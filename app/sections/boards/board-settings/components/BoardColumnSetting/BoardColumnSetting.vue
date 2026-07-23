@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
-import { GripVertical, Trash2 } from 'lucide-vue-next'
+import { GripVertical, Trash2 } from '@lucide/vue'
 
 const props = defineProps<{
   canUpdate: boolean
@@ -51,8 +51,8 @@ const props = defineProps<{
   onUpdateColor: (color: string) => void
   onUpdateName: (name: string) => void
 }>()
-const element = ref<HTMLElement>()
-const handle = ref<HTMLElement>()
+const element = useTemplateRef('element')
+const handle = useTemplateRef('handle')
 const { isDragging } = useSortable({
   disabled: computed(() => !props.canUpdate || props.disabled),
   element,

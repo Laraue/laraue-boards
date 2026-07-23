@@ -46,25 +46,14 @@
   </section>
 </template>
 
-<script lang="ts">
-import type { IssueCardViewModel } from '~/sections/boards/board/components/BoardColumn/components/IssueCard.vue'
-
-export type BoardColumnViewModel = {
-  color: null | string
-  hasNext: boolean
-  id: string
-  issueCount: number
-  issues: IssueCardViewModel[]
-  title: string
-}
-</script>
-
 <script setup lang="ts">
 import { useDroppable } from '@dnd-kit/vue'
-import { Loader } from 'lucide-vue-next'
+import { Loader } from '@lucide/vue'
 
 import { COLORS } from '~/constants/colors'
 import IssueCard from '~/sections/boards/board/components/BoardColumn/components/IssueCard.vue'
+
+import type { BoardColumnViewModel } from './BoardColumn.types'
 
 const props = defineProps<{
   canMoveIssues: boolean
@@ -77,8 +66,8 @@ const props = defineProps<{
   viewModel: BoardColumnViewModel
 }>()
 
-const element = ref<HTMLElement>()
-const sentinel = ref<HTMLElement>()
+const element = useTemplateRef('element')
+const sentinel = useTemplateRef('sentinel')
 
 const { isDropTarget } = useDroppable({
   accept: 'item',

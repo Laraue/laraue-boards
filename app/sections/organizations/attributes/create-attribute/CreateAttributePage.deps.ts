@@ -1,18 +1,9 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult } from '#infrastructure/api/apiResult'
 
-export type CreateAttributeInput = {
-  color: string
-  data: { listValues: string[]; type: 'list' } | { type: 'text' }
-  name: string
-}
+import type { CreateAttributeInput } from './CreateAttributePage.types'
 
-export type CreateAttributeFailure =
-  | { message: string; type: 'invalidInput' }
-  | { type: 'accessDenied' }
-  | { type: 'temporarilyUnavailable' }
+export type CreateAttribute = (input: CreateAttributeInput) => Promise<ActionResult<{ id: string }>>
 
 export type CreateAttributePageDeps = {
-  create: (
-    input: CreateAttributeInput,
-  ) => Promise<Result<{ id: string }, CreateAttributeFailure>>
+  create: CreateAttribute
 }

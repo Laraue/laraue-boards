@@ -1,18 +1,11 @@
-import type { Result } from '~/utils/actionResult'
+import type { QueryResult } from '#infrastructure/api/apiResult'
 
-export type AttributeListItem = {
-  color: string
-  id: string
-  name: string
-  type: 'list' | 'text'
-}
+import type { AttributeListItem } from './AttributesPage.types'
 
-export type ViewAttributesFailure =
-  | { type: 'accessDenied' }
-  | { type: 'temporarilyUnavailable' }
+export type ViewAttributes = (input: {
+  signal?: AbortSignal
+}) => Promise<QueryResult<AttributeListItem[]>>
 
 export type AttributesPageDeps = {
-  view: (input: {
-    signal?: AbortSignal
-  }) => Promise<Result<AttributeListItem[], ViewAttributesFailure>>
+  view: ViewAttributes
 }

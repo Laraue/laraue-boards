@@ -1,30 +1,76 @@
 <template>
-  <IssuesContent
-    v-if="pageState.type === 'ready'"
-    :filter-value="filterValue"
-    :filtering="filtering"
-    :issue-list-deps="deps.issueList"
-    :on-issues-moved="handleIssuesMoved"
-    :on-update-filters="updateFilters"
-    :on-update-page="updatePage"
-    :on-update-search="updateSearch"
-    :page="request.page"
-    :search="request.search"
-    :view-model="pageState.data.IssuesPage" />
-  <PageLoadState
-    v-else
-    :error-text="pageState.type === 'error' ? pageState.message : ''"
-    :loading="pageState.type === 'pending'"
+  <QueryState
+    :data="data"
+    error-title="Could not load issues"
     loading-text="Loading issues…"
-    :on-retry="refresh" />
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
+    <template #default="{ data: view }">
+      <section>
+        <div class="title-row">
+          <div class="page-heading">
+            <ClipboardList class="page-heading-icon" />
+            <div class="page-heading-text">
+              <h1>All issues</h1>
+            </div>
+          </div>
+          <NuxtLink
+            v-if="view.spaces.length"
+            aria-label="Add issue"
+            class="primary"
+            :to="organizationRoutes.newIssue()">
+            <Plus />
+            <span class="btn-label">Add issue</span>
+          </NuxtLink>
+        </div>
+        <div class="toolbar">
+          <input
+            aria-label="Search issues"
+            placeholder="Search issues"
+            type="search"
+            :value="request.search"
+            @input="updateSearch(($event.target as HTMLInputElement).value)" />
+          <IssueFilters
+            :attributes="view.attributes"
+            :loading="filtering"
+            :model-value="filterValue"
+            :spaces="view.spaces"
+            @update:model-value="
+              updateFilters({
+                attributes: $event.attributes,
+                spaceIds: $event.spaceIds ?? [],
+              })
+            " />
+        </div>
+        <p
+          v-if="searchMessage"
+          class="form-error">
+          {{ searchMessage }}
+        </p>
+        <IssueList
+          :deps="deps.issueList"
+          empty-text="No issues yet."
+          :filtering="filtering"
+          :has-next-page="hasNextPage"
+          :issues="issues"
+          :on-moved="searchIssues"
+          :on-update-page="updatePage"
+          :page="request.page" />
+      </section>
+    </template>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
+import { ClipboardList, Plus } from '@lucide/vue'
 import { debounce } from 'es-toolkit'
+import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
-import type { IssuesPageFilterValue } from '~/sections/issues/issues/components/IssuesContent.vue'
-import IssuesContent from '~/sections/issues/issues/components/IssuesContent.vue'
-import type { IssuesPageDeps } from '~/sections/issues/issues/IssuesPageDeps'
+import type { IssueFiltersValue } from '~/components/issue-filters/IssueFilters.types'
+import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
+import IssueList from '~/components/issue-list/IssueList.vue'
+import type { IssuesPageDeps } from '~/sections/issues/issues/IssuesPage.deps'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -33,143 +79,123 @@ import {
   withIssueAttributeFilters,
 } from '~/utils/issueAttributeFilters'
 
-const props = defineProps<{ deps: IssuesPageDeps }>()
+const props = defineProps<{
+  deps: IssuesPageDeps
+  onUpdateQuery: (query: LocationQueryRaw) => Promise<void> | void
+  organizationKey: string
+  routeQuery: LocationQuery
+}>()
+
+const organizationRoutes = useOrganizationRoutes()
+
+const request = computed(() => ({
+  attributeQuery: readIssueAttributeQuery(props.routeQuery),
+  page: Math.max(1, Number(props.routeQuery.page) || 1),
+  search: typeof props.routeQuery.search === 'string' ? props.routeQuery.search : '',
+  spaceIds: readIssueSpaceQuery(props.routeQuery.space),
+}))
+
+const { data, message, pending, refresh } = await useQuery(
+  () => `issues:${props.organizationKey}`,
+  (_nuxtApp, { signal }) => props.deps.view({ ...request.value, signal }),
+  { watch: [() => props.organizationKey] },
+)
+
 useHead({ title: 'All issues' })
 
-// Page loading and filtering
-const route = useRoute('organizations-organizationKey-issues')
-const request = computed(() => ({
-  attributeQuery: readIssueAttributeQuery(route.query),
-  page: Math.max(1, Number(route.query.page) || 1),
-  search: typeof route.query.search === 'string' ? route.query.search : '',
-  spaceIds: readIssueSpaceQuery(route.query.space),
-}))
-const router = useRouter()
-const {
-  actionResult: outcome,
-  refresh,
-  state: pageState,
-} = await useActionData({
-  action: () => props.deps.viewIssuesPage(request.value),
-  fallbackMessage: 'Could not load issues. Try again.',
-  messages: {
-    AccessDenied: 'You do not have access to organization issues.',
-    TemporarilyUnavailable:
-      'Could not load issues. The service is temporarily unavailable.',
-  },
-})
-const issueAttributes = computed(() =>
-  pageState.value.type === 'ready'
-    ? pageState.value.data.IssuesPage.attributes
-    : [],
-)
+const attributes = computed(() => data.value?.attributes ?? [])
 const attributeFilters = computed(() =>
-  normalizeIssueAttributeFilters(
-    request.value.attributeQuery,
-    issueAttributes.value,
-  ),
+  normalizeIssueAttributeFilters(request.value.attributeQuery, attributes.value),
 )
-const filterValue = computed<IssuesPageFilterValue>(() => ({
+const filterValue = computed<IssueFiltersValue>(() => ({
   attributes: attributeFilters.value,
   spaceIds: request.value.spaceIds,
 }))
 
-function updateFilters(value: IssuesPageFilterValue) {
-  const query = withIssueAttributeFilters(
-    route.query,
-    value.attributes,
-    issueAttributes.value,
-  )
-  if (value.spaceIds.length) {
-    query.space = value.spaceIds
-  } else {
-    delete query.space
-  }
-  void router.replace({ query })
-}
+const {
+  clear: clearSearch,
+  data: searchResult,
+  execute: runSearch,
+  message: searchMessage,
+  pending: searching,
+} = await useQuery(
+  () => `issues-search:${props.organizationKey}`,
+  () =>
+    props.deps.searchIssues({
+      filters: getIssueAttributeFilterInput(attributeFilters.value, attributes.value),
+      page: request.value.page,
+      search: request.value.search,
+      spaceIds: request.value.spaceIds,
+    }),
+  { immediate: false },
+)
 
-function updatePage(value: number) {
-  const query = { ...route.query }
-  if (value > 1) {
-    query.page = String(value)
-  } else {
-    delete query.page
-  }
-  void router.replace({ query })
-}
+const issues = computed(() => searchResult.value?.issues ?? data.value?.issues ?? [])
+const hasNextPage = computed(
+  () => searchResult.value?.hasNextPage ?? data.value?.hasNextPage ?? false,
+)
 
-function updateSearch(value: string) {
-  const query = { ...route.query }
-  delete query.page
-  if (value) {
-    query.search = value
-  } else {
-    delete query.search
-  }
-  void router.replace({ query })
-}
+const state = reactive({ scheduled: false })
 
-// Issue search
-const runSearch = createLatestRequest()
-const filtering = ref(false)
+const filtering = computed(() => state.scheduled || searching.value)
 
-async function searchIssues(input: typeof request.value) {
+const searchIssues = async () => {
   scheduleSearch.cancel()
-  filtering.value = true
-  const latest = await runSearch({
-    onLatest: (result) => {
-      matchActionResult({
-        err: (error) => {
-          outcome.value = { error, ok: false }
-        },
-        ok: (value) => {
-          const current = outcome.value
-          if (!current) {
-            return
-          }
-          matchActionResult({
-            err: () => undefined,
-            ok: (currentValue) => {
-              outcome.value = {
-                ok: true,
-                value: {
-                  IssuesPage: {
-                    ...currentValue.IssuesPage,
-                    ...value.IssuesPage,
-                  },
-                },
-              }
-            },
-            result: current,
-          })
-        },
-        result,
-      })
-    },
-    request: () =>
-      props.deps.searchIssues({
-        filters: getIssueAttributeFilterInput(
-          attributeFilters.value,
-          issueAttributes.value,
-        ),
-        page: input.page,
-        search: input.search,
-        spaceIds: input.spaceIds,
-      }),
-  })
-  if (latest) {
-    filtering.value = false
+  state.scheduled = false
+  if (data.value === undefined) {
+    return
   }
-}
-
-async function handleIssuesMoved() {
-  await searchIssues(request.value)
+  await runSearch()
 }
 
 const scheduleSearch = debounce(searchIssues, 300)
-watch(request, (input) => {
-  filtering.value = true
-  scheduleSearch(input)
+
+const updateFilters = (value: Required<IssueFiltersValue>) => {
+  const nextQuery = withIssueAttributeFilters(props.routeQuery, value.attributes, attributes.value)
+  if (value.spaceIds.length) {
+    nextQuery.space = value.spaceIds
+  } else {
+    delete nextQuery.space
+  }
+  void props.onUpdateQuery(nextQuery)
+}
+
+const updatePage = (value: number) => {
+  const nextQuery: LocationQueryRaw = { ...props.routeQuery }
+  if (value > 1) {
+    nextQuery.page = String(value)
+  } else {
+    delete nextQuery.page
+  }
+  void props.onUpdateQuery(nextQuery)
+}
+
+const updateSearch = (value: string) => {
+  const nextQuery: LocationQueryRaw = { ...props.routeQuery }
+  delete nextQuery.page
+  if (value) {
+    nextQuery.search = value
+  } else {
+    delete nextQuery.search
+  }
+  void props.onUpdateQuery(nextQuery)
+}
+
+watch(request, () => {
+  state.scheduled = true
+  scheduleSearch()
 })
-onScopeDispose(scheduleSearch.cancel)
+
+watch(
+  () => props.organizationKey,
+  () => {
+    scheduleSearch.cancel()
+    state.scheduled = false
+    clearSearch()
+  },
+)
+
+onScopeDispose(() => {
+  scheduleSearch.cancel()
+})
 </script>

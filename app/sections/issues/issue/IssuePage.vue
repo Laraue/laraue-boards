@@ -1,169 +1,488 @@
 <template>
-  <IssueContent
-    v-if="pageState.type === 'ready'"
-    :error="error"
-    :issue-details-deps="deps.issueDetails"
-    :on-back="returnToSource"
-    :on-delete="remove"
-    :on-dirty-change="setDirty"
-    :on-save="save"
-    :saving="saving"
-    :view-model="pageState.data.IssuePage" />
-  <PageLoadState
-    v-else-if="!leaving"
-    :error-text="pageState.type === 'error' ? pageState.message : ''"
-    :loading="pageState.type === 'pending'"
+  <QueryState
+    v-if="!state.leaving"
+    :data="data"
+    error-title="Could not load issue"
     loading-text="Loading issue…"
-    :on-retry="refresh" />
+    :message="viewMessage"
+    :on-retry="refresh"
+    :pending="pending">
+    <template #loading>
+      <IssueSkeleton />
+    </template>
+    <template #default="{ data: issue }">
+      <section class="issue-page">
+        <div class="title-row">
+          <div class="page-heading">
+            <slot name="leading">
+              <button
+                aria-label="Back"
+                class="icon-btn"
+                type="button"
+                @click="leave">
+                <ArrowLeft />
+              </button>
+            </slot>
+            <div class="page-heading-text">
+              <h1>
+                <NuxtLink
+                  rel="noopener"
+                  target="_blank"
+                  :to="issueRoute">
+                  {{ issue.issueKey }}
+                </NuxtLink>
+              </h1>
+              <button
+                aria-label="Copy issue link"
+                class="issue-copy"
+                :class="{ 'issue-copy--copied': state.copied }"
+                title="Copy issue link"
+                type="button"
+                @click="copyIssueLink">
+                <Transition
+                  mode="out-in"
+                  name="icon-pop">
+                  <Check
+                    v-if="state.copied"
+                    key="check" />
+                  <Link
+                    v-else
+                    key="link" />
+                </Transition>
+              </button>
+            </div>
+            <slot name="actions" />
+          </div>
+        </div>
+        <form
+          class="issue-form issue-page-form"
+          @submit.prevent="save">
+          <div class="issue-form-content">
+            <div class="issue-form-main">
+              <textarea
+                v-model="state.content"
+                aria-label="Content"
+                :disabled="!issue.canEdit"
+                rows="10" />
+              <IssueAttachments
+                :key="issue.issueKey"
+                :attachments="issue.attachments"
+                class="issue-page-attachments"
+                :disabled="!issue.canEdit || saving || deleting"
+                :files="state.files"
+                :on-change="changeFiles"
+                :on-remove-attachment="removeAttachment"
+                :removed-attachment-ids="state.removedAttachmentIds" />
+            </div>
+            <div class="issue-form-side">
+              <label>Space</label>
+              <SpaceSelect
+                :key="`space-${issue.issueKey}`"
+                v-model="state.pickedSpaceId"
+                :deps="deps.spaceSelect"
+                :disabled="!issue.canEdit"
+                :initial-option="{
+                  label: issue.spaceLabel || 'Current space',
+                  value: issue.spaceId,
+                }" />
+              <label>Board</label>
+              <BoardSelect
+                :key="`board-${issue.issueKey}`"
+                v-model="state.boardId"
+                :deps="deps.boardSelect"
+                :disabled="!issue.canEdit"
+                :initial-option="{
+                  label: issue.boardLabel || 'Current board',
+                  value: issue.boardId,
+                }"
+                :space-id="state.pickedSpaceId" />
+              <label>Status</label>
+              <StatusSelect
+                :key="`status-${issue.issueKey}`"
+                v-model="state.statusId"
+                :board-id="state.boardId"
+                :deps="deps.statusSelect"
+                :disabled="!issue.canEdit"
+                :initial-option="{
+                  label: issue.statusLabel || 'Current status',
+                  value: issue.statusId,
+                }" />
+              <label>Assignee</label>
+              <AssigneeSelect
+                :key="`assignee-${issue.issueKey}`"
+                v-model="state.assigneeId"
+                :deps="deps.assigneeSelect"
+                :disabled="!issue.canEdit"
+                :initial-option="{
+                  color: issue.assigneeColor,
+                  initials: issue.assigneeInitial,
+                  label: issue.assignee,
+                  value: issue.assigneeId,
+                }"
+                :space-id="state.pickedSpaceId" />
+              <label>Owner</label>
+              <div class="issue-person">
+                <span
+                  class="avatar"
+                  :style="{ background: issue.ownerColor }">
+                  {{ issue.ownerInitial }}
+                </span>
+                <span>{{ issue.owner }}</span>
+              </div>
+              <IssueAttributeFields
+                v-if="issue.attributes.length"
+                v-model="state.attributeValues"
+                :attributes="issue.attributes"
+                :disabled="!issue.canEdit" />
+              <span class="issue-date-label">Created</span>
+              <time :datetime="issue.createdAt">{{ formatDate(issue.createdAt) }}</time>
+              <span class="issue-date-label">Updated</span>
+              <time :datetime="issue.updatedAt">{{ formatDate(issue.updatedAt) }}</time>
+            </div>
+          </div>
+          <div
+            v-if="issue.canEdit"
+            class="issue-actions">
+            <p
+              v-if="saveMessage || deleteMessage"
+              class="form-error">
+              {{ saveMessage || deleteMessage }}
+            </p>
+            <div class="form-actions">
+              <button
+                class="primary"
+                :disabled="!canSave || saving || deleting"
+                type="submit">
+                {{ saving ? 'Saving…' : 'Save changes' }}
+              </button>
+              <button
+                class="secondary danger"
+                :disabled="saving || deleting"
+                type="button"
+                @click="remove">
+                Delete issue
+              </button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </template>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
-import type { IssueDetailsSaveInput } from '~/components/issues/issue-details/IssueDetails.vue'
-import IssueContent from '~/sections/issues/issue/components/IssueContent.vue'
-import type { IssuePageDeps } from '~/sections/issues/issue/IssuePageDeps'
+import { ArrowLeft, Check, Link } from '@lucide/vue'
+
+import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
+import BoardSelect from '~/components/board-select/BoardSelect.vue'
+import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vue'
+import IssueAttributeFields from '~/components/issue-attribute-fields/IssueAttributeFields.vue'
+import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
+import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
+
+import IssueSkeleton from './components/IssueSkeleton.vue'
+import type { IssuePageDeps } from './IssuePage.deps'
+import type { IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
 
 const props = defineProps<{
   deps: IssuePageDeps
   issueKey: string
+  onBack: () => Promise<void> | void
+  onDeleted?: (issueKey: string) => Promise<void> | void
+  onDirtyChange?: (dirty: boolean) => void
+  onSaved?: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
+
 const organizationRoutes = useOrganizationRoutes()
-const { refresh, state: pageState } = await useActionData({
-  action: () => props.deps.viewIssuePage({ issueKey: props.issueKey }),
-  fallbackMessage: 'Could not load issue. Try again.',
-  messages: {
-    AccessDenied: 'You do not have access to this issue.',
-    IssueNotFound: 'The issue was not found or is not available to you.',
-    TemporarilyUnavailable:
-      'Could not load issue. The service is temporarily unavailable.',
-  },
-  watch: [() => props.issueKey],
+const router = useRouter()
+const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'UTC',
 })
-useHead({
-  title: computed(() =>
-    pageState.value.type === 'ready'
-      ? pageState.value.data.IssuePage.issueKey
-      : 'Issue',
-  ),
-})
-const saving = ref(false)
-const dirty = ref(false)
-const error = ref<null | string>(null)
-const leaving = ref(false)
-
-useUnsavedChangesWarning(dirty)
-
-watch(
-  () => props.issueKey,
-  () => {
-    error.value = null
-  },
+const {
+  data,
+  message: viewMessage,
+  pending,
+  refresh,
+} = await useQuery(
+  () => `issue:${props.issueKey}`,
+  (_nuxtApp, { signal }) => props.deps.view({ issueKey: props.issueKey, signal }),
+  { lazy: true, watch: [() => props.issueKey] },
 )
 
-async function returnToSource() {
-  leaving.value = true
-  const back = window.history.state?.back
-  if (typeof back === 'string' && back.startsWith('/')) {
-    await navigateTo(back, { replace: true })
-    return
-  }
-  await navigateTo(organizationRoutes.issues(), { replace: true })
+useHead({ title: computed(() => data.value?.issueKey ?? 'Issue') })
+
+const state = reactive({
+  assigneeId: '',
+  attributeValues: {} as Record<string, string>,
+  boardId: '',
+  content: '',
+  copied: false,
+  dirty: false,
+  files: [] as File[],
+  leaving: false,
+  pickedSpaceId: '',
+  removedAttachmentIds: [] as string[],
+  statusId: '',
+})
+
+const currentIssue = computed(() => data.value)
+const canSave = computed(
+  () =>
+    !!currentIssue.value &&
+    !saving.value &&
+    !!state.assigneeId &&
+    (state.boardId === currentIssue.value.boardId || !!state.statusId),
+)
+const dirty = computed(
+  () =>
+    !!currentIssue.value &&
+    (state.assigneeId !== currentIssue.value.assigneeId ||
+      state.boardId !== currentIssue.value.boardId ||
+      state.content !== currentIssue.value.content ||
+      state.pickedSpaceId !== currentIssue.value.spaceId ||
+      state.statusId !== currentIssue.value.statusId ||
+      state.files.length > 0 ||
+      state.removedAttachmentIds.length > 0 ||
+      currentIssue.value.attributes.some(
+        (attribute) => state.attributeValues[attribute.id] !== attribute.value,
+      )),
+)
+const issueRoute = computed(() => organizationRoutes.issue(props.issueKey))
+const formatDate = (value: string) => dateTimeFormatter.format(new Date(value))
+const syncState = (issue: IssuePageViewModel) => {
+  Object.assign(state, {
+    assigneeId: issue.assigneeId,
+    attributeValues: Object.fromEntries(
+      issue.attributes.map((attribute) => [attribute.id, attribute.value]),
+    ),
+    boardId: issue.boardId,
+    content: issue.content,
+    files: [],
+    pickedSpaceId: issue.spaceId,
+    removedAttachmentIds: [],
+    statusId: issue.statusId,
+  })
 }
 
-function setDirty(value: boolean) {
-  dirty.value = value
-}
-
-async function save(input: IssueDetailsSaveInput) {
-  if (pageState.value.type !== 'ready') {
+const handleSaved = async (issue: IssuePageSavedIssue) => {
+  await props.onSaved?.(issue)
+  if (issue.complete) {
+    await leaveAfterIssueChanged()
     return
   }
-  const issue = pageState.value.data.IssuePage
-  saving.value = true
-  error.value = null
-  const updateResult = await props.deps.updateIssue({
-    assigneeId: input.assigneeId,
+  await refresh()
+  saveMessage.value = 'Changes were saved, but the issue could not be moved. Try again.'
+}
+const {
+  execute: saveIssue,
+  message: saveMessage,
+  pending: saving,
+} = useAction(props.deps.saveIssue, { onSuccess: handleSaved })
+const {
+  execute: deleteIssue,
+  message: deleteMessage,
+  pending: deleting,
+} = useAction(props.deps.deleteIssue, {
+  onSuccess: async () => {
+    await props.onDeleted?.(props.issueKey)
+    await leaveAfterIssueChanged()
+  },
+})
+
+const save = async () => {
+  const issue = currentIssue.value
+  if (!issue || !canSave.value) {
+    return
+  }
+  await saveIssue({
+    assigneeId: state.assigneeId,
     attributeValues: getIssueAttributeValueInput(
-      input.attributeValues,
+      Object.fromEntries(Object.entries(state.attributeValues).filter(([, value]) => value)),
       issue.attributes,
     ),
-    content: input.content,
-    files: input.files,
-    issueKey: props.issueKey,
-    removeAttachmentIds: input.removeAttachmentIds,
+    boardId: state.boardId,
+    content: state.content,
+    files: state.files,
+    issueKey: issue.issueKey,
+    previousBoardId: issue.boardId,
+    previousStatusId: issue.statusId,
+    removeAttachmentIds: state.removedAttachmentIds,
+    statusId: state.statusId,
   })
-  await matchActionResult({
-    err: async (actionError) => {
-      error.value = getErrorMessage({
-        error: actionError,
-        messages: {
-          AccessDenied: 'You do not have permission to update this issue.',
-          IssueNotFound: 'The issue was not found.',
-          TemporarilyUnavailable: 'Could not save issue. Try again.',
-        },
-      })
-    },
-    ok: async () => {
-      if (
-        pageState.value.type === 'ready' &&
-        input.statusId !== pageState.value.data.IssuePage.statusId
-      ) {
-        const moveResult = await props.deps.moveIssue({
-          issueKey: props.issueKey,
-          statusId: input.statusId,
-        })
-        const moved = matchActionResult({
-          err: (moveError) => {
-            error.value = getErrorMessage({
-              error: moveError,
-              messages: {
-                AccessDenied:
-                  'You do not have permission to update this issue.',
-                InvalidStatus: 'Select a valid board status.',
-                ResourceNotFound: 'The issue or board status was not found.',
-                TemporarilyUnavailable: 'Could not save issue. Try again.',
-              },
-            })
-            return false
-          },
-          ok: () => true,
-          result: moveResult,
-        })
-        if (!moved) {
-          await refresh()
-          return
-        }
-      }
-      await leaveAfterIssueChanged()
-    },
-    result: updateResult,
-  })
-  saving.value = false
 }
-
-async function remove() {
-  if (!confirm('Delete this issue?')) {
-    return
+const remove = async () => {
+  if (confirm('Delete this issue?')) {
+    await deleteIssue({ issueKey: props.issueKey })
   }
-  const result = await props.deps.deleteIssue({ issueKey: props.issueKey })
-  await matchActionResult({
-    err: async (actionError) => {
-      error.value = getErrorMessage({
-        error: actionError,
-        messages: {
-          AccessDenied: 'You do not have permission to delete this issue.',
-          IssueNotFound: 'This issue no longer exists.',
-          TemporarilyUnavailable: 'Could not delete issue. Try again.',
-        },
-      })
-    },
-    ok: leaveAfterIssueChanged,
-    result,
-  })
+}
+const changeFiles = (files: File[]) => {
+  state.files = files
+}
+const removeAttachment = (id: string) => {
+  state.removedAttachmentIds.push(id)
+}
+const copyIssueLink = async () => {
+  const url = new URL(router.resolve(issueRoute.value).href, window.location.origin).href
+  try {
+    await navigator.clipboard.writeText(url)
+  } catch {
+    window.prompt('Copy issue link', url)
+  }
+  state.copied = true
+  setTimeout(() => (state.copied = false), 1200)
+}
+const leaveAfterIssueChanged = async () => {
+  state.dirty = false
+  await leave()
+}
+const leave = async () => {
+  state.leaving = true
+  await props.onBack()
 }
 
-async function leaveAfterIssueChanged() {
-  dirty.value = false
-  await returnToSource()
-}
+useUnsavedChangesWarning(toRef(state, 'dirty'))
+watch(data, (issue) => issue && syncState(issue), { immediate: true })
+watch(
+  dirty,
+  (value) => {
+    state.dirty = value
+    props.onDirtyChange?.(value)
+  },
+  { immediate: true },
+)
 </script>
+
+<style scoped>
+.issue-page {
+  align-self: start;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: 100%;
+  min-height: 0;
+}
+.issue-page-form {
+  display: grid;
+  grid-template-areas:
+    'content'
+    'actions';
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  margin-top: var(--space-5);
+  min-height: 0;
+  row-gap: var(--space-4);
+}
+.issue-form-main {
+  display: grid;
+  grid-template-rows: minmax(376px, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+}
+.issue-form-content {
+  column-gap: var(--space-6);
+  display: grid;
+  grid-area: content;
+  grid-template-areas: 'main side';
+  grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+  grid-template-rows: max-content;
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: var(--space-1);
+  width: 100%;
+}
+.issue-form-content .issue-form-main {
+  grid-area: main;
+}
+.issue-form-content .issue-form-side {
+  grid-area: side;
+}
+.issue-form-side {
+  align-items: center;
+  display: grid;
+  gap: var(--space-4);
+  grid-auto-rows: minmax(var(--control-height), auto);
+  grid-template-columns: max-content minmax(0, 1fr);
+  place-self: start stretch;
+}
+.issue-form-side > label {
+  margin: 0;
+}
+.issue-page-attachments {
+  margin-top: var(--space-4);
+}
+.issue-person {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+}
+.issue-person .avatar {
+  font-size: var(--font-size-caption);
+  height: 28px;
+  width: 28px;
+}
+.issue-date-label {
+  font-weight: var(--font-weight-semibold);
+}
+.issue-actions {
+  grid-area: actions;
+}
+.issue-actions .form-error {
+  margin: 0;
+}
+.issue-actions .form-actions {
+  margin-top: 0;
+}
+.issue-actions .form-error + .form-actions {
+  margin-top: var(--space-4);
+}
+.issue-copy {
+  background: transparent;
+  border: 0;
+  color: var(--color-muted);
+  display: inline-flex;
+  padding: 0;
+  transition: var(--transition-press);
+}
+.issue-copy:hover {
+  color: var(--color-text);
+}
+.issue-copy:active {
+  translate: 0 var(--press-offset);
+}
+.issue-copy--copied {
+  color: var(--color-success);
+}
+.page-heading h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+.page-heading h1 a:hover {
+  color: var(--color-accent);
+}
+@media (max-width: 760px) {
+  .page-heading-text {
+    align-items: center;
+    flex-direction: row;
+    gap: var(--space-2);
+  }
+  .issue-form-content {
+    column-gap: 0;
+    grid-template-areas:
+      'main'
+      'side';
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: max-content max-content;
+    row-gap: var(--space-5);
+  }
+  .issue-form-side {
+    width: auto;
+  }
+  .issue-actions .form-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+</style>

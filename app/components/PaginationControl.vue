@@ -30,17 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight } from '@lucide/vue'
 
 defineProps<{ hasNextPage: boolean; page: number }>()
 const emit = defineEmits<{ 'update:page': [page: number] }>()
 const changePage = (event: Event) =>
   emit(
     'update:page',
-    Math.max(
-      1,
-      Math.trunc(Number((event.target as HTMLInputElement).value)) || 1,
-    ),
+    Math.max(1, Math.trunc(Number((event.target as HTMLInputElement).value)) || 1),
   )
 </script>
 

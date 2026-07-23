@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { createCreateAttributePageDeps } from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.deps.impl'
 import CreateAttributePage from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.vue'
+import { createCreateAttributePageDeps } from '~/sections/organizations/attributes/create-attribute/deps-impl'
 
 const client = useApiClient()
 const deps = createCreateAttributePageDeps(client)

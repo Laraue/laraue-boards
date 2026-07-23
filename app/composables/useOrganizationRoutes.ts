@@ -8,7 +8,13 @@ export type OrganizationRouteName = Extract<
 
 export const useOrganizationRoutes = () => {
   const route = useRoute<OrganizationRouteName>()
-  const organizationKey = computed(() => route.params.organizationKey)
+  const organizationKey = computed(() => {
+    const value = route.params.organizationKey
+    if (typeof value !== 'string') {
+      throw new Error('organizationKey is missing or invalid')
+    }
+    return value
+  })
   const organizationParams = () => ({
     organizationKey: organizationKey.value,
   })

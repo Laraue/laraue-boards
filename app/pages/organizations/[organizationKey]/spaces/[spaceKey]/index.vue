@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { createSpacePageDeps } from '~/sections/spaces/space/SpacePage.deps.impl'
+import { createSpacePageDeps } from '~/sections/spaces/space/deps-impl'
 import SpacePage from '~/sections/spaces/space/SpacePage.vue'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey')

@@ -6,12 +6,10 @@
 </template>
 
 <script setup lang="ts">
-import { createCreateBacklogIssuePageDeps } from '~/sections/spaces/create-backlog-issue/CreateBacklogIssuePage.deps.impl'
 import CreateBacklogIssuePage from '~/sections/spaces/create-backlog-issue/CreateBacklogIssuePage.vue'
+import { createCreateBacklogIssuePageDeps } from '~/sections/spaces/create-backlog-issue/deps-impl'
 
-const route = useRoute(
-  'organizations-organizationKey-spaces-spaceKey-backlog-issues-new',
-)
+const route = useRoute('organizations-organizationKey-spaces-spaceKey-backlog-issues-new')
 const spaceKey = computed(() => String(route.params.spaceKey))
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient()

@@ -6,12 +6,10 @@
 </template>
 
 <script setup lang="ts">
-import { createCreateBoardPageDeps } from '~/sections/boards/create-board/CreateBoardPage.deps.impl'
 import CreateBoardPage from '~/sections/boards/create-board/CreateBoardPage.vue'
+import { createCreateBoardPageDeps } from '~/sections/boards/create-board/deps-impl'
 
-const route = useRoute(
-  'organizations-organizationKey-spaces-spaceKey-boards-new',
-)
+const route = useRoute('organizations-organizationKey-spaces-spaceKey-boards-new')
 const spaceKey = computed(() => String(route.params.spaceKey))
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient()

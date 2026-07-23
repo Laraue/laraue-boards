@@ -6,8 +6,8 @@
 </template>
 
 <script setup lang="ts">
-import { createAttributePageDeps } from '~/sections/organizations/attributes/attribute/AttributePage.deps.impl'
 import AttributePage from '~/sections/organizations/attributes/attribute/AttributePage.vue'
+import { createAttributePageDeps } from '~/sections/organizations/attributes/attribute/deps-impl'
 
 const route = useRoute('organizations-organizationKey-settings-attributes-id')
 const attributeId = computed(() => String(route.params.id))

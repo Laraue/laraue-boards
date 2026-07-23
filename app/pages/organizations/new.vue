@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { createCreateOrganizationPageDeps } from '~/sections/organizations/create-organization/CreateOrganizationPage.deps.impl'
 import CreateOrganizationPage from '~/sections/organizations/create-organization/CreateOrganizationPage.vue'
+import { createCreateOrganizationPageDeps } from '~/sections/organizations/create-organization/deps-impl'
 
 definePageMeta({ layout: false })
 const client = useApiClient()

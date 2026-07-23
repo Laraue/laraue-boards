@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { House, RefreshCw } from 'lucide-vue-next'
+import { House, RefreshCw } from '@lucide/vue'
 
 import type { NuxtError } from '#app'
 

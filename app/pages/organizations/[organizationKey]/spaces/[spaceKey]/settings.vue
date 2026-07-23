@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { createSpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps.impl'
+import { createSpaceSettingsPageDeps } from '~/sections/spaces/space-settings/deps-impl'
 import SpaceSettingsPage from '~/sections/spaces/space-settings/SpaceSettingsPage.vue'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-settings')

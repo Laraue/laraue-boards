@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { createOrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps.impl'
+import { createOrganizationPickerPageDeps } from '~/sections/organizations/select-organization/deps-impl'
 import OrganizationPickerPage from '~/sections/organizations/select-organization/OrganizationPickerPage.vue'
 
 definePageMeta({ layout: false })

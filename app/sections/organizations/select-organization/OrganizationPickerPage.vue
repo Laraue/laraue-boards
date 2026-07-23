@@ -1,18 +1,11 @@
 <template>
-  <PageState
+  <QueryState
+    :data="data"
     error-title="Could not load organizations"
     loading-text="Loading organizations…"
-    :on-retry="
-      pageState.type === 'error' && pageState.error.type === 'accessDenied'
-        ? onAccessDenied
-        : query.refresh
-    "
-    :retry-text="
-      pageState.type === 'error' && pageState.error.type === 'accessDenied'
-        ? 'Sign in'
-        : 'Try again'
-    "
-    :state="pageState">
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
     <template #default="{ data: organizations }">
       <section class="org-picker">
         <div class="picker-card">
@@ -30,7 +23,7 @@
               v-for="organization in organizations"
               :key="organization.id"
               class="org-choice"
-              :disabled="state.selecting"
+              :disabled="selecting"
               type="button"
               @click="select(organization.id, organization.key)">
               <span
@@ -57,93 +50,43 @@
             Create organization
           </NuxtLink>
           <p
-            v-if="state.error"
+            v-if="selectMessage"
             class="form-error">
-            {{ state.error }}
+            {{ selectMessage }}
           </p>
         </div>
       </section>
     </template>
-  </PageState>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Plus } from 'lucide-vue-next'
+import { ChevronRight, Plus } from '@lucide/vue'
 
-import type {
-  OrganizationPickerPageDeps,
-  SelectOrganizationFailure,
-  ViewOrganizationPickerFailure,
-} from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
+import type { OrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
 
 const props = defineProps<{
   deps: OrganizationPickerPageDeps
-  onAccessDenied: () => Promise<void> | void
   onSelected: (organizationKey: string) => Promise<void> | void
 }>()
-const state = reactive({ error: null as null | string, selecting: false })
+
 useHead({ title: 'Organizations' })
-const query = await useAsyncData(
+
+const { data, message, pending, refresh } = await useQuery(
   'organization-picker',
   (_nuxtApp, { signal }) => props.deps.view({ signal }),
 )
-const getViewFailureMessage = (
-  failure: ViewOrganizationPickerFailure,
-): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'Your session is missing or has expired.'
-    case 'temporarilyUnavailable':
-      return 'Could not load organizations. The service is temporarily unavailable.'
-    default:
-      return assertNever(failure)
-  }
-}
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getViewFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
-)
-const getSelectFailureMessage = (
-  failure: SelectOrganizationFailure,
-): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'Your session has expired. Sign in again.'
-    case 'organizationNotFound':
-      return 'This organization is no longer available to you.'
-    case 'temporarilyUnavailable':
-      return 'Could not open organization. Try again.'
-    default:
-      return assertNever(failure)
-  }
-}
 
-async function select(
-  organizationId: string,
-  organizationKey: string,
-): Promise<void> {
-  if (state.selecting) {
-    return
-  }
-  state.selecting = true
-  state.error = null
-  try {
-    const result = await props.deps.select({ organizationId })
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getSelectFailureMessage(failure)
-      },
-      ok: () => props.onSelected(organizationKey),
-    })
-  } finally {
-    state.selecting = false
+const {
+  execute: selectOrganization,
+  message: selectMessage,
+  pending: selecting,
+} = useAction(props.deps.select)
+
+const select = async (organizationId: string, organizationKey: string): Promise<void> => {
+  const selected = await selectOrganization({ organizationId })
+  if (selected) {
+    await props.onSelected(organizationKey)
   }
 }
 </script>

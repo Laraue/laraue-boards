@@ -37,7 +37,7 @@ let resizeObserver: ResizeObserver | undefined
 let stopWatchingColumnCount: (() => void) | undefined
 let stopWatchingTarget: (() => void) | undefined
 
-function sync() {
+const sync = () => {
   if (!observedTarget) {
     return
   }
@@ -50,7 +50,7 @@ function sync() {
   thumbWidth.value = `${visibleRatio * 100}%`
 }
 
-function observeTarget(target: HTMLElement | null) {
+const observeTarget = (target: HTMLElement | null) => {
   observedTarget?.removeEventListener('scroll', sync)
   resizeObserver?.disconnect()
   observedTarget = target
@@ -65,7 +65,7 @@ function observeTarget(target: HTMLElement | null) {
   sync()
 }
 
-function handleInput(event: Event) {
+const handleInput = (event: Event) => {
   if (observedTarget) {
     observedTarget.scrollLeft = Number((event.target as HTMLInputElement).value)
   }
@@ -141,8 +141,7 @@ input::-webkit-slider-runnable-track {
 input::-webkit-slider-thumb {
   appearance: none;
   background: color-mix(in srgb, var(--color-accent) 10%, transparent);
-  border: 2px solid
-    color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+  border: 2px solid color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
   border-radius: var(--radius-small);
   height: 100%;
   width: max(18px, var(--scroll-map-thumb-width));
@@ -155,8 +154,7 @@ input::-moz-range-track {
 
 input::-moz-range-thumb {
   background: color-mix(in srgb, var(--color-accent) 10%, transparent);
-  border: 1px solid
-    color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+  border: 1px solid color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
   border-radius: var(--radius-small);
   height: 100%;
   width: max(18px, var(--scroll-map-thumb-width));

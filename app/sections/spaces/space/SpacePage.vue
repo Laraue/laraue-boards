@@ -1,33 +1,36 @@
 <template>
-  <PageState
+  <QueryState
+    :data="data"
     error-title="Could not load space"
     loading-text="Loading space…"
-    :on-retry="query.refresh"
-    :state="pageState">
-    <template #default="{ data }">
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
+    <template #default="{ data: page }">
       <section class="space-page">
         <div class="title-row">
           <div class="page-heading">
             <SpaceIcon
               class="page-heading-icon"
-              :style="{ color: data.color }" />
+              :style="{ color: page.color }" />
             <div class="page-heading-text">
-              <h1>{{ data.name }}</h1>
+              <h1>{{ page.name }}</h1>
             </div>
           </div>
           <div class="title-actions">
             <NuxtLink
-              v-if="data.canManage"
+              v-if="page.canManage"
               aria-label="Space settings"
               class="secondary"
-              :to="organizationRoutes.spaceSettings(data.key)">
+              :to="organizationRoutes.spaceSettings(page.key)">
               <Settings />
               <span class="btn-label">Settings</span>
             </NuxtLink>
             <NuxtLink
-              v-if="data.canCreateBoards"
+              v-if="page.canCreateBoards"
+              aria-label="Create board"
               class="primary"
-              :to="organizationRoutes.newBoard(data.key)">
+              :to="organizationRoutes.newBoard(page.key)">
               <Plus />
               <span class="btn-label">Create board</span>
             </NuxtLink>
@@ -40,13 +43,11 @@
           <h2 class="space-section-title">Backlog</h2>
           <NuxtLink
             class="backlog-summary"
-            :to="organizationRoutes.backlog(data.key)">
+            :to="organizationRoutes.backlog(page.key)">
             <div class="summary-title">
               <ListTodo :style="{ color: backlog.color }" />
               <strong>{{ backlog.name }}</strong>
-              <span class="muted issue-count">
-                {{ backlog.issueCount }} issues
-              </span>
+              <span class="muted issue-count">{{ backlog.issueCount }} issues</span>
             </div>
           </NuxtLink>
         </div>
@@ -63,13 +64,11 @@
               v-for="board in regularBoards"
               :key="board.id"
               class="board-summary"
-              :to="organizationRoutes.board(data.key, board.id)">
+              :to="organizationRoutes.board(page.key, board.id)">
               <div class="summary-title">
                 <BoardIcon :style="{ color: board.color }" />
                 <strong>{{ board.name }}</strong>
-                <span class="muted issue-count">
-                  {{ board.issueCount }} issues
-                </span>
+                <span class="muted issue-count">{{ board.issueCount }} issues</span>
               </div>
               <div class="meter">
                 <span
@@ -100,61 +99,33 @@
         </div>
       </section>
     </template>
-  </PageState>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
-import { ListTodo, Plus, Settings } from 'lucide-vue-next'
+import { ListTodo, Plus, Settings } from '@lucide/vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
-import type {
-  SpacePageDeps,
-  ViewSpaceFailure,
-} from '~/sections/spaces/space/SpacePage.deps'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
+import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
 const props = defineProps<{ deps: SpacePageDeps; spaceKey: string }>()
+
 const organizationRoutes = useOrganizationRoutes()
-const query = await useAsyncData(
+
+const { data, message, pending, refresh } = await useQuery(
   () => `space:${props.spaceKey}`,
-  (_nuxtApp, { signal }) =>
-    props.deps.view({ signal, spaceKey: props.spaceKey }),
+  (_nuxtApp, { signal }) => props.deps.view({ signal, spaceKey: props.spaceKey }),
   { watch: [() => props.spaceKey] },
 )
-const getFailureMessage = (failure: ViewSpaceFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have access to this space.'
-    case 'spaceNotFound':
-      return 'The space was not found or is not available to you.'
-    case 'temporarilyUnavailable':
-      return 'Could not load space. The service is temporarily unavailable.'
-    default:
-      return assertNever(failure)
-  }
-}
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
-)
-const boards = computed(() =>
-  pageState.value.type === 'ready' ? pageState.value.data.boards : [],
-)
-const backlog = computed(() =>
-  boards.value.find((board) => board.kind === 'backlog'),
-)
-const regularBoards = computed(() =>
-  boards.value.filter((board) => board.kind === 'board'),
-)
+
+const boards = computed(() => data.value?.boards ?? [])
+
+const backlog = computed(() => boards.value.find((board) => board.kind === 'backlog'))
+
+const regularBoards = computed(() => boards.value.filter((board) => board.kind === 'board'))
+
 useHead({
-  title: computed(() =>
-    pageState.value.type === 'ready' ? pageState.value.data.name : 'Space',
-  ),
+  title: computed(() => data.value?.name ?? 'Space'),
 })
 </script>
 

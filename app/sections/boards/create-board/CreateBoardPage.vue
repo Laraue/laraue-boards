@@ -8,23 +8,24 @@
         <h1>Create board</h1>
       </div>
     </div>
-    <form @submit.prevent="submit">
-      <label>Name</label>
+    <form @submit.prevent="submit({ color: form.color, name: form.name, spaceKey })">
+      <label for="create-board-name">Name</label>
       <input
-        v-model="state.name"
+        id="create-board-name"
+        v-model="form.name"
         required />
       <label>Color</label>
-      <AppColorPicker v-model="state.color" />
+      <AppColorPicker v-model="form.color" />
       <p
-        v-if="state.error"
+        v-if="message"
         class="form-error">
-        {{ state.error }}
+        {{ message }}
       </p>
       <div class="form-actions">
         <button
           class="primary"
-          :disabled="state.submitting">
-          {{ state.submitting ? 'Creating…' : 'Create board' }}
+          :disabled="pending">
+          {{ pending ? 'Creating…' : 'Create board' }}
         </button>
       </div>
     </form>
@@ -33,62 +34,28 @@
 
 <script setup lang="ts">
 import { DEFAULT_COLOR } from '~/constants/colors'
-import type {
-  CreateBoardFailure,
-  CreateBoardPageDeps,
-} from '~/sections/boards/create-board/CreateBoardPage.deps'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
+import type { CreateBoardPageDeps } from '~/sections/boards/create-board/CreateBoardPage.deps'
 
 const props = defineProps<{
   deps: CreateBoardPageDeps
   onCreated: (boardId: string) => Promise<void> | void
   spaceKey: string
 }>()
+
 const organizationRoutes = useOrganizationRoutes()
-const state = reactive({
+
+const form = reactive({
   color: DEFAULT_COLOR,
-  error: null as null | string,
   name: '',
-  submitting: false,
 })
+
 useHead({ title: 'Create board' })
 
-const getFailureMessage = (failure: CreateBoardFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have permission to create boards.'
-    case 'invalidInput':
-      return failure.message
-    case 'spaceNotFound':
-      return 'The space was not found or is not available to you.'
-    case 'temporarilyUnavailable':
-      return 'Could not create board. Try again.'
-    default:
-      return assertNever(failure)
-  }
-}
-
-async function submit(): Promise<void> {
-  if (state.submitting) {
-    return
-  }
-  state.submitting = true
-  state.error = null
-  try {
-    const result = await props.deps.create({
-      color: state.color,
-      name: state.name.trim(),
-      spaceKey: props.spaceKey,
-    })
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getFailureMessage(failure)
-      },
-      ok: ({ boardId }) => props.onCreated(boardId),
-    })
-  } finally {
-    state.submitting = false
-  }
-}
+const {
+  execute: submit,
+  message,
+  pending,
+} = useAction(props.deps.create, {
+  onSuccess: (board) => props.onCreated(board.boardId),
+})
 </script>

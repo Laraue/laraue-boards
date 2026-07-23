@@ -1,148 +1,240 @@
 <template>
-  <PageState
+  <QueryState
+    :data="data"
     error-title="Could not load attribute"
     loading-text="Loading attribute…"
-    :on-retry="query.refresh"
-    :state="pageState">
-    <template #default="{ data }">
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
+    <template #default="{ data: attribute }">
       <section class="form-page">
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
               label="Back to attributes"
               :to="organizationRoutes.attributes()" />
-            <Tags
-              class="page-heading-icon"
-              :style="{ color: data.color }" />
+            <Tags class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>{{ data.name }}</h1>
+              <h1>Edit attribute</h1>
             </div>
           </div>
         </div>
-        <EditAttributeForm
-          :error="state.error"
-          :on-delete="remove"
-          :on-submit="update"
-          :submitting="state.submitting"
-          :view-model="data" />
+        <form
+          v-if="draft"
+          class="attribute-editor"
+          @submit.prevent="submit">
+          <label for="edit-attribute-name">Name</label>
+          <input
+            id="edit-attribute-name"
+            v-model="draft.name"
+            maxlength="64"
+            required />
+
+          <label>Color</label>
+          <AppColorPicker v-model="draft.color" />
+
+          <fieldset v-if="draft.data.type === 'list'">
+            <legend>Options</legend>
+            <TransitionGroup
+              name="list"
+              tag="div">
+              <div
+                v-for="(option, index) in draft.data.listValues"
+                :key="option.key"
+                class="attribute-option">
+                <input
+                  v-model="option.name"
+                  :aria-label="`Option ${index + 1}`"
+                  maxlength="64"
+                  required />
+                <button
+                  :aria-label="`Remove option ${index + 1}`"
+                  class="icon-btn danger"
+                  :disabled="draft.data.listValues.length === 1"
+                  type="button"
+                  @click="draft.data.listValues.splice(index, 1)">
+                  <Trash2 />
+                </button>
+              </div>
+            </TransitionGroup>
+            <button
+              class="secondary add-option"
+              type="button"
+              @click="addOption">
+              <Plus />
+              Add option
+            </button>
+          </fieldset>
+
+          <p
+            v-if="updateMessage || deleteMessage"
+            class="form-error">
+            {{ updateMessage || deleteMessage }}
+          </p>
+          <div class="form-actions">
+            <button
+              class="primary"
+              :disabled="submitting">
+              {{ submitting ? 'Saving…' : 'Save changes' }}
+            </button>
+            <button
+              class="secondary danger"
+              :disabled="submitting"
+              type="button"
+              @click="remove(attribute)">
+              <Trash2 />
+              Delete attribute
+            </button>
+          </div>
+        </form>
       </section>
     </template>
-  </PageState>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
-import { Tags } from 'lucide-vue-next'
+import { Plus, Tags, Trash2 } from '@lucide/vue'
 
+import type { AttributePageDeps } from '~/sections/organizations/attributes/attribute/AttributePage.deps'
 import type {
-  AttributePageDeps,
-  ChangeAttributeFailure,
-  UpdateAttributeInput,
-  ViewAttributeFailure,
-} from '~/sections/organizations/attributes/attribute/AttributePage.deps'
-import EditAttributeForm from '~/sections/organizations/attributes/attribute/components/EditAttributeForm.vue'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
+  Attribute,
+  AttributeDraft,
+} from '~/sections/organizations/attributes/attribute/AttributePage.types'
 
 const props = defineProps<{
   attributeId: string
   deps: AttributePageDeps
   onFinished: () => Promise<void> | void
 }>()
+
 const organizationRoutes = useOrganizationRoutes()
-const query = await useAsyncData(
+
+const { data, message, pending, refresh } = await useQuery(
   () => `attribute:${props.attributeId}`,
-  (_nuxtApp, { signal }) =>
-    props.deps.view({ attributeId: props.attributeId, signal }),
+  (_nuxtApp, { signal }) => props.deps.view({ attributeId: props.attributeId, signal }),
   { watch: [() => props.attributeId] },
 )
-const getViewFailureMessage = (failure: ViewAttributeFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have permission to open this page.'
-    case 'attributeNotFound':
-      return 'The requested page was not found.'
-    case 'temporarilyUnavailable':
-      return 'Could not load the attribute. The service is temporarily unavailable.'
-    default:
-      return assertNever(failure)
-  }
-}
-const getChangeFailureMessage = (
-  failure: ChangeAttributeFailure,
-  unavailableMessage: string,
-): string => {
-  switch (failure.type) {
-    case 'invalidInput':
-      return failure.message
-    case 'accessDenied':
-      return 'You do not have permission to manage attributes.'
-    case 'attributeNotFound':
-      return 'The requested page was not found.'
-    case 'temporarilyUnavailable':
-      return unavailableMessage
-    default:
-      return assertNever(failure)
-  }
-}
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getViewFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
-)
-const state = reactive({ error: null as null | string, submitting: false })
+
 useHead({
-  title: computed(() =>
-    pageState.value.type === 'ready'
-      ? `${pageState.value.data.name} attribute`
-      : 'Attribute',
-  ),
+  title: computed(() => (data.value ? `${data.value.name} attribute` : 'Attribute')),
 })
 
-async function remove(id: string): Promise<void> {
-  if (state.submitting) {
-    return
-  }
-  state.submitting = true
-  state.error = null
-  try {
-    const result = await props.deps.delete({ id })
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getChangeFailureMessage(
-          failure,
-          'Could not delete the attribute. Try again.',
-        )
-      },
-      ok: props.onFinished,
-    })
-  } finally {
-    state.submitting = false
+const {
+  execute: update,
+  message: updateMessage,
+  pending: updating,
+} = useAction(props.deps.update, {
+  onSuccess: props.onFinished,
+})
+
+const {
+  execute: deleteAttribute,
+  message: deleteMessage,
+  pending: deleting,
+} = useAction(props.deps.delete, {
+  onSuccess: props.onFinished,
+})
+
+const submitting = computed(() => updating.value || deleting.value)
+
+let nextOptionKey = 0
+
+const toDraft = (attribute: Attribute): AttributeDraft =>
+  attribute.data.type === 'list'
+    ? {
+        color: attribute.color,
+        data: {
+          listValues:
+            attribute.data.listValues.length > 0
+              ? attribute.data.listValues.map((option) => ({
+                  id: option.id,
+                  key: nextOptionKey++,
+                  name: option.name,
+                }))
+              : [{ id: null, key: nextOptionKey++, name: '' }],
+          type: attribute.data.type,
+        },
+        id: attribute.id,
+        name: attribute.name,
+      }
+    : {
+        color: attribute.color,
+        data: { type: attribute.data.type },
+        id: attribute.id,
+        name: attribute.name,
+      }
+
+const draft = ref<AttributeDraft | undefined>(data.value ? toDraft(data.value) : undefined)
+
+watch(data, (attribute) => {
+  draft.value = attribute ? toDraft(attribute) : undefined
+})
+
+const addOption = () => {
+  if (draft.value?.data.type === 'list') {
+    draft.value.data.listValues.push({ id: null, key: nextOptionKey++, name: '' })
   }
 }
 
-async function update(input: UpdateAttributeInput): Promise<void> {
-  if (state.submitting) {
+const submit = () => {
+  const value = draft.value
+  if (!value) {
     return
   }
-  state.submitting = true
-  state.error = null
-  try {
-    const result = await props.deps.update(input)
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getChangeFailureMessage(
-          failure,
-          'Could not save the attribute. Try again.',
-        )
-      },
-      ok: props.onFinished,
-    })
-  } finally {
-    state.submitting = false
+  void update(
+    value.data.type === 'list'
+      ? {
+          color: value.color,
+          data: {
+            listValues: value.data.listValues.map((option) => ({
+              id: option.id,
+              name: option.name,
+            })),
+            type: value.data.type,
+          },
+          id: value.id,
+          name: value.name,
+        }
+      : {
+          color: value.color,
+          data: { type: value.data.type },
+          id: value.id,
+          name: value.name,
+        },
+  )
+}
+
+const remove = (attribute: Attribute) => {
+  if (submitting.value) {
+    return
+  }
+  if (confirm(`Delete attribute "${attribute.name}"?`)) {
+    void deleteAttribute({ id: attribute.id })
   }
 }
 </script>
+
+<style scoped>
+.attribute-editor fieldset {
+  border: 0;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+
+.attribute-editor legend {
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-2);
+}
+
+.attribute-option {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: var(--space-2);
+}
+
+.add-option {
+  margin-top: var(--space-2);
+}
+</style>
