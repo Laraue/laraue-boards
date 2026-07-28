@@ -63,16 +63,20 @@
                 v-model="state.content"
                 aria-label="Content"
                 :disabled="!issue.canEdit"
-                rows="10" />
+                rows="8" />
               <IssueAttachments
                 :key="issue.issueKey"
                 :attachments="issue.attachments"
-                class="issue-page-attachments"
                 :disabled="!issue.canEdit || saving || deleting"
                 :files="state.files"
                 :on-change="changeFiles"
                 :on-remove-attachment="removeAttachment"
                 :removed-attachment-ids="state.removedAttachmentIds" />
+              <IssueComments
+                :key="issue.issueKey"
+                :deps="deps.comments"
+                :initial-comments="issue.comments"
+                :issue-key="issue.issueKey" />
             </div>
             <div class="issue-form-side">
               <label>Space</label>
@@ -95,7 +99,7 @@
                   label: issue.boardLabel || 'Current board',
                   value: issue.boardId,
                 }"
-                :space-id="state.pickedSpaceId" />
+                :space-key="state.pickedSpaceId" />
               <label>Status</label>
               <StatusSelect
                 :key="`status-${issue.issueKey}`"
@@ -119,7 +123,7 @@
                   label: issue.assignee,
                   value: issue.assigneeId,
                 }"
-                :space-id="state.pickedSpaceId" />
+                :space-key="state.pickedSpaceId" />
               <label>Owner</label>
               <div class="issue-person">
                 <span
@@ -181,6 +185,7 @@ import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
+import IssueComments from './components/issue-comments/IssueComments.vue'
 import IssueSkeleton from './components/IssueSkeleton.vue'
 import type { IssuePageDeps } from './IssuePage.deps'
 import type { IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
@@ -253,6 +258,9 @@ const dirty = computed(
 const issueRoute = computed(() => organizationRoutes.issue(props.issueKey))
 const formatDate = (value: string) => dateTimeFormatter.format(new Date(value))
 const syncState = (issue: IssuePageViewModel) => {
+  if (state.dirty) {
+    return
+  }
   Object.assign(state, {
     assigneeId: issue.assigneeId,
     attributeValues: Object.fromEntries(
@@ -372,15 +380,22 @@ watch(
   grid-template-rows: minmax(0, 1fr) auto;
   margin-top: var(--space-5);
   min-height: 0;
-  row-gap: var(--space-4);
+  row-gap: var(--space-6);
 }
 .issue-form-main {
+  align-self: stretch;
   display: grid;
-  grid-template-rows: minmax(376px, 1fr) auto;
+  gap: var(--space-6);
+  grid-auto-rows: max-content;
+  grid-template-rows: minmax(200px, 1fr);
   min-height: 0;
   min-width: 0;
 }
+.issue-form-main textarea {
+  min-height: 200px;
+}
 .issue-form-content {
+  align-items: start;
   column-gap: var(--space-6);
   display: grid;
   grid-area: content;
@@ -408,9 +423,6 @@ watch(
 }
 .issue-form-side > label {
   margin: 0;
-}
-.issue-page-attachments {
-  margin-top: var(--space-4);
 }
 .issue-person {
   align-items: center;

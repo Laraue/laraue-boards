@@ -6,7 +6,7 @@ import { createViewMemberPermissions } from './viewMemberPermissions'
 
 const members = [
   {
-    adminAccessLevel: 3,
+    adminAccessLevel: 'Manage, UpdateOrganization',
     color: '#4774d4',
     displayName: 'Ada Lovelace',
     initials: 'AL',
@@ -16,13 +16,13 @@ const members = [
 ]
 
 const spaces = [
-  { color: '#000', id: 10, isDefault: true, name: 'Backlog' },
-  { color: '#fff', id: 11, isDefault: false, name: 'Product' },
+  { color: '#000', isDefault: true, key: 'backlog', name: 'Backlog' },
+  { color: '#fff', isDefault: false, key: 'product', name: 'Product' },
 ]
 
 const permissions = {
-  admin: 3,
-  direct: { 11: { canRead: true, canUpdate: true } },
+  admin: 'Manage, UpdateOrganization',
+  direct: { product: { canRead: true, canUpdate: true } },
   global: { canCreateEpics: true, canRead: true },
 }
 
@@ -58,7 +58,7 @@ test('maps member permissions response', async () => {
           canUpdateOrganization: true,
         },
         direct: {
-          '10': {
+          backlog: {
             canCreateBoards: false,
             canCreateIssues: false,
             canDelete: false,
@@ -69,7 +69,7 @@ test('maps member permissions response', async () => {
             canUpdateBoards: false,
             canUpdateIssues: false,
           },
-          '11': {
+          product: {
             canCreateBoards: false,
             canCreateIssues: false,
             canDelete: false,
@@ -95,8 +95,8 @@ test('maps member permissions response', async () => {
         },
       },
       spaces: [
-        { color: '#000', id: '10', isDefault: true, name: 'Backlog' },
-        { color: '#fff', id: '11', isDefault: false, name: 'Product' },
+        { color: '#000', id: 'backlog', isDefault: true, name: 'Backlog' },
+        { color: '#fff', id: 'product', isDefault: false, name: 'Product' },
       ],
     },
     status: 'success',

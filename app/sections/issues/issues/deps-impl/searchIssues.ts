@@ -24,7 +24,7 @@ export const createSearchIssues =
             perPage: 10,
             searchString: search || undefined,
             sorting: createdAtDescending,
-            spaceIds: spaceIds.length ? spaceIds : undefined,
+            spaceKeys: spaceIds.length ? spaceIds : undefined,
           },
         }),
     })

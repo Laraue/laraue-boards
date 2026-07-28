@@ -7,9 +7,9 @@ import { createViewBacklogIssue } from './viewBacklogIssue'
 test('maps backlog issue page data', async () => {
   const { client } = createTestApiClient((_request, path) => {
     if (path === '/api/spaces') {
-      return [{ id: 4, key: 'product-ABCD', name: 'Product' }]
+      return [{ isDefault: false, key: 'product-ABCD', name: 'Product' }]
     }
-    if (path === '/api/spaces/4/epics') {
+    if (path === '/api/spaces/product-ABCD/epics') {
       return [{ id: 8, isDefault: true, name: 'Backlog' }]
     }
     if (path === '/api/epics/8') {
@@ -23,7 +23,7 @@ test('maps backlog issue page data', async () => {
       attributes: [],
       boardId: '8',
       boardName: 'Backlog',
-      spaceId: '4',
+      spaceKey: 'product-ABCD',
     },
     status: 'success',
   })

@@ -9,13 +9,13 @@ export const createUpdateSpace =
     executeAction({
       map: () => true,
       request: () =>
-        client.PUT('/api/spaces/{id}', {
+        client.PUT('/api/spaces/{key}', {
           body: {
             color: input.color,
-            id: input.spaceId,
-            key: input.key,
             name: input.name,
+            newKey: input.newKey,
+            oldKey: input.oldKey,
           },
-          params: { path: { id: Number(input.spaceId) } },
+          params: { path: { key: input.oldKey } },
         }),
     })

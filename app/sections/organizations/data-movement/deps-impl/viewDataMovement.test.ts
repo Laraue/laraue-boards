@@ -11,7 +11,7 @@ test('maps movable spaces and boards', async () => {
       return { canMassMove: true, id: 1, name: 'Current' }
     }
     if (path.endsWith('/spaces')) {
-      return [{ color: COLORS.gray, id: 10, isDefault: false, name: 'Development' }]
+      return [{ color: COLORS.gray, isDefault: false, key: 'development', name: 'Development' }]
     }
     return [
       { color: COLORS.amber, id: 20, isDefault: true, name: 'Backlog' },
@@ -27,8 +27,8 @@ test('maps movable spaces and boards', async () => {
         {
           boards: [{ color: COLORS.coral, id: '21', name: 'Board' }],
           color: COLORS.gray,
-          id: '10',
           isDefault: false,
+          key: 'development',
           name: 'Development',
         },
       ],

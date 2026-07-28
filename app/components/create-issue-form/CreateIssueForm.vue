@@ -9,10 +9,9 @@
         aria-label="Content"
         placeholder="What needs attention?"
         required
-        rows="10" />
+        rows="8" />
       <IssueAttachments
         :attachments="[]"
-        class="issue-form-attachments"
         :disabled="pending"
         :files="form.files"
         :on-change="changeFiles" />
@@ -26,7 +25,7 @@
         <label :for="`${idPrefix}-space`">Space</label>
         <SpaceSelect
           :id="`${idPrefix}-space`"
-          v-model="form.spaceId"
+          v-model="form.spaceKey"
           :deps="selectDeps.spaceSelect" />
 
         <label :for="`${idPrefix}-board`">Board</label>
@@ -34,7 +33,7 @@
           :id="`${idPrefix}-board`"
           v-model="form.boardId"
           :deps="selectDeps.boardSelect"
-          :space-id="form.spaceId" />
+          :space-key="form.spaceKey" />
       </template>
 
       <label :for="`${idPrefix}-status`">Status</label>
@@ -53,7 +52,7 @@
         :id="`${idPrefix}-assignee`"
         v-model="form.assigneeId"
         :deps="deps.assigneeSelect"
-        :space-id="spaceId" />
+        :space-key="spaceKey" />
 
       <p
         v-if="message"
@@ -92,7 +91,7 @@ const form = reactive({
   boardId: '',
   content: '',
   files: [] as File[],
-  spaceId: '',
+  spaceKey: '',
   statusId: '',
 })
 const selectDeps = {
@@ -100,7 +99,7 @@ const selectDeps = {
   spaceSelect: props.deps.spaceSelect,
 }
 const boardId = computed(() => props.board?.id ?? form.boardId)
-const spaceId = computed(() => props.board?.spaceId ?? form.spaceId)
+const spaceKey = computed(() => props.board?.spaceKey ?? form.spaceKey)
 const {
   execute: create,
   message,
@@ -129,7 +128,7 @@ const submit = () => {
 
 <style scoped>
 .issue-form {
-  align-items: stretch;
+  align-items: start;
   column-gap: var(--space-6);
   display: grid;
   grid-template-areas: 'main side';
@@ -138,15 +137,18 @@ const submit = () => {
 }
 
 .issue-form-main {
+  align-self: stretch;
   display: grid;
+  gap: var(--space-4);
   grid-area: main;
-  grid-template-rows: minmax(376px, 1fr) auto;
+  grid-auto-rows: max-content;
+  grid-template-rows: minmax(200px, 1fr);
   min-height: 0;
   min-width: 0;
 }
 
 .issue-form textarea {
-  flex: 1;
+  min-height: 200px;
 }
 
 .issue-form-side {
@@ -171,10 +173,6 @@ const submit = () => {
   margin-top: var(--space-5);
 }
 
-.issue-form-attachments {
-  margin-top: var(--space-4);
-}
-
 .selected-entity {
   align-items: center;
   background: var(--color-soft);
@@ -193,10 +191,6 @@ const submit = () => {
       'side';
     grid-template-columns: 1fr;
     row-gap: var(--space-5);
-  }
-
-  .issue-form textarea {
-    flex: none;
   }
 }
 </style>

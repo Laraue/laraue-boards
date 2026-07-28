@@ -9,7 +9,7 @@
       v-bind="$attrs"
       v-model="model"
       :aria-busy="pending"
-      :disabled="disabled || !spaceId"
+      :disabled="disabled || !spaceKey"
       @focus="load">
       <option
         disabled
@@ -53,7 +53,7 @@ const props = withDefaults(
     disabled?: boolean
     initialOption?: AssigneeSelectOption
     placeholder?: string
-    spaceId: string
+    spaceKey: string
   }>(),
   {
     disabled: false,
@@ -67,8 +67,8 @@ defineOptions({ inheritAttrs: false })
 const model = defineModel<string>({ required: true })
 
 const { data, execute, message, pending, status } = await useQuery(
-  () => `assignee-select:${props.spaceId}`,
-  (_nuxtApp, { signal }) => props.deps.loadAssignees({ signal, spaceId: props.spaceId }),
+  () => `assignee-select:${props.spaceKey}`,
+  (_nuxtApp, { signal }) => props.deps.loadAssignees({ signal, spaceKey: props.spaceKey }),
   { cached: true, immediate: false },
 )
 
@@ -94,13 +94,13 @@ const selectedOption = computed(
 )
 
 const load = () => {
-  if (props.spaceId && data.value === undefined && !pending.value) {
+  if (props.spaceKey && data.value === undefined && !pending.value) {
     void execute()
   }
 }
 
 watch(
-  () => props.spaceId,
+  () => props.spaceKey,
   () => {
     model.value = ''
   },

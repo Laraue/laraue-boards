@@ -10,16 +10,16 @@ test('maps update space request', async () => {
   assert.deepEqual(
     await createUpdateSpace(client)({
       color: '#fff',
-      key: 'product',
       name: 'Product',
-      spaceId: '4',
+      newKey: 'product-next',
+      oldKey: 'product',
     }),
     { data: true, status: 'success' },
   )
   assert.deepEqual(await requests[0]!.json(), {
     color: '#fff',
-    id: '4',
-    key: 'product',
     name: 'Product',
+    newKey: 'product-next',
+    oldKey: 'product',
   })
 })

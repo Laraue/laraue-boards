@@ -18,8 +18,8 @@ const pageData: DataMovementPageData = {
     {
       boards: [{ color: '#f00', id: '21', name: 'Board' }],
       color: '#000',
-      id: '10',
       isDefault: false,
+      key: '10',
       name: 'Development',
     },
   ],

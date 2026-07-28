@@ -6,13 +6,11 @@ import { createViewIssue } from './viewIssue'
 
 test('maps issue detail attributes and image attachments', async () => {
   const { client } = createTestApiClient(() => ({
-    assignee: 'Ada',
-    assigneeColor: '#111',
+    assignee: { color: '#111', displayName: 'Ada', initials: 'A' },
     assigneeId: '9',
-    assigneeInitial: 'A',
     attachments: [
-      { id: 'image', originalFileId: 'original', previewFileId: 'preview', type: 0 },
-      { id: 'file', originalFileId: 'file', previewFileId: 'file', type: 1 },
+      { id: 'image', originalFileId: 'original', previewFileId: 'preview', type: 'Image' },
+      { id: 'file', originalFileId: 'file', previewFileId: 'file', type: 'Video' },
     ],
     attributeValues: [
       {
@@ -20,19 +18,27 @@ test('maps issue detail attributes and image attachments', async () => {
         id: 3,
         listValues: [{ id: 4, name: 'High' }],
         name: 'Priority',
-        type: 1,
+        type: 'List',
         value: '4',
       },
     ],
     canEdit: true,
+    comments: [
+      {
+        canModify: true,
+        createdAt: '2026-01-03T00:00:00Z',
+        id: 8,
+        owner: { color: '#444', displayName: 'Ada', initials: 'A' },
+        text: 'A comment',
+        updatedAt: '2026-01-04T00:00:00Z',
+      },
+    ],
     content: null,
     epicId: 7,
     epicName: null,
     key: 'ISS-1',
-    ownerColor: '#333',
-    ownerDisplayName: null,
-    ownerInitials: null,
-    spaceId: 2,
+    owner: { color: '#333', displayName: 'Grace', initials: 'G' },
+    spaceKey: 'product',
     spaceName: 'Product',
     statusId: 5,
     statusName: null,
@@ -44,7 +50,7 @@ test('maps issue detail attributes and image attachments', async () => {
 
   assert(result.status === 'success')
   assert.equal(result.data.content, '')
-  assert.equal(result.data.owner, 'Unknown owner')
+  assert.equal(result.data.owner, 'Grace')
   assert.deepEqual(result.data.attributes, [
     {
       color: '#222',
@@ -60,6 +66,16 @@ test('maps issue detail attributes and image attachments', async () => {
       id: 'image',
       originalUrl: 'https://api.test/api/files/original',
       previewUrl: 'https://api.test/api/files/preview',
+    },
+  ])
+  assert.deepEqual(result.data.comments, [
+    {
+      canModify: true,
+      createdAt: '2026-01-03T00:00:00Z',
+      id: '8',
+      owner: { color: '#444', initials: 'A', name: 'Ada' },
+      text: 'A comment',
+      updatedAt: '2026-01-04T00:00:00Z',
     },
   ])
 })

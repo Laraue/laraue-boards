@@ -9,7 +9,7 @@ test('maps assignee options', async () => {
     { color: '#123456', displayName: 'Ada Lovelace', initials: 'AL', userId: 'user-1' },
   ])
 
-  assert.deepEqual(await createLoadAssignees(client)({ spaceId: '2' }), {
+  assert.deepEqual(await createLoadAssignees(client)({ spaceKey: 'product' }), {
     data: [{ color: '#123456', initials: 'AL', label: 'Ada Lovelace', value: 'user-1' }],
     status: 'success',
   })

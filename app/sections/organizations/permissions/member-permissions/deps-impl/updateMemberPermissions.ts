@@ -9,11 +9,11 @@ import { adminFlags } from './viewMemberPermissions'
 type ApiUserPermissions = components['schemas']['UserPermissions']
 
 const mapMemberPermissionsRequest = (permissions: MemberPermissions): ApiUserPermissions => ({
-  admin: Object.entries(adminFlags).reduce(
-    (result, [key, flag]) =>
-      permissions.admin[key as keyof MemberPermissions['admin']] ? result | flag : result,
-    0,
-  ),
+  admin:
+    Object.entries(adminFlags)
+      .filter(([key]) => permissions.admin[key as keyof MemberPermissions['admin']])
+      .map(([, flag]) => flag)
+      .join(', ') || 'None',
   direct: Object.fromEntries(
     Object.entries(permissions.direct)
       .filter(([, direct]) => Object.values(direct).some(Boolean))

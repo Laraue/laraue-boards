@@ -12,13 +12,13 @@
     <div class="entity-list">
       <div
         v-for="space in movableSpaces"
-        :key="space.id"
+        :key="space.key"
         class="entity-row">
         <input
           :aria-label="`Select ${space.name}`"
-          :checked="state.selected.has(space.id)"
+          :checked="state.selected.has(space.key)"
           type="checkbox"
-          @change="toggle(space.id)" />
+          @change="toggle(space.key)" />
         <SpaceIcon :style="{ color: space.color }" />
         <strong>{{ space.name }}</strong>
         <button
@@ -26,7 +26,7 @@
           class="icon-btn"
           title="Move space"
           type="button"
-          @click="openDialog([space.id])">
+          @click="openDialog([space.key])">
           <ArrowRightLeft />
         </button>
       </div>
@@ -70,7 +70,7 @@ const state = reactive({
 const movableSpaces = computed(() => props.spaces.filter((space) => !space.isDefault))
 
 const selectedIds = computed(() =>
-  movableSpaces.value.map(({ id }) => id).filter((id) => state.selected.has(id)),
+  movableSpaces.value.map(({ key }) => key).filter((key) => state.selected.has(key)),
 )
 
 const toggle = (id: string) => {

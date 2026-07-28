@@ -7,6 +7,6 @@ export const createCreateSpace =
   (client: ApiClient): CreateSpace =>
   (input) =>
     executeAction({
-      map: () => ({ spaceKey: input.key }),
+      map: (spaceKey) => (spaceKey ? { spaceKey } : undefined),
       request: () => client.POST('/api/spaces', { body: input, parseAs: 'text' }),
     })

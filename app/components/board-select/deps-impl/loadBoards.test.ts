@@ -7,7 +7,7 @@ import { createLoadBoards } from './loadBoards'
 test('maps board options', async () => {
   const { client } = createTestApiClient(() => [{ id: 3, name: 'Roadmap' }])
 
-  assert.deepEqual(await createLoadBoards(client)({ spaceId: '2' }), {
+  assert.deepEqual(await createLoadBoards(client)({ spaceKey: 'product' }), {
     data: [{ label: 'Roadmap', value: '3' }],
     status: 'success',
   })

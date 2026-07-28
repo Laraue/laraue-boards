@@ -4,7 +4,7 @@ import type { QueryResult } from '#infrastructure/api/apiResult'
 import type { UpdateSpaceInput } from './SpaceSettingsPage.types'
 import type { SpaceSettingsPageData } from './SpaceSettingsPage.types'
 
-export type RemoveSpace = (input: { spaceId: string }) => Promise<ActionResult<true>>
+export type RemoveSpace = (input: { spaceKey: string }) => Promise<ActionResult<true>>
 
 export type UpdateSpace = (input: UpdateSpaceInput) => Promise<ActionResult<true>>
 

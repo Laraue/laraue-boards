@@ -64,7 +64,6 @@ test('maps searched board issues and sends their filters', async () => {
     epicId: '7',
     filters: { '4': { $type: 'enum', ids: ['9'] } },
     searchString: 'bug',
-    sorting: { $type: 'property', direction: 1, property: 1 },
     take: 10,
   })
 })

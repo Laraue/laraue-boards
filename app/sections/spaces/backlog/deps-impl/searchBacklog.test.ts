@@ -36,6 +36,6 @@ test('maps backlog search request and response', async () => {
     page: 1,
     perPage: 10,
     searchString: 'bug',
-    sorting: { $type: 'property', direction: 1, property: 1 },
+    sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
   })
 })

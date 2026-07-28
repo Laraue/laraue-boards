@@ -48,7 +48,7 @@ test('maps successful update', async () => {
   assert.deepEqual(result, { data: true, status: 'success' })
   const body = (await requests[0]!.json()) as { userPermissions: unknown }
   assert.deepEqual(body.userPermissions, {
-    admin: 1,
+    admin: 'Manage',
     direct: {
       '11': {
         canCreateEpics: false,

@@ -98,8 +98,8 @@ test('maps filters, paging and search to the request body', async () => {
     page: 1,
     perPage: 10,
     searchString: 'search',
-    sorting: { $type: 'property', direction: 1, property: 1 },
-    spaceIds: ['5'],
+    sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
+    spaceKeys: ['5'],
   })
 })
 
@@ -112,6 +112,6 @@ test('omits an empty search and space filter', async () => {
     filters: {},
     page: 0,
     perPage: 10,
-    sorting: { $type: 'property', direction: 1, property: 1 },
+    sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
   })
 })

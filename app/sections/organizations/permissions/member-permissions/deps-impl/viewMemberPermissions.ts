@@ -9,11 +9,11 @@ type ApiUserPermissions = components['schemas']['UserPermissions']
 type OrganizationMember = components['schemas']['OrganizationMember']
 
 export const adminFlags = {
-  canDeleteOrganization: 4,
-  canManageAttributes: 16,
-  canManageMembers: 1,
-  canMoveData: 8,
-  canUpdateOrganization: 2,
+  canDeleteOrganization: 'DeleteOrganization',
+  canManageAttributes: 'ManageAttributes',
+  canManageMembers: 'Manage',
+  canMoveData: 'MassMove',
+  canUpdateOrganization: 'UpdateOrganization',
 } as const
 
 const mapOrganizationMembers = (members: OrganizationMember[]) =>
@@ -26,7 +26,7 @@ const mapOrganizationMembers = (members: OrganizationMember[]) =>
         color: member.color,
         id: String(member.organizationUserId),
         initials: member.initials,
-        isAdmin: member.adminAccessLevel !== 0,
+        isAdmin: member.adminAccessLevel !== 'None',
         isOwner: member.isOwner,
         name: member.displayName,
       },
@@ -37,16 +37,16 @@ const mapMemberPermissions = (
   permissions: ApiUserPermissions,
   spaces: Array<{ id: string; isDefault: boolean }>,
 ): MemberPermissions => {
-  const admin = permissions.admin ?? 0
+  const admin = new Set((permissions.admin ?? 'None').split(', '))
   const global = permissions.global ?? {}
 
   return {
     admin: {
-      canDeleteOrganization: (admin & adminFlags.canDeleteOrganization) !== 0,
-      canManageAttributes: (admin & adminFlags.canManageAttributes) !== 0,
-      canManageMembers: (admin & adminFlags.canManageMembers) !== 0,
-      canMoveData: (admin & adminFlags.canMoveData) !== 0,
-      canUpdateOrganization: (admin & adminFlags.canUpdateOrganization) !== 0,
+      canDeleteOrganization: admin.has(adminFlags.canDeleteOrganization) || admin.has('All'),
+      canManageAttributes: admin.has(adminFlags.canManageAttributes),
+      canManageMembers: admin.has(adminFlags.canManageMembers) || admin.has('All'),
+      canMoveData: admin.has(adminFlags.canMoveData) || admin.has('All'),
+      canUpdateOrganization: admin.has(adminFlags.canUpdateOrganization) || admin.has('All'),
     },
     direct: Object.fromEntries(
       spaces.map((space) => {
@@ -113,7 +113,7 @@ export const createViewMemberPermissions =
     }
     const spaces = spacesResponse.data.map((space) => ({
       color: space.color,
-      id: String(space.id),
+      id: space.key,
       isDefault: space.isDefault,
       name: space.name,
     }))

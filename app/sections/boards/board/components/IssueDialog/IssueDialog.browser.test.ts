@@ -20,6 +20,7 @@ const issue: IssuePageViewModel = {
   boardId: '12',
   boardLabel: 'Sprint board',
   canEdit: true,
+  comments: [],
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
   issueKey: 'ISS-1',
@@ -39,6 +40,12 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   },
   boardSelect: {
     loadBoards: vi.fn<IssuePageDeps['boardSelect']['loadBoards']>(),
+  },
+  comments: {
+    create: vi.fn<IssuePageDeps['comments']['create']>(),
+    delete: vi.fn<IssuePageDeps['comments']['delete']>(),
+    load: vi.fn<IssuePageDeps['comments']['load']>(),
+    update: vi.fn<IssuePageDeps['comments']['update']>(),
   },
   deleteIssue: vi.fn<IssuePageDeps['deleteIssue']>(),
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),

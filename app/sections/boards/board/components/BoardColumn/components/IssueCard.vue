@@ -2,7 +2,7 @@
   <article
     ref="element"
     class="task"
-    :class="{ 'task--ghost': isDragging, 'task--moving': moving }">
+    :class="{ 'task--ghost': isDragging, 'task--moving': moving, 'task--over': isDropTarget }">
     <NuxtLink
       v-slot="{ href }"
       custom
@@ -56,13 +56,15 @@ const timeFormatter = new Intl.DateTimeFormat('en-US', {
 </script>
 
 <script setup lang="ts">
-import { useDraggable } from '@dnd-kit/vue'
+import { useSortable } from '@dnd-kit/vue/sortable'
 import { Loader, Undo2 } from '@lucide/vue'
 
 import type { IssueCardViewModel } from './IssueCard.types'
 
 const props = defineProps<{
+  columnId: string
   disabled: boolean
+  index: number
   moving: boolean
   onMoveToBacklog: (issueKey: string) => void
   onOpenIssue: (issueKey: string) => void
@@ -72,10 +74,13 @@ const organizationRoutes = useOrganizationRoutes()
 
 const element = useTemplateRef('element')
 
-const { isDragging } = useDraggable({
+const { isDragging, isDropTarget } = useSortable({
+  accept: 'item',
   disabled: computed(() => props.disabled),
   element,
+  group: computed(() => props.columnId),
   id: computed(() => props.viewModel.issueKey),
+  index: computed(() => props.index),
   type: 'item',
 })
 
@@ -127,6 +132,11 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   opacity: 0.6;
 }
 
+.task--over {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus);
+}
+
 .task small {
   color: var(--color-muted);
 }
@@ -144,7 +154,10 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   animation: spin 0.8s linear infinite;
   color: var(--color-accent);
   height: 16px;
-  margin-left: auto;
+  margin: 2px;
+  position: absolute;
+  right: var(--space-3);
+  top: var(--space-3);
   width: 16px;
 }
 

@@ -19,7 +19,7 @@ test('maps create attribute request and response', async () => {
     color: '#fff',
     listValues: [{ name: 'Low' }, { name: 'High' }],
     name: 'Severity',
-    type: 1,
+    type: 'List',
   })
 })
 
@@ -32,6 +32,6 @@ test('sends null listValues and type 0 for text attributes', async () => {
     color: '#fff',
     listValues: null,
     name: 'Priority',
-    type: 0,
+    type: 'Text',
   })
 })

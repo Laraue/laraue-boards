@@ -2,6 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
 
+import { mapIssueComment } from '../components/issue-comments/deps-impl/mapComment'
 import type { ViewIssue } from '../IssuePage.deps'
 import type { IssuePageViewModel } from '../IssuePage.types'
 
@@ -16,9 +17,9 @@ const mapAttribute = (
     value: attribute.value,
   }
   switch (attribute.type) {
-    case 0:
+    case 'Text':
       return { ...base, type: 'text' }
-    case 1:
+    case 'List':
       return {
         ...base,
         options: attribute.listValues.map((option) => ({
@@ -36,7 +37,7 @@ const mapAttachments = (
   baseUrl: string,
 ): IssuePageViewModel['attachments'] =>
   attachments.flatMap((attachment) => {
-    if (attachment.type !== 0) {
+    if (attachment.type !== 'Image') {
       return []
     }
     const previewId = attachment.previewFileId ?? attachment.originalFileId
@@ -47,23 +48,25 @@ const mapAttachments = (
     const fileUrl = (id: string) => new URL(`/api/files/${encodeURIComponent(id)}`, baseUrl).href
     return [{ id: attachment.id, originalUrl: fileUrl(originalId), previewUrl: fileUrl(previewId) }]
   })
+
 const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageViewModel => ({
-  assignee: issue.assignee,
-  assigneeColor: issue.assigneeColor,
+  assignee: issue.assignee.displayName,
+  assigneeColor: issue.assignee.color,
   assigneeId: issue.assigneeId,
-  assigneeInitial: issue.assigneeInitial,
+  assigneeInitial: issue.assignee.initials,
   attachments: mapAttachments(issue.attachments, baseUrl),
   attributes: issue.attributeValues.map(mapAttribute),
   boardId: String(issue.epicId),
   boardLabel: issue.epicName ?? '',
   canEdit: issue.canEdit,
+  comments: issue.comments.map(mapIssueComment),
   content: issue.content ?? '',
   createdAt: issue.time,
   issueKey: issue.key,
-  owner: issue.ownerDisplayName ?? 'Unknown owner',
-  ownerColor: issue.ownerColor,
-  ownerInitial: issue.ownerInitials ?? '?',
-  spaceId: String(issue.spaceId),
+  owner: issue.owner.displayName,
+  ownerColor: issue.owner.color,
+  ownerInitial: issue.owner.initials,
+  spaceId: issue.spaceKey,
   spaceLabel: issue.spaceName,
   statusId: String(issue.statusId),
   statusLabel: issue.statusName ?? '',

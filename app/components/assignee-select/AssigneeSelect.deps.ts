@@ -4,7 +4,7 @@ import type { AssigneeSelectOption } from './AssigneeSelect.types'
 
 export type LoadAssignees = (input: {
   signal?: AbortSignal
-  spaceId: string
+  spaceKey: string
 }) => Promise<QueryResult<AssigneeSelectOption[]>>
 
 export type AssigneeSelectDeps = {

@@ -6,10 +6,7 @@ import { createMoveIssueToBacklog } from './moveIssueToBacklog'
 
 test('finds the first backlog status and moves the issue there', async () => {
   const { client, paths } = createTestApiClient((_request, path) => {
-    if (path === '/api/spaces') {
-      return [{ id: 2, key: 'product', name: 'Product' }]
-    }
-    if (path === '/api/spaces/2/epics') {
+    if (path === '/api/spaces/product/epics') {
       return [
         { id: 7, isDefault: false, name: 'Roadmap' },
         { id: 8, isDefault: true, name: 'Backlog' },
@@ -39,10 +36,5 @@ test('finds the first backlog status and moves the issue there', async () => {
     }),
     { data: true, status: 'success' },
   )
-  assert.deepEqual(paths(), [
-    '/api/spaces',
-    '/api/spaces/2/epics',
-    '/api/epics/8',
-    '/api/movement/issue/ISS-1/move-to-status/4',
-  ])
+  assert.deepEqual(paths(), ['/api/spaces/product/epics', '/api/epics/8', '/api/issues/status'])
 })

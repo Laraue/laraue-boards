@@ -120,9 +120,9 @@ const update = async (): Promise<void> => {
   const key = form.key.trim()
   const updated = await updateSpace({
     color: form.color,
-    key,
     name: form.name,
-    spaceId: page.id,
+    newKey: key,
+    oldKey: page.spaceKey,
   })
   if (updated) {
     await props.onUpdated(key)
@@ -144,6 +144,6 @@ const remove = async (): Promise<void> => {
   if (!page || submitting.value || !confirm('Delete this space?')) {
     return
   }
-  void removeSpace({ spaceId: page.id })
+  void removeSpace({ spaceKey: page.spaceKey })
 }
 </script>

@@ -19,7 +19,7 @@ test('maps board issue page data', async () => {
     data: {
       attributes: [],
       boardName: 'Roadmap',
-      spaceId: '4',
+      spaceKey: 'product-ABCD',
     },
     status: 'success',
   })

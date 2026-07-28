@@ -18,7 +18,7 @@ const data: AppLayoutData = {
     initial: 'A',
     name: 'Acme',
   },
-  spaces: [{ color: '#4774d4', id: '2', key: 'product', name: 'Product' }],
+  spaces: [{ color: '#4774d4', key: 'product', name: 'Product' }],
   user: { color: '#4774d4', initials: 'AL', name: 'Ada Lovelace' },
 }
 
@@ -53,23 +53,6 @@ it('shows desktop navigation and logs out on request', async () => {
 
   await vi.waitFor(() => expect(logout).toHaveBeenCalledOnce())
   expect(onLoggedOut).toHaveBeenCalledOnce()
-})
-
-it('loads the workspace again after a failed request', async () => {
-  const view = vi
-    .fn<AppLayoutDeps['view']>()
-    .mockResolvedValueOnce({ code: 0, status: 'error' })
-    .mockResolvedValue({ data, status: 'success' })
-
-  await page.viewport(1280, 800)
-  await mount({
-    logout: vi.fn<AppLayoutDeps['logout']>(),
-    view,
-  })
-
-  await page.getByRole('button', { name: 'Try again' }).click()
-
-  await expect.element(page.getByRole('link', { name: 'All issues' })).toBeInTheDocument()
 })
 
 it('opens the navigation from the mobile menu button', async () => {

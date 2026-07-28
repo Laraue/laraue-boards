@@ -16,8 +16,8 @@ export const createViewSpaceSettings =
       return { code: 404, status: 'error' }
     }
     const details = await tryRequest(() =>
-      client.GET('/api/spaces/{id}', {
-        params: { path: { id: Number(space.id) } },
+      client.GET('/api/spaces/{key}', {
+        params: { path: { key: spaceKey } },
         signal,
       }),
     )
@@ -29,7 +29,6 @@ export const createViewSpaceSettings =
         canDelete: details.data.canDelete,
         canUpdate: details.data.canUpdate,
         color: space.color,
-        id: String(space.id),
         name: space.name,
         spaceKey,
       },

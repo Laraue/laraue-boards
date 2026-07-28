@@ -63,6 +63,12 @@ it('calls onRetry when the retry button is pressed', async () => {
   expect(onRetry).toHaveBeenCalledTimes(1)
 })
 
+it('offers a link back to the home page on errors', async () => {
+  await mount({ message: 'Server error. Try again.', pending: false })
+
+  await expect.element(page.getByRole('link', { name: 'Go home' })).toHaveAttribute('href', '/')
+})
+
 it('omits the retry button when no retry is provided', async () => {
   await mount({ message: 'Server error. Try again.', pending: false })
 

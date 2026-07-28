@@ -20,9 +20,11 @@
         No issues
       </p>
       <IssueCard
-        v-for="issue in viewModel.issues"
+        v-for="(issue, index) in viewModel.issues"
         :key="issue.issueKey"
+        :column-id="viewModel.id"
         :disabled="!canMoveIssues || movingIssueKeys.has(issue.issueKey)"
+        :index="index"
         :moving="movingIssueKeys.has(issue.issueKey)"
         :on-move-to-backlog="onMoveToBacklog"
         :on-open-issue="onOpenIssue"

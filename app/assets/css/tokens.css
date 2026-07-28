@@ -38,7 +38,9 @@
   --radius-pill: 999px;
 
   --control-height: 40px;
-  --control-height-compact: 32px;
+  --control-height-small: 28px;
+  --icon-btn-size: 32px;
+  --icon-btn-size-small: 24px;
   --icon-size: 16px;
   --control-icon-padding: calc(var(--icon-size) + var(--space-5));
 

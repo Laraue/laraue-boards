@@ -29,7 +29,7 @@ export const createViewIssues =
             perPage: 10,
             searchString: search || undefined,
             sorting: createdAtDescending,
-            spaceIds: spaceIds.length ? spaceIds : undefined,
+            spaceKeys: spaceIds.length ? spaceIds : undefined,
           },
           signal,
         }),
@@ -53,9 +53,7 @@ export const createViewIssues =
         attributes: attributeData.attributes,
         hasNextPage: issues.data.hasNextPage,
         issues: issues.data.data.map(mapIssue),
-        spaces: spaces.data.flatMap((space) =>
-          space.id === undefined ? [] : [{ label: space.name, value: String(space.id) }],
-        ),
+        spaces: spaces.data.map((space) => ({ label: space.name, value: space.key })),
       },
       status: 'success',
     }

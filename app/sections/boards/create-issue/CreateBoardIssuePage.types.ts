@@ -3,5 +3,5 @@ import type { IssueAttributeField } from '~/components/issue-attribute-fields/Is
 export type CreateBoardIssuePageData = {
   attributes: IssueAttributeField[]
   boardName: string
-  spaceId: string
+  spaceKey: string
 }

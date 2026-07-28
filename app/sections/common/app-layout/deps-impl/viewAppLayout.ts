@@ -11,7 +11,7 @@ type Schemas = components['schemas']
 
 const getErrorCode = (status: number, context: string): number => {
   if (status === 401 || status === 403) {
-    return 403
+    return status
   }
   if (status === 404) {
     return 404
@@ -39,17 +39,11 @@ const mapAppLayoutData = (
     initial: organization.name[0] ?? '?',
     name: organization.name,
   },
-  spaces: spaces.map((space) => {
-    if (space.id === undefined) {
-      throw new TypeError('Space id is required')
-    }
-    return {
-      color: space.color,
-      id: String(space.id),
-      key: space.key,
-      name: space.name,
-    }
-  }),
+  spaces: spaces.map((space) => ({
+    color: space.color,
+    key: space.key,
+    name: space.name,
+  })),
   user: {
     color: user.color,
     initials: user.initials ?? '?',

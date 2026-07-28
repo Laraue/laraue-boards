@@ -13,7 +13,7 @@
       <section
         v-for="space in spaces"
         v-show="space.boards.length"
-        :key="space.id"
+        :key="space.key"
         class="board-group">
         <div class="board-group-heading">
           <SpaceIcon :style="{ color: space.color }" />

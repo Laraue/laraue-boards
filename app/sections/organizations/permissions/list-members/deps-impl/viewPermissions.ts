@@ -16,7 +16,7 @@ const mapOrganizationMembers = (members: OrganizationMember[]) =>
         color: member.color,
         id: String(member.organizationUserId),
         initials: member.initials,
-        isAdmin: member.adminAccessLevel !== 0,
+        isAdmin: member.adminAccessLevel !== 'None',
         isOwner: member.isOwner,
         name: member.displayName,
       },

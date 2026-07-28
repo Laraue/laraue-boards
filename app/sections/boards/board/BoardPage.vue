@@ -138,6 +138,7 @@ const mergeRefreshedBoard = (
 
 <script setup lang="ts">
 import { defaultPreset, PointerActivationConstraints } from '@dnd-kit/dom'
+import { move } from '@dnd-kit/helpers'
 import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
 import type { DragEndEvent } from '@dnd-kit/vue'
 import { Plus, Settings } from '@lucide/vue'
@@ -425,31 +426,40 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
   viewModel.value = mergeRefreshedBoard(latest, refreshedColumns, refreshedSummary)
 }
 
-const moveIssue = async (input: { issueKey: string; statusId: string }) => {
+const moveIssue = async (input: {
+  index: number
+  issueKey: string
+  statusId: string
+  updateStatus: boolean
+}) => {
   const current = viewModel.value
-  const sourceColumn = current?.columns.find((column) =>
-    column.issues.some((issue) => issue.issueKey === input.issueKey),
-  )
-  if (
-    !current ||
-    !sourceColumn ||
-    sourceColumn.id === input.statusId ||
-    state.movingIssueKeys.has(input.issueKey)
-  ) {
+  const targetColumn = current?.columns.find((column) => column.id === input.statusId)
+  if (!current || !targetColumn || state.movingIssueKeys.has(input.issueKey)) {
     return
   }
+
+  const siblings = targetColumn.issues.filter((issue) => issue.issueKey !== input.issueKey)
+  const previous = input.index > 0 ? siblings[input.index - 1] : undefined
+  const next = input.index === 0 ? siblings[0] : undefined
+  const target = previous
+    ? { issueKey: previous.issueKey, position: 'After' as const }
+    : next
+      ? { issueKey: next.issueKey, position: 'Before' as const }
+      : undefined
 
   scheduleSearch.cancel()
   state.filtering = false
   state.moveError = null
   state.movingIssueKeys.add(input.issueKey)
-  viewModel.value = moveIssueInBoard(current, input.issueKey, input.statusId)
-  const result = await executeMoveBoardIssue(input)
+  viewModel.value = moveIssueInBoard(current, input.issueKey, input.statusId, input.index)
+  const result = await executeMoveBoardIssue({
+    issueKey: input.issueKey,
+    statusId: input.statusId,
+    target,
+    updateStatus: input.updateStatus,
+  })
   if (result === undefined) {
-    const optimistic = viewModel.value
-    if (optimistic) {
-      viewModel.value = moveIssueInBoard(optimistic, input.issueKey, sourceColumn.id)
-    }
+    viewModel.value = current
     state.moveError = moveBoardIssueMessage.value ?? getErrorMessage(0)
   }
   state.movingIssueKeys.delete(input.issueKey)
@@ -553,20 +563,29 @@ const moveIssueInBoard = (
   boardData: BoardPageViewModel,
   issueKey: string,
   statusId: string,
+  index?: number,
 ): BoardPageViewModel => {
   const source = boardData.columns.find((column) =>
     column.issues.some((issue) => issue.issueKey === issueKey),
   )
   const target = boardData.columns.find((column) => column.id === statusId)
   const issue = source?.issues.find((item) => item.issueKey === issueKey)
-  if (!source || !target || !issue || source === target) {
+  if (!source || !target || !issue) {
     return boardData
   }
+
+  const targetIssues = target.issues.filter((item) => item !== issue)
+  const targetIndex = Math.min(index ?? targetIssues.length, targetIssues.length)
+  const orderedTargetIssues = [
+    ...targetIssues.slice(0, targetIndex),
+    issue,
+    ...targetIssues.slice(targetIndex),
+  ]
 
   return {
     ...boardData,
     columns: boardData.columns.map((column) => {
-      if (column === source) {
+      if (column === source && column !== target) {
         return {
           ...column,
           issueCount: column.issueCount - 1,
@@ -576,8 +595,8 @@ const moveIssueInBoard = (
       if (column === target) {
         return {
           ...column,
-          issueCount: column.issueCount + 1,
-          issues: [...column.issues, issue],
+          issueCount: source === target ? column.issueCount : column.issueCount + 1,
+          issues: orderedTargetIssues,
         }
       }
       return column
@@ -613,23 +632,27 @@ const updateIssueInBoard = (
 
 const handleDragEnd = (event: DragEndEvent) => {
   state.dragging = false
-  if (event.canceled) {
-    return
-  }
-
-  const issueKey = event.operation.source?.id
-  const statusId = event.operation.target?.id
-  if (typeof issueKey !== 'string' || typeof statusId !== 'string') {
-    return
-  }
-
   const current = viewModel.value
-  const sourceColumn = current?.columns.find((column) =>
-    column.issues.some((issue) => issue.issueKey === issueKey),
-  )
-  if (sourceColumn && sourceColumn.id !== statusId) {
-    void moveIssue({ issueKey, statusId })
+  const issueKey = event.operation.source?.id
+  if (event.canceled || !current || typeof issueKey !== 'string') {
+    return
   }
+
+  const before: Record<string, string[]> = Object.fromEntries(
+    current.columns.map((column) => [column.id, column.issues.map((issue) => issue.issueKey)]),
+  )
+  const after = move(before, event)
+  const sourceStatusId = current.columns.find((column) => before[column.id]?.includes(issueKey))?.id
+  const statusId = current.columns.find((column) => after[column.id]?.includes(issueKey))?.id
+  if (!sourceStatusId || !statusId) {
+    return
+  }
+
+  const index = after[statusId]!.indexOf(issueKey)
+  if (statusId === sourceStatusId && index === before[statusId]!.indexOf(issueKey)) {
+    return
+  }
+  void moveIssue({ index, issueKey, statusId, updateStatus: statusId !== sourceStatusId })
 }
 
 const resolveIssueDialogCloseTarget = (input: {

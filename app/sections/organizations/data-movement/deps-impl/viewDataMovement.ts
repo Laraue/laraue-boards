@@ -22,8 +22,8 @@ const mapPage = (
       name: board.name,
     })),
     color: space.color,
-    id: String(space.id),
     isDefault: space.isDefault,
+    key: space.key,
     name: space.name,
   })),
 })
@@ -57,8 +57,8 @@ export const createViewDataMovement =
     const boardResponses = await tryRequest(() =>
       Promise.all(
         spaces.data.map((space) =>
-          client.GET('/api/spaces/{id}/epics', {
-            params: { path: { id: Number(space.id) } },
+          client.GET('/api/spaces/{key}/epics', {
+            params: { path: { key: space.key } },
             signal,
           }),
         ),

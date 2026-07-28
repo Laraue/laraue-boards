@@ -32,8 +32,8 @@ export const createViewBacklog =
     }
     const attributeData = mapRawIssueFilters(attributeQuery, attributes.data)
     const boards = await tryRequest(() =>
-      client.GET('/api/spaces/{id}/epics', {
-        params: { path: { id: Number(space.id) } },
+      client.GET('/api/spaces/{key}/epics', {
+        params: { path: { key: spaceKey } },
         signal,
       }),
     )

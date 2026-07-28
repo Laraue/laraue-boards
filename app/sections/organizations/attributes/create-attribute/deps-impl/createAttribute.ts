@@ -15,7 +15,7 @@ export const createCreateAttribute =
             listValues:
               input.data.type === 'list' ? input.data.listValues.map((name) => ({ name })) : null,
             name: input.name,
-            type: input.data.type === 'list' ? 1 : 0,
+            type: input.data.type === 'list' ? 'List' : 'Text',
           },
         }),
     })

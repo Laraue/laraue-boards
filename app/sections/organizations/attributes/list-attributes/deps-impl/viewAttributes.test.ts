@@ -6,8 +6,8 @@ import { createViewAttributes } from './viewAttributes'
 
 test('maps attributes response', async () => {
   const { client } = createTestApiClient(() => [
-    { color: '#fff', id: 7, name: 'Priority', type: 0 },
-    { color: '#000', id: 8, listValues: [], name: 'Severity', type: 1 },
+    { color: '#fff', id: 7, name: 'Priority', type: 'Text' },
+    { color: '#000', id: 8, listValues: [], name: 'Severity', type: 'List' },
   ])
 
   assert.deepEqual(await createViewAttributes(client)({}), {

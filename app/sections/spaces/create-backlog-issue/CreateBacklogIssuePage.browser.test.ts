@@ -10,7 +10,7 @@ const pageData: CreateBacklogIssuePageData = {
   attributes: [],
   boardId: '8',
   boardName: 'Backlog',
-  spaceId: '4',
+  spaceKey: 'product-ABCD',
 }
 
 const createDeps = (
