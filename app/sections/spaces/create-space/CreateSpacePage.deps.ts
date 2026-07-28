@@ -1,19 +1,9 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult } from '#infrastructure/api/apiResult'
 
-export type CreateSpaceInput = {
-  color: string
-  key: string
-  name: string
-}
+import type { CreateSpaceInput } from './CreateSpacePage.types'
 
-export type CreateSpaceFailure =
-  | { message: string; type: 'invalidInput' }
-  | { type: 'accessDenied' }
-  | { type: 'organizationNotFound' }
-  | { type: 'temporarilyUnavailable' }
+export type CreateSpace = (input: CreateSpaceInput) => Promise<ActionResult<{ spaceKey: string }>>
 
 export type CreateSpacePageDeps = {
-  create: (
-    input: CreateSpaceInput,
-  ) => Promise<Result<{ spaceKey: string }, CreateSpaceFailure>>
+  create: CreateSpace
 }

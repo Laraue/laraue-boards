@@ -1,50 +1,28 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
 
-export type BoardSettingsColumn = {
+import type {
+  BoardSettingsColumn,
+  BoardSettingsColumnDraft,
+  BoardSettingsPageData,
+} from './BoardSettingsPage.types'
+
+export type RemoveBoard = (input: { boardId: string }) => Promise<ActionResult<true>>
+
+export type SaveBoardSettings = (input: {
+  boardId: string
   color: string
-  id: string
+  columns: BoardSettingsColumnDraft[]
   name: string
-}
+  originalColumns: BoardSettingsColumn[]
+}) => Promise<ActionResult<true>>
 
-export type BoardSettingsColumnDraft = {
-  color: string
-  id: null | string
-  name: string
-}
-
-export type BoardSettingsPageData = {
-  canDelete: boolean
-  canUpdate: boolean
-  color: string
-  columns: BoardSettingsColumn[]
-  name: string
-}
-
-export type ViewBoardSettingsFailure =
-  | { type: 'accessDenied' }
-  | { type: 'boardNotFound' }
-  | { type: 'temporarilyUnavailable' }
-
-export type ChangeBoardFailure = ViewBoardSettingsFailure
-
-export type SaveBoardFailure =
-  | ChangeBoardFailure
-  | { message: string; type: 'invalidInput' }
-  | { type: 'boardColumnNotFound' }
+export type ViewBoardSettings = (input: {
+  boardId: string
+  signal?: AbortSignal
+}) => Promise<QueryResult<BoardSettingsPageData>>
 
 export type BoardSettingsPageDeps = {
-  remove: (input: {
-    boardId: string
-  }) => Promise<Result<null, ChangeBoardFailure>>
-  save: (input: {
-    boardId: string
-    color: string
-    columns: BoardSettingsColumnDraft[]
-    name: string
-    originalColumns: BoardSettingsColumn[]
-  }) => Promise<Result<null, SaveBoardFailure>>
-  view: (input: {
-    boardId: string
-    signal?: AbortSignal
-  }) => Promise<Result<BoardSettingsPageData, ViewBoardSettingsFailure>>
+  remove: RemoveBoard
+  save: SaveBoardSettings
+  view: ViewBoardSettings
 }

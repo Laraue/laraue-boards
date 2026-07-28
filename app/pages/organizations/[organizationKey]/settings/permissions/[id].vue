@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { createMemberPermissionsPageDeps } from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.deps.impl'
+import { createMemberPermissionsPageDeps } from '~/sections/organizations/permissions/member-permissions/deps-impl'
 import MemberPermissionsPage from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.vue'
 
 const route = useRoute('organizations-organizationKey-settings-permissions-id')

@@ -1,10 +1,12 @@
 <template>
-  <PageState
+  <QueryState
+    :data="data"
     error-title="Could not load space"
     loading-text="Loading space…"
-    :on-retry="query.refresh"
-    :state="pageState">
-    <template #default="{ data }">
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
+    <template #default="{ data: page }">
       <section class="form-page">
         <div class="title-row">
           <div class="page-heading">
@@ -13,42 +15,44 @@
               :to="organizationRoutes.space(spaceKey)" />
             <SpaceIcon
               class="page-heading-icon"
-              :style="{ color: state.color }" />
+              :style="{ color: form.color }" />
             <div class="page-heading-text"><h1>Edit space</h1></div>
           </div>
         </div>
         <form @submit.prevent="update">
-          <label>Name</label>
+          <label for="space-settings-name">Name</label>
           <input
-            v-model="state.name"
-            :disabled="!data.canUpdate"
+            id="space-settings-name"
+            v-model="form.name"
+            :disabled="!page.canUpdate"
             required />
-          <label>Key</label>
+          <label for="space-settings-key">Key</label>
           <input
-            v-model="state.key"
-            :disabled="!data.canUpdate"
+            id="space-settings-key"
+            v-model="form.key"
+            :disabled="!page.canUpdate"
             required />
           <label>Color</label>
           <AppColorPicker
-            v-model="state.color"
-            :disabled="!data.canUpdate" />
+            v-model="form.color"
+            :disabled="!page.canUpdate" />
           <p
-            v-if="state.error"
+            v-if="updateMessage || removeMessage"
             class="form-error">
-            {{ state.error }}
+            {{ updateMessage || removeMessage }}
           </p>
           <div class="form-actions">
             <button
-              v-if="data.canUpdate"
+              v-if="page.canUpdate"
               class="primary"
-              :disabled="state.submitting"
+              :disabled="submitting"
               type="submit">
-              {{ state.submitting ? 'Saving…' : 'Save changes' }}
+              {{ updating ? 'Saving…' : 'Save changes' }}
             </button>
             <button
-              v-if="data.canDelete"
+              v-if="page.canDelete"
               class="secondary danger"
-              :disabled="state.submitting"
+              :disabled="submitting"
               type="button"
               @click="remove">
               Delete space
@@ -57,20 +61,12 @@
         </form>
       </section>
     </template>
-  </PageState>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
 import { SpaceIcon } from '~/constants/icons'
-import type {
-  ChangeSpaceFailure,
-  SpaceSettingsPageDeps,
-  UpdateSpaceFailure,
-  ViewSpaceSettingsFailure,
-} from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
+import type { SpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
 
 const props = defineProps<{
   deps: SpaceSettingsPageDeps
@@ -78,128 +74,76 @@ const props = defineProps<{
   onUpdated: (spaceKey: string) => Promise<void> | void
   spaceKey: string
 }>()
-const state = reactive({
+
+const form = reactive({
   color: '',
-  error: null as null | string,
   key: '',
   name: '',
-  submitting: false,
 })
+
 const organizationRoutes = useOrganizationRoutes()
 
-const query = await useAsyncData(
+const { data, message, pending, refresh } = await useQuery(
   () => `space-settings:${props.spaceKey}`,
-  (_nuxtApp, { signal }) =>
-    props.deps.view({ signal, spaceKey: props.spaceKey }),
+  (_nuxtApp, { signal }) => props.deps.view({ signal, spaceKey: props.spaceKey }),
   { watch: [() => props.spaceKey] },
-)
-const getViewFailureMessage = (failure: ViewSpaceSettingsFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have access to this space.'
-    case 'spaceNotFound':
-      return 'The space was not found or is not available to you.'
-    case 'temporarilyUnavailable':
-      return 'Could not load space. The service is temporarily unavailable.'
-    default:
-      return assertNever(failure)
-  }
-}
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getViewFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
-)
-const page = computed(() =>
-  pageState.value.type === 'ready' ? pageState.value.data : null,
 )
 
 watch(
-  page,
+  data,
   (value) => {
     if (!value) {
       return
     }
-    state.color = value.color
-    state.key = value.spaceKey
-    state.name = value.name
+    form.color = value.color
+    form.key = value.spaceKey
+    form.name = value.name
   },
   { immediate: true },
 )
 
 useHead({
-  title: computed(() =>
-    page.value ? `${page.value.name} settings` : 'Space settings',
-  ),
+  title: computed(() => (data.value ? `${data.value.name} settings` : 'Space settings')),
 })
 
-const getChangeFailureMessage = (
-  failure: ChangeSpaceFailure,
-  operation: 'delete' | 'update',
-): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return `You do not have permission to ${operation} this space.`
-    case 'spaceNotFound':
-      return operation === 'delete'
-        ? 'This space no longer exists.'
-        : 'The space was not found.'
-    case 'temporarilyUnavailable':
-      return `Could not ${operation === 'delete' ? 'delete' : 'save'} space. Try again.`
-    default:
-      return assertNever(failure)
+const {
+  execute: updateSpace,
+  message: updateMessage,
+  pending: updating,
+} = useAction(props.deps.update)
+
+const update = async (): Promise<void> => {
+  const page = data.value
+  if (!page || removing.value) {
+    return
+  }
+  const key = form.key.trim()
+  const updated = await updateSpace({
+    color: form.color,
+    key,
+    name: form.name,
+    spaceId: page.id,
+  })
+  if (updated) {
+    await props.onUpdated(key)
   }
 }
 
-const getUpdateFailureMessage = (failure: UpdateSpaceFailure): string =>
-  failure.type === 'invalidInput'
-    ? failure.message
-    : getChangeFailureMessage(failure, 'update')
+const {
+  execute: removeSpace,
+  message: removeMessage,
+  pending: removing,
+} = useAction(props.deps.remove, {
+  onSuccess: props.onDeleted,
+})
 
-async function update(): Promise<void> {
-  const current = page.value
-  if (!current || state.submitting) {
+const submitting = computed(() => updating.value || removing.value)
+
+const remove = async (): Promise<void> => {
+  const page = data.value
+  if (!page || submitting.value || !confirm('Delete this space?')) {
     return
   }
-  state.error = null
-  state.submitting = true
-  try {
-    const key = state.key.trim()
-    const result = await props.deps.update({
-      color: state.color,
-      key,
-      name: state.name.trim(),
-      spaceId: current.id,
-    })
-    await matchResult(result, {
-      err: (failure) => (state.error = getUpdateFailureMessage(failure)),
-      ok: () => props.onUpdated(key),
-    })
-  } finally {
-    state.submitting = false
-  }
-}
-
-async function remove(): Promise<void> {
-  const current = page.value
-  if (!current || state.submitting || !confirm('Delete this space?')) {
-    return
-  }
-  state.error = null
-  state.submitting = true
-  try {
-    const result = await props.deps.delete({ spaceId: current.id })
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getChangeFailureMessage(failure, 'delete')
-      },
-      ok: props.onDeleted,
-    })
-  } finally {
-    state.submitting = false
-  }
+  void removeSpace({ spaceId: page.id })
 }
 </script>

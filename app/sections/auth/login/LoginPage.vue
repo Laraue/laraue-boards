@@ -10,10 +10,7 @@
       </div>
       <div class="auth-copy">
         <h1>Turn messages into work.</h1>
-        <p>
-          Send Telegram messages to organized boards and keep every important
-          request moving.
-        </p>
+        <p>Send Telegram messages to organized boards and keep every important request moving.</p>
         <div class="auth-flow">
           <span class="auth-flow-step">
             <MessageCircle aria-hidden="true" />
@@ -38,7 +35,7 @@
       <small>Your conversations stay in Telegram. Your work stays clear.</small>
     </div>
     <div
-      :aria-busy="state.submitting"
+      :aria-busy="submitting"
       class="auth-card">
       <div class="logo">
         <img
@@ -50,12 +47,12 @@
       <h2>Welcome back</h2>
       <p class="muted">Use your Telegram account to continue.</p>
       <p
-        v-if="state.error"
+        v-if="message"
         class="form-error">
-        {{ state.error }}
+        {{ message }}
       </p>
       <p
-        v-if="state.submitting"
+        v-if="submitting"
         class="muted login-status">
         Signing in…
       </p>
@@ -67,33 +64,23 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ArrowRight,
-  CircleCheck,
-  MessageCircle,
-  SquareKanban,
-} from 'lucide-vue-next'
+import { ArrowRight, CircleCheck, MessageCircle, SquareKanban } from '@lucide/vue'
 
-import type {
-  LoginFailure,
-  LoginPageDeps,
-  TelegramUser,
-} from '~/sections/auth/login/LoginPage.deps'
-import { matchResult } from '~/utils/actionResult'
+import type { LoginPageDeps } from '~/sections/auth/login/LoginPage.deps'
+import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
 
 const props = defineProps<{
   botName: string
   deps: LoginPageDeps
   onLoggedIn: () => Promise<void> | void
 }>()
-const widgetContainer = ref<HTMLElement | null>(null)
-const state = reactive({ error: null as null | string, submitting: false })
+const widgetContainer = useTemplateRef('widgetContainer')
 const telegramWindow = globalThis as typeof globalThis & {
   onTelegramAuth?: (user: TelegramUser) => void
 }
 
 onMounted(() => {
-  telegramWindow.onTelegramAuth = loginViaTelegramWidget
+  telegramWindow.onTelegramAuth = (user) => void loginWidget(user)
 
   const script = document.createElement('script')
   script.async = true
@@ -108,59 +95,37 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => delete telegramWindow.onTelegramAuth)
-onMounted(loginViaTelegramMiniApp)
+onMounted(() => void loginViaTelegramMiniApp())
 useHead({ title: 'Sign in' })
 
-function getLoginFailureMessage(failure: LoginFailure): string {
-  switch (failure.type) {
-    case 'invalidTelegramData':
-      return 'Telegram sign-in data is invalid or has expired.'
-    case 'temporarilyUnavailable':
-      return 'Could not sign in with Telegram. Try again.'
-    default:
-      return assertNever(failure)
-  }
-}
+const {
+  execute: loginViaTelegramMiniApp,
+  message: miniAppMessage,
+  pending: miniAppSubmitting,
+} = useAction(props.deps.loginViaTelegramMiniApp, {
+  onSuccess: async ({ authenticated }) => {
+    if (authenticated) {
+      await props.onLoggedIn()
+    }
+  },
+})
 
-async function loginViaTelegramMiniApp() {
-  state.submitting = true
-  try {
-    const result = await props.deps.loginViaTelegramMiniApp()
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getLoginFailureMessage(failure)
-      },
-      ok: async (authenticated) => {
-        state.error = null
-        if (authenticated) {
-          await props.onLoggedIn()
-        }
-      },
-    })
-  } finally {
-    state.submitting = false
-  }
-}
+const {
+  execute: loginViaTelegramWidget,
+  message: widgetMessage,
+  pending: widgetSubmitting,
+} = useAction(props.deps.loginViaTelegramWidget, {
+  onSuccess: props.onLoggedIn,
+})
 
-async function loginViaTelegramWidget(input: TelegramUser) {
-  if (state.submitting) {
+const submitting = computed(() => miniAppSubmitting.value || widgetSubmitting.value)
+const message = computed(() => miniAppMessage.value || widgetMessage.value)
+
+const loginWidget = async (input: TelegramUser): Promise<void> => {
+  if (submitting.value) {
     return
   }
-  state.submitting = true
-  try {
-    const result = await props.deps.loginViaTelegramWidget(input)
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getLoginFailureMessage(failure)
-      },
-      ok: async () => {
-        state.error = null
-        await props.onLoggedIn()
-      },
-    })
-  } finally {
-    state.submitting = false
-  }
+  await loginViaTelegramWidget(input)
 }
 </script>
 
@@ -172,8 +137,7 @@ async function loginViaTelegramWidget(input: TelegramUser) {
 }
 
 .auth-art {
-  background: #172554
-    radial-gradient(circle at 25% 25%, #3156d3, transparent 45%);
+  background: #172554 radial-gradient(circle at 25% 25%, #3156d3, transparent 45%);
   color: white;
   display: flex;
   flex-direction: column;

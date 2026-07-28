@@ -1,39 +1,20 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult } from '#infrastructure/api/apiResult'
+import type { QueryResult } from '#infrastructure/api/apiResult'
 
-export type Attribute = {
-  color: string
-  data:
-    | { listValues: Array<{ id: string; name: string }>; type: 'list' }
-    | { type: 'text' }
-  id: string
-  name: string
-}
+import type { UpdateAttributeInput } from './AttributePage.types'
+import type { Attribute } from './AttributePage.types'
 
-export type UpdateAttributeInput = {
-  color: string
-  data:
-    | { listValues: Array<{ id: null | string; name: string }>; type: 'list' }
-    | { type: 'text' }
-  id: string
-  name: string
-}
+export type DeleteAttribute = (input: { id: string }) => Promise<ActionResult<true>>
 
-export type ViewAttributeFailure =
-  | { type: 'accessDenied' }
-  | { type: 'attributeNotFound' }
-  | { type: 'temporarilyUnavailable' }
+export type UpdateAttribute = (input: UpdateAttributeInput) => Promise<ActionResult<true>>
 
-export type ChangeAttributeFailure =
-  | ViewAttributeFailure
-  | { message: string; type: 'invalidInput' }
+export type ViewAttribute = (input: {
+  attributeId: string
+  signal?: AbortSignal
+}) => Promise<QueryResult<Attribute>>
 
 export type AttributePageDeps = {
-  delete: (input: { id: string }) => Promise<Result<void, ViewAttributeFailure>>
-  update: (
-    input: UpdateAttributeInput,
-  ) => Promise<Result<void, ChangeAttributeFailure>>
-  view: (input: {
-    attributeId: string
-    signal?: AbortSignal
-  }) => Promise<Result<Attribute, ViewAttributeFailure>>
+  delete: DeleteAttribute
+  update: UpdateAttribute
+  view: ViewAttribute
 }

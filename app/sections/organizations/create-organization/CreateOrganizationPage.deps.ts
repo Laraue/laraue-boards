@@ -1,18 +1,11 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult } from '#infrastructure/api/apiResult'
 
-export type CreateOrganizationInput = {
-  color: string
-  name: string
-  slug: string
-}
+import type { CreateOrganizationInput } from './CreateOrganizationPage.types'
 
-export type CreateOrganizationFailure =
-  | { message: string; type: 'invalidInput' }
-  | { type: 'accessDenied' }
-  | { type: 'temporarilyUnavailable' }
+export type CreateOrganization = (
+  input: CreateOrganizationInput,
+) => Promise<ActionResult<{ organizationId: string }>>
 
 export type CreateOrganizationPageDeps = {
-  create: (
-    input: CreateOrganizationInput,
-  ) => Promise<Result<{ organizationId: string }, CreateOrganizationFailure>>
+  create: CreateOrganization
 }

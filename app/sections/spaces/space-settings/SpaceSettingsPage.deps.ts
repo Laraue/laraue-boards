@@ -1,40 +1,20 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult } from '#infrastructure/api/apiResult'
+import type { QueryResult } from '#infrastructure/api/apiResult'
 
-export type SpaceSettingsPageData = {
-  canDelete: boolean
-  canUpdate: boolean
-  color: string
-  id: string
-  name: string
+import type { UpdateSpaceInput } from './SpaceSettingsPage.types'
+import type { SpaceSettingsPageData } from './SpaceSettingsPage.types'
+
+export type RemoveSpace = (input: { spaceId: string }) => Promise<ActionResult<true>>
+
+export type UpdateSpace = (input: UpdateSpaceInput) => Promise<ActionResult<true>>
+
+export type ViewSpaceSettings = (input: {
+  signal?: AbortSignal
   spaceKey: string
-}
-
-export type ViewSpaceSettingsFailure =
-  | { type: 'accessDenied' }
-  | { type: 'spaceNotFound' }
-  | { type: 'temporarilyUnavailable' }
-
-export type ChangeSpaceFailure =
-  | { type: 'accessDenied' }
-  | { type: 'spaceNotFound' }
-  | { type: 'temporarilyUnavailable' }
-
-export type UpdateSpaceFailure =
-  | ChangeSpaceFailure
-  | { message: string; type: 'invalidInput' }
+}) => Promise<QueryResult<SpaceSettingsPageData>>
 
 export type SpaceSettingsPageDeps = {
-  delete: (input: {
-    spaceId: string
-  }) => Promise<Result<null, ChangeSpaceFailure>>
-  update: (input: {
-    color: string
-    key: string
-    name: string
-    spaceId: string
-  }) => Promise<Result<null, UpdateSpaceFailure>>
-  view: (input: {
-    signal?: AbortSignal
-    spaceKey: string
-  }) => Promise<Result<SpaceSettingsPageData, ViewSpaceSettingsFailure>>
+  remove: RemoveSpace
+  update: UpdateSpace
+  view: ViewSpaceSettings
 }

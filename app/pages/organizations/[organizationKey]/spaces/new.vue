@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { createCreateSpacePageDeps } from '~/sections/spaces/create-space/CreateSpacePage.deps.impl'
 import CreateSpacePage from '~/sections/spaces/create-space/CreateSpacePage.vue'
+import { createCreateSpacePageDeps } from '~/sections/spaces/create-space/deps-impl'
 
 const client = useApiClient()
 const deps = createCreateSpacePageDeps(client)

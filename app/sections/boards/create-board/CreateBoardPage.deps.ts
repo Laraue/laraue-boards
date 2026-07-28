@@ -1,15 +1,9 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult } from '#infrastructure/api/apiResult'
 
-export type CreateBoardFailure =
-  | { message: string; type: 'invalidInput' }
-  | { type: 'accessDenied' }
-  | { type: 'spaceNotFound' }
-  | { type: 'temporarilyUnavailable' }
+import type { CreateBoardInput } from './CreateBoardPage.types'
+
+export type CreateBoard = (input: CreateBoardInput) => Promise<ActionResult<{ boardId: string }>>
 
 export type CreateBoardPageDeps = {
-  create: (input: {
-    color: string
-    name: string
-    spaceKey: string
-  }) => Promise<Result<{ boardId: string }, CreateBoardFailure>>
+  create: CreateBoard
 }

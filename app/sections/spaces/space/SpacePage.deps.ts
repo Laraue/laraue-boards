@@ -1,32 +1,12 @@
-import type { Result } from '~/utils/actionResult'
+import type { QueryResult } from '#infrastructure/api/apiResult'
 
-export type SpaceBoardSummary = {
-  color: string
-  id: string
-  issueCount: number
-  kind: 'backlog' | 'board'
-  name: string
-  statuses: Array<{ color: string; count: number; name: string }>
-}
+import type { SpacePageData } from './SpacePage.types'
 
-export type SpacePageData = {
-  boards: SpaceBoardSummary[]
-  canCreateBoards: boolean
-  canManage: boolean
-  color: string
-  id: string
-  key: string
-  name: string
-}
-
-export type ViewSpaceFailure =
-  | { type: 'accessDenied' }
-  | { type: 'spaceNotFound' }
-  | { type: 'temporarilyUnavailable' }
+export type ViewSpace = (input: {
+  signal?: AbortSignal
+  spaceKey: string
+}) => Promise<QueryResult<SpacePageData>>
 
 export type SpacePageDeps = {
-  view: (input: {
-    signal?: AbortSignal
-    spaceKey: string
-  }) => Promise<Result<SpacePageData, ViewSpaceFailure>>
+  view: ViewSpace
 }

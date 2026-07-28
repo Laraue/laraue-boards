@@ -1,7 +1,8 @@
 <template>
   <form @submit.prevent="submit">
-    <label>Name</label>
+    <label for="board-settings-name">Name</label>
     <input
+      id="board-settings-name"
       v-model="state.name"
       :disabled="!viewModel.canUpdate"
       required />
@@ -69,30 +70,27 @@ import { arrayMove } from '@dnd-kit/helpers'
 import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
 import type { DragEndEvent } from '@dnd-kit/vue'
 import { isSortable } from '@dnd-kit/vue/sortable'
-import { Plus } from 'lucide-vue-next'
+import { Plus } from '@lucide/vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
-import type {
-  BoardSettingsColumnDraft,
-  BoardSettingsPageData,
-} from '~/sections/boards/board-settings/BoardSettingsPage.deps'
+import type { BoardSettingsPageData } from '~/sections/boards/board-settings/BoardSettingsPage.types'
 import BoardColumnSetting from '~/sections/boards/board-settings/components/BoardColumnSetting/BoardColumnSetting.vue'
 
-const props = defineProps<{
-  error: null | string
-  onDelete: () => void
-  onUpdate: (input: {
-    color: string
-    columns: BoardSettingsColumnDraft[]
-    name: string
-  }) => void
-  submitting: boolean
-  viewModel: BoardSettingsPageData
-}>()
-type BoardColumnDraft = BoardSettingsColumnDraft & { key: string }
+import type {
+  BoardSettingsFormColumnDraft,
+  BoardSettingsFormProps,
+} from './BoardSettingsForm.types'
+
+const props = defineProps<BoardSettingsFormProps>()
+const toDraftColumns = (columns: BoardSettingsPageData['columns']) =>
+  columns.map((column) => ({
+    ...column,
+    key: `column-${column.id}`,
+  }))
+
 const state = reactive<{
   color: string
-  columns: BoardColumnDraft[]
+  columns: BoardSettingsFormColumnDraft[]
   name: string
   newColumnId: number
 }>({
@@ -112,14 +110,7 @@ const sensors = [
   KeyboardSensor,
 ]
 
-function toDraftColumns(columns: BoardSettingsPageData['columns']) {
-  return columns.map((column) => ({
-    ...column,
-    key: `column-${column.id}`,
-  }))
-}
-
-function addColumn() {
+const addColumn = () => {
   state.newColumnId += 1
   state.columns.push({
     color: DEFAULT_COLOR,
@@ -129,22 +120,22 @@ function addColumn() {
   })
 }
 
-function removeColumn(key: string) {
+const removeColumn = (key: string) => {
   state.columns = state.columns.filter((column) => column.key !== key)
 }
 
-function handleDragEnd(event: DragEndEvent) {
+const handleDragEnd = (event: DragEndEvent) => {
   const source = event.operation.source
   if (!event.canceled && isSortable(source)) {
     state.columns = arrayMove(state.columns, source.initialIndex, source.index)
   }
 }
 
-function submit() {
+const submit = () => {
   props.onUpdate({
     color: state.color,
     columns: state.columns.map(({ color, id, name }) => ({ color, id, name })),
-    name: state.name.trim(),
+    name: state.name,
   })
 }
 

@@ -1,26 +1,22 @@
 <template>
   <AppLayoutContent
-    v-if="pageState.type === 'ready'"
+    v-if="data"
     :on-logout="logout"
-    :view-model="pageState.data">
+    :view-model="data">
     <slot />
   </AppLayoutContent>
   <PageLoadState
-    v-else-if="
-      pageState.type === 'pending' ||
-      (pageState.type === 'error' &&
-        pageState.error.type === 'organizationSwitchRequired')
-    "
+    v-else-if="query.pending.value || switchingOrganization"
     error-text=""
     :loading="true"
     loading-text="Loading workspace…" />
   <AppErrorState
     v-else
     code="Workspace error"
-    :message="pageState.message"
+    :message="errorMessage"
     :title="errorTitle">
     <button
-      v-if="pageState.error.type === 'accessDenied'"
+      v-if="accessDenied"
       class="primary"
       type="button"
       @click="logout">
@@ -30,7 +26,7 @@
     <button
       class="secondary"
       type="button"
-      @click="query.refresh()">
+      @click="refresh">
       <RefreshCw />
       Try again
     </button>
@@ -38,102 +34,75 @@
 </template>
 
 <script setup lang="ts">
-import { LogIn, RefreshCw } from 'lucide-vue-next'
+import { LogIn, RefreshCw } from '@lucide/vue'
 
-import type {
-  AppLayoutDeps,
-  ViewAppLayoutFailure,
-} from '~/sections/common/app-layout/AppLayout.deps'
+import type { AppLayoutDeps } from '~/sections/common/app-layout/AppLayout.deps'
 import AppLayoutContent from '~/sections/common/app-layout/components/AppLayoutContent.vue'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
 
 const props = defineProps<{
   deps: AppLayoutDeps
   onLoggedOut: () => Promise<void> | void
   organizationKey: string
 }>()
-const state = reactive({ loggingOut: false })
-
 const query = await useAsyncData(
   appLayoutDataKey,
-  (_nuxtApp, { signal }) =>
-    props.deps.view({ organizationKey: props.organizationKey, signal }),
+  (_nuxtApp, { signal }) => props.deps.view({ organizationKey: props.organizationKey, signal }),
   { watch: [() => props.organizationKey] },
 )
-const getFailureMessage = (failure: ViewAppLayoutFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'Your session has expired. Sign in and select your organization again.'
-    case 'organizationSwitchRequired':
-      return 'Switching organization…'
-    case 'temporarilyUnavailable':
-      return 'Workspace is unavailable. Check your connection and try again.'
-    case 'workspaceNotFound':
-      return 'The workspace may have moved or is no longer available.'
-    default:
-      return assertNever(failure)
-  }
-}
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
+const data = computed(() =>
+  query.data.value?.status === 'success' ? query.data.value.data : undefined,
 )
+const errorCode = computed(() =>
+  query.data.value?.status === 'error' ? query.data.value.code : undefined,
+)
+const switchingOrganization = computed(() => errorCode.value === 409)
+const accessDenied = computed(() => errorCode.value === 403)
+const refresh = () => void query.refresh()
 
 onNuxtReady(async () => {
-  const result = query.data.value
-  if (!result) {
+  if (!query.data.value) {
     await query.refresh()
     return
   }
-  const switchRequired = matchResult(result, {
-    err: (failure) => failure.type === 'organizationSwitchRequired',
-    ok: () => false,
-  })
-  if (!switchRequired) {
+  if (!switchingOrganization.value) {
     return
   }
 
   await query.refresh()
-  const refreshedResult = query.data.value
-  if (refreshedResult?.ok) {
+  if (query.data.value?.status === 'success') {
     window.location.reload()
   }
 })
 
 const errorTitle = computed(() => {
-  if (pageState.value.type !== 'error') {
-    return 'Could not load workspace'
-  }
-  switch (pageState.value.error.type) {
-    case 'accessDenied':
+  switch (errorCode.value) {
+    case 403:
       return 'Sign in required'
-    case 'organizationSwitchRequired':
+    case 409:
       return 'Switching organization'
-    case 'temporarilyUnavailable':
-      return 'Something went wrong'
-    case 'workspaceNotFound':
+    case 404:
       return 'Workspace not found'
     default:
-      return assertNever(pageState.value.error)
+      return 'Something went wrong'
   }
 })
 
-const logout = async (): Promise<void> => {
-  if (state.loggingOut) {
-    return
+const errorMessage = computed(() => {
+  switch (errorCode.value) {
+    case 403:
+      return 'Your session has expired. Sign in and select your organization again.'
+    case 404:
+      return 'The workspace may have moved or is no longer available.'
+    default:
+      return 'Workspace is unavailable. Check your connection and try again.'
   }
-  state.loggingOut = true
-  try {
-    await props.deps.logout()
-    await props.onLoggedOut()
-  } finally {
-    state.loggingOut = false
+})
+const { execute: executeLogout, pending: loggingOut } = useAction(props.deps.logout, {
+  onSuccess: props.onLoggedOut,
+})
+const logout = () => {
+  if (!loggingOut.value) {
+    void executeLogout()
   }
 }
 </script>

@@ -1,49 +1,15 @@
-import type { Result } from '~/utils/actionResult'
+import type { QueryResult } from '#infrastructure/api/apiResult'
 
-export type MoveOption = { label: string; value: string }
+import type { BoardsMovementSectionDeps } from './components/BoardsMovementSection/BoardsMovementSection.deps'
+import type { SpacesMovementSectionDeps } from './components/SpacesMovementSection/SpacesMovementSection.deps'
+import type { DataMovementPageData } from './DataMovementPage.types'
 
-export type DataMovementPageData = {
-  currentOrganizationId: string
-  currentSpaces: MoveOption[]
-  organizations: MoveOption[]
-  spaceOrganizations: MoveOption[]
-  spaces: Array<{
-    boards: Array<{ color: string; id: string; name: string }>
-    color: string
-    id: string
-    isDefault: boolean
-    name: string
-  }>
-}
-
-export type ViewDataMovementFailure =
-  | { type: 'accessDenied' }
-  | { type: 'temporarilyUnavailable' }
-
-export type LoadDestinationSpacesFailure =
-  | { type: 'accessDenied' }
-  | { type: 'organizationNotFound' }
-  | { type: 'temporarilyUnavailable' }
-
-export type MoveDataFailure =
-  | { type: 'accessDenied' }
-  | { type: 'invalidDestination' }
-  | { type: 'resourceNotFound' }
-  | { type: 'temporarilyUnavailable' }
+export type ViewDataMovement = (input: {
+  signal?: AbortSignal
+}) => Promise<QueryResult<DataMovementPageData>>
 
 export type DataMovementPageDeps = {
-  loadSpaces: (input: {
-    organizationId: string
-  }) => Promise<Result<MoveOption[], LoadDestinationSpacesFailure>>
-  moveBoards: (input: {
-    boardIds: string[]
-    destinationSpaceId: string
-  }) => Promise<Result<void, MoveDataFailure>>
-  moveSpaces: (input: {
-    destinationOrganizationId: string
-    spaceIds: string[]
-  }) => Promise<Result<void, MoveDataFailure>>
-  view: (input: {
-    signal?: AbortSignal
-  }) => Promise<Result<DataMovementPageData, ViewDataMovementFailure>>
+  boardsMovementSection: BoardsMovementSectionDeps
+  spacesMovementSection: SpacesMovementSectionDeps
+  view: ViewDataMovement
 }

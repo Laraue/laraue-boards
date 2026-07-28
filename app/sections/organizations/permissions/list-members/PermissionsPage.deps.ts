@@ -1,21 +1,11 @@
-import type { Result } from '~/utils/actionResult'
+import type { QueryResult } from '#infrastructure/api/apiResult'
 
-export type PermissionsPageMember = {
-  color: string
-  id: string
-  initials: string
-  isAdmin: boolean
-  isOwner: boolean
-  name: string
-}
+import type { PermissionsPageMember } from './PermissionsPage.types'
 
-export type ViewPermissionsFailure =
-  | { type: 'accessDenied' }
-  | { type: 'permissionsNotFound' }
-  | { type: 'temporarilyUnavailable' }
+export type ViewPermissions = (input: {
+  signal?: AbortSignal
+}) => Promise<QueryResult<PermissionsPageMember[]>>
 
 export type PermissionsPageDeps = {
-  view: (input: {
-    signal?: AbortSignal
-  }) => Promise<Result<PermissionsPageMember[], ViewPermissionsFailure>>
+  view: ViewPermissions
 }

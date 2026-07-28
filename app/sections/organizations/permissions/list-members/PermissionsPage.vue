@@ -1,9 +1,11 @@
 <template>
-  <PageState
+  <QueryState
+    :data="data"
     error-title="Could not load permissions"
     loading-text="Loading permissions…"
-    :on-retry="query.refresh"
-    :state="pageState">
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
     <template #default="{ data: members }">
       <section class="permissions-page">
         <div class="title-row">
@@ -29,9 +31,7 @@
             <span class="member-name">
               <strong>{{ member.name }}</strong>
               <small class="muted">
-                {{
-                  member.isOwner ? 'Owner' : member.isAdmin ? 'Admin' : 'Member'
-                }}
+                {{ member.isOwner ? 'Owner' : member.isAdmin ? 'Admin' : 'Member' }}
               </small>
             </span>
             <ChevronRight />
@@ -44,45 +44,23 @@
         </p>
       </section>
     </template>
-  </PageState>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, ShieldCheck } from 'lucide-vue-next'
+import { ChevronRight, ShieldCheck } from '@lucide/vue'
 
-import type {
-  PermissionsPageDeps,
-  ViewPermissionsFailure,
-} from '~/sections/organizations/permissions/list-members/PermissionsPage.deps'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
+import type { PermissionsPageDeps } from '~/sections/organizations/permissions/list-members/PermissionsPage.deps'
 
 const props = defineProps<{ deps: PermissionsPageDeps }>()
+
 const organizationRoutes = useOrganizationRoutes()
+
 useHead({ title: 'Permissions' })
-const query = await useAsyncData(
+
+const { data, message, pending, refresh } = await useQuery(
   'organization-permissions',
   (_nuxtApp, { signal }) => props.deps.view({ signal }),
-)
-const getFailureMessage = (failure: ViewPermissionsFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have permission to open this page.'
-    case 'permissionsNotFound':
-      return 'The requested page was not found.'
-    case 'temporarilyUnavailable':
-      return 'Could not load permissions. The service is temporarily unavailable.'
-    default:
-      return assertNever(failure)
-  }
-}
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
 )
 </script>
 

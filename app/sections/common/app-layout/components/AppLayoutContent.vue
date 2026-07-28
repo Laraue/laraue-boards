@@ -80,9 +80,7 @@
         <NuxtLink
           v-if="viewModel.organization.canManage"
           :class="{
-            active: within(
-              'organizations-organizationKey-settings-permissions',
-            ),
+            active: within('organizations-organizationKey-settings-permissions'),
           }"
           :to="organizationRoutes.permissions()">
           <ShieldCheck />
@@ -100,9 +98,7 @@
         <NuxtLink
           v-if="viewModel.organization.canMassMove"
           :class="{
-            active: active(
-              'organizations-organizationKey-settings-data-movement',
-            ),
+            active: active('organizations-organizationKey-settings-data-movement'),
           }"
           :to="organizationRoutes.dataMovement()">
           <ArrowRightLeft />
@@ -177,10 +173,10 @@ import {
   ShieldCheck,
   Sun,
   Tags,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 import { SpaceIcon } from '~/constants/icons'
-import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
+import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const props = defineProps<{
   onLogout: () => void
@@ -190,7 +186,8 @@ const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const state = reactive({ sidebarOpen: false })
 const active = (name: OrganizationRouteName) => route.name === name
-const within = (name: OrganizationRouteName) => route.name.startsWith(name)
+const within = (name: OrganizationRouteName) =>
+  typeof route.name === 'string' && route.name.startsWith(name)
 const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   within('organizations-organizationKey-spaces-spaceKey') &&
   'spaceKey' in route.params &&
@@ -291,7 +288,6 @@ main {
   overflow: auto;
   padding: var(--layout-content-padding);
   position: relative;
-  scrollbar-gutter: stable;
   width: 100%;
 }
 

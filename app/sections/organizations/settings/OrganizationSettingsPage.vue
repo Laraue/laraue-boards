@@ -1,10 +1,12 @@
 <template>
-  <PageState
+  <QueryState
+    :data="data"
     error-title="Could not load settings"
     loading-text="Loading settings…"
-    :on-retry="query.refresh"
-    :state="pageState">
-    <template #default="{ data }">
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
+    <template #default="{ data: page }">
       <section class="form-page">
         <div class="title-row">
           <div class="page-heading">
@@ -16,158 +18,93 @@
         </div>
         <form
           @submit.prevent="
-            submit({
-              id: data.id,
-              name: state.name.trim(),
+            submitForm({
+              id: page.id,
+              name: state.name,
               color: state.color,
-              slug: data.slug,
+              slug: page.slug,
             })
           ">
-          <label>Name</label>
+          <label for="organization-settings-name">Name</label>
           <input
+            id="organization-settings-name"
             v-model="state.name"
-            :disabled="!data.canUpdate"
+            :disabled="!page.canUpdate"
             required />
           <label>Color</label>
           <AppColorPicker
             v-model="state.color"
-            :disabled="!data.canUpdate" />
+            :disabled="!page.canUpdate" />
           <p
             v-if="state.saved"
             class="form-success">
             Changes saved.
           </p>
           <p
-            v-if="state.mutationError"
+            v-if="submitMessage"
             class="form-error">
-            {{ state.mutationError }}
+            {{ submitMessage }}
           </p>
           <div
-            v-if="data.canUpdate"
+            v-if="page.canUpdate"
             class="form-actions">
             <button
               class="primary"
-              :disabled="state.submitting">
-              {{ state.submitting ? 'Saving…' : 'Save changes' }}
+              :disabled="submitting">
+              {{ submitting ? 'Saving…' : 'Save changes' }}
             </button>
           </div>
         </form>
       </section>
     </template>
-  </PageState>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
-import { Settings } from 'lucide-vue-next'
+import { Settings } from '@lucide/vue'
 
-import type {
-  OrganizationSettingsPageDeps,
-  UpdateOrganizationFailure,
-  UpdateOrganizationInput,
-  ViewOrganizationSettingsFailure,
-} from '~/sections/organizations/settings/OrganizationSettingsPage.deps'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
+import type { OrganizationSettingsPageDeps } from '~/sections/organizations/settings/OrganizationSettingsPage.deps'
+import type { UpdateOrganizationInput } from '~/sections/organizations/settings/OrganizationSettingsPage.types'
 
 const props = defineProps<{
   deps: OrganizationSettingsPageDeps
   onUpdated: () => Promise<void> | void
 }>()
 
-const query = await useAsyncData(
+const { data, message, pending, refresh } = await useQuery(
   'organization-settings',
   (_nuxtApp, { signal }) => props.deps.view({ signal }),
 )
 
-const getViewFailureMessage = (
-  failure: ViewOrganizationSettingsFailure,
-): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have access to this organization.'
-    case 'organizationNotFound':
-      return 'The organization was not found.'
-    case 'temporarilyUnavailable':
-      return 'Could not load settings. The service is temporarily unavailable.'
-    default:
-      return assertNever(failure)
-  }
-}
-
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getViewFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
-)
-
 const state = reactive({
-  color: '',
-  mutationError: null as null | string,
-  name: '',
+  color: data.value?.color ?? '',
+  name: data.value?.name ?? '',
   saved: false,
-  submitting: false,
+})
+
+watch(data, (settings) => {
+  state.color = settings?.color ?? ''
+  state.name = settings?.name ?? ''
 })
 
 useHead({
   title: computed(() => (state.name ? `${state.name} settings` : 'Settings')),
 })
 
-watch(
-  pageState,
-  (page) => {
-    if (page.type !== 'ready') {
-      return
-    }
-    state.color = page.data.color
-    state.name = page.data.name
+const {
+  execute: submit,
+  message: submitMessage,
+  pending: submitting,
+} = useAction<[UpdateOrganizationInput], true>(props.deps.updateOrganization, {
+  onSuccess: async () => {
+    await props.onUpdated()
+    state.saved = true
   },
-  { immediate: true },
-)
+})
 
-const getUpdateFailureMessage = (
-  failure: UpdateOrganizationFailure,
-): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have permission to update this organization.'
-    case 'organizationNotFound':
-      return 'The organization was not found.'
-    case 'temporarilyUnavailable':
-      return 'Could not save changes. Try again.'
-    case 'invalidInput':
-      return failure.message
-    default:
-      return assertNever(failure)
-  }
-}
-
-async function submit(input: UpdateOrganizationInput): Promise<void> {
-  if (state.submitting) {
-    return
-  }
-
-  state.submitting = true
+const submitForm = (input: UpdateOrganizationInput): void => {
   state.saved = false
-  state.mutationError = null
-
-  try {
-    const result = await props.deps.updateOrganization(input)
-    await matchResult(result, {
-      err: (failure) => {
-        state.mutationError = getUpdateFailureMessage(failure)
-      },
-      ok: async () => {
-        await props.onUpdated()
-        state.saved = true
-      },
-    })
-  } finally {
-    state.submitting = false
-  }
+  void submit(input)
 }
 </script>
 

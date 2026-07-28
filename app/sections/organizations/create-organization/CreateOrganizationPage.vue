@@ -19,35 +19,37 @@
         </div>
       </div>
       <p class="muted">Create a new workspace for your team.</p>
-      <form @submit.prevent="submit">
-        <label>Name</label>
+      <form @submit.prevent="submit({ color: form.color, name: form.name, slug: form.slug })">
+        <label for="create-organization-name">Name</label>
         <input
-          v-model="state.name"
+          id="create-organization-name"
+          v-model="form.name"
           required />
-        <label>Slug</label>
+        <label for="create-organization-slug">Slug</label>
         <input
-          v-model="state.slug"
+          id="create-organization-slug"
+          v-model="form.slug"
           pattern="[a-z0-9-]+"
           placeholder="acme-studio"
           required />
         <label>Color</label>
-        <AppColorPicker v-model="state.color" />
+        <AppColorPicker v-model="form.color" />
         <p
-          v-if="state.error"
+          v-if="message"
           class="form-error">
-          {{ state.error }}
+          {{ message }}
         </p>
         <div class="form-actions">
+          <button
+            class="primary"
+            :disabled="pending">
+            {{ pending ? 'Creating…' : 'Create organization' }}
+          </button>
           <NuxtLink
             class="secondary"
             to="/organizations">
             Cancel
           </NuxtLink>
-          <button
-            class="primary"
-            :disabled="state.submitting">
-            {{ state.submitting ? 'Creating…' : 'Create organization' }}
-          </button>
         </div>
       </form>
     </div>
@@ -56,63 +58,28 @@
 
 <script setup lang="ts">
 import { DEFAULT_COLOR } from '~/constants/colors'
-import type {
-  CreateOrganizationFailure,
-  CreateOrganizationPageDeps,
-} from '~/sections/organizations/create-organization/CreateOrganizationPage.deps'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
+import type { CreateOrganizationPageDeps } from '~/sections/organizations/create-organization/CreateOrganizationPage.deps'
 
 const props = defineProps<{
   deps: CreateOrganizationPageDeps
   onCreated: () => Promise<void> | void
 }>()
-const state = reactive({
+
+const form = reactive({
   color: DEFAULT_COLOR,
-  error: null as null | string,
   name: '',
   slug: '',
-  submitting: false,
 })
+
 useHead({ title: 'Create organization' })
 
-function getFailureMessage(failure: CreateOrganizationFailure): string {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'Sign in to create an organization.'
-    case 'invalidInput':
-      return failure.message
-    case 'temporarilyUnavailable':
-      return 'Could not create organization. Try again.'
-    default:
-      return assertNever(failure)
-  }
-}
-
-async function submit() {
-  if (state.submitting) {
-    return
-  }
-  state.submitting = true
-  state.error = null
-  try {
-    await matchResult(
-      await props.deps.create({
-        color: state.color,
-        name: state.name.trim(),
-        slug: state.slug.trim(),
-      }),
-      {
-        err: (failure) => {
-          state.error = getFailureMessage(failure)
-        },
-        ok: props.onCreated,
-      },
-    )
-  } finally {
-    state.submitting = false
-  }
-}
+const {
+  execute: submit,
+  message,
+  pending,
+} = useAction(props.deps.create, {
+  onSuccess: props.onCreated,
+})
 </script>
 
 <style scoped>

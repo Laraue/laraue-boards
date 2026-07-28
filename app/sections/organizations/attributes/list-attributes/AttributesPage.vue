@@ -1,9 +1,11 @@
 <template>
-  <PageState
+  <QueryState
+    :data="data"
     error-title="Could not load attributes"
     loading-text="Loading attributes…"
-    :on-retry="query.refresh"
-    :state="pageState">
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
     <template #default="{ data: attributes }">
       <section class="attributes-page">
         <div class="title-row">
@@ -14,6 +16,7 @@
             </div>
           </div>
           <NuxtLink
+            aria-label="New attribute"
             class="primary"
             :to="organizationRoutes.newAttribute()">
             <Plus />
@@ -47,43 +50,23 @@
         </p>
       </section>
     </template>
-  </PageState>
+  </QueryState>
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Plus, Tags } from 'lucide-vue-next'
+import { ChevronRight, Plus, Tags } from '@lucide/vue'
 
-import type {
-  AttributesPageDeps,
-  ViewAttributesFailure,
-} from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
-import { assertNever } from '~/utils/assertNever'
-import { toAsyncResultState } from '~/utils/asyncResultState'
+import type { AttributesPageDeps } from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
 
 const props = defineProps<{ deps: AttributesPageDeps }>()
+
 const organizationRoutes = useOrganizationRoutes()
+
 useHead({ title: 'Attributes' })
-const query = await useAsyncData(
+
+const { data, message, pending, refresh } = await useQuery(
   'organization-attributes',
   (_nuxtApp, { signal }) => props.deps.view({ signal }),
-)
-const getFailureMessage = (failure: ViewAttributesFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have permission to manage attributes.'
-    case 'temporarilyUnavailable':
-      return 'Could not load attributes. The service is temporarily unavailable.'
-    default:
-      return assertNever(failure)
-  }
-}
-const pageState = computed(() =>
-  toAsyncResultState({
-    error: query.error.value,
-    getErrorMessage: getFailureMessage,
-    result: query.data.value,
-    status: query.status.value,
-  }),
 )
 </script>
 

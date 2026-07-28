@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft } from 'lucide-vue-next'
+import { ArrowLeft } from '@lucide/vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 defineProps<{ label: string; to: RouteLocationRaw }>()

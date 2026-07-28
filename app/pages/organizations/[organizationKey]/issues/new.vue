@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import { createCreateIssuePageDeps } from '~/sections/issues/create-issue/CreateIssuePage.deps.impl'
 import CreateIssuePage from '~/sections/issues/create-issue/CreateIssuePage.vue'
+import { createCreateIssuePageDeps } from '~/sections/issues/create-issue/deps-impl'
 
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient()

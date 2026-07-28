@@ -1,49 +1,50 @@
 <template>
-  <NuxtLink
-    v-slot="{ href }"
-    custom
-    :to="organizationRoutes.issue(viewModel.issueKey)">
-    <a
-      ref="element"
-      class="task"
-      :class="{ 'task--ghost': isDragging, 'task--moving': moving }"
-      draggable="false"
-      :href="href || undefined"
-      @click.left.exact.prevent="onOpenIssue(viewModel.issueKey)">
-      <div class="task-source">
-        <span
-          class="avatar"
-          :style="{ background: viewModel.assigneeColor }">
-          {{ viewModel.assigneeInitial }}
-        </span>
-        <strong>{{ viewModel.assigneeName }}</strong>
-        <time :datetime="viewModel.time">
-          · {{ formatTime(viewModel.time) }}
-        </time>
-        <Transition
-          mode="out-in"
-          name="icon-pop">
-          <Loader
-            v-if="moving"
-            key="loader"
-            aria-label="Saving issue position"
-            class="task-progress" />
-          <button
-            v-else-if="!disabled"
-            key="backlog"
-            aria-label="Move to backlog"
-            class="task-backlog-btn"
-            title="Move to backlog"
-            type="button"
-            @click.stop.prevent="onMoveToBacklog(viewModel.issueKey)">
-            <Undo2 />
-          </button>
-        </Transition>
-      </div>
-      <small>{{ viewModel.issueKey }}</small>
-      <p>{{ viewModel.content }}</p>
-    </a>
-  </NuxtLink>
+  <article
+    ref="element"
+    class="task"
+    :class="{ 'task--ghost': isDragging, 'task--moving': moving }">
+    <NuxtLink
+      v-slot="{ href }"
+      custom
+      :to="organizationRoutes.issue(viewModel.issueKey)">
+      <a
+        class="task-link"
+        draggable="false"
+        :href="href || undefined"
+        @click.left.exact.prevent="onOpenIssue(viewModel.issueKey)">
+        <div class="task-source">
+          <span
+            class="avatar"
+            :style="{ background: viewModel.assigneeColor }">
+            {{ viewModel.assigneeInitial }}
+          </span>
+          <strong>{{ viewModel.assigneeName }}</strong>
+          <time :datetime="viewModel.time">· {{ formatTime(viewModel.time) }}</time>
+        </div>
+        <small>{{ viewModel.issueKey }}</small>
+        <p>{{ viewModel.content }}</p>
+      </a>
+    </NuxtLink>
+    <Transition
+      mode="out-in"
+      name="icon-pop">
+      <Loader
+        v-if="moving"
+        key="loader"
+        aria-label="Saving issue position"
+        class="task-progress" />
+      <button
+        v-else-if="!disabled"
+        key="backlog"
+        aria-label="Move to backlog"
+        class="task-backlog-btn"
+        title="Move to backlog"
+        type="button"
+        @click="onMoveToBacklog(viewModel.issueKey)">
+        <Undo2 />
+      </button>
+    </Transition>
+  </article>
 </template>
 
 <script lang="ts">
@@ -52,20 +53,13 @@ const timeFormatter = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
   timeZone: 'UTC',
 })
-
-export type IssueCardViewModel = {
-  assigneeColor: string
-  assigneeInitial: string
-  assigneeName: string
-  content: string
-  issueKey: string
-  time: string
-}
 </script>
 
 <script setup lang="ts">
 import { useDraggable } from '@dnd-kit/vue'
-import { Loader, Undo2 } from 'lucide-vue-next'
+import { Loader, Undo2 } from '@lucide/vue'
+
+import type { IssueCardViewModel } from './IssueCard.types'
 
 const props = defineProps<{
   disabled: boolean
@@ -76,7 +70,7 @@ const props = defineProps<{
 }>()
 const organizationRoutes = useOrganizationRoutes()
 
-const element = ref<HTMLElement>()
+const element = useTemplateRef('element')
 
 const { isDragging } = useDraggable({
   disabled: computed(() => props.disabled),
@@ -99,12 +93,19 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   display: block;
   margin-bottom: var(--space-2);
   padding: var(--space-4);
+  position: relative;
   text-decoration: none;
   -webkit-touch-callout: none;
   transition:
     var(--transition-press),
     opacity var(--duration-fast) var(--ease-standard);
   -webkit-user-drag: none;
+}
+
+.task-link {
+  color: inherit;
+  display: block;
+  text-decoration: none;
 }
 
 .task:hover {
@@ -156,9 +157,11 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   display: inline-flex;
   height: 20px;
   justify-content: center;
-  margin-left: auto;
   opacity: 0;
   padding: 0;
+  position: absolute;
+  right: var(--space-3);
+  top: var(--space-3);
   transition: var(--transition-press);
   width: 20px;
 }

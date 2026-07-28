@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertTriangle, Loader } from 'lucide-vue-next'
+import { AlertTriangle, Loader } from '@lucide/vue'
 
 const props = withDefaults(
   defineProps<{

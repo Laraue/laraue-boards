@@ -1,31 +1,36 @@
 <template>
   <section class="form-page">
     <div class="page-heading">
+      <SpaceIcon
+        class="page-heading-icon"
+        :style="{ color: form.color }" />
       <div class="page-heading-text">
         <h1>Create space</h1>
       </div>
     </div>
-    <form @submit.prevent="submit">
-      <label>Name</label>
+    <form @submit.prevent="submit({ color: form.color, key: form.key.trim(), name: form.name })">
+      <label for="create-space-name">Name</label>
       <input
-        v-model="state.name"
+        id="create-space-name"
+        v-model="form.name"
         required />
-      <label>Key</label>
+      <label for="create-space-key">Key</label>
       <input
-        v-model="state.key"
+        id="create-space-key"
+        v-model="form.key"
         required />
       <label>Color</label>
-      <AppColorPicker v-model="state.color" />
+      <AppColorPicker v-model="form.color" />
       <p
-        v-if="state.error"
+        v-if="message"
         class="form-error">
-        {{ state.error }}
+        {{ message }}
       </p>
       <div class="form-actions">
         <button
           class="primary"
-          :disabled="state.submitting">
-          {{ state.submitting ? 'Creating…' : 'Create space' }}
+          :disabled="pending">
+          {{ pending ? 'Creating…' : 'Create space' }}
         </button>
       </div>
     </form>
@@ -34,61 +39,27 @@
 
 <script setup lang="ts">
 import { DEFAULT_COLOR } from '~/constants/colors'
-import type {
-  CreateSpaceFailure,
-  CreateSpacePageDeps,
-} from '~/sections/spaces/create-space/CreateSpacePage.deps'
-import { matchResult } from '~/utils/actionResult'
-import { assertNever } from '~/utils/assertNever'
+import { SpaceIcon } from '~/constants/icons'
+import type { CreateSpacePageDeps } from '~/sections/spaces/create-space/CreateSpacePage.deps'
 
 const props = defineProps<{
   deps: CreateSpacePageDeps
   onCreated: (spaceKey: string) => Promise<void> | void
 }>()
-const state = reactive({
+
+const form = reactive({
   color: DEFAULT_COLOR,
-  error: null as null | string,
   key: '',
   name: '',
-  submitting: false,
 })
+
 useHead({ title: 'Create space' })
 
-const getFailureMessage = (failure: CreateSpaceFailure): string => {
-  switch (failure.type) {
-    case 'accessDenied':
-      return 'You do not have permission to create spaces.'
-    case 'invalidInput':
-      return failure.message
-    case 'organizationNotFound':
-      return 'The organization was not found.'
-    case 'temporarilyUnavailable':
-      return 'Could not create space. Try again.'
-    default:
-      return assertNever(failure)
-  }
-}
-
-async function submit(): Promise<void> {
-  if (state.submitting) {
-    return
-  }
-  state.submitting = true
-  state.error = null
-  try {
-    const result = await props.deps.create({
-      color: state.color,
-      key: state.key.trim(),
-      name: state.name.trim(),
-    })
-    await matchResult(result, {
-      err: (failure) => {
-        state.error = getFailureMessage(failure)
-      },
-      ok: ({ spaceKey }) => props.onCreated(spaceKey),
-    })
-  } finally {
-    state.submitting = false
-  }
-}
+const {
+  execute: submit,
+  message,
+  pending,
+} = useAction(props.deps.create, {
+  onSuccess: (space) => props.onCreated(space.spaceKey),
+})
 </script>

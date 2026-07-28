@@ -1,28 +1,15 @@
-import type { Result } from '~/utils/actionResult'
+import type { ActionResult } from '#infrastructure/api/apiResult'
+import type { QueryResult } from '#infrastructure/api/apiResult'
 
-export type OrganizationPickerItem = {
-  color: string
-  description: string
-  id: string
-  initial: string
-  key: string
-  name: string
-}
+import type { OrganizationPickerItem } from './OrganizationPickerPage.types'
 
-export type ViewOrganizationPickerFailure =
-  | { type: 'accessDenied' }
-  | { type: 'temporarilyUnavailable' }
+export type SelectOrganization = (input: { organizationId: string }) => Promise<ActionResult<true>>
 
-export type SelectOrganizationFailure =
-  | { type: 'accessDenied' }
-  | { type: 'organizationNotFound' }
-  | { type: 'temporarilyUnavailable' }
+export type ViewOrganizationPicker = (input: {
+  signal?: AbortSignal
+}) => Promise<QueryResult<OrganizationPickerItem[]>>
 
 export type OrganizationPickerPageDeps = {
-  select: (input: {
-    organizationId: string
-  }) => Promise<Result<null, SelectOrganizationFailure>>
-  view: (input: {
-    signal?: AbortSignal
-  }) => Promise<Result<OrganizationPickerItem[], ViewOrganizationPickerFailure>>
+  select: SelectOrganization
+  view: ViewOrganizationPicker
 }
