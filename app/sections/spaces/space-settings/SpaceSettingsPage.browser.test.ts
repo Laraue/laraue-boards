@@ -10,7 +10,6 @@ const pageData: SpaceSettingsPageData = {
   canDelete: true,
   canUpdate: true,
   color: '#4774d4',
-  id: '4',
   name: 'Product',
   spaceKey: 'product',
 }
@@ -65,9 +64,9 @@ it('submits edited settings and reports the trimmed key', async () => {
 
   expect(update).toHaveBeenCalledWith({
     color: '#4774d4',
-    key: 'product-team',
     name: 'Product team',
-    spaceId: '4',
+    newKey: 'product-team',
+    oldKey: 'product',
   })
   expect(onUpdated).toHaveBeenCalledWith('product-team')
 })
@@ -83,7 +82,7 @@ it('deletes the space after confirmation', async () => {
   await mount(createDeps({ remove }), onDeleted)
   await page.getByRole('button', { name: 'Delete space' }).click()
 
-  expect(remove).toHaveBeenCalledWith({ spaceId: '4' })
+  expect(remove).toHaveBeenCalledWith({ spaceKey: 'product' })
   expect(onDeleted).toHaveBeenCalledTimes(1)
 })
 

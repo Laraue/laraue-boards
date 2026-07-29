@@ -1,7 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import { mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
-import { createdAtDescending } from '~/sections/issues/shared/api/issueSorting'
 
 import type { BoardPageDeps } from '../BoardPage.deps'
 import { mapBoardPage } from './mapBoardPage'
@@ -30,7 +29,6 @@ export const createViewBoardPage =
               epicId: boardId,
               filters: attributeData.filters,
               searchString: search || undefined,
-              sorting: createdAtDescending,
               take: 25,
             },
             signal,

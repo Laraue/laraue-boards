@@ -1,29 +1,17 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeAction } from '#infrastructure/api/executeAction'
 import { executeQuery } from '#infrastructure/api/executeQuery'
-import { findSpaceByKey } from '~/sections/spaces/shared/findSpaceByKey'
 
 import type { BoardPageDeps } from '../BoardPage.deps'
 
 export const createMoveIssueToBacklog =
   (client: ApiClient): BoardPageDeps['moveIssueToBacklog'] =>
   async ({ boardId, issueKey, spaceKey }) => {
-    const spaces = await executeQuery({
-      map: (data) => data,
-      request: () => client.GET('/api/spaces'),
-    })
-    if (spaces.status === 'error') {
-      return spaces
-    }
-    const space = findSpaceByKey(spaces.data, spaceKey)
-    if (!space) {
-      return { code: 404, status: 'error' }
-    }
     const boards = await executeQuery({
       map: (data) => data,
       request: () =>
-        client.GET('/api/spaces/{id}/epics', {
-          params: { path: { id: Number(space.id) } },
+        client.GET('/api/spaces/{key}/epics', {
+          params: { path: { key: spaceKey } },
         }),
     })
     if (boards.status === 'error') {
@@ -56,8 +44,8 @@ export const createMoveIssueToBacklog =
     return executeAction({
       map: () => true,
       request: () =>
-        client.POST('/api/movement/issue/{key}/move-to-status/{statusId}', {
-          params: { path: { key: issueKey, statusId: Number(status.id) } },
+        client.POST('/api/issues/status', {
+          body: { issueKeys: [issueKey], statusId: Number(status.id) },
         }),
     })
   }

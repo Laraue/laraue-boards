@@ -10,19 +10,18 @@
     <div
       ref="element"
       class="column-issues"
-      :class="{
-        'column-issues--enabled': canMoveIssues,
-        'column-issues--over': isDropTarget,
-      }">
+      :class="{ 'column-issues--enabled': canMoveIssues }">
       <p
         v-if="viewModel.issues.length === 0"
         class="empty">
         No issues
       </p>
       <IssueCard
-        v-for="issue in viewModel.issues"
+        v-for="(issue, index) in viewModel.issues"
         :key="issue.issueKey"
+        :column-id="viewModel.id"
         :disabled="!canMoveIssues || movingIssueKeys.has(issue.issueKey)"
+        :index="index"
         :moving="movingIssueKeys.has(issue.issueKey)"
         :on-move-to-backlog="onMoveToBacklog"
         :on-open-issue="onOpenIssue"
@@ -47,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { CollisionPriority } from '@dnd-kit/abstract'
 import { useDroppable } from '@dnd-kit/vue'
 import { Loader } from '@lucide/vue'
 
@@ -69,11 +69,13 @@ const props = defineProps<{
 const element = useTemplateRef('element')
 const sentinel = useTemplateRef('sentinel')
 
-const { isDropTarget } = useDroppable({
+useDroppable({
   accept: 'item',
+  collisionPriority: CollisionPriority.Low,
   disabled: computed(() => !props.canMoveIssues),
   element,
   id: computed(() => props.viewModel.id),
+  type: 'column',
 })
 
 let observer: IntersectionObserver | undefined
@@ -114,19 +116,12 @@ onBeforeUnmount(() => observer?.disconnect())
 .column-issues {
   flex: 1;
   min-height: 200px;
-  outline: 2px dashed transparent;
-  outline-offset: var(--space-1);
-  overflow-y: auto;
-  transition: outline-color var(--duration-fast) var(--ease-standard);
+  overflow: hidden auto;
 }
 
-.column-issues--enabled :deep(.task) {
+.column-issues--enabled :deep(.task),
+.column-issues--enabled :deep(.task-link) {
   cursor: grab;
-}
-
-.column-issues--over {
-  border-radius: var(--radius-card);
-  outline-color: var(--color-accent);
 }
 
 .column-sentinel {

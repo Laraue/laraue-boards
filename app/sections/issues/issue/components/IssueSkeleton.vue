@@ -65,8 +65,8 @@
 }
 
 .skeleton-back {
-  height: var(--control-height-compact);
-  width: var(--control-height-compact);
+  height: var(--icon-btn-size);
+  width: var(--icon-btn-size);
 }
 
 .skeleton-title {
@@ -91,7 +91,7 @@
 
 .skeleton-main {
   display: grid;
-  grid-template-rows: minmax(376px, 1fr) auto;
+  grid-template-rows: minmax(200px, auto) auto;
   min-height: 0;
 }
 

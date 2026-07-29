@@ -5,16 +5,18 @@ import type { MoveBoards } from '../MoveBoardsDialog.deps'
 
 export const createMoveBoards =
   (client: ApiClient): MoveBoards =>
-  async ({ boardIds, destinationSpaceId }) => {
-    if (!boardIds.length || !destinationSpaceId) {
+  async ({ boardIds, destinationOrganizationId, destinationSpaceKey }) => {
+    if (!boardIds.length || !destinationOrganizationId || !destinationSpaceKey) {
       return { code: 400, status: 'error' }
     }
     const responses = await tryRequest(() =>
       Promise.all(
         boardIds.map((boardId) =>
-          client.POST('/api/movement/epic/{id}/to-space/{newSpaceId}', {
-            params: {
-              path: { id: Number(boardId), newSpaceId: Number(destinationSpaceId) },
+          client.POST('/api/movement/move-epic', {
+            body: {
+              newOrganizationId: Number(destinationOrganizationId),
+              newSpaceKey: destinationSpaceKey,
+              sourceEpicId: Number(boardId),
             },
           }),
         ),

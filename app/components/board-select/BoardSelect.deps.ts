@@ -4,7 +4,7 @@ import type { BoardSelectOption } from './BoardSelect.types'
 
 export type LoadBoards = (input: {
   signal?: AbortSignal
-  spaceId: string
+  spaceKey: string
 }) => Promise<QueryResult<BoardSelectOption[]>>
 
 export type BoardSelectDeps = {

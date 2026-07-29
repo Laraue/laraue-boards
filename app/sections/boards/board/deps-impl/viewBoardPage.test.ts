@@ -7,7 +7,7 @@ import { createViewBoardPage } from './viewBoardPage'
 test('loads the board, attributes, and initial issue columns', async () => {
   const { client, requests } = createTestApiClient((_request, path) => {
     if (path === '/api/organizations/attributes') {
-      return [{ color: '#111', id: 3, listValues: [], name: 'Priority', type: 0 }]
+      return [{ color: '#111', id: 3, listValues: [], name: 'Priority', type: 'Text' }]
     }
     if (path === '/api/epics/7') {
       return {
@@ -34,7 +34,6 @@ test('loads the board, attributes, and initial issue columns', async () => {
     epicId: '7',
     filters: { '3': { $type: 'string', searchString: 'urgent' } },
     searchString: 'bug',
-    sorting: { $type: 'property', direction: 1, property: 1 },
     take: 25,
   })
 })

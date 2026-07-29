@@ -9,10 +9,11 @@
       multiple
       type="file"
       @change="changeFiles" />
+    <strong class="section-label">Attachments</strong>
     <div class="issue-attachment-actions">
       <label
         :aria-disabled="disabled"
-        class="secondary issue-attachment-picker"
+        class="secondary small issue-attachment-picker"
         :class="{ 'issue-attachment-picker--disabled': disabled }"
         :for="inputId">
         <ImagePlus />
@@ -20,7 +21,7 @@
       </label>
       <button
         v-if="files.length || attachmentError"
-        class="secondary"
+        class="secondary small"
         :disabled="disabled"
         type="button"
         @click="clearFiles">
@@ -53,7 +54,7 @@
         <button
           v-if="onRemoveAttachment && !disabled"
           :aria-label="`Remove attachment ${index + 1}`"
-          class="icon-btn issue-attachment-remove"
+          class="icon-btn small issue-attachment-remove"
           type="button"
           @click="onRemoveAttachment(attachment.id)">
           <X />
@@ -77,7 +78,7 @@
         <button
           v-if="!disabled"
           :aria-label="`Remove ${preview.file.name}`"
-          class="icon-btn issue-attachment-remove"
+          class="icon-btn small issue-attachment-remove"
           type="button"
           @click="removeFile(index)">
           <X />
@@ -87,7 +88,7 @@
           aria-label="Uploading attachment"
           class="issue-attachment-uploading"
           role="status">
-          <LoaderCircle />
+          <Loader />
         </div>
       </div>
     </div>
@@ -97,7 +98,7 @@
         aria-label="Attachment preview"
         class="issue-attachment-lightbox"
         @click="closeLightboxFromBackdrop"
-        @close="activeAttachment = null">
+        @close="closeLightboxPreview">
         <button
           aria-label="Close attachment preview"
           class="icon-btn issue-attachment-lightbox-close"
@@ -108,14 +109,23 @@
         <img
           v-if="activeAttachment"
           :alt="activeAttachment.alt"
-          :src="activeAttachment.url" />
+          :src="activeAttachment.url"
+          @error="lightboxLoading = false"
+          @load="lightboxLoading = false" />
+        <div
+          v-if="lightboxLoading"
+          aria-label="Loading attachment preview"
+          class="issue-attachment-lightbox-loading"
+          role="status">
+          <Loader />
+        </div>
       </dialog>
     </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ImagePlus, LoaderCircle, X } from '@lucide/vue'
+import { ImagePlus, Loader, X } from '@lucide/vue'
 
 import { MAX_IMAGE_SIZE } from '~/constants/attachments'
 
@@ -135,6 +145,7 @@ const attachmentError = ref('')
 const inputId = useId()
 const inputEl = useTemplateRef('inputEl')
 const lightboxEl = useTemplateRef('lightboxEl')
+const lightboxLoading = ref(false)
 const pendingPreviews = ref<Array<{ file: File; url: string }>>([])
 const supportedImageTypes = new Set(['image/jpeg', 'image/png'])
 const visibleAttachments = computed(() =>
@@ -195,6 +206,7 @@ const revokePreviews = () => {
 }
 
 const openLightbox = async (url: string, alt: string) => {
+  lightboxLoading.value = true
   activeAttachment.value = { alt, url }
   await nextTick()
   lightboxEl.value?.showModal()
@@ -202,6 +214,11 @@ const openLightbox = async (url: string, alt: string) => {
 
 const closeLightbox = () => {
   lightboxEl.value?.close()
+}
+
+const closeLightboxPreview = () => {
+  activeAttachment.value = null
+  lightboxLoading.value = false
 }
 
 const closeLightboxFromBackdrop = (event: MouseEvent) => {
@@ -232,18 +249,19 @@ onBeforeUnmount(() => {
 <style scoped>
 .issue-attachments {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
   position: relative;
 }
 
 .issue-attachment-gallery {
+  --attachment-size: 64px;
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: repeat(auto-fill, 84px);
+  grid-auto-rows: var(--attachment-size);
+  grid-template-columns: repeat(auto-fill, var(--attachment-size));
 }
 
 .issue-attachment-preview {
-  aspect-ratio: 1;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
   overflow: hidden;
@@ -305,11 +323,6 @@ onBeforeUnmount(() => {
   z-index: 1;
 }
 
-.issue-attachment-remove svg {
-  height: 16px;
-  width: 16px;
-}
-
 .issue-attachment-input {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
@@ -343,11 +356,6 @@ onBeforeUnmount(() => {
   box-shadow: var(--shadow-focus);
 }
 
-.issue-attachment-picker svg {
-  height: 18px;
-  width: 18px;
-}
-
 .issue-attachment-paste-hint {
   align-self: center;
   font-size: var(--font-size-small);
@@ -359,8 +367,9 @@ onBeforeUnmount(() => {
 }
 
 .issue-attachment-lightbox {
-  background: #000000eb;
+  background: transparent;
   border: 0;
+  border-radius: 0;
   box-sizing: border-box;
   height: 100dvh;
   inset: 0;
@@ -369,15 +378,19 @@ onBeforeUnmount(() => {
   max-width: none;
   overflow: hidden;
   padding: var(--space-8);
+  transition: none;
   width: 100vw;
 }
 
 .issue-attachment-lightbox::backdrop {
-  background: transparent;
+  background: #000000bd;
+  opacity: 1;
+  transition: opacity var(--duration-base) var(--ease-standard);
 }
 
 .issue-attachment-lightbox[open] {
   display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
 }
 
@@ -389,10 +402,38 @@ onBeforeUnmount(() => {
   width: auto;
 }
 
+.issue-attachment-lightbox-loading {
+  align-items: center;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  pointer-events: none;
+  position: fixed;
+}
+
+.issue-attachment-lightbox-loading svg {
+  animation: var(--animation-spin);
+  color: var(--color-accent);
+  height: 32px;
+  width: 32px;
+}
+
 .issue-attachment-lightbox-close {
   position: fixed;
   right: var(--space-4);
   top: var(--space-4);
   z-index: 1;
+}
+
+@starting-style {
+  .issue-attachment-lightbox::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .issue-attachment-lightbox::backdrop {
+    transition: none;
+  }
 }
 </style>

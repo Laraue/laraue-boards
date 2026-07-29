@@ -61,10 +61,11 @@
         </p>
 
         <DragDropProvider
-          :plugins="defaultPreset.plugins"
+          :plugins="plugins"
           :sensors="sensors"
           @drag-end="handleDragEnd"
-          @drag-start="state.dragging = true">
+          @drag-over="handleDragOver"
+          @drag-start="handleDragStart">
           <div
             id="board-scroll-area"
             ref="board"
@@ -137,9 +138,10 @@ const mergeRefreshedBoard = (
 </script>
 
 <script setup lang="ts">
-import { defaultPreset, PointerActivationConstraints } from '@dnd-kit/dom'
+import { defaultPreset, Feedback, PointerActivationConstraints } from '@dnd-kit/dom'
+import { move } from '@dnd-kit/helpers'
 import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
-import type { DragEndEvent } from '@dnd-kit/vue'
+import type { DragEndEvent, DragOverEvent } from '@dnd-kit/vue'
 import { Plus, Settings } from '@lucide/vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
@@ -176,6 +178,11 @@ const IssueDialog = defineAsyncComponent(
 )
 const organizationRoutes = useOrganizationRoutes()
 const board = useTemplateRef('board')
+// 'clone' leaves a visible copy of the card in the slot it would drop into, where the default
+// feedback leaves a `visibility: hidden` one and so an empty gap.
+const plugins = defaultPreset.plugins.map((plugin) =>
+  plugin === Feedback ? Feedback.configure({ feedback: 'clone' }) : plugin,
+)
 const sensors = [
   PointerSensor.configure({
     activationConstraints: (event) =>
@@ -196,6 +203,7 @@ const attributeQuery = computed(() => readIssueAttributeQuery(props.routeQuery))
 const state = reactive({
   closingIssueDialog: false,
   dragging: false,
+  dragSnapshot: null as BoardPageViewModel | null,
   filtering: false,
   loadingColumnIds: new Set<string>(),
   loadMoreErrors: new Map<string, string>(),
@@ -425,31 +433,40 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
   viewModel.value = mergeRefreshedBoard(latest, refreshedColumns, refreshedSummary)
 }
 
-const moveIssue = async (input: { issueKey: string; statusId: string }) => {
+const moveIssue = async (input: {
+  index: number
+  issueKey: string
+  revert: BoardPageViewModel
+  statusId: string
+  updateStatus: boolean
+}) => {
   const current = viewModel.value
-  const sourceColumn = current?.columns.find((column) =>
-    column.issues.some((issue) => issue.issueKey === input.issueKey),
-  )
-  if (
-    !current ||
-    !sourceColumn ||
-    sourceColumn.id === input.statusId ||
-    state.movingIssueKeys.has(input.issueKey)
-  ) {
+  const targetColumn = current?.columns.find((column) => column.id === input.statusId)
+  if (!current || !targetColumn || state.movingIssueKeys.has(input.issueKey)) {
     return
   }
+
+  const siblings = targetColumn.issues.filter((issue) => issue.issueKey !== input.issueKey)
+  const previous = input.index > 0 ? siblings[input.index - 1] : undefined
+  const next = input.index === 0 ? siblings[0] : undefined
+  const target = previous
+    ? { issueKey: previous.issueKey, position: 'After' as const }
+    : next
+      ? { issueKey: next.issueKey, position: 'Before' as const }
+      : undefined
 
   scheduleSearch.cancel()
   state.filtering = false
   state.moveError = null
   state.movingIssueKeys.add(input.issueKey)
-  viewModel.value = moveIssueInBoard(current, input.issueKey, input.statusId)
-  const result = await executeMoveBoardIssue(input)
+  const result = await executeMoveBoardIssue({
+    issueKey: input.issueKey,
+    statusId: input.statusId,
+    target,
+    updateStatus: input.updateStatus,
+  })
   if (result === undefined) {
-    const optimistic = viewModel.value
-    if (optimistic) {
-      viewModel.value = moveIssueInBoard(optimistic, input.issueKey, sourceColumn.id)
-    }
+    viewModel.value = input.revert
     state.moveError = moveBoardIssueMessage.value ?? getErrorMessage(0)
   }
   state.movingIssueKeys.delete(input.issueKey)
@@ -553,20 +570,29 @@ const moveIssueInBoard = (
   boardData: BoardPageViewModel,
   issueKey: string,
   statusId: string,
+  index?: number,
 ): BoardPageViewModel => {
   const source = boardData.columns.find((column) =>
     column.issues.some((issue) => issue.issueKey === issueKey),
   )
   const target = boardData.columns.find((column) => column.id === statusId)
   const issue = source?.issues.find((item) => item.issueKey === issueKey)
-  if (!source || !target || !issue || source === target) {
+  if (!source || !target || !issue) {
     return boardData
   }
+
+  const targetIssues = target.issues.filter((item) => item !== issue)
+  const targetIndex = Math.min(index ?? targetIssues.length, targetIssues.length)
+  const orderedTargetIssues = [
+    ...targetIssues.slice(0, targetIndex),
+    issue,
+    ...targetIssues.slice(targetIndex),
+  ]
 
   return {
     ...boardData,
     columns: boardData.columns.map((column) => {
-      if (column === source) {
+      if (column === source && column !== target) {
         return {
           ...column,
           issueCount: column.issueCount - 1,
@@ -576,8 +602,8 @@ const moveIssueInBoard = (
       if (column === target) {
         return {
           ...column,
-          issueCount: column.issueCount + 1,
-          issues: [...column.issues, issue],
+          issueCount: source === target ? column.issueCount : column.issueCount + 1,
+          issues: orderedTargetIssues,
         }
       }
       return column
@@ -611,25 +637,110 @@ const updateIssueInBoard = (
   }
 }
 
-const handleDragEnd = (event: DragEndEvent) => {
-  state.dragging = false
-  if (event.canceled) {
+const handleDragStart = () => {
+  state.dragging = true
+  state.dragSnapshot = viewModel.value ?? null
+}
+
+// Reordering our own state on every drag over keeps it in step with the reordering @dnd-kit
+// performs on the DOM; leaving it behind makes the two fight each other on the next render.
+const handleDragOver = (event: DragOverEvent) => {
+  const current = viewModel.value
+  if (!current) {
     return
   }
 
   const issueKey = event.operation.source?.id
-  const statusId = event.operation.target?.id
-  if (typeof issueKey !== 'string' || typeof statusId !== 'string') {
+  const before: Record<string, string[]> = Object.fromEntries(
+    current.columns.map((column) => [column.id, column.issues.map((issue) => issue.issueKey)]),
+  )
+  // `move` resolves a column target against the column midpoint, which lands the issue on top of a
+  // tall column. The column is only ever the target below the cards, which means the end.
+  const after =
+    event.operation.target?.type === 'column' && typeof issueKey === 'string'
+      ? appendToColumn(before, String(event.operation.target.id), issueKey)
+      : move(before, event)
+  if (after === before) {
     return
   }
 
+  const issues = new Map(
+    current.columns.flatMap((column) => column.issues.map((issue) => [issue.issueKey, issue])),
+  )
+  viewModel.value = {
+    ...current,
+    columns: current.columns.map((column) => {
+      const keys = after[column.id]
+      if (!keys || keys.length === column.issues.length) {
+        return keys && keys.some((key, index) => key !== column.issues[index]?.issueKey)
+          ? { ...column, issues: keys.map((key) => issues.get(key)!) }
+          : column
+      }
+      return {
+        ...column,
+        issueCount: column.issueCount + keys.length - column.issues.length,
+        issues: keys.map((key) => issues.get(key)!),
+      }
+    }),
+  }
+}
+
+const appendToColumn = (
+  columns: Record<string, string[]>,
+  columnId: string,
+  issueKey: string,
+): Record<string, string[]> => {
+  if (columns[columnId]?.at(-1) === issueKey) {
+    return columns
+  }
+  return Object.fromEntries(
+    Object.entries(columns).map(([id, keys]) => {
+      const without = keys.filter((key) => key !== issueKey)
+      return [id, id === columnId ? [...without, issueKey] : without]
+    }),
+  )
+}
+
+const handleDragEnd = (event: DragEndEvent) => {
+  state.dragging = false
+  const snapshot = state.dragSnapshot
+  state.dragSnapshot = null
   const current = viewModel.value
-  const sourceColumn = current?.columns.find((column) =>
+  const issueKey = event.operation.source?.id
+  if (!snapshot || !current || typeof issueKey !== 'string') {
+    return
+  }
+  // @dnd-kit only reverts what it did to the DOM, the optimistic reorder is ours to undo.
+  if (event.canceled) {
+    viewModel.value = snapshot
+    return
+  }
+
+  const sourceColumn = snapshot.columns.find((column) =>
     column.issues.some((issue) => issue.issueKey === issueKey),
   )
-  if (sourceColumn && sourceColumn.id !== statusId) {
-    void moveIssue({ issueKey, statusId })
+  const targetColumn = current.columns.find((column) =>
+    column.issues.some((issue) => issue.issueKey === issueKey),
+  )
+  if (!sourceColumn || !targetColumn) {
+    return
   }
+
+  const index = targetColumn.issues.findIndex((issue) => issue.issueKey === issueKey)
+  if (
+    targetColumn.id === sourceColumn.id &&
+    index === sourceColumn.issues.findIndex((issue) => issue.issueKey === issueKey)
+  ) {
+    return
+  }
+
+  void moveIssue({
+    index,
+    issueKey,
+    revert: snapshot,
+    statusId: targetColumn.id,
+    updateStatus: targetColumn.id !== sourceColumn.id,
+  })
 }
 
 const resolveIssueDialogCloseTarget = (input: {

@@ -9,7 +9,7 @@ import CreateBoardIssuePage from './CreateBoardIssuePage.vue'
 const pageData: CreateBoardIssuePageData = {
   attributes: [],
   boardName: 'Roadmap',
-  spaceId: '4',
+  spaceKey: 'product-AB12',
 }
 
 const createDeps = (

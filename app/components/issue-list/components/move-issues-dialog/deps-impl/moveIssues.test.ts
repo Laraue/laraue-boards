@@ -19,7 +19,7 @@ test('rejects moving issues without a selection or a destination', async () => {
 })
 
 test('moves every selected issue', async () => {
-  const { client, paths } = createTestApiClient(() => new Response(null, { status: 204 }))
+  const { client, paths, requests } = createTestApiClient(() => new Response(null, { status: 204 }))
 
   assert.deepEqual(
     await createMoveIssues(client)({ issueKeys: ['ISS-1', 'ISS-2'], statusId: '3' }),
@@ -28,10 +28,8 @@ test('moves every selected issue', async () => {
       status: 'success',
     },
   )
-  assert.deepEqual(paths(), [
-    '/api/movement/issue/ISS-1/move-to-status/3',
-    '/api/movement/issue/ISS-2/move-to-status/3',
-  ])
+  assert.deepEqual(paths(), ['/api/issues/status'])
+  assert.deepEqual(await requests[0]!.json(), { issueKeys: ['ISS-1', 'ISS-2'], statusId: 3 })
 })
 
 test('reports the status of the first failed move', async () => {

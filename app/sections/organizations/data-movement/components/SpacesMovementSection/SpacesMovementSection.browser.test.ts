@@ -10,9 +10,9 @@ import type { SpacesMovementSectionDeps } from './SpacesMovementSection.deps'
 import SpacesMovementSection from './SpacesMovementSection.vue'
 
 const spaces: DataMovementPageData['spaces'] = [
-  { boards: [], color: '#aaa', id: '9', isDefault: true, name: 'Backlog' },
-  { boards: [], color: '#000', id: '10', isDefault: false, name: 'Development' },
-  { boards: [], color: '#fff', id: '11', isDefault: false, name: 'Product' },
+  { boards: [], color: '#aaa', isDefault: true, key: '9', name: 'Backlog' },
+  { boards: [], color: '#000', isDefault: false, key: '10', name: 'Development' },
+  { boards: [], color: '#fff', isDefault: false, key: '11', name: 'Product' },
 ]
 
 const createDeps = (overrides: Partial<MoveSpacesDialogDeps> = {}): SpacesMovementSectionDeps => ({
@@ -71,7 +71,7 @@ it('hides the default space because it cannot be moved', async () => {
 
 it('shows an empty state when only the default space exists', async () => {
   await mount(createDeps(), vi.fn<() => void>(), [
-    { boards: [], color: '#aaa', id: '9', isDefault: true, name: 'Backlog' },
+    { boards: [], color: '#aaa', isDefault: true, key: '9', name: 'Backlog' },
   ])
 
   await expect.element(page.getByText('No movable spaces.')).toBeInTheDocument()
@@ -91,7 +91,7 @@ it('moves a single space through its row action without touching the selection',
   await chooseOrganization()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  expect(moveSpaces).toHaveBeenCalledWith({ destinationOrganizationId: '2', spaceIds: ['10'] })
+  expect(moveSpaces).toHaveBeenCalledWith({ destinationOrganizationId: '2', spaceKeys: ['10'] })
   expect(onMoved).toHaveBeenCalledTimes(1)
 })
 
@@ -111,7 +111,7 @@ it('moves every selected space through the bulk action', async () => {
 
   expect(moveSpaces).toHaveBeenCalledWith({
     destinationOrganizationId: '2',
-    spaceIds: ['10', '11'],
+    spaceKeys: ['10', '11'],
   })
 })
 

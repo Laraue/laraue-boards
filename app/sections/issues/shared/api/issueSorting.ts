@@ -4,6 +4,6 @@ type Schemas = components['schemas']
 
 export const createdAtDescending = {
   $type: 'property' as const,
-  direction: 1,
-  property: 1,
+  direction: 'Descending',
+  property: 'CreatedAt',
 } satisfies Schemas['IssueSorting']

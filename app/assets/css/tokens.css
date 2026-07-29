@@ -38,7 +38,9 @@
   --radius-pill: 999px;
 
   --control-height: 40px;
-  --control-height-compact: 32px;
+  --control-height-small: 28px;
+  --icon-btn-size: 32px;
+  --icon-btn-size-small: 24px;
   --icon-size: 16px;
   --control-icon-padding: calc(var(--icon-size) + var(--space-5));
 
@@ -52,7 +54,7 @@
   --font-weight-extrabold: 800;
 
   --form-page-max-width: 620px;
-  --workspace-max-width: 1920px;
+  --workspace-max-width: 1440px;
 
   --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-accent) 16%, transparent);
   --shadow-card: 0 1px 2px #1018280d;

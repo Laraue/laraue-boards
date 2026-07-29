@@ -8,7 +8,7 @@
       <label :for="`${idPrefix}-space`">Space</label>
       <SpaceSelect
         :id="`${idPrefix}-space`"
-        v-model="state.spaceId"
+        v-model="state.spaceKey"
         :deps="deps.spaceSelect"
         :disabled="moving"
         required />
@@ -20,7 +20,7 @@
         :disabled="moving"
         :excluded-value="excludedBoardId"
         required
-        :space-id="state.spaceId" />
+        :space-key="state.spaceKey" />
       <label :for="`${idPrefix}-status`">Column</label>
       <StatusSelect
         :id="`${idPrefix}-status`"
@@ -73,7 +73,7 @@ const dialog = useTemplateRef('dialog')
 const state = reactive({
   boardId: '',
   issueKeys: [] as string[],
-  spaceId: '',
+  spaceKey: '',
   statusId: '',
 })
 
@@ -90,7 +90,7 @@ const {
 
 const open = (issueKeys: string[]) => {
   message.value = undefined
-  Object.assign(state, { boardId: '', issueKeys, spaceId: '', statusId: '' })
+  Object.assign(state, { boardId: '', issueKeys, spaceKey: '', statusId: '' })
   dialog.value?.showModal()
 }
 
@@ -99,7 +99,7 @@ const move = () => {
 }
 
 watch(
-  () => [state.spaceId, state.boardId, state.statusId],
+  () => [state.spaceKey, state.boardId, state.statusId],
   () => {
     message.value = undefined
   },

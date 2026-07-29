@@ -1,5 +1,6 @@
 import { assert, test } from 'vitest'
 
+import type { components } from '#infrastructure/api/generated'
 import { COLORS } from '~/constants/colors'
 import {
   mapIssueAttributes,
@@ -8,8 +9,8 @@ import {
   mapRawIssueFilters,
 } from '~/sections/issues/shared/api/issueAttributes'
 
-const attributeDtos = [
-  { color: COLORS.gray, id: 1, listValues: [], name: 'Reference', type: 0 },
+const attributeDtos: components['schemas']['AttributeDto'][] = [
+  { color: COLORS.gray, id: 1, listValues: [], name: 'Reference', type: 'Text' },
   {
     color: COLORS.amber,
     id: 2,
@@ -18,7 +19,7 @@ const attributeDtos = [
       { id: 4, name: 'Low' },
     ],
     name: 'Priority',
-    type: 1,
+    type: 'List',
   },
 ]
 

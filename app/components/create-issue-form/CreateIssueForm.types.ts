@@ -14,7 +14,7 @@ export type CreateIssueFormInput = {
 export type CreateIssueFormBoard = {
   id: string
   name: string
-  spaceId: string
+  spaceKey: string
 }
 
 export type CreateIssueFormProps = {

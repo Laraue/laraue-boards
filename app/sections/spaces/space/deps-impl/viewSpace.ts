@@ -46,15 +46,14 @@ export const createViewSpace =
     if (!space) {
       return { code: 404, status: 'error' }
     }
-    const spaceId = String(space.id)
     const responses = await tryRequest(() =>
       Promise.all([
-        client.GET('/api/spaces/{id}', {
-          params: { path: { id: Number(spaceId) } },
+        client.GET('/api/spaces/{key}', {
+          params: { path: { key: spaceKey } },
           signal,
         }),
         client.GET('/api/issues/summary', {
-          params: { query: { SpaceId: Number(spaceId) } },
+          params: { query: { SpaceKey: spaceKey } },
           signal,
         }),
       ]),
@@ -69,5 +68,5 @@ export const createViewSpace =
     if ('error' in boards) {
       return { code: boards.response.status, status: 'error' }
     }
-    return { data: mapPage(spaceId, space, details.data, boards.data), status: 'success' }
+    return { data: mapPage(spaceKey, space, details.data, boards.data), status: 'success' }
   }

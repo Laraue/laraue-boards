@@ -17,13 +17,20 @@
     </span>
     <h2>{{ errorTitle }}</h2>
     <p class="muted">{{ message }}</p>
-    <button
-      v-if="onRetry"
-      class="secondary"
-      type="button"
-      @click="onRetry">
-      {{ retryText }}
-    </button>
+    <div class="page-state-actions">
+      <button
+        v-if="onRetry"
+        class="primary"
+        type="button"
+        @click="onRetry">
+        {{ retryText }}
+      </button>
+      <NuxtLink
+        class="secondary"
+        to="/">
+        Go home
+      </NuxtLink>
+    </div>
   </section>
   <slot
     v-else
@@ -74,6 +81,11 @@ defineSlots<{
   margin: 0;
 }
 
+.page-state-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
 .icon-badge {
   border-radius: var(--radius-card);
   display: grid;
@@ -99,5 +111,12 @@ defineSlots<{
 .icon-badge.error {
   background: color-mix(in srgb, var(--color-danger) 12%, transparent);
   color: var(--color-danger);
+}
+
+@media (max-width: 480px) {
+  .page-state-actions {
+    flex-direction: column;
+    width: 100%;
+  }
 }
 </style>

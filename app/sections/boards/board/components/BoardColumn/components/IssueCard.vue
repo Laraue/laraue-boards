@@ -2,7 +2,7 @@
   <article
     ref="element"
     class="task"
-    :class="{ 'task--ghost': isDragging, 'task--moving': moving }">
+    :class="{ 'task--moving': moving }">
     <NuxtLink
       v-slot="{ href }"
       custom
@@ -56,13 +56,15 @@ const timeFormatter = new Intl.DateTimeFormat('en-US', {
 </script>
 
 <script setup lang="ts">
-import { useDraggable } from '@dnd-kit/vue'
+import { useSortable } from '@dnd-kit/vue/sortable'
 import { Loader, Undo2 } from '@lucide/vue'
 
 import type { IssueCardViewModel } from './IssueCard.types'
 
 const props = defineProps<{
+  columnId: string
   disabled: boolean
+  index: number
   moving: boolean
   onMoveToBacklog: (issueKey: string) => void
   onOpenIssue: (issueKey: string) => void
@@ -72,10 +74,13 @@ const organizationRoutes = useOrganizationRoutes()
 
 const element = useTemplateRef('element')
 
-const { isDragging } = useDraggable({
+useSortable({
+  accept: 'item',
   disabled: computed(() => props.disabled),
   element,
+  group: computed(() => props.columnId),
   id: computed(() => props.viewModel.issueKey),
+  index: computed(() => props.index),
   type: 'item',
 })
 
@@ -92,7 +97,6 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   cursor: pointer;
   display: block;
   margin-bottom: var(--space-2);
-  padding: var(--space-4);
   position: relative;
   text-decoration: none;
   -webkit-touch-callout: none;
@@ -105,6 +109,7 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
 .task-link {
   color: inherit;
   display: block;
+  padding: var(--space-4);
   text-decoration: none;
 }
 
@@ -117,12 +122,15 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   translate: 0 var(--press-offset);
 }
 
-.task--ghost {
+/* The placeholder @dnd-kit clones into the slot the card would drop into. */
+.task[data-dnd-placeholder] {
   border-style: dashed;
-  opacity: 0.4;
+  box-shadow: none;
+  opacity: 0.5;
 }
 
-.task--moving {
+/* Not while the card is still flying to its slot: that element is the one being dragged. */
+.task--moving:not([data-dnd-dropping]) {
   cursor: default;
   opacity: 0.6;
 }
@@ -144,7 +152,10 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   animation: spin 0.8s linear infinite;
   color: var(--color-accent);
   height: 16px;
-  margin-left: auto;
+  margin: 2px;
+  position: absolute;
+  right: var(--space-3);
+  top: var(--space-3);
   width: 16px;
 }
 

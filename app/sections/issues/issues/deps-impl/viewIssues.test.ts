@@ -10,7 +10,7 @@ test('loads the initial issues page data', async () => {
       return []
     }
     if (path === '/api/spaces') {
-      return [{ id: 2, name: 'Product' }]
+      return [{ key: 'product', name: 'Product' }]
     }
     return { data: [], hasNextPage: false }
   })
@@ -22,7 +22,7 @@ test('loads the initial issues page data', async () => {
         attributes: [],
         hasNextPage: false,
         issues: [],
-        spaces: [{ label: 'Product', value: '2' }],
+        spaces: [{ label: 'Product', value: 'product' }],
       },
       status: 'success',
     },

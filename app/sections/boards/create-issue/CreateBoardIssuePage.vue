@@ -19,7 +19,7 @@
         </div>
         <CreateIssueForm
           :attributes="page.attributes"
-          :board="{ id: boardId, name: page.boardName, spaceId: page.spaceId }"
+          :board="{ id: boardId, name: page.boardName, spaceKey: page.spaceKey }"
           :deps="deps.form"
           :on-created="onCreated" />
       </section>

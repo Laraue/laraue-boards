@@ -43,7 +43,7 @@
         <div class="nav-title">Spaces</div>
         <div
           v-for="space in viewModel.spaces"
-          :key="space.id"
+          :key="space.key"
           class="space-group">
           <NuxtLink
             :class="{ active: spaceActive(space) }"
@@ -454,7 +454,7 @@ main :deep(.page-load-state) {
   }
 
   main :deep(.page-heading) {
-    padding-left: calc(var(--control-height-compact) + var(--space-2));
+    padding-left: calc(var(--icon-btn-size) + var(--space-2));
   }
 
   .mobile-menu-button {

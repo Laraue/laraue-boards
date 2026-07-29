@@ -41,7 +41,7 @@
       <button
         v-if="canMove"
         aria-label="Move to board"
-        class="icon-btn row-move"
+        class="icon-btn small row-move"
         title="Move to board"
         type="button"
         @click.stop.prevent="props.onMove">
@@ -131,10 +131,10 @@ const props = defineProps<{
   cursor: pointer;
   display: inline-flex;
   flex-shrink: 0;
-  height: var(--control-height-compact);
+  height: var(--icon-btn-size);
   justify-content: center;
   margin: -9px;
-  width: var(--control-height-compact);
+  width: var(--icon-btn-size);
 }
 
 .row-move,

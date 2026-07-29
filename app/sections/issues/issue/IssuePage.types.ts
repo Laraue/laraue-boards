@@ -1,6 +1,8 @@
 import type { IssueAttachmentViewModel } from '~/components/issue-attachments/IssueAttachments.types'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 
+import type { IssueCommentViewModel } from './components/issue-comments/IssueComments.types'
+
 type IssuePageAttributeViewModel = IssueAttributeField & {
   value: string
 }
@@ -38,6 +40,7 @@ export type IssuePageViewModel = {
   boardId: string
   boardLabel: string
   canEdit: boolean
+  comments: IssueCommentViewModel[]
   content: string
   createdAt: string
   issueKey: string

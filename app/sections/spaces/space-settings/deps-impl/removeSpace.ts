@@ -5,9 +5,8 @@ import type { RemoveSpace } from '../SpaceSettingsPage.deps'
 
 export const createRemoveSpace =
   (client: ApiClient): RemoveSpace =>
-  ({ spaceId }) =>
+  ({ spaceKey }) =>
     executeAction({
       map: () => true,
-      request: () =>
-        client.DELETE('/api/spaces/{id}', { params: { path: { id: Number(spaceId) } } }),
+      request: () => client.DELETE('/api/spaces/{key}', { params: { path: { key: spaceKey } } }),
     })

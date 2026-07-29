@@ -10,7 +10,7 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 const mount = async (deps: BoardSelectDeps, props: Record<string, unknown> = {}) => {
   currentWrapper = await mountSuspended(BoardSelect, {
     attachTo: document.body,
-    props: { 'aria-label': 'Board', deps, modelValue: '', spaceId: '7', ...props },
+    props: { 'aria-label': 'Board', deps, modelValue: '', spaceKey: 'product', ...props },
   })
 }
 

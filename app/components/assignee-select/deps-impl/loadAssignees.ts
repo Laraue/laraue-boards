@@ -5,7 +5,7 @@ import type { LoadAssignees } from '../AssigneeSelect.deps'
 
 export const createLoadAssignees =
   (client: ApiClient): LoadAssignees =>
-  ({ signal, spaceId }) =>
+  ({ signal, spaceKey }) =>
     executeQuery({
       map: (members) =>
         members?.map((member) => ({
@@ -15,8 +15,8 @@ export const createLoadAssignees =
           value: member.userId,
         })),
       request: () =>
-        client.GET('/api/spaces/{id}/members', {
-          params: { path: { id: Number(spaceId) } },
+        client.GET('/api/spaces/{key}/members', {
+          params: { path: { key: spaceKey } },
           signal,
         }),
     })

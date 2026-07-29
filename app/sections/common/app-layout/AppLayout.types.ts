@@ -12,7 +12,6 @@ export type AppLayoutData = {
   }
   spaces: Array<{
     color: string
-    id: string
     key: string
     name: string
   }>

@@ -17,8 +17,8 @@ const spaces: DataMovementPageData['spaces'] = [
       { color: '#0f0', id: '22', name: 'Support' },
     ],
     color: '#000',
-    id: '10',
     isDefault: false,
+    key: '10',
     name: 'Development',
   },
 ]
@@ -84,7 +84,7 @@ afterEach(async () => {
 
 it('shows an empty state when no space has boards', async () => {
   await mount(createDeps(), vi.fn<() => void>(), [
-    { boards: [], color: '#000', id: '10', isDefault: false, name: 'Development' },
+    { boards: [], color: '#000', isDefault: false, key: '10', name: 'Development' },
   ])
 
   await expect.element(page.getByText('No movable boards.')).toBeInTheDocument()
@@ -105,7 +105,11 @@ it('moves a single board through its row action without touching the selection',
   await chooseSpace()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  expect(moveBoards).toHaveBeenCalledWith({ boardIds: ['21'], destinationSpaceId: '10' })
+  expect(moveBoards).toHaveBeenCalledWith({
+    boardIds: ['21'],
+    destinationOrganizationId: '1',
+    destinationSpaceKey: '10',
+  })
   expect(onMoved).toHaveBeenCalledTimes(1)
 })
 
@@ -123,7 +127,11 @@ it('moves every selected board through the bulk action', async () => {
   await chooseSpace()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  expect(moveBoards).toHaveBeenCalledWith({ boardIds: ['21', '22'], destinationSpaceId: '10' })
+  expect(moveBoards).toHaveBeenCalledWith({
+    boardIds: ['21', '22'],
+    destinationOrganizationId: '1',
+    destinationSpaceKey: '10',
+  })
 })
 
 it('drops the selection when it is cleared', async () => {

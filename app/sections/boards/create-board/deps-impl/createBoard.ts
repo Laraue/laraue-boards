@@ -1,26 +1,15 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { getInvalidInputError } from '#infrastructure/api/getInvalidInputError'
 import { tryRequest } from '#infrastructure/api/tryRequest'
-import { findSpaceByKey } from '~/sections/spaces/shared/findSpaceByKey'
 
 import type { CreateBoard } from '../CreateBoardPage.deps'
 
 export const createCreateBoard =
   (client: ApiClient): CreateBoard =>
   async (input) => {
-    const spaces = await tryRequest(() => client.GET('/api/spaces'))
-    if (!spaces || !('data' in spaces) || spaces.data === undefined) {
-      return { code: spaces && 'error' in spaces ? spaces.response.status : 0, status: 'error' }
-    }
-
-    const space = findSpaceByKey(spaces.data, input.spaceKey)
-    if (!space) {
-      return { code: 404, status: 'error' }
-    }
-
     const response = await tryRequest(() =>
       client.POST('/api/epics', {
-        body: { color: input.color, name: input.name, spaceId: space.id },
+        body: { color: input.color, name: input.name, spaceKey: input.spaceKey },
         parseAs: 'text',
       }),
     )

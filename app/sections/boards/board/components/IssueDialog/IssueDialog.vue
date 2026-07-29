@@ -135,7 +135,7 @@ watch(
 /* the close button floats over the content so it stays reachable while loading */
 .issue-dialog-content :deep(.page-heading),
 .issue-dialog-content :deep(.skeleton-header) {
-  padding-right: calc(var(--control-height-compact) + var(--space-2));
+  padding-right: calc(var(--icon-btn-size) + var(--space-2));
 }
 .issue-close {
   position: absolute;

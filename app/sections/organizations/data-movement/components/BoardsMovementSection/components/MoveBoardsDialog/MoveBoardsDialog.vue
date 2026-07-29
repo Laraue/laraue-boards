@@ -12,7 +12,7 @@
       <label for="movement-board-space">Space</label>
       <SpaceSelect
         id="movement-board-space"
-        v-model="state.spaceId"
+        v-model="state.spaceKey"
         :deps="deps.spaceSelect"
         :organization-id="state.organizationId"
         required />
@@ -31,7 +31,7 @@
         </button>
         <button
           class="primary"
-          :disabled="moving || !state.spaceId">
+          :disabled="moving || !state.spaceKey">
           {{ moving ? 'Moving…' : 'Move' }}
         </button>
       </div>
@@ -55,7 +55,7 @@ const props = defineProps<{
 
 const state = reactive({
   organizationId: props.currentOrganizationId,
-  spaceId: '',
+  spaceKey: '',
 })
 
 const dialog = useTemplateRef('dialog')
@@ -74,12 +74,16 @@ const {
 const open = () => {
   message.value = undefined
   state.organizationId = props.currentOrganizationId
-  state.spaceId = ''
+  state.spaceKey = ''
   dialog.value?.showModal()
 }
 
 const confirmMove = () => {
-  void moveBoards({ boardIds: props.ids, destinationSpaceId: state.spaceId })
+  void moveBoards({
+    boardIds: props.ids,
+    destinationOrganizationId: state.organizationId,
+    destinationSpaceKey: state.spaceKey,
+  })
 }
 
 defineExpose({ open })

@@ -1,4 +1,5 @@
 export type MoveBoardsInput = {
   boardIds: string[]
-  destinationSpaceId: string
+  destinationOrganizationId: string
+  destinationSpaceKey: string
 }

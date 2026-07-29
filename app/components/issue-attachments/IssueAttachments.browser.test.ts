@@ -32,6 +32,9 @@ it('opens and closes a preview of an existing attachment', async () => {
 
   await page.getByRole('button', { name: 'Open attachment 1' }).click()
   await expect.element(page.getByRole('dialog', { name: 'Attachment preview' })).toBeVisible()
+  await expect
+    .element(page.getByRole('status', { name: 'Loading attachment preview' }))
+    .toBeVisible()
   await page.getByRole('button', { name: 'Close attachment preview' }).click()
 
   await expect

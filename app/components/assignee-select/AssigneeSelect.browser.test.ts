@@ -7,10 +7,10 @@ import AssigneeSelect from './AssigneeSelect.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (deps: AssigneeSelectDeps, spaceId = '7') => {
+const mount = async (deps: AssigneeSelectDeps, spaceKey = 'product') => {
   currentWrapper = await mountSuspended(AssigneeSelect, {
     attachTo: document.body,
-    props: { 'aria-label': 'Assignee', deps, modelValue: '', spaceId },
+    props: { 'aria-label': 'Assignee', deps, modelValue: '', spaceKey },
   })
 }
 
@@ -45,7 +45,7 @@ it('clears the selected assignee when the space changes', async () => {
   await page.getByLabelText('Assignee').click()
   await page.getByLabelText('Assignee').selectOptions('9')
 
-  await currentWrapper!.setProps({ spaceId: '8' })
+  await currentWrapper!.setProps({ spaceKey: 'backlog' })
 
   await expect.element(page.getByLabelText('Assignee')).toHaveValue('')
 })

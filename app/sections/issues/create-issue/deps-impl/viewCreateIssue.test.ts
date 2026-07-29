@@ -6,7 +6,7 @@ import { createViewCreateIssue } from './viewCreateIssue'
 
 test('maps create issue page data', async () => {
   const { client } = createTestApiClient(() => [
-    { color: '#fff', id: 3, listValues: [], name: 'Note', type: 0 },
+    { color: '#fff', id: 3, listValues: [], name: 'Note', type: 'Text' },
   ])
 
   assert.deepEqual(await createViewCreateIssue(client)({}), {

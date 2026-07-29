@@ -17,7 +17,12 @@ export type BoardPageDeps = {
     statusId: string
     take: number
   }) => Promise<QueryResult<LoadMoreBoardIssuesResult>>
-  moveBoardIssue: (input: { issueKey: string; statusId: string }) => Promise<ActionResult<true>>
+  moveBoardIssue: (input: {
+    issueKey: string
+    statusId: string
+    target?: { issueKey: string; position: 'After' | 'Before' }
+    updateStatus: boolean
+  }) => Promise<ActionResult<true>>
   moveIssueToBacklog: (input: {
     boardId: string
     issueKey: string

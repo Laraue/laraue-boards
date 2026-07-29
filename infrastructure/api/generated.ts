@@ -555,7 +555,7 @@ export interface paths {
                 query?: {
                     "AuthData.OrganizationId"?: number | string;
                     "AuthData.UserId"?: string;
-                    SpaceId?: number | string;
+                    SpaceKey?: string;
                 };
                 header?: never;
                 path?: never;
@@ -584,7 +584,202 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/movement/space/{id}/to-organization/{organizationId}": {
+    "/api/issues/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: int64 */
+                        "AuthData.OrganizationId"?: number | string;
+                        /** Format: uuid */
+                        "AuthData.UserId"?: string;
+                        Text?: string;
+                        IssueKey?: string;
+                        Files?: components["schemas"]["IFormFile"][];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": number | string;
+                        "application/json": number | string;
+                        "text/json": number | string;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/issues/comments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: int64 */
+                        "AuthData.OrganizationId"?: number | string;
+                        /** Format: uuid */
+                        "AuthData.UserId"?: string;
+                        /** Format: int64 */
+                        CommentId?: number | string;
+                        Text?: string;
+                        RemoveAttachmentIds?: string[];
+                        AddFiles?: components["schemas"]["IFormFile"][];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/issues/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangesIssuesOrderRequest"];
+                    "text/json": components["schemas"]["ChangesIssuesOrderRequest"];
+                    "application/*+json": components["schemas"]["ChangesIssuesOrderRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/issues/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateIssuesStatusRequest"];
+                    "text/json": components["schemas"]["UpdateIssuesStatusRequest"];
+                    "application/*+json": components["schemas"]["UpdateIssuesStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/movement/space/{key}/to-organization/{organizationId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -598,7 +793,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: number;
+                    key: string;
                     organizationId: number;
                 };
                 cookie?: never;
@@ -620,7 +815,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/movement/space/{id}/epics-to-space/{newSpaceId}": {
+    "/api/movement/move-space-epics": {
         parameters: {
             query?: never;
             header?: never;
@@ -633,13 +828,16 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    id: number;
-                    newSpaceId: number;
-                };
+                path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MoveSpaceEpicsRequest"];
+                    "text/json": components["schemas"]["MoveSpaceEpicsRequest"];
+                    "application/*+json": components["schemas"]["MoveSpaceEpicsRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -656,7 +854,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/movement/epic/{id}/to-space/{newSpaceId}": {
+    "/api/movement/move-epic": {
         parameters: {
             query?: never;
             header?: never;
@@ -669,13 +867,16 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    id: number;
-                    newSpaceId: number;
-                };
+                path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MoveEpicRequest"];
+                    "text/json": components["schemas"]["MoveEpicRequest"];
+                    "application/*+json": components["schemas"]["MoveEpicRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -725,42 +926,6 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/movement/issue/{key}/move-to-status/{statusId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: string;
-                    statusId: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
         delete?: never;
         options?: never;
         head?: never;
@@ -1463,9 +1628,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": number | string;
-                        "application/json": number | string;
-                        "text/json": number | string;
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
                     };
                 };
             };
@@ -1476,7 +1641,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/spaces/{id}": {
+    "/api/spaces/{key}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1488,7 +1653,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: number;
+                    key: string;
                 };
                 cookie?: never;
             };
@@ -1512,7 +1677,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: number;
+                    key: string;
                 };
                 cookie?: never;
             };
@@ -1539,7 +1704,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: number;
+                    key: string;
                 };
                 cookie?: never;
             };
@@ -1559,7 +1724,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/spaces/{id}/epics": {
+    "/api/spaces/{key}/epics": {
         parameters: {
             query?: never;
             header?: never;
@@ -1571,7 +1736,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: number;
+                    key: string;
                 };
                 cookie?: never;
             };
@@ -1598,7 +1763,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/spaces/{id}/members": {
+    "/api/spaces/{key}/members": {
         parameters: {
             query?: never;
             header?: never;
@@ -1610,7 +1775,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: number;
+                    key: string;
                 };
                 cookie?: never;
             };
@@ -2042,7 +2207,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        AdminAccessLevel: number;
+        AdminAccessLevel: string;
         AttachmentData: {
             /** Format: uuid */
             id: string;
@@ -2052,10 +2217,11 @@ export interface components {
             originalFileId?: string;
             type?: components["schemas"]["AttachmentType"];
         };
-        AttachmentType: number;
+        /** @enum {unknown} */
+        AttachmentType: "Image" | "Video";
         AttributeDto: {
             /** Format: int64 */
-            id?: number | string;
+            id: number | string;
             name: string;
             color: string;
             type: components["schemas"]["AttributeType"];
@@ -2074,10 +2240,11 @@ export interface components {
         };
         AttributeListValueDto: {
             /** Format: int64 */
-            id?: number | string;
+            id: number | string;
             name: string;
         };
-        AttributeType: number;
+        /** @enum {unknown} */
+        AttributeType: "Text" | "List";
         AttributeValue: components["schemas"]["AttributeValueEnumAttributeValue"] | components["schemas"]["AttributeValueStringAttributeValue"];
         AttributeValueEnumAttributeValue: {
             /** @enum {string} */
@@ -2085,23 +2252,29 @@ export interface components {
             /** Format: int64 */
             valueId: number | string;
             /** Format: int64 */
-            attributeId?: number | string;
+            attributeId: number | string;
         };
         AttributeValueStringAttributeValue: {
             /** @enum {string} */
             $type?: "string";
             value: string;
             /** Format: int64 */
-            attributeId?: number | string;
+            attributeId: number | string;
         };
         AuthenticateViaStringInitDataRequest: {
             initData: string;
         };
         BatchResultOfIssueListDto: {
             /** Format: int64 */
-            offset?: number | string;
-            hasNext?: boolean;
+            offset: number | string;
+            hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
+        };
+        ChangesIssuesOrderRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKeys: string[];
+            targetKey: string;
+            targetType: components["schemas"]["OrderTargetType"];
         };
         ColumnIssues: {
             /** Format: int64 */
@@ -2116,17 +2289,28 @@ export interface components {
             /** Format: int32 */
             count: number | string;
         };
+        CommentDto: {
+            /** Format: int64 */
+            id: number | string;
+            text: string;
+            attachments: components["schemas"]["AttachmentData"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            canModify: boolean;
+            owner: components["schemas"]["UserDetails"];
+        };
         CreateAttributeRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             name: string;
             color: string;
-            type?: components["schemas"]["AttributeType"];
+            type: components["schemas"]["AttributeType"];
             listValues?: null | components["schemas"]["NewAttributeListValueDto"][];
         };
         CreateEpicRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
-            /** Format: int64 */
-            spaceId?: number | string;
+            spaceKey: string;
             name: string;
             color: string;
         };
@@ -2157,8 +2341,7 @@ export interface components {
             epicId: number | string;
         };
         DestinationSpace: {
-            /** Format: int64 */
-            id: number | string;
+            key: string;
             name: string;
             color: string;
         };
@@ -2217,7 +2400,8 @@ export interface components {
             touchedAt: string;
             isDefault: boolean;
         };
-        EpicSortOrder: number;
+        /** @enum {unknown} */
+        EpicSortOrder: "LastTouched" | "Alphabetical";
         EpicSummary: {
             /** Format: int64 */
             id: number | string;
@@ -2231,9 +2415,9 @@ export interface components {
         GetBoardRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            epicId?: number | string;
+            epicId: number | string;
             /** Format: int32 */
-            take?: number | string;
+            take: number | string;
             searchString?: null | string;
             filters?: {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
@@ -2252,7 +2436,7 @@ export interface components {
             /** Format: int32 */
             skip?: number | string;
             /** Format: int32 */
-            take?: number | string;
+            take: number | string;
         };
         GlobalAccessLevels: {
             canRead?: boolean;
@@ -2270,10 +2454,10 @@ export interface components {
         IFormFile: string;
         InitialBatchResultOfIssueListDto: {
             /** Format: int64 */
-            totalCount?: number | string;
+            totalCount: number | string;
             /** Format: int64 */
-            offset?: number | string;
-            hasNext?: boolean;
+            offset: number | string;
+            hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
         IssueAttributeListValueDto: {
@@ -2286,16 +2470,12 @@ export interface components {
             id: number | string;
             /** Format: uuid */
             assigneeId: string;
-            assignee: string;
-            assigneeInitial: string;
-            assigneeColor: string;
+            assignee: components["schemas"]["UserDetails"];
             /** Format: date-time */
             time: string;
             /** Format: date-time */
             updatedAt: string;
-            ownerDisplayName: null | string;
-            ownerInitials?: null | string;
-            ownerColor: string;
+            owner: components["schemas"]["UserDetails"];
             content: null | string;
             /** Format: int64 */
             epicId: number | string;
@@ -2305,14 +2485,14 @@ export interface components {
             statusId: number | string;
             statusName: null | string;
             statusColor: null | string;
-            /** Format: int64 */
-            spaceId: number | string;
+            spaceKey: string;
             spaceName: string;
             spaceColor: string;
             canEdit: boolean;
             key: string;
             attributeValues: components["schemas"]["DetailIssueAttributeDto"][];
             attachments: components["schemas"]["AttachmentData"][];
+            comments: components["schemas"]["CommentDto"][];
         };
         IssueListAttributeDto: {
             value: string;
@@ -2332,24 +2512,24 @@ export interface components {
             epicId: number | string;
             /** Format: int64 */
             statusId: number | string;
-            /** Format: int64 */
-            spaceId: number | string;
+            spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
         };
-        IssueProperty: number;
+        /** @enum {unknown} */
+        IssueProperty: "Content" | "CreatedAt" | "UpdatedAt";
         IssueSorting: components["schemas"]["IssueSortingByAttributeIssueSorting"] | components["schemas"]["IssueSortingByPropertyIssueSorting"];
         IssueSortingByAttributeIssueSorting: {
             /** @enum {string} */
             $type?: "attribute";
             /** Format: int64 */
-            attributeId?: number | string;
-            direction?: components["schemas"]["SortingDirection"];
+            attributeId: number | string;
+            direction: components["schemas"]["SortingDirection"];
         };
         IssueSortingByPropertyIssueSorting: {
             /** @enum {string} */
             $type?: "property";
-            property?: components["schemas"]["IssueProperty"];
-            direction?: components["schemas"]["SortingDirection"];
+            property: components["schemas"]["IssueProperty"];
+            direction: components["schemas"]["SortingDirection"];
         };
         LoginRequest: {
             /** Format: uuid */
@@ -2373,6 +2553,21 @@ export interface components {
             firstName?: null | string;
             lastName?: null | string;
         };
+        MoveEpicRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            /** Format: int64 */
+            sourceEpicId?: number | string;
+            newSpaceKey: string;
+            /** Format: int64 */
+            newOrganizationId: number | string;
+        };
+        MoveSpaceEpicsRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            sourceSpaceKey: string;
+            newSpaceKey: string;
+            /** Format: int64 */
+            newOrganizationId: number | string;
+        };
         NameAndColor: {
             name: string;
             color: string;
@@ -2380,6 +2575,8 @@ export interface components {
         NewAttributeListValueDto: {
             name: string;
         };
+        /** @enum {unknown} */
+        OrderTargetType: "After" | "Before";
         OrganizationAuthData: {
             /** Format: int64 */
             organizationId?: number | string;
@@ -2421,8 +2618,7 @@ export interface components {
             adminAccessLevel: components["schemas"]["AdminAccessLevel"];
         };
         PermittableSpace: {
-            /** Format: int64 */
-            id: number | string;
+            key: string;
             name: string;
             color: string;
             isDefault: boolean;
@@ -2445,19 +2641,18 @@ export interface components {
             epicId: number | string;
             /** Format: int64 */
             statusId: number | string;
-            /** Format: int64 */
-            spaceId: number | string;
+            spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
         };
         SearchRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             epicIds?: (number | string)[];
-            spaceIds?: (number | string)[];
+            spaceKeys?: string[];
             searchString?: null | string;
             /** Format: int32 */
-            page?: number | string;
+            page: number | string;
             /** Format: int32 */
-            perPage?: number | string;
+            perPage: number | string;
             filters?: {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
             };
@@ -2478,15 +2673,14 @@ export interface components {
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
-        SortingDirection: number;
+        /** @enum {unknown} */
+        SortingDirection: "Ascending" | "Descending";
         SpaceDetailsDto: {
             canCreateEpics: boolean;
             canUpdate: boolean;
             canDelete: boolean;
         };
         SpaceListDto: {
-            /** Format: int64 */
-            id: number | string;
             name: string;
             color: string;
             key: string;
@@ -2538,13 +2732,23 @@ export interface components {
             name: string;
             color: string;
         };
+        UpdateIssuesStatusRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKeys: string[];
+            /** Format: int64 */
+            statusId: number | string;
+        };
         UpdateSpaceRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
-            /** Format: int64 */
-            id?: number | string;
+            oldKey?: string;
             name: string;
             color: string;
-            key: string;
+            newKey: string;
+        };
+        UserDetails: {
+            color: string;
+            displayName: string;
+            initials: string;
         };
         UserDto: {
             /** Format: int64 */

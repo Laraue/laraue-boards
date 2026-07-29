@@ -16,6 +16,7 @@ const issue: IssuePageViewModel = {
   boardId: '12',
   boardLabel: 'Sprint board',
   canEdit: true,
+  comments: [],
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
   issueKey: 'ISS-1',
@@ -41,6 +42,12 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
       data: [{ label: 'Sprint board', value: '12' }],
       status: 'success',
     })),
+  },
+  comments: {
+    create: vi.fn<IssuePageDeps['comments']['create']>(),
+    delete: vi.fn<IssuePageDeps['comments']['delete']>(),
+    load: vi.fn<IssuePageDeps['comments']['load']>(),
+    update: vi.fn<IssuePageDeps['comments']['update']>(),
   },
   deleteIssue: vi.fn<IssuePageDeps['deleteIssue']>(async () => ({
     data: true,
@@ -87,6 +94,46 @@ it('shows the loaded issue', async () => {
   )
 
   await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
+})
+
+it('shows comments loaded after creating one', async () => {
+  const comment = {
+    canModify: true,
+    createdAt: '2026-01-03T00:00:00Z',
+    id: '12',
+    owner: { color: '#111', initials: 'A', name: 'Ada Lovelace' },
+    text: 'New comment',
+    updatedAt: '2026-01-03T00:00:00Z',
+  }
+  const create = vi.fn<IssuePageDeps['comments']['create']>(async () => ({
+    data: true,
+    status: 'success',
+  }))
+  const load = vi.fn<IssuePageDeps['comments']['load']>(async () => ({
+    data: [comment],
+    status: 'success',
+  }))
+  const view = vi.fn<IssuePageDeps['view']>(async () => ({ data: issue, status: 'success' }))
+
+  await mount(
+    createDeps({
+      comments: {
+        create,
+        delete: vi.fn<IssuePageDeps['comments']['delete']>(),
+        load,
+        update: vi.fn<IssuePageDeps['comments']['update']>(),
+      },
+      view,
+    }),
+  )
+
+  expect(load).not.toHaveBeenCalled()
+  await page.getByLabelText('Write a comment').fill('New comment')
+  await page.getByRole('button', { name: 'Add comment' }).click()
+
+  await expect.element(page.getByText('New comment')).toBeInTheDocument()
+  expect(load).toHaveBeenCalledWith({ issueKey: 'ISS-1' })
+  expect(view).toHaveBeenCalledOnce()
 })
 
 it('leaves the page when back is pressed', async () => {

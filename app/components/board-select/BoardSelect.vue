@@ -3,7 +3,7 @@
     v-bind="$attrs"
     v-model="model"
     :aria-busy="pending"
-    :disabled="disabled || !spaceId"
+    :disabled="disabled || !spaceKey"
     @focus="load">
     <option
       disabled
@@ -47,7 +47,7 @@ const props = withDefaults(
     excludedValue?: string
     initialOption?: BoardSelectOption
     placeholder?: string
-    spaceId: string
+    spaceKey: string
   }>(),
   {
     disabled: false,
@@ -62,8 +62,8 @@ defineOptions({ inheritAttrs: false })
 const model = defineModel<string>({ required: true })
 
 const { data, execute, message, pending, status } = await useQuery(
-  () => `board-select:${props.spaceId}`,
-  (_nuxtApp, { signal }) => props.deps.loadBoards({ signal, spaceId: props.spaceId }),
+  () => `board-select:${props.spaceKey}`,
+  (_nuxtApp, { signal }) => props.deps.loadBoards({ signal, spaceKey: props.spaceKey }),
   { cached: true, immediate: false },
 )
 
@@ -83,13 +83,13 @@ const visibleOptions = computed(() => {
 })
 
 const load = () => {
-  if (props.spaceId && data.value === undefined && !pending.value) {
+  if (props.spaceKey && data.value === undefined && !pending.value) {
     void execute()
   }
 }
 
 watch(
-  () => props.spaceId,
+  () => props.spaceKey,
   () => {
     model.value = ''
   },

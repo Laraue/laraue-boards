@@ -41,8 +41,8 @@ export const createSaveIssue =
       return { data: saved, status: 'success' }
     }
     const moveResponse = await tryRequest(() =>
-      client.POST('/api/movement/issue/{key}/move-to-status/{statusId}', {
-        params: { path: { key: input.issueKey, statusId: Number(input.statusId) } },
+      client.POST('/api/issues/status', {
+        body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
       }),
     )
     if (moveResponse && 'data' in moveResponse) {

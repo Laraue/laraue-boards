@@ -52,7 +52,6 @@ test('loads and maps another status page', async () => {
   assert.deepEqual(await requests[0]!.json(), {
     filters: {},
     skip: 10,
-    sorting: { $type: 'property', direction: 1, property: 1 },
     take: 10,
   })
 })

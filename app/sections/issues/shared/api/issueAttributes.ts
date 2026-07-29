@@ -22,9 +22,9 @@ export const mapIssueAttributes = (
       name: attribute.name,
     }
     switch (attribute.type) {
-      case 0:
+      case 'Text':
         return { ...base, type: 'text' }
-      case 1:
+      case 'List':
         return {
           ...base,
           options: attribute.listValues.map((option) => {

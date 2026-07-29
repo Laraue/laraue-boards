@@ -1,7 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import { mapIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
-import { createdAtDescending } from '~/sections/issues/shared/api/issueSorting'
 
 import type { BoardPageDeps } from '../BoardPage.deps'
 import { mapIssueListItem } from './mapBoardPage'
@@ -23,7 +22,6 @@ export const createLoadMoreBoardIssues =
             filters: mapIssueFilters(filters),
             searchString: search || undefined,
             skip: offset,
-            sorting: createdAtDescending,
             take,
           },
           params: { path: { statusId: Number(statusId) } },

@@ -7,7 +7,7 @@ import { createViewPermissions } from './viewPermissions'
 test('maps organization members response', async () => {
   const { client } = createTestApiClient(() => [
     {
-      adminAccessLevel: 1,
+      adminAccessLevel: 'Manage',
       color: '#4774d4',
       displayName: 'Ada Lovelace',
       initials: 'AL',
@@ -15,7 +15,7 @@ test('maps organization members response', async () => {
       organizationUserId: 5,
     },
     {
-      adminAccessLevel: 0,
+      adminAccessLevel: 'None',
       color: '#e5484d',
       displayName: 'Grace Hopper',
       initials: 'GH',
@@ -50,7 +50,7 @@ test('maps organization members response', async () => {
 test('skips members without an id', async () => {
   const { client } = createTestApiClient(() => [
     {
-      adminAccessLevel: 0,
+      adminAccessLevel: 'None',
       color: '#000',
       displayName: 'No id',
       initials: 'NI',

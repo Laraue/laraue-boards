@@ -4,6 +4,7 @@ import type { BoardSelectDeps } from '~/components/board-select/BoardSelect.deps
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
+import type { IssueCommentsDeps } from './components/issue-comments/IssueComments.deps'
 import type { IssuePageInput, IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
 
 export type DeleteIssue = (input: { issueKey: string }) => Promise<ActionResult<true>>
@@ -24,6 +25,7 @@ export type ViewIssue = (input: {
 export type IssuePageDeps = {
   assigneeSelect: AssigneeSelectDeps
   boardSelect: BoardSelectDeps
+  comments: IssueCommentsDeps
   deleteIssue: DeleteIssue
   saveIssue: SaveIssue
   spaceSelect: SpaceSelectDeps

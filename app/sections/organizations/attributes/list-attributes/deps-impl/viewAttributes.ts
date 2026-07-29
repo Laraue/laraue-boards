@@ -7,9 +7,9 @@ import type { AttributeListItem } from '../AttributesPage.types'
 
 const mapType = (type: components['schemas']['AttributeType']): AttributeListItem['type'] => {
   switch (type) {
-    case 0:
+    case 'Text':
       return 'text'
-    case 1:
+    case 'List':
       return 'list'
     default:
       throw new RangeError(`Unsupported attribute type: ${type}`)

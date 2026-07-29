@@ -22,7 +22,7 @@ test('loads the requested organization layout', async () => {
       case '/api/user':
         return { color: '#456', firstName: 'Ada', initials: 'AL', lastName: 'Lovelace' }
       case '/api/spaces':
-        return [{ color: '#789', id: 2, key: 'DEV', name: 'Development' }]
+        return [{ color: '#789', isDefault: false, key: 'DEV', name: 'Development' }]
       default:
         return new Response(null, { status: 404 })
     }
@@ -41,9 +41,18 @@ test('loads the requested organization layout', async () => {
         initial: 'A',
         name: 'Acme',
       },
-      spaces: [{ color: '#789', id: '2', key: 'DEV', name: 'Development' }],
+      spaces: [{ color: '#789', key: 'DEV', name: 'Development' }],
       user: { color: '#456', initials: 'AL', name: 'Ada Lovelace' },
     },
     status: 'success',
+  })
+})
+
+test('keeps an unauthenticated response distinct from forbidden access', async () => {
+  const { client } = createTestApiClient(() => new Response(null, { status: 401 }))
+
+  assert.deepEqual(await createViewAppLayout(client)({ organizationKey: 'acme-AB12' }), {
+    code: 401,
+    status: 'error',
   })
 })

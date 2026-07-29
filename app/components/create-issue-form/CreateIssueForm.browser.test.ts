@@ -82,7 +82,7 @@ it('creates an issue in a fixed board without showing destination selects', asyn
     attachTo: document.body,
     props: {
       attributes: [],
-      board: { id: '12', name: 'Sprint board', spaceId: '7' },
+      board: { id: '12', name: 'Sprint board', spaceKey: 'product' },
       deps,
       onCreated,
     },
@@ -110,7 +110,7 @@ it('keeps the form open and shows the message when creation fails', async () => 
     attachTo: document.body,
     props: {
       attributes: [],
-      board: { id: '12', name: 'Sprint board', spaceId: '7' },
+      board: { id: '12', name: 'Sprint board', spaceKey: 'product' },
       deps,
       onCreated,
     },

@@ -31,7 +31,7 @@ export const createViewBacklogIssue =
     }
 
     const boards = await tryRequest(() =>
-      client.GET('/api/spaces/{id}/epics', { params: { path: { id: Number(space.id) } }, signal }),
+      client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
     )
     if (!boards || !('data' in boards) || boards.data === undefined) {
       return { code: boards && 'error' in boards ? boards.response.status : 0, status: 'error' }
@@ -56,7 +56,7 @@ export const createViewBacklogIssue =
         attributes: mapIssueAttributes(attributes.data),
         boardId: String(backlog.id),
         boardName: backlog.name,
-        spaceId: String(space.id),
+        spaceKey,
       },
       status: 'success',
     }

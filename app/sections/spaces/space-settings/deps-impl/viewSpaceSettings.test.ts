@@ -7,7 +7,7 @@ import { createViewSpaceSettings } from './viewSpaceSettings'
 test('maps space settings data', async () => {
   const { client } = createTestApiClient((_request, path) =>
     path === '/api/spaces'
-      ? [{ color: '#fff', id: 4, key: 'product', name: 'Product' }]
+      ? [{ color: '#fff', isDefault: false, key: 'product', name: 'Product' }]
       : { canDelete: true, canUpdate: false },
   )
 
@@ -16,7 +16,6 @@ test('maps space settings data', async () => {
       canDelete: true,
       canUpdate: false,
       color: '#fff',
-      id: '4',
       name: 'Product',
       spaceKey: 'product',
     },

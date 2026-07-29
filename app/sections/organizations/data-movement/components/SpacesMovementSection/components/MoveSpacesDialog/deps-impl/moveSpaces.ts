@@ -5,16 +5,16 @@ import type { MoveSpaces } from '../MoveSpacesDialog.deps'
 
 export const createMoveSpaces =
   (client: ApiClient): MoveSpaces =>
-  async ({ destinationOrganizationId, spaceIds }) => {
-    if (!destinationOrganizationId || !spaceIds.length) {
+  async ({ destinationOrganizationId, spaceKeys }) => {
+    if (!destinationOrganizationId || !spaceKeys.length) {
       return { code: 400, status: 'error' }
     }
     const responses = await tryRequest(() =>
       Promise.all(
-        spaceIds.map((spaceId) =>
-          client.POST('/api/movement/space/{id}/to-organization/{organizationId}', {
+        spaceKeys.map((spaceKey) =>
+          client.POST('/api/movement/space/{key}/to-organization/{organizationId}', {
             params: {
-              path: { id: Number(spaceId), organizationId: Number(destinationOrganizationId) },
+              path: { key: spaceKey, organizationId: Number(destinationOrganizationId) },
             },
           }),
         ),
