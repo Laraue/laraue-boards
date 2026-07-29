@@ -3,10 +3,9 @@
 The backend for this application lives in the
 [Laraue.Apps.StructuredMessages repository](https://github.com/win7user10/Laraue.Apps.StructuredMessages).
 
-## Interface examples
+## Interface example
 
-<img width="250" height="540" alt="All issues view" src="https://github.com/user-attachments/assets/91e01273-a8fd-49e6-99be-3466db41b60d" />
-<img width="250" height="540" alt="Board view" src="https://github.com/user-attachments/assets/eda748c6-8595-4555-b9a4-533027c6e2df" />
+<img width="1867" height="1944" alt="image" src="https://github.com/user-attachments/assets/2e3f9d69-8fba-4f40-9820-730a1b5719b6" />
 
 ## Local setup
 
