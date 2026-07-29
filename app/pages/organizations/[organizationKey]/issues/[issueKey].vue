@@ -2,6 +2,7 @@
   <IssuePage
     :deps="deps"
     :issue-key="issueKey"
+    :lazy="false"
     :on-back="onBack" />
 </template>
 

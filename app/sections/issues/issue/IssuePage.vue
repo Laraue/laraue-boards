@@ -1,6 +1,5 @@
 <template>
   <QueryState
-    v-if="!state.leaving"
     :data="data"
     error-title="Could not load issue"
     loading-text="Loading issue…"
@@ -193,6 +192,7 @@ import type { IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
 const props = defineProps<{
   deps: IssuePageDeps
   issueKey: string
+  lazy?: boolean
   onBack: () => Promise<void> | void
   onDeleted?: (issueKey: string) => Promise<void> | void
   onDirtyChange?: (dirty: boolean) => void
@@ -214,7 +214,7 @@ const {
 } = await useQuery(
   () => `issue:${props.issueKey}`,
   (_nuxtApp, { signal }) => props.deps.view({ issueKey: props.issueKey, signal }),
-  { lazy: true, watch: [() => props.issueKey] },
+  { lazy: props.lazy, watch: [() => props.issueKey] },
 )
 
 useHead({ title: computed(() => data.value?.issueKey ?? 'Issue') })
@@ -227,7 +227,6 @@ const state = reactive({
   copied: false,
   dirty: false,
   files: [] as File[],
-  leaving: false,
   pickedSpaceId: '',
   removedAttachmentIds: [] as string[],
   statusId: '',
@@ -347,7 +346,6 @@ const leaveAfterIssueChanged = async () => {
   await leave()
 }
 const leave = async () => {
-  state.leaving = true
   await props.onBack()
 }
 

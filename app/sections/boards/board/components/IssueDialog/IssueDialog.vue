@@ -22,6 +22,7 @@
         <IssuePage
           :deps="deps"
           :issue-key="issueKey"
+          lazy
           :on-back="() => close(true)"
           :on-deleted="onDeleted"
           :on-dirty-change="setDirty"
