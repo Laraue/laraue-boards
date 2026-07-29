@@ -193,6 +193,7 @@ import type { IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
 const props = defineProps<{
   deps: IssuePageDeps
   issueKey: string
+  lazy?: boolean
   onBack: () => Promise<void> | void
   onDeleted?: (issueKey: string) => Promise<void> | void
   onDirtyChange?: (dirty: boolean) => void
@@ -214,7 +215,7 @@ const {
 } = await useQuery(
   () => `issue:${props.issueKey}`,
   (_nuxtApp, { signal }) => props.deps.view({ issueKey: props.issueKey, signal }),
-  { lazy: true, watch: [() => props.issueKey] },
+  { lazy: props.lazy, watch: [() => props.issueKey] },
 )
 
 useHead({ title: computed(() => data.value?.issueKey ?? 'Issue') })
