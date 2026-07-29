@@ -28,17 +28,11 @@ test('moves every selected board to the space', async () => {
     }),
     { data: true, status: 'success' },
   )
-  assert.deepEqual(paths(), [
-    '/api/movement/move-epic',
-    '/api/movement/move-epic',
+  assert.deepEqual(paths(), ['/api/movement/move-epic', '/api/movement/move-epic'])
+  assert.deepEqual(await Promise.all(requests.map((request) => request.json())), [
+    { newOrganizationId: 2, newSpaceKey: 'product', sourceEpicId: 21 },
+    { newOrganizationId: 2, newSpaceKey: 'product', sourceEpicId: 22 },
   ])
-  assert.deepEqual(
-    await Promise.all(requests.map((request) => request.json())),
-    [
-      { newOrganizationId: 2, newSpaceKey: 'product', sourceEpicId: 21 },
-      { newOrganizationId: 2, newSpaceKey: 'product', sourceEpicId: 22 },
-    ],
-  )
 })
 
 test('returns error status when moving boards fails', async () => {
