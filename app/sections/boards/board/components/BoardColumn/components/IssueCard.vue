@@ -2,7 +2,7 @@
   <article
     ref="element"
     class="task"
-    :class="{ 'task--ghost': isDragging, 'task--moving': moving, 'task--over': isDropTarget }">
+    :class="{ 'task--moving': moving }">
     <NuxtLink
       v-slot="{ href }"
       custom
@@ -74,7 +74,7 @@ const organizationRoutes = useOrganizationRoutes()
 
 const element = useTemplateRef('element')
 
-const { isDragging, isDropTarget } = useSortable({
+useSortable({
   accept: 'item',
   disabled: computed(() => props.disabled),
   element,
@@ -97,7 +97,6 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   cursor: pointer;
   display: block;
   margin-bottom: var(--space-2);
-  padding: var(--space-4);
   position: relative;
   text-decoration: none;
   -webkit-touch-callout: none;
@@ -110,6 +109,7 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
 .task-link {
   color: inherit;
   display: block;
+  padding: var(--space-4);
   text-decoration: none;
 }
 
@@ -122,19 +122,17 @@ const formatTime = (value: string) => timeFormatter.format(new Date(value))
   translate: 0 var(--press-offset);
 }
 
-.task--ghost {
+/* The placeholder @dnd-kit clones into the slot the card would drop into. */
+.task[data-dnd-placeholder] {
   border-style: dashed;
-  opacity: 0.4;
+  box-shadow: none;
+  opacity: 0.5;
 }
 
-.task--moving {
+/* Not while the card is still flying to its slot: that element is the one being dragged. */
+.task--moving:not([data-dnd-dropping]) {
   cursor: default;
   opacity: 0.6;
-}
-
-.task--over {
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-focus);
 }
 
 .task small {
