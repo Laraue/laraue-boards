@@ -72,7 +72,10 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (deps: IssuePageDeps, onBack: () => void = vi.fn<() => void>()) => {
+const mount = async (
+  deps: IssuePageDeps,
+  onBack: () => Promise<void> | void = vi.fn<() => void>(),
+) => {
   currentWrapper = await mountSuspended(IssuePage, {
     attachTo: document.body,
     props: { deps, issueKey: 'ISS-1', onBack },
@@ -137,13 +140,14 @@ it('shows comments loaded after creating one', async () => {
 })
 
 it('leaves the page when back is pressed', async () => {
-  const onBack = vi.fn<() => void>()
+  const onBack = vi.fn<() => Promise<void>>(() => new Promise(() => {}))
 
   await mount(createDeps(), onBack)
 
   await page.getByRole('button', { name: 'Back' }).click()
 
   expect(onBack).toHaveBeenCalledTimes(1)
+  await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
 })
 
 it('leaves the page after the issue is saved', async () => {

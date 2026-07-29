@@ -1,6 +1,5 @@
 <template>
   <QueryState
-    v-if="!state.leaving"
     :data="data"
     error-title="Could not load issue"
     loading-text="Loading issue…"
@@ -228,7 +227,6 @@ const state = reactive({
   copied: false,
   dirty: false,
   files: [] as File[],
-  leaving: false,
   pickedSpaceId: '',
   removedAttachmentIds: [] as string[],
   statusId: '',
@@ -348,7 +346,6 @@ const leaveAfterIssueChanged = async () => {
   await leave()
 }
 const leave = async () => {
-  state.leaving = true
   await props.onBack()
 }
 
