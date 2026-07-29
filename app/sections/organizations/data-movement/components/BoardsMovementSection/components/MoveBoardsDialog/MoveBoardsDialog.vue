@@ -79,7 +79,11 @@ const open = () => {
 }
 
 const confirmMove = () => {
-  void moveBoards({ boardIds: props.ids, destinationSpaceKey: state.spaceKey })
+  void moveBoards({
+    boardIds: props.ids,
+    destinationOrganizationId: state.organizationId,
+    destinationSpaceKey: state.spaceKey,
+  })
 }
 
 defineExpose({ open })

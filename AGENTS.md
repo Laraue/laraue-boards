@@ -1,6 +1,5 @@
 # Working rules
 
 - Never run `pnpm install`, `pnpm i`, or `pnpm add`; the user installs dependencies.
-- Run checks only when the work is completely completed. Use the command `pnpm pre-commit` to check
-  everything,
+- Don't run any commands to run checks until I ask you to. If I ask you to run a full check, run `pnpm pre-commit`.
 - Do not edit generated API types manually.

@@ -815,7 +815,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/movement/space/{spaceKey}/epics-to-space/{newSpaceKey}": {
+    "/api/movement/move-space-epics": {
         parameters: {
             query?: never;
             header?: never;
@@ -828,13 +828,16 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    spaceKey: string;
-                    newSpaceKey: string;
-                };
+                path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MoveSpaceEpicsRequest"];
+                    "text/json": components["schemas"]["MoveSpaceEpicsRequest"];
+                    "application/*+json": components["schemas"]["MoveSpaceEpicsRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -851,7 +854,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/movement/epic/{id}/to-space/{newSpaceKey}": {
+    "/api/movement/move-epic": {
         parameters: {
             query?: never;
             header?: never;
@@ -864,13 +867,16 @@ export interface paths {
             parameters: {
                 query?: never;
                 header?: never;
-                path: {
-                    id: number;
-                    newSpaceKey: string;
-                };
+                path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MoveEpicRequest"];
+                    "text/json": components["schemas"]["MoveEpicRequest"];
+                    "application/*+json": components["schemas"]["MoveEpicRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -2546,6 +2552,21 @@ export interface components {
             languageCode?: null | string;
             firstName?: null | string;
             lastName?: null | string;
+        };
+        MoveEpicRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            /** Format: int64 */
+            sourceEpicId?: number | string;
+            newSpaceKey: string;
+            /** Format: int64 */
+            newOrganizationId: number | string;
+        };
+        MoveSpaceEpicsRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            sourceSpaceKey: string;
+            newSpaceKey: string;
+            /** Format: int64 */
+            newOrganizationId: number | string;
         };
         NameAndColor: {
             name: string;
