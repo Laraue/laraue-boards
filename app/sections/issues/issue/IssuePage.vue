@@ -382,14 +382,21 @@ watch(
 }
 .issue-form-main {
   align-self: stretch;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-6);
-  grid-auto-rows: max-content;
-  grid-template-rows: minmax(200px, 1fr);
+  max-height: 100%;
   min-height: 0;
   min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-.issue-form-main textarea {
+.issue-form-main > * {
+  flex-shrink: 0;
+}
+.issue-form-main > textarea {
+  flex-grow: 1;
+  max-height: none;
   min-height: 200px;
 }
 .issue-form-content {
@@ -399,9 +406,9 @@ watch(
   grid-area: content;
   grid-template-areas: 'main side';
   grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
-  grid-template-rows: max-content;
+  grid-template-rows: fit-content(100%);
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   padding-bottom: var(--space-1);
   width: 100%;
 }
@@ -417,6 +424,10 @@ watch(
   gap: var(--space-4);
   grid-auto-rows: minmax(var(--control-height), auto);
   grid-template-columns: max-content minmax(0, 1fr);
+  max-height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   place-self: start stretch;
 }
 .issue-form-side > label {
@@ -485,7 +496,12 @@ watch(
       'side';
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;
+    overflow: auto;
     row-gap: var(--space-5);
+  }
+  .issue-form-main,
+  .issue-form-side {
+    overflow: visible;
   }
   .issue-form-side {
     width: auto;

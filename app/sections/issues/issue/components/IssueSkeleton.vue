@@ -8,35 +8,44 @@
       <span class="skeleton skeleton-title" />
       <span class="skeleton skeleton-link" />
     </div>
-    <div class="skeleton-content">
-      <div class="skeleton-main">
-        <span class="skeleton skeleton-text" />
-        <div class="skeleton-attachments">
-          <span class="skeleton skeleton-attachment-button" />
-          <span class="skeleton skeleton-attachment-hint" />
+    <div class="skeleton-form">
+      <div class="skeleton-content">
+        <div class="skeleton-main">
+          <span class="skeleton skeleton-text" />
+          <div class="skeleton-attachments">
+            <span class="skeleton skeleton-section-label" />
+            <div class="skeleton-attachment-actions">
+              <span class="skeleton skeleton-attachment-button" />
+              <span class="skeleton skeleton-attachment-hint" />
+            </div>
+          </div>
+          <div class="skeleton-comments">
+            <span class="skeleton skeleton-section-label" />
+            <span class="skeleton skeleton-comment-field" />
+          </div>
         </div>
-      </div>
-      <div class="skeleton-side">
-        <template
-          v-for="field in 4"
-          :key="field">
+        <div class="skeleton-side">
+          <template
+            v-for="field in 4"
+            :key="field">
+            <span class="skeleton skeleton-label" />
+            <span class="skeleton skeleton-field" />
+          </template>
           <span class="skeleton skeleton-label" />
-          <span class="skeleton skeleton-field" />
-        </template>
-        <span class="skeleton skeleton-label" />
-        <div class="skeleton-person">
-          <span class="skeleton skeleton-avatar" />
-          <span class="skeleton skeleton-name" />
+          <div class="skeleton-person">
+            <span class="skeleton skeleton-avatar" />
+            <span class="skeleton skeleton-name" />
+          </div>
+          <span class="skeleton skeleton-label" />
+          <span class="skeleton skeleton-date" />
+          <span class="skeleton skeleton-label" />
+          <span class="skeleton skeleton-date" />
         </div>
-        <span class="skeleton skeleton-label" />
-        <span class="skeleton skeleton-date" />
-        <span class="skeleton skeleton-label" />
-        <span class="skeleton skeleton-date" />
       </div>
-    </div>
-    <div class="skeleton-actions">
-      <span class="skeleton skeleton-button skeleton-button--primary" />
-      <span class="skeleton skeleton-button" />
+      <div class="skeleton-actions">
+        <span class="skeleton skeleton-button skeleton-button--primary" />
+        <span class="skeleton skeleton-button" />
+      </div>
     </div>
   </div>
 </template>
@@ -46,7 +55,7 @@
   align-self: start;
   animation: issue-skeleton-pulse 1.4s ease-in-out infinite;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
   max-height: 100%;
   min-height: 0;
 }
@@ -80,30 +89,62 @@
   width: var(--icon-size);
 }
 
+.skeleton-form {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  margin-top: var(--space-5);
+  min-height: 0;
+  row-gap: var(--space-6);
+}
+
 .skeleton-content {
+  align-items: start;
   column-gap: var(--space-6);
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
-  margin-top: var(--space-5);
+  grid-template-rows: fit-content(100%);
   min-height: 0;
   overflow: hidden;
+  padding-bottom: var(--space-1);
 }
 
 .skeleton-main {
-  display: grid;
-  grid-template-rows: minmax(200px, auto) auto;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-height: 100%;
   min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.skeleton-main > * {
+  flex-shrink: 0;
 }
 
 .skeleton-text {
-  height: 100%;
+  flex-grow: 1;
+  min-height: 200px;
 }
 
-.skeleton-attachments {
+.skeleton-attachments,
+.skeleton-comments {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.skeleton-attachment-actions {
   align-items: center;
   display: flex;
   gap: var(--space-2);
-  margin-top: var(--space-4);
+}
+
+.skeleton-section-label {
+  border-radius: var(--radius-small);
+  height: 14px;
+  width: 88px;
 }
 
 .skeleton-attachment-button {
@@ -116,15 +157,21 @@
   width: 200px;
 }
 
+.skeleton-comment-field {
+  height: var(--control-height);
+}
+
 .skeleton-side {
-  align-content: start;
   align-items: center;
   display: grid;
   gap: var(--space-4);
   grid-auto-rows: minmax(var(--control-height), auto);
   grid-template-columns: max-content minmax(0, 1fr);
+  max-height: 100%;
   min-height: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  place-self: start stretch;
 }
 
 .skeleton-label {
@@ -163,7 +210,6 @@
 .skeleton-actions {
   display: flex;
   gap: var(--space-3);
-  margin-top: var(--space-4);
 }
 
 .skeleton-button {
@@ -190,10 +236,14 @@
 @media (max-width: 760px) {
   .skeleton-content {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: max-content max-content;
+    overflow: auto;
+    row-gap: var(--space-5);
   }
 
+  .skeleton-main,
   .skeleton-side {
-    display: none;
+    overflow: visible;
   }
 
   .skeleton-actions {
