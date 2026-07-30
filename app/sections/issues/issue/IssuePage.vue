@@ -5,7 +5,7 @@
     loading-text="Loading issue…"
     :message="viewMessage"
     :on-retry="refresh"
-    :pending="pending">
+    :pending="pending && !data">
     <template #loading>
       <IssueSkeleton />
     </template>
@@ -25,8 +25,6 @@
             <div class="page-heading-text">
               <h1>
                 <NuxtLink
-                  rel="noopener"
-                  target="_blank"
                   :to="issueRoute">
                   {{ issue.issueKey }}
                 </NuxtLink>
@@ -276,12 +274,11 @@ const syncState = (issue: IssuePageViewModel) => {
 
 const handleSaved = async (issue: IssuePageSavedIssue) => {
   await props.onSaved?.(issue)
-  if (issue.complete) {
-    await leaveAfterIssueChanged()
-    return
-  }
+  state.dirty = false
   await refresh()
-  saveMessage.value = 'Changes were saved, but the issue could not be moved. Try again.'
+  if (!issue.complete) {
+    saveMessage.value = 'Changes were saved, but the issue could not be moved. Try again.'
+  }
 }
 const {
   execute: saveIssue,

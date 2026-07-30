@@ -269,7 +269,7 @@ nav a.active,
 nav button.active {
   background: var(--color-accent-soft);
   color: var(--color-text);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
 }
 
 .nav-title {
