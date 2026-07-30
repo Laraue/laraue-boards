@@ -113,7 +113,7 @@ it('lets the user close the dialog while the issue is still loading', async () =
   expect(onClose).toHaveBeenCalledOnce()
 })
 
-it('notifies the board and closes after the issue is saved', async () => {
+it('notifies the board and stays open after the issue is saved', async () => {
   const onClose = vi.fn<() => void>()
   const onSaved = vi.fn<(issue: IssuePageSavedIssue) => void>()
   const deps = createDeps({
@@ -148,5 +148,6 @@ it('notifies the board and closes after the issue is saved', async () => {
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   expect(onSaved).toHaveBeenCalledOnce()
-  expect(onClose).toHaveBeenCalledOnce()
+  expect(onClose).not.toHaveBeenCalled()
+  await expect.element(page.getByRole('dialog', { name: 'Issue details' })).toBeInTheDocument()
 })

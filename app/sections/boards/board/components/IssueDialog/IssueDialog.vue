@@ -109,7 +109,7 @@ watch(
   padding: var(--space-6);
   position: fixed;
   transition: none;
-  width: min(980px, calc(100% - var(--space-8)));
+  width: min(1280px, calc(100% - var(--space-8)));
   z-index: 1001;
 }
 .issue-dialog[open] {

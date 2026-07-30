@@ -52,6 +52,7 @@ const select = (value: string, close: () => void) => {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
+  color: var(--color-text);
   display: flex;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
@@ -60,7 +61,7 @@ const select = (value: string, close: () => void) => {
 }
 
 .color-trigger:hover:not(:disabled) {
-  border-color: var(--color-muted);
+  border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
 }
 
 .color-trigger:not(:disabled):active {

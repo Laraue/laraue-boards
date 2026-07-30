@@ -150,8 +150,12 @@ it('leaves the page when back is pressed', async () => {
   await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
 })
 
-it('leaves the page after the issue is saved', async () => {
+it('stays on the page after the issue is saved', async () => {
   const onBack = vi.fn<() => void>()
+  const view = vi
+    .fn<IssuePageDeps['view']>()
+    .mockResolvedValueOnce({ data: issue, status: 'success' })
+    .mockImplementation(() => new Promise(() => {}))
   await mount(
     createDeps({
       saveIssue: vi.fn<IssuePageDeps['saveIssue']>(async () => ({
@@ -166,6 +170,7 @@ it('leaves the page after the issue is saved', async () => {
         },
         status: 'success',
       })),
+      view,
     }),
     onBack,
   )
@@ -173,7 +178,8 @@ it('leaves the page after the issue is saved', async () => {
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await page.getByRole('button', { name: 'Save changes' }).click()
 
-  expect(onBack).toHaveBeenCalledOnce()
+  expect(onBack).not.toHaveBeenCalled()
+  await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
 })
 
 it('hides the actions when the issue cannot be edited', async () => {
