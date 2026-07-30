@@ -54,6 +54,7 @@
         </div>
         <NuxtLink
           v-if="viewModel.organization.canCreateSpaces"
+          exact-active-class="active"
           :to="organizationRoutes.newSpace()">
           <Plus />
           Create space
@@ -267,7 +268,7 @@ nav button:active {
 nav a.active,
 nav button.active {
   background: var(--color-accent-soft);
-  color: var(--color-accent);
+  color: var(--color-text);
   font-weight: var(--font-weight-bold);
 }
 

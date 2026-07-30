@@ -241,12 +241,12 @@ const toggleSpace = (spaceId: string) => {
 }
 
 .issue-filters-popover nav button:not(.clear-filter):hover {
-  background: var(--color-surface);
+  background: var(--color-hover);
 }
 
 .issue-filters-popover nav button:not(.clear-filter).active {
   background: var(--color-accent-soft);
-  color: var(--color-accent);
+  color: var(--color-text);
   font-weight: var(--font-weight-semibold);
 }
 
