@@ -24,8 +24,7 @@
             </slot>
             <div class="page-heading-text">
               <h1>
-                <NuxtLink
-                  :to="issueRoute">
+                <NuxtLink :to="issueRoute">
                   {{ issue.issueKey }}
                 </NuxtLink>
               </h1>
