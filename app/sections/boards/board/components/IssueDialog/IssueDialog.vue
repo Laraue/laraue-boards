@@ -23,7 +23,7 @@
           :deps="deps"
           :issue-key="issueKey"
           lazy
-          :on-back="() => close(true)"
+          :on-back="() => close()"
           :on-deleted="onDeleted"
           :on-dirty-change="setDirty"
           :on-saved="onSaved" />
