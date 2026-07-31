@@ -1,6 +1,7 @@
 <template>
   <OrganizationSettingsPage
     :deps="deps"
+    :on-deleted="onDeleted"
     :on-updated="onUpdated" />
 </template>
 
@@ -10,6 +11,10 @@ import OrganizationSettingsPage from '~/sections/organizations/settings/Organiza
 
 const client = useApiClient()
 const deps = createOrganizationSettingsPageDeps(client)
+const onDeleted = async (): Promise<void> => {
+  clearNuxtData(appLayoutDataKey)
+  await navigateTo('/organizations')
+}
 const onUpdated = async (): Promise<void> => {
   await refreshAppLayoutData()
 }
