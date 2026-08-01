@@ -213,7 +213,7 @@ const toggleTheme = () => {
   grid-template-columns: 240px minmax(0, 1fr);
   margin-inline: auto;
   max-width: var(--workspace-max-width);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 aside {

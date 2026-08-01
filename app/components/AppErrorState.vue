@@ -28,7 +28,7 @@ defineProps<{ code: string; message: string; title: string }>()
 <style scoped>
 .error-page {
   display: grid;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: var(--space-6);
   place-items: center;
 }

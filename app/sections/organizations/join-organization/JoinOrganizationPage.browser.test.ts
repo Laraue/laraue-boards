@@ -3,6 +3,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
+
 import type { JoinOrganizationPageDeps } from './JoinOrganizationPage.deps'
 import JoinOrganizationPage from './JoinOrganizationPage.vue'
 
@@ -13,9 +14,7 @@ afterEach(async () => {
   currentWrapper = undefined
 })
 
-const depsOf = (
-  overrides: Partial<JoinOrganizationPageDeps> = {},
-): JoinOrganizationPageDeps => ({
+const depsOf = (overrides: Partial<JoinOrganizationPageDeps> = {}): JoinOrganizationPageDeps => ({
   join: vi.fn<JoinOrganizationPageDeps['join']>(),
   loginViaTelegramMiniApp: vi.fn<JoinOrganizationPageDeps['loginViaTelegramMiniApp']>(async () => ({
     data: { authenticated: false },

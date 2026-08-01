@@ -66,11 +66,7 @@ const telegramWindow = globalThis as typeof globalThis & {
 
 useHead({ title: 'Join organization' })
 
-const {
-  execute: join,
-  message: joinMessage,
-  pending,
-} = useAction(props.deps.join)
+const { execute: join, message: joinMessage, pending } = useAction(props.deps.join)
 
 const {
   execute: loginViaTelegramMiniApp,

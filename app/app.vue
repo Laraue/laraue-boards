@@ -6,6 +6,7 @@
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <AppToasts />
 </template>
 
 <script setup lang="ts">

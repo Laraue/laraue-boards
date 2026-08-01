@@ -85,7 +85,7 @@ const {
 <style scoped>
 .org-picker {
   display: grid;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: var(--space-6);
   place-items: center;
 }

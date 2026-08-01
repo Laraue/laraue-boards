@@ -7,6 +7,7 @@ export const useAction = <Args extends unknown[], Data>(
 ) => {
   const pending = ref(false)
   const message = ref<string | undefined>()
+  const toast = useToast()
 
   const execute = async (...args: Args): Promise<Data | undefined> => {
     pending.value = true
@@ -19,8 +20,12 @@ export const useAction = <Args extends unknown[], Data>(
         await options.onSuccess?.(result.data)
         return result.data
       }
-      message.value =
-        result.status === 'validation-error' ? result.message : getErrorMessage(result.code)
+      // A validation error belongs to the form; anything else is a request failure with no field to attach to.
+      if (result.status === 'validation-error') {
+        message.value = result.message
+      } else {
+        toast.show(getErrorMessage(result.code))
+      }
       return undefined
     } finally {
       pending.value = false

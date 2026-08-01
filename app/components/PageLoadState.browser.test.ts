@@ -27,3 +27,17 @@ it('lets the user retry after a load failure', async () => {
 
   expect(onRetry).toHaveBeenCalledOnce()
 })
+
+it('hides the retry button while loading', async () => {
+  currentWrapper = await mountSuspended(PageLoadState, {
+    attachTo: document.body,
+    props: {
+      errorText: 'Could not load the organization.',
+      loading: true,
+      loadingText: 'Loading organization…',
+    },
+  })
+
+  await expect.element(page.getByText('Loading organization…')).toBeVisible()
+  await expect.element(page.getByRole('button', { name: 'Try again' })).not.toBeInTheDocument()
+})

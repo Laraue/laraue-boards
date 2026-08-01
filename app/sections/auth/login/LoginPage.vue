@@ -130,7 +130,7 @@ const loginWidget = async (input: TelegramUser): Promise<void> => {
 .auth {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .auth-art {
