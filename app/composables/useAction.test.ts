@@ -70,6 +70,29 @@ test('reports an opaque error as a toast instead of a form message', async () =>
   )
 })
 
+test('keeps the message on screen while the retry is running', async () => {
+  let resolve!: (result: ActionResult<string>) => void
+  const action = vi
+    .fn<() => Promise<ActionResult<string>>>()
+    .mockResolvedValueOnce({ message: 'Name is required.', status: 'validation-error' })
+    .mockReturnValueOnce(
+      new Promise<ActionResult<string>>((r) => {
+        resolve = r
+      }),
+    )
+  const { execute, message } = useAction(action)
+
+  await execute()
+  const retry = execute()
+
+  assert.equal(message.value, 'Name is required.')
+
+  resolve({ data: 'ok', status: 'success' })
+  await retry
+
+  assert.isUndefined(message.value)
+})
+
 test('clears a stale message when executed again', async () => {
   const action = vi
     .fn<() => Promise<ActionResult<string>>>()

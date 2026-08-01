@@ -10,13 +10,14 @@ export const useAction = <Args extends unknown[], Data>(
   const toast = useToast()
 
   const execute = async (...args: Args): Promise<Data | undefined> => {
+    // The previous message stays up until the retry has an answer, so the form does not flicker mid-request.
     pending.value = true
-    message.value = undefined
 
     try {
       const result = await action(...args)
 
       if (result.status === 'success') {
+        message.value = undefined
         await options.onSuccess?.(result.data)
         return result.data
       }
@@ -24,6 +25,7 @@ export const useAction = <Args extends unknown[], Data>(
       if (result.status === 'validation-error') {
         message.value = result.message
       } else {
+        message.value = undefined
         toast.show(getErrorMessage(result.code))
       }
       return undefined
