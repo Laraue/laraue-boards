@@ -779,6 +779,96 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/issues/{key}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetIssueCommentsRequest"];
+                    "text/json": components["schemas"]["GetIssueCommentsRequest"];
+                    "application/*+json": components["schemas"]["GetIssueCommentsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfCommentDto"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfCommentDto"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfCommentDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/issues/{key}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetIssueHistoryRequest"];
+                    "text/json": components["schemas"]["GetIssueHistoryRequest"];
+                    "application/*+json": components["schemas"]["GetIssueHistoryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/movement/space/{key}/to-organization/{organizationId}": {
         parameters: {
             query?: never;
@@ -2212,10 +2302,11 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
-            previewFileId?: null | string;
+            previewFileId: null | string;
             /** Format: uuid */
-            originalFileId?: string;
-            type?: components["schemas"]["AttachmentType"];
+            originalFileId: string;
+            type: components["schemas"]["AttachmentType"];
+            fileName: null | string;
         };
         /** @enum {unknown} */
         AttachmentType: "Image" | "Video";
@@ -2270,6 +2361,8 @@ export interface components {
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
+        /** @enum {unknown} */
+        ChangeAction: "Create" | "Update" | "Delete";
         ChangesIssuesOrderRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             issueKeys: string[];
@@ -2424,6 +2517,16 @@ export interface components {
             };
             sorting?: null | components["schemas"]["IssueSorting"];
         };
+        GetIssueCommentsRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKey?: string;
+            pagination: components["schemas"]["PaginationData"];
+        };
+        GetIssueHistoryRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKey?: string;
+            pagination: components["schemas"]["PaginationData"];
+        };
         GetIssuesRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
@@ -2492,7 +2595,63 @@ export interface components {
             key: string;
             attributeValues: components["schemas"]["DetailIssueAttributeDto"][];
             attachments: components["schemas"]["AttachmentData"][];
-            comments: components["schemas"]["CommentDto"][];
+        };
+        IssueHistoryItem: {
+            /** Format: date-time */
+            createdAt: string;
+            owner: components["schemas"]["UserDetails"];
+            changes: components["schemas"]["IssueHistoryItemChange"][];
+        };
+        IssueHistoryItemChange: components["schemas"]["IssueHistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryIssueChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAttachmentChange"];
+        IssueHistoryItemChangeIssueHistoryAssigneeChange: {
+            /** @enum {string} */
+            $type?: "assignee";
+            oldAssigneeDisplayName: null | string;
+            /** Format: uuid */
+            oldAssigneeId: null | string;
+            newAssigneeDisplayName: null | string;
+            /** Format: uuid */
+            newAssigneeId: null | string;
+        };
+        IssueHistoryItemChangeIssueHistoryAttachmentChange: {
+            /** @enum {string} */
+            $type?: "attachment";
+            fileName: null | string;
+            /** Format: uuid */
+            fileId: string;
+            changeAction?: components["schemas"]["ChangeAction"];
+        };
+        IssueHistoryItemChangeIssueHistoryContentChange: {
+            /** @enum {string} */
+            $type?: "content";
+            oldContent: null | string;
+            newContent: null | string;
+        };
+        IssueHistoryItemChangeIssueHistoryIssueChange: {
+            /** @enum {string} */
+            $type?: "issue";
+            changeAction?: components["schemas"]["ChangeAction"];
+        };
+        IssueHistoryItemChangeIssueHistoryPropertyChange: {
+            /** @enum {string} */
+            $type?: "property";
+            propertyName: string;
+            oldValueName: null | string;
+            /** Format: int64 */
+            oldValueId: null | number | string;
+            newValueName: null | string;
+            /** Format: int64 */
+            newValueId: null | number | string;
+        };
+        IssueHistoryItemChangeIssueHistoryStatusChange: {
+            /** @enum {string} */
+            $type?: "status";
+            oldStatusName: null | string;
+            /** Format: int64 */
+            oldStatusId: null | number | string;
+            newStatusName: null | string;
+            /** Format: int64 */
+            newStatusId: null | number | string;
         };
         IssueListAttributeDto: {
             value: string;
@@ -2617,6 +2776,12 @@ export interface components {
             isOwner: boolean;
             adminAccessLevel: components["schemas"]["AdminAccessLevel"];
         };
+        PaginationData: {
+            /** Format: int32 */
+            page?: number | string;
+            /** Format: int32 */
+            perPage?: number | string;
+        };
         PermittableSpace: {
             key: string;
             name: string;
@@ -2663,6 +2828,24 @@ export interface components {
             /** Format: int64 */
             organizationUserId?: number | string;
             userPermissions: components["schemas"]["UserPermissions"];
+        };
+        ShortPaginatedResultOfCommentDto: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["CommentDto"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
+        };
+        ShortPaginatedResultOfIssueHistoryItem: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["IssueHistoryItem"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfSearchIssueDto: {
             /** Format: int64 */

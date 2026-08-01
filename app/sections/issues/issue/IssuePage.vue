@@ -385,13 +385,14 @@ watch(
   min-width: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  padding-right: var(--space-1);
 }
 .issue-form-main > * {
   flex-shrink: 0;
 }
 .issue-form-content {
   align-items: start;
-  column-gap: var(--space-6);
+  column-gap: var(--space-5);
   display: grid;
   grid-area: content;
   grid-template-areas: 'main side';

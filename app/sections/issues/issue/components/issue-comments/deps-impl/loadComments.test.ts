@@ -4,9 +4,9 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createLoadComments } from './loadComments'
 
-test('maps comments from the issue', async () => {
-  const { client, paths } = createTestApiClient(() => ({
-    comments: [
+test('maps comments from the comments endpoint', async () => {
+  const { client, requests } = createTestApiClient(() => ({
+    data: [
       {
         canModify: true,
         createdAt: '2026-01-03T00:00:00Z',
@@ -16,6 +16,9 @@ test('maps comments from the issue', async () => {
         updatedAt: '2026-01-04T00:00:00Z',
       },
     ],
+    hasNextPage: false,
+    page: 0,
+    perPage: 100,
   }))
 
   assert.deepEqual(await createLoadComments(client)({ issueKey: 'ISS-1' }), {
@@ -31,5 +34,8 @@ test('maps comments from the issue', async () => {
     ],
     status: 'success',
   })
-  assert.deepEqual(paths(), ['/api/issues/ISS-1'])
+  const request = requests[0]!
+  assert.equal(request.method, 'POST')
+  assert.equal(new URL(request.url).pathname, '/api/issues/ISS-1/comments')
+  assert.deepEqual(await request.json(), { pagination: { page: 0, perPage: 100 } })
 })

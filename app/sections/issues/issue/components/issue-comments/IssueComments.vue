@@ -175,6 +175,7 @@ const remove = async (id: string) => {
 .issue-comments {
   display: grid;
   gap: var(--space-3);
+  padding-bottom: var(--space-1);
 }
 .issue-comment-list {
   display: grid;
