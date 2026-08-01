@@ -68,6 +68,7 @@ import { ArrowRight, CircleCheck, MessageCircle, SquareKanban } from '@lucide/vu
 
 import type { LoginPageDeps } from '~/sections/auth/login/LoginPage.deps'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
+import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLoginWidget'
 
 const props = defineProps<{
   botName: string
@@ -81,17 +82,13 @@ const telegramWindow = globalThis as typeof globalThis & {
 
 onMounted(() => {
   telegramWindow.onTelegramAuth = (user) => void loginWidget(user)
-
-  const script = document.createElement('script')
-  script.async = true
-  script.src = 'https://telegram.org/js/telegram-widget.js?22'
-  script.setAttribute('data-telegram-login', props.botName)
-  script.setAttribute('data-size', 'large')
-  script.setAttribute('data-onauth', 'onTelegramAuth(user)')
-  script.setAttribute('data-request-access', 'write')
-  script.setAttribute('data-radius', '10')
-  script.setAttribute('data-userpic', 'true')
-  widgetContainer.value?.appendChild(script)
+  if (widgetContainer.value) {
+    mountTelegramLoginWidget({
+      botName: props.botName,
+      callbackName: 'onTelegramAuth',
+      container: widgetContainer.value,
+    })
+  }
 })
 
 onBeforeUnmount(() => delete telegramWindow.onTelegramAuth)
