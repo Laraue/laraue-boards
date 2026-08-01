@@ -55,7 +55,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   statusSelect: {
     loadStatuses: vi.fn<IssuePageDeps['statusSelect']['loadStatuses']>(),
   },
-  view: vi.fn<IssuePageDeps['view']>(),
+  view: vi.fn<IssuePageDeps['view']>(async () => ({ data: issue, status: 'success' })),
   ...overrides,
 })
 
@@ -64,6 +64,7 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 afterEach(async () => {
   await currentWrapper?.unmount()
   currentWrapper = undefined
+  vi.restoreAllMocks()
 })
 
 it('lets the user close an unavailable issue dialog', async () => {
@@ -113,6 +114,30 @@ it('lets the user close the dialog while the issue is still loading', async () =
   expect(onClose).toHaveBeenCalledOnce()
 })
 
+it('warns before the back button closes a dirty issue', async () => {
+  const onClose = vi.fn<() => void>()
+  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
+
+  currentWrapper = await mountSuspended(IssueDialog, {
+    attachTo: document.body,
+    props: {
+      deps: createDeps(),
+      issueKey: 'ISS-1',
+      onClose,
+      onDeleted: vi.fn<(issueKey: string) => void>(),
+      onSaved: vi.fn<(issue: IssuePageSavedIssue) => void>(),
+    },
+    route: '/organizations/acme-ab12/spaces/product-AB12/12?issue=ISS-1',
+  })
+
+  await page.getByRole('button', { name: 'Edit description' }).click()
+  await page.getByLabelText('Content').fill('Changed description')
+  await page.getByRole('button', { name: 'Back' }).click()
+
+  expect(confirm).toHaveBeenCalledOnce()
+  expect(onClose).not.toHaveBeenCalled()
+})
+
 it('notifies the board and stays open after the issue is saved', async () => {
   const onClose = vi.fn<() => void>()
   const onSaved = vi.fn<(issue: IssuePageSavedIssue) => void>()
@@ -144,6 +169,7 @@ it('notifies the board and stays open after the issue is saved', async () => {
     route: '/organizations/acme-ab12/spaces/product-AB12/12?issue=ISS-1',
   })
 
+  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await page.getByRole('button', { name: 'Save changes' }).click()
 

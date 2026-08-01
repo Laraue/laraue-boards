@@ -3,57 +3,74 @@
     aria-label="Loading issue"
     class="issue-skeleton"
     role="status">
-    <div class="skeleton-header">
+    <div
+      aria-hidden="true"
+      class="skeleton-header">
       <span class="skeleton skeleton-back" />
-      <span class="skeleton skeleton-title" />
+      <span class="skeleton skeleton-copy skeleton-title">DEF-00</span>
       <span class="skeleton skeleton-link" />
     </div>
-    <div class="skeleton-form">
+    <div
+      aria-hidden="true"
+      class="skeleton-form">
       <div class="skeleton-content">
         <div class="skeleton-main">
-          <span class="skeleton skeleton-text" />
+          <div class="skeleton-description">
+            <span class="skeleton skeleton-description-title" />
+            <span class="skeleton skeleton-description-line" />
+            <span class="skeleton skeleton-description-line skeleton-description-line--short" />
+            <span class="skeleton skeleton-description-line skeleton-description-line--medium" />
+          </div>
           <div class="skeleton-attachments">
-            <span class="skeleton skeleton-section-label" />
+            <strong class="section-label skeleton skeleton-copy">Attachments</strong>
             <div class="skeleton-attachment-actions">
-              <span class="skeleton skeleton-attachment-button" />
-              <span class="skeleton skeleton-attachment-hint" />
+              <span class="secondary small skeleton skeleton-control">
+                <ImagePlus />
+                Choose images
+              </span>
+              <span class="muted skeleton skeleton-copy skeleton-attachment-hint">
+                or paste PNG/JPG with Ctrl+V
+              </span>
             </div>
           </div>
           <div class="skeleton-comments">
-            <span class="skeleton skeleton-section-label" />
+            <strong class="section-label skeleton skeleton-copy">Comments</strong>
             <span class="skeleton skeleton-comment-field" />
           </div>
         </div>
         <div class="skeleton-side">
           <template
-            v-for="field in 4"
-            :key="field">
-            <span class="skeleton skeleton-label" />
+            v-for="label in ['Space', 'Board', 'Status', 'Assignee']"
+            :key="label">
+            <span class="skeleton skeleton-copy skeleton-label">{{ label }}</span>
             <span class="skeleton skeleton-field" />
           </template>
-          <span class="skeleton skeleton-label" />
+          <span class="skeleton skeleton-copy skeleton-label">Owner</span>
           <div class="skeleton-person">
             <span class="skeleton skeleton-avatar" />
-            <span class="skeleton skeleton-name" />
+            <span class="skeleton skeleton-copy skeleton-name">win7user10</span>
           </div>
-          <span class="skeleton skeleton-label" />
-          <span class="skeleton skeleton-date" />
-          <span class="skeleton skeleton-label" />
-          <span class="skeleton skeleton-date" />
+          <span class="skeleton skeleton-copy skeleton-label">Created</span>
+          <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
+          <span class="skeleton skeleton-copy skeleton-label">Updated</span>
+          <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
         </div>
       </div>
       <div class="skeleton-actions">
-        <span class="skeleton skeleton-button skeleton-button--primary" />
-        <span class="skeleton skeleton-button" />
+        <span class="primary skeleton skeleton-control">Save changes</span>
+        <span class="secondary danger skeleton skeleton-control">Delete issue</span>
       </div>
     </div>
   </div>
 </template>
 
+<script setup lang="ts">
+import { ImagePlus } from '@lucide/vue'
+</script>
+
 <style scoped>
 .issue-skeleton {
   align-self: start;
-  animation: issue-skeleton-pulse 1.4s ease-in-out infinite;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   max-height: 100%;
@@ -61,9 +78,37 @@
 }
 
 .skeleton {
-  background: color-mix(in srgb, var(--color-border) 40%, transparent);
+  animation: issue-skeleton-shimmer 1.4s linear infinite;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--color-border) 38%, transparent) 35%,
+    color-mix(in srgb, var(--color-border) 65%, transparent) 50%,
+    color-mix(in srgb, var(--color-border) 38%, transparent) 65%
+  );
+  background-size: 220% 100%;
   border-radius: var(--radius-control);
   display: block;
+}
+
+.skeleton-copy,
+.skeleton-control {
+  color: transparent;
+  user-select: none;
+}
+
+.skeleton-copy {
+  justify-self: start;
+  width: max-content;
+}
+
+.skeleton-control {
+  border-color: transparent;
+  display: inline-flex;
+  pointer-events: none;
+}
+
+.skeleton-control .lucide {
+  visibility: hidden;
 }
 
 .skeleton-header {
@@ -79,8 +124,8 @@
 }
 
 .skeleton-title {
-  height: 28px;
-  width: 104px;
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
 }
 
 .skeleton-link {
@@ -124,9 +169,34 @@
   flex-shrink: 0;
 }
 
-.skeleton-text {
+.skeleton-description {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
+  gap: var(--space-3);
   min-height: 200px;
+  padding: var(--space-3);
+}
+
+.skeleton-description-title {
+  height: 20px;
+  width: 42%;
+}
+
+.skeleton-description-line {
+  border-radius: var(--radius-small);
+  height: 12px;
+  width: 92%;
+}
+
+.skeleton-description-line--short {
+  width: 58%;
+}
+
+.skeleton-description-line--medium {
+  width: 76%;
 }
 
 .skeleton-attachments,
@@ -141,20 +211,8 @@
   gap: var(--space-2);
 }
 
-.skeleton-section-label {
-  border-radius: var(--radius-small);
-  height: 14px;
-  width: 88px;
-}
-
-.skeleton-attachment-button {
-  height: var(--control-height);
-  width: 148px;
-}
-
 .skeleton-attachment-hint {
-  height: 14px;
-  width: 200px;
+  font-size: var(--font-size-small);
 }
 
 .skeleton-comment-field {
@@ -176,8 +234,7 @@
 
 .skeleton-label {
   border-radius: var(--radius-small);
-  height: 14px;
-  width: 72px;
+  font-weight: var(--font-weight-semibold);
 }
 
 .skeleton-field {
@@ -198,13 +255,11 @@
 }
 
 .skeleton-name {
-  height: 14px;
-  width: 104px;
+  white-space: nowrap;
 }
 
 .skeleton-date {
-  height: 14px;
-  width: 140px;
+  white-space: nowrap;
 }
 
 .skeleton-actions {
@@ -212,23 +267,14 @@
   gap: var(--space-3);
 }
 
-.skeleton-button {
-  height: var(--control-height);
-  width: 116px;
-}
-
-.skeleton-button--primary {
-  width: 140px;
-}
-
-@keyframes issue-skeleton-pulse {
-  50% {
-    opacity: 0.45;
+@keyframes issue-skeleton-shimmer {
+  to {
+    background-position-x: -220%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .issue-skeleton {
+  .skeleton {
     animation: none;
   }
 }
@@ -249,11 +295,6 @@
   .skeleton-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .skeleton-button,
-  .skeleton-button--primary {
-    width: auto;
   }
 }
 </style>

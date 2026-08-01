@@ -55,11 +55,9 @@
           @submit.prevent="save">
           <div class="issue-form-content">
             <div class="issue-form-main">
-              <textarea
+              <IssueDescription
                 v-model="state.content"
-                aria-label="Content"
-                :disabled="!issue.canEdit"
-                rows="8" />
+                :disabled="!issue.canEdit" />
               <IssueAttachments
                 :key="issue.issueKey"
                 :attachments="issue.attachments"
@@ -182,6 +180,7 @@ import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
 import IssueComments from './components/issue-comments/IssueComments.vue'
+import IssueDescription from './components/IssueDescription.vue'
 import IssueSkeleton from './components/IssueSkeleton.vue'
 import type { IssuePageDeps } from './IssuePage.deps'
 import type { IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
@@ -389,11 +388,6 @@ watch(
 }
 .issue-form-main > * {
   flex-shrink: 0;
-}
-.issue-form-main > textarea {
-  flex-grow: 1;
-  max-height: none;
-  min-height: 200px;
 }
 .issue-form-content {
   align-items: start;

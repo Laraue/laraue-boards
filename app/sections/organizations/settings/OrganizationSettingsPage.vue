@@ -41,17 +41,24 @@
             Changes saved.
           </p>
           <p
-            v-if="submitMessage"
+            v-if="submitMessage || removeMessage"
             class="form-error">
-            {{ submitMessage }}
+            {{ submitMessage || removeMessage }}
           </p>
-          <div
-            v-if="page.canUpdate"
-            class="form-actions">
+          <div class="form-actions">
             <button
+              v-if="page.canUpdate"
               class="primary"
-              :disabled="submitting">
+              :disabled="busy">
               {{ submitting ? 'Saving…' : 'Save changes' }}
+            </button>
+            <button
+              v-if="page.canDelete"
+              class="secondary danger"
+              :disabled="busy"
+              type="button"
+              @click="remove(page.id)">
+              {{ removing ? 'Deleting…' : 'Delete organization' }}
             </button>
           </div>
         </form>
@@ -68,6 +75,7 @@ import type { UpdateOrganizationInput } from '~/sections/organizations/settings/
 
 const props = defineProps<{
   deps: OrganizationSettingsPageDeps
+  onDeleted: () => Promise<void> | void
   onUpdated: () => Promise<void> | void
 }>()
 
@@ -105,6 +113,18 @@ const {
 const submitForm = (input: UpdateOrganizationInput): void => {
   state.saved = false
   void submit(input)
+}
+
+const {
+  execute: removeOrganization,
+  message: removeMessage,
+  pending: removing,
+} = useAction(props.deps.remove, { onSuccess: props.onDeleted })
+const busy = computed(() => submitting.value || removing.value)
+const remove = (id: string): void => {
+  if (!busy.value && confirm('Delete this organization?')) {
+    void removeOrganization({ id })
+  }
 }
 </script>
 

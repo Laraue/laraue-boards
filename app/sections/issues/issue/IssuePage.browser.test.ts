@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
-import { page } from 'vitest/browser'
+import { page, userEvent } from 'vitest/browser'
 
 import type { IssuePageDeps } from './IssuePage.deps'
 import type { IssuePageViewModel } from './IssuePage.types'
@@ -99,6 +99,40 @@ it('shows the loaded issue', async () => {
   await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
 })
 
+it('previews markdown content', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        data: { ...issue, content: '# Steps\n\nUse **preview**.' },
+        status: 'success',
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('heading', { name: 'Steps' })).toBeInTheDocument()
+  await expect.element(page.getByText('preview', { exact: true })).toBeInTheDocument()
+})
+
+it('formats selected description text', async () => {
+  await mount(createDeps())
+
+  await page.getByRole('button', { name: 'Edit description' }).click()
+  await page.getByLabelText('Content').fill('Fix the bug')
+  const textarea = document.querySelector<HTMLTextAreaElement>('textarea[aria-label="Content"]')
+  textarea?.setSelectionRange(0, 3)
+  await page.getByRole('button', { name: 'Bold' }).click()
+
+  await expect.element(page.getByLabelText('Content')).toHaveValue('**Fix** the bug')
+  await userEvent.keyboard('{Control>}z{/Control}')
+  await expect.element(page.getByLabelText('Content')).toHaveValue('Fix the bug')
+
+  textarea?.setSelectionRange(0, textarea.value.length)
+  await page.getByLabelText('Heading level').selectOptions('###')
+  await expect.element(page.getByLabelText('Content')).toHaveValue('### Fix the bug')
+  await page.getByRole('button', { name: 'Return to visual' }).click()
+  await expect.element(page.getByRole('heading', { name: 'Fix the bug' })).toBeInTheDocument()
+})
+
 it('shows comments loaded after creating one', async () => {
   const comment = {
     canModify: true,
@@ -175,6 +209,7 @@ it('stays on the page after the issue is saved', async () => {
     onBack,
   )
 
+  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await page.getByRole('button', { name: 'Save changes' }).click()
 
