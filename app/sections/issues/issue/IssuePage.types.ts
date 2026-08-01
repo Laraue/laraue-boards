@@ -1,7 +1,7 @@
 import type { IssueAttachmentViewModel } from '~/components/issue-attachments/IssueAttachments.types'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 
-import type { IssueCommentViewModel } from './components/issue-comments/IssueComments.types'
+import type { IssueCommentViewModel } from './components/IssueComments/IssueComments.types'
 
 type IssuePageAttributeViewModel = IssueAttributeField & {
   value: string

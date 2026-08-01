@@ -33,9 +33,22 @@ A typical page section contains:
 - `deps-impl/*.test.ts` — a unit test for mapping and response handling when an implementation
   contains meaningful transformation or branching.
 
-A nested component follows the same rule and owns its own `.types.ts`, `.deps.ts`, and, where
-external operations are needed, `deps-impl/`. The parent receives nested dependencies in its
-contract, while the composition root in `deps-impl/index.ts` builds the dependency tree.
+A nested component lives in its parent's `components/` directory. A component module groups its
+files in a PascalCase directory, and its direct child components always live in its own
+`components/` directory. Component-owned types shared with its dependencies or consumers live in
+`<Component>.types.ts`; keep local-only types in the component and do not collect nested-component
+types in the page's `.types.ts`. External operations use `<Component>.deps.ts` and `deps-impl/`. The
+parent receives nested dependencies in its contract, while the composition root in
+`deps-impl/index.ts` builds the dependency tree.
+
+## Component code conventions
+
+Each Vue component keeps its mutable UI state in one `reactive` object named `state`. Computed
+values, template refs, model refs, and refs returned by composables are not component-owned mutable
+state and remain separate.
+
+Separate logical groups of top-level declarations, functions, watchers, and style rules with blank
+lines. Keep lines that form one declaration or one control-flow block together.
 
 ## Contracts and API boundary
 

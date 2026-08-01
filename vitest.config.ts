@@ -14,6 +14,9 @@ export default defineConfig({
   test: {
     projects: [
       defineVitestProject({
+        optimizeDeps: {
+          include: ['diff-sequences'],
+        },
         root: process.cwd(),
         test: {
           browser: {

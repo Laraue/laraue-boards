@@ -10,10 +10,10 @@
       {{ state.message }}
     </p>
     <div
-      v-if="comments.length"
+      v-if="state.comments.length"
       class="issue-comment-list">
       <article
-        v-for="comment in comments"
+        v-for="comment in state.comments"
         :key="comment.id"
         class="issue-comment">
         <span
@@ -119,51 +119,69 @@ const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
   timeStyle: 'short',
   timeZone: 'UTC',
 })
-const state = reactive({ editingId: '', editText: '', message: '', newText: '', pendingId: '' })
-const comments = ref(props.initialComments)
+
+const state = reactive({
+  comments: props.initialComments,
+  editingId: '',
+  editText: '',
+  message: '',
+  newText: '',
+  pendingId: '',
+})
+
 const formatDate = (value: string) => dateTimeFormatter.format(new Date(value))
+
 const refreshComments = async () => {
   const result = await props.deps.load({ issueKey: props.issueKey })
+
   if (result.status === 'success') {
-    comments.value = result.data
+    state.comments = result.data
   } else {
     state.message = 'Could not load comments.'
   }
 }
+
 const run = async (pendingId: string, action: () => ReturnType<IssueCommentsDeps['create']>) => {
   state.message = ''
   state.pendingId = pendingId
   const result = await action()
+
   if (result.status !== 'success') {
     state.pendingId = ''
     state.message =
       result.status === 'validation-error' ? result.message : 'Could not save comment.'
     return false
   }
+
   await refreshComments()
   state.pendingId = ''
   return true
 }
+
 const create = async () => {
   const text = state.newText.trim()
   if (text && (await run('new', () => props.deps.create({ issueKey: props.issueKey, text })))) {
     state.newText = ''
   }
 }
+
 const startEdit = (comment: IssueCommentViewModel) => {
   state.editingId = comment.id
   state.editText = comment.text
 }
+
 const cancelEdit = () => {
   state.editingId = ''
   state.editText = ''
 }
+
 const update = async (id: string) => {
   const text = state.editText.trim()
   if (text && (await run(id, () => props.deps.update({ id, text })))) {
     cancelEdit()
   }
 }
+
 const remove = async (id: string) => {
   if (confirm('Delete this comment?')) {
     await run(id, () => props.deps.delete({ id }))
@@ -177,32 +195,38 @@ const remove = async (id: string) => {
   gap: var(--space-3);
   padding-bottom: var(--space-1);
 }
+
 .issue-comment-list {
   display: grid;
   gap: var(--space-4);
 }
+
 .issue-comment {
   align-items: start;
   display: grid;
   gap: var(--space-3);
   grid-template-columns: auto minmax(0, 1fr);
 }
+
 .issue-comment > .avatar {
   font-size: var(--font-size-caption);
   height: 28px;
   width: 28px;
 }
+
 .issue-comment-body {
   display: grid;
   gap: var(--space-1);
   justify-items: start;
   min-width: 0;
 }
+
 .issue-comment p {
   margin: 0;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
+
 .issue-comment-bubble {
   background: var(--color-soft);
   border-radius: var(--radius-card);
@@ -210,6 +234,7 @@ const remove = async (id: string) => {
   max-width: 100%;
   padding: var(--space-1) var(--space-2);
 }
+
 .issue-comment-head {
   align-items: center;
   color: var(--color-muted);
@@ -219,33 +244,41 @@ const remove = async (id: string) => {
   justify-self: stretch;
   min-height: var(--icon-btn-size-small);
 }
+
 .issue-comment-name {
   color: var(--color-text);
   font-weight: var(--font-weight-semibold);
 }
+
 .issue-comment-actions {
   display: flex;
   gap: var(--space-1);
   margin-left: auto;
 }
+
 .issue-comment-actions .icon-btn {
   background: transparent;
   border: 0;
   color: var(--color-muted);
 }
+
 .issue-comment-actions .icon-btn:hover:not(:disabled) {
   background: var(--color-soft);
   color: var(--color-text);
 }
+
 .issue-comment-actions .icon-btn.danger:hover:not(:disabled) {
   color: var(--color-danger);
 }
+
 .issue-comment-actions .spin {
   animation: var(--animation-spin);
 }
+
 .issue-comment-body textarea {
   width: 100%;
 }
+
 .issue-comment-form-actions {
   gap: var(--space-1);
   margin-top: 0;

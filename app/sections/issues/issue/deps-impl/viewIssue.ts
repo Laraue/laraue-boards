@@ -2,7 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
 
-import { createLoadComments } from '../components/issue-comments/deps-impl/loadComments'
+import { createLoadComments } from '../components/IssueComments/deps-impl/loadComments'
 import type { ViewIssue } from '../IssuePage.deps'
 import type { IssuePageViewModel } from '../IssuePage.types'
 
@@ -79,14 +79,19 @@ export const createViewIssue =
   async ({ issueKey, signal }) => {
     const [issue, comments] = await Promise.all([
       executeQuery({
-        map: (issue) => (issue === undefined ? undefined : mapIssue(issue, client.baseUrl)),
+        map: (response) =>
+          response === undefined ? undefined : mapIssue(response, client.baseUrl),
         request: () =>
           client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
       }),
       createLoadComments(client)({ issueKey, signal }),
     ])
 
-    if (issue.status !== 'success') return issue
-    if (comments.status !== 'success') return comments
+    if (issue.status !== 'success') {
+      return issue
+    }
+    if (comments.status !== 'success') {
+      return comments
+    }
     return { data: { ...issue.data, comments: comments.data }, status: 'success' }
   }

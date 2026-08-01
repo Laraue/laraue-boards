@@ -48,6 +48,9 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
     update: vi.fn<IssuePageDeps['comments']['update']>(),
   },
   deleteIssue: vi.fn<IssuePageDeps['deleteIssue']>(),
+  history: {
+    load: vi.fn<IssuePageDeps['history']['load']>(),
+  },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {
     loadSpaces: vi.fn<IssuePageDeps['spaceSelect']['loadSpaces']>(),
