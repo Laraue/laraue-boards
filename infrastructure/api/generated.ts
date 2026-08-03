@@ -2361,8 +2361,6 @@ export interface components {
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
-        /** @enum {unknown} */
-        ChangeAction: "Create" | "Update" | "Delete";
         ChangesIssuesOrderRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             issueKeys: string[];
@@ -2601,17 +2599,17 @@ export interface components {
             createdAt: string;
             owner: components["schemas"]["UserDetails"];
             changes: components["schemas"]["IssueHistoryItemChange"][];
+            entityType: components["schemas"]["LogEntityType"];
+            action: components["schemas"]["LogAction"];
         };
-        IssueHistoryItemChange: components["schemas"]["IssueHistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryIssueChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAttachmentChange"];
+        IssueHistoryItemChange: components["schemas"]["IssueHistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistorySpaceChange"];
         IssueHistoryItemChangeIssueHistoryAssigneeChange: {
             /** @enum {string} */
             $type?: "assignee";
             oldAssigneeDisplayName: null | string;
-            /** Format: uuid */
-            oldAssigneeId: null | string;
+            oldAssigneeColor: null | string;
             newAssigneeDisplayName: null | string;
-            /** Format: uuid */
-            newAssigneeId: null | string;
+            newAssigneeColor: null | string;
         };
         IssueHistoryItemChangeIssueHistoryAttachmentChange: {
             /** @enum {string} */
@@ -2619,7 +2617,6 @@ export interface components {
             fileName: null | string;
             /** Format: uuid */
             fileId: string;
-            changeAction?: components["schemas"]["ChangeAction"];
         };
         IssueHistoryItemChangeIssueHistoryContentChange: {
             /** @enum {string} */
@@ -2627,31 +2624,38 @@ export interface components {
             oldContent: null | string;
             newContent: null | string;
         };
-        IssueHistoryItemChangeIssueHistoryIssueChange: {
+        IssueHistoryItemChangeIssueHistoryEpicChange: {
             /** @enum {string} */
-            $type?: "issue";
-            changeAction?: components["schemas"]["ChangeAction"];
+            $type?: "epic";
+            oldEpicName: null | string;
+            oldEpicColor: null | string;
+            newEpicName: null | string;
+            newEpicColor: null | string;
         };
         IssueHistoryItemChangeIssueHistoryPropertyChange: {
             /** @enum {string} */
             $type?: "property";
             propertyName: string;
             oldValueName: null | string;
-            /** Format: int64 */
-            oldValueId: null | number | string;
+            oldValueColor: null | string;
             newValueName: null | string;
-            /** Format: int64 */
-            newValueId: null | number | string;
+            newValueColor: null | string;
+        };
+        IssueHistoryItemChangeIssueHistorySpaceChange: {
+            /** @enum {string} */
+            $type?: "space";
+            oldSpaceName: null | string;
+            oldSpaceColor: null | string;
+            newSpaceName: null | string;
+            newSpaceColor: null | string;
         };
         IssueHistoryItemChangeIssueHistoryStatusChange: {
             /** @enum {string} */
             $type?: "status";
             oldStatusName: null | string;
-            /** Format: int64 */
-            oldStatusId: null | number | string;
+            oldStatusColor: null | string;
             newStatusName: null | string;
-            /** Format: int64 */
-            newStatusId: null | number | string;
+            newStatusColor: null | string;
         };
         IssueListAttributeDto: {
             value: string;
@@ -2690,6 +2694,10 @@ export interface components {
             property: components["schemas"]["IssueProperty"];
             direction: components["schemas"]["SortingDirection"];
         };
+        /** @enum {unknown} */
+        LogAction: "Create" | "Update" | "Delete";
+        /** @enum {unknown} */
+        LogEntityType: "Issue" | "Comment";
         LoginRequest: {
             /** Format: uuid */
             userId?: string;

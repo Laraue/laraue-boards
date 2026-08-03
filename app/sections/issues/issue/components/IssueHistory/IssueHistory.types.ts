@@ -2,9 +2,11 @@ import type { IssueDescriptionDiffLine } from '../IssueDescription/components/Is
 
 export type IssueHistoryChangeViewModel = {
   diff?: IssueDescriptionDiffLine[]
-  kind?: 'description'
+  kind?: 'assignee' | 'board' | 'description' | 'space'
   label: string
+  newColor?: null | string
   newValue?: string
+  oldColor?: null | string
   oldValue?: string
 }
 

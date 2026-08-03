@@ -8,58 +8,78 @@ import { diffLines } from './diffLines'
 
 type Schemas = components['schemas']
 type Change = Schemas['IssueHistoryItemChange']
+type Action = Schemas['LogAction']
+type EntityType = Schemas['LogEntityType']
 
-const value = (name: null | string, id?: null | number | string) =>
-  name ?? (id == null ? 'None' : String(id))
+const value = (name: null | string) => name ?? 'None'
 
-const mapChange = (change: Change): IssueHistoryChangeViewModel => {
+const actionLabel = (entityType: EntityType, action: Action) =>
+  `${entityType} ${action === 'Create' ? 'created' : action === 'Delete' ? 'deleted' : 'updated'}`
+
+const mapChange = (
+  change: Change,
+  action: Action,
+  entityType: EntityType,
+): IssueHistoryChangeViewModel => {
   switch (change.$type) {
     case 'content':
       return {
         diff: diffLines(change.oldContent ?? '', change.newContent ?? ''),
         kind: 'description',
-        label: 'Description changed',
+        label: entityType === 'Comment' ? actionLabel(entityType, action) : 'Description changed',
       }
     case 'assignee':
       return {
+        kind: 'assignee',
         label: 'Assignee changed',
-        newValue: value(change.newAssigneeDisplayName, change.newAssigneeId),
-        oldValue: value(change.oldAssigneeDisplayName, change.oldAssigneeId),
+        newColor: change.newAssigneeColor,
+        newValue: value(change.newAssigneeDisplayName),
+        oldColor: change.oldAssigneeColor,
+        oldValue: value(change.oldAssigneeDisplayName),
       }
     case 'status':
       return {
         label: 'Status changed',
-        newValue: value(change.newStatusName, change.newStatusId),
-        oldValue: value(change.oldStatusName, change.oldStatusId),
+        newColor: change.newStatusColor,
+        newValue: value(change.newStatusName),
+        oldColor: change.oldStatusColor,
+        oldValue: value(change.oldStatusName),
       }
     case 'property':
       return {
         label: `${change.propertyName} changed`,
-        newValue: value(change.newValueName, change.newValueId),
-        oldValue: value(change.oldValueName, change.oldValueId),
+        newColor: change.newValueColor,
+        newValue: value(change.newValueName),
+        oldColor: change.oldValueColor,
+        oldValue: value(change.oldValueName),
       }
     case 'attachment':
       return {
         label: `${
-          change.changeAction === 'Delete'
-            ? 'Removed'
-            : change.changeAction === 'Create'
-              ? 'Added'
-              : 'Updated'
+          action === 'Delete' ? 'Removed' : action === 'Create' ? 'Added' : 'Updated'
         } attachment`,
         newValue: change.fileName || 'Untitled file',
       }
-    case 'issue':
+    case 'epic':
       return {
-        label:
-          change.changeAction === 'Create'
-            ? 'Issue created'
-            : change.changeAction === 'Delete'
-              ? 'Issue deleted'
-              : 'Issue updated',
+        kind: 'board',
+        label: 'Board changed',
+        newColor: change.newEpicColor,
+        newValue: value(change.newEpicName),
+        oldColor: change.oldEpicColor,
+        oldValue: value(change.oldEpicName),
+      }
+    case 'space':
+      return {
+        kind: 'space',
+        label: 'Space changed',
+        newColor: change.newSpaceColor,
+        newValue: value(change.newSpaceName),
+        oldColor: change.oldSpaceColor,
+        oldValue: value(change.oldSpaceName),
       }
     default:
-      return { label: 'Issue updated' }
+      return { label: actionLabel(entityType, action) }
   }
 }
 
@@ -72,15 +92,23 @@ export const createLoadIssueHistory =
           ? undefined
           : {
               hasNextPage: result.hasNextPage,
-              items: result.data.map((item) => ({
-                changes: item.changes.map(mapChange),
-                createdAt: item.createdAt,
-                owner: {
-                  color: item.owner.color,
-                  initials: item.owner.initials,
-                  name: item.owner.displayName,
-                },
-              })),
+              items: result.data.map((item) => {
+                const changes = item.changes.map((change) =>
+                  mapChange(change, item.action, item.entityType),
+                )
+
+                return {
+                  changes: changes.length
+                    ? changes
+                    : [{ label: actionLabel(item.entityType, item.action) }],
+                  createdAt: item.createdAt,
+                  owner: {
+                    color: item.owner.color,
+                    initials: item.owner.initials,
+                    name: item.owner.displayName,
+                  },
+                }
+              }),
             },
       request: () =>
         client.POST('/api/issues/{key}/history', {

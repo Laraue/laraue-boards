@@ -36,14 +36,45 @@
                 <span
                   v-if="change.oldValue !== undefined"
                   :title="change.oldValue">
+                  <BoardIcon
+                    v-if="change.kind === 'board'"
+                    :style="{ color: change.oldColor ?? undefined }" />
+                  <SpaceIcon
+                    v-else-if="change.kind === 'space'"
+                    :style="{ color: change.oldColor ?? undefined }" />
+                  <span
+                    v-else-if="change.kind === 'assignee' && change.oldValue !== 'None'"
+                    class="avatar"
+                    :style="{ background: change.oldColor ?? 'var(--color-border)' }">
+                    {{ initials(change.oldValue) }}
+                  </span>
+                  <i
+                    v-else-if="change.oldColor"
+                    :style="{ background: change.oldColor }" />
                   {{ change.oldValue }}
                 </span>
                 <ArrowRight v-if="change.oldValue !== undefined" />
-                <strong
+                <span
                   v-if="change.newValue !== undefined"
+                  class="history-new-value"
                   :title="change.newValue">
+                  <BoardIcon
+                    v-if="change.kind === 'board'"
+                    :style="{ color: change.newColor ?? undefined }" />
+                  <SpaceIcon
+                    v-else-if="change.kind === 'space'"
+                    :style="{ color: change.newColor ?? undefined }" />
+                  <span
+                    v-else-if="change.kind === 'assignee' && change.newValue !== 'None'"
+                    class="avatar"
+                    :style="{ background: change.newColor ?? 'var(--color-border)' }">
+                    {{ initials(change.newValue) }}
+                  </span>
+                  <i
+                    v-else-if="change.newColor"
+                    :style="{ background: change.newColor }" />
                   {{ change.newValue }}
-                </strong>
+                </span>
               </div>
             </div>
           </div>
@@ -81,6 +112,8 @@
 <script setup lang="ts">
 import { ArrowRight, LoaderCircle } from '@lucide/vue'
 
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
+
 import IssueDescriptionDiff from '../IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.vue'
 import type { IssueHistoryDeps } from './IssueHistory.deps'
 import type { IssueHistoryChangeViewModel, IssueHistoryItemViewModel } from './IssueHistory.types'
@@ -106,6 +139,14 @@ const hasValues = (change: IssueHistoryChangeViewModel) =>
   change.oldValue !== undefined || change.newValue !== undefined
 
 const formatDate = (date: string) => dateTimeFormatter.format(new Date(date))
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((part) => part.charAt(0))
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
 
 const load = async (replace = false) => {
   if (state.pending || state.refreshing) {
@@ -228,14 +269,29 @@ defineExpose({ refresh })
   min-width: 0;
 }
 
-.history-values > span,
-.history-values > strong {
+.history-values > span {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.history-values > strong {
+.history-values i:not(.avatar) {
+  border-radius: 50%;
+  flex: 0 0 auto;
+  height: 8px;
+  width: 8px;
+}
+
+.history-values .avatar {
+  font-size: 9px;
+  height: 20px;
+  width: 20px;
+}
+
+.history-new-value {
   color: var(--color-text);
 }
 
