@@ -26,12 +26,12 @@ const mapChange = (
       return {
         diff: diffLines(change.oldContent ?? '', change.newContent ?? ''),
         kind: 'description',
-        label: entityType === 'Comment' ? actionLabel(entityType, action) : 'Description changed',
+        label: entityType === 'Comment' ? actionLabel(entityType, action) : 'Description',
       }
     case 'assignee':
       return {
         kind: 'assignee',
-        label: 'Assignee changed',
+        label: 'Assignee',
         newColor: change.newAssigneeColor,
         newValue: value(change.newAssigneeDisplayName),
         oldColor: change.oldAssigneeColor,
@@ -39,7 +39,7 @@ const mapChange = (
       }
     case 'status':
       return {
-        label: 'Status changed',
+        label: 'Status',
         newColor: change.newStatusColor,
         newValue: value(change.newStatusName),
         oldColor: change.oldStatusColor,
@@ -47,7 +47,7 @@ const mapChange = (
       }
     case 'property':
       return {
-        label: `${change.propertyName} changed`,
+        label: change.propertyName,
         newColor: change.newValueColor,
         newValue: value(change.newValueName),
         oldColor: change.oldValueColor,
@@ -63,7 +63,7 @@ const mapChange = (
     case 'epic':
       return {
         kind: 'board',
-        label: 'Board changed',
+        label: 'Board',
         newColor: change.newEpicColor,
         newValue: value(change.newEpicName),
         oldColor: change.oldEpicColor,
@@ -72,7 +72,7 @@ const mapChange = (
     case 'space':
       return {
         kind: 'space',
-        label: 'Space changed',
+        label: 'Space',
         newColor: change.newSpaceColor,
         newValue: value(change.newSpaceName),
         oldColor: change.oldSpaceColor,
@@ -92,10 +92,17 @@ export const createLoadIssueHistory =
           ? undefined
           : {
               hasNextPage: result.hasNextPage,
-              items: result.data.map((item) => {
-                const changes = item.changes.map((change) =>
-                  mapChange(change, item.action, item.entityType),
-                )
+              items: result.data.flatMap((item) => {
+                const changes = item.changes
+                  .map((change) => mapChange(change, item.action, item.entityType))
+                  .filter(
+                    (change) =>
+                      change.oldValue === undefined || change.oldValue !== change.newValue,
+                  )
+
+                if (item.changes.length && !changes.length) {
+                  return []
+                }
 
                 return {
                   changes: changes.length

@@ -5,7 +5,9 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 import { createSaveIssue } from './saveIssue'
 
 test('returns the new issue key after moving it to another space', async () => {
-  const { client } = createTestApiClient(() => new Response(null, { status: 204 }))
+  const { client } = createTestApiClient((request) =>
+    request.method === 'PUT' ? new Response(null, { status: 204 }) : { 'ISS-42': 'BACKLOG-9000' },
+  )
 
   const result = await createSaveIssue(client)({
     assigneeId: '4',
@@ -22,7 +24,12 @@ test('returns the new issue key after moving it to another space', async () => {
     statusId: '3',
   })
 
-  assert.equal(result.status === 'success' ? result.data.issueKey : undefined, 'BRD-42')
+  assert.deepEqual(
+    result.status === 'success'
+      ? { issueKey: result.data.issueKey, previousIssueKey: result.data.previousIssueKey }
+      : undefined,
+    { issueKey: 'BACKLOG-9000', previousIssueKey: 'ISS-42' },
+  )
 })
 
 test('reports a partial save when moving the issue fails', async () => {

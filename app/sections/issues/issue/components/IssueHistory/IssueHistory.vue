@@ -3,10 +3,10 @@
     aria-label="Issue history"
     class="issue-history">
     <div
-      v-if="state.items.length"
+      v-if="groups.length"
       class="history-list">
       <article
-        v-for="(item, index) in state.items"
+        v-for="(item, index) in groups"
         :key="`${item.createdAt}-${index}`"
         class="history-item">
         <span
@@ -17,7 +17,11 @@
         <div class="history-content">
           <div class="history-head">
             <strong>{{ item.owner.name }}</strong>
-            <time :datetime="item.createdAt">{{ formatDate(item.createdAt) }}</time>
+            <time
+              :datetime="item.createdAt"
+              :title="formatDate(item.createdAt)">
+              {{ formatTime(item.createdAt) }}
+            </time>
           </div>
           <div class="history-changes">
             <div
@@ -135,10 +139,43 @@ const state = reactive({
   refreshing: false,
 })
 
+const timeFormatter = new Intl.DateTimeFormat('en-US', {
+  timeStyle: 'short',
+  timeZone: 'UTC',
+})
+
+const utc = (date: string) => new Date(date).toISOString()
+
+// Entries written by one save land in the same minute — show them as a single event.
+// ponytail: minute buckets also merge two separate saves a few seconds apart; group by a
+// server-side save id if that ever matters.
+const groups = computed(() =>
+  state.items.reduce<IssueHistoryItemViewModel[]>((result, item) => {
+    const last = result.at(-1)
+
+    if (
+      last &&
+      last.owner.name === item.owner.name &&
+      utc(last.createdAt).slice(0, 16) === utc(item.createdAt).slice(0, 16)
+    ) {
+      last.changes = [...last.changes, ...item.changes]
+
+      return result
+    }
+
+    return [...result, { ...item, changes: [...item.changes] }]
+  }, []),
+)
+
 const hasValues = (change: IssueHistoryChangeViewModel) =>
   change.oldValue !== undefined || change.newValue !== undefined
 
 const formatDate = (date: string) => dateTimeFormatter.format(new Date(date))
+
+const formatTime = (date: string) =>
+  utc(date).slice(0, 10) === new Date().toISOString().slice(0, 10)
+    ? timeFormatter.format(new Date(date))
+    : dateTimeFormatter.format(new Date(date))
 
 const initials = (name: string) =>
   name
@@ -227,10 +264,15 @@ defineExpose({ refresh })
   z-index: 1;
 }
 
-.history-content,
-.history-changes {
+.history-content {
   display: grid;
   gap: var(--space-2);
+  min-width: 0;
+}
+
+.history-changes {
+  display: grid;
+  gap: var(--space-1);
   min-width: 0;
 }
 
@@ -248,12 +290,10 @@ defineExpose({ refresh })
 
 .history-change {
   align-items: center;
-  background: var(--color-soft);
-  border-radius: var(--radius-control);
+  color: var(--color-muted);
   display: flex;
   gap: var(--space-2);
   min-width: 0;
-  padding: var(--space-2) var(--space-3);
 }
 
 .history-change--description {

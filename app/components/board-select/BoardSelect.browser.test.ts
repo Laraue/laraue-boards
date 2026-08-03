@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
-import { page } from 'vitest/browser'
+import { page, userEvent } from 'vitest/browser'
 
 import type { BoardSelectDeps } from './BoardSelect.deps'
 import BoardSelect from './BoardSelect.vue'
@@ -30,6 +30,29 @@ it('loads boards when the user focuses the select', async () => {
   await page.getByLabelText('Board').click()
 
   await expect.element(page.getByRole('option', { name: 'Sprint board' })).toBeInTheDocument()
+})
+
+it('clears the selected board when the space changes', async () => {
+  const loadBoards = vi.fn<BoardSelectDeps['loadBoards']>(async ({ spaceKey }) => ({
+    data:
+      spaceKey === 'backlog'
+        ? [{ label: 'Backlog board', value: '20' }]
+        : [{ label: 'Sprint board', value: '12' }],
+    status: 'success',
+  }))
+  await mount({ loadBoards })
+  await page.getByLabelText('Board').click()
+  await page.getByLabelText('Board').selectOptions('12')
+
+  await userEvent.click(document.body)
+  await currentWrapper!.setProps({ spaceKey: 'backlog' })
+
+  expect(loadBoards).toHaveBeenCalledOnce()
+  await expect.element(page.getByLabelText('Board')).toHaveValue('')
+
+  await page.getByLabelText('Board').click()
+
+  await expect.element(page.getByRole('option', { name: 'Backlog board' })).toBeInTheDocument()
 })
 
 it('hides the excluded board from the destination choices', async () => {

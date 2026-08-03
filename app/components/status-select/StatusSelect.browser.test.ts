@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
-import { page } from 'vitest/browser'
+import { page, userEvent } from 'vitest/browser'
 
 import type { StatusSelectDeps } from './StatusSelect.deps'
 import StatusSelect from './StatusSelect.vue'
@@ -33,16 +33,21 @@ it('loads statuses when the user focuses the select', async () => {
 })
 
 it('clears the selected status when the board changes', async () => {
-  const loadStatuses = vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
-    data: [{ label: 'To do', value: '3' }],
+  const loadStatuses = vi.fn<StatusSelectDeps['loadStatuses']>(async ({ boardId }) => ({
+    data: boardId === '13' ? [{ label: 'Done', value: '5' }] : [{ label: 'To do', value: '3' }],
     status: 'success',
   }))
   await mount({ loadStatuses })
   await page.getByLabelText('Status').click()
   await page.getByLabelText('Status').selectOptions('3')
 
+  await userEvent.click(document.body)
   await currentWrapper!.setProps({ boardId: '13' })
 
   expect(loadStatuses).toHaveBeenCalledOnce()
   await expect.element(page.getByLabelText('Status')).toHaveValue('')
+
+  await page.getByLabelText('Status').click()
+
+  await expect.element(page.getByRole('option', { name: 'Done' })).toBeInTheDocument()
 })

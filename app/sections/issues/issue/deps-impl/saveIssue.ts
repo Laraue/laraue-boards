@@ -6,10 +6,6 @@ import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
 
 import type { SaveIssue } from '../IssuePage.deps'
 
-// ponytail: the status API returns no body; remove this derivation when it returns the new key.
-const moveIssueKey = (issueKey: string, spaceKey: string) =>
-  `${spaceKey}-${issueKey.slice(issueKey.lastIndexOf('-') + 1)}`
-
 export const createSaveIssue =
   (client: ApiClient): SaveIssue =>
   async (input) => {
@@ -51,14 +47,15 @@ export const createSaveIssue =
         body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
       }),
     )
-    if (moveResponse && 'data' in moveResponse) {
+    if (moveResponse && 'data' in moveResponse && moveResponse.data) {
+      const issueKey = moveResponse.data[input.issueKey]
+      if (!issueKey) {
+        return { code: 0, status: 'error' }
+      }
       return {
         data: {
           ...saved,
-          issueKey:
-            input.spaceKey === input.previousSpaceKey
-              ? input.issueKey
-              : moveIssueKey(input.issueKey, input.spaceKey),
+          issueKey,
           spaceKey: input.spaceKey,
         },
         status: 'success',

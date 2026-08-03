@@ -769,7 +769,17 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": {
+                            [key: string]: string;
+                        };
+                        "application/json": {
+                            [key: string]: string;
+                        };
+                        "text/json": {
+                            [key: string]: string;
+                        };
+                    };
                 };
             };
         };
