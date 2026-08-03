@@ -350,8 +350,12 @@ const syncState = (issue: IssuePageViewModel) => {
 }
 
 const handleSaved = async (issue: IssuePageSavedIssue) => {
-  await props.onSaved?.(issue)
+  const keyChanged = issue.issueKey !== props.issueKey
   state.dirty = false
+  await props.onSaved?.(issue)
+  if (keyChanged) {
+    return
+  }
   await refresh()
   void history.value?.refresh()
   if (!issue.complete) {
@@ -392,8 +396,10 @@ const save = async () => {
     files: state.files,
     issueKey: issue.issueKey,
     previousBoardId: issue.boardId,
+    previousSpaceKey: issue.spaceId,
     previousStatusId: issue.statusId,
     removeAttachmentIds: state.removedAttachmentIds,
+    spaceKey: state.pickedSpaceId,
     statusId: state.statusId,
   })
 }

@@ -14,6 +14,7 @@ export type SaveIssue = (
   input: IssuePageInput & {
     issueKey: string
     previousBoardId: string
+    previousSpaceKey: string
     previousStatusId: string
   },
 ) => Promise<ActionResult<IssuePageSavedIssue>>

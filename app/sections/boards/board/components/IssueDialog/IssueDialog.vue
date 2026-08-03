@@ -26,7 +26,7 @@
           :on-back="() => close()"
           :on-deleted="onDeleted"
           :on-dirty-change="setDirty"
-          :on-saved="onSaved" />
+          :on-saved="handleSaved" />
         <template #fallback>
           <IssueSkeleton />
         </template>
@@ -49,7 +49,7 @@ const props = defineProps<{
   issueKey: string
   onClose: () => void
   onDeleted: (issueKey: string) => void
-  onSaved: (issue: IssuePageSavedIssue) => void
+  onSaved: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-boardId')
@@ -66,6 +66,10 @@ const showDialog = () => {
 }
 const setDirty = (dirty: boolean) => {
   state.dirty = dirty
+}
+const handleSaved = async (issue: IssuePageSavedIssue) => {
+  state.dirty = false
+  await props.onSaved(issue)
 }
 const close = (skipWarning = false) => {
   if (!skipWarning && !confirmUnsavedChanges()) {

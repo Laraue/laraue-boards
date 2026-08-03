@@ -13,7 +13,9 @@ export type IssuePageSavedIssue = {
   content: string
   issueKey: string
   previousBoardId: string
+  previousIssueKey: string
   previousStatusId: string
+  spaceKey: string
   statusId: string
 }
 
@@ -27,6 +29,7 @@ export type IssuePageInput = {
   content: string
   files: File[]
   removeAttachmentIds: string[]
+  spaceKey: string
   statusId: string
 }
 

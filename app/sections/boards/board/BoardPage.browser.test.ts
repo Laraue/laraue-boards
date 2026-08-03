@@ -49,6 +49,7 @@ const mount = async ({
       deps,
       issueKey: null,
       onBack: vi.fn<() => void>(),
+      onIssueMoved: vi.fn<() => void>(),
       onPushQuery: vi.fn<(query: LocationQueryRaw) => void>(),
       onReplaceQuery,
       routePath: '/organizations/acme-ab12/spaces/product-AB12/12',
