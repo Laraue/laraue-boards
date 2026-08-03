@@ -8,7 +8,11 @@ export const createLoadComments =
   (client: ApiClient): LoadComments =>
   ({ issueKey, signal }) =>
     executeQuery({
-      map: (issue) => (issue === undefined ? undefined : issue.comments.map(mapIssueComment)),
+      map: (result) => (result === undefined ? undefined : result.data.map(mapIssueComment)),
       request: () =>
-        client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
+        client.POST('/api/issues/{key}/comments', {
+          body: { pagination: { page: 0, perPage: 100 } },
+          params: { path: { key: issueKey } },
+          signal,
+        }),
     })

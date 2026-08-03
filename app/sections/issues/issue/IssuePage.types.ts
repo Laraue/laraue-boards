@@ -1,7 +1,7 @@
 import type { IssueAttachmentViewModel } from '~/components/issue-attachments/IssueAttachments.types'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 
-import type { IssueCommentViewModel } from './components/issue-comments/IssueComments.types'
+import type { IssueCommentViewModel } from './components/IssueComments/IssueComments.types'
 
 type IssuePageAttributeViewModel = IssueAttributeField & {
   value: string
@@ -13,7 +13,9 @@ export type IssuePageSavedIssue = {
   content: string
   issueKey: string
   previousBoardId: string
+  previousIssueKey: string
   previousStatusId: string
+  spaceKey: string
   statusId: string
 }
 
@@ -27,6 +29,7 @@ export type IssuePageInput = {
   content: string
   files: File[]
   removeAttachmentIds: string[]
+  spaceKey: string
   statusId: string
 }
 

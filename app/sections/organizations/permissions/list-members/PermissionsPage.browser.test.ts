@@ -35,10 +35,18 @@ const members: PermissionsPageMember[] = [
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (view: PermissionsPageDeps['view']) => {
+const mount = async (
+  view: PermissionsPageDeps['view'],
+  regenerateJoinCode = vi.fn<PermissionsPageDeps['regenerateJoinCode']>(),
+) => {
   currentWrapper = await mountSuspended(PermissionsPage, {
     attachTo: document.body,
-    props: { deps: { view } },
+    props: {
+      deps: {
+        regenerateJoinCode,
+        view,
+      },
+    },
     route: '/organizations/acme-ab12/settings/permissions',
   })
   return currentWrapper
@@ -47,16 +55,20 @@ const mount = async (view: PermissionsPageDeps['view']) => {
 afterEach(async () => {
   await currentWrapper?.unmount()
   currentWrapper = undefined
+  vi.restoreAllMocks()
 })
 
 it('links every member to their permissions and labels their role', async () => {
   const view = vi.fn<PermissionsPageDeps['view']>(async () => ({
-    data: members,
+    data: { joinCode: 'invite-123', members },
     status: 'success',
   }))
 
   await mount(view)
 
+  await expect
+    .element(page.getByLabelText('Invitation link'))
+    .toHaveValue(`${window.location.origin}/join/invite-123`)
   await expect
     .element(page.getByRole('link', { name: /Ada Lovelace/ }))
     .toHaveAttribute('href', '/organizations/acme-ab12/settings/permissions/5')
@@ -65,8 +77,31 @@ it('links every member to their permissions and labels their role', async () => 
   await expect.element(page.getByRole('link', { name: /Alan Turing/ })).toHaveTextContent('Member')
 })
 
+it('replaces the invitation link after confirmation', async () => {
+  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({
+    data: { joinCode: 'invite-123', members },
+    status: 'success',
+  }))
+  const regenerateJoinCode = vi.fn<PermissionsPageDeps['regenerateJoinCode']>(async () => ({
+    data: 'invite-456',
+    status: 'success',
+  }))
+  vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+  await mount(view, regenerateJoinCode)
+  await page.getByRole('button', { name: 'Create a new link' }).click()
+
+  expect(regenerateJoinCode).toHaveBeenCalledOnce()
+  await expect
+    .element(page.getByLabelText('Invitation link'))
+    .toHaveValue(`${window.location.origin}/join/invite-456`)
+})
+
 it('shows no member links when the list is empty', async () => {
-  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({ data: [], status: 'success' }))
+  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({
+    data: { joinCode: 'invite-123', members: [] },
+    status: 'success',
+  }))
 
   await mount(view)
 
@@ -78,7 +113,7 @@ it('reloads the members when the failed request is retried', async () => {
   const view = vi
     .fn<PermissionsPageDeps['view']>()
     .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: members, status: 'success' })
+    .mockResolvedValue({ data: { joinCode: 'invite-123', members }, status: 'success' })
 
   await mount(view)
 

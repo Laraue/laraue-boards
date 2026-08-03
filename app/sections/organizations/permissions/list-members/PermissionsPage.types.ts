@@ -6,3 +6,8 @@ export type PermissionsPageMember = {
   isOwner: boolean
   name: string
 }
+
+export type PermissionsPageData = {
+  joinCode: string
+  members: PermissionsPageMember[]
+}

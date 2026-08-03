@@ -26,6 +26,9 @@ importers:
       '@lucide/vue':
         specifier: ^1.26.0
         version: 1.26.0(vue@3.5.40(typescript@6.0.3))
+      diff-sequences:
+        specifier: ^29.6.3
+        version: 29.6.3
       es-toolkit:
         specifier: ^1.50.0
         version: 1.50.0
@@ -2470,6 +2473,10 @@ packages:
         optional: true
       cac:
         optional: true
+
+  diff-sequences@29.6.3:
+    resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
   diff@8.0.4:
     resolution: {integrity: sha512-DPi0FmjiSU5EvQV0++GFDOJ9ASQUVFh5kD+OzOnYdi7n3Wpm9hWWGfB/O2blfHcMVTL5WkQXSnRiK9makhrcnw==}
@@ -7333,6 +7340,8 @@ snapshots:
     transitivePeerDependencies:
       - srvx
       - typescript
+
+  diff-sequences@29.6.3: {}
 
   diff@8.0.4: {}
 

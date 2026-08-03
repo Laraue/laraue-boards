@@ -59,10 +59,10 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { data, execute, message, pending, status } = await useQuery(
-  () => `status-select:${props.boardId}`,
+const { clear, data, execute, message, pending, status } = await useQuery(
+  `status-select:${useId()}`,
   (_nuxtApp, { signal }) => props.deps.loadStatuses({ boardId: props.boardId, signal }),
-  { cached: true, immediate: false },
+  { immediate: false },
 )
 
 const loaded = computed(() => status.value !== 'idle' && !pending.value)
@@ -87,6 +87,7 @@ const load = () => {
 watch(
   () => props.boardId,
   () => {
+    clear()
     model.value = ''
   },
 )

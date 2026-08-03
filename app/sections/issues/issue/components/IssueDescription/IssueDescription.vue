@@ -14,7 +14,7 @@
             class="markdown-toolbar-return"
             title="Visual"
             type="button"
-            @click="editing = false">
+            @click="state.editing = false">
             <Eye aria-hidden="true" />
             Visual
           </button>
@@ -161,19 +161,21 @@ import { renderMarkdown } from '~/utils/renderMarkdown'
 const props = defineProps<{ disabled?: boolean }>()
 
 const model = defineModel<string>({ required: true })
-const editing = ref(false)
+const state = reactive({ editing: false })
 const textarea = useTemplateRef<HTMLTextAreaElement>('textarea')
-const isWriting = computed(() => editing.value && !props.disabled)
+
+const isWriting = computed(() => state.editing && !props.disabled)
 const preview = computed(() =>
   model.value.trim()
     ? renderMarkdown(model.value)
     : '<p class="issue-description-empty">Nothing here yet.</p>',
 )
+
 const startEditing = async (event: Event) => {
   if (props.disabled || (event.target as Element).closest('a')) {
     return
   }
-  editing.value = true
+  state.editing = true
   await nextTick()
   textarea.value?.focus()
 }
@@ -192,6 +194,7 @@ const restoreSelection = async (start: number, end: number) => {
   textarea.value?.focus()
   textarea.value?.setSelectionRange(start, end)
 }
+
 const replace = async (
   start: number,
   end: number,
@@ -218,6 +221,7 @@ const replace = async (
   model.value = element.value
   await restoreSelection(selectionStart, selectionEnd)
 }
+
 const wrap = async (before: string, after = before, placeholder = 'text') => {
   const element = textarea.value
   if (!element) {
@@ -234,6 +238,7 @@ const wrap = async (before: string, after = before, placeholder = 'text') => {
     start + before.length + content.length,
   )
 }
+
 const prefixLines = async (prefix: string, placeholder = 'text', ordered = false) => {
   const element = textarea.value
   if (!element) {
@@ -250,12 +255,15 @@ const prefixLines = async (prefix: string, placeholder = 'text', ordered = false
     .join('\n')
   await replace(lineStart, lineEnd, formatted, lineStart, lineStart + formatted.length)
 }
+
 const insertHeading = (event: Event) => {
   const select = event.target as HTMLSelectElement
   void prefixLines(`${select.value} `, 'Heading')
   select.value = ''
 }
+
 const insertLink = () => wrap('[', '](https://example.com)', 'link text')
+
 const handleKeydown = (event: KeyboardEvent) => {
   if (!event.ctrlKey && !event.metaKey) {
     return
@@ -278,9 +286,9 @@ const handleKeydown = (event: KeyboardEvent) => {
 .issue-description {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   min-height: 200px;
 }
+
 /* Editor frame */
 
 .issue-description-frame {
@@ -295,10 +303,12 @@ const handleKeydown = (event: KeyboardEvent) => {
     border-color var(--duration-fast) var(--ease-standard),
     box-shadow var(--duration-fast) var(--ease-standard);
 }
+
 .issue-description--writing .issue-description-frame:focus-within {
   border-color: var(--color-accent);
   box-shadow: var(--shadow-focus);
 }
+
 .markdown-toolbar {
   align-items: center;
   border-bottom: 1px solid var(--color-divider);
@@ -307,14 +317,17 @@ const handleKeydown = (event: KeyboardEvent) => {
   gap: var(--space-1) var(--space-3);
   padding: var(--space-1) var(--space-2);
 }
+
 .markdown-toolbar-group {
   display: flex;
   gap: var(--space-1);
 }
+
 .markdown-toolbar-group + .markdown-toolbar-group {
   border-left: 1px solid var(--color-divider);
   padding-left: var(--space-3);
 }
+
 .markdown-toolbar button,
 .markdown-toolbar select {
   align-items: center;
@@ -334,35 +347,43 @@ const handleKeydown = (event: KeyboardEvent) => {
     color var(--duration-fast) var(--ease-standard);
   width: auto;
 }
+
 .markdown-toolbar .lucide {
   height: 15px;
   width: 15px;
 }
+
 .markdown-toolbar select {
   background-position: right var(--space-1) center;
   padding-right: var(--space-5);
 }
+
 .markdown-toolbar :is(button, select):hover {
   background-color: var(--color-hover);
   color: var(--color-text);
 }
+
 .markdown-toolbar button:active {
   background-color: var(--color-accent-soft);
   color: var(--color-accent);
 }
+
 .markdown-toolbar-return {
   gap: var(--space-1);
 }
+
 .markdown-toolbar :is(button, select):focus-visible {
   box-shadow: var(--shadow-focus);
   outline: none;
 }
+
 .issue-description-frame textarea,
 .issue-description-preview {
   flex-grow: 1;
   max-height: none;
   min-height: 200px;
 }
+
 .issue-description-frame textarea {
   background: transparent;
   border: 0;
@@ -371,28 +392,35 @@ const handleKeydown = (event: KeyboardEvent) => {
   padding: var(--space-3);
   resize: none;
 }
+
 .issue-description-frame textarea:focus {
   border: 0;
   box-shadow: none;
 }
+
 .issue-description-preview {
   overflow-wrap: anywhere;
   padding: var(--space-3);
 }
+
 .issue-description-preview--editable {
   cursor: text;
 }
+
 .issue-description-preview :deep(.issue-description-empty) {
   color: var(--color-muted);
   font-size: var(--font-size-small);
   margin: 0;
 }
+
 .issue-description-preview :deep(> *) {
   line-height: 1.6;
 }
+
 .issue-description-preview :deep(> * + *) {
   margin-top: var(--space-3);
 }
+
 .issue-description-preview :deep(h1),
 .issue-description-preview :deep(h2),
 .issue-description-preview :deep(h3),
@@ -403,69 +431,86 @@ const handleKeydown = (event: KeyboardEvent) => {
   line-height: 1.25;
   margin-bottom: 0;
 }
+
 .issue-description-preview :deep(h1) {
   font-size: 20px;
 }
+
 .issue-description-preview :deep(h2) {
   font-size: 17px;
 }
+
 .issue-description-preview :deep(:is(h3, h4, h5, h6)) {
   font-size: var(--font-size-body);
 }
+
 .issue-description-preview :deep(:is(h1, h2, h3, h4, h5, h6) + *) {
   margin-top: var(--space-2);
 }
+
 .issue-description-preview :deep(:is(ul, ol)) {
   padding-left: var(--space-5);
 }
+
 .issue-description-preview :deep(li + li) {
   margin-top: var(--space-1);
 }
+
 .issue-description-preview :deep(img) {
   border-radius: var(--radius-control);
   max-width: 100%;
 }
+
 .issue-description-preview :deep(hr) {
   border: 0;
   border-top: 1px solid var(--color-divider);
 }
+
 .issue-description-preview :deep(table) {
   border-collapse: collapse;
   display: block;
   overflow-x: auto;
   width: max-content;
 }
+
 .issue-description-preview :deep(:is(th, td)) {
   border: 1px solid var(--color-border);
   padding: var(--space-1) var(--space-3);
   text-align: left;
 }
+
 .issue-description-preview :deep(th) {
   background: var(--color-soft);
   font-weight: var(--font-weight-semibold);
 }
+
 .issue-description-preview :deep(blockquote) {
   border-left: 3px solid var(--color-border);
   color: var(--color-muted);
   margin-left: 0;
   padding-left: var(--space-3);
 }
+
 .issue-description-preview :deep(pre),
 .issue-description-preview :deep(code) {
   background: var(--color-hover);
   border-radius: var(--radius-small);
   font-family: monospace;
 }
+
 .issue-description-preview :deep(code) {
   padding: 0 var(--space-1);
 }
+
 .issue-description-preview :deep(pre) {
   overflow-x: auto;
   padding: var(--space-3);
 }
+
 .issue-description-preview :deep(pre code) {
   padding: 0;
 }
+
 .issue-description-preview :deep(a) {
   color: var(--color-accent);
 }

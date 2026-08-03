@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
-import { page } from 'vitest/browser'
+import { page, userEvent } from 'vitest/browser'
 
 import type { SpaceSelectDeps } from './SpaceSelect.deps'
 import SpaceSelect from './SpaceSelect.vue'
@@ -46,6 +46,7 @@ it('reloads and clears the selection when the organization changes', async () =>
   await expect.element(page.getByRole('option', { name: 'Development' })).toBeInTheDocument()
   await page.getByLabelText('Space').selectOptions('10')
 
+  await userEvent.click(document.body)
   await currentWrapper!.setProps({ organizationId: '2' })
   await page.getByLabelText('Space').click()
 

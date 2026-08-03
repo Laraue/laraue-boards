@@ -34,7 +34,9 @@ export const createSaveIssue =
       content: input.content,
       issueKey: input.issueKey,
       previousBoardId: input.previousBoardId,
+      previousIssueKey: input.issueKey,
       previousStatusId: input.previousStatusId,
+      spaceKey: input.previousSpaceKey,
       statusId: input.statusId,
     }
     if (input.statusId === input.previousStatusId) {
@@ -45,8 +47,19 @@ export const createSaveIssue =
         body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
       }),
     )
-    if (moveResponse && 'data' in moveResponse) {
-      return { data: saved, status: 'success' }
+    if (moveResponse && 'data' in moveResponse && moveResponse.data) {
+      const issueKey = moveResponse.data[input.issueKey]
+      if (!issueKey) {
+        return { code: 0, status: 'error' }
+      }
+      return {
+        data: {
+          ...saved,
+          issueKey,
+          spaceKey: input.spaceKey,
+        },
+        status: 'success',
+      }
     }
     return {
       data: {

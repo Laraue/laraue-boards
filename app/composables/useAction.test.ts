@@ -2,6 +2,7 @@ import { assert, test, vi } from 'vitest'
 
 import type { ActionResult } from '#infrastructure/api/apiResult'
 import { useAction } from '~/composables/useAction'
+import { useToast } from '~/composables/useToast'
 
 test('returns data and calls onSuccess on success', async () => {
   const onSuccess = vi.fn<(value: string) => void>()
@@ -53,25 +54,54 @@ test('sets the validation message on a validation error', async () => {
   assert.equal(message.value, 'Name is required.')
 })
 
-test('sets the generic error message on an opaque error', async () => {
+test('reports an opaque error as a toast instead of a form message', async () => {
+  const { toasts } = useToast()
+  toasts.value = []
   const { execute, message } = useAction(
     async (): Promise<ActionResult<string>> => ({ code: 500, status: 'error' }),
   )
 
   await execute()
 
-  assert.equal(message.value, 'Server error. Try again.')
+  assert.isUndefined(message.value)
+  assert.deepEqual(
+    toasts.value.map((toast) => toast.message),
+    ['Server error. Try again.'],
+  )
+})
+
+test('keeps the message on screen while the retry is running', async () => {
+  let resolve!: (result: ActionResult<string>) => void
+  const action = vi
+    .fn<() => Promise<ActionResult<string>>>()
+    .mockResolvedValueOnce({ message: 'Name is required.', status: 'validation-error' })
+    .mockReturnValueOnce(
+      new Promise<ActionResult<string>>((r) => {
+        resolve = r
+      }),
+    )
+  const { execute, message } = useAction(action)
+
+  await execute()
+  const retry = execute()
+
+  assert.equal(message.value, 'Name is required.')
+
+  resolve({ data: 'ok', status: 'success' })
+  await retry
+
+  assert.isUndefined(message.value)
 })
 
 test('clears a stale message when executed again', async () => {
   const action = vi
     .fn<() => Promise<ActionResult<string>>>()
-    .mockResolvedValueOnce({ code: 500, status: 'error' })
+    .mockResolvedValueOnce({ message: 'Name is required.', status: 'validation-error' })
     .mockResolvedValueOnce({ data: 'ok', status: 'success' })
   const { execute, message } = useAction(action)
 
   await execute()
-  assert.equal(message.value, 'Server error. Try again.')
+  assert.equal(message.value, 'Name is required.')
 
   await execute()
   assert.isUndefined(message.value)

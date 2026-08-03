@@ -53,6 +53,12 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
     data: true,
     status: 'success',
   })),
+  history: {
+    load: vi.fn<IssuePageDeps['history']['load']>(async () => ({
+      data: { hasNextPage: false, items: [] },
+      status: 'success',
+    })),
+  },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {
     loadSpaces: vi.fn<IssuePageDeps['spaceSelect']['loadSpaces']>(async () => ({
@@ -173,6 +179,66 @@ it('shows comments loaded after creating one', async () => {
   expect(view).toHaveBeenCalledOnce()
 })
 
+it('loads history only when its tab is opened', async () => {
+  const loadHistory = vi.fn<IssuePageDeps['history']['load']>(async () => ({
+    data: {
+      hasNextPage: false,
+      items: [
+        {
+          changes: [
+            { label: 'Status changed', newValue: 'Done', oldValue: 'To do' },
+            {
+              diff: [
+                {
+                  kind: 'removed',
+                  oldLine: 1,
+                  spans: [
+                    { changed: false, text: '- List Item ' },
+                    { changed: true, text: '3' },
+                  ],
+                  text: '- List Item 3',
+                },
+                {
+                  kind: 'added',
+                  newLine: 1,
+                  spans: [
+                    { changed: false, text: '- List Item ' },
+                    { changed: true, text: '4' },
+                  ],
+                  text: '- List Item 4',
+                },
+              ],
+              kind: 'description',
+              label: 'Description changed',
+            },
+          ],
+          createdAt: '2026-01-03T00:00:00Z',
+          owner: { color: '#111', initials: 'A', name: 'Ada Lovelace' },
+        },
+      ],
+    },
+    status: 'success',
+  }))
+
+  await mount(createDeps({ history: { load: loadHistory } }))
+
+  expect(loadHistory).not.toHaveBeenCalled()
+  await expect.element(page.getByLabelText('Write a comment')).toBeInTheDocument()
+  await page.getByRole('tab', { name: 'History' }).click()
+
+  expect(loadHistory).toHaveBeenCalledWith({ issueKey: 'ISS-1', page: 0 })
+  await expect.element(page.getByText('Status changed')).toBeInTheDocument()
+  await expect.element(page.getByText('Done')).toBeInTheDocument()
+  await page.getByText('Description changed').click()
+  await expect
+    .element(page.getByLabelText('Description changes split view'))
+    .toHaveTextContent('List Item 3')
+  await expect
+    .element(page.getByLabelText('Description changes split view'))
+    .toHaveTextContent('List Item 4')
+  await expect.element(page.getByRole('button', { name: 'Unified' })).not.toBeInTheDocument()
+})
+
 it('leaves the page when back is pressed', async () => {
   const onBack = vi.fn<() => Promise<void>>(() => new Promise(() => {}))
 
@@ -199,7 +265,9 @@ it('stays on the page after the issue is saved', async () => {
           content: 'Document the reproduction steps',
           issueKey: 'ISS-1',
           previousBoardId: '12',
+          previousIssueKey: 'ISS-1',
           previousStatusId: '3',
+          spaceKey: '7',
           statusId: '3',
         },
         status: 'success',

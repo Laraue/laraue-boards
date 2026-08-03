@@ -25,8 +25,26 @@ const mapOrganizationMembers = (members: OrganizationMember[]) =>
 
 export const createViewPermissions =
   (client: ApiClient): ViewPermissions =>
-  ({ signal }) =>
-    executeQuery({
-      map: (members) => members && mapOrganizationMembers(members),
-      request: () => client.GET('/api/organizations/members', { signal }),
-    })
+  async ({ signal }) => {
+    const [members, joinCode] = await Promise.all([
+      executeQuery({
+        map: mapOrganizationMembers,
+        request: () => client.GET('/api/organizations/members', { signal }),
+      }),
+      executeQuery({
+        map: (code: string) => code || undefined,
+        request: () => client.GET('/api/organizations/join-code', { parseAs: 'text', signal }),
+      }),
+    ])
+
+    if (members.status === 'error') {
+      return members
+    }
+    if (joinCode.status === 'error') {
+      return joinCode
+    }
+    return {
+      data: { joinCode: joinCode.data, members: members.data },
+      status: 'success',
+    }
+  }

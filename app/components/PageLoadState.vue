@@ -1,12 +1,16 @@
 <template>
   <section class="page-load-state">
-    <template v-if="loading">
+    <div
+      class="state"
+      :class="{ hidden: !loading }">
       <span class="icon-badge loading">
         <Loader />
       </span>
       <p>{{ loadingText }}</p>
-    </template>
-    <template v-else>
+    </div>
+    <div
+      class="state"
+      :class="{ hidden: loading }">
       <span class="icon-badge error">
         <AlertTriangle />
       </span>
@@ -17,7 +21,7 @@
         @click="props.onRetry?.()">
         {{ retryText }}
       </button>
-    </template>
+    </div>
   </section>
 </template>
 
@@ -39,12 +43,22 @@ const props = withDefaults(
 <style scoped>
 .page-load-state {
   display: grid;
-  gap: var(--space-3);
-  justify-items: center;
   min-height: 100dvh;
   padding: var(--space-6);
   place-content: center;
+}
+
+/* Both states share one grid cell: the box keeps the height of the tallest one and never jumps on switch */
+.state {
+  display: grid;
+  gap: var(--space-3);
+  grid-area: 1 / 1;
+  justify-items: center;
   text-align: center;
+}
+
+.state.hidden {
+  visibility: hidden;
 }
 
 .icon-badge {

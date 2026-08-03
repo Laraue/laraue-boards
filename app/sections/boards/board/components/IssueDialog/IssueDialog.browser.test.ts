@@ -48,6 +48,9 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
     update: vi.fn<IssuePageDeps['comments']['update']>(),
   },
   deleteIssue: vi.fn<IssuePageDeps['deleteIssue']>(),
+  history: {
+    load: vi.fn<IssuePageDeps['history']['load']>(),
+  },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {
     loadSpaces: vi.fn<IssuePageDeps['spaceSelect']['loadSpaces']>(),
@@ -149,7 +152,9 @@ it('notifies the board and stays open after the issue is saved', async () => {
         content: 'Document the reproduction steps',
         issueKey: 'ISS-1',
         previousBoardId: '12',
+        previousIssueKey: 'ISS-1',
         previousStatusId: '3',
+        spaceKey: 'product-AB12',
         statusId: '3',
       },
       status: 'success',

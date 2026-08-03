@@ -166,6 +166,7 @@ const props = defineProps<{
   deps: BoardPageDeps
   issueKey: null | string
   onBack: () => void
+  onIssueMoved: (issue: IssuePageSavedIssue) => Promise<void> | void
   onPushQuery: (query: LocationQueryRaw) => Promise<void> | void
   onReplaceQuery: (query: LocationQueryRaw) => Promise<void> | void
   routePath: string
@@ -323,7 +324,7 @@ const closeIssueDialog = () => {
   void props.onReplaceQuery(target.query)
 }
 
-const handleIssueSaved = (issue: IssuePageSavedIssue) => {
+const handleIssueSaved = async (issue: IssuePageSavedIssue) => {
   scheduleSearch.cancel()
   state.filtering = false
   const current = viewModel.value
@@ -338,6 +339,13 @@ const handleIssueSaved = (issue: IssuePageSavedIssue) => {
     viewModel.value = updateIssueInBoard(current, issue)
   }
   void refreshLoadedIssues(affectedColumnIds)
+  if (
+    issue.boardId !== props.boardId ||
+    issue.spaceKey !== props.spaceKey ||
+    issue.issueKey !== props.issueKey
+  ) {
+    await props.onIssueMoved(issue)
+  }
 }
 
 const handleIssueDeleted = (issueKey: string) => {
@@ -616,22 +624,24 @@ const updateIssueInBoard = (
   update: IssuePageSavedIssue,
 ): BoardPageViewModel => {
   const hasIssue = boardData.columns.some((column) =>
-    column.issues.some((issue) => issue.issueKey === update.issueKey),
+    column.issues.some((issue) => issue.issueKey === update.previousIssueKey),
   )
   if (!hasIssue) {
     return boardData
   }
   if (update.boardId !== boardData.id) {
-    return removeIssueFromBoard(boardData, update.issueKey)
+    return removeIssueFromBoard(boardData, update.previousIssueKey)
   }
 
-  const updated = moveIssueInBoard(boardData, update.issueKey, update.statusId)
+  const updated = moveIssueInBoard(boardData, update.previousIssueKey, update.statusId)
   return {
     ...updated,
     columns: updated.columns.map((column) => ({
       ...column,
       issues: column.issues.map((issue) =>
-        issue.issueKey === update.issueKey ? { ...issue, content: update.content } : issue,
+        issue.issueKey === update.previousIssueKey
+          ? { ...issue, content: update.content, issueKey: update.issueKey }
+          : issue,
       ),
     })),
   }

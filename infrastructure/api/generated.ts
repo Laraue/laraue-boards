@@ -769,7 +769,107 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": {
+                            [key: string]: string;
+                        };
+                        "application/json": {
+                            [key: string]: string;
+                        };
+                        "text/json": {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/issues/{key}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetIssueCommentsRequest"];
+                    "text/json": components["schemas"]["GetIssueCommentsRequest"];
+                    "application/*+json": components["schemas"]["GetIssueCommentsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfCommentDto"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfCommentDto"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfCommentDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/issues/{key}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetIssueHistoryRequest"];
+                    "text/json": components["schemas"]["GetIssueHistoryRequest"];
+                    "application/*+json": components["schemas"]["GetIssueHistoryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
+                    };
                 };
             };
         };
@@ -2212,10 +2312,11 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: uuid */
-            previewFileId?: null | string;
+            previewFileId: null | string;
             /** Format: uuid */
-            originalFileId?: string;
-            type?: components["schemas"]["AttachmentType"];
+            originalFileId: string;
+            type: components["schemas"]["AttachmentType"];
+            fileName: null | string;
         };
         /** @enum {unknown} */
         AttachmentType: "Image" | "Video";
@@ -2424,6 +2525,16 @@ export interface components {
             };
             sorting?: null | components["schemas"]["IssueSorting"];
         };
+        GetIssueCommentsRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKey?: string;
+            pagination: components["schemas"]["PaginationData"];
+        };
+        GetIssueHistoryRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKey?: string;
+            pagination: components["schemas"]["PaginationData"];
+        };
         GetIssuesRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
@@ -2492,7 +2603,69 @@ export interface components {
             key: string;
             attributeValues: components["schemas"]["DetailIssueAttributeDto"][];
             attachments: components["schemas"]["AttachmentData"][];
-            comments: components["schemas"]["CommentDto"][];
+        };
+        IssueHistoryItem: {
+            /** Format: date-time */
+            createdAt: string;
+            owner: components["schemas"]["UserDetails"];
+            changes: components["schemas"]["IssueHistoryItemChange"][];
+            entityType: components["schemas"]["LogEntityType"];
+            action: components["schemas"]["LogAction"];
+        };
+        IssueHistoryItemChange: components["schemas"]["IssueHistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistorySpaceChange"];
+        IssueHistoryItemChangeIssueHistoryAssigneeChange: {
+            /** @enum {string} */
+            $type?: "assignee";
+            oldAssigneeDisplayName: null | string;
+            oldAssigneeColor: null | string;
+            newAssigneeDisplayName: null | string;
+            newAssigneeColor: null | string;
+        };
+        IssueHistoryItemChangeIssueHistoryAttachmentChange: {
+            /** @enum {string} */
+            $type?: "attachment";
+            fileName: null | string;
+            /** Format: uuid */
+            fileId: string;
+        };
+        IssueHistoryItemChangeIssueHistoryContentChange: {
+            /** @enum {string} */
+            $type?: "content";
+            oldContent: null | string;
+            newContent: null | string;
+        };
+        IssueHistoryItemChangeIssueHistoryEpicChange: {
+            /** @enum {string} */
+            $type?: "epic";
+            oldEpicName: null | string;
+            oldEpicColor: null | string;
+            newEpicName: null | string;
+            newEpicColor: null | string;
+        };
+        IssueHistoryItemChangeIssueHistoryPropertyChange: {
+            /** @enum {string} */
+            $type?: "property";
+            propertyName: string;
+            oldValueName: null | string;
+            oldValueColor: null | string;
+            newValueName: null | string;
+            newValueColor: null | string;
+        };
+        IssueHistoryItemChangeIssueHistorySpaceChange: {
+            /** @enum {string} */
+            $type?: "space";
+            oldSpaceName: null | string;
+            oldSpaceColor: null | string;
+            newSpaceName: null | string;
+            newSpaceColor: null | string;
+        };
+        IssueHistoryItemChangeIssueHistoryStatusChange: {
+            /** @enum {string} */
+            $type?: "status";
+            oldStatusName: null | string;
+            oldStatusColor: null | string;
+            newStatusName: null | string;
+            newStatusColor: null | string;
         };
         IssueListAttributeDto: {
             value: string;
@@ -2531,6 +2704,10 @@ export interface components {
             property: components["schemas"]["IssueProperty"];
             direction: components["schemas"]["SortingDirection"];
         };
+        /** @enum {unknown} */
+        LogAction: "Create" | "Update" | "Delete";
+        /** @enum {unknown} */
+        LogEntityType: "Issue" | "Comment";
         LoginRequest: {
             /** Format: uuid */
             userId?: string;
@@ -2617,6 +2794,12 @@ export interface components {
             isOwner: boolean;
             adminAccessLevel: components["schemas"]["AdminAccessLevel"];
         };
+        PaginationData: {
+            /** Format: int32 */
+            page?: number | string;
+            /** Format: int32 */
+            perPage?: number | string;
+        };
         PermittableSpace: {
             key: string;
             name: string;
@@ -2663,6 +2846,24 @@ export interface components {
             /** Format: int64 */
             organizationUserId?: number | string;
             userPermissions: components["schemas"]["UserPermissions"];
+        };
+        ShortPaginatedResultOfCommentDto: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["CommentDto"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
+        };
+        ShortPaginatedResultOfIssueHistoryItem: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["IssueHistoryItem"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfSearchIssueDto: {
             /** Format: int64 */

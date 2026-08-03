@@ -2,7 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
 
-import { mapIssueComment } from '../components/issue-comments/deps-impl/mapComment'
+import { createLoadComments } from '../components/IssueComments/deps-impl/loadComments'
 import type { ViewIssue } from '../IssuePage.deps'
 import type { IssuePageViewModel } from '../IssuePage.types'
 
@@ -40,16 +40,19 @@ const mapAttachments = (
     if (attachment.type !== 'Image') {
       return []
     }
-    const previewId = attachment.previewFileId ?? attachment.originalFileId
+    const originalId = attachment.originalFileId
+    const previewId = attachment.previewFileId ?? originalId
     if (!previewId) {
       return []
     }
-    const originalId = attachment.originalFileId ?? previewId
     const fileUrl = (id: string) => new URL(`/api/files/${encodeURIComponent(id)}`, baseUrl).href
     return [{ id: attachment.id, originalUrl: fileUrl(originalId), previewUrl: fileUrl(previewId) }]
   })
 
-const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageViewModel => ({
+const mapIssue = (
+  issue: Schemas['IssueDetailDto'],
+  baseUrl: string,
+): Omit<IssuePageViewModel, 'comments'> => ({
   assignee: issue.assignee.displayName,
   assigneeColor: issue.assignee.color,
   assigneeId: issue.assigneeId,
@@ -59,7 +62,6 @@ const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageV
   boardId: String(issue.epicId),
   boardLabel: issue.epicName ?? '',
   canEdit: issue.canEdit,
-  comments: issue.comments.map(mapIssueComment),
   content: issue.content ?? '',
   createdAt: issue.time,
   issueKey: issue.key,
@@ -74,9 +76,22 @@ const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageV
 })
 export const createViewIssue =
   (client: ApiClient): ViewIssue =>
-  ({ issueKey, signal }) =>
-    executeQuery({
-      map: (issue) => (issue === undefined ? undefined : mapIssue(issue, client.baseUrl)),
-      request: () =>
-        client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
-    })
+  async ({ issueKey, signal }) => {
+    const [issue, comments] = await Promise.all([
+      executeQuery({
+        map: (response) =>
+          response === undefined ? undefined : mapIssue(response, client.baseUrl),
+        request: () =>
+          client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
+      }),
+      createLoadComments(client)({ issueKey, signal }),
+    ])
+
+    if (issue.status !== 'success') {
+      return issue
+    }
+    if (comments.status !== 'success') {
+      return comments
+    }
+    return { data: { ...issue.data, comments: comments.data }, status: 'success' }
+  }
