@@ -5,8 +5,12 @@ import type { LoadStatuses } from '../StatusSelect.deps'
 
 export const createLoadStatuses =
   (client: ApiClient): LoadStatuses =>
-  ({ boardId, signal }) =>
-    executeQuery({
+  ({ boardId, signal }) => {
+    if (!boardId) {
+      return Promise.resolve({ data: [], status: 'success' })
+    }
+
+    return executeQuery({
       map: (board) =>
         (board?.statuses ?? [])
           .toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
@@ -17,3 +21,4 @@ export const createLoadStatuses =
           signal,
         }),
     })
+  }

@@ -59,7 +59,7 @@ defineOptions({ inheritAttrs: false })
 const model = defineModel<string>({ required: true })
 
 const { data, execute, message, pending, status } = await useQuery(
-  'organization-select',
+  `organization-select:${useId()}`,
   (_nuxtApp, { signal }) => props.deps.loadOrganizations({ signal }),
   { immediate: false },
 )

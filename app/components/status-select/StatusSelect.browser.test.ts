@@ -33,16 +33,16 @@ it('loads statuses when the user focuses the select', async () => {
 })
 
 it('clears the selected status when the board changes', async () => {
-  await mount({
-    loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
-      data: [{ label: 'To do', value: '3' }],
-      status: 'success',
-    })),
-  })
+  const loadStatuses = vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
+    data: [{ label: 'To do', value: '3' }],
+    status: 'success',
+  }))
+  await mount({ loadStatuses })
   await page.getByLabelText('Status').click()
   await page.getByLabelText('Status').selectOptions('3')
 
   await currentWrapper!.setProps({ boardId: '13' })
 
+  expect(loadStatuses).toHaveBeenCalledOnce()
   await expect.element(page.getByLabelText('Status')).toHaveValue('')
 })
