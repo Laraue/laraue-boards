@@ -6,12 +6,19 @@
     :disabled="disabled || !boardId"
     @focus="load">
     <option
+      v-if="!message"
       disabled
       value="">
       {{ placeholder }}
     </option>
     <option
-      v-if="pending"
+      v-if="message"
+      disabled
+      value="">
+      Could not load statuses.
+    </option>
+    <option
+      v-else-if="pending"
       disabled
       value="__loading">
       Loading statuses…
@@ -29,11 +36,6 @@
       {{ option.label }}
     </option>
   </select>
-  <p
-    v-if="message"
-    class="form-error">
-    Could not load statuses.
-  </p>
 </template>
 
 <script setup lang="ts">

@@ -186,7 +186,14 @@ it('loads history only when its tab is opened', async () => {
       items: [
         {
           changes: [
-            { label: 'Status changed', newValue: 'Done', oldValue: 'To do' },
+            {
+              kind: 'status',
+              label: 'Status changed',
+              newColor: null,
+              newValue: 'Done',
+              oldColor: null,
+              oldValue: 'To do',
+            },
             {
               diff: [
                 {

@@ -12,12 +12,19 @@
       :disabled="disabled || !spaceKey"
       @focus="load">
       <option
+        v-if="!message"
         disabled
         value="">
         {{ placeholder }}
       </option>
       <option
-        v-if="pending"
+        v-if="message"
+        disabled
+        value="">
+        Could not load assignees.
+      </option>
+      <option
+        v-else-if="pending"
         disabled
         value="__loading">
         Loading assignees…
@@ -35,11 +42,6 @@
         {{ option.label }}
       </option>
     </select>
-    <p
-      v-if="message"
-      class="form-error">
-      Could not load assignees.
-    </p>
   </div>
 </template>
 
@@ -121,9 +123,5 @@ watch(
   font-size: var(--font-size-caption);
   height: 28px;
   width: 28px;
-}
-
-.form-error {
-  grid-column: 1 / -1;
 }
 </style>

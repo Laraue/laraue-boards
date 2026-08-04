@@ -33,7 +33,18 @@ test('maps issue history and sends pagination', async () => {
             oldValueName: 'High',
             propertyName: 'Priority',
           },
-          { $type: 'attachment', fileId: '1', fileName: 'new.txt' },
+          {
+            $type: 'attachment',
+            action: 'Created',
+            fileName: 'new.txt',
+            previewFileId: '1',
+          },
+          {
+            $type: 'attachment',
+            action: 'Deleted',
+            fileName: 'old.txt',
+            previewFileId: null,
+          },
           {
             $type: 'epic',
             newEpicColor: '#555',
@@ -104,6 +115,7 @@ test('maps issue history and sends pagination', async () => {
             oldValue: 'None',
           },
           {
+            kind: 'status',
             label: 'Status',
             newColor: '#222',
             newValue: 'None',
@@ -111,13 +123,25 @@ test('maps issue history and sends pagination', async () => {
             oldValue: 'To do',
           },
           {
+            kind: 'property',
             label: 'Priority',
             newColor: null,
             newValue: 'None',
             oldColor: '#444',
             oldValue: 'High',
           },
-          { label: 'Updated attachment', newValue: 'new.txt' },
+          {
+            imageUrl: 'https://api.test/api/files/1',
+            kind: 'attachment',
+            label: 'Added attachment',
+            newValue: 'new.txt',
+          },
+          {
+            imageUrl: null,
+            kind: 'attachment',
+            label: 'Removed attachment',
+            newValue: 'old.txt',
+          },
           {
             kind: 'board',
             label: 'Board',
@@ -139,7 +163,7 @@ test('maps issue history and sends pagination', async () => {
         owner: { color: '#444', initials: 'A', name: 'Ada Lovelace' },
       },
       {
-        changes: [{ label: 'Comment created' }],
+        changes: [{ kind: 'event', label: 'Comment created' }],
         createdAt: '2026-01-02T00:00:00Z',
         owner: { color: '#888', initials: 'G', name: 'Grace Hopper' },
       },

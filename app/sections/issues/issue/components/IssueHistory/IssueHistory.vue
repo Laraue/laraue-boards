@@ -31,54 +31,69 @@
               :class="{ 'history-change--description': change.kind === 'description' }">
               <IssueDescriptionDiff
                 v-if="change.kind === 'description'"
-                :diff="change.diff ?? []"
+                :diff="change.diff"
                 :label="change.label" />
-              <span v-else>{{ change.label }}{{ hasValues(change) ? ':' : '' }}</span>
+              <span v-else>{{ change.label }}{{ change.kind === 'event' ? '' : ':' }}</span>
               <div
-                v-if="change.kind !== 'description' && hasValues(change)"
+                v-if="change.kind !== 'description' && change.kind !== 'event'"
                 class="history-values">
                 <span
-                  v-if="change.oldValue !== undefined"
-                  :title="change.oldValue">
-                  <BoardIcon
-                    v-if="change.kind === 'board'"
-                    :style="{ color: change.oldColor ?? undefined }" />
-                  <SpaceIcon
-                    v-else-if="change.kind === 'space'"
-                    :style="{ color: change.oldColor ?? undefined }" />
-                  <span
-                    v-else-if="change.kind === 'assignee' && change.oldValue !== 'None'"
-                    class="avatar"
-                    :style="{ background: change.oldColor ?? 'var(--color-border)' }">
-                    {{ initials(change.oldValue) }}
-                  </span>
-                  <i
-                    v-else-if="change.oldColor"
-                    :style="{ background: change.oldColor }" />
-                  {{ change.oldValue }}
-                </span>
-                <ArrowRight v-if="change.oldValue !== undefined" />
-                <span
-                  v-if="change.newValue !== undefined"
+                  v-if="change.kind === 'attachment'"
                   class="history-new-value"
                   :title="change.newValue">
-                  <BoardIcon
-                    v-if="change.kind === 'board'"
-                    :style="{ color: change.newColor ?? undefined }" />
-                  <SpaceIcon
-                    v-else-if="change.kind === 'space'"
-                    :style="{ color: change.newColor ?? undefined }" />
-                  <span
-                    v-else-if="change.kind === 'assignee' && change.newValue !== 'None'"
-                    class="avatar"
-                    :style="{ background: change.newColor ?? 'var(--color-border)' }">
-                    {{ initials(change.newValue) }}
-                  </span>
-                  <i
-                    v-else-if="change.newColor"
-                    :style="{ background: change.newColor }" />
+                  <a
+                    v-if="change.imageUrl"
+                    :aria-label="`Open ${change.newValue}`"
+                    class="history-attachment"
+                    :href="change.imageUrl"
+                    target="_blank">
+                    <img
+                      :alt="change.newValue"
+                      :src="change.imageUrl" />
+                  </a>
                   {{ change.newValue }}
                 </span>
+                <template v-else>
+                  <span :title="change.oldValue">
+                    <BoardIcon
+                      v-if="change.kind === 'board'"
+                      :style="{ color: change.oldColor ?? undefined }" />
+                    <SpaceIcon
+                      v-else-if="change.kind === 'space'"
+                      :style="{ color: change.oldColor ?? undefined }" />
+                    <span
+                      v-else-if="change.kind === 'assignee' && change.oldValue !== 'None'"
+                      class="avatar"
+                      :style="{ background: change.oldColor ?? 'var(--color-border)' }">
+                      {{ initials(change.oldValue) }}
+                    </span>
+                    <i
+                      v-else-if="change.oldColor"
+                      :style="{ background: change.oldColor }" />
+                    {{ change.oldValue }}
+                  </span>
+                  <ArrowRight />
+                  <span
+                    class="history-new-value"
+                    :title="change.newValue">
+                    <BoardIcon
+                      v-if="change.kind === 'board'"
+                      :style="{ color: change.newColor ?? undefined }" />
+                    <SpaceIcon
+                      v-else-if="change.kind === 'space'"
+                      :style="{ color: change.newColor ?? undefined }" />
+                    <span
+                      v-else-if="change.kind === 'assignee' && change.newValue !== 'None'"
+                      class="avatar"
+                      :style="{ background: change.newColor ?? 'var(--color-border)' }">
+                      {{ initials(change.newValue) }}
+                    </span>
+                    <i
+                      v-else-if="change.newColor"
+                      :style="{ background: change.newColor }" />
+                    {{ change.newValue }}
+                  </span>
+                </template>
               </div>
             </div>
           </div>
@@ -120,7 +135,7 @@ import { BoardIcon, SpaceIcon } from '~/constants/icons'
 
 import IssueDescriptionDiff from '../IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.vue'
 import type { IssueHistoryDeps } from './IssueHistory.deps'
-import type { IssueHistoryChangeViewModel, IssueHistoryItemViewModel } from './IssueHistory.types'
+import type { IssueHistoryItemViewModel } from './IssueHistory.types'
 
 const props = defineProps<{ deps: IssueHistoryDeps; issueKey: string }>()
 
@@ -166,9 +181,6 @@ const groups = computed(() =>
     return [...result, { ...item, changes: [...item.changes] }]
   }, []),
 )
-
-const hasValues = (change: IssueHistoryChangeViewModel) =>
-  change.oldValue !== undefined || change.newValue !== undefined
 
 const formatDate = (date: string) => dateTimeFormatter.format(new Date(date))
 
@@ -333,6 +345,21 @@ defineExpose({ refresh })
 
 .history-new-value {
   color: var(--color-text);
+}
+
+.history-attachment {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  flex: 0 0 auto;
+  height: 24px;
+  overflow: hidden;
+  width: 24px;
+}
+
+.history-attachment img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .history-values svg,
