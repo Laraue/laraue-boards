@@ -2308,6 +2308,8 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         AdminAccessLevel: string;
+        /** @enum {unknown} */
+        AttachmentAction: "Created" | "Deleted";
         AttachmentData: {
             /** Format: uuid */
             id: string;
@@ -2626,7 +2628,8 @@ export interface components {
             $type?: "attachment";
             fileName: null | string;
             /** Format: uuid */
-            fileId: string;
+            previewFileId: null | string;
+            action: components["schemas"]["AttachmentAction"];
         };
         IssueHistoryItemChangeIssueHistoryContentChange: {
             /** @enum {string} */

@@ -20,6 +20,7 @@ const mapChange = (
   change: Change,
   action: Action,
   entityType: EntityType,
+  baseUrl: string,
 ): IssueHistoryChangeViewModel => {
   switch (change.$type) {
     case 'content':
@@ -39,6 +40,7 @@ const mapChange = (
       }
     case 'status':
       return {
+        kind: 'status',
         label: 'Status',
         newColor: change.newStatusColor,
         newValue: value(change.newStatusName),
@@ -47,6 +49,7 @@ const mapChange = (
       }
     case 'property':
       return {
+        kind: 'property',
         label: change.propertyName,
         newColor: change.newValueColor,
         newValue: value(change.newValueName),
@@ -55,9 +58,11 @@ const mapChange = (
       }
     case 'attachment':
       return {
-        label: `${
-          action === 'Delete' ? 'Removed' : action === 'Create' ? 'Added' : 'Updated'
-        } attachment`,
+        imageUrl: change.previewFileId
+          ? new URL(`/api/files/${encodeURIComponent(change.previewFileId)}`, baseUrl).href
+          : null,
+        kind: 'attachment',
+        label: `${change.action === 'Deleted' ? 'Removed' : 'Added'} attachment`,
         newValue: change.fileName || 'Untitled file',
       }
     case 'epic':
@@ -79,7 +84,7 @@ const mapChange = (
         oldValue: value(change.oldSpaceName),
       }
     default:
-      return { label: actionLabel(entityType, action) }
+      return { kind: 'event', label: actionLabel(entityType, action) }
   }
 }
 
@@ -94,10 +99,9 @@ export const createLoadIssueHistory =
               hasNextPage: result.hasNextPage,
               items: result.data.flatMap((item) => {
                 const changes = item.changes
-                  .map((change) => mapChange(change, item.action, item.entityType))
+                  .map((change) => mapChange(change, item.action, item.entityType, client.baseUrl))
                   .filter(
-                    (change) =>
-                      change.oldValue === undefined || change.oldValue !== change.newValue,
+                    (change) => !('oldValue' in change) || change.oldValue !== change.newValue,
                   )
 
                 if (item.changes.length && !changes.length) {
@@ -107,7 +111,12 @@ export const createLoadIssueHistory =
                 return {
                   changes: changes.length
                     ? changes
-                    : [{ label: actionLabel(item.entityType, item.action) }],
+                    : [
+                        {
+                          kind: 'event' as const,
+                          label: actionLabel(item.entityType, item.action),
+                        },
+                      ],
                   createdAt: item.createdAt,
                   owner: {
                     color: item.owner.color,

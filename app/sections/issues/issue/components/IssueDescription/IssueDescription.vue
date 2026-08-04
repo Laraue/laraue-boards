@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="root"
     class="issue-description"
     :class="{ 'issue-description--writing': isWriting }">
     <div class="issue-description-frame">
@@ -162,6 +163,7 @@ const props = defineProps<{ disabled?: boolean }>()
 
 const model = defineModel<string>({ required: true })
 const state = reactive({ editing: false })
+const root = useTemplateRef<HTMLElement>('root')
 const textarea = useTemplateRef<HTMLTextAreaElement>('textarea')
 
 const isWriting = computed(() => state.editing && !props.disabled)
@@ -179,6 +181,20 @@ const startEditing = async (event: Event) => {
   await nextTick()
   textarea.value?.focus()
 }
+
+const stopEditingOnOutsideClick = (event: MouseEvent) => {
+  if (
+    state.editing &&
+    event.button === 0 &&
+    root.value &&
+    !event.composedPath().includes(root.value)
+  ) {
+    state.editing = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', stopEditingOnOutsideClick))
+onBeforeUnmount(() => document.removeEventListener('click', stopEditingOnOutsideClick))
 
 // execCommand is deprecated but stays the only insert that keeps the textarea undo stack.
 // Typed locally so the TS6387 deprecation hint does not fire; swap to a standard undoable insert API when one ships.
@@ -401,6 +417,10 @@ const handleKeydown = (event: KeyboardEvent) => {
 .issue-description-preview {
   overflow-wrap: anywhere;
   padding: var(--space-3);
+}
+
+.issue-description-preview :deep(:is(p, li, blockquote)) {
+  white-space: break-spaces;
 }
 
 .issue-description-preview--editable {
