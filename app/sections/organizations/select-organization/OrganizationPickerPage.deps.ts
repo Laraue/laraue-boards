@@ -1,6 +1,5 @@
 import type { ActionResult } from '#infrastructure/api/apiResult'
 import type { QueryResult } from '#infrastructure/api/apiResult'
-
 import type { TourStateDeps } from '~/composables/useTour'
 
 import type { OrganizationPickerItem } from './OrganizationPickerPage.types'

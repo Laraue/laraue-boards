@@ -2,7 +2,7 @@ import type { TourStateDeps, TourStatus } from '~/composables/useTour'
 
 const ORGANIZATION_TOUR_KEY = 'onboarding:organizations:v1'
 
-const isOrganizationTourStatus = (value: string | null): value is TourStatus =>
+const isOrganizationTourStatus = (value: null | string): value is TourStatus =>
   value === 'completed' || value === 'dismissed'
 
 export const createOrganizationTourDeps = (): TourStateDeps => ({

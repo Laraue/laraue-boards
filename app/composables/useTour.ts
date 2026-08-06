@@ -30,17 +30,15 @@ export const useTour = ({
 
   const startTour = (): Promise<TourStatus | undefined> =>
     new Promise((resolve) => {
-      let completed = false
-
       activeTour = driver({
         animate: !matchMedia('(prefers-reduced-motion: reduce)').matches,
         disableActiveInteraction: true,
         doneBtnText: 'Start working',
         duration: 200,
         nextBtnText: 'Next',
-        onDestroyed: () => resolve(disposed ? undefined : completed ? 'completed' : 'dismissed'),
+        onDestroyed: () => resolve(disposed ? undefined : 'dismissed'),
         onDoneClick: () => {
-          completed = true
+          resolve('completed')
           activeTour?.destroy()
         },
         popoverClass: 'product-tour',

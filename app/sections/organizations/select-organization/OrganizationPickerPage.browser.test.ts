@@ -3,7 +3,6 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
 import type { ActionResult } from '#infrastructure/api/apiResult'
-
 import type { TourStateDeps } from '~/composables/useTour'
 
 import type { OrganizationPickerPageDeps } from './OrganizationPickerPage.deps'
@@ -23,7 +22,7 @@ const organization: Item = {
 }
 
 const createTourDeps = () => ({
-  loadStatus: vi.fn<TourStateDeps['loadStatus']>(async () => undefined),
+  loadStatus: vi.fn<TourStateDeps['loadStatus']>(async () => 'completed'),
   saveStatus: vi.fn<TourStateDeps['saveStatus']>(async () => undefined),
 })
 
@@ -83,6 +82,7 @@ it('shows no organizations when the list is empty', async () => {
 
 it('introduces the personal organization once', async () => {
   const tour = createTourDeps()
+  tour.loadStatus.mockResolvedValue(undefined)
   const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
     data: [{ ...organization, description: 'Personal organization', isPersonal: true }],
     status: 'success',
@@ -97,7 +97,7 @@ it('introduces the personal organization once', async () => {
   await expect.element(page.getByText('Bring your team together')).toBeInTheDocument()
   await page.getByRole('button', { name: 'Start working' }).click()
 
-  expect(tour.saveStatus).toHaveBeenCalledWith('completed')
+  await vi.waitFor(() => expect(tour.saveStatus).toHaveBeenCalledWith('completed'))
 
   await currentWrapper?.unmount()
   currentWrapper = undefined
