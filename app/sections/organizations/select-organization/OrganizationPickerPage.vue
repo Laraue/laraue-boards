@@ -23,6 +23,7 @@
               v-for="organization in organizations"
               :key="organization.id"
               class="org-choice"
+              :data-tour="organization.isPersonal ? 'personal-organization' : undefined"
               :disabled="selecting"
               type="button"
               @click="select(organization.id, organization.key)">
@@ -45,6 +46,7 @@
           </div>
           <NuxtLink
             class="secondary"
+            data-tour="create-organization"
             to="/organizations/new">
             <Plus />
             Create organization
@@ -64,6 +66,7 @@
 import { ChevronRight, Plus } from '@lucide/vue'
 
 import type { OrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
+import { useOrganizationTour } from '~/sections/organizations/select-organization/useOrganizationTour'
 
 const props = defineProps<{
   deps: OrganizationPickerPageDeps
@@ -76,6 +79,8 @@ const { data, message, pending, refresh } = await useQuery(
   'organization-picker',
   (_nuxtApp, { signal }) => props.deps.view({ signal }),
 )
+
+useOrganizationTour(data, props.deps.tour)
 
 const {
   execute: selectOrganization,
