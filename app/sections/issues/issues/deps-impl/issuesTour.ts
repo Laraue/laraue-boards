@@ -1,14 +1,14 @@
 import type { TourStateDeps, TourStatus } from '~/composables/useTour'
 
-const ORGANIZATION_TOUR_KEY = 'onboarding:organizations:v1'
+const ISSUES_TOUR_KEY = 'onboarding:issues:v1'
 
 const isTourStatus = (value: null | string): value is TourStatus =>
   value === 'completed' || value === 'dismissed'
 
-export const createOrganizationTourDeps = (): TourStateDeps => ({
+export const createIssuesTourDeps = (): TourStateDeps => ({
   loadStatus: async () => {
-    const status = localStorage.getItem(ORGANIZATION_TOUR_KEY)
+    const status = localStorage.getItem(ISSUES_TOUR_KEY)
     return isTourStatus(status) ? status : undefined
   },
-  saveStatus: async (status) => localStorage.setItem(ORGANIZATION_TOUR_KEY, status),
+  saveStatus: async (status) => localStorage.setItem(ISSUES_TOUR_KEY, status),
 })

@@ -1,14 +1,14 @@
 import type { TourStateDeps, TourStatus } from '~/composables/useTour'
 
-const ORGANIZATION_TOUR_KEY = 'onboarding:organizations:v1'
+const APP_LAYOUT_TOUR_KEY = 'onboarding:app-layout:v1'
 
 const isTourStatus = (value: null | string): value is TourStatus =>
   value === 'completed' || value === 'dismissed'
 
-export const createOrganizationTourDeps = (): TourStateDeps => ({
+export const createAppLayoutTourDeps = (): TourStateDeps => ({
   loadStatus: async () => {
-    const status = localStorage.getItem(ORGANIZATION_TOUR_KEY)
+    const status = localStorage.getItem(APP_LAYOUT_TOUR_KEY)
     return isTourStatus(status) ? status : undefined
   },
-  saveStatus: async (status) => localStorage.setItem(ORGANIZATION_TOUR_KEY, status),
+  saveStatus: async (status) => localStorage.setItem(APP_LAYOUT_TOUR_KEY, status),
 })

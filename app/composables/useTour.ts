@@ -14,11 +14,45 @@ export type TourStateDeps = {
   saveStatus: (status: TourStatus) => Promise<void>
 }
 
+type QueuedTour = {
+  cancelled: () => boolean
+  priority: number
+  run: () => Promise<void>
+}
+
+const queue: QueuedTour[] = []
+let queueRunning = false
+let queueTimer: ReturnType<typeof setTimeout> | undefined
+
+const runQueue = async (): Promise<void> => {
+  queueTimer = undefined
+  if (queueRunning) {
+    return
+  }
+
+  queueRunning = true
+  while (queue.length) {
+    queue.sort((left, right) => left.priority - right.priority)
+    const next = queue.shift()
+    if (next && !next.cancelled()) {
+      await next.run()
+    }
+  }
+  queueRunning = false
+}
+
+const enqueueTour = (tour: QueuedTour): void => {
+  queue.push(tour)
+  queueTimer ??= setTimeout(() => void runQueue())
+}
+
 export const useTour = ({
+  priority = 0,
   ready,
   state,
   steps,
 }: {
+  priority?: number
   ready: () => boolean
   state: TourStateDeps
   steps: TourStep[]
@@ -71,15 +105,21 @@ export const useTour = ({
         return
       }
 
-      await nextTick()
-      if (disposed) {
-        return
-      }
+      enqueueTour({
+        cancelled: () => disposed,
+        priority,
+        run: async () => {
+          await nextTick()
+          if (disposed) {
+            return
+          }
 
-      const status = await startTour()
-      if (status) {
-        await state.saveStatus(status)
-      }
+          const status = await startTour()
+          if (status) {
+            await state.saveStatus(status)
+          }
+        },
+      })
     },
     { immediate: true },
   )

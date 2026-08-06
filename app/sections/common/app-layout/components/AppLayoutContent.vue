@@ -16,6 +16,7 @@
         <NuxtLink
           :aria-label="`Switch organization. Current organization: ${viewModel.organization.name}`"
           class="organization-select"
+          data-tour="organization-switcher"
           title="Switch organization"
           to="/organizations">
           <span
@@ -36,6 +37,7 @@
           :class="{
             active: active('organizations-organizationKey-issues'),
           }"
+          data-tour="all-issues"
           :to="organizationRoutes.issues()">
           <ClipboardList />
           All issues
@@ -54,6 +56,7 @@
         </div>
         <NuxtLink
           v-if="viewModel.organization.canCreateSpaces"
+          data-tour="create-space"
           exact-active-class="active"
           :to="organizationRoutes.newSpace()">
           <Plus />
@@ -66,7 +69,8 @@
             viewModel.organization.canManageAttributes ||
             viewModel.organization.canMassMove
           "
-          class="nav-title">
+          class="nav-title"
+          data-tour="organization-settings">
           Settings
         </div>
         <NuxtLink
@@ -106,7 +110,9 @@
           Data movement
         </NuxtLink>
       </nav>
-      <div class="sidebar-footer">
+      <div
+        class="sidebar-footer"
+        data-tour="user-controls">
         <div class="sidebar-user">
           <span
             class="avatar"

@@ -1,5 +1,6 @@
 import type { QueryResult } from '#infrastructure/api/apiResult'
 import type { IssueListDeps } from '~/components/issue-list/IssueList.deps'
+import type { TourStateDeps } from '~/composables/useTour'
 
 import type { IssuesFilter, IssuesPageData, SearchIssuesResult } from './IssuesPage.types'
 
@@ -21,5 +22,6 @@ export type ViewIssues = (input: {
 export type IssuesPageDeps = {
   issueList: IssueListDeps
   searchIssues: SearchIssues
+  tour: TourStateDeps
   view: ViewIssues
 }

@@ -20,6 +20,7 @@
 <script setup lang="ts">
 import type { AppLayoutDeps } from '~/sections/common/app-layout/AppLayout.deps'
 import AppLayoutContent from '~/sections/common/app-layout/components/AppLayoutContent.vue'
+import { useAppLayoutTour } from '~/sections/common/app-layout/useAppLayoutTour'
 
 const props = defineProps<{
   deps: AppLayoutDeps
@@ -34,6 +35,7 @@ const query = await useAsyncData(
 const data = computed(() =>
   query.data.value?.status === 'success' ? query.data.value.data : undefined,
 )
+useAppLayoutTour(data, props.deps.tour)
 const errorCode = computed(() =>
   query.data.value?.status === 'error' ? query.data.value.code : undefined,
 )
