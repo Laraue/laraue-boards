@@ -5,22 +5,12 @@ import { useTour } from '~/composables/useTour'
 
 import type { AppLayoutData } from './AppLayout.types'
 
-const steps = [
+const buildSteps = (data: AppLayoutData | undefined): TourStep[] => [
   {
-    description: 'Here is a quick tour of the tools available in every organization.',
-    title: 'Welcome to your workspace',
-  },
-  {
-    description: 'See your current organization here or switch to another workspace.',
+    description: `Switch between organizations here — ${data?.organization.name ?? 'each one'} keeps its own spaces and issues.`,
     placement: 'right',
     target: '[data-tour="organization-switcher"]',
     title: 'Your organization',
-  },
-  {
-    description: 'Review every issue across all spaces from one place.',
-    placement: 'right',
-    target: '[data-tour="all-issues"]',
-    title: 'All issues',
   },
   {
     description: 'Spaces group related boards and issues for a project or area of work.',
@@ -29,26 +19,31 @@ const steps = [
     title: 'Organize work with spaces',
   },
   {
-    description: 'Manage the organization, members, attributes, and data from this section.',
+    description: 'Members, attributes, and the rest of the organization settings live here.',
     placement: 'right',
     target: '[data-tour="organization-settings"]',
     title: 'Workspace settings',
   },
-  {
-    description: 'Your profile, theme switcher, and sign out action are always available here.',
-    placement: 'right',
-    target: '[data-tour="user-controls"]',
-    title: 'Your account',
-  },
-] satisfies TourStep[]
+]
 
 export const useAppLayoutTour = (
   data: Readonly<Ref<AppLayoutData | undefined>>,
   deps: TourStateDeps,
-): void =>
+): void => {
+  const routes = useOrganizationRoutes()
+
   useTour({
+    finish: () => {
+      const organization = data.value?.organization
+      if (!organization?.canCreateSpaces || data.value?.spaces.length) {
+        return undefined
+      }
+      return { run: () => void navigateTo(routes.newSpace()), text: 'Create a space' }
+    },
+    greetingName: () => data.value?.user.name.split(' ')[0],
     priority: 0,
     ready: () => import.meta.client && data.value !== undefined && innerWidth > 760,
     state: deps,
-    steps,
+    steps: () => buildSteps(data.value),
   })
+}

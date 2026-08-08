@@ -80,11 +80,18 @@
             <ChevronRight />
           </NuxtLink>
         </div>
-        <p
+        <AppEmptyState
           v-else
-          class="empty">
-          No organization members found.
-        </p>
+          hint="You are the only one here. Send the invitation link above to a teammate or a friend — whoever opens it joins this organization and can work on the same spaces and boards."
+          title="No one else has joined yet">
+          <button
+            class="primary"
+            type="button"
+            @click="copyInvitation">
+            <Copy />
+            {{ state.copied ? 'Copied' : 'Copy invitation link' }}
+          </button>
+        </AppEmptyState>
       </section>
     </template>
   </QueryState>
@@ -125,6 +132,7 @@ const copyInvitation = async (): Promise<void> => {
   state.copyError = ''
   try {
     await navigator.clipboard.writeText(invitationUrl.value)
+    completeOnboardingTask(organizationRoutes.organizationKey.value, 'invite')
     state.copied = true
     clearTimeout(copiedTimer)
     copiedTimer = setTimeout(() => (state.copied = false), 2000)

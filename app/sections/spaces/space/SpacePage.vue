@@ -91,11 +91,18 @@
               </div>
             </NuxtLink>
           </div>
-          <p
+          <AppEmptyState
             v-else
-            class="muted">
-            No boards in this space yet.
-          </p>
+            hint="A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it."
+            title="No boards yet">
+            <NuxtLink
+              v-if="page.canCreateBoards"
+              class="primary"
+              :to="organizationRoutes.newBoard(page.key)">
+              <Plus />
+              Create board
+            </NuxtLink>
+          </AppEmptyState>
         </div>
       </section>
     </template>

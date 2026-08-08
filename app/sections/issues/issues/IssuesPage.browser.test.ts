@@ -115,19 +115,16 @@ it('links to the issue creation page only when a space exists', async () => {
 })
 
 it('introduces the all issues page once', async () => {
+  localStorage.setItem('onboarding:opt-in:v1', 'accepted')
   const tour = createTourDeps()
   tour.loadStatus.mockResolvedValue(undefined)
 
   await mount(createDeps({ tour }))
 
-  await expect.element(page.getByText('All your work in one place')).toBeInTheDocument()
-  await page.getByRole('button', { name: 'Next' }).click()
-  await expect.element(page.getByText('Find an issue')).toBeInTheDocument()
-  await page.getByRole('button', { name: 'Next' }).click()
-  await expect.element(page.getByText('Focus the list')).toBeInTheDocument()
+  await expect.element(page.getByText('Find any issue')).toBeInTheDocument()
   await page.getByRole('button', { name: 'Next' }).click()
   await expect.element(page.getByText('Add an issue')).toBeInTheDocument()
-  await page.getByRole('button', { name: 'Start working' }).click()
+  await page.getByRole('button', { name: 'Create an issue' }).click()
 
   await vi.waitFor(() => expect(tour.saveStatus).toHaveBeenCalledWith('completed'))
 })

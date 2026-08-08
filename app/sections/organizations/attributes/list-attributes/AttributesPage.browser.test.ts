@@ -65,7 +65,7 @@ it('shows no attribute links when the list is empty', async () => {
 
   await mount(view)
 
-  await expect.element(page.getByText('No attributes yet.')).toBeInTheDocument()
+  await expect.element(page.getByText('No attributes yet')).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: /Priority/ })).not.toBeInTheDocument()
 })
 

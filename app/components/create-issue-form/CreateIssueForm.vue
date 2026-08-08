@@ -84,6 +84,7 @@ import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
 import type { CreateIssueFormProps } from './CreateIssueForm.types'
 
 const props = defineProps<CreateIssueFormProps & { deps: CreateIssueFormDeps }>()
+const route = useRoute()
 const idPrefix = useId()
 const form = reactive({
   assigneeId: '',
@@ -105,7 +106,14 @@ const {
   message,
   pending,
 } = useAction(props.deps.create, {
-  onSuccess: (issue) => props.onCreated(issue.issueKey),
+  onSuccess: (issue) => {
+    const organizationKey =
+      'organizationKey' in route.params ? route.params.organizationKey : undefined
+    if (typeof organizationKey === 'string') {
+      completeOnboardingTask(organizationKey, 'issue')
+    }
+    props.onCreated(issue.issueKey)
+  },
 })
 
 const changeFiles = (files: File[]) => {

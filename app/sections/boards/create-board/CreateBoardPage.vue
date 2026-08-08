@@ -56,6 +56,9 @@ const {
   message,
   pending,
 } = useAction(props.deps.create, {
-  onSuccess: (board) => props.onCreated(board.boardId),
+  onSuccess: (board) => {
+    completeOnboardingTask(organizationRoutes.organizationKey.value, 'board')
+    props.onCreated(board.boardId)
+  },
 })
 </script>

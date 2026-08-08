@@ -43,6 +43,11 @@
           All issues
         </NuxtLink>
         <div class="nav-title">Spaces</div>
+        <p
+          v-if="viewModel.spaces.length === 0"
+          class="nav-hint">
+          A space groups the boards and issues of one project.
+        </p>
         <div
           v-for="space in viewModel.spaces"
           :key="space.key"
@@ -113,6 +118,7 @@
       <div
         class="sidebar-footer"
         data-tour="user-controls">
+        <OnboardingChecklist :view-model="viewModel" />
         <div class="sidebar-user">
           <span
             class="avatar"
@@ -136,6 +142,13 @@
             <Moon />
             Dark mode
           </span>
+        </button>
+        <button
+          class="secondary sidebar-action"
+          type="button"
+          @click="restartTours">
+          <Compass />
+          Replay the tour
         </button>
         <button
           class="secondary danger sidebar-action"
@@ -172,6 +185,7 @@ import {
   ArrowRightLeft,
   ChevronsUpDown,
   ClipboardList,
+  Compass,
   LogOut,
   Menu,
   Moon,
@@ -182,8 +196,10 @@ import {
   Tags,
 } from '@lucide/vue'
 
+import { restartTours } from '~/composables/useTour'
 import { SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
+import OnboardingChecklist from '~/sections/common/app-layout/components/OnboardingChecklist.vue'
 
 const props = defineProps<{
   onLogout: () => void
@@ -276,6 +292,13 @@ nav button.active {
   background: var(--color-accent-soft);
   color: var(--color-text);
   font-weight: var(--font-weight-semibold);
+}
+
+.nav-hint {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+  padding: 0 var(--space-3) var(--space-2);
 }
 
 .nav-title {

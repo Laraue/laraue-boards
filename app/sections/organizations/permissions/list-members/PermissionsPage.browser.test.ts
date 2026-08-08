@@ -105,7 +105,7 @@ it('shows no member links when the list is empty', async () => {
 
   await mount(view)
 
-  await expect.element(page.getByText('No organization members found.')).toBeInTheDocument()
+  await expect.element(page.getByText('No one else has joined yet')).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: /Ada Lovelace/ })).not.toBeInTheDocument()
 })
 

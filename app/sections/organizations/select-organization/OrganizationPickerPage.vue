@@ -38,11 +38,10 @@
               </span>
               <ChevronRight />
             </button>
-            <p
+            <AppEmptyState
               v-if="organizations.length === 0"
-              class="empty">
-              No organizations yet.
-            </p>
+              hint="An organization is your workspace — it holds your spaces, boards, and issues. Create one for yourself or your team, or open a teammate's invitation link to join theirs."
+              title="No organizations yet" />
           </div>
           <NuxtLink
             class="secondary"

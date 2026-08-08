@@ -76,11 +76,12 @@ it('shows no organizations when the list is empty', async () => {
 
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
 
-  await expect.element(page.getByText('No organizations yet.')).toBeInTheDocument()
+  await expect.element(page.getByText('No organizations yet')).toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: /Laraue/ })).not.toBeInTheDocument()
 })
 
 it('introduces the personal organization once', async () => {
+  localStorage.setItem('onboarding:opt-in:v1', 'accepted')
   const tour = createTourDeps()
   tour.loadStatus.mockResolvedValue(undefined)
   const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
@@ -90,8 +91,6 @@ it('introduces the personal organization once', async () => {
 
   await mount({ ...createDeps(view), tour }, vi.fn<(organizationKey: string) => void>())
 
-  await expect.element(page.getByText('Welcome to Laraue Boards')).toBeInTheDocument()
-  await page.getByRole('button', { name: 'Next' }).click()
   await expect.element(page.getByText('Your personal workspace')).toBeInTheDocument()
   await page.getByRole('button', { name: 'Next' }).click()
   await expect.element(page.getByText('Bring your team together')).toBeInTheDocument()
@@ -104,7 +103,7 @@ it('introduces the personal organization once', async () => {
   tour.loadStatus.mockResolvedValue('completed')
   await mount({ ...createDeps(view), tour }, vi.fn<(organizationKey: string) => void>())
 
-  await expect.element(page.getByText('Welcome to Laraue Boards')).not.toBeInTheDocument()
+  await expect.element(page.getByText('Your personal workspace')).not.toBeInTheDocument()
 })
 
 it('reloads the organizations when the failed request is retried', async () => {

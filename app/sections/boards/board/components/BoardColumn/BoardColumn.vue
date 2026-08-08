@@ -14,7 +14,7 @@
       <p
         v-if="viewModel.issues.length === 0"
         class="empty">
-        No issues
+        {{ canMoveIssues ? 'Drop issues here' : 'No issues' }}
       </p>
       <IssueCard
         v-for="(issue, index) in viewModel.issues"

@@ -7,10 +7,6 @@ import type { OrganizationPickerItem } from './OrganizationPickerPage.types'
 
 const steps = [
   {
-    description: 'Here is a quick introduction to organizations and where your work lives.',
-    title: 'Welcome to Laraue Boards',
-  },
-  {
     description: 'Use your personal organization for your own projects and tasks.',
     placement: 'right',
     target: '[data-tour="personal-organization"]',
@@ -31,5 +27,5 @@ export const useOrganizationTour = (
   useTour({
     ready: () => organizations.value !== undefined,
     state: deps,
-    steps,
+    steps: () => steps,
   })
