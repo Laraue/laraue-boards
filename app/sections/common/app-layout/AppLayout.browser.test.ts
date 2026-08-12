@@ -76,7 +76,6 @@ it('opens the navigation from the mobile menu button', async () => {
 })
 
 it('introduces the workspace navigation once', async () => {
-  localStorage.setItem('onboarding:opt-in:v1', 'accepted')
   const tour = createTourDeps()
   tour.loadStatus.mockResolvedValue(undefined)
   await page.viewport(1280, 800)
@@ -85,7 +84,9 @@ it('introduces the workspace navigation once', async () => {
 
   await expect.element(page.getByText('Your organization')).toBeInTheDocument()
   await page.getByRole('button', { name: 'Next' }).click()
-  await expect.element(page.getByText('Organize work with spaces')).toBeInTheDocument()
+  await expect.element(page.getByText('Issues are your tasks')).toBeInTheDocument()
+  await page.getByRole('button', { name: 'Next' }).click()
+  await expect.element(page.getByText('Spaces, backlog, and boards')).toBeInTheDocument()
   await page.getByRole('button', { name: 'Next' }).click()
   await expect.element(page.getByText('Workspace settings')).toBeInTheDocument()
   await page.getByRole('button', { name: 'Start working' }).click()

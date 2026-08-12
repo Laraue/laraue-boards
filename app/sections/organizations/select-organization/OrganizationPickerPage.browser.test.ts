@@ -81,7 +81,6 @@ it('shows no organizations when the list is empty', async () => {
 })
 
 it('introduces the personal organization once', async () => {
-  localStorage.setItem('onboarding:opt-in:v1', 'accepted')
   const tour = createTourDeps()
   tour.loadStatus.mockResolvedValue(undefined)
   const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({

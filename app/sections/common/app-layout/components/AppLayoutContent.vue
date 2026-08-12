@@ -42,7 +42,11 @@
           <ClipboardList />
           All issues
         </NuxtLink>
-        <div class="nav-title">Spaces</div>
+        <div
+          class="nav-title"
+          data-tour="spaces">
+          Spaces
+        </div>
         <p
           v-if="viewModel.spaces.length === 0"
           class="nav-hint">
@@ -61,7 +65,6 @@
         </div>
         <NuxtLink
           v-if="viewModel.organization.canCreateSpaces"
-          data-tour="create-space"
           exact-active-class="active"
           :to="organizationRoutes.newSpace()">
           <Plus />
@@ -116,9 +119,7 @@
         </NuxtLink>
       </nav>
       <div
-        class="sidebar-footer"
-        data-tour="user-controls">
-        <OnboardingChecklist :view-model="viewModel" />
+        class="sidebar-footer">
         <div class="sidebar-user">
           <span
             class="avatar"
@@ -142,13 +143,6 @@
             <Moon />
             Dark mode
           </span>
-        </button>
-        <button
-          class="secondary sidebar-action"
-          type="button"
-          @click="restartTours">
-          <Compass />
-          Replay the tour
         </button>
         <button
           class="secondary danger sidebar-action"
@@ -185,7 +179,6 @@ import {
   ArrowRightLeft,
   ChevronsUpDown,
   ClipboardList,
-  Compass,
   LogOut,
   Menu,
   Moon,
@@ -196,10 +189,8 @@ import {
   Tags,
 } from '@lucide/vue'
 
-import { restartTours } from '~/composables/useTour'
 import { SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
-import OnboardingChecklist from '~/sections/common/app-layout/components/OnboardingChecklist.vue'
 
 const props = defineProps<{
   onLogout: () => void

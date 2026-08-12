@@ -13,10 +13,18 @@ const buildSteps = (data: AppLayoutData | undefined): TourStep[] => [
     title: 'Your organization',
   },
   {
-    description: 'Spaces group related boards and issues for a project or area of work.',
+    description:
+      'An issue is a task or request. All issues shows them across every space, so nothing gets lost between projects.',
     placement: 'right',
-    target: '[data-tour="create-space"]',
-    title: 'Organize work with spaces',
+    target: '[data-tour="all-issues"]',
+    title: 'Issues are your tasks',
+  },
+  {
+    description:
+      'A space is a project or a large area of work — similar to an epic. Inside it, the backlog holds unscheduled issues and boards show their workflow.',
+    placement: 'right',
+    target: '[data-tour="spaces"]',
+    title: 'Spaces, backlog, and boards',
   },
   {
     description: 'Members, attributes, and the rest of the organization settings live here.',
@@ -30,18 +38,7 @@ export const useAppLayoutTour = (
   data: Readonly<Ref<AppLayoutData | undefined>>,
   deps: TourStateDeps,
 ): void => {
-  const routes = useOrganizationRoutes()
-
   useTour({
-    finish: () => {
-      const organization = data.value?.organization
-      if (!organization?.canCreateSpaces || data.value?.spaces.length) {
-        return undefined
-      }
-      return { run: () => void navigateTo(routes.newSpace()), text: 'Create a space' }
-    },
-    greetingName: () => data.value?.user.name.split(' ')[0],
-    priority: 0,
     ready: () => import.meta.client && data.value !== undefined && innerWidth > 760,
     state: deps,
     steps: () => buildSteps(data.value),

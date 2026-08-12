@@ -476,8 +476,6 @@ const moveIssue = async (input: {
   if (result === undefined) {
     viewModel.value = input.revert
     state.moveError = moveBoardIssueMessage.value ?? getErrorMessage(0)
-  } else if (input.updateStatus) {
-    completeOnboardingTask(organizationRoutes.organizationKey.value, 'move')
   }
   state.movingIssueKeys.delete(input.issueKey)
 }

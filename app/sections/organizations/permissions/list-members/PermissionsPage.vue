@@ -132,7 +132,6 @@ const copyInvitation = async (): Promise<void> => {
   state.copyError = ''
   try {
     await navigator.clipboard.writeText(invitationUrl.value)
-    completeOnboardingTask(organizationRoutes.organizationKey.value, 'invite')
     state.copied = true
     clearTimeout(copiedTimer)
     copiedTimer = setTimeout(() => (state.copied = false), 2000)

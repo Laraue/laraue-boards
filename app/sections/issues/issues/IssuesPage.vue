@@ -19,7 +19,6 @@
             v-if="view.spaces.length"
             aria-label="Add issue"
             class="primary"
-            data-tour="create-issue"
             :to="organizationRoutes.newIssue()">
             <Plus />
             <span class="btn-label">Add issue</span>
@@ -28,14 +27,12 @@
         <div class="toolbar">
           <input
             aria-label="Search issues"
-            data-tour="issues-search"
             placeholder="Search issues"
             type="search"
             :value="request.search"
             @input="updateSearch(($event.target as HTMLInputElement).value)" />
           <IssueFilters
             :attributes="view.attributes"
-            data-tour="issues-filters"
             :loading="filtering"
             :model-value="filterValue"
             :spaces="view.spaces"
@@ -75,7 +72,6 @@ import type { IssueFiltersValue } from '~/components/issue-filters/IssueFilters.
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
 import IssueList from '~/components/issue-list/IssueList.vue'
 import type { IssuesPageDeps } from '~/sections/issues/issues/IssuesPage.deps'
-import { useIssuesTour } from '~/sections/issues/issues/useIssuesTour'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -105,8 +101,6 @@ const { data, message, pending, refresh } = await useQuery(
   (_nuxtApp, { signal }) => props.deps.view({ ...request.value, signal }),
   { watch: [() => props.organizationKey] },
 )
-
-useIssuesTour(data, props.deps.tour)
 
 useHead({ title: 'All issues' })
 

@@ -8,7 +8,6 @@ import type { MoveIssuesDialogDeps } from '~/components/issue-list/components/mo
 import type { IssueListItem } from '~/components/issue-list/IssueList.types'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
-import type { TourStateDeps } from '~/composables/useTour'
 
 import type { IssuesPageDeps } from './IssuesPage.deps'
 import type { IssuesPageData } from './IssuesPage.types'
@@ -35,11 +34,6 @@ const pageData: IssuesPageData = {
   issues: [issueOf('ISS-1', 'First issue')],
   spaces: [{ label: 'Product', value: '7' }],
 }
-
-const createTourDeps = () => ({
-  loadStatus: vi.fn<TourStateDeps['loadStatus']>(async () => 'completed'),
-  saveStatus: vi.fn<TourStateDeps['saveStatus']>(async () => undefined),
-})
 
 const createDeps = (overrides: Partial<IssuesPageDeps> = {}): IssuesPageDeps => ({
   issueList: {
@@ -69,7 +63,6 @@ const createDeps = (overrides: Partial<IssuesPageDeps> = {}): IssuesPageDeps => 
     data: { hasNextPage: false, issues: [issueOf('ISS-2', 'Searched issue')] },
     status: 'success',
   })),
-  tour: createTourDeps(),
   view: vi.fn<IssuesPageDeps['view']>(async () => ({ data: pageData, status: 'success' })),
   ...overrides,
 })
@@ -112,21 +105,6 @@ it('links to the issue creation page only when a space exists', async () => {
   await expect
     .element(page.getByRole('link', { name: 'Add issue' }))
     .toHaveAttribute('href', '/organizations/acme-ab12/issues/new')
-})
-
-it('introduces the all issues page once', async () => {
-  localStorage.setItem('onboarding:opt-in:v1', 'accepted')
-  const tour = createTourDeps()
-  tour.loadStatus.mockResolvedValue(undefined)
-
-  await mount(createDeps({ tour }))
-
-  await expect.element(page.getByText('Find any issue')).toBeInTheDocument()
-  await page.getByRole('button', { name: 'Next' }).click()
-  await expect.element(page.getByText('Add an issue')).toBeInTheDocument()
-  await page.getByRole('button', { name: 'Create an issue' }).click()
-
-  await vi.waitFor(() => expect(tour.saveStatus).toHaveBeenCalledWith('completed'))
 })
 
 it('hides the issue creation link when there is no space', async () => {

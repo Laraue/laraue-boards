@@ -32,7 +32,6 @@
 }
 
 .product-tour .driver-popover-description {
-  color: var(--color-muted);
   font-size: var(--font-size-body);
   line-height: 1.5;
   margin-bottom: var(--space-6);
@@ -143,32 +142,6 @@
 /* The 16px offset already ties the popover to the stage; a 5px arrow just floats in the gap. */
 .product-tour .driver-popover-arrow {
   display: none;
-}
-
-/* Opening question: centered, no target, single call to action. */
-.driver-popover.product-tour-welcome {
-  max-width: min(440px, calc(100vw - var(--space-8)));
-}
-
-.product-tour-welcome .driver-popover-title {
-  padding-right: 0;
-}
-
-/* Driver sets display:block inline on the description, so the layout lives one level down. */
-.product-tour .tour-intro {
-  align-items: center;
-  display: flex;
-  gap: var(--space-4);
-}
-
-.product-tour .mascot {
-  flex: none;
-  height: 56px;
-  width: 56px;
-}
-
-.product-tour-welcome .driver-popover-footer {
-  justify-content: flex-end;
 }
 
 .driver-overlay path {
