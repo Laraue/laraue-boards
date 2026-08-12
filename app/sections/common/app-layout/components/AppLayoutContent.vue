@@ -118,8 +118,16 @@
           Data movement
         </NuxtLink>
       </nav>
-      <div
-        class="sidebar-footer">
+      <a
+        aria-label="Documentation (opens in a new tab)"
+        class="secondary sidebar-action sidebar-documentation"
+        href="https://laraue.com/blog/documentation/laraue-boards"
+        rel="noopener noreferrer"
+        target="_blank">
+        <BookOpen />
+        Documentation
+      </a>
+      <div class="sidebar-footer">
         <div class="sidebar-user">
           <span
             class="avatar"
@@ -177,6 +185,7 @@
 <script setup lang="ts">
 import {
   ArrowRightLeft,
+  BookOpen,
   ChevronsUpDown,
   ClipboardList,
   LogOut,
@@ -342,8 +351,12 @@ main :deep(.page-load-state) {
   border-top: 1px solid var(--color-divider);
   display: grid;
   gap: var(--space-2);
-  margin-top: auto;
   padding-top: var(--space-3);
+}
+
+.sidebar-documentation {
+  margin-bottom: var(--space-3);
+  margin-top: auto;
 }
 
 .sidebar-user {

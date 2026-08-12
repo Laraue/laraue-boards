@@ -97,18 +97,6 @@ it('replaces the invitation link after confirmation', async () => {
     .toHaveValue(`${window.location.origin}/join/invite-456`)
 })
 
-it('shows no member links when the list is empty', async () => {
-  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({
-    data: { joinCode: 'invite-123', members: [] },
-    status: 'success',
-  }))
-
-  await mount(view)
-
-  await expect.element(page.getByText('No one else has joined yet')).toBeInTheDocument()
-  await expect.element(page.getByRole('link', { name: /Ada Lovelace/ })).not.toBeInTheDocument()
-})
-
 it('reloads the members when the failed request is retried', async () => {
   const view = vi
     .fn<PermissionsPageDeps['view']>()

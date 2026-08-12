@@ -6,11 +6,6 @@
       class="muted">
       {{ hint }}
     </p>
-    <div
-      v-if="$slots.default"
-      class="empty-state-actions">
-      <slot />
-    </div>
   </div>
 </template>
 
@@ -32,9 +27,4 @@ defineProps<{ hint?: string; title: string }>()
   max-width: 420px;
 }
 
-.empty-state-actions {
-  display: flex;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-}
 </style>

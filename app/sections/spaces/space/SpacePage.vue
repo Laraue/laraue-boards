@@ -94,15 +94,7 @@
           <AppEmptyState
             v-else
             hint="A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it."
-            title="No boards yet">
-            <NuxtLink
-              v-if="page.canCreateBoards"
-              class="primary"
-              :to="organizationRoutes.newBoard(page.key)">
-              <Plus />
-              Create board
-            </NuxtLink>
-          </AppEmptyState>
+            title="No boards yet" />
         </div>
       </section>
     </template>

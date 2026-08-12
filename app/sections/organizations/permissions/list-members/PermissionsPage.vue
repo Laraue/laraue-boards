@@ -59,9 +59,7 @@
           </p>
         </div>
         <p class="section-label members-label">Members</p>
-        <div
-          v-if="page.members.length"
-          class="member-list">
+        <div class="member-list">
           <NuxtLink
             v-for="member in page.members"
             :key="member.id"
@@ -80,18 +78,6 @@
             <ChevronRight />
           </NuxtLink>
         </div>
-        <AppEmptyState
-          v-else
-          hint="You are the only one here. Send the invitation link above to a teammate or a friend — whoever opens it joins this organization and can work on the same spaces and boards."
-          title="No one else has joined yet">
-          <button
-            class="primary"
-            type="button"
-            @click="copyInvitation">
-            <Copy />
-            {{ state.copied ? 'Copied' : 'Copy invitation link' }}
-          </button>
-        </AppEmptyState>
       </section>
     </template>
   </QueryState>
