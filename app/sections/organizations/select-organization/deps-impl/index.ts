@@ -9,6 +9,6 @@ export const createOrganizationPickerPageDeps = (
   client: ApiClient,
 ): OrganizationPickerPageDeps => ({
   select: createSelectOrganization(client),
-  tour: createOrganizationTourDeps(),
+  tour: createOrganizationTourDeps(client),
   view: createViewOrganizationPicker(client),
 })

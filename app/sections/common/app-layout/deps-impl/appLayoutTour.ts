@@ -1,14 +1,26 @@
-import type { TourStateDeps, TourStatus } from '~/composables/useTour'
+import type { ApiClient } from '#infrastructure/api/client'
+import { tryRequest } from '#infrastructure/api/tryRequest'
+import type { TourStateDeps } from '~/composables/useTour'
 
-const APP_LAYOUT_TOUR_KEY = 'onboarding:app-layout:v1'
+const ONBOARDING_ID = 'app-layout-v1'
 
-const isTourStatus = (value: null | string): value is TourStatus =>
-  value === 'completed' || value === 'dismissed'
-
-export const createAppLayoutTourDeps = (): TourStateDeps => ({
+export const createAppLayoutTourDeps = (client: ApiClient): TourStateDeps => ({
   loadStatus: async () => {
-    const status = localStorage.getItem(APP_LAYOUT_TOUR_KEY)
-    return isTourStatus(status) ? status : undefined
+    const response = await tryRequest(() =>
+      client.GET('/api/user/onboarding/{onboardingId}', {
+        params: { path: { onboardingId: ONBOARDING_ID } },
+      }),
+    )
+    const status = response && 'data' in response ? response.data?.status : undefined
+
+    return status === 'Completed' ? 'completed' : status === 'Dismissed' ? 'dismissed' : undefined
   },
-  saveStatus: async (status) => localStorage.setItem(APP_LAYOUT_TOUR_KEY, status),
+  saveStatus: async (status) => {
+    await tryRequest(() =>
+      client.PUT('/api/user/onboarding/{onboardingId}', {
+        body: { status: status === 'completed' ? 'Completed' : 'Dismissed' },
+        params: { path: { onboardingId: ONBOARDING_ID } },
+      }),
+    )
+  },
 })

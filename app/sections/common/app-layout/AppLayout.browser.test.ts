@@ -93,3 +93,32 @@ it('introduces the workspace navigation once', async () => {
 
   await vi.waitFor(() => expect(tour.saveStatus).toHaveBeenCalledWith('completed'))
 })
+
+it('finishes the tour before unavailable settings', async () => {
+  const tour = createTourDeps()
+  tour.loadStatus.mockResolvedValue(undefined)
+  await page.viewport(1280, 800)
+  await mount(
+    createDeps({
+      tour,
+      view: vi.fn<AppLayoutDeps['view']>(async () => ({
+        data: {
+          ...data,
+          organization: {
+            ...data.organization,
+            canManage: false,
+            canUpdate: false,
+          },
+        },
+        status: 'success',
+      })),
+    }),
+  )
+
+  await page.getByRole('button', { name: 'Next' }).click()
+  await page.getByRole('button', { name: 'Next' }).click()
+
+  await expect.element(page.getByText('Spaces, backlog, and boards')).toBeInTheDocument()
+  await expect.element(page.getByText('3 of 3')).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Start working' })).toBeInTheDocument()
+})

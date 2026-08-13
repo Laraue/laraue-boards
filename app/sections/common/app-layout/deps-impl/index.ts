@@ -7,6 +7,6 @@ import { createViewAppLayout } from './viewAppLayout'
 
 export const createAppLayoutDeps = (client: ApiClient): AppLayoutDeps => ({
   logout: createLogout(client),
-  tour: createAppLayoutTourDeps(),
+  tour: createAppLayoutTourDeps(client),
   view: createViewAppLayout(client),
 })

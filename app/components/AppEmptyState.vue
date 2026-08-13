@@ -26,5 +26,4 @@ defineProps<{ hint?: string; title: string }>()
   line-height: 1.6;
   max-width: 420px;
 }
-
 </style>
