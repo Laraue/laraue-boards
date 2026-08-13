@@ -2243,7 +2243,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    onboardingId: string;
+                    onboardingId: components["schemas"]["OnboardingId"];
                 };
                 cookie?: never;
             };
@@ -2267,7 +2267,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    onboardingId: string;
+                    onboardingId: components["schemas"]["OnboardingId"];
                 };
                 cookie?: never;
             };
@@ -2616,7 +2616,7 @@ export interface components {
             take: number | string;
         };
         GetOnboardingStatusResponse: {
-            status?: null | components["schemas"]["OnboardingStatus"];
+            status?: null | string;
         };
         GlobalAccessLevels: {
             canRead?: boolean;
@@ -2823,7 +2823,9 @@ export interface components {
             name: string;
         };
         /** @enum {unknown} */
-        OnboardingStatus: "Completed" | "Dismissed" | null;
+        OnboardingId: "OrganizationsV1" | "AppLayoutV1";
+        /** @enum {unknown} */
+        OnboardingStatus: "Completed" | "Dismissed";
         /** @enum {unknown} */
         OrderTargetType: "After" | "Before";
         OrganizationAuthData: {

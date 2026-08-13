@@ -2,7 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import { tryRequest } from '#infrastructure/api/tryRequest'
 import type { TourStateDeps } from '~/composables/useTour'
 
-const ONBOARDING_ID = 'app-layout-v1'
+const ONBOARDING_ID = 'AppLayoutV1'
 
 export const createAppLayoutTourDeps = (client: ApiClient): TourStateDeps => ({
   loadStatus: async () => {

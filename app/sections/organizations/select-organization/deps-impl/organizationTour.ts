@@ -2,7 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import { tryRequest } from '#infrastructure/api/tryRequest'
 import type { TourStateDeps } from '~/composables/useTour'
 
-const ONBOARDING_ID = 'organizations-v1'
+const ONBOARDING_ID = 'OrganizationsV1'
 
 export const createOrganizationTourDeps = (client: ApiClient): TourStateDeps => ({
   loadStatus: async () => {
