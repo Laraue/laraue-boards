@@ -23,6 +23,7 @@ test('maps organizations response', async () => {
         description: 'Team organization',
         id: '42',
         initial: 'L',
+        isPersonal: false,
         key: 'laraue-HF2P0',
         name: 'Laraue',
       },

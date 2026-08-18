@@ -50,7 +50,8 @@
         </p>
         <IssueList
           :deps="deps.issueList"
-          empty-text="No issues yet."
+          empty-hint="An issue is one piece of work — a task, a bug, an idea. It lives in a space, sits in a board column that shows its status, and can be assigned to someone."
+          empty-text="No issues yet"
           :filtering="filtering"
           :has-next-page="hasNextPage"
           :issues="issues"

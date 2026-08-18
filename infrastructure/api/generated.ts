@@ -2231,6 +2231,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user/onboarding/{onboardingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    onboardingId: components["schemas"]["OnboardingId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GetOnboardingStatusResponse"];
+                        "application/json": components["schemas"]["GetOnboardingStatusResponse"];
+                        "text/json": components["schemas"]["GetOnboardingStatusResponse"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    onboardingId: components["schemas"]["OnboardingId"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetOnboardingStatusRequest"];
+                    "text/json": components["schemas"]["SetOnboardingStatusRequest"];
+                    "application/*+json": components["schemas"]["SetOnboardingStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/user": {
         parameters: {
             query?: never;
@@ -2551,6 +2615,9 @@ export interface components {
             /** Format: int32 */
             take: number | string;
         };
+        GetOnboardingStatusResponse: {
+            status?: null | string;
+        };
         GlobalAccessLevels: {
             canRead?: boolean;
             canCreateSpaces?: boolean;
@@ -2756,6 +2823,10 @@ export interface components {
             name: string;
         };
         /** @enum {unknown} */
+        OnboardingId: "OrganizationsV1" | "AppLayoutV1";
+        /** @enum {unknown} */
+        OnboardingStatus: "Completed" | "Dismissed";
+        /** @enum {unknown} */
         OrderTargetType: "After" | "Before";
         OrganizationAuthData: {
             /** Format: int64 */
@@ -2843,6 +2914,9 @@ export interface components {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
             };
             sorting?: null | components["schemas"]["IssueSorting"];
+        };
+        SetOnboardingStatusRequest: {
+            status: components["schemas"]["OnboardingStatus"];
         };
         SetPermissionsRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];

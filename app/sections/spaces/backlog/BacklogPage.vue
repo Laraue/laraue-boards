@@ -50,7 +50,8 @@
         </p>
         <IssueList
           :deps="deps.issueList"
-          empty-text="The backlog is empty."
+          empty-hint="The backlog is where work waits. Park ideas and requests here, then move them onto a board when the team is ready to pick them up."
+          empty-text="The backlog is empty"
           :excluded-move-board-id="page.backlogBoardId"
           :filtering="filtering"
           :has-next-page="hasNextPage"

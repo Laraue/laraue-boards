@@ -3,6 +3,7 @@ export type OrganizationPickerItem = {
   description: string
   id: string
   initial: string
+  isPersonal: boolean
   key: string
   name: string
 }

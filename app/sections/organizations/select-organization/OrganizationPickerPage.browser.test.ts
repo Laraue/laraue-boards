@@ -3,6 +3,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
 import type { ActionResult } from '#infrastructure/api/apiResult'
+import type { TourStateDeps } from '~/composables/useTour'
 
 import type { OrganizationPickerPageDeps } from './OrganizationPickerPage.deps'
 import type { OrganizationPickerItem } from './OrganizationPickerPage.types'
@@ -15,14 +16,20 @@ const organization: Item = {
   description: 'Team organization',
   id: '42',
   initial: 'L',
+  isPersonal: false,
   key: 'laraue-HF2P0',
   name: 'Laraue',
 }
 
+const createTourDeps = () => ({
+  loadStatus: vi.fn<TourStateDeps['loadStatus']>(async () => 'completed'),
+  saveStatus: vi.fn<TourStateDeps['saveStatus']>(async () => undefined),
+})
+
 const createDeps = (
   view: OrganizationPickerPageDeps['view'],
   select: OrganizationPickerPageDeps['select'] = vi.fn<OrganizationPickerPageDeps['select']>(),
-): OrganizationPickerPageDeps => ({ select, view })
+): OrganizationPickerPageDeps => ({ select, tour: createTourDeps(), view })
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
@@ -69,8 +76,33 @@ it('shows no organizations when the list is empty', async () => {
 
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
 
-  await expect.element(page.getByText('No organizations yet.')).toBeInTheDocument()
+  await expect.element(page.getByText('No organizations yet')).toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: /Laraue/ })).not.toBeInTheDocument()
+})
+
+it('introduces the personal organization once', async () => {
+  const tour = createTourDeps()
+  tour.loadStatus.mockResolvedValue(undefined)
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
+    data: [{ ...organization, description: 'Personal organization', isPersonal: true }],
+    status: 'success',
+  }))
+
+  await mount({ ...createDeps(view), tour }, vi.fn<(organizationKey: string) => void>())
+
+  await expect.element(page.getByText('Your personal workspace')).toBeInTheDocument()
+  await page.getByRole('button', { name: 'Next' }).click()
+  await expect.element(page.getByText('Bring your team together')).toBeInTheDocument()
+  await page.getByRole('button', { name: 'Start working' }).click()
+
+  await vi.waitFor(() => expect(tour.saveStatus).toHaveBeenCalledWith('completed'))
+
+  await currentWrapper?.unmount()
+  currentWrapper = undefined
+  tour.loadStatus.mockResolvedValue('completed')
+  await mount({ ...createDeps(view), tour }, vi.fn<(organizationKey: string) => void>())
+
+  await expect.element(page.getByText('Your personal workspace')).not.toBeInTheDocument()
 })
 
 it('reloads the organizations when the failed request is retried', async () => {

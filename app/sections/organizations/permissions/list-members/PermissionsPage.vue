@@ -59,9 +59,7 @@
           </p>
         </div>
         <p class="section-label members-label">Members</p>
-        <div
-          v-if="page.members.length"
-          class="member-list">
+        <div class="member-list">
           <NuxtLink
             v-for="member in page.members"
             :key="member.id"
@@ -80,11 +78,6 @@
             <ChevronRight />
           </NuxtLink>
         </div>
-        <p
-          v-else
-          class="empty">
-          No organization members found.
-        </p>
       </section>
     </template>
   </QueryState>

@@ -43,11 +43,10 @@
             <ChevronRight />
           </NuxtLink>
         </div>
-        <p
+        <AppEmptyState
           v-else
-          class="empty">
-          No attributes yet.
-        </p>
+          hint="Attributes are your own fields on every issue — priority, client, environment, whatever your team tracks. Add one and it shows up in the issue form and in the filters."
+          title="No attributes yet" />
       </section>
     </template>
   </QueryState>

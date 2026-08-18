@@ -15,6 +15,7 @@ export const createViewOrganizationPicker =
           description: organization.isPersonal ? 'Personal organization' : 'Team organization',
           id: String(organization.id),
           initial: organization.name[0] ?? '?',
+          isPersonal: organization.isPersonal,
           key: getOrganizationKey(organization),
           name: organization.name,
         })),

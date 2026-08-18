@@ -26,7 +26,7 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-07-15',
-  css: ['~/assets/css/tokens.css', '~/assets/css/main.css'],
+  css: ['~/assets/css/tokens.css', '~/assets/css/main.css', '~/assets/css/tours.css'],
   devtools: { enabled: true },
 
   experimental: {

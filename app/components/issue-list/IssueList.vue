@@ -27,11 +27,10 @@
       :status="issue.status"
       :status-color="issue.statusColor"
       :to="organizationRoutes.issue(issue.issueKey)" />
-    <p
+    <AppEmptyState
       v-if="issues.length === 0"
-      class="empty">
-      {{ emptyText }}
-    </p>
+      :hint="emptyHint"
+      :title="emptyText" />
   </div>
   <PaginationControl
     :has-next-page="hasNextPage"
@@ -53,6 +52,7 @@ import type { IssueListItem } from './IssueList.types'
 
 const props = defineProps<{
   deps: IssueListDeps
+  emptyHint?: string
   emptyText: string
   excludedMoveBoardId?: string
   filtering: boolean
