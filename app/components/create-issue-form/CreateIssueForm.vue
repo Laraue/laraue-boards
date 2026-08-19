@@ -3,13 +3,7 @@
     class="issue-form issue-form-page"
     @submit.prevent="submit">
     <div class="issue-form-main">
-      <textarea
-        :id="`${idPrefix}-content`"
-        v-model="form.content"
-        aria-label="Content"
-        placeholder="What needs attention?"
-        required
-        rows="8" />
+      <IssueDescription v-model="form.content" />
       <IssueAttachments
         :attachments="[]"
         :disabled="pending"
@@ -63,7 +57,7 @@
     <div class="page-actions">
       <button
         class="primary"
-        :disabled="pending || !form.statusId || !form.assigneeId"
+        :disabled="pending || !form.content.trim() || !form.statusId || !form.assigneeId"
         type="submit">
         {{ pending ? 'Adding…' : 'Add issue' }}
       </button>
@@ -78,6 +72,7 @@ import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vu
 import IssueAttributeFields from '~/components/issue-attribute-fields/IssueAttributeFields.vue'
 import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
+import IssueDescription from '~/sections/issues/issue/components/IssueDescription/IssueDescription.vue'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
 import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
@@ -113,7 +108,7 @@ const changeFiles = (files: File[]) => {
 }
 
 const submit = () => {
-  if (!form.statusId || !form.assigneeId) {
+  if (!form.content.trim() || !form.statusId || !form.assigneeId) {
     return
   }
   void create({

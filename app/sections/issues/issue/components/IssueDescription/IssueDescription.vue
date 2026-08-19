@@ -429,7 +429,6 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 .issue-description-preview :deep(.issue-description-empty) {
   color: var(--color-muted);
-  font-size: var(--font-size-small);
   margin: 0;
 }
 

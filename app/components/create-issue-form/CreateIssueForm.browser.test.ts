@@ -58,6 +58,7 @@ it('lets the user choose a destination and create an issue from the issue list',
     props: { attributes: [], deps, onCreated },
   })
 
+  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Space', 'Product', '7')
   await chooseOption('Board', 'Sprint board', '12')
@@ -88,6 +89,7 @@ it('creates an issue in a fixed board without showing destination selects', asyn
     },
   })
 
+  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Status', 'To do', '1')
   await chooseOption('Assignee', 'Ann Lee', '9')
@@ -116,6 +118,7 @@ it('keeps the form open and shows the message when creation fails', async () => 
     },
   })
 
+  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Status', 'To do', '1')
   await chooseOption('Assignee', 'Ann Lee', '9')
