@@ -32,6 +32,10 @@ jobs:
           NUXT_PUBLIC_BOARDS_API_BASE_URL: ${{ vars.BOARDS_API_BASE_URL }}
         run: test -n "$NUXT_PUBLIC_BOARDS_API_BASE_URL" && pnpm build
 
+      - name: Pack build output
+        if: github.ref == 'refs/heads/master'
+        run: tar -czf laraue.tar.gz -C .output .
+
       - name: Upload
         if: github.ref == 'refs/heads/master'
         uses: marcodallasanta/ssh-scp-deploy@v1.2.0
@@ -40,5 +44,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }} # 22
           user: ${{ secrets.SSH_USER }} # "user"
           password: ${{ secrets.SSH_PASSWORD }} # "password"
-          local: .output/*
+          local: laraue.tar.gz
           remote: '/home/laraue/frontend/boards'
+          post_upload: cd /home/laraue/frontend/boards && find . -mindepth 1 ! -name laraue.tar.gz -delete && tar -xzf laraue.tar.gz && rm laraue.tar.gz
