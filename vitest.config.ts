@@ -14,16 +14,9 @@ export default defineConfig({
   test: {
     projects: [
       defineVitestProject({
-        optimizeDeps: {
-          include: ['diff-sequences'],
-        },
         root: process.cwd(),
         test: {
           browser: {
-            api: {
-              host: '127.0.0.1',
-              port: 63318,
-            },
             enabled: true,
             headless: true,
             instances: [
@@ -35,15 +28,13 @@ export default defineConfig({
                 },
               },
             ],
-            provider: playwright({
-              launchOptions: {
-                slowMo: 0,
-              },
-            }),
+            provider: playwright(),
+            screenshotFailures: false,
           },
           environment: 'nuxt',
           include: ['app/**/*.browser.test.ts'],
           name: 'browser',
+          sequence: { groupOrder: 0 },
           setupFiles: ['./vitest.setup.ts'],
         },
       }),
@@ -54,6 +45,7 @@ export default defineConfig({
           exclude: [...defaultExclude, '**/*.browser.test.ts'],
           include: ['app/**/*.test.ts', 'infrastructure/**/*.test.ts'],
           name: 'unit',
+          sequence: { groupOrder: 1 },
           setupFiles: ['./vitest.setup.ts'],
         },
       }),

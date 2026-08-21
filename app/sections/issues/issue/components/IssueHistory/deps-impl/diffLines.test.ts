@@ -29,3 +29,31 @@ test('returns changed lines with word-level spans', () => {
     ],
   )
 })
+
+test('handles a prepended line', () => {
+  assert.deepEqual(diffLines('Test 2', 'Test 1\r\nTest 2'), [
+    { kind: 'added', newLine: 1, text: 'Test 1' },
+  ])
+})
+
+test('handles an appended line', () => {
+  assert.deepEqual(diffLines('Test 1\r\nTest 2', 'Test 1\r\nTest 2\r\nTest 3'), [
+    { kind: 'added', newLine: 3, text: 'Test 3' },
+  ])
+})
+
+test('handles a leading deletion with a repeated trailing line', () => {
+  assert.deepEqual(diffLines('Test 1\r\nTest 2\r\nTest 3', 'Test 2\r\nTest 3\r\nTest 3'), [
+    { kind: 'removed', oldLine: 1, text: 'Test 1' },
+    { kind: 'separator', text: 'unchanged lines' },
+    { kind: 'added', newLine: 3, text: 'Test 3' },
+  ])
+})
+
+test('handles a removed Markdown block with an empty line', () => {
+  assert.deepEqual(diffLines('Test 1\r\n\r\n## Test 2', ''), [
+    { kind: 'removed', oldLine: 1, text: 'Test 1' },
+    { kind: 'removed', oldLine: 2, text: '' },
+    { kind: 'removed', oldLine: 3, text: '## Test 2' },
+  ])
+})
