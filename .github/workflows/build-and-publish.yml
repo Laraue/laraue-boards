@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble
 
     steps:
       - uses: actions/checkout@v5
@@ -23,10 +25,16 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
-      - name: Run checks
-        run: pnpm lint && pnpm format && pnpm style && pnpm typecheck && pnpm test
+      - name: Lint
+        run: pnpm lint
+      - name: Check formatting
+        run: pnpm format
+      - name: Check styles
+        run: pnpm style
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Run tests
+        run: pnpm test
       - name: Build SSR app
         env:
           NUXT_PUBLIC_BOARDS_API_BASE_URL: ${{ vars.BOARDS_API_BASE_URL }}

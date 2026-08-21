@@ -1,13 +1,9 @@
-import diffSequencesModule from 'diff-sequences'
+import { diffArrays, diffWordsWithSpace } from 'diff'
 
 import type {
   IssueDescriptionDiffLine,
   IssueDescriptionDiffSpan,
 } from '../../IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.types'
-
-const diffSequences =
-  (diffSequencesModule as typeof diffSequencesModule & { default?: typeof diffSequencesModule })
-    .default ?? diffSequencesModule
 
 const appendSpan = (spans: IssueDescriptionDiffSpan[], text: string, changed: boolean) => {
   if (!text) {
@@ -24,34 +20,18 @@ const appendSpan = (spans: IssueDescriptionDiffSpan[], text: string, changed: bo
 }
 
 const diffWords = (before: string, after: string) => {
-  const oldWords = before.match(/[\p{L}\p{N}_]+|\s+|[^\s\p{L}\p{N}_]+/gu) ?? []
-  const newWords = after.match(/[\p{L}\p{N}_]+|\s+|[^\s\p{L}\p{N}_]+/gu) ?? []
   const oldSpans: IssueDescriptionDiffSpan[] = []
   const newSpans: IssueDescriptionDiffSpan[] = []
-  let oldIndex = 0
-  let newIndex = 0
 
-  const appendChanges = (oldEnd: number, newEnd: number) => {
-    appendSpan(oldSpans, oldWords.slice(oldIndex, oldEnd).join(''), true)
-    appendSpan(newSpans, newWords.slice(newIndex, newEnd).join(''), true)
-    oldIndex = oldEnd
-    newIndex = newEnd
+  for (const change of diffWordsWithSpace(before, after)) {
+    if (!change.added) {
+      appendSpan(oldSpans, change.value, change.removed)
+    }
+
+    if (!change.removed) {
+      appendSpan(newSpans, change.value, change.added)
+    }
   }
-
-  diffSequences(
-    oldWords.length,
-    newWords.length,
-    (oldWord, newWord) => oldWords[oldWord] === newWords[newWord],
-    (length, oldCommon, newCommon) => {
-      appendChanges(oldCommon, newCommon)
-      appendSpan(oldSpans, oldWords.slice(oldIndex, oldIndex + length).join(''), false)
-      appendSpan(newSpans, newWords.slice(newIndex, newIndex + length).join(''), false)
-      oldIndex += length
-      newIndex += length
-    },
-  )
-
-  appendChanges(oldWords.length, newWords.length)
 
   return [oldSpans, newSpans] as const
 }
@@ -64,39 +44,28 @@ export const diffLines = (before: string, after: string): IssueDescriptionDiffLi
   let newIndex = 0
   let hasUnchangedLines = false
 
-  const appendChanges = (oldEnd: number, newEnd: number) => {
-    if (oldIndex === oldEnd && newIndex === newEnd) {
-      return
+  for (const change of diffArrays(oldLines, newLines)) {
+    if (!change.added && !change.removed) {
+      oldIndex += change.count
+      newIndex += change.count
+      hasUnchangedLines ||= result.length > 0
+      continue
     }
 
     if (result.length && hasUnchangedLines) {
       result.push({ kind: 'separator', text: 'unchanged lines' })
     }
 
-    for (; oldIndex < oldEnd; oldIndex++) {
-      result.push({ kind: 'removed', oldLine: oldIndex + 1, text: oldLines[oldIndex]! })
-    }
-
-    for (; newIndex < newEnd; newIndex++) {
-      result.push({ kind: 'added', newLine: newIndex + 1, text: newLines[newIndex]! })
-    }
-
     hasUnchangedLines = false
+
+    for (const text of change.value) {
+      if (change.removed) {
+        result.push({ kind: 'removed', oldLine: ++oldIndex, text })
+      } else {
+        result.push({ kind: 'added', newLine: ++newIndex, text })
+      }
+    }
   }
-
-  diffSequences(
-    oldLines.length,
-    newLines.length,
-    (oldLine, newLine) => oldLines[oldLine] === newLines[newLine],
-    (length, oldCommon, newCommon) => {
-      appendChanges(oldCommon, newCommon)
-      oldIndex += length
-      newIndex += length
-      hasUnchangedLines ||= result.length > 0 && length > 0
-    },
-  )
-
-  appendChanges(oldLines.length, newLines.length)
 
   let removed: IssueDescriptionDiffLine[] = []
   let added: IssueDescriptionDiffLine[] = []
