@@ -2,17 +2,19 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 const prefix = 'attribute.'
 
-type AttributeFilterValues = Record<string, string | string[]>
-type AttributeFilterInput =
+export type AttributeFilterValues = Record<string, string | string[]>
+export type AttributeFilterInput =
   | { attributeId: string; searchString: string; type: 'text' }
   | { attributeId: string; type: 'list'; valueIds: string[] }
-type IssueAttribute =
-  | { id: string; type: 'text' }
   | {
-      id: string
-      options: Array<{ value: string }>
-      type: 'list'
+      attributeId: string
+      from?: string
+      to?: string
+      type: 'date' | 'dateTime' | 'decimal' | 'integer'
     }
+type IssueAttribute =
+  | { id: string; type: 'date' | 'dateTime' | 'decimal' | 'integer' | 'text' }
+  | { id: string; options: Array<{ value: string }>; type: 'list' }
 
 export function readIssueAttributeQuery(query: LocationQuery) {
   return Object.fromEntries(
@@ -21,9 +23,9 @@ export function readIssueAttributeQuery(query: LocationQuery) {
         return []
       }
       const values = (Array.isArray(value) ? value : [value]).filter(
-        (item): item is string => typeof item === 'string' && item.length > 0,
+        (item): item is string => typeof item === 'string',
       )
-      return values.length ? [[key.slice(prefix.length), values]] : []
+      return values.some(Boolean) ? [[key.slice(prefix.length), values]] : []
     }),
   )
 }
@@ -52,10 +54,17 @@ export function normalizeIssueAttributeFilters(
       }
       continue
     }
-    const allowed = new Set(attribute.options.map((option) => option.value))
-    const selected = [...new Set(values.filter((value) => allowed.has(value)))]
-    if (selected.length) {
-      result[attribute.id] = selected
+    if (attribute.type === 'list') {
+      const allowed = new Set(attribute.options.map((option) => option.value))
+      const selected = [...new Set(values.filter((value) => allowed.has(value)))]
+      if (selected.length) {
+        result[attribute.id] = selected
+      }
+      continue
+    }
+    const range = values.slice(-2)
+    if (range.some(Boolean)) {
+      result[attribute.id] = [range[0] ?? '', range[1] ?? '']
     }
   }
   return result
@@ -78,6 +87,17 @@ export function getIssueAttributeFilterInput(
     if (attribute.type === 'list' && Array.isArray(value) && value.length) {
       result.push({ attributeId: attribute.id, type: 'list', valueIds: value })
     }
+    if (attribute.type !== 'list' && attribute.type !== 'text' && Array.isArray(value)) {
+      const [from, to] = value.map((item) => item.trim())
+      if (from || to) {
+        result.push({
+          attributeId: attribute.id,
+          ...(from && { from }),
+          ...(to && { to }),
+          type: attribute.type,
+        })
+      }
+    }
   }
   return result
 }
@@ -95,6 +115,13 @@ export function withIssueAttributeFilters(
     if (attribute.type === 'text' && typeof value === 'string' && value.trim()) {
       next[`${prefix}${attribute.id}`] = value.trim()
     } else if (attribute.type === 'list' && Array.isArray(value) && value.length) {
+      next[`${prefix}${attribute.id}`] = value
+    } else if (
+      attribute.type !== 'list' &&
+      attribute.type !== 'text' &&
+      Array.isArray(value) &&
+      value.some(Boolean)
+    ) {
       next[`${prefix}${attribute.id}`] = value
     }
   }

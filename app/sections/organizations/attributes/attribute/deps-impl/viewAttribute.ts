@@ -9,16 +9,20 @@ const mapAttribute = (value: components['schemas']['AttributeDto']): Attribute =
   if (value.id === undefined) {
     throw new TypeError('Attribute id is required')
   }
-  if (value.type === 'Text') {
+  if (value.type !== 'List') {
+    const types = {
+      Date: 'date',
+      DateTime: 'dateTime',
+      Decimal: 'decimal',
+      Integer: 'integer',
+      Text: 'text',
+    } as const
     return {
       color: value.color,
-      data: { type: 'text' },
+      data: { type: types[value.type] },
       id: String(value.id),
       name: value.name,
     }
-  }
-  if (value.type !== 'List') {
-    throw new RangeError(`Unsupported attribute type: ${value.type}`)
   }
   return {
     color: value.color,

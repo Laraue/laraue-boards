@@ -37,7 +37,7 @@
             <span class="attribute-name">
               <strong>{{ attribute.name }}</strong>
               <small class="muted">
-                {{ attribute.type === 'list' ? 'List' : 'Text' }}
+                {{ typeLabels[attribute.type] }}
               </small>
             </span>
             <ChevronRight />
@@ -60,6 +60,15 @@ import type { AttributesPageDeps } from '~/sections/organizations/attributes/lis
 const props = defineProps<{ deps: AttributesPageDeps }>()
 
 const organizationRoutes = useOrganizationRoutes()
+
+const typeLabels = {
+  date: 'Date',
+  dateTime: 'Date and time',
+  decimal: 'Decimal',
+  integer: 'Integer',
+  list: 'List',
+  text: 'Text',
+}
 
 useHead({ title: 'Attributes' })
 

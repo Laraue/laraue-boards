@@ -81,15 +81,16 @@
         class="filter-editor">
         <template v-if="activeAttribute.type === 'text'">
           <label :for="`${idPrefix}-${activeAttribute.id}`">Value</label>
-          <input
+          <IssueAttributeTextField
             :id="`${idPrefix}-${activeAttribute.id}`"
             autofocus
+            :disabled="false"
+            :model-value="String(modelValue.attributes[activeAttribute.id] ?? '')"
             placeholder="Enter a value"
             type="search"
-            :value="modelValue.attributes[activeAttribute.id] ?? ''"
-            @input="updateText(activeAttribute.id, $event)" />
+            @update:model-value="updateValue(activeAttribute.id, $event)" />
         </template>
-        <fieldset v-else>
+        <fieldset v-else-if="activeAttribute.type === 'list'">
           <legend>Options</legend>
           <label
             v-for="option in activeAttribute.options"
@@ -101,6 +102,27 @@
             <span>{{ option.label }}</span>
           </label>
         </fieldset>
+        <template v-else>
+          <label :for="`${idPrefix}-${activeAttribute.id}-from`">
+            {{ numeric(activeAttribute.type) ? 'Minimum' : 'From' }}
+          </label>
+          <component
+            :is="activeRangeComponent"
+            :id="`${idPrefix}-${activeAttribute.id}-from`"
+            autofocus
+            :disabled="false"
+            :model-value="selected(activeAttribute.id)[0] ?? ''"
+            @update:model-value="updateRange(activeAttribute.id, 0, $event)" />
+          <label :for="`${idPrefix}-${activeAttribute.id}-to`">
+            {{ numeric(activeAttribute.type) ? 'Maximum' : 'To' }}
+          </label>
+          <component
+            :is="activeRangeComponent"
+            :id="`${idPrefix}-${activeAttribute.id}-to`"
+            :disabled="false"
+            :model-value="selected(activeAttribute.id)[1] ?? ''"
+            @update:model-value="updateRange(activeAttribute.id, 1, $event)" />
+        </template>
         <button
           class="secondary clear-filter"
           :disabled="!valueCount(activeAttribute.id)"
@@ -116,6 +138,11 @@
 <script setup lang="ts">
 import { ListFilter, LoaderCircle } from '@lucide/vue'
 
+import IssueAttributeDateField from '~/components/issue-attribute-fields/components/IssueAttributeDateField.vue'
+import IssueAttributeDateTimeField from '~/components/issue-attribute-fields/components/IssueAttributeDateTimeField.vue'
+import IssueAttributeDecimalField from '~/components/issue-attribute-fields/components/IssueAttributeDecimalField.vue'
+import IssueAttributeIntegerField from '~/components/issue-attribute-fields/components/IssueAttributeIntegerField.vue'
+import IssueAttributeTextField from '~/components/issue-attribute-fields/components/IssueAttributeTextField.vue'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 
 import type { IssueFiltersValue } from './IssueFilters.types'
@@ -140,6 +167,18 @@ const activeFilterId = ref(props.spaces.length ? SPACE_FILTER : (props.attribute
 const activeAttribute = computed(() =>
   props.attributes.find((attribute) => attribute.id === activeFilterId.value),
 )
+const activeRangeComponent = computed(() => {
+  switch (activeAttribute.value?.type) {
+    case 'integer':
+      return IssueAttributeIntegerField
+    case 'decimal':
+      return IssueAttributeDecimalField
+    case 'date':
+      return IssueAttributeDateField
+    case 'dateTime':
+      return IssueAttributeDateTimeField
+  }
+})
 const selectedSpaces = computed(() => props.modelValue.spaceIds ?? [])
 const activeCount = computed(
   () => Object.keys(props.modelValue.attributes).length + selectedSpaces.value.length,
@@ -150,20 +189,23 @@ const selected = (id: string) => {
 }
 const valueCount = (id: string) => {
   const value = props.modelValue.attributes[id]
-  return Array.isArray(value) ? value.length : Number(Boolean(value))
+  return Array.isArray(value) ? value.filter(Boolean).length : Number(Boolean(value))
 }
-const updateText = (id: string, event: Event) => {
-  updateValue(id, (event.target as HTMLInputElement).value)
-}
-
 const updateValue = (id: string, value: string | string[]) => {
   const attributes = { ...props.modelValue.attributes }
-  if (value.length) {
+  if (Array.isArray(value) ? value.some(Boolean) : value.length > 0) {
     attributes[id] = value
   } else {
     delete attributes[id]
   }
   emit('update:modelValue', { ...props.modelValue, attributes })
+}
+
+const numeric = (type: IssueAttributeField['type']) => type === 'decimal' || type === 'integer'
+const updateRange = (id: string, index: number, next: string) => {
+  const value = [...selected(id)]
+  value[index] = next
+  updateValue(id, [value[0] ?? '', value[1] ?? ''])
 }
 
 const toggle = (id: string, option: string) => {

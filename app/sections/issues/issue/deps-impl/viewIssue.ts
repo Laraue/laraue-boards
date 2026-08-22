@@ -28,6 +28,18 @@ const mapAttribute = (
         })),
         type: 'list',
       }
+    case 'Integer':
+      return { ...base, type: 'integer' }
+    case 'Decimal':
+      return { ...base, type: 'decimal' }
+    case 'Date':
+      return { ...base, type: 'date' }
+    case 'DateTime':
+      return {
+        ...base,
+        type: 'dateTime',
+        value: attribute.value.replace(/(?:Z|[+-]\d{2}:\d{2})$/, ''),
+      }
     default:
       throw new RangeError(`Unsupported attribute type: ${attribute.type}`)
   }

@@ -23,15 +23,26 @@ test('maps create attribute request and response', async () => {
   })
 })
 
-test('sends null listValues and type 0 for text attributes', async () => {
+test('maps scalar attribute types', async () => {
   const { client, requests } = createTestApiClient(() => 42)
 
   await createCreateAttribute(client)({ color: '#fff', data: { type: 'text' }, name: 'Priority' })
+  await createCreateAttribute(client)({
+    color: '#fff',
+    data: { type: 'dateTime' },
+    name: 'Starts',
+  })
 
   assert.deepEqual(await requests[0]!.json(), {
     color: '#fff',
     listValues: null,
     name: 'Priority',
     type: 'Text',
+  })
+  assert.deepEqual(await requests[1]!.json(), {
+    color: '#fff',
+    listValues: null,
+    name: 'Starts',
+    type: 'DateTime',
   })
 })

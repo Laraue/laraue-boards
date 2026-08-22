@@ -1,4 +1,7 @@
-type IssueAttribute = { id: string; type: 'list' | 'text' }
+type IssueAttribute = {
+  id: string
+  type: 'date' | 'dateTime' | 'decimal' | 'integer' | 'list' | 'text'
+}
 
 export function getIssueAttributeValueInput(
   values: Record<string, string>,
@@ -10,9 +13,9 @@ export function getIssueAttributeValueInput(
       return []
     }
     return [
-      attribute.type === 'text'
-        ? { attributeId: attribute.id, type: 'text' as const, value }
-        : { attributeId: attribute.id, type: 'list' as const, valueId: value },
+      attribute.type === 'list'
+        ? { attributeId: attribute.id, type: 'list' as const, valueId: value }
+        : { attributeId: attribute.id, type: attribute.type, value },
     ]
   })
 }

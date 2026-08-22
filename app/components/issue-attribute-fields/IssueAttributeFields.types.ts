@@ -1,3 +1,9 @@
+export type IssueAttributeType = 'date' | 'dateTime' | 'decimal' | 'integer' | 'list' | 'text'
+
+export type IssueAttributeValueInput =
+  | { attributeId: string; type: 'list'; valueId: string }
+  | { attributeId: string; type: Exclude<IssueAttributeType, 'list'>; value: string }
+
 export type IssueAttributeField =
   | {
       color: string
@@ -10,5 +16,5 @@ export type IssueAttributeField =
       color: string
       id: string
       name: string
-      type: 'text'
+      type: Exclude<IssueAttributeType, 'list'>
     }

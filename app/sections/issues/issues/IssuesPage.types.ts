@@ -11,6 +11,12 @@ export type IssuesPageData = {
 export type IssuesFilter =
   | { attributeId: string; searchString: string; type: 'text' }
   | { attributeId: string; type: 'list'; valueIds: string[] }
+  | {
+      attributeId: string
+      from?: string
+      to?: string
+      type: 'date' | 'dateTime' | 'decimal' | 'integer'
+    }
 
 export type SearchIssuesResult = {
   hasNextPage: boolean

@@ -18,6 +18,7 @@ const mount = async () => {
           options: [{ label: 'High', value: 'high' }],
           type: 'list',
         },
+        { color: '#489c61', id: 'estimate', name: 'Estimate', type: 'integer' },
       ],
       loading: false,
       modelValue: { attributes: {}, spaceIds: [] },
@@ -52,4 +53,16 @@ it('clears all selected filters', async () => {
   await page.getByRole('button', { name: 'Clear all' }).click()
 
   expect(currentWrapper!.emitted('update:modelValue')).toEqual([[{ attributes: {}, spaceIds: [] }]])
+})
+
+it('updates a numeric range filter', async () => {
+  await mount()
+
+  await page.getByRole('button', { name: 'Filters' }).click()
+  await page.getByRole('button', { name: 'Estimate' }).click()
+  await page.getByLabelText('Maximum').fill('10')
+
+  expect(currentWrapper!.emitted('update:modelValue')).toEqual([
+    [{ attributes: { estimate: ['', '10'] }, spaceIds: [] }],
+  ])
 })

@@ -3,6 +3,15 @@ import { executeAction } from '#infrastructure/api/executeAction'
 
 import type { CreateAttribute } from '../CreateAttributePage.deps'
 
+const types = {
+  date: 'Date',
+  dateTime: 'DateTime',
+  decimal: 'Decimal',
+  integer: 'Integer',
+  list: 'List',
+  text: 'Text',
+} as const
+
 export const createCreateAttribute =
   (client: ApiClient): CreateAttribute =>
   (input) =>
@@ -15,7 +24,7 @@ export const createCreateAttribute =
             listValues:
               input.data.type === 'list' ? input.data.listValues.map((name) => ({ name })) : null,
             name: input.name,
-            type: input.data.type === 'list' ? 'List' : 'Text',
+            type: types[input.data.type],
           },
         }),
     })

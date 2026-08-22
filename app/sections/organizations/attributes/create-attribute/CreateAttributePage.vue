@@ -29,6 +29,10 @@
         @change="changeType">
         <option value="text">Text</option>
         <option value="list">List</option>
+        <option value="integer">Integer</option>
+        <option value="decimal">Decimal</option>
+        <option value="date">Date</option>
+        <option value="dateTime">Date and time</option>
       </select>
 
       <Transition name="slide-fade">
@@ -127,6 +131,10 @@ const changeType = (event: Event) => {
       draft.data = { listValues: [{ key: nextOptionKey++, name: '' }], type }
       break
     case 'text':
+    case 'integer':
+    case 'decimal':
+    case 'date':
+    case 'dateTime':
       draft.data = { type }
       break
   }

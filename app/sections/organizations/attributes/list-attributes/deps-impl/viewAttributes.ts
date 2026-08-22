@@ -11,6 +11,14 @@ const mapType = (type: components['schemas']['AttributeType']): AttributeListIte
       return 'text'
     case 'List':
       return 'list'
+    case 'Integer':
+      return 'integer'
+    case 'Decimal':
+      return 'decimal'
+    case 'Date':
+      return 'date'
+    case 'DateTime':
+      return 'dateTime'
     default:
       throw new RangeError(`Unsupported attribute type: ${type}`)
   }
