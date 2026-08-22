@@ -8,7 +8,15 @@ import CreateIssueForm from './CreateIssueForm.vue'
 const createDeps = (): CreateIssueFormDeps => ({
   assigneeSelect: {
     loadAssignees: vi.fn<CreateIssueFormDeps['assigneeSelect']['loadAssignees']>(async () => ({
-      data: [{ color: '#4774d4', initials: 'AL', label: 'Ann Lee', value: '9' }],
+      data: [
+        {
+          color: '#4774d4',
+          initials: 'AL',
+          isCurrentUser: true,
+          label: 'Ann Lee',
+          value: '9',
+        },
+      ],
       status: 'success',
     })),
   },
@@ -62,8 +70,8 @@ it('lets the user choose a destination and create an issue from the issue list',
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Space', 'Product', '7')
   await chooseOption('Board', 'Sprint board', '12')
-  await chooseOption('Status', 'To do', '1')
-  await chooseOption('Assignee', 'Ann Lee', '9')
+  await expect.element(page.getByLabelText('Status')).toHaveValue('1')
+  await expect.element(page.getByLabelText('Assignee')).toHaveValue('9')
   await page.getByRole('button', { name: 'Add issue' }).click()
 
   expect(deps.create).toHaveBeenCalledWith({
@@ -79,20 +87,30 @@ it('lets the user choose a destination and create an issue from the issue list',
 it('creates an issue in a fixed board without showing destination selects', async () => {
   const onCreated = vi.fn<(issueKey: string) => void>()
   const deps = createDeps()
+  deps.statusSelect.loadStatuses = vi.fn<CreateIssueFormDeps['statusSelect']['loadStatuses']>(
+    async () => ({
+      data: [
+        { label: 'To do', value: '1' },
+        { label: 'In progress', value: '2' },
+      ],
+      status: 'success',
+    }),
+  )
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,
     props: {
       attributes: [],
       board: { id: '12', name: 'Sprint board', spaceKey: 'product' },
       deps,
+      initialStatusId: '2',
       onCreated,
     },
   })
 
   await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
-  await chooseOption('Status', 'To do', '1')
-  await chooseOption('Assignee', 'Ann Lee', '9')
+  await expect.element(page.getByLabelText('Status')).toHaveValue('2')
+  await expect.element(page.getByLabelText('Assignee')).toHaveValue('9')
   await page.getByRole('button', { name: 'Add issue' }).click()
 
   await expect.element(page.getByText('Sprint board')).toBeInTheDocument()

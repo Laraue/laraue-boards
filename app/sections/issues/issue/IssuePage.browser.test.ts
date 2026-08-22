@@ -11,6 +11,7 @@ const issue: IssuePageViewModel = {
   assigneeColor: '#111',
   assigneeId: '9',
   assigneeInitial: 'A',
+  assigneeIsCurrentUser: true,
   attachments: [],
   attributes: [],
   boardId: '12',
@@ -33,7 +34,15 @@ const issue: IssuePageViewModel = {
 const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   assigneeSelect: {
     loadAssignees: vi.fn<IssuePageDeps['assigneeSelect']['loadAssignees']>(async () => ({
-      data: [{ color: '#111', initials: 'A', label: 'Ada Lovelace', value: '9' }],
+      data: [
+        {
+          color: '#111',
+          initials: 'A',
+          isCurrentUser: false,
+          label: 'Ada Lovelace',
+          value: '9',
+        },
+      ],
       status: 'success',
     })),
   },

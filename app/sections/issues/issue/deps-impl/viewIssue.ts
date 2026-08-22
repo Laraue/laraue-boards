@@ -57,6 +57,7 @@ const mapIssue = (
   assigneeColor: issue.assignee.color,
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assignee.initials,
+  assigneeIsCurrentUser: issue.assignee.isCurrentUser,
   attachments: mapAttachments(issue.attachments, baseUrl),
   attributes: issue.attributeValues.map(mapAttribute),
   boardId: String(issue.epicId),

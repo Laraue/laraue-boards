@@ -38,6 +38,7 @@ export type IssuePageViewModel = {
   assigneeColor: string
   assigneeId: string
   assigneeInitial: string
+  assigneeIsCurrentUser: boolean
   attachments: IssueAttachmentViewModel[]
   attributes: IssuePageAttributeViewModel[]
   boardId: string

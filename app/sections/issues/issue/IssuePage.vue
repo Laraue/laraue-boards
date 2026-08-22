@@ -171,6 +171,7 @@
                 :initial-option="{
                   color: issue.assigneeColor,
                   initials: issue.assigneeInitial,
+                  isCurrentUser: issue.assigneeIsCurrentUser,
                   label: issue.assignee,
                   value: issue.assigneeId,
                 }"

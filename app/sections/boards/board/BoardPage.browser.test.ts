@@ -25,10 +25,12 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 const mount = async ({
   data = board,
   moveIssueToBacklog = vi.fn<BoardPageDeps['moveIssueToBacklog']>(),
+  onCreateIssue = vi.fn<(statusId: string) => void>(),
   onReplaceQuery = vi.fn<(query: LocationQueryRaw) => void>(),
 }: {
   data?: BoardPageViewModel
   moveIssueToBacklog?: BoardPageDeps['moveIssueToBacklog']
+  onCreateIssue?: (statusId: string) => void
   onReplaceQuery?: (query: LocationQueryRaw) => void
 } = {}) => {
   const deps: BoardPageDeps = {
@@ -49,6 +51,7 @@ const mount = async ({
       deps,
       issueKey: null,
       onBack: vi.fn<() => void>(),
+      onCreateIssue,
       onIssueMoved: vi.fn<() => void>(),
       onPushQuery: vi.fn<(query: LocationQueryRaw) => void>(),
       onReplaceQuery,
@@ -72,6 +75,30 @@ it('puts a typed board search into the route query', async () => {
   await page.getByLabelText('Search issues').fill('bug')
 
   await vi.waitFor(() => expect(onReplaceQuery).toHaveBeenLastCalledWith({ search: 'bug' }))
+})
+
+it('requests issue creation in the selected column', async () => {
+  const onCreateIssue = vi.fn<(statusId: string) => void>()
+
+  await mount({
+    data: {
+      ...board,
+      columns: [
+        {
+          color: '#4774d4',
+          hasNext: false,
+          id: '3',
+          issueCount: 0,
+          issues: [],
+          title: 'To do',
+        },
+      ],
+    },
+    onCreateIssue,
+  })
+  await page.getByRole('button', { name: 'Add issue to To do' }).click()
+
+  expect(onCreateIssue).toHaveBeenCalledWith('3')
 })
 
 it('moves an issue to backlog and removes it from the board', async () => {

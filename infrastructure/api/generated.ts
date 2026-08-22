@@ -130,6 +130,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/epics/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangeEpicStatusRequest"];
+                    "text/json": components["schemas"]["ChangeEpicStatusRequest"];
+                    "application/*+json": components["schemas"]["ChangeEpicStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/epics/{id}/reorder-statuses": {
         parameters: {
             query?: never;
@@ -1833,7 +1874,9 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    statuses?: components["schemas"]["EpicStatus"][];
+                };
                 header?: never;
                 path: {
                     key: string;
@@ -2231,70 +2274,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/user/onboarding/{onboardingId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    onboardingId: components["schemas"]["OnboardingId"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["GetOnboardingStatusResponse"];
-                        "application/json": components["schemas"]["GetOnboardingStatusResponse"];
-                        "text/json": components["schemas"]["GetOnboardingStatusResponse"];
-                    };
-                };
-            };
-        };
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    onboardingId: components["schemas"]["OnboardingId"];
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["SetOnboardingStatusRequest"];
-                    "text/json": components["schemas"]["SetOnboardingStatusRequest"];
-                    "application/*+json": components["schemas"]["SetOnboardingStatusRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/user": {
         parameters: {
             query?: never;
@@ -2367,6 +2346,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user/onboarding/{onboardingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    onboardingId: components["schemas"]["OnboardingId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GetOnboardingStatusResponse"];
+                        "application/json": components["schemas"]["GetOnboardingStatusResponse"];
+                        "text/json": components["schemas"]["GetOnboardingStatusResponse"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    onboardingId: components["schemas"]["OnboardingId"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetOnboardingStatusRequest"];
+                    "text/json": components["schemas"]["SetOnboardingStatusRequest"];
+                    "application/*+json": components["schemas"]["SetOnboardingStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2394,11 +2437,43 @@ export interface components {
             type: components["schemas"]["AttributeType"];
             listValues: components["schemas"]["AttributeListValueDto"][];
         };
-        AttributeFilterValue: components["schemas"]["AttributeFilterValueStringAttributeFilterValue"] | components["schemas"]["AttributeFilterValueEnumAttributeFilterValue"];
+        AttributeFilterValue: components["schemas"]["AttributeFilterValueStringAttributeFilterValue"] | components["schemas"]["AttributeFilterValueEnumAttributeFilterValue"] | components["schemas"]["AttributeFilterValueIntegerAttributeFilterValue"] | components["schemas"]["AttributeFilterValueDecimalAttributeFilterValue"] | components["schemas"]["AttributeFilterValueDateAttributeFilterValue"] | components["schemas"]["AttributeFilterValueDateTimeAttributeFilterValue"];
+        AttributeFilterValueDateAttributeFilterValue: {
+            /** @enum {string} */
+            $type?: "date";
+            /** Format: date */
+            from?: null | string;
+            /** Format: date */
+            to?: null | string;
+        };
+        AttributeFilterValueDateTimeAttributeFilterValue: {
+            /** @enum {string} */
+            $type?: "datetime";
+            /** Format: date-time */
+            from?: null | string;
+            /** Format: date-time */
+            to?: null | string;
+        };
+        AttributeFilterValueDecimalAttributeFilterValue: {
+            /** @enum {string} */
+            $type?: "decimal";
+            /** Format: double */
+            min?: null | number | string;
+            /** Format: double */
+            max?: null | number | string;
+        };
         AttributeFilterValueEnumAttributeFilterValue: {
             /** @enum {string} */
             $type?: "enum";
             ids: (number | string)[];
+        };
+        AttributeFilterValueIntegerAttributeFilterValue: {
+            /** @enum {string} */
+            $type?: "integer";
+            /** Format: int64 */
+            min?: null | number | string;
+            /** Format: int64 */
+            max?: null | number | string;
         };
         AttributeFilterValueStringAttributeFilterValue: {
             /** @enum {string} */
@@ -2411,13 +2486,45 @@ export interface components {
             name: string;
         };
         /** @enum {unknown} */
-        AttributeType: "Text" | "List";
-        AttributeValue: components["schemas"]["AttributeValueEnumAttributeValue"] | components["schemas"]["AttributeValueStringAttributeValue"];
+        AttributeType: "Text" | "List" | "Integer" | "Decimal" | "Date" | "DateTime";
+        AttributeValue: components["schemas"]["AttributeValueEnumAttributeValue"] | components["schemas"]["AttributeValueStringAttributeValue"] | components["schemas"]["AttributeValueIntegerAttributeValue"] | components["schemas"]["AttributeValueDecimalAttributeValue"] | components["schemas"]["AttributeValueDateAttributeValue"] | components["schemas"]["AttributeValueDateTimeAttributeValue"];
+        AttributeValueDateAttributeValue: {
+            /** @enum {string} */
+            $type?: "date";
+            /** Format: date */
+            value: string;
+            /** Format: int64 */
+            attributeId: number | string;
+        };
+        AttributeValueDateTimeAttributeValue: {
+            /** @enum {string} */
+            $type?: "datetime";
+            /** Format: date-time */
+            value: string;
+            /** Format: int64 */
+            attributeId: number | string;
+        };
+        AttributeValueDecimalAttributeValue: {
+            /** @enum {string} */
+            $type?: "decimal";
+            /** Format: double */
+            value: number | string;
+            /** Format: int64 */
+            attributeId: number | string;
+        };
         AttributeValueEnumAttributeValue: {
             /** @enum {string} */
             $type?: "enum";
             /** Format: int64 */
             valueId: number | string;
+            /** Format: int64 */
+            attributeId: number | string;
+        };
+        AttributeValueIntegerAttributeValue: {
+            /** @enum {string} */
+            $type?: "integer";
+            /** Format: int64 */
+            value: number | string;
             /** Format: int64 */
             attributeId: number | string;
         };
@@ -2436,6 +2543,12 @@ export interface components {
             offset: number | string;
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
+        };
+        ChangeEpicStatusRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            /** Format: int64 */
+            id?: number | string;
+            status: components["schemas"]["EpicStatus"];
         };
         ChangesIssuesOrderRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -2557,6 +2670,7 @@ export interface components {
             canUpdateIssues: boolean;
             canUpdate?: boolean;
             canDelete?: boolean;
+            status: components["schemas"]["EpicStatus"];
         };
         EpicListDto: {
             /** Format: int64 */
@@ -2566,9 +2680,12 @@ export interface components {
             /** Format: date-time */
             touchedAt: string;
             isDefault: boolean;
+            status: components["schemas"]["EpicStatus"];
         };
         /** @enum {unknown} */
         EpicSortOrder: "LastTouched" | "Alphabetical";
+        /** @enum {unknown} */
+        EpicStatus: "New" | "Active" | "Done";
         EpicSummary: {
             /** Format: int64 */
             id: number | string;
@@ -2616,7 +2733,7 @@ export interface components {
             take: number | string;
         };
         GetOnboardingStatusResponse: {
-            status?: null | string;
+            status?: null | components["schemas"]["OnboardingStatus"];
         };
         GlobalAccessLevels: {
             canRead?: boolean;
@@ -2640,6 +2757,12 @@ export interface components {
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
+        IssueAssigneeDetails: {
+            isCurrentUser: boolean;
+            color: string;
+            displayName: string;
+            initials: string;
+        };
         IssueAttributeListValueDto: {
             /** Format: int64 */
             id: number | string;
@@ -2650,7 +2773,7 @@ export interface components {
             id: number | string;
             /** Format: uuid */
             assigneeId: string;
-            assignee: components["schemas"]["UserDetails"];
+            assignee: components["schemas"]["IssueAssigneeDetails"];
             /** Format: date-time */
             time: string;
             /** Format: date-time */
@@ -2825,7 +2948,7 @@ export interface components {
         /** @enum {unknown} */
         OnboardingId: "OrganizationsV1" | "AppLayoutV1";
         /** @enum {unknown} */
-        OnboardingStatus: "Completed" | "Dismissed";
+        OnboardingStatus: "Completed" | "Dismissed" | null;
         /** @enum {unknown} */
         OrderTargetType: "After" | "Before";
         OrganizationAuthData: {
@@ -2904,6 +3027,7 @@ export interface components {
         SearchRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             epicIds?: (number | string)[];
+            epicStatuses?: components["schemas"]["EpicStatus"][];
             spaceKeys?: string[];
             searchString?: null | string;
             /** Format: int32 */
@@ -2970,6 +3094,7 @@ export interface components {
             displayName: string;
             initials: string;
             color: string;
+            isCurrentUser: boolean;
         };
         StatusDto: {
             /** Format: int64 */

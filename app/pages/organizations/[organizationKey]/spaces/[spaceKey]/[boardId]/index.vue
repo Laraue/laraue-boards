@@ -4,6 +4,7 @@
     :deps="deps"
     :issue-key="issueKey"
     :on-back="onBack"
+    :on-create-issue="onCreateIssue"
     :on-issue-moved="onIssueMoved"
     :on-push-query="onPushQuery"
     :on-replace-query="onReplaceQuery"
@@ -28,6 +29,12 @@ const deps = createBoardPageDeps(client)
 const router = useRouter()
 const onBack = () => router.back()
 const organizationRoutes = useOrganizationRoutes()
+const onCreateIssue = async (statusId: string): Promise<void> => {
+  await navigateTo({
+    ...organizationRoutes.newBoardIssue(spaceKey.value, boardId.value),
+    query: { statusId },
+  })
+}
 const onIssueMoved = async (issue: IssuePageSavedIssue): Promise<void> => {
   await router.replace({
     ...organizationRoutes.board(issue.spaceKey, issue.boardId),

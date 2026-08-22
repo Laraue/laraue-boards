@@ -21,6 +21,7 @@
           :attributes="page.attributes"
           :board="{ id: boardId, name: page.boardName, spaceKey: page.spaceKey }"
           :deps="deps.form"
+          :initial-status-id="initialStatusId"
           :on-created="onCreated" />
       </section>
     </template>
@@ -36,6 +37,7 @@ import type { CreateBoardIssuePageDeps } from '~/sections/boards/create-issue/Cr
 const props = defineProps<{
   boardId: string
   deps: CreateBoardIssuePageDeps
+  initialStatusId?: string
   onCreated: (issueKey: string) => Promise<void> | void
   spaceKey: string
 }>()

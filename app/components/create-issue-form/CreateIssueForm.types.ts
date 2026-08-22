@@ -20,5 +20,6 @@ export type CreateIssueFormBoard = {
 export type CreateIssueFormProps = {
   attributes: IssueAttributeField[]
   board?: CreateIssueFormBoard
+  initialStatusId?: string
   onCreated: (issueKey: string) => Promise<void> | void
 }

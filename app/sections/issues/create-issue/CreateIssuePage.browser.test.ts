@@ -13,7 +13,15 @@ const createDeps = (overrides: Partial<CreateIssuePageDeps> = {}): CreateIssuePa
     assigneeSelect: {
       loadAssignees: vi.fn<CreateIssuePageDeps['form']['assigneeSelect']['loadAssignees']>(
         async () => ({
-          data: [{ color: '#4774d4', initials: 'AL', label: 'Ann Lee', value: '9' }],
+          data: [
+            {
+              color: '#4774d4',
+              initials: 'AL',
+              isCurrentUser: false,
+              label: 'Ann Lee',
+              value: '9',
+            },
+          ],
           status: 'success',
         }),
       ),

@@ -35,7 +35,9 @@
         :id="`${idPrefix}-status`"
         v-model="form.statusId"
         :board-id="boardId"
-        :deps="deps.statusSelect" />
+        :deps="deps.statusSelect"
+        eager
+        select-first />
 
       <IssueAttributeFields
         v-model="form.attributeValues"
@@ -46,6 +48,8 @@
         :id="`${idPrefix}-assignee`"
         v-model="form.assigneeId"
         :deps="deps.assigneeSelect"
+        eager
+        select-current-user
         :space-key="spaceKey" />
 
       <p
@@ -87,7 +91,7 @@ const form = reactive({
   content: '',
   files: [] as File[],
   spaceKey: '',
-  statusId: '',
+  statusId: props.initialStatusId ?? '',
 })
 const selectDeps = {
   boardSelect: props.deps.boardSelect,

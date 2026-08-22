@@ -53,14 +53,18 @@ const props = withDefaults(
   defineProps<{
     deps: AssigneeSelectDeps
     disabled?: boolean
+    eager?: boolean
     initialOption?: AssigneeSelectOption
     placeholder?: string
+    selectCurrentUser?: boolean
     spaceKey: string
   }>(),
   {
     disabled: false,
+    eager: false,
     initialOption: undefined,
     placeholder: 'Select assignee',
+    selectCurrentUser: false,
   },
 )
 
@@ -71,7 +75,7 @@ const model = defineModel<string>({ required: true })
 const { clear, data, execute, message, pending, status } = await useQuery(
   `assignee-select:${useId()}`,
   (_nuxtApp, { signal }) => props.deps.loadAssignees({ signal, spaceKey: props.spaceKey }),
-  { immediate: false },
+  { immediate: props.eager && Boolean(props.spaceKey) },
 )
 
 const loaded = computed(() => status.value !== 'idle' && !pending.value)
@@ -102,10 +106,23 @@ const load = () => {
 }
 
 watch(
+  data,
+  (loadedOptions) => {
+    if (props.selectCurrentUser && !model.value) {
+      model.value = loadedOptions?.find((option) => option.isCurrentUser)?.value ?? ''
+    }
+  },
+  { immediate: true },
+)
+
+watch(
   () => props.spaceKey,
   () => {
     clear()
     model.value = ''
+    if (props.eager && props.spaceKey) {
+      void execute()
+    }
   },
 )
 </script>

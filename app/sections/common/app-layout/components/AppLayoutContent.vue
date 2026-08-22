@@ -117,16 +117,16 @@
           <ArrowRightLeft />
           Data movement
         </NuxtLink>
+        <a
+          aria-label="Documentation (opens in a new tab)"
+          class="sidebar-documentation"
+          href="https://laraue.com/blog/documentation/laraue-boards"
+          rel="noopener noreferrer"
+          target="_blank">
+          <BookOpen />
+          Documentation
+        </a>
       </nav>
-      <a
-        aria-label="Documentation (opens in a new tab)"
-        class="secondary sidebar-action sidebar-documentation"
-        href="https://laraue.com/blog/documentation/laraue-boards"
-        rel="noopener noreferrer"
-        target="_blank">
-        <BookOpen />
-        Documentation
-      </a>
       <div class="sidebar-footer">
         <div class="sidebar-user">
           <span
@@ -256,6 +256,9 @@ aside .logo {
 }
 
 nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
   margin-bottom: var(--space-4);
 }
 
@@ -354,17 +357,16 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
-.sidebar-documentation {
-  margin-bottom: var(--space-3);
-  margin-top: auto;
-}
-
 .sidebar-user {
   align-items: center;
   display: flex;
   gap: var(--space-2);
   min-width: 0;
   padding: var(--space-2);
+}
+
+.sidebar-documentation {
+  margin-top: auto;
 }
 
 .sidebar-user > span:last-child {
