@@ -15,6 +15,7 @@ test('maps board columns, their issues, and attributes', () => {
     canUpdateIssues: true,
     color: '#111',
     name: 'Roadmap',
+    status: 'Active',
     statuses: [
       { color: '#222', id: 2, name: 'Done', sortOrder: 2 },
       { color: '#333', id: 1, name: 'To do', sortOrder: 1 },

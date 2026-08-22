@@ -47,13 +47,17 @@ const props = withDefaults(
     boardId: string
     deps: StatusSelectDeps
     disabled?: boolean
+    eager?: boolean
     initialOption?: StatusSelectOption
     placeholder?: string
+    selectFirst?: boolean
   }>(),
   {
     disabled: false,
+    eager: false,
     initialOption: undefined,
     placeholder: 'Select status',
+    selectFirst: false,
   },
 )
 
@@ -64,7 +68,7 @@ const model = defineModel<string>({ required: true })
 const { clear, data, execute, message, pending, status } = await useQuery(
   `status-select:${useId()}`,
   (_nuxtApp, { signal }) => props.deps.loadStatuses({ boardId: props.boardId, signal }),
-  { immediate: false },
+  { immediate: props.eager && Boolean(props.boardId) },
 )
 
 const loaded = computed(() => status.value !== 'idle' && !pending.value)
@@ -87,10 +91,27 @@ const load = () => {
 }
 
 watch(
+  data,
+  (loadedOptions) => {
+    if (
+      props.selectFirst &&
+      loadedOptions &&
+      !loadedOptions.some((option) => option.value === model.value)
+    ) {
+      model.value = loadedOptions[0]?.value ?? ''
+    }
+  },
+  { immediate: true },
+)
+
+watch(
   () => props.boardId,
   () => {
     clear()
     model.value = ''
+    if (props.eager && props.boardId) {
+      void execute()
+    }
   },
 )
 </script>

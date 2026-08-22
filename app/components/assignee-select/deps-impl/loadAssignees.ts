@@ -11,6 +11,7 @@ export const createLoadAssignees =
         members?.map((member) => ({
           color: member.color,
           initials: member.initials,
+          isCurrentUser: member.isCurrentUser,
           label: member.displayName,
           value: member.userId,
         })),

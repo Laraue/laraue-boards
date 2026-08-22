@@ -15,6 +15,7 @@ const issue: IssuePageViewModel = {
   assigneeColor: '#4774d4',
   assigneeId: '9',
   assigneeInitial: 'A',
+  assigneeIsCurrentUser: true,
   attachments: [],
   attributes: [],
   boardId: '12',

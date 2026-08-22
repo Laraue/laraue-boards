@@ -7,10 +7,14 @@ import StatusSelect from './StatusSelect.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (deps: StatusSelectDeps, boardId = '12') => {
+const mount = async (
+  deps: StatusSelectDeps,
+  boardId = '12',
+  props: { eager?: boolean; modelValue?: string; selectFirst?: boolean } = {},
+) => {
   currentWrapper = await mountSuspended(StatusSelect, {
     attachTo: document.body,
-    props: { 'aria-label': 'Status', boardId, deps, modelValue: '' },
+    props: { 'aria-label': 'Status', boardId, deps, modelValue: '', ...props },
   })
 }
 
@@ -30,6 +34,24 @@ it('loads statuses when the user focuses the select', async () => {
   await page.getByLabelText('Status').click()
 
   await expect.element(page.getByRole('option', { name: 'To do' })).toBeInTheDocument()
+})
+
+it('selects the first status when the initial status is unavailable', async () => {
+  await mount(
+    {
+      loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
+        data: [
+          { label: 'To do', value: '3' },
+          { label: 'Done', value: '5' },
+        ],
+        status: 'success',
+      })),
+    },
+    '12',
+    { eager: true, modelValue: '999', selectFirst: true },
+  )
+
+  await expect.element(page.getByLabelText('Status')).toHaveValue('3')
 })
 
 it('clears the selected status when the board changes', async () => {

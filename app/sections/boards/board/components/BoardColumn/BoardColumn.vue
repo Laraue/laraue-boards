@@ -5,7 +5,18 @@
         <i :style="{ background: viewModel.color || COLORS.gray }" />
         {{ viewModel.title }}
       </span>
-      <span>{{ viewModel.issueCount }}</span>
+      <span class="column-head-actions">
+        <button
+          v-if="canCreateIssues"
+          :aria-label="`Add issue to ${viewModel.title}`"
+          class="icon-btn small"
+          title="Add issue"
+          type="button"
+          @click="onCreateIssue(viewModel.id)">
+          <Plus />
+        </button>
+        <span>{{ viewModel.issueCount }}</span>
+      </span>
     </div>
     <div
       ref="element"
@@ -48,7 +59,7 @@
 <script setup lang="ts">
 import { CollisionPriority } from '@dnd-kit/abstract'
 import { useDroppable } from '@dnd-kit/vue'
-import { Loader } from '@lucide/vue'
+import { Loader, Plus } from '@lucide/vue'
 
 import { COLORS } from '~/constants/colors'
 import IssueCard from '~/sections/boards/board/components/BoardColumn/components/IssueCard.vue'
@@ -56,10 +67,12 @@ import IssueCard from '~/sections/boards/board/components/BoardColumn/components
 import type { BoardColumnViewModel } from './BoardColumn.types'
 
 const props = defineProps<{
+  canCreateIssues: boolean
   canMoveIssues: boolean
   loadingMore: boolean
   loadMoreError: null | string
   movingIssueKeys: Set<string>
+  onCreateIssue: (statusId: string) => void
   onLoadMore: (statusId: string) => void
   onMoveToBacklog: (issueKey: string) => void
   onOpenIssue: (issueKey: string) => void
@@ -174,12 +187,22 @@ onBeforeUnmount(() => observer?.disconnect())
   width: 8px;
 }
 
-.column-head > span:last-child {
+.column-head-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.column-head-actions > span {
   background: var(--color-surface);
   border-radius: var(--radius-pill);
   color: var(--color-muted);
   font-size: var(--font-size-small);
   padding: 2px var(--space-2);
+}
+
+.column-head-actions > .icon-btn {
+  color: var(--color-accent);
 }
 
 @media (max-width: 760px) {

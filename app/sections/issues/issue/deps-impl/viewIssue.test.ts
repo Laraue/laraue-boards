@@ -17,7 +17,12 @@ test('maps issue detail and comments', async () => {
     path.endsWith('/comments')
       ? { data: [comment], hasNextPage: false, page: 0, perPage: 100 }
       : {
-          assignee: { color: '#111', displayName: 'Ada', initials: 'A' },
+          assignee: {
+            color: '#111',
+            displayName: 'Ada',
+            initials: 'A',
+            isCurrentUser: true,
+          },
           assigneeId: '9',
           attachments: [
             {
@@ -64,6 +69,7 @@ test('maps issue detail and comments', async () => {
 
   assert(result.status === 'success')
   assert.equal(result.data.content, '')
+  assert.equal(result.data.assigneeIsCurrentUser, true)
   assert.equal(result.data.owner, 'Grace')
   assert.deepEqual(result.data.attributes, [
     {

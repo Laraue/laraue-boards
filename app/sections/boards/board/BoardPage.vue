@@ -78,10 +78,12 @@
             <BoardColumn
               v-for="column in page.columns"
               :key="column.id"
+              :can-create-issues="page.canCreateIssues"
               :can-move-issues="page.canMoveIssues"
               :load-more-error="state.loadMoreErrors.get(column.id) ?? null"
               :loading-more="state.loadingColumnIds.has(column.id)"
               :moving-issue-keys="state.movingIssueKeys"
+              :on-create-issue="onCreateIssue"
               :on-load-more="loadMoreIssues"
               :on-move-to-backlog="moveToBacklog"
               :on-open-issue="openIssue"
@@ -166,6 +168,7 @@ const props = defineProps<{
   deps: BoardPageDeps
   issueKey: null | string
   onBack: () => void
+  onCreateIssue: (statusId: string) => Promise<void> | void
   onIssueMoved: (issue: IssuePageSavedIssue) => Promise<void> | void
   onPushQuery: (query: LocationQueryRaw) => Promise<void> | void
   onReplaceQuery: (query: LocationQueryRaw) => Promise<void> | void

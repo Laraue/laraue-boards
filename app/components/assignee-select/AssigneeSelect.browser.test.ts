@@ -22,7 +22,15 @@ afterEach(async () => {
 it('loads assignees when the user focuses the select', async () => {
   await mount({
     loadAssignees: vi.fn<AssigneeSelectDeps['loadAssignees']>(async () => ({
-      data: [{ color: '#4774d4', initials: 'A', label: 'Ada Lovelace', value: '9' }],
+      data: [
+        {
+          color: '#4774d4',
+          initials: 'A',
+          isCurrentUser: false,
+          label: 'Ada Lovelace',
+          value: '9',
+        },
+      ],
       status: 'success',
     })),
   })
@@ -36,8 +44,24 @@ it('clears the selected assignee when the space changes', async () => {
   const loadAssignees = vi.fn<AssigneeSelectDeps['loadAssignees']>(async ({ spaceKey }) => ({
     data:
       spaceKey === 'backlog'
-        ? [{ color: '#d44747', initials: 'G', label: 'Grace Hopper', value: '4' }]
-        : [{ color: '#4774d4', initials: 'A', label: 'Ada Lovelace', value: '9' }],
+        ? [
+            {
+              color: '#d44747',
+              initials: 'G',
+              isCurrentUser: false,
+              label: 'Grace Hopper',
+              value: '4',
+            },
+          ]
+        : [
+            {
+              color: '#4774d4',
+              initials: 'A',
+              isCurrentUser: false,
+              label: 'Ada Lovelace',
+              value: '9',
+            },
+          ],
     status: 'success',
   }))
   await mount({ loadAssignees }, '7')
