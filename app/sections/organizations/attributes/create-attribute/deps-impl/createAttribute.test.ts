@@ -29,6 +29,13 @@ test('maps scalar attribute types', async () => {
   await createCreateAttribute(client)({ color: '#fff', data: { type: 'text' }, name: 'Priority' })
   await createCreateAttribute(client)({
     color: '#fff',
+    data: { type: 'integer' },
+    name: 'Estimate',
+  })
+  await createCreateAttribute(client)({ color: '#fff', data: { type: 'decimal' }, name: 'Cost' })
+  await createCreateAttribute(client)({ color: '#fff', data: { type: 'date' }, name: 'Due' })
+  await createCreateAttribute(client)({
+    color: '#fff',
     data: { type: 'dateTime' },
     name: 'Starts',
   })
@@ -40,6 +47,24 @@ test('maps scalar attribute types', async () => {
     type: 'Text',
   })
   assert.deepEqual(await requests[1]!.json(), {
+    color: '#fff',
+    listValues: null,
+    name: 'Estimate',
+    type: 'Integer',
+  })
+  assert.deepEqual(await requests[2]!.json(), {
+    color: '#fff',
+    listValues: null,
+    name: 'Cost',
+    type: 'Decimal',
+  })
+  assert.deepEqual(await requests[3]!.json(), {
+    color: '#fff',
+    listValues: null,
+    name: 'Due',
+    type: 'Date',
+  })
+  assert.deepEqual(await requests[4]!.json(), {
     color: '#fff',
     listValues: null,
     name: 'Starts',

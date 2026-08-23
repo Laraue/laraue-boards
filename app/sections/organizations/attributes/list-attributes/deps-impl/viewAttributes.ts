@@ -1,6 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
+import { assertNever } from '~/utils/assertNever'
 
 import type { ViewAttributes } from '../AttributesPage.deps'
 import type { AttributeListItem } from '../AttributesPage.types'
@@ -20,7 +21,7 @@ const mapType = (type: components['schemas']['AttributeType']): AttributeListIte
     case 'DateTime':
       return 'dateTime'
     default:
-      throw new RangeError(`Unsupported attribute type: ${type}`)
+      return assertNever(type)
   }
 }
 

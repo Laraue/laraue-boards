@@ -92,6 +92,7 @@ import { Plus, Tags, Trash2 } from '@lucide/vue'
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { CreateAttributePageDeps } from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.deps'
 import type { AttributeDraft } from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.types'
+import { assertNever } from '~/utils/assertNever'
 
 const props = defineProps<{
   deps: CreateAttributePageDeps
@@ -125,39 +126,62 @@ const addOption = () => {
 }
 
 const changeType = (event: Event) => {
-  const type = (event.target as HTMLSelectElement).value
+  const type = (event.target as HTMLSelectElement).value as AttributeDraft['data']['type']
   switch (type) {
-    case 'list':
-      draft.data = { listValues: [{ key: nextOptionKey++, name: '' }], type }
-      break
     case 'text':
-    case 'integer':
-    case 'decimal':
-    case 'date':
-    case 'dateTime':
-      draft.data = { type }
+      draft.data = { type: 'text' }
       break
+    case 'list':
+      draft.data = { listValues: [{ key: nextOptionKey++, name: '' }], type: 'list' }
+      break
+    case 'integer':
+      draft.data = { type: 'integer' }
+      break
+    case 'decimal':
+      draft.data = { type: 'decimal' }
+      break
+    case 'date':
+      draft.data = { type: 'date' }
+      break
+    case 'dateTime':
+      draft.data = { type: 'dateTime' }
+      break
+    default:
+      assertNever(type)
   }
 }
 
 const submit = () => {
   const value = draft
-  void create(
-    value.data.type === 'list'
-      ? {
-          color: value.color,
-          data: {
-            listValues: value.data.listValues.map((option) => option.name),
-            type: value.data.type,
-          },
-          name: value.name,
-        }
-      : {
-          color: value.color,
-          data: { type: value.data.type },
-          name: value.name,
+  const base = { color: value.color, name: value.name }
+  switch (value.data.type) {
+    case 'text':
+      void create({ ...base, data: { type: 'text' } })
+      break
+    case 'list':
+      void create({
+        ...base,
+        data: {
+          listValues: value.data.listValues.map((option) => option.name),
+          type: 'list',
         },
-  )
+      })
+      break
+    case 'integer':
+      void create({ ...base, data: { type: 'integer' } })
+      break
+    case 'decimal':
+      void create({ ...base, data: { type: 'decimal' } })
+      break
+    case 'date':
+      void create({ ...base, data: { type: 'date' } })
+      break
+    case 'dateTime':
+      void create({ ...base, data: { type: 'dateTime' } })
+      break
+    default:
+      assertNever(value.data)
+  }
 }
 </script>
 

@@ -46,18 +46,21 @@
         :disabled="disabled"
         :model-value="modelValue[attribute.id] ?? ''"
         @update:model-value="update(attribute.id, $event)" />
+      <template v-else>{{ assertNever(attribute) }}</template>
     </div>
   </template>
 </template>
 
 <script setup lang="ts">
+import { assertNever } from '~/utils/assertNever'
+
 import IssueAttributeDateField from './components/IssueAttributeDateField.vue'
 import IssueAttributeDateTimeField from './components/IssueAttributeDateTimeField.vue'
 import IssueAttributeDecimalField from './components/IssueAttributeDecimalField.vue'
-import type { IssueAttributeField } from './IssueAttributeFields.types'
 import IssueAttributeIntegerField from './components/IssueAttributeIntegerField.vue'
 import IssueAttributeListField from './components/IssueAttributeListField.vue'
 import IssueAttributeTextField from './components/IssueAttributeTextField.vue'
+import type { IssueAttributeField } from './IssueAttributeFields.types'
 
 const props = withDefaults(
   defineProps<{

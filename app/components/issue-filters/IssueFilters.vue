@@ -109,6 +109,7 @@
           :id="`${idPrefix}-${activeAttribute.id}`"
           :model-value="arrayValue(activeAttribute.id)"
           @update:model-value="updateValue(activeAttribute.id, $event)" />
+        <template v-else>{{ assertNever(activeAttribute) }}</template>
         <button
           class="secondary clear-filter"
           :disabled="!valueCount(activeAttribute.id)"
@@ -125,14 +126,15 @@
 import { ListFilter, LoaderCircle } from '@lucide/vue'
 
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
+import { assertNever } from '~/utils/assertNever'
 
-import type { IssueFiltersValue } from './IssueFilters.types'
 import IssueDateFilter from './components/IssueDateFilter.vue'
 import IssueDateTimeFilter from './components/IssueDateTimeFilter.vue'
 import IssueDecimalFilter from './components/IssueDecimalFilter.vue'
 import IssueIntegerFilter from './components/IssueIntegerFilter.vue'
 import IssueListFilter from './components/IssueListFilter.vue'
 import IssueTextFilter from './components/IssueTextFilter.vue'
+import type { IssueFiltersValue } from './IssueFilters.types'
 
 const props = withDefaults(
   defineProps<{

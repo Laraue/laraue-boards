@@ -12,14 +12,12 @@ export type BacklogPageData = {
 }
 
 export type BacklogFilter =
+  | { attributeId: string; from?: string; to?: string; type: 'date' }
+  | { attributeId: string; from?: string; to?: string; type: 'dateTime' }
+  | { attributeId: string; from?: string; to?: string; type: 'decimal' }
+  | { attributeId: string; from?: string; to?: string; type: 'integer' }
   | { attributeId: string; searchString: string; type: 'text' }
   | { attributeId: string; type: 'list'; valueIds: string[] }
-  | {
-      attributeId: string
-      from?: string
-      to?: string
-      type: 'date' | 'dateTime' | 'decimal' | 'integer'
-    }
 
 export type SearchBacklogResult = {
   hasNextPage: boolean

@@ -17,6 +17,8 @@ const attributes = [
   },
   { id: '3', type: 'integer' as const },
   { id: '4', type: 'dateTime' as const },
+  { id: '5', type: 'decimal' as const },
+  { id: '6', type: 'date' as const },
 ]
 
 test('maps issue filters between URL and action input', () => {
@@ -25,6 +27,8 @@ test('maps issue filters between URL and action input', () => {
     'attribute.2': ['3', '4', '99'],
     'attribute.3': ['', '10'],
     'attribute.4': ['2026-08-01T09:00', '2026-08-22T18:00'],
+    'attribute.5': ['1.5', '9.5'],
+    'attribute.6': ['2026-08-01', '2026-08-31'],
     'attribute.99': 'stale',
     page: '3',
   })
@@ -35,6 +39,8 @@ test('maps issue filters between URL and action input', () => {
     2: ['3', '4'],
     3: ['', '10'],
     4: ['2026-08-01T09:00', '2026-08-22T18:00'],
+    5: ['1.5', '9.5'],
+    6: ['2026-08-01', '2026-08-31'],
   })
   assert.deepEqual(getIssueAttributeFilterInput(values, attributes), [
     { attributeId: '1', searchString: 'ABC', type: 'text' },
@@ -46,12 +52,16 @@ test('maps issue filters between URL and action input', () => {
       to: '2026-08-22T18:00',
       type: 'dateTime',
     },
+    { attributeId: '5', from: '1.5', to: '9.5', type: 'decimal' },
+    { attributeId: '6', from: '2026-08-01', to: '2026-08-31', type: 'date' },
   ])
   assert.deepEqual(withIssueAttributeFilters({ page: '3', search: 'x' }, values, attributes), {
     'attribute.1': 'ABC',
     'attribute.2': ['3', '4'],
     'attribute.3': ['', '10'],
     'attribute.4': ['2026-08-01T09:00', '2026-08-22T18:00'],
+    'attribute.5': ['1.5', '9.5'],
+    'attribute.6': ['2026-08-01', '2026-08-31'],
     search: 'x',
   })
   assert.deepEqual(readIssueSpaceQuery(['10', '20', null, '10']), ['10', '20'])

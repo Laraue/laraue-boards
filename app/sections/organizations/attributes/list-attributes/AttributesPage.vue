@@ -56,6 +56,7 @@
 import { ChevronRight, Plus, Tags } from '@lucide/vue'
 
 import type { AttributesPageDeps } from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
+import type { AttributeListItem } from '~/sections/organizations/attributes/list-attributes/AttributesPage.types'
 
 const props = defineProps<{ deps: AttributesPageDeps }>()
 
@@ -68,7 +69,7 @@ const typeLabels = {
   integer: 'Integer',
   list: 'List',
   text: 'Text',
-}
+} satisfies Record<AttributeListItem['type'], string>
 
 useHead({ title: 'Attributes' })
 

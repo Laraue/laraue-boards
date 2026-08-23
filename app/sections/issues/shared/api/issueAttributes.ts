@@ -1,5 +1,6 @@
 import type { components } from '#infrastructure/api/generated'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
+import { assertNever } from '~/utils/assertNever'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -7,21 +8,19 @@ import {
 
 type Schemas = components['schemas']
 type IssueFilter =
+  | { attributeId: string; from?: string; to?: string; type: 'date' }
+  | { attributeId: string; from?: string; to?: string; type: 'dateTime' }
+  | { attributeId: string; from?: string; to?: string; type: 'decimal' }
+  | { attributeId: string; from?: string; to?: string; type: 'integer' }
   | { attributeId: string; searchString: string; type: 'text' }
   | { attributeId: string; type: 'list'; valueIds: string[] }
-  | {
-      attributeId: string
-      from?: string
-      to?: string
-      type: 'date' | 'dateTime' | 'decimal' | 'integer'
-    }
 type IssueAttributeValueInput =
+  | { attributeId: string; type: 'date'; value: string }
+  | { attributeId: string; type: 'dateTime'; value: string }
+  | { attributeId: string; type: 'decimal'; value: string }
+  | { attributeId: string; type: 'integer'; value: string }
   | { attributeId: string; type: 'list'; valueId: string }
-  | {
-      attributeId: string
-      type: 'date' | 'dateTime' | 'decimal' | 'integer' | 'text'
-      value: string
-    }
+  | { attributeId: string; type: 'text'; value: string }
 
 export const mapIssueAttributes = (
   attributes: Schemas['AttributeDto'][],
@@ -58,7 +57,7 @@ export const mapIssueAttributes = (
       case 'DateTime':
         return { ...base, type: 'dateTime' }
       default:
-        throw new RangeError(`Unsupported attribute type: ${attribute.type}`)
+        return assertNever(attribute.type)
     }
   })
 }
@@ -68,7 +67,10 @@ export const mapIssueFilters = (filters: IssueFilter[]) => {
     filters.map((filter) => {
       switch (filter.type) {
         case 'text':
-          return [filter.attributeId, { $type: 'string' as const, searchString: filter.searchString }]
+          return [
+            filter.attributeId,
+            { $type: 'string' as const, searchString: filter.searchString },
+          ]
         case 'list':
           return [filter.attributeId, { $type: 'enum' as const, ids: filter.valueIds }]
         case 'date':
@@ -79,8 +81,17 @@ export const mapIssueFilters = (filters: IssueFilter[]) => {
             { $type: 'datetime' as const, from: filter.from, to: filter.to },
           ]
         case 'decimal':
+          return [
+            filter.attributeId,
+            { $type: 'decimal' as const, max: filter.to, min: filter.from },
+          ]
         case 'integer':
-          return [filter.attributeId, { $type: filter.type, min: filter.from, max: filter.to }]
+          return [
+            filter.attributeId,
+            { $type: 'integer' as const, max: filter.to, min: filter.from },
+          ]
+        default:
+          return assertNever(filter)
       }
     }),
   ) satisfies Record<string, Schemas['AttributeFilterValue']>
@@ -88,18 +99,21 @@ export const mapIssueFilters = (filters: IssueFilter[]) => {
 
 export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
   return values.map((value) => {
-    if (value.type === 'list') {
-      return { $type: 'enum' as const, attributeId: value.attributeId, valueId: value.valueId }
-    }
-    return {
-      $type:
-        value.type === 'text'
-          ? ('string' as const)
-          : value.type === 'dateTime'
-            ? 'datetime'
-            : value.type,
-      attributeId: value.attributeId,
-      value: value.value,
+    switch (value.type) {
+      case 'text':
+        return { $type: 'string' as const, attributeId: value.attributeId, value: value.value }
+      case 'list':
+        return { $type: 'enum' as const, attributeId: value.attributeId, valueId: value.valueId }
+      case 'integer':
+        return { $type: 'integer' as const, attributeId: value.attributeId, value: value.value }
+      case 'decimal':
+        return { $type: 'decimal' as const, attributeId: value.attributeId, value: value.value }
+      case 'date':
+        return { $type: 'date' as const, attributeId: value.attributeId, value: value.value }
+      case 'dateTime':
+        return { $type: 'datetime' as const, attributeId: value.attributeId, value: value.value }
+      default:
+        return assertNever(value)
     }
   }) satisfies Schemas['AttributeValue'][]
 }
