@@ -8,6 +8,7 @@ import OrganizationSettingsPage from './OrganizationSettingsPage.vue'
 
 const pageData: OrganizationSettingsPageData = {
   canDelete: true,
+  canLeave: true,
   canUpdate: true,
   color: '#4774d4',
   id: '7',
@@ -18,6 +19,10 @@ const pageData: OrganizationSettingsPageData = {
 const createDeps = (
   overrides: Partial<OrganizationSettingsPageDeps> = {},
 ): OrganizationSettingsPageDeps => ({
+  leave: vi.fn<OrganizationSettingsPageDeps['leave']>(async () => ({
+    data: true,
+    status: 'success',
+  })),
   remove: vi.fn<OrganizationSettingsPageDeps['remove']>(async () => ({
     data: true,
     status: 'success',
@@ -39,10 +44,11 @@ const mount = async (
   deps: OrganizationSettingsPageDeps,
   onUpdated: () => void = vi.fn<() => void>(),
   onDeleted: () => void = vi.fn<() => void>(),
+  onLeft: () => void = vi.fn<() => void>(),
 ) => {
   currentWrapper = await mountSuspended(OrganizationSettingsPage, {
     attachTo: document.body,
-    props: { deps, onDeleted, onUpdated },
+    props: { deps, onDeleted, onLeft, onUpdated },
     route: '/organizations/acme-ab12/settings',
   })
   return currentWrapper
@@ -110,6 +116,21 @@ it('deletes the organization after confirmation', async () => {
   expect(onDeleted).toHaveBeenCalledTimes(1)
 })
 
+it('leaves the organization after confirmation', async () => {
+  const leave = vi.fn<OrganizationSettingsPageDeps['leave']>(async () => ({
+    data: true,
+    status: 'success',
+  }))
+  const onLeft = vi.fn<() => void>()
+  vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+  await mount(createDeps({ leave }), vi.fn<() => void>(), vi.fn<() => void>(), onLeft)
+  await page.getByRole('button', { name: 'Leave organization' }).click()
+
+  expect(leave).toHaveBeenCalledWith({ id: '7' })
+  expect(onLeft).toHaveBeenCalledTimes(1)
+})
+
 it('reloads the settings when the failed request is retried', async () => {
   const view = vi
     .fn<OrganizationSettingsPageDeps['view']>()
@@ -125,7 +146,7 @@ it('reloads the settings when the failed request is retried', async () => {
 
 it('hides unavailable settings actions', async () => {
   const view = vi.fn<OrganizationSettingsPageDeps['view']>(async () => ({
-    data: { ...pageData, canDelete: false, canUpdate: false },
+    data: { ...pageData, canDelete: false, canLeave: false, canUpdate: false },
     status: 'success',
   }))
 
@@ -135,5 +156,8 @@ it('hides unavailable settings actions', async () => {
   await expect.element(page.getByRole('button', { name: 'Save changes' })).not.toBeInTheDocument()
   await expect
     .element(page.getByRole('button', { name: 'Delete organization' }))
+    .not.toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { name: 'Leave organization' }))
     .not.toBeInTheDocument()
 })

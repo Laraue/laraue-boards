@@ -18,7 +18,16 @@ test('loads the requested organization layout', async () => {
           name: 'Acme',
         }
       case '/api/organizations':
-        return [{ canUpdate: true, id: 1, name: 'Acme', slug: 'acme', slugPostfix: 'AB12' }]
+        return [
+          {
+            canUpdate: true,
+            id: 1,
+            isPersonal: false,
+            name: 'Acme',
+            slug: 'acme',
+            slugPostfix: 'AB12',
+          },
+        ]
       case '/api/user':
         return { color: '#456', firstName: 'Ada', initials: 'AL', lastName: 'Lovelace' }
       case '/api/spaces':
@@ -32,6 +41,7 @@ test('loads the requested organization layout', async () => {
     data: {
       organization: {
         canCreateSpaces: true,
+        canLeave: true,
         canManage: true,
         canManageAttributes: true,
         canMassMove: false,
