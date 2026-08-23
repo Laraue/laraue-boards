@@ -3,7 +3,6 @@
     :id="id"
     v-model="model"
     :disabled="disabled"
-    :step="1"
     type="datetime-local" />
 </template>
 

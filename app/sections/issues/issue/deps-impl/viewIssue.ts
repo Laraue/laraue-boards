@@ -1,6 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
+import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { assertNever } from '~/utils/assertNever'
 
 import { createLoadComments } from '../components/IssueComments/deps-impl/loadComments'
@@ -15,7 +16,7 @@ const mapAttribute = (
     color: attribute.color,
     id: String(attribute.id),
     name: attribute.name,
-    value: attribute.value,
+    value: String(attribute.value),
   }
   switch (attribute.type) {
     case 'Text':
@@ -36,11 +37,7 @@ const mapAttribute = (
     case 'Date':
       return { ...base, type: 'date' }
     case 'DateTime':
-      return {
-        ...base,
-        type: 'dateTime',
-        value: attribute.value.replace(/(?:Z|[+-]\d{2}:\d{2})$/, ''),
-      }
+      return { ...base, type: 'dateTime', value: toLocalIssueDateTime(attribute.value) }
     default:
       return assertNever(attribute.type)
   }
