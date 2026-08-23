@@ -56,7 +56,7 @@ export const useTour = ({
         progressText: '{{current}} of {{total}}',
         showProgress: true,
         skipMissingElement: true,
-        smoothScroll: true,
+        smoothScroll: animate(),
         stagePadding: 8,
         stageRadius: 12,
         steps: steps().map(({ description, placement, target, title }) => ({

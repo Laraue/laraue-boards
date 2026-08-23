@@ -53,7 +53,15 @@ watch(errorCode, (code) => {
   }
 })
 
+/** Nuxt runs the ready hook even after this layout is gone; a refresh from a dead instance
+ * writes stale data into the shared `appLayoutDataKey` cache that the next one reads. */
+let unmounted = false
+onUnmounted(() => (unmounted = true))
+
 onNuxtReady(async () => {
+  if (unmounted) {
+    return
+  }
   if (!query.data.value) {
     await query.refresh()
     return
