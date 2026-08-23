@@ -9,6 +9,8 @@ import {
   mapRawIssueFilters,
 } from '~/sections/issues/shared/api/issueAttributes'
 
+import { toLocalIssueDateTime, toUtcIssueDateTime } from './issueDateTime'
+
 const attributeDtos: components['schemas']['AttributeDto'][] = [
   { color: COLORS.gray, id: 1, listValues: [], name: 'Reference', type: 'Text' },
   {
@@ -28,6 +30,8 @@ const attributeDtos: components['schemas']['AttributeDto'][] = [
 ]
 
 test('maps issue attributes, filters, and values to API models', () => {
+  const utcDateTime = new Date('2026-08-22T12:30').toISOString()
+
   assert.deepEqual(mapIssueAttributes(attributeDtos), [
     { color: COLORS.gray, id: '1', name: 'Reference', type: 'text' },
     {
@@ -60,7 +64,7 @@ test('maps issue attributes, filters, and values to API models', () => {
       5: { $type: 'integer', max: '10', min: '1' },
       6: { $type: 'decimal', max: '9.5', min: '1.5' },
       7: { $type: 'date', from: '2026-08-01', to: '2026-08-31' },
-      8: { $type: 'datetime', from: '2026-08-22T12:30', to: undefined },
+      8: { $type: 'datetime', from: utcDateTime, to: undefined },
     },
   )
   assert.deepEqual(mapRawIssueFilters({ 1: ['ABC'], 2: ['3', '4', '99'] }, attributeDtos).filters, {
@@ -82,7 +86,15 @@ test('maps issue attributes, filters, and values to API models', () => {
       { $type: 'decimal', attributeId: '6', value: '12.5' },
       { $type: 'integer', attributeId: '5', value: '42' },
       { $type: 'date', attributeId: '7', value: '2026-08-23' },
-      { $type: 'datetime', attributeId: '8', value: '2026-08-22T12:30' },
+      { $type: 'datetime', attributeId: '8', value: utcDateTime },
     ],
   )
+})
+
+test('converts issue date-times between client time and UTC', () => {
+  const utc = '2026-01-22T12:30:00.000Z'
+  const local = toLocalIssueDateTime(utc)
+
+  assert.match(local, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)
+  assert.equal(toUtcIssueDateTime(`${local}:42`), utc)
 })

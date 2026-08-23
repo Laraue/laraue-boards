@@ -73,6 +73,7 @@
         <div
           v-if="
             viewModel.organization.canUpdate ||
+            viewModel.organization.canLeave ||
             viewModel.organization.canManage ||
             viewModel.organization.canManageAttributes ||
             viewModel.organization.canMassMove
@@ -82,7 +83,7 @@
           Settings
         </div>
         <NuxtLink
-          v-if="viewModel.organization.canUpdate"
+          v-if="viewModel.organization.canUpdate || viewModel.organization.canLeave"
           :class="{
             active: active('organizations-organizationKey-settings'),
           }"

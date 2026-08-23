@@ -1,6 +1,7 @@
 import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
+import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 
 import { createViewIssue } from './viewIssue'
 
@@ -57,6 +58,22 @@ test('maps issue detail and comments', async () => {
               type: 'DateTime',
               value: '2026-08-22T12:30:00Z',
             },
+            {
+              color: '#666',
+              id: 7,
+              listValues: [],
+              name: 'Estimate',
+              type: 'Decimal',
+              value: 1,
+            },
+            {
+              color: '#777',
+              id: 8,
+              listValues: [],
+              name: 'Points',
+              type: 'Integer',
+              value: 2,
+            },
           ],
           canEdit: true,
           content: null,
@@ -93,7 +110,21 @@ test('maps issue detail and comments', async () => {
       id: '6',
       name: 'Starts',
       type: 'dateTime',
-      value: '2026-08-22T12:30:00',
+      value: toLocalIssueDateTime('2026-08-22T12:30:00Z'),
+    },
+    {
+      color: '#666',
+      id: '7',
+      name: 'Estimate',
+      type: 'decimal',
+      value: '1',
+    },
+    {
+      color: '#777',
+      id: '8',
+      name: 'Points',
+      type: 'integer',
+      value: '2',
     },
   ])
   assert.deepEqual(result.data.attachments, [

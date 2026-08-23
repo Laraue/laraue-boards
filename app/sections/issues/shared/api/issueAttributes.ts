@@ -6,6 +6,8 @@ import {
   normalizeIssueAttributeFilters,
 } from '~/utils/issueAttributeFilters'
 
+import { toUtcIssueDateTime } from './issueDateTime'
+
 type Schemas = components['schemas']
 type IssueFilter =
   | { attributeId: string; from?: string; to?: string; type: 'date' }
@@ -78,7 +80,11 @@ export const mapIssueFilters = (filters: IssueFilter[]) => {
         case 'dateTime':
           return [
             filter.attributeId,
-            { $type: 'datetime' as const, from: filter.from, to: filter.to },
+            {
+              $type: 'datetime' as const,
+              from: filter.from && toUtcIssueDateTime(filter.from),
+              to: filter.to && toUtcIssueDateTime(filter.to),
+            },
           ]
         case 'decimal':
           return [
@@ -111,7 +117,11 @@ export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
       case 'date':
         return { $type: 'date' as const, attributeId: value.attributeId, value: value.value }
       case 'dateTime':
-        return { $type: 'datetime' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'datetime' as const,
+          attributeId: value.attributeId,
+          value: toUtcIssueDateTime(value.value),
+        }
       default:
         return assertNever(value)
     }

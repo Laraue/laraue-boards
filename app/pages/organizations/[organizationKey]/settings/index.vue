@@ -2,6 +2,7 @@
   <OrganizationSettingsPage
     :deps="deps"
     :on-deleted="onDeleted"
+    :on-left="onDeleted"
     :on-updated="onUpdated" />
 </template>
 

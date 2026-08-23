@@ -3,14 +3,12 @@
   <input
     :id="`${id}-from`"
     autofocus
-    :step="1"
     type="datetime-local"
     :value="model[0] ?? ''"
     @input="update(0, $event)" />
   <label :for="`${id}-to`">To</label>
   <input
     :id="`${id}-to`"
-    :step="1"
     type="datetime-local"
     :value="model[1] ?? ''"
     @input="update(1, $event)" />
