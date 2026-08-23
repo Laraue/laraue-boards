@@ -2,22 +2,11 @@
   <input
     :id="id"
     v-model="model"
-    :autofocus="autofocus"
     :disabled="disabled"
-    :placeholder="placeholder"
-    :type="type" />
+    type="text" />
 </template>
 
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
-    autofocus?: boolean
-    disabled: boolean
-    id: string
-    placeholder?: string
-    type?: 'search' | 'text'
-  }>(),
-  { autofocus: false, type: 'text' },
-)
+defineProps<{ disabled: boolean; id: string }>()
 const model = defineModel<string>({ required: true })
 </script>

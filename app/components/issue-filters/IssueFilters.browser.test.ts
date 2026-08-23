@@ -43,6 +43,18 @@ it('updates the filters when the user selects a space', async () => {
   ])
 })
 
+it('updates a list filter', async () => {
+  await mount()
+
+  await page.getByRole('button', { name: 'Filters' }).click()
+  await page.getByRole('button', { name: 'Priority' }).click()
+  await page.getByLabelText('High').click()
+
+  expect(currentWrapper!.emitted('update:modelValue')).toEqual([
+    [{ attributes: { priority: ['high'] }, spaceIds: [] }],
+  ])
+})
+
 it('clears all selected filters', async () => {
   await mount()
   await currentWrapper!.setProps({
