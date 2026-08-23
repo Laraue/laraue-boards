@@ -37,7 +37,7 @@
             <span class="attribute-name">
               <strong>{{ attribute.name }}</strong>
               <small class="muted">
-                {{ attribute.type === 'list' ? 'List' : 'Text' }}
+                {{ typeLabels[attribute.type] }}
               </small>
             </span>
             <ChevronRight />
@@ -56,10 +56,20 @@
 import { ChevronRight, Plus, Tags } from '@lucide/vue'
 
 import type { AttributesPageDeps } from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
+import type { AttributeListItem } from '~/sections/organizations/attributes/list-attributes/AttributesPage.types'
 
 const props = defineProps<{ deps: AttributesPageDeps }>()
 
 const organizationRoutes = useOrganizationRoutes()
+
+const typeLabels = {
+  date: 'Date',
+  dateTime: 'Date and time',
+  decimal: 'Decimal',
+  integer: 'Integer',
+  list: 'List',
+  text: 'Text',
+} satisfies Record<AttributeListItem['type'], string>
 
 useHead({ title: 'Attributes' })
 

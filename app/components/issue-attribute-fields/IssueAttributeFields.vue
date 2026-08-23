@@ -9,33 +9,57 @@
       <span
         class="attribute-dot"
         :style="{ background: attribute.color }" />
-      <input
+      <IssueAttributeTextField
         v-if="attribute.type === 'text'"
         :id="`${idPrefix}-${attribute.id}`"
         :disabled="disabled"
-        type="text"
-        :value="modelValue[attribute.id] ?? ''"
-        @input="update(attribute.id, ($event.target as HTMLInputElement).value)" />
-      <select
-        v-else
+        :model-value="modelValue[attribute.id] ?? ''"
+        @update:model-value="update(attribute.id, $event)" />
+      <IssueAttributeListField
+        v-else-if="attribute.type === 'list'"
         :id="`${idPrefix}-${attribute.id}`"
         :disabled="disabled"
-        :value="modelValue[attribute.id] ?? ''"
-        @change="update(attribute.id, ($event.target as HTMLSelectElement).value)">
-        <option value="">None</option>
-        <option
-          v-for="option in attribute.options"
-          :key="option.value"
-          :selected="modelValue[attribute.id] === option.value"
-          :value="option.value">
-          {{ option.label }}
-        </option>
-      </select>
+        :model-value="modelValue[attribute.id] ?? ''"
+        :options="attribute.options"
+        @update:model-value="update(attribute.id, $event)" />
+      <IssueAttributeIntegerField
+        v-else-if="attribute.type === 'integer'"
+        :id="`${idPrefix}-${attribute.id}`"
+        :disabled="disabled"
+        :model-value="modelValue[attribute.id] ?? ''"
+        @update:model-value="update(attribute.id, $event)" />
+      <IssueAttributeDecimalField
+        v-else-if="attribute.type === 'decimal'"
+        :id="`${idPrefix}-${attribute.id}`"
+        :disabled="disabled"
+        :model-value="modelValue[attribute.id] ?? ''"
+        @update:model-value="update(attribute.id, $event)" />
+      <IssueAttributeDateField
+        v-else-if="attribute.type === 'date'"
+        :id="`${idPrefix}-${attribute.id}`"
+        :disabled="disabled"
+        :model-value="modelValue[attribute.id] ?? ''"
+        @update:model-value="update(attribute.id, $event)" />
+      <IssueAttributeDateTimeField
+        v-else-if="attribute.type === 'dateTime'"
+        :id="`${idPrefix}-${attribute.id}`"
+        :disabled="disabled"
+        :model-value="modelValue[attribute.id] ?? ''"
+        @update:model-value="update(attribute.id, $event)" />
+      <template v-else>{{ assertNever(attribute) }}</template>
     </div>
   </template>
 </template>
 
 <script setup lang="ts">
+import { assertNever } from '~/utils/assertNever'
+
+import IssueAttributeDateField from './components/IssueAttributeDateField.vue'
+import IssueAttributeDateTimeField from './components/IssueAttributeDateTimeField.vue'
+import IssueAttributeDecimalField from './components/IssueAttributeDecimalField.vue'
+import IssueAttributeIntegerField from './components/IssueAttributeIntegerField.vue'
+import IssueAttributeListField from './components/IssueAttributeListField.vue'
+import IssueAttributeTextField from './components/IssueAttributeTextField.vue'
 import type { IssueAttributeField } from './IssueAttributeFields.types'
 
 const props = withDefaults(

@@ -100,6 +100,7 @@ import type {
   Attribute,
   AttributeDraft,
 } from '~/sections/organizations/attributes/attribute/AttributePage.types'
+import { assertNever } from '~/utils/assertNever'
 
 const props = defineProps<{
   attributeId: string
@@ -139,10 +140,14 @@ const submitting = computed(() => updating.value || deleting.value)
 
 let nextOptionKey = 0
 
-const toDraft = (attribute: Attribute): AttributeDraft =>
-  attribute.data.type === 'list'
-    ? {
-        color: attribute.color,
+const toDraft = (attribute: Attribute): AttributeDraft => {
+  const base = { color: attribute.color, id: attribute.id, name: attribute.name }
+  switch (attribute.data.type) {
+    case 'text':
+      return { ...base, data: { type: 'text' } }
+    case 'list':
+      return {
+        ...base,
         data: {
           listValues:
             attribute.data.listValues.length > 0
@@ -152,17 +157,21 @@ const toDraft = (attribute: Attribute): AttributeDraft =>
                   name: option.name,
                 }))
               : [{ id: null, key: nextOptionKey++, name: '' }],
-          type: attribute.data.type,
+          type: 'list',
         },
-        id: attribute.id,
-        name: attribute.name,
       }
-    : {
-        color: attribute.color,
-        data: { type: attribute.data.type },
-        id: attribute.id,
-        name: attribute.name,
-      }
+    case 'integer':
+      return { ...base, data: { type: 'integer' } }
+    case 'decimal':
+      return { ...base, data: { type: 'decimal' } }
+    case 'date':
+      return { ...base, data: { type: 'date' } }
+    case 'dateTime':
+      return { ...base, data: { type: 'dateTime' } }
+    default:
+      return assertNever(attribute.data)
+  }
+}
 
 const draft = ref<AttributeDraft | undefined>(data.value ? toDraft(data.value) : undefined)
 
@@ -181,27 +190,38 @@ const submit = () => {
   if (!value) {
     return
   }
-  void update(
-    value.data.type === 'list'
-      ? {
-          color: value.color,
-          data: {
-            listValues: value.data.listValues.map((option) => ({
-              id: option.id,
-              name: option.name,
-            })),
-            type: value.data.type,
-          },
-          id: value.id,
-          name: value.name,
-        }
-      : {
-          color: value.color,
-          data: { type: value.data.type },
-          id: value.id,
-          name: value.name,
+  const base = { color: value.color, id: value.id, name: value.name }
+  switch (value.data.type) {
+    case 'text':
+      void update({ ...base, data: { type: 'text' } })
+      break
+    case 'list':
+      void update({
+        ...base,
+        data: {
+          listValues: value.data.listValues.map((option) => ({
+            id: option.id,
+            name: option.name,
+          })),
+          type: 'list',
         },
-  )
+      })
+      break
+    case 'integer':
+      void update({ ...base, data: { type: 'integer' } })
+      break
+    case 'decimal':
+      void update({ ...base, data: { type: 'decimal' } })
+      break
+    case 'date':
+      void update({ ...base, data: { type: 'date' } })
+      break
+    case 'dateTime':
+      void update({ ...base, data: { type: 'dateTime' } })
+      break
+    default:
+      assertNever(value.data)
+  }
 }
 
 const remove = (attribute: Attribute) => {

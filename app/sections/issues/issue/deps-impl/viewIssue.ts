@@ -1,6 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
+import { assertNever } from '~/utils/assertNever'
 
 import { createLoadComments } from '../components/IssueComments/deps-impl/loadComments'
 import type { ViewIssue } from '../IssuePage.deps'
@@ -28,8 +29,20 @@ const mapAttribute = (
         })),
         type: 'list',
       }
+    case 'Integer':
+      return { ...base, type: 'integer' }
+    case 'Decimal':
+      return { ...base, type: 'decimal' }
+    case 'Date':
+      return { ...base, type: 'date' }
+    case 'DateTime':
+      return {
+        ...base,
+        type: 'dateTime',
+        value: attribute.value.replace(/(?:Z|[+-]\d{2}:\d{2})$/, ''),
+      }
     default:
-      throw new RangeError(`Unsupported attribute type: ${attribute.type}`)
+      return assertNever(attribute.type)
   }
 }
 const mapAttachments = (

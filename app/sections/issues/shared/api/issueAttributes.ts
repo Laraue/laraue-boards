@@ -1,11 +1,24 @@
 import type { components } from '#infrastructure/api/generated'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
+import { assertNever } from '~/utils/assertNever'
+import {
+  getIssueAttributeFilterInput,
+  normalizeIssueAttributeFilters,
+} from '~/utils/issueAttributeFilters'
 
 type Schemas = components['schemas']
 type IssueFilter =
+  | { attributeId: string; from?: string; to?: string; type: 'date' }
+  | { attributeId: string; from?: string; to?: string; type: 'dateTime' }
+  | { attributeId: string; from?: string; to?: string; type: 'decimal' }
+  | { attributeId: string; from?: string; to?: string; type: 'integer' }
   | { attributeId: string; searchString: string; type: 'text' }
   | { attributeId: string; type: 'list'; valueIds: string[] }
 type IssueAttributeValueInput =
+  | { attributeId: string; type: 'date'; value: string }
+  | { attributeId: string; type: 'dateTime'; value: string }
+  | { attributeId: string; type: 'decimal'; value: string }
+  | { attributeId: string; type: 'integer'; value: string }
   | { attributeId: string; type: 'list'; valueId: string }
   | { attributeId: string; type: 'text'; value: string }
 
@@ -35,37 +48,74 @@ export const mapIssueAttributes = (
           }),
           type: 'list',
         }
+      case 'Integer':
+        return { ...base, type: 'integer' }
+      case 'Decimal':
+        return { ...base, type: 'decimal' }
+      case 'Date':
+        return { ...base, type: 'date' }
+      case 'DateTime':
+        return { ...base, type: 'dateTime' }
       default:
-        throw new RangeError(`Unsupported attribute type: ${attribute.type}`)
+        return assertNever(attribute.type)
     }
   })
 }
 
 export const mapIssueFilters = (filters: IssueFilter[]) => {
   return Object.fromEntries(
-    filters.map((filter) => [
-      filter.attributeId,
-      filter.type === 'text'
-        ? { $type: 'string' as const, searchString: filter.searchString }
-        : { $type: 'enum' as const, ids: filter.valueIds },
-    ]),
+    filters.map((filter) => {
+      switch (filter.type) {
+        case 'text':
+          return [
+            filter.attributeId,
+            { $type: 'string' as const, searchString: filter.searchString },
+          ]
+        case 'list':
+          return [filter.attributeId, { $type: 'enum' as const, ids: filter.valueIds }]
+        case 'date':
+          return [filter.attributeId, { $type: 'date' as const, from: filter.from, to: filter.to }]
+        case 'dateTime':
+          return [
+            filter.attributeId,
+            { $type: 'datetime' as const, from: filter.from, to: filter.to },
+          ]
+        case 'decimal':
+          return [
+            filter.attributeId,
+            { $type: 'decimal' as const, max: filter.to, min: filter.from },
+          ]
+        case 'integer':
+          return [
+            filter.attributeId,
+            { $type: 'integer' as const, max: filter.to, min: filter.from },
+          ]
+        default:
+          return assertNever(filter)
+      }
+    }),
   ) satisfies Record<string, Schemas['AttributeFilterValue']>
 }
 
 export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
-  return values.map((value) =>
-    value.type === 'text'
-      ? {
-          $type: 'string' as const,
-          attributeId: value.attributeId,
-          value: value.value,
-        }
-      : {
-          $type: 'enum' as const,
-          attributeId: value.attributeId,
-          valueId: value.valueId,
-        },
-  ) satisfies Schemas['AttributeValue'][]
+  return values.map((value) => {
+    switch (value.type) {
+      case 'text':
+        return { $type: 'string' as const, attributeId: value.attributeId, value: value.value }
+      case 'list':
+        return { $type: 'enum' as const, attributeId: value.attributeId, valueId: value.valueId }
+      case 'integer':
+        return { $type: 'integer' as const, attributeId: value.attributeId, value: value.value }
+      case 'decimal':
+        return { $type: 'decimal' as const, attributeId: value.attributeId, value: value.value }
+      case 'date':
+        return { $type: 'date' as const, attributeId: value.attributeId, value: value.value }
+      case 'dateTime':
+        return { $type: 'datetime' as const, attributeId: value.attributeId, value: value.value }
+      default:
+        return assertNever(value)
+    }
+  }) satisfies Schemas['AttributeValue'][]
 }
 
 export const mapRawIssueFilters = (
@@ -73,22 +123,10 @@ export const mapRawIssueFilters = (
   attributeDtos: Schemas['AttributeDto'][],
 ) => {
   const attributes = mapIssueAttributes(attributeDtos)
-  const filters: IssueFilter[] = []
-  for (const attribute of attributes) {
-    const values = raw[attribute.id] ?? []
-    if (attribute.type === 'text') {
-      const searchString = values.at(-1)
-      if (searchString) {
-        filters.push({ attributeId: attribute.id, searchString, type: 'text' })
-      }
-      continue
-    }
-    const allowed = new Set(attribute.options.map((option) => option.value))
-    const valueIds = [...new Set(values.filter((value) => allowed.has(value)))]
-    if (valueIds.length) {
-      filters.push({ attributeId: attribute.id, type: 'list', valueIds })
-    }
-  }
+  const filters = getIssueAttributeFilterInput(
+    normalizeIssueAttributeFilters(raw, attributes),
+    attributes,
+  )
   return {
     attributes,
     filters: mapIssueFilters(filters),

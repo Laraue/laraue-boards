@@ -9,6 +9,10 @@ export type IssuesPageData = {
 }
 
 export type IssuesFilter =
+  | { attributeId: string; from?: string; to?: string; type: 'date' }
+  | { attributeId: string; from?: string; to?: string; type: 'dateTime' }
+  | { attributeId: string; from?: string; to?: string; type: 'decimal' }
+  | { attributeId: string; from?: string; to?: string; type: 'integer' }
   | { attributeId: string; searchString: string; type: 'text' }
   | { attributeId: string; type: 'list'; valueIds: string[] }
 

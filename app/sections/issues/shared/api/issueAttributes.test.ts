@@ -21,6 +21,10 @@ const attributeDtos: components['schemas']['AttributeDto'][] = [
     name: 'Priority',
     type: 'List',
   },
+  { color: COLORS.blue, id: 5, listValues: [], name: 'Estimate', type: 'Integer' },
+  { color: COLORS.green, id: 6, listValues: [], name: 'Cost', type: 'Decimal' },
+  { color: COLORS.red, id: 7, listValues: [], name: 'Due', type: 'Date' },
+  { color: COLORS.purple, id: 8, listValues: [], name: 'Starts', type: 'DateTime' },
 ]
 
 test('maps issue attributes, filters, and values to API models', () => {
@@ -36,15 +40,27 @@ test('maps issue attributes, filters, and values to API models', () => {
       ],
       type: 'list',
     },
+    { color: COLORS.blue, id: '5', name: 'Estimate', type: 'integer' },
+    { color: COLORS.green, id: '6', name: 'Cost', type: 'decimal' },
+    { color: COLORS.red, id: '7', name: 'Due', type: 'date' },
+    { color: COLORS.purple, id: '8', name: 'Starts', type: 'dateTime' },
   ])
   assert.deepEqual(
     mapIssueFilters([
       { attributeId: '1', searchString: 'ABC', type: 'text' },
       { attributeId: '2', type: 'list', valueIds: ['3', '4'] },
+      { attributeId: '5', from: '1', to: '10', type: 'integer' },
+      { attributeId: '6', from: '1.5', to: '9.5', type: 'decimal' },
+      { attributeId: '7', from: '2026-08-01', to: '2026-08-31', type: 'date' },
+      { attributeId: '8', from: '2026-08-22T12:30', type: 'dateTime' },
     ]),
     {
       1: { $type: 'string', searchString: 'ABC' },
       2: { $type: 'enum', ids: ['3', '4'] },
+      5: { $type: 'integer', max: '10', min: '1' },
+      6: { $type: 'decimal', max: '9.5', min: '1.5' },
+      7: { $type: 'date', from: '2026-08-01', to: '2026-08-31' },
+      8: { $type: 'datetime', from: '2026-08-22T12:30', to: undefined },
     },
   )
   assert.deepEqual(mapRawIssueFilters({ 1: ['ABC'], 2: ['3', '4', '99'] }, attributeDtos).filters, {
@@ -55,10 +71,18 @@ test('maps issue attributes, filters, and values to API models', () => {
     mapIssueAttributeValues([
       { attributeId: '1', type: 'text', value: 'ABC' },
       { attributeId: '2', type: 'list', valueId: '3' },
+      { attributeId: '6', type: 'decimal', value: '12.5' },
+      { attributeId: '5', type: 'integer', value: '42' },
+      { attributeId: '7', type: 'date', value: '2026-08-23' },
+      { attributeId: '8', type: 'dateTime', value: '2026-08-22T12:30' },
     ]),
     [
       { $type: 'string', attributeId: '1', value: 'ABC' },
       { $type: 'enum', attributeId: '2', valueId: '3' },
+      { $type: 'decimal', attributeId: '6', value: '12.5' },
+      { $type: 'integer', attributeId: '5', value: '42' },
+      { $type: 'date', attributeId: '7', value: '2026-08-23' },
+      { $type: 'datetime', attributeId: '8', value: '2026-08-22T12:30' },
     ],
   )
 })

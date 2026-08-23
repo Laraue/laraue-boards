@@ -79,28 +79,37 @@
         v-else-if="activeAttribute"
         :key="activeAttribute.id"
         class="filter-editor">
-        <template v-if="activeAttribute.type === 'text'">
-          <label :for="`${idPrefix}-${activeAttribute.id}`">Value</label>
-          <input
-            :id="`${idPrefix}-${activeAttribute.id}`"
-            autofocus
-            placeholder="Enter a value"
-            type="search"
-            :value="modelValue.attributes[activeAttribute.id] ?? ''"
-            @input="updateText(activeAttribute.id, $event)" />
-        </template>
-        <fieldset v-else>
-          <legend>Options</legend>
-          <label
-            v-for="option in activeAttribute.options"
-            :key="option.value">
-            <input
-              :checked="selected(activeAttribute.id).includes(option.value)"
-              type="checkbox"
-              @change="toggle(activeAttribute.id, option.value)" />
-            <span>{{ option.label }}</span>
-          </label>
-        </fieldset>
+        <IssueTextFilter
+          v-if="activeAttribute.type === 'text'"
+          :id="`${idPrefix}-${activeAttribute.id}`"
+          :model-value="String(modelValue.attributes[activeAttribute.id] ?? '')"
+          @update:model-value="updateValue(activeAttribute.id, $event)" />
+        <IssueListFilter
+          v-else-if="activeAttribute.type === 'list'"
+          :model-value="arrayValue(activeAttribute.id)"
+          :options="activeAttribute.options"
+          @update:model-value="updateValue(activeAttribute.id, $event)" />
+        <IssueIntegerFilter
+          v-else-if="activeAttribute.type === 'integer'"
+          :id="`${idPrefix}-${activeAttribute.id}`"
+          :model-value="arrayValue(activeAttribute.id)"
+          @update:model-value="updateValue(activeAttribute.id, $event)" />
+        <IssueDecimalFilter
+          v-else-if="activeAttribute.type === 'decimal'"
+          :id="`${idPrefix}-${activeAttribute.id}`"
+          :model-value="arrayValue(activeAttribute.id)"
+          @update:model-value="updateValue(activeAttribute.id, $event)" />
+        <IssueDateFilter
+          v-else-if="activeAttribute.type === 'date'"
+          :id="`${idPrefix}-${activeAttribute.id}`"
+          :model-value="arrayValue(activeAttribute.id)"
+          @update:model-value="updateValue(activeAttribute.id, $event)" />
+        <IssueDateTimeFilter
+          v-else-if="activeAttribute.type === 'dateTime'"
+          :id="`${idPrefix}-${activeAttribute.id}`"
+          :model-value="arrayValue(activeAttribute.id)"
+          @update:model-value="updateValue(activeAttribute.id, $event)" />
+        <template v-else>{{ assertNever(activeAttribute) }}</template>
         <button
           class="secondary clear-filter"
           :disabled="!valueCount(activeAttribute.id)"
@@ -117,7 +126,14 @@
 import { ListFilter, LoaderCircle } from '@lucide/vue'
 
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
+import { assertNever } from '~/utils/assertNever'
 
+import IssueDateFilter from './components/IssueDateFilter.vue'
+import IssueDateTimeFilter from './components/IssueDateTimeFilter.vue'
+import IssueDecimalFilter from './components/IssueDecimalFilter.vue'
+import IssueIntegerFilter from './components/IssueIntegerFilter.vue'
+import IssueListFilter from './components/IssueListFilter.vue'
+import IssueTextFilter from './components/IssueTextFilter.vue'
 import type { IssueFiltersValue } from './IssueFilters.types'
 
 const props = withDefaults(
@@ -144,34 +160,22 @@ const selectedSpaces = computed(() => props.modelValue.spaceIds ?? [])
 const activeCount = computed(
   () => Object.keys(props.modelValue.attributes).length + selectedSpaces.value.length,
 )
-const selected = (id: string) => {
+const arrayValue = (id: string) => {
   const value = props.modelValue.attributes[id]
   return Array.isArray(value) ? value : []
 }
 const valueCount = (id: string) => {
   const value = props.modelValue.attributes[id]
-  return Array.isArray(value) ? value.length : Number(Boolean(value))
+  return Array.isArray(value) ? value.filter(Boolean).length : Number(Boolean(value))
 }
-const updateText = (id: string, event: Event) => {
-  updateValue(id, (event.target as HTMLInputElement).value)
-}
-
 const updateValue = (id: string, value: string | string[]) => {
   const attributes = { ...props.modelValue.attributes }
-  if (value.length) {
+  if (Array.isArray(value) ? value.some(Boolean) : value.length > 0) {
     attributes[id] = value
   } else {
     delete attributes[id]
   }
   emit('update:modelValue', { ...props.modelValue, attributes })
-}
-
-const toggle = (id: string, option: string) => {
-  const values = selected(id)
-  const nextValues = values.includes(option)
-    ? values.filter((value) => value !== option)
-    : [...values, option]
-  updateValue(id, nextValues)
 }
 
 const clear = (id?: string) => {
@@ -279,14 +283,6 @@ const toggleSpace = (spaceId: string) => {
   min-height: 0;
   min-width: 0;
   padding: var(--space-2);
-}
-
-.filter-editor > label {
-  margin-top: 0;
-}
-
-.filter-editor > input {
-  max-width: none;
 }
 
 .filter-editor fieldset {

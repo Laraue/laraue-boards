@@ -15,6 +15,17 @@ test('maps a text attribute', async () => {
   })
 })
 
+test('maps a date-time attribute', async () => {
+  const { client } = createTestApiClient(() => [
+    { color: '#fff', id: 7, listValues: [], name: 'Starts', type: 'DateTime' },
+  ])
+
+  assert.deepEqual(await createViewAttribute(client)({ attributeId: '7' }), {
+    data: { color: '#fff', data: { type: 'dateTime' }, id: '7', name: 'Starts' },
+    status: 'success',
+  })
+})
+
 test('maps a list attribute', async () => {
   const { client } = createTestApiClient(() => [
     {

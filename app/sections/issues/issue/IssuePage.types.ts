@@ -1,5 +1,8 @@
 import type { IssueAttachmentViewModel } from '~/components/issue-attachments/IssueAttachments.types'
-import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
+import type {
+  IssueAttributeField,
+  IssueAttributeValueInput,
+} from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 
 import type { IssueCommentViewModel } from './components/IssueComments/IssueComments.types'
 
@@ -21,10 +24,7 @@ export type IssuePageSavedIssue = {
 
 export type IssuePageInput = {
   assigneeId: string
-  attributeValues: Array<
-    | { attributeId: string; type: 'list'; valueId: string }
-    | { attributeId: string; type: 'text'; value: string }
-  >
+  attributeValues: IssueAttributeValueInput[]
   boardId: string
   content: string
   files: File[]

@@ -19,6 +19,8 @@ const mount = async (modelValue: Record<string, string> = {}) => {
           options: [{ label: 'High', value: 'high' }],
           type: 'list',
         },
+        { color: '#489c61', id: 'estimate', name: 'Estimate', type: 'integer' },
+        { color: '#8a5fc1', id: 'starts', name: 'Starts', type: 'dateTime' },
       ],
       modelValue,
     },
@@ -52,4 +54,11 @@ it('shows the current list value', async () => {
   await mount({ priority: 'high' })
 
   await expect.element(page.getByLabelText('Priority')).toHaveValue('high')
+})
+
+it('uses native controls for integer and date-time values', async () => {
+  await mount()
+
+  await expect.element(page.getByLabelText('Estimate')).toHaveAttribute('type', 'number')
+  await expect.element(page.getByLabelText('Starts')).toHaveAttribute('type', 'datetime-local')
 })

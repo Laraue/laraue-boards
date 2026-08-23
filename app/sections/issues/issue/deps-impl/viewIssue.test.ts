@@ -49,6 +49,14 @@ test('maps issue detail and comments', async () => {
               type: 'List',
               value: '4',
             },
+            {
+              color: '#555',
+              id: 6,
+              listValues: [],
+              name: 'Starts',
+              type: 'DateTime',
+              value: '2026-08-22T12:30:00Z',
+            },
           ],
           canEdit: true,
           content: null,
@@ -79,6 +87,13 @@ test('maps issue detail and comments', async () => {
       options: [{ label: 'High', value: '4' }],
       type: 'list',
       value: '4',
+    },
+    {
+      color: '#555',
+      id: '6',
+      name: 'Starts',
+      type: 'dateTime',
+      value: '2026-08-22T12:30:00',
     },
   ])
   assert.deepEqual(result.data.attachments, [
