@@ -25,6 +25,7 @@ import { useAppLayoutTour } from '~/sections/common/app-layout/useAppLayoutTour'
 const props = defineProps<{
   deps: AppLayoutDeps
   onLoggedOut: () => Promise<void> | void
+  onOrganizationSwitched: () => void
   organizationKey: string
 }>()
 const query = await useAsyncData(
@@ -72,7 +73,7 @@ onNuxtReady(async () => {
 
   await query.refresh()
   if (query.data.value?.status === 'success') {
-    window.location.reload()
+    props.onOrganizationSwitched()
   }
 })
 

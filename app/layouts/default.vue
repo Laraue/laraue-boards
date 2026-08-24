@@ -2,6 +2,7 @@
   <AppLayout
     :deps="deps"
     :on-logged-out="onLoggedOut"
+    :on-organization-switched="onOrganizationSwitched"
     :organization-key="organizationKey">
     <slot />
   </AppLayout>
@@ -14,6 +15,7 @@ import { createAppLayoutDeps } from '~/sections/common/app-layout/deps-impl'
 const { organizationKey } = useOrganizationRoutes()
 const client = useApiClient()
 const deps = createAppLayoutDeps(client)
+const onOrganizationSwitched = () => globalThis.location.reload()
 const onLoggedOut = async (): Promise<void> => {
   clearNuxtData()
   await navigateTo('/')
