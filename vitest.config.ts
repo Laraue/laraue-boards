@@ -34,6 +34,11 @@ export default defineConfig({
           environment: 'nuxt',
           include: ['app/**/*.browser.test.ts'],
           name: 'browser',
+          // Isolated interactions occasionally stall for 10+s under CI's cgroup CPU
+          // quota (CFS bandwidth throttling can inject latency far beyond the
+          // nominal quota fraction) even though the app is otherwise correct;
+          // retrying is far cheaper than chasing an infra-level scheduling stall.
+          retry: process.env.CI ? 2 : 0,
           sequence: { groupOrder: 0 },
           setupFiles: ['./vitest.setup.ts'],
         },
