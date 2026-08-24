@@ -26,6 +26,7 @@ const props = defineProps<{
   deps: AppLayoutDeps
   onLoggedOut: () => Promise<void> | void
   onOrganizationSwitched: () => void
+  onViewError: (code: number) => Promise<void> | void
   organizationKey: string
 }>()
 const query = await useAsyncData(
@@ -42,15 +43,13 @@ const errorCode = computed(() =>
 )
 const switchingOrganization = computed(() => errorCode.value === 409)
 
-const redirectForError = (code: number) => (code === 401 ? '/' : '/organizations')
-
 if (errorCode.value !== undefined && !switchingOrganization.value) {
-  await navigateTo(redirectForError(errorCode.value))
+  await props.onViewError(errorCode.value)
 }
 
 watch(errorCode, (code) => {
   if (code !== undefined && code !== 409) {
-    void navigateTo(redirectForError(code))
+    void props.onViewError(code)
   }
 })
 

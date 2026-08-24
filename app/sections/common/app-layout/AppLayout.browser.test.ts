@@ -46,6 +46,7 @@ const mount = async (deps: AppLayoutDeps, onLoggedOut = vi.fn<() => void>()) => 
       deps,
       onLoggedOut,
       onOrganizationSwitched: vi.fn<() => void>(),
+      onViewError: vi.fn<(code: number) => void>(),
       organizationKey: 'acme-ab12',
     },
     route: '/organizations/acme-ab12/issues',
