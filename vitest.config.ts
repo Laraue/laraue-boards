@@ -12,6 +12,22 @@ export default defineConfig({
     },
   },
   test: {
+    // Known vitest/Chromium issue (github.com/vitest-dev/vitest/issues/9437): Chromium's
+    // disk cache accumulates per test file across a run and is never cleaned up between
+    // files, eventually killing the browser connection once disk space runs low — the
+    // failure always lands well into a run (never near the start), not randomly. The
+    // --disk-cache-size launch arg below addresses the root cause; this is a defensive
+    // backstop in case it still slips through (checks the whole cause chain, since the
+    // matching text is nested under error.cause, not the top-level error.message).
+    onUnhandledError: (error) => {
+      const messages: string[] = []
+      for (let current: unknown = error; current instanceof Error; current = current.cause) {
+        messages.push(current.message)
+      }
+      return messages.some((message) => message.includes('Browser connection was closed'))
+        ? false
+        : undefined
+    },
     projects: [
       defineVitestProject({
         root: process.cwd(),
@@ -22,6 +38,12 @@ export default defineConfig({
             instances: [
               {
                 browser: 'chromium',
+                // Cap Chromium's on-disk cache so it doesn't accumulate across the
+                // ~120 test files in this run and exhaust the container's disk
+                // (see the onUnhandledError comment above for the failure this causes).
+                launch: process.env.CI
+                  ? { args: ['--disk-cache-size=1', '--media-cache-size=1'] }
+                  : {},
                 viewport: {
                   height: 720,
                   width: 1280,
