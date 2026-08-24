@@ -5,14 +5,31 @@ import { playwright } from '@vitest/browser-playwright'
 import { defaultExclude, defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '#infrastructure': fileURLToPath(new URL('./infrastructure', import.meta.url)),
-      '~': fileURLToPath(new URL('./app', import.meta.url)),
-    },
-  },
   test: {
     projects: [
+      {
+        resolve: {
+          alias: {
+            '#infrastructure': fileURLToPath(new URL('./infrastructure', import.meta.url)),
+            '~': fileURLToPath(new URL('./app', import.meta.url)),
+          },
+        },
+        test: {
+          exclude: [...defaultExclude, '**/*.browser.test.ts', '**/*.nuxt.test.ts'],
+          include: ['app/**/*.test.ts', 'infrastructure/**/*.test.ts'],
+          name: 'node',
+          sequence: { groupOrder: 0 },
+        },
+      },
+      defineVitestProject({
+        root: process.cwd(),
+        test: {
+          include: ['app/**/*.nuxt.test.ts'],
+          name: 'nuxt',
+          sequence: { groupOrder: 1 },
+          setupFiles: ['./vitest.setup.ts'],
+        },
+      }),
       defineVitestProject({
         root: process.cwd(),
         test: {
@@ -28,24 +45,17 @@ export default defineConfig({
                 },
               },
             ],
-            provider: playwright(),
+            provider: playwright({
+              contextOptions: { reducedMotion: 'reduce' },
+            }),
             screenshotFailures: false,
           },
           environment: 'nuxt',
+          fileParallelism: false,
           include: ['app/**/*.browser.test.ts'],
+          isolate: false,
           name: 'browser',
-          sequence: { groupOrder: 0 },
-          setupFiles: ['./vitest.setup.ts'],
-        },
-      }),
-      defineVitestProject({
-        root: process.cwd(),
-        test: {
-          environment: 'nuxt',
-          exclude: [...defaultExclude, '**/*.browser.test.ts'],
-          include: ['app/**/*.test.ts', 'infrastructure/**/*.test.ts'],
-          name: 'unit',
-          sequence: { groupOrder: 1 },
+          sequence: { groupOrder: 2 },
           setupFiles: ['./vitest.setup.ts'],
         },
       }),

@@ -250,7 +250,7 @@ const props = defineProps<{
   lazy?: boolean
   onBack: () => Promise<void> | void
   onDeleted?: (issueKey: string) => Promise<void> | void
-  onDirtyChange?: (dirty: boolean) => void
+  onDirtyChange: (dirty: boolean) => void
   onSaved?: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
 
@@ -350,9 +350,14 @@ const syncState = (issue: IssuePageViewModel) => {
   })
 }
 
+const setDirty = (value: boolean) => {
+  state.dirty = value
+  props.onDirtyChange(value)
+}
+
 const handleSaved = async (issue: IssuePageSavedIssue) => {
   const keyChanged = issue.issueKey !== props.issueKey
-  state.dirty = false
+  setDirty(false)
   await props.onSaved?.(issue)
   if (keyChanged) {
     return
@@ -431,15 +436,13 @@ const copyIssueLink = async () => {
 }
 
 const leaveAfterIssueChanged = async () => {
-  state.dirty = false
+  setDirty(false)
   await leave()
 }
 
 const leave = async () => {
   await props.onBack()
 }
-
-useUnsavedChangesWarning(toRef(state, 'dirty'))
 
 watch(data, (issue) => issue && syncState(issue), { immediate: true })
 
@@ -451,14 +454,7 @@ watch(
   },
 )
 
-watch(
-  dirty,
-  (value) => {
-    state.dirty = value
-    props.onDirtyChange?.(value)
-  },
-  { immediate: true },
-)
+watch(dirty, setDirty, { immediate: true })
 </script>
 
 <style scoped>

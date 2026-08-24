@@ -99,6 +99,7 @@
           :issue-key="issueKey"
           :on-close="closeIssueDialog"
           :on-deleted="handleIssueDeleted"
+          :on-dirty-change="onIssueDirtyChange"
           :on-saved="handleIssueSaved" />
       </section>
     </template>
@@ -169,6 +170,7 @@ const props = defineProps<{
   issueKey: null | string
   onBack: () => void
   onCreateIssue: (statusId: string) => Promise<void> | void
+  onIssueDirtyChange: (dirty: boolean) => void
   onIssueMoved: (issue: IssuePageSavedIssue) => Promise<void> | void
   onPushQuery: (query: LocationQueryRaw) => Promise<void> | void
   onReplaceQuery: (query: LocationQueryRaw) => Promise<void> | void

@@ -25,6 +25,8 @@ import { useAppLayoutTour } from '~/sections/common/app-layout/useAppLayoutTour'
 const props = defineProps<{
   deps: AppLayoutDeps
   onLoggedOut: () => Promise<void> | void
+  onOrganizationSwitched: () => void
+  onViewError: (code: number) => Promise<void> | void
   organizationKey: string
 }>()
 const query = await useAsyncData(
@@ -41,19 +43,25 @@ const errorCode = computed(() =>
 )
 const switchingOrganization = computed(() => errorCode.value === 409)
 
-const redirectForError = (code: number) => (code === 401 ? '/' : '/organizations')
-
 if (errorCode.value !== undefined && !switchingOrganization.value) {
-  await navigateTo(redirectForError(errorCode.value))
+  await props.onViewError(errorCode.value)
 }
 
 watch(errorCode, (code) => {
   if (code !== undefined && code !== 409) {
-    void navigateTo(redirectForError(code))
+    void props.onViewError(code)
   }
 })
 
+/** Nuxt runs the ready hook even after this layout is gone; a refresh from a dead instance
+ * writes stale data into the shared `appLayoutDataKey` cache that the next one reads. */
+let unmounted = false
+onUnmounted(() => (unmounted = true))
+
 onNuxtReady(async () => {
+  if (unmounted) {
+    return
+  }
   if (!query.data.value) {
     await query.refresh()
     return
@@ -64,7 +72,7 @@ onNuxtReady(async () => {
 
   await query.refresh()
   if (query.data.value?.status === 'success') {
-    window.location.reload()
+    props.onOrganizationSwitched()
   }
 })
 

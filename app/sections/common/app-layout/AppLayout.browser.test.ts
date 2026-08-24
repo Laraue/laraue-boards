@@ -42,7 +42,13 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 const mount = async (deps: AppLayoutDeps, onLoggedOut = vi.fn<() => void>()) => {
   currentWrapper = await mountSuspended(AppLayout, {
     attachTo: document.body,
-    props: { deps, onLoggedOut, organizationKey: 'acme-ab12' },
+    props: {
+      deps,
+      onLoggedOut,
+      onOrganizationSwitched: vi.fn<() => void>(),
+      onViewError: vi.fn<(code: number) => void>(),
+      organizationKey: 'acme-ab12',
+    },
     route: '/organizations/acme-ab12/issues',
     slots: { default: '<p>Issues page</p>' },
   })

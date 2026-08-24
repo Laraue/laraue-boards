@@ -1,11 +1,13 @@
 import type { Ref } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 
-export const useUnsavedChangesWarning = (dirty: Readonly<Ref<boolean>>) => {
-  const confirmUnsavedChanges = () =>
-    !dirty.value || confirm('You have unsaved changes. Leave this page?')
+export const confirmUnsavedChanges = (dirty: boolean) =>
+  !dirty || confirm('You have unsaved changes. Leave this page?')
 
-  onBeforeRouteLeave(confirmUnsavedChanges)
+export const useUnsavedChangesWarning = (dirty: Readonly<Ref<boolean>>) => {
+  const confirmLeaving = () => confirmUnsavedChanges(dirty.value)
+
+  onBeforeRouteLeave(confirmLeaving)
   onMounted(() => window.addEventListener('beforeunload', warnBeforeUnload))
   onBeforeUnmount(() => window.removeEventListener('beforeunload', warnBeforeUnload))
 
@@ -15,5 +17,5 @@ export const useUnsavedChangesWarning = (dirty: Readonly<Ref<boolean>>) => {
     }
   }
 
-  return { confirmUnsavedChanges }
+  return { confirmUnsavedChanges: confirmLeaving }
 }
