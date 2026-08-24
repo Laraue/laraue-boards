@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-noble
+      # Default 64MB /dev/shm crashes headless chromium mid-run.
+      options: --shm-size=2g
 
     steps:
       - uses: actions/checkout@v5
