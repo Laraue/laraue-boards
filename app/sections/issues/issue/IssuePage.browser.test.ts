@@ -90,10 +90,11 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 const mount = async (
   deps: IssuePageDeps,
   onBack: () => Promise<void> | void = vi.fn<() => void>(),
+  onDirtyChange = vi.fn<(dirty: boolean) => void>(),
 ) => {
   currentWrapper = await mountSuspended(IssuePage, {
     attachTo: document.body,
-    props: { deps, issueKey: 'ISS-1', onBack },
+    props: { deps, issueKey: 'ISS-1', onBack, onDirtyChange },
     route: '/organizations/acme-ab12/issues/ISS-1',
   })
   return currentWrapper
@@ -268,6 +269,7 @@ it('leaves the page when back is pressed', async () => {
 
 it('stays on the page after the issue is saved', async () => {
   const onBack = vi.fn<() => void>()
+  const onDirtyChange = vi.fn<(dirty: boolean) => void>()
   const view = vi
     .fn<IssuePageDeps['view']>()
     .mockResolvedValueOnce({ data: issue, status: 'success' })
@@ -291,13 +293,16 @@ it('stays on the page after the issue is saved', async () => {
       view,
     }),
     onBack,
+    onDirtyChange,
   )
 
   await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Document the reproduction steps')
+  await vi.waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true))
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   expect(onBack).not.toHaveBeenCalled()
+  expect(onDirtyChange).toHaveBeenLastCalledWith(false)
   await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
 })
 

@@ -49,7 +49,7 @@ const props = defineProps<{
   issueKey: string
   onClose: () => void
   onDeleted: (issueKey: string) => void
-  onDirtyChange?: (dirty: boolean) => void
+  onDirtyChange: (dirty: boolean) => void
   onSaved: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
 
@@ -65,7 +65,7 @@ const showDialog = () => {
 }
 const setDirty = (dirty: boolean) => {
   state.dirty = dirty
-  props.onDirtyChange?.(dirty)
+  props.onDirtyChange(dirty)
 }
 const handleSaved = async (issue: IssuePageSavedIssue) => {
   setDirty(false)
@@ -84,7 +84,7 @@ const handleCancel = (event: Event) => {
 }
 
 onMounted(showDialog)
-onBeforeUnmount(() => props.onDirtyChange?.(false))
+onBeforeUnmount(() => props.onDirtyChange(false))
 watch(
   () => props.issueKey,
   () => setDirty(false),
