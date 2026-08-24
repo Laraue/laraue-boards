@@ -16,7 +16,13 @@ test('loads the initial issues page data', async () => {
   })
 
   assert.deepEqual(
-    await createViewIssues(client)({ attributeQuery: {}, page: 1, search: '', spaceIds: [] }),
+    await createViewIssues(client)({
+      attributeQuery: {},
+      epicStatuses: [],
+      page: 1,
+      search: '',
+      spaceIds: [],
+    }),
     {
       data: {
         attributes: [],

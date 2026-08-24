@@ -14,6 +14,7 @@ const pageData: SpacePageData = {
       issueCount: 2,
       kind: 'backlog',
       name: 'Backlog',
+      status: 'New',
       statuses: [],
     },
     {
@@ -22,6 +23,7 @@ const pageData: SpacePageData = {
       issueCount: 3,
       kind: 'board',
       name: 'Roadmap',
+      status: 'Active',
       statuses: [{ color: '#333', count: 3, name: 'To do' }],
     },
   ],

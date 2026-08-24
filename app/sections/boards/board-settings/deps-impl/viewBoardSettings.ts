@@ -21,6 +21,7 @@ export const createViewBoardSettings =
               name: status.name,
             })),
           name: board.name,
+          status: board.status,
         },
       request: () =>
         client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal }),

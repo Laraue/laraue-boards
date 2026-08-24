@@ -15,6 +15,7 @@ const board: BoardSettingsPageData = {
     { color: '#d65f63', id: '2', name: 'Done' },
   ],
   name: 'Roadmap',
+  status: 'New',
 }
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
@@ -59,6 +60,8 @@ it('saves the board name edited by the user', async () => {
     columns: board.columns,
     name: 'Planning',
     originalColumns: board.columns,
+    originalStatus: 'New',
+    status: 'New',
   })
   expect(onSaved).toHaveBeenCalledOnce()
 })

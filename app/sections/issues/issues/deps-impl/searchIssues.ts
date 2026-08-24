@@ -8,7 +8,7 @@ import { mapIssue } from './mapIssue'
 
 export const createSearchIssues =
   (client: ApiClient): SearchIssues =>
-  ({ filters, page, search, spaceIds }) => {
+  ({ epicStatuses, filters, page, search, spaceIds }) => {
     const mappedFilters = mapIssueFilters(filters)
 
     return executeQuery({
@@ -19,6 +19,7 @@ export const createSearchIssues =
       request: () =>
         client.POST('/api/issues/search', {
           body: {
+            epicStatuses: epicStatuses.length ? epicStatuses : undefined,
             filters: mappedFilters,
             page: page - 1,
             perPage: 10,

@@ -1,9 +1,14 @@
-import type { BoardSettingsColumnDraft, BoardSettingsPageData } from '../BoardSettingsPage.types'
+import type {
+  BoardSettingsColumnDraft,
+  BoardSettingsPageData,
+  BoardSettingsStatus,
+} from '../BoardSettingsPage.types'
 
 export type BoardSettingsFormInput = {
   color: string
   columns: BoardSettingsColumnDraft[]
   name: string
+  status: BoardSettingsStatus
 }
 
 export type BoardSettingsFormColumnDraft = BoardSettingsColumnDraft & { key: string }

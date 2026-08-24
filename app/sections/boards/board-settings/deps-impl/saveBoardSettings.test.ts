@@ -21,6 +21,8 @@ test('saves board and column changes', async () => {
       { color: '#000', id: '2', name: 'Todo' },
       { color: '#333', id: '3', name: 'Later' },
     ],
+    originalStatus: 'New',
+    status: 'Done',
   })
 
   assert.deepEqual(result, { data: true, status: 'success' })
@@ -28,11 +30,12 @@ test('saves board and column changes', async () => {
     requests.map((request) => [request.method, new URL(request.url).pathname]),
     [
       ['PUT', '/api/epics/7'],
+      ['POST', '/api/epics/7/status'],
       ['POST', '/api/statuses'],
       ['PUT', '/api/statuses/2'],
       ['DELETE', '/api/statuses/3'],
       ['POST', '/api/epics/7/reorder-statuses'],
     ],
   )
-  assert.deepEqual(await requests[4]!.json(), { 2: 1, 9: 2 })
+  assert.deepEqual(await requests[5]!.json(), { 2: 1, 9: 2 })
 })

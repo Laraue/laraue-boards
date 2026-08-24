@@ -13,6 +13,18 @@ test('maps the space and its board summaries', async () => {
     if (path === '/api/spaces/WEB') {
       return { canCreateEpics: true, canDelete: true, canUpdate: true }
     }
+    if (path === '/api/spaces/WEB/epics') {
+      return [
+        {
+          color: null,
+          id: 10,
+          isDefault: true,
+          name: 'Default',
+          status: 'New',
+          touchedAt: '2026-01-01T00:00:00Z',
+        },
+      ]
+    }
     return [
       {
         color: null,

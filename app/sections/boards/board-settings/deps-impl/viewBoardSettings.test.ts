@@ -10,6 +10,7 @@ test('maps board settings and sorts columns', async () => {
     canUpdate: true,
     color: '#111',
     name: 'Roadmap',
+    status: 'Active',
     statuses: [
       { color: '#222', id: 2, name: 'Done', sortOrder: 2 },
       { color: '#333', id: 1, name: 'To do', sortOrder: 1 },
@@ -26,6 +27,7 @@ test('maps board settings and sorts columns', async () => {
         { color: '#222', id: '2', name: 'Done' },
       ],
       name: 'Roadmap',
+      status: 'Active',
     },
     status: 'success',
   })

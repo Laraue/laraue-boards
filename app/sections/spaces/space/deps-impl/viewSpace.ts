@@ -14,6 +14,7 @@ const mapPage = (
   space: Schemas['SpaceListDto'],
   details: Schemas['SpaceDetailsDto'],
   boards: Schemas['EpicSummary'][],
+  boardStatuses: Schemas['EpicListDto'][],
 ): SpacePageData => ({
   boards: boards.map((board) => ({
     color: board.color ?? (board.isDefault ? space.color : COLORS.gray),
@@ -21,6 +22,7 @@ const mapPage = (
     issueCount: board.columns.reduce((sum, column) => sum + Number(column.count), 0),
     kind: board.isDefault ? 'backlog' : 'board',
     name: board.isDefault ? 'Backlog' : board.name,
+    status: boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
     statuses: board.columns.map((column) => ({
       color: column.color ?? COLORS.gray,
       count: Number(column.count),
@@ -56,17 +58,27 @@ export const createViewSpace =
           params: { query: { SpaceKey: spaceKey } },
           signal,
         }),
+        client.GET('/api/spaces/{key}/epics', {
+          params: { path: { key: spaceKey } },
+          signal,
+        }),
       ]),
     )
     if (!responses) {
       return { code: 0, status: 'error' }
     }
-    const [details, boards] = responses
+    const [details, boards, boardStatuses] = responses
     if ('error' in details) {
       return { code: details.response.status, status: 'error' }
     }
     if ('error' in boards) {
       return { code: boards.response.status, status: 'error' }
     }
-    return { data: mapPage(spaceKey, space, details.data, boards.data), status: 'success' }
+    if ('error' in boardStatuses) {
+      return { code: boardStatuses.response.status, status: 'error' }
+    }
+    return {
+      data: mapPage(spaceKey, space, details.data, boards.data, boardStatuses.data),
+      status: 'success',
+    }
   }

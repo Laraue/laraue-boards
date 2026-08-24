@@ -1,6 +1,9 @@
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 import type { IssueListItem } from '~/components/issue-list/IssueList.types'
 
+export const issueBoardStatuses = ['New', 'Active', 'Done'] as const
+export type IssueBoardStatus = (typeof issueBoardStatuses)[number]
+
 export type IssuesPageData = {
   attributes: IssueAttributeField[]
   hasNextPage: boolean

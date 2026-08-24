@@ -59,6 +59,19 @@ export const createSaveBoardSettings =
       return boardFailure
     }
 
+    if (input.status !== input.originalStatus) {
+      const status = await tryRequest(() =>
+        client.POST('/api/epics/{id}/status', {
+          body: { id: input.boardId, status: input.status },
+          params: { path: { id: Number(input.boardId) } },
+        }),
+      )
+      const statusFailure = toSaveFailure(status)
+      if (statusFailure) {
+        return statusFailure
+      }
+    }
+
     const changes = getColumnChanges(input.originalColumns, input.columns)
     const createdIds: string[] = []
     for (const column of changes.created) {

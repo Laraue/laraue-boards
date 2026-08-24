@@ -68,6 +68,11 @@
               <div class="summary-title">
                 <BoardIcon :style="{ color: board.color }" />
                 <strong>{{ board.name }}</strong>
+                <span
+                  class="board-status"
+                  :class="`board-status--${board.status.toLowerCase()}`">
+                  {{ statusLabel(board.status) }}
+                </span>
                 <span class="muted issue-count">{{ board.issueCount }} issues</span>
               </div>
               <div class="meter">
@@ -122,6 +127,9 @@ const boards = computed(() => data.value?.boards ?? [])
 const backlog = computed(() => boards.value.find((board) => board.kind === 'backlog'))
 
 const regularBoards = computed(() => boards.value.filter((board) => board.kind === 'board'))
+
+const statusLabel = (status: 'Active' | 'Done' | 'New') =>
+  ({ Active: 'In progress', Done: 'Done', New: 'New' })[status]
 
 useHead({
   title: computed(() => data.value?.name ?? 'Space'),
@@ -199,6 +207,25 @@ useHead({
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.board-status {
+  --board-status-color: var(--color-chart-neutral);
+
+  background: color-mix(in srgb, var(--board-status-color) 14%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--board-status-color);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+}
+
+.board-status--active {
+  --board-status-color: var(--color-chart-2);
+}
+
+.board-status--done {
+  --board-status-color: var(--color-chart-done);
 }
 
 .meter {

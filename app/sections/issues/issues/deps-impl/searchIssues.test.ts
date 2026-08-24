@@ -37,7 +37,13 @@ test('maps searched issues', async () => {
   const { client } = createTestApiClient(response)
 
   assert.deepEqual(
-    await createSearchIssues(client)({ filters: [], page: 1, search: 'search', spaceIds: [] }),
+    await createSearchIssues(client)({
+      epicStatuses: [],
+      filters: [],
+      page: 1,
+      search: 'search',
+      spaceIds: [],
+    }),
     {
       data: {
         hasNextPage: true,
@@ -81,6 +87,7 @@ test('maps filters, paging and search to the request body', async () => {
   const { client, requests } = createTestApiClient(response)
 
   await createSearchIssues(client)({
+    epicStatuses: ['New', 'Active'],
     filters: [
       { attributeId: '3', searchString: 'urgent', type: 'text' },
       { attributeId: '4', type: 'list', valueIds: ['9'] },
@@ -91,6 +98,7 @@ test('maps filters, paging and search to the request body', async () => {
   })
 
   assert.deepEqual(await requests[0]!.json(), {
+    epicStatuses: ['New', 'Active'],
     filters: {
       '3': { $type: 'string', searchString: 'urgent' },
       '4': { $type: 'enum', ids: ['9'] },
@@ -106,7 +114,13 @@ test('maps filters, paging and search to the request body', async () => {
 test('omits an empty search and space filter', async () => {
   const { client, requests } = createTestApiClient(response)
 
-  await createSearchIssues(client)({ filters: [], page: 1, search: '', spaceIds: [] })
+  await createSearchIssues(client)({
+    epicStatuses: [],
+    filters: [],
+    page: 1,
+    search: '',
+    spaceIds: [],
+  })
 
   assert.deepEqual(await requests[0]!.json(), {
     filters: {},

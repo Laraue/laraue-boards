@@ -4,6 +4,7 @@ import type {
   BoardSettingsColumn,
   BoardSettingsColumnDraft,
   BoardSettingsPageData,
+  BoardSettingsStatus,
 } from './BoardSettingsPage.types'
 
 export type RemoveBoard = (input: { boardId: string }) => Promise<ActionResult<true>>
@@ -14,6 +15,8 @@ export type SaveBoardSettings = (input: {
   columns: BoardSettingsColumnDraft[]
   name: string
   originalColumns: BoardSettingsColumn[]
+  originalStatus: BoardSettingsStatus
+  status: BoardSettingsStatus
 }) => Promise<ActionResult<true>>
 
 export type ViewBoardSettings = (input: {

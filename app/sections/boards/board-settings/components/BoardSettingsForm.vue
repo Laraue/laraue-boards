@@ -10,6 +10,18 @@
     <AppColorPicker
       v-model="state.color"
       :disabled="!viewModel.canUpdate" />
+    <label for="board-settings-status">Board status</label>
+    <select
+      id="board-settings-status"
+      v-model="state.status"
+      :disabled="!viewModel.canUpdate">
+      <option
+        v-for="option in statusOptions"
+        :key="option.value"
+        :value="option.value">
+        {{ option.label }}
+      </option>
+    </select>
     <label>Columns</label>
     <DragDropProvider
       :plugins="defaultPreset.plugins"
@@ -82,6 +94,14 @@ import type {
 } from './BoardSettingsForm.types'
 
 const props = defineProps<BoardSettingsFormProps>()
+const statusOptions = [
+  { label: 'New', value: 'New' },
+  { label: 'In progress', value: 'Active' },
+  { label: 'Done', value: 'Done' },
+] as const satisfies ReadonlyArray<{
+  label: string
+  value: BoardSettingsPageData['status']
+}>
 const toDraftColumns = (columns: BoardSettingsPageData['columns']) =>
   columns.map((column) => ({
     ...column,
@@ -93,11 +113,13 @@ const state = reactive<{
   columns: BoardSettingsFormColumnDraft[]
   name: string
   newColumnId: number
+  status: BoardSettingsPageData['status']
 }>({
   color: props.viewModel.color,
   columns: toDraftColumns(props.viewModel.columns),
   name: props.viewModel.name,
   newColumnId: 0,
+  status: props.viewModel.status,
 })
 const sensors = [
   PointerSensor.configure({
@@ -136,6 +158,7 @@ const submit = () => {
     color: state.color,
     columns: state.columns.map(({ color, id, name }) => ({ color, id, name })),
     name: state.name,
+    status: state.status,
   })
 }
 
@@ -145,6 +168,7 @@ watch(
     state.name = value.name
     state.color = value.color
     state.columns = toDraftColumns(value.columns)
+    state.status = value.status
   },
 )
 </script>
