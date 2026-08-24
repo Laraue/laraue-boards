@@ -49,7 +49,6 @@ export default defineConfig({
             screenshotFailures: false,
           },
           environment: 'nuxt',
-          fileParallelism: !process.env.CI,
           include: ['app/**/*.browser.test.ts'],
           name: 'browser',
           setupFiles: ['./vitest.setup.ts'],
