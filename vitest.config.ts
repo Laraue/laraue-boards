@@ -4,7 +4,7 @@ import { defineVitestProject } from '@nuxt/test-utils/config'
 import { playwright } from '@vitest/browser-playwright'
 import { defaultExclude, defineConfig } from 'vitest/config'
 
-const MAX_WORKERS = process.env.CI ? 2 : undefined
+const MAX_WORKERS = process.env.CI ? 1 : undefined
 
 export default defineConfig({
   test: {
