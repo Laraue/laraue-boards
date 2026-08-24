@@ -1,7 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeAction } from '#infrastructure/api/executeAction'
 
-import type { LeaveOrganization } from '../OrganizationSettingsPage.deps'
+import type { LeaveOrganization } from '../OrganizationPickerPage.deps'
 
 export const createLeaveOrganization =
   (client: ApiClient): LeaveOrganization =>

@@ -1,6 +1,6 @@
 <template>
   <AppPopover
-    v-if="attributes.length || spaces?.length"
+    v-if="attributes.length || spaces.length || epicStatuses.length"
     class="issue-filters">
     <template #trigger="{ open, toggle: togglePopover }">
       <button
@@ -21,13 +21,23 @@
     <div class="issue-filters-popover">
       <nav aria-label="Issue filters">
         <button
-          v-if="spaces?.length"
+          v-if="spaces.length"
           :class="{ active: activeFilterId === SPACE_FILTER }"
           type="button"
           @click="activeFilterId = SPACE_FILTER">
           <span class="filter-label">Space</span>
           <small v-if="selectedSpaces.length">
             {{ selectedSpaces.length }}
+          </small>
+        </button>
+        <button
+          v-if="epicStatuses.length"
+          :class="{ active: activeFilterId === EPIC_STATUS_FILTER }"
+          type="button"
+          @click="activeFilterId = EPIC_STATUS_FILTER">
+          <span class="filter-label">Board status</span>
+          <small v-if="selectedEpicStatuses.length">
+            {{ selectedEpicStatuses.length }}
           </small>
         </button>
         <button
@@ -52,6 +62,29 @@
           Clear all
         </button>
       </nav>
+      <section
+        v-if="activeFilterId === EPIC_STATUS_FILTER"
+        class="filter-editor">
+        <fieldset>
+          <legend>Board status</legend>
+          <label
+            v-for="option in epicStatuses"
+            :key="option.value">
+            <input
+              :checked="selectedEpicStatuses.includes(option.value)"
+              type="checkbox"
+              @change="toggleEpicStatus(option.value)" />
+            <span>{{ option.label }}</span>
+          </label>
+        </fieldset>
+        <button
+          class="secondary clear-filter"
+          :disabled="!selectedEpicStatuses.length"
+          type="button"
+          @click="setEpicStatuses([])">
+          Clear
+        </button>
+      </section>
       <section
         v-if="activeFilterId === SPACE_FILTER"
         class="filter-editor">
@@ -134,16 +167,17 @@ import IssueDecimalFilter from './components/IssueDecimalFilter.vue'
 import IssueIntegerFilter from './components/IssueIntegerFilter.vue'
 import IssueListFilter from './components/IssueListFilter.vue'
 import IssueTextFilter from './components/IssueTextFilter.vue'
-import type { IssueFiltersValue } from './IssueFilters.types'
+import type { IssueFilterBoardStatus, IssueFiltersValue } from './IssueFilters.types'
 
 const props = withDefaults(
   defineProps<{
     attributes: IssueAttributeField[]
+    epicStatuses?: Array<{ label: string; value: IssueFilterBoardStatus }>
     loading: boolean
     modelValue: IssueFiltersValue
     spaces?: Array<{ label: string; value: string }>
   }>(),
-  { spaces: () => [] },
+  { epicStatuses: () => [], spaces: () => [] },
 )
 
 const emit = defineEmits<{
@@ -152,13 +186,24 @@ const emit = defineEmits<{
 
 const idPrefix = useId()
 const SPACE_FILTER = '__space__'
-const activeFilterId = ref(props.spaces.length ? SPACE_FILTER : (props.attributes[0]?.id ?? ''))
+const EPIC_STATUS_FILTER = '__epic_status__'
+const activeFilterId = ref(
+  props.epicStatuses.length
+    ? EPIC_STATUS_FILTER
+    : props.spaces.length
+      ? SPACE_FILTER
+      : (props.attributes[0]?.id ?? ''),
+)
 const activeAttribute = computed(() =>
   props.attributes.find((attribute) => attribute.id === activeFilterId.value),
 )
 const selectedSpaces = computed(() => props.modelValue.spaceIds ?? [])
+const selectedEpicStatuses = computed(() => props.modelValue.epicStatuses ?? [])
 const activeCount = computed(
-  () => Object.keys(props.modelValue.attributes).length + selectedSpaces.value.length,
+  () =>
+    Object.keys(props.modelValue.attributes).length +
+    selectedSpaces.value.length +
+    selectedEpicStatuses.value.length,
 )
 const arrayValue = (id: string) => {
   const value = props.modelValue.attributes[id]
@@ -180,7 +225,12 @@ const updateValue = (id: string, value: string | string[]) => {
 
 const clear = (id?: string) => {
   if (!id) {
-    emit('update:modelValue', { attributes: {}, spaceIds: [] })
+    emit(
+      'update:modelValue',
+      props.epicStatuses.length
+        ? { attributes: {}, epicStatuses: [], spaceIds: [] }
+        : { attributes: {}, spaceIds: [] },
+    )
     return
   }
   updateValue(id, '')
@@ -188,9 +238,21 @@ const clear = (id?: string) => {
 
 const setSpaces = (spaceIds: string[]) => {
   emit('update:modelValue', {
-    attributes: props.modelValue.attributes,
+    ...props.modelValue,
     spaceIds,
   })
+}
+
+const setEpicStatuses = (epicStatuses: IssueFilterBoardStatus[]) => {
+  emit('update:modelValue', { ...props.modelValue, epicStatuses })
+}
+
+const toggleEpicStatus = (status: IssueFilterBoardStatus) => {
+  setEpicStatuses(
+    selectedEpicStatuses.value.includes(status)
+      ? selectedEpicStatuses.value.filter((value) => value !== status)
+      : [...selectedEpicStatuses.value, status],
+  )
 }
 
 const toggleSpace = (spaceId: string) => {

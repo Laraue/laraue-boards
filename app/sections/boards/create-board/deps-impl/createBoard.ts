@@ -9,7 +9,12 @@ export const createCreateBoard =
   async (input) => {
     const response = await tryRequest(() =>
       client.POST('/api/epics', {
-        body: { color: input.color, name: input.name, spaceKey: input.spaceKey },
+        body: {
+          color: input.color,
+          name: input.name,
+          spaceKey: input.spaceKey,
+          statuses: input.statuses,
+        },
         parseAs: 'text',
       }),
     )

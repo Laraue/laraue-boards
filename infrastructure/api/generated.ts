@@ -130,6 +130,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/epics/get-with-statuses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SearchEpicStatusesRequest"];
+                    "text/json": components["schemas"]["SearchEpicStatusesRequest"];
+                    "application/*+json": components["schemas"]["SearchEpicStatusesRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfEpicStatusesDto"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfEpicStatusesDto"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfEpicStatusesDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/epics/{id}/status": {
         parameters: {
             query?: never;
@@ -875,6 +918,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/issues/summarize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SummarizeIssueContentRequest"];
+                    "text/json": components["schemas"]["SummarizeIssueContentRequest"];
+                    "application/*+json": components["schemas"]["SummarizeIssueContentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                        "application/json": string;
+                        "text/json": string;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/issues/{key}/history": {
         parameters: {
             query?: never;
@@ -907,9 +993,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
-                        "application/json": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
-                        "text/json": components["schemas"]["ShortPaginatedResultOfIssueHistoryItem"];
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfOrganizationHistoryItem"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfOrganizationHistoryItem"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfOrganizationHistoryItem"];
                     };
                 };
             };
@@ -1551,6 +1637,49 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organizations/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetOrganizationHistoryRequest"];
+                    "text/json": components["schemas"]["GetOrganizationHistoryRequest"];
+                    "application/*+json": components["schemas"]["GetOrganizationHistoryRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfOrganizationHistoryItem"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfOrganizationHistoryItem"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfOrganizationHistoryItem"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -2593,6 +2722,11 @@ export interface components {
             spaceKey: string;
             name: string;
             color: string;
+            statuses?: null | components["schemas"]["CreateEpicStatusDto"][];
+        };
+        CreateEpicStatusDto: {
+            name: string;
+            color: string;
         };
         CreateOrganizationRequest: {
             /** Format: uuid */
@@ -2686,6 +2820,13 @@ export interface components {
         EpicSortOrder: "LastTouched" | "Alphabetical";
         /** @enum {unknown} */
         EpicStatus: "New" | "Active" | "Done";
+        EpicStatusesDto: {
+            /** Format: int64 */
+            epicId: number | string;
+            epicName: string;
+            epicColor: null | string;
+            statuses: components["schemas"]["StatusDto"][];
+        };
         EpicSummary: {
             /** Format: int64 */
             id: number | string;
@@ -2735,6 +2876,16 @@ export interface components {
         GetOnboardingStatusResponse: {
             status?: null | components["schemas"]["OnboardingStatus"];
         };
+        GetOrganizationHistoryRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            /** Format: uuid */
+            ownerId?: null | string;
+            /** Format: date-time */
+            dateFrom?: null | string;
+            /** Format: date-time */
+            dateTo?: null | string;
+            pagination: components["schemas"]["PaginationData"];
+        };
         GlobalAccessLevels: {
             canRead?: boolean;
             canCreateSpaces?: boolean;
@@ -2746,6 +2897,63 @@ export interface components {
             canCreateIssues?: boolean;
             canUpdateIssues?: boolean;
             canDeleteIssues?: boolean;
+        };
+        HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"];
+        HistoryItemChangeIssueHistoryAssigneeChange: {
+            /** @enum {string} */
+            $type?: "assignee";
+            oldAssigneeDisplayName: null | string;
+            oldAssigneeColor: null | string;
+            newAssigneeDisplayName: null | string;
+            newAssigneeColor: null | string;
+        };
+        HistoryItemChangeIssueHistoryAttachmentChange: {
+            /** @enum {string} */
+            $type?: "attachment";
+            fileName: null | string;
+            /** Format: uuid */
+            previewFileId: null | string;
+            action: components["schemas"]["AttachmentAction"];
+        };
+        HistoryItemChangeIssueHistoryContentChange: {
+            /** @enum {string} */
+            $type?: "content";
+            oldContent: null | string;
+            newContent: null | string;
+        };
+        HistoryItemChangeIssueHistoryEpicChange: {
+            /** @enum {string} */
+            $type?: "epic";
+            oldEpicName: null | string;
+            oldEpicColor: null | string;
+            newEpicName: null | string;
+            newEpicColor: null | string;
+        };
+        HistoryItemChangeIssueHistoryPropertyChange: {
+            /** @enum {string} */
+            $type?: "property";
+            propertyName: string;
+            attributeType: components["schemas"]["AttributeType"];
+            oldValueName: null | string;
+            oldValueColor: null | string;
+            newValueName: null | string;
+            newValueColor: null | string;
+        };
+        HistoryItemChangeIssueHistorySpaceChange: {
+            /** @enum {string} */
+            $type?: "space";
+            oldSpaceName: null | string;
+            oldSpaceColor: null | string;
+            newSpaceName: null | string;
+            newSpaceColor: null | string;
+        };
+        HistoryItemChangeIssueHistoryStatusChange: {
+            /** @enum {string} */
+            $type?: "status";
+            oldStatusName: null | string;
+            oldStatusColor: null | string;
+            newStatusName: null | string;
+            newStatusColor: null | string;
         };
         /** Format: binary */
         IFormFile: string;
@@ -2795,70 +3003,6 @@ export interface components {
             key: string;
             attributeValues: components["schemas"]["DetailIssueAttributeDto"][];
             attachments: components["schemas"]["AttachmentData"][];
-        };
-        IssueHistoryItem: {
-            /** Format: date-time */
-            createdAt: string;
-            owner: components["schemas"]["UserDetails"];
-            changes: components["schemas"]["IssueHistoryItemChange"][];
-            entityType: components["schemas"]["LogEntityType"];
-            action: components["schemas"]["LogAction"];
-        };
-        IssueHistoryItemChange: components["schemas"]["IssueHistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["IssueHistoryItemChangeIssueHistorySpaceChange"];
-        IssueHistoryItemChangeIssueHistoryAssigneeChange: {
-            /** @enum {string} */
-            $type?: "assignee";
-            oldAssigneeDisplayName: null | string;
-            oldAssigneeColor: null | string;
-            newAssigneeDisplayName: null | string;
-            newAssigneeColor: null | string;
-        };
-        IssueHistoryItemChangeIssueHistoryAttachmentChange: {
-            /** @enum {string} */
-            $type?: "attachment";
-            fileName: null | string;
-            /** Format: uuid */
-            previewFileId: null | string;
-            action: components["schemas"]["AttachmentAction"];
-        };
-        IssueHistoryItemChangeIssueHistoryContentChange: {
-            /** @enum {string} */
-            $type?: "content";
-            oldContent: null | string;
-            newContent: null | string;
-        };
-        IssueHistoryItemChangeIssueHistoryEpicChange: {
-            /** @enum {string} */
-            $type?: "epic";
-            oldEpicName: null | string;
-            oldEpicColor: null | string;
-            newEpicName: null | string;
-            newEpicColor: null | string;
-        };
-        IssueHistoryItemChangeIssueHistoryPropertyChange: {
-            /** @enum {string} */
-            $type?: "property";
-            propertyName: string;
-            oldValueName: null | string;
-            oldValueColor: null | string;
-            newValueName: null | string;
-            newValueColor: null | string;
-        };
-        IssueHistoryItemChangeIssueHistorySpaceChange: {
-            /** @enum {string} */
-            $type?: "space";
-            oldSpaceName: null | string;
-            oldSpaceColor: null | string;
-            newSpaceName: null | string;
-            newSpaceColor: null | string;
-        };
-        IssueHistoryItemChangeIssueHistoryStatusChange: {
-            /** @enum {string} */
-            $type?: "status";
-            oldStatusName: null | string;
-            oldStatusColor: null | string;
-            newStatusName: null | string;
-            newStatusColor: null | string;
         };
         IssueListAttributeDto: {
             value: string;
@@ -2970,6 +3114,15 @@ export interface components {
             slugPostfix: string;
             preferences?: components["schemas"]["UserOrganizationPreferencesResponse"];
         };
+        OrganizationHistoryItem: {
+            /** Format: date-time */
+            createdAt: string;
+            owner: components["schemas"]["UserDetails"];
+            changes: components["schemas"]["HistoryItemChange"][];
+            entityType: components["schemas"]["LogEntityType"];
+            action: components["schemas"]["LogAction"];
+            issueKey: null | string;
+        };
         OrganizationListDto: {
             /** Format: int64 */
             id: number | string;
@@ -2977,6 +3130,7 @@ export interface components {
             color: null | string;
             canUpdate: boolean;
             canDelete: boolean;
+            canLeave: boolean;
             isPersonal: boolean;
             canCreateSpaces: boolean;
             slug: string;
@@ -2985,6 +3139,8 @@ export interface components {
         OrganizationMember: {
             /** Format: int64 */
             organizationUserId?: number | string;
+            /** Format: uuid */
+            userId: string;
             displayName: string;
             initials: string;
             color: string;
@@ -3002,6 +3158,12 @@ export interface components {
             name: string;
             color: string;
             isDefault: boolean;
+        };
+        SearchEpicStatusesRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            spaceKey?: null | string;
+            searchString?: null | string;
+            pagination: components["schemas"]["PaginationData"];
         };
         SearchIssueDto: {
             epic: components["schemas"]["NameAndColor"];
@@ -3057,12 +3219,21 @@ export interface components {
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
-        ShortPaginatedResultOfIssueHistoryItem: {
+        ShortPaginatedResultOfEpicStatusesDto: {
             /** Format: int64 */
             page: number | string;
             /** Format: int32 */
             perPage: number | string;
-            data: components["schemas"]["IssueHistoryItem"][];
+            data: components["schemas"]["EpicStatusesDto"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
+        };
+        ShortPaginatedResultOfOrganizationHistoryItem: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["OrganizationHistoryItem"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
@@ -3103,6 +3274,10 @@ export interface components {
             color: null | string;
             /** Format: int32 */
             sortOrder: number | string;
+        };
+        SummarizeIssueContentRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            content: string;
         };
         TelegramWidgetAuthRequest: {
             /** Format: int64 */

@@ -1,8 +1,8 @@
 import { assert, test } from 'vitest'
 
-import type { components } from '#infrastructure/api/generated'
 import { COLORS } from '~/constants/colors'
 import {
+  type IssueAttributeDto,
   mapIssueAttributes,
   mapIssueAttributeValues,
   mapIssueFilters,
@@ -11,7 +11,7 @@ import {
 
 import { toLocalIssueDateTime, toUtcIssueDateTime } from './issueDateTime'
 
-const attributeDtos: components['schemas']['AttributeDto'][] = [
+const attributeDtos: IssueAttributeDto[] = [
   { color: COLORS.gray, id: 1, listValues: [], name: 'Reference', type: 'Text' },
   {
     color: COLORS.amber,

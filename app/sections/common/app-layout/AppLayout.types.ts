@@ -1,7 +1,6 @@
 export type AppLayoutData = {
   organization: {
     canCreateSpaces: boolean
-    canLeave: boolean
     canManage: boolean
     canManageAttributes: boolean
     canMassMove: boolean

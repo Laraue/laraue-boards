@@ -1,3 +1,5 @@
+export type BoardSettingsStatus = 'Active' | 'Done' | 'New'
+
 export type BoardSettingsColumn = {
   color: string
   id: string
@@ -10,6 +12,7 @@ export type BoardSettingsPageData = {
   color: string
   columns: BoardSettingsColumn[]
   name: string
+  status: BoardSettingsStatus
 }
 
 export type BoardSettingsColumnDraft = {

@@ -4,7 +4,7 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createLeaveOrganization } from './leaveOrganization'
 
-test('leaves the requested organization', async () => {
+test('leaves an organization from the picker', async () => {
   const { client, requests } = createTestApiClient(() => new Response(null, { status: 200 }))
 
   assert.deepEqual(await createLeaveOrganization(client)({ id: '7' }), {

@@ -1,6 +1,6 @@
-import type { components } from '#infrastructure/api/generated'
+import type { mapIssueAttributeValues } from './issueAttributes'
 
-type AttributeValue = components['schemas']['AttributeValue']
+type AttributeValue = ReturnType<typeof mapIssueAttributeValues>[number]
 
 const appendIssueFields = (
   formData: FormData,

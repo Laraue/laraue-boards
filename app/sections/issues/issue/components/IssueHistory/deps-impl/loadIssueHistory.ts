@@ -1,17 +1,36 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
+import { diffLines } from '~/components/history-timeline/diffLines'
+import type {
+  HistoryChangeViewModel,
+  HistoryPageViewModel,
+} from '~/components/history-timeline/HistoryTimeline.types'
 
 import type { LoadIssueHistory } from '../IssueHistory.deps'
-import type { IssueHistoryChangeViewModel } from '../IssueHistory.types'
-import { diffLines } from './diffLines'
 
 type Schemas = components['schemas']
-type Change = Schemas['IssueHistoryItemChange']
+type Change = Schemas['HistoryItemChange']
 type Action = Schemas['LogAction']
 type EntityType = Schemas['LogEntityType']
+type AttributeType = Schemas['AttributeType']
 
 const value = (name: null | string) => name ?? 'None'
+const formatPropertyValue = (name: null | string, type: AttributeType) => {
+  if (name === null || (type !== 'Date' && type !== 'DateTime')) {
+    return value(name)
+  }
+
+  const date = new Date(name)
+
+  return Number.isNaN(date.getTime())
+    ? name
+    : new Intl.DateTimeFormat('en-US', {
+        dateStyle: 'medium',
+        ...(type === 'DateTime' ? { timeStyle: 'short' } : {}),
+        timeZone: 'UTC',
+      }).format(date)
+}
 
 const actionLabel = (entityType: EntityType, action: Action) =>
   `${entityType} ${action === 'Create' ? 'created' : action === 'Delete' ? 'deleted' : 'updated'}`
@@ -21,7 +40,7 @@ const mapChange = (
   action: Action,
   entityType: EntityType,
   baseUrl: string,
-): IssueHistoryChangeViewModel => {
+): HistoryChangeViewModel => {
   switch (change.$type) {
     case 'content':
       return {
@@ -52,9 +71,9 @@ const mapChange = (
         kind: 'property',
         label: change.propertyName,
         newColor: change.newValueColor,
-        newValue: value(change.newValueName),
+        newValue: formatPropertyValue(change.newValueName, change.attributeType),
         oldColor: change.oldValueColor,
-        oldValue: value(change.oldValueName),
+        oldValue: formatPropertyValue(change.oldValueName, change.attributeType),
       }
     case 'attachment':
       return {
@@ -88,44 +107,45 @@ const mapChange = (
   }
 }
 
+export const mapHistoryPage = (
+  result: Schemas['ShortPaginatedResultOfOrganizationHistoryItem'],
+  baseUrl: string,
+): HistoryPageViewModel => ({
+  hasNextPage: result.hasNextPage,
+  items: result.data.flatMap((item) => {
+    const changes = item.changes
+      .map((change) => mapChange(change, item.action, item.entityType, baseUrl))
+      .filter((change) => !('oldValue' in change) || change.oldValue !== change.newValue)
+
+    if (item.changes.length && !changes.length) {
+      return []
+    }
+
+    return {
+      changes: changes.length
+        ? changes
+        : [
+            {
+              kind: 'event' as const,
+              label: actionLabel(item.entityType, item.action),
+            },
+          ],
+      createdAt: item.createdAt,
+      ...(item.issueKey ? { issueKey: item.issueKey } : {}),
+      owner: {
+        color: item.owner.color,
+        initials: item.owner.initials,
+        name: item.owner.displayName,
+      },
+    }
+  }),
+})
+
 export const createLoadIssueHistory =
   (client: ApiClient): LoadIssueHistory =>
   ({ issueKey, page }) =>
     executeQuery({
-      map: (result) =>
-        result === undefined
-          ? undefined
-          : {
-              hasNextPage: result.hasNextPage,
-              items: result.data.flatMap((item) => {
-                const changes = item.changes
-                  .map((change) => mapChange(change, item.action, item.entityType, client.baseUrl))
-                  .filter(
-                    (change) => !('oldValue' in change) || change.oldValue !== change.newValue,
-                  )
-
-                if (item.changes.length && !changes.length) {
-                  return []
-                }
-
-                return {
-                  changes: changes.length
-                    ? changes
-                    : [
-                        {
-                          kind: 'event' as const,
-                          label: actionLabel(item.entityType, item.action),
-                        },
-                      ],
-                  createdAt: item.createdAt,
-                  owner: {
-                    color: item.owner.color,
-                    initials: item.owner.initials,
-                    name: item.owner.displayName,
-                  },
-                }
-              }),
-            },
+      map: (result) => result && mapHistoryPage(result, client.baseUrl),
       request: () =>
         client.POST('/api/issues/{key}/history', {
           body: { pagination: { page, perPage: 20 } },

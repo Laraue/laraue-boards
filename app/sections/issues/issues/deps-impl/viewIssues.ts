@@ -8,7 +8,7 @@ import { mapIssue } from './mapIssue'
 
 export const createViewIssues =
   (client: ApiClient): ViewIssues =>
-  async ({ attributeQuery, page, search, signal, spaceIds }) => {
+  async ({ attributeQuery, epicStatuses, page, search, signal, spaceIds }) => {
     const attributes = await tryRequest(() =>
       client.GET('/api/organizations/attributes', { signal }),
     )
@@ -24,6 +24,7 @@ export const createViewIssues =
       Promise.all([
         client.POST('/api/issues/search', {
           body: {
+            epicStatuses: epicStatuses.length ? epicStatuses : undefined,
             filters: attributeData.filters,
             page: page - 1,
             perPage: 10,

@@ -1,9 +1,15 @@
 import type { QueryResult } from '#infrastructure/api/apiResult'
 import type { IssueListDeps } from '~/components/issue-list/IssueList.deps'
 
-import type { IssuesFilter, IssuesPageData, SearchIssuesResult } from './IssuesPage.types'
+import type {
+  IssueBoardStatus,
+  IssuesFilter,
+  IssuesPageData,
+  SearchIssuesResult,
+} from './IssuesPage.types'
 
 export type SearchIssues = (input: {
+  epicStatuses: IssueBoardStatus[]
   filters: IssuesFilter[]
   page: number
   search: string
@@ -12,6 +18,7 @@ export type SearchIssues = (input: {
 
 export type ViewIssues = (input: {
   attributeQuery: Record<string, string[]>
+  epicStatuses: IssueBoardStatus[]
   page: number
   search: string
   signal?: AbortSignal

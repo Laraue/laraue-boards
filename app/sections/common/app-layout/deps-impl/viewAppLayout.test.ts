@@ -41,7 +41,6 @@ test('loads the requested organization layout', async () => {
     data: {
       organization: {
         canCreateSpaces: true,
-        canLeave: true,
         canManage: true,
         canManageAttributes: true,
         canMassMove: false,

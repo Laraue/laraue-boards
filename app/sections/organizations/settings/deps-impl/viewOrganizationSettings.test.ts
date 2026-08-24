@@ -37,7 +37,6 @@ test('maps API responses to organization settings data', async () => {
   assert.deepEqual(await createViewOrganizationSettings(client)({}), {
     data: {
       canDelete: false,
-      canLeave: true,
       canUpdate: true,
       color: DEFAULT_COLOR,
       id: '7',

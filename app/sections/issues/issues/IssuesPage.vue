@@ -33,12 +33,14 @@
             @input="updateSearch(($event.target as HTMLInputElement).value)" />
           <IssueFilters
             :attributes="view.attributes"
+            :epic-statuses="epicStatusOptions"
             :loading="filtering"
             :model-value="filterValue"
             :spaces="view.spaces"
             @update:model-value="
               updateFilters({
                 attributes: $event.attributes,
+                epicStatuses: $event.epicStatuses ?? [],
                 spaceIds: $event.spaceIds ?? [],
               })
             " />
@@ -73,6 +75,10 @@ import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
 import IssueList from '~/components/issue-list/IssueList.vue'
 import type { IssuesPageDeps } from '~/sections/issues/issues/IssuesPage.deps'
 import {
+  issueBoardStatuses,
+  type IssueBoardStatus,
+} from '~/sections/issues/issues/IssuesPage.types'
+import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
   readIssueAttributeQuery,
@@ -88,9 +94,17 @@ const props = defineProps<{
 }>()
 
 const organizationRoutes = useOrganizationRoutes()
+const epicStatusOptions: Array<{ label: string; value: IssueBoardStatus }> = [
+  { label: 'New', value: 'New' },
+  { label: 'In progress', value: 'Active' },
+  { label: 'Done', value: 'Done' },
+]
 
 const request = computed(() => ({
   attributeQuery: readIssueAttributeQuery(props.routeQuery),
+  epicStatuses: issueBoardStatuses.filter((status) =>
+    [props.routeQuery.epicStatus].flat().includes(status),
+  ),
   page: Math.max(1, Number(props.routeQuery.page) || 1),
   search: typeof props.routeQuery.search === 'string' ? props.routeQuery.search : '',
   spaceIds: readIssueSpaceQuery(props.routeQuery.space),
@@ -110,6 +124,7 @@ const attributeFilters = computed(() =>
 )
 const filterValue = computed<IssueFiltersValue>(() => ({
   attributes: attributeFilters.value,
+  epicStatuses: request.value.epicStatuses,
   spaceIds: request.value.spaceIds,
 }))
 
@@ -123,6 +138,7 @@ const {
   () => `issues-search:${props.organizationKey}`,
   () =>
     props.deps.searchIssues({
+      epicStatuses: request.value.epicStatuses,
       filters: getIssueAttributeFilterInput(attributeFilters.value, attributes.value),
       page: request.value.page,
       search: request.value.search,
@@ -157,6 +173,11 @@ const updateFilters = (value: Required<IssueFiltersValue>) => {
     nextQuery.space = value.spaceIds
   } else {
     delete nextQuery.space
+  }
+  if (value.epicStatuses.length) {
+    nextQuery.epicStatus = value.epicStatuses
+  } else {
+    delete nextQuery.epicStatus
   }
   void props.onUpdateQuery(nextQuery)
 }

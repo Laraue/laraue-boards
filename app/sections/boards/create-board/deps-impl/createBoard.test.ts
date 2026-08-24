@@ -8,12 +8,18 @@ test('maps create board request and response', async () => {
   const { client, requests } = createTestApiClient(() => new Response('7'))
 
   assert.deepEqual(
-    await createCreateBoard(client)({ color: '#fff', name: 'Roadmap', spaceKey: 'product' }),
+    await createCreateBoard(client)({
+      color: '#fff',
+      name: 'Roadmap',
+      spaceKey: 'product',
+      statuses: [{ color: '#111', name: 'To do' }],
+    }),
     { data: { boardId: '7' }, status: 'success' },
   )
   assert.deepEqual(await requests[0]!.json(), {
     color: '#fff',
     name: 'Roadmap',
     spaceKey: 'product',
+    statuses: [{ color: '#111', name: 'To do' }],
   })
 })

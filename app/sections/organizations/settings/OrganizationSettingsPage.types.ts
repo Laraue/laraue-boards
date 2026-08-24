@@ -1,6 +1,5 @@
 export type OrganizationSettingsPageData = {
   canDelete: boolean
-  canLeave: boolean
   canUpdate: boolean
   color: string
   id: string

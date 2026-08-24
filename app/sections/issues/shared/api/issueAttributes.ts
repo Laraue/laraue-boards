@@ -9,6 +9,7 @@ import {
 import { toUtcIssueDateTime } from './issueDateTime'
 
 type Schemas = components['schemas']
+export type IssueAttributeDto = Schemas['AttributeDto']
 type IssueFilter =
   | { attributeId: string; from?: string; to?: string; type: 'date' }
   | { attributeId: string; from?: string; to?: string; type: 'dateTime' }
@@ -24,9 +25,7 @@ type IssueAttributeValueInput =
   | { attributeId: string; type: 'list'; valueId: string }
   | { attributeId: string; type: 'text'; value: string }
 
-export const mapIssueAttributes = (
-  attributes: Schemas['AttributeDto'][],
-): IssueAttributeField[] => {
+export const mapIssueAttributes = (attributes: IssueAttributeDto[]): IssueAttributeField[] => {
   return attributes.map((attribute) => {
     if (attribute.id === undefined) {
       throw new TypeError('Attribute id is required')
@@ -130,7 +129,7 @@ export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
 
 export const mapRawIssueFilters = (
   raw: Record<string, string[]>,
-  attributeDtos: Schemas['AttributeDto'][],
+  attributeDtos: IssueAttributeDto[],
 ) => {
   const attributes = mapIssueAttributes(attributeDtos)
   const filters = getIssueAttributeFilterInput(
