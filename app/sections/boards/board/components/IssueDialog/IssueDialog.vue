@@ -37,8 +37,8 @@
 
 <script setup lang="ts">
 import { X } from '@lucide/vue'
-import { onBeforeRouteUpdate } from 'vue-router'
 
+import { confirmUnsavedChanges } from '~/composables/useUnsavedChangesWarning'
 import IssueSkeleton from '~/sections/issues/issue/components/IssueSkeleton.vue'
 import type { IssuePageDeps } from '~/sections/issues/issue/IssuePage.deps'
 import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.types'
@@ -49,13 +49,12 @@ const props = defineProps<{
   issueKey: string
   onClose: () => void
   onDeleted: (issueKey: string) => void
+  onDirtyChange?: (dirty: boolean) => void
   onSaved: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
 
-const route = useRoute('organizations-organizationKey-spaces-spaceKey-boardId')
 const dialogEl = useTemplateRef('dialogEl')
 const state = reactive({ dirty: false })
-const { confirmUnsavedChanges } = useUnsavedChangesWarning(toRef(state, 'dirty'))
 
 const showDialog = () => {
   if (dialogEl.value) {
@@ -66,16 +65,17 @@ const showDialog = () => {
 }
 const setDirty = (dirty: boolean) => {
   state.dirty = dirty
+  props.onDirtyChange?.(dirty)
 }
 const handleSaved = async (issue: IssuePageSavedIssue) => {
-  state.dirty = false
+  setDirty(false)
   await props.onSaved(issue)
 }
 const close = (skipWarning = false) => {
-  if (!skipWarning && !confirmUnsavedChanges()) {
+  if (!skipWarning && !confirmUnsavedChanges(state.dirty)) {
     return
   }
-  state.dirty = false
+  setDirty(false)
   props.onClose()
 }
 const handleCancel = (event: Event) => {
@@ -84,12 +84,10 @@ const handleCancel = (event: Event) => {
 }
 
 onMounted(showDialog)
-onBeforeRouteUpdate(
-  (to) => (to.path === route.path && to.query.issue === props.issueKey) || confirmUnsavedChanges(),
-)
+onBeforeUnmount(() => props.onDirtyChange?.(false))
 watch(
   () => props.issueKey,
-  () => (state.dirty = false),
+  () => setDirty(false),
 )
 </script>
 

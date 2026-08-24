@@ -439,8 +439,6 @@ const leave = async () => {
   await props.onBack()
 }
 
-useUnsavedChangesWarning(toRef(state, 'dirty'))
-
 watch(data, (issue) => issue && syncState(issue), { immediate: true })
 
 watch(

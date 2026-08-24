@@ -52,6 +52,7 @@ const mount = async ({
       issueKey: null,
       onBack: vi.fn<() => void>(),
       onCreateIssue,
+      onIssueDirtyChange: vi.fn<(dirty: boolean) => void>(),
       onIssueMoved: vi.fn<() => void>(),
       onPushQuery: vi.fn<(query: LocationQueryRaw) => void>(),
       onReplaceQuery,
