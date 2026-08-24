@@ -1,13 +1,9 @@
-import type { ApiClient } from '#infrastructure/api/client'
-import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
 import { diffLines } from '~/components/history-timeline/diffLines'
 import type {
   HistoryChangeViewModel,
   HistoryPageViewModel,
 } from '~/components/history-timeline/HistoryTimeline.types'
-
-import type { LoadIssueHistory } from '../IssueHistory.deps'
 
 type Schemas = components['schemas']
 type Change = Schemas['HistoryItemChange']
@@ -22,7 +18,6 @@ const formatPropertyValue = (name: null | string, type: AttributeType) => {
   }
 
   const date = new Date(name)
-
   return Number.isNaN(date.getTime())
     ? name
     : new Intl.DateTimeFormat('en-US', {
@@ -107,7 +102,7 @@ const mapChange = (
   }
 }
 
-export const mapHistoryPage = (
+export const mapOrganizationHistoryPage = (
   result: Schemas['ShortPaginatedResultOfOrganizationHistoryItem'],
   baseUrl: string,
 ): HistoryPageViewModel => ({
@@ -124,12 +119,7 @@ export const mapHistoryPage = (
     return {
       changes: changes.length
         ? changes
-        : [
-            {
-              kind: 'event' as const,
-              label: actionLabel(item.entityType, item.action),
-            },
-          ],
+        : [{ kind: 'event' as const, label: actionLabel(item.entityType, item.action) }],
       createdAt: item.createdAt,
       ...(item.issueKey ? { issueKey: item.issueKey } : {}),
       owner: {
@@ -140,15 +130,3 @@ export const mapHistoryPage = (
     }
   }),
 })
-
-export const createLoadIssueHistory =
-  (client: ApiClient): LoadIssueHistory =>
-  ({ issueKey, page }) =>
-    executeQuery({
-      map: (result) => result && mapHistoryPage(result, client.baseUrl),
-      request: () =>
-        client.POST('/api/issues/{key}/history', {
-          body: { pagination: { page, perPage: 20 } },
-          params: { path: { key: issueKey } },
-        }),
-    })

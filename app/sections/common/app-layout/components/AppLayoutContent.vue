@@ -42,6 +42,12 @@
           <ClipboardList />
           All issues
         </NuxtLink>
+        <NuxtLink
+          :class="{ active: active('organizations-organizationKey-history') }"
+          :to="organizationRoutes.history()">
+          <History />
+          History
+        </NuxtLink>
         <div
           class="nav-title"
           data-tour="spaces">
@@ -73,7 +79,6 @@
         <div
           v-if="
             viewModel.organization.canUpdate ||
-            viewModel.organization.canLeave ||
             viewModel.organization.canManage ||
             viewModel.organization.canManageAttributes ||
             viewModel.organization.canMassMove
@@ -83,7 +88,7 @@
           Settings
         </div>
         <NuxtLink
-          v-if="viewModel.organization.canUpdate || viewModel.organization.canLeave"
+          v-if="viewModel.organization.canUpdate"
           :class="{
             active: active('organizations-organizationKey-settings'),
           }"
@@ -189,6 +194,7 @@ import {
   BookOpen,
   ChevronsUpDown,
   ClipboardList,
+  History,
   LogOut,
   Menu,
   Moon,

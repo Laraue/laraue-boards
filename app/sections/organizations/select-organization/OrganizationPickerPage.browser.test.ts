@@ -12,6 +12,7 @@ import OrganizationPickerPage from './OrganizationPickerPage.vue'
 type Item = OrganizationPickerItem
 
 const organization: Item = {
+  canLeave: true,
   color: '#4774d4',
   description: 'Team organization',
   id: '42',
@@ -29,7 +30,8 @@ const createTourDeps = () => ({
 const createDeps = (
   view: OrganizationPickerPageDeps['view'],
   select: OrganizationPickerPageDeps['select'] = vi.fn<OrganizationPickerPageDeps['select']>(),
-): OrganizationPickerPageDeps => ({ select, tour: createTourDeps(), view })
+  leave: OrganizationPickerPageDeps['leave'] = vi.fn<OrganizationPickerPageDeps['leave']>(),
+): OrganizationPickerPageDeps => ({ leave, select, tour: createTourDeps(), view })
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
@@ -62,7 +64,7 @@ it('shows organizations and selects one', async () => {
 
   await mount(createDeps(view, select), onSelected)
 
-  await page.getByRole('button', { name: /Laraue/ }).click()
+  await page.getByRole('button', { name: 'L Laraue Team organization' }).click()
 
   expect(select).toHaveBeenCalledWith({ organizationId: '42' })
   expect(onSelected).toHaveBeenCalledWith('laraue-HF2P0')
@@ -77,7 +79,38 @@ it('shows no organizations when the list is empty', async () => {
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
 
   await expect.element(page.getByText('No organizations yet')).toBeInTheDocument()
-  await expect.element(page.getByRole('button', { name: /Laraue/ })).not.toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { name: 'L Laraue Team organization' }))
+    .not.toBeInTheDocument()
+})
+
+it('leaves a team organization and reloads the list', async () => {
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
+    data: [organization],
+    status: 'success',
+  }))
+  const leave = vi.fn<OrganizationPickerPageDeps['leave']>(async () => ({
+    data: true,
+    status: 'success',
+  }))
+  vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+  await mount(createDeps(view, undefined, leave), vi.fn<(organizationKey: string) => void>())
+  await page.getByRole('button', { name: 'Leave Laraue' }).click()
+
+  expect(leave).toHaveBeenCalledWith({ id: '42' })
+  await vi.waitFor(() => expect(view).toHaveBeenCalledTimes(2))
+})
+
+it('does not offer leaving an owned organization', async () => {
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
+    data: [{ ...organization, canLeave: false }],
+    status: 'success',
+  }))
+
+  await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
+
+  await expect.element(page.getByRole('button', { name: 'Leave Laraue' })).not.toBeInTheDocument()
 })
 
 it('introduces the personal organization once', async () => {
@@ -115,7 +148,9 @@ it('reloads the organizations when the failed request is retried', async () => {
 
   await page.getByRole('button', { name: 'Try again' }).click()
 
-  await expect.element(page.getByRole('button', { name: /Laraue/ })).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { name: 'L Laraue Team organization' }))
+    .toBeInTheDocument()
 })
 
 it('stays on the picker and shows the message when selecting fails', async () => {
@@ -133,7 +168,7 @@ it('stays on the picker and shows the message when selecting fails', async () =>
 
   await mount(createDeps(view, select), onSelected)
 
-  await page.getByRole('button', { name: /Laraue/ }).click()
+  await page.getByRole('button', { name: 'L Laraue Team organization' }).click()
 
   await expect
     .element(page.getByText('This organization is no longer available.'))

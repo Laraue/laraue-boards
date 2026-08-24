@@ -30,7 +30,6 @@ const mapAppLayoutData = (
 ): AppLayoutData => ({
   organization: {
     canCreateSpaces: organization.canCreateSpaces,
-    canLeave: !organizationMembership.isPersonal,
     canManage: organization.canManage,
     canManageAttributes: organization.canManageAttributes,
     canMassMove: organization.canMassMove,

@@ -3,7 +3,7 @@ import { diffArrays, diffWordsWithSpace } from 'diff'
 import type {
   IssueDescriptionDiffLine,
   IssueDescriptionDiffSpan,
-} from '../../IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.types'
+} from '~/sections/issues/issue/components/IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.types'
 
 const appendSpan = (spans: IssueDescriptionDiffSpan[], text: string, changed: boolean) => {
   if (!text) {

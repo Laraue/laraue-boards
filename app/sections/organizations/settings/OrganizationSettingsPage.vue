@@ -41,9 +41,9 @@
             Changes saved.
           </p>
           <p
-            v-if="submitMessage || leaveMessage || removeMessage"
+            v-if="submitMessage || removeMessage"
             class="form-error">
-            {{ submitMessage || leaveMessage || removeMessage }}
+            {{ submitMessage || removeMessage }}
           </p>
           <div class="form-actions">
             <button
@@ -51,14 +51,6 @@
               class="primary"
               :disabled="busy">
               {{ submitting ? 'Saving…' : 'Save changes' }}
-            </button>
-            <button
-              v-if="page.canLeave"
-              class="secondary danger"
-              :disabled="busy"
-              type="button"
-              @click="leave(page.id)">
-              {{ leaving ? 'Leaving…' : 'Leave organization' }}
             </button>
             <button
               v-if="page.canDelete"
@@ -84,7 +76,6 @@ import type { UpdateOrganizationInput } from '~/sections/organizations/settings/
 const props = defineProps<{
   deps: OrganizationSettingsPageDeps
   onDeleted: () => Promise<void> | void
-  onLeft: () => Promise<void> | void
   onUpdated: () => Promise<void> | void
 }>()
 
@@ -125,21 +116,11 @@ const submitForm = (input: UpdateOrganizationInput): void => {
 }
 
 const {
-  execute: leaveOrganization,
-  message: leaveMessage,
-  pending: leaving,
-} = useAction(props.deps.leave, { onSuccess: props.onLeft })
-const {
   execute: removeOrganization,
   message: removeMessage,
   pending: removing,
 } = useAction(props.deps.remove, { onSuccess: props.onDeleted })
-const busy = computed(() => submitting.value || leaving.value || removing.value)
-const leave = (id: string): void => {
-  if (!busy.value && confirm('Leave this organization?')) {
-    void leaveOrganization({ id })
-  }
-}
+const busy = computed(() => submitting.value || removing.value)
 const remove = (id: string): void => {
   if (!busy.value && confirm('Delete this organization?')) {
     void removeOrganization({ id })

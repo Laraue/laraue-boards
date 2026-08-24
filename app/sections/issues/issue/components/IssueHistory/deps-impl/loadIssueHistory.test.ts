@@ -27,11 +27,21 @@ test('maps issue history and sends pagination', async () => {
           },
           {
             $type: 'property',
+            attributeType: 'List',
             newValueColor: null,
             newValueName: null,
             oldValueColor: '#444',
             oldValueName: 'High',
             propertyName: 'Priority',
+          },
+          {
+            $type: 'property',
+            attributeType: 'DateTime',
+            newValueColor: null,
+            newValueName: '2026-08-11T09:00:00.0000000Z',
+            oldValueColor: null,
+            oldValueName: '2026-08-04T11:00:00.0000000Z',
+            propertyName: 'Date and time',
           },
           {
             $type: 'attachment',
@@ -129,6 +139,14 @@ test('maps issue history and sends pagination', async () => {
             newValue: 'None',
             oldColor: '#444',
             oldValue: 'High',
+          },
+          {
+            kind: 'property',
+            label: 'Date and time',
+            newColor: null,
+            newValue: 'Aug 11, 2026, 9:00 AM',
+            oldColor: null,
+            oldValue: 'Aug 4, 2026, 11:00 AM',
           },
           {
             imageUrl: 'https://api.test/api/files/1',

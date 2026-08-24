@@ -7,6 +7,7 @@ import { createViewOrganizationPicker } from './viewOrganizationPicker'
 test('maps organizations response', async () => {
   const { client } = createTestApiClient(() => [
     {
+      canLeave: true,
       color: null,
       id: 42,
       isPersonal: false,
@@ -19,6 +20,7 @@ test('maps organizations response', async () => {
   assert.deepEqual(await createViewOrganizationPicker(client)({}), {
     data: [
       {
+        canLeave: true,
         color: '#4774d4',
         description: 'Team organization',
         id: '42',

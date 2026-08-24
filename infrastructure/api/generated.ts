@@ -2933,6 +2933,7 @@ export interface components {
             /** @enum {string} */
             $type?: "property";
             propertyName: string;
+            attributeType: components["schemas"]["AttributeType"];
             oldValueName: null | string;
             oldValueColor: null | string;
             newValueName: null | string;
@@ -3129,6 +3130,7 @@ export interface components {
             color: null | string;
             canUpdate: boolean;
             canDelete: boolean;
+            canLeave: boolean;
             isPersonal: boolean;
             canCreateSpaces: boolean;
             slug: string;
@@ -3137,6 +3139,8 @@ export interface components {
         OrganizationMember: {
             /** Format: int64 */
             organizationUserId?: number | string;
+            /** Format: uuid */
+            userId: string;
             displayName: string;
             initials: string;
             color: string;

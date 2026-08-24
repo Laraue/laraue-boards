@@ -11,7 +11,6 @@ import AppLayout from './AppLayout.vue'
 const data: AppLayoutData = {
   organization: {
     canCreateSpaces: true,
-    canLeave: true,
     canManage: true,
     canManageAttributes: false,
     canMassMove: false,
@@ -82,7 +81,7 @@ it('opens the navigation from the mobile menu button', async () => {
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeVisible()
 })
 
-it('shows general settings when leaving is the only available action', async () => {
+it('hides general settings without update access', async () => {
   await page.viewport(1280, 800)
   await mount(
     createDeps({
@@ -100,7 +99,7 @@ it('shows general settings when leaving is the only available action', async () 
     }),
   )
 
-  await expect.element(page.getByRole('link', { name: 'General' })).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: 'General' })).not.toBeInTheDocument()
 })
 
 it('introduces the workspace navigation once', async () => {
@@ -134,7 +133,6 @@ it('finishes the tour before unavailable settings', async () => {
           ...data,
           organization: {
             ...data.organization,
-            canLeave: false,
             canManage: false,
             canUpdate: false,
           },

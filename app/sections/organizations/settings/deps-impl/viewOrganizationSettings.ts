@@ -32,7 +32,6 @@ export const createViewOrganizationSettings =
     return {
       data: {
         canDelete: organization.canDelete,
-        canLeave: !organization.isPersonal,
         canUpdate: organization.canUpdate,
         color: current.data.color ?? DEFAULT_COLOR,
         id: String(current.data.id),

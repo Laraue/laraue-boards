@@ -11,6 +11,7 @@ export const createViewOrganizationPicker =
     executeQuery({
       map: (organizations) =>
         organizations?.map((organization) => ({
+          canLeave: organization.canLeave,
           color: organization.color ?? DEFAULT_COLOR,
           description: organization.isPersonal ? 'Personal organization' : 'Team organization',
           id: String(organization.id),

@@ -19,25 +19,37 @@
           <h1>Choose an organization</h1>
           <p class="muted">Select where you want to work today.</p>
           <div class="org-list">
-            <button
+            <div
               v-for="organization in organizations"
               :key="organization.id"
-              class="org-choice"
-              :data-tour="organization.isPersonal ? 'personal-organization' : undefined"
-              :disabled="selecting"
-              type="button"
-              @click="select(organization.id, organization.key)">
-              <span
-                class="entity-avatar"
-                :style="{ background: organization.color }">
-                {{ organization.initial }}
-              </span>
-              <span>
-                <strong>{{ organization.name }}</strong>
-                <small class="muted">{{ organization.description }}</small>
-              </span>
-              <ChevronRight />
-            </button>
+              class="org-row">
+              <button
+                class="org-choice"
+                :data-tour="organization.isPersonal ? 'personal-organization' : undefined"
+                :disabled="selecting || leaving"
+                type="button"
+                @click="select(organization.id, organization.key)">
+                <span
+                  class="entity-avatar"
+                  :style="{ background: organization.color }">
+                  {{ organization.initial }}
+                </span>
+                <span>
+                  <strong>{{ organization.name }}</strong>
+                  <small class="muted">{{ organization.description }}</small>
+                </span>
+              </button>
+              <button
+                v-if="organization.canLeave"
+                :aria-label="`Leave ${organization.name}`"
+                class="icon-btn danger"
+                :disabled="selecting || leaving"
+                title="Leave organization"
+                type="button"
+                @click="leave(organization.id, organization.name)">
+                <LogOut />
+              </button>
+            </div>
             <AppEmptyState
               v-if="organizations.length === 0"
               hint="An organization is your workspace — it holds your spaces, boards, and issues. Create one for yourself or your team, or open a teammate's invitation link to join theirs."
@@ -51,9 +63,9 @@
             Create organization
           </NuxtLink>
           <p
-            v-if="selectMessage"
+            v-if="selectMessage || leaveMessage"
             class="form-error">
-            {{ selectMessage }}
+            {{ selectMessage || leaveMessage }}
           </p>
         </div>
       </section>
@@ -62,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Plus } from '@lucide/vue'
+import { LogOut, Plus } from '@lucide/vue'
 
 import type { OrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
 import { useOrganizationTour } from '~/sections/organizations/select-organization/useOrganizationTour'
@@ -87,10 +99,22 @@ const {
   pending: selecting,
 } = useAction(props.deps.select)
 
+const {
+  execute: leaveOrganization,
+  message: leaveMessage,
+  pending: leaving,
+} = useAction(props.deps.leave, { onSuccess: async () => refresh() })
+
 const select = async (organizationId: string, organizationKey: string): Promise<void> => {
   const selected = await selectOrganization({ organizationId })
   if (selected) {
     await props.onSelected(organizationKey)
+  }
+}
+
+const leave = (id: string, name: string): void => {
+  if (!selecting.value && !leaving.value && confirm(`Leave ${name}?`)) {
+    void leaveOrganization({ id })
   }
 }
 </script>
@@ -119,20 +143,43 @@ const select = async (organizationId: string, organizationKey: string): Promise<
 
 .org-choice {
   align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  background: transparent;
+  border: 0;
   color: var(--color-text);
   display: flex;
+  flex: 1;
   gap: var(--space-3);
+  min-width: 0;
   padding: var(--space-4);
   text-align: left;
   transition: var(--transition-press);
-  width: 100%;
 }
 
-.org-choice:hover {
+.org-row {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  display: flex;
+  overflow: hidden;
+  transition: var(--transition-press);
+}
+
+.org-row > .icon-btn {
+  align-self: stretch;
+  border: 0;
+  border-left: 1px solid var(--color-border);
+  border-radius: 0;
+  flex: 0 0 auto;
+  height: auto;
+  width: 56px;
+}
+
+.org-row:has(.org-choice:hover) {
   border-color: var(--color-accent);
+}
+
+.org-row:has(.org-choice:hover) > .icon-btn {
+  border-left-color: var(--color-accent);
 }
 
 .org-choice:not(:disabled):active {
@@ -141,10 +188,5 @@ const select = async (organizationId: string, organizationKey: string): Promise<
 
 .org-choice > span:nth-child(2) {
   display: grid;
-}
-
-.org-choice > .lucide {
-  color: var(--color-muted);
-  margin-left: auto;
 }
 </style>

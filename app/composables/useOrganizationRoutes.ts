@@ -50,6 +50,11 @@ export const useOrganizationRoutes = () => {
         name: 'organizations-organizationKey-settings-data-movement',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
+    history: () =>
+      ({
+        name: 'organizations-organizationKey-history',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
     issue: (issueKey: string) =>
       ({
         name: 'organizations-organizationKey-issues-issueKey',
