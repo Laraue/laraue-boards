@@ -7,7 +7,7 @@ import type { IssueHistoryChangeViewModel } from '../IssueHistory.types'
 import { diffLines } from './diffLines'
 
 type Schemas = components['schemas']
-type Change = Schemas['IssueHistoryItemChange']
+type Change = Schemas['HistoryItemChange']
 type Action = Schemas['LogAction']
 type EntityType = Schemas['LogEntityType']
 
