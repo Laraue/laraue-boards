@@ -8,5 +8,6 @@ export const createRegenerateJoinCode =
   () =>
     executeAction({
       map: (code) => code || undefined,
-      request: () => client.POST('/api/organizations/regenerate-join-code', { parseAs: 'text' }),
+      request: () =>
+        client.POST('/api/admin/organizations/regenerate-join-code', { parseAs: 'text' }),
     })

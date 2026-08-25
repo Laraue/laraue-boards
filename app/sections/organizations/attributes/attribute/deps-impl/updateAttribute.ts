@@ -28,7 +28,7 @@ export const createUpdateAttribute =
     return executeAction({
       map: () => true,
       request: () =>
-        client.PUT('/api/organizations/attributes/{id}', {
+        client.PUT('/api/admin/organizations/attributes/{id}', {
           body: {
             color: input.color,
             id: Number(input.id),

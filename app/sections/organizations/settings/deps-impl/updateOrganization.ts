@@ -9,7 +9,7 @@ export const createUpdateOrganization =
     executeAction({
       map: () => true,
       request: () =>
-        client.PUT('/api/organizations/{id}', {
+        client.PUT('/api/admin/organizations/{id}', {
           body: { color: input.color, id: input.id, name: input.name, slug: input.slug },
           params: { path: { id: Number(input.id) } },
         }),

@@ -31,7 +31,7 @@ export const createCreateAttribute =
     return executeAction({
       map: (id) => (id === undefined ? undefined : { id: String(id) }),
       request: () =>
-        client.POST('/api/organizations/attributes', {
+        client.POST('/api/admin/organizations/attributes', {
           body: {
             color: input.color,
             listValues: data.listValues,

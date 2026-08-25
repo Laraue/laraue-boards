@@ -52,7 +52,7 @@ export const createUpdateMemberPermissions =
     executeAction({
       map: () => true,
       request: () =>
-        client.POST('/api/organizations/permissions/{organizationUserId}', {
+        client.POST('/api/admin/organizations/permissions/{organizationUserId}', {
           body: { userPermissions: mapMemberPermissionsRequest(input.permissions) },
           params: { path: { organizationUserId: Number(input.memberId) } },
         }),

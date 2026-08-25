@@ -87,12 +87,12 @@ export const createViewMemberPermissions =
   async ({ memberId, signal }) => {
     const responses = await tryRequest(() =>
       Promise.all([
-        client.GET('/api/organizations/members', { signal }),
-        client.GET('/api/organizations/permissions/{organizationUserId}', {
+        client.GET('/api/admin/organizations/members', { signal }),
+        client.GET('/api/admin/organizations/permissions/{organizationUserId}', {
           params: { path: { organizationUserId: Number(memberId) } },
           signal,
         }),
-        client.GET('/api/organizations/permittable-entities', { signal }),
+        client.GET('/api/admin/organizations/permittable-entities', { signal }),
       ]),
     )
     if (!responses) {
