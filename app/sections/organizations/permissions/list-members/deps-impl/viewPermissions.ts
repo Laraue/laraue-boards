@@ -29,11 +29,12 @@ export const createViewPermissions =
     const [members, joinCode] = await Promise.all([
       executeQuery({
         map: mapOrganizationMembers,
-        request: () => client.GET('/api/organizations/members', { signal }),
+        request: () => client.GET('/api/admin/organizations/members', { signal }),
       }),
       executeQuery({
         map: (code: string) => code || undefined,
-        request: () => client.GET('/api/organizations/join-code', { parseAs: 'text', signal }),
+        request: () =>
+          client.GET('/api/admin/organizations/join-code', { parseAs: 'text', signal }),
       }),
     ])
 

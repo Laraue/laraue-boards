@@ -9,5 +9,5 @@ export const createRemoveOrganization =
     executeAction({
       map: () => true,
       request: () =>
-        client.DELETE('/api/organizations/{id}', { params: { path: { id: Number(id) } } }),
+        client.DELETE('/api/admin/organizations/{id}', { params: { path: { id: Number(id) } } }),
     })

@@ -11,6 +11,6 @@ test('removes the requested organization', async () => {
     data: true,
     status: 'success',
   })
-  assert.equal(new URL(requests[0]!.url).pathname, '/api/organizations/7')
+  assert.equal(new URL(requests[0]!.url).pathname, '/api/admin/organizations/7')
   assert.equal(requests[0]!.method, 'DELETE')
 })

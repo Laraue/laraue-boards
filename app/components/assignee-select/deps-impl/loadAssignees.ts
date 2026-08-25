@@ -16,8 +16,8 @@ export const createLoadAssignees =
           value: member.userId,
         })),
       request: () =>
-        client.GET('/api/spaces/{key}/members', {
-          params: { path: { key: spaceKey } },
+        client.GET('/api/organizations/members', {
+          params: { query: { spaceKey } },
           signal,
         }),
     })

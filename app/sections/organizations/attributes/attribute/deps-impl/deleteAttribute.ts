@@ -9,7 +9,7 @@ export const createDeleteAttribute =
     executeAction({
       map: () => true,
       request: () =>
-        client.DELETE('/api/organizations/attributes/{id}', {
+        client.DELETE('/api/admin/organizations/attributes/{id}', {
           params: { path: { id: Number(id) } },
         }),
     })
