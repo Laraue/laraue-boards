@@ -4,8 +4,8 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createLoadAssignees } from './loadAssignees'
 
-test('maps assignee options', async () => {
-  const { client } = createTestApiClient(() => [
+test('loads visible users for the space and maps assignee options', async () => {
+  const { client, requests } = createTestApiClient(() => [
     {
       color: '#123456',
       displayName: 'Ada Lovelace',
@@ -27,4 +27,6 @@ test('maps assignee options', async () => {
     ],
     status: 'success',
   })
+  assert.equal(new URL(requests[0]!.url).pathname, '/api/organizations/members')
+  assert.equal(new URL(requests[0]!.url).searchParams.get('spaceKey'), 'product')
 })
