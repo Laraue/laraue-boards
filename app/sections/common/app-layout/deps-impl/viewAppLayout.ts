@@ -85,7 +85,12 @@ export const createViewAppLayout =
       if (!('error' in organization) && import.meta.server) {
         return { code: 409, status: 'error' }
       }
-      if ('error' in organization && organization.response.status !== 404) {
+      // No organization cookie yet - `current` answers 401 though the user is signed in.
+      const noOrganizationSelected =
+        'error' in organization &&
+        (organization.response.status === 401 || organization.response.status === 404)
+
+      if ('error' in organization && !noOrganizationSelected) {
         return {
           code: getErrorCode(organization.response.status, 'current organization'),
           status: 'error',

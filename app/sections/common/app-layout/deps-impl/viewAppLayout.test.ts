@@ -65,3 +65,49 @@ test('keeps an unauthenticated response distinct from forbidden access', async (
     status: 'error',
   })
 })
+
+test('selects the organization from the url when only the organization cookie is missing', async () => {
+  let organizationSelected = false
+  const { client, paths } = createTestApiClient((_request, path) => {
+    switch (path) {
+      // Signed in as a user, but with no organization chosen yet.
+      case '/api/organizations/current':
+        return organizationSelected
+          ? {
+              canCreateSpaces: true,
+              canManage: true,
+              canManageAttributes: true,
+              canMassMove: false,
+              color: '#123',
+              id: 1,
+              name: 'Acme',
+            }
+          : new Response(null, { status: 401 })
+      case '/api/organizations':
+        return [
+          {
+            canUpdate: true,
+            id: 1,
+            isPersonal: false,
+            name: 'Acme',
+            slug: 'acme',
+            slugPostfix: 'AB12',
+          },
+        ]
+      case '/api/organizations/login':
+        organizationSelected = true
+        return new Response('ok')
+      case '/api/user':
+        return { color: '#456', firstName: 'Ada', initials: 'AL', lastName: 'Lovelace' }
+      case '/api/spaces':
+        return []
+      default:
+        return new Response(null, { status: 404 })
+    }
+  })
+
+  const result = await createViewAppLayout(client)({ organizationKey: 'acme-AB12' })
+
+  assert.equal(result.status, 'success')
+  assert.include(paths(), '/api/organizations/login')
+})

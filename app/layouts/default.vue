@@ -14,11 +14,16 @@ import AppLayout from '~/sections/common/app-layout/AppLayout.vue'
 import { createAppLayoutDeps } from '~/sections/common/app-layout/deps-impl'
 
 const { organizationKey } = useOrganizationRoutes()
+const route = useRoute()
 const client = useApiClient()
 const deps = createAppLayoutDeps(client)
 const onOrganizationSwitched = () => globalThis.location.reload()
 const onViewError = async (code: number): Promise<void> => {
-  await navigateTo(code === 401 ? '/' : '/organizations')
+  // Shared key: a failed load left behind is what the next layout instance acts on.
+  clearNuxtData(appLayoutDataKey)
+  await navigateTo(
+    code === 401 ? { path: '/', query: { redirect: route.fullPath } } : '/organizations',
+  )
 }
 const onLoggedOut = async (): Promise<void> => {
   clearNuxtData()
