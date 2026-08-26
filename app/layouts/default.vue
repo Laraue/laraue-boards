@@ -3,13 +3,14 @@
     :deps="deps"
     :on-logged-out="onLoggedOut"
     :on-organization-switched="onOrganizationSwitched"
-    :on-view-error="onViewError"
+    :on-view-problem="onViewProblem"
     :organization-key="organizationKey">
     <slot />
   </AppLayout>
 </template>
 
 <script setup lang="ts">
+import type { RoutableProblem } from '~/sections/common/app-layout/AppLayout.deps'
 import AppLayout from '~/sections/common/app-layout/AppLayout.vue'
 import { createAppLayoutDeps } from '~/sections/common/app-layout/deps-impl'
 
@@ -18,12 +19,25 @@ const route = useRoute()
 const client = useApiClient()
 const deps = createAppLayoutDeps(client)
 const onOrganizationSwitched = () => globalThis.location.reload()
-const onViewError = async (code: number): Promise<void> => {
-  // Shared key: a failed load left behind is what the next layout instance acts on.
+const onViewProblem = async (problem: RoutableProblem): Promise<void> => {
   clearNuxtData(appLayoutDataKey)
-  await navigateTo(
-    code === 401 ? { path: '/', query: { redirect: route.fullPath } } : '/organizations',
-  )
+  switch (problem.kind) {
+    case 'load-failed': {
+      showError(createError({ statusCode: problem.code || 500 }))
+      return
+    }
+    case 'no-access': {
+      showError(createError({ statusCode: 403 }))
+      return
+    }
+    case 'signed-out': {
+      await navigateTo({ path: '/', query: { redirect: route.fullPath } })
+      return
+    }
+    case 'unknown-organization': {
+      await navigateTo('/organizations')
+    }
+  }
 }
 const onLoggedOut = async (): Promise<void> => {
   clearNuxtData()

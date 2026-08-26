@@ -58,11 +58,25 @@ test('loads the requested organization layout', async () => {
 })
 
 test('keeps an unauthenticated response distinct from forbidden access', async () => {
-  const { client } = createTestApiClient(() => new Response(null, { status: 401 }))
+  const signedOut = createTestApiClient(() => new Response(null, { status: 401 }))
+  const forbidden = createTestApiClient(() => new Response(null, { status: 403 }))
+
+  assert.deepEqual(await createViewAppLayout(signedOut.client)({ organizationKey: 'acme-AB12' }), {
+    problem: { kind: 'signed-out' },
+    status: 'problem',
+  })
+  assert.deepEqual(await createViewAppLayout(forbidden.client)({ organizationKey: 'acme-AB12' }), {
+    problem: { kind: 'no-access' },
+    status: 'problem',
+  })
+})
+
+test('reports a server failure as a failed load rather than a missing organization', async () => {
+  const { client } = createTestApiClient(() => new Response(null, { status: 503 }))
 
   assert.deepEqual(await createViewAppLayout(client)({ organizationKey: 'acme-AB12' }), {
-    code: 401,
-    status: 'error',
+    problem: { code: 503, kind: 'load-failed' },
+    status: 'problem',
   })
 })
 
@@ -70,7 +84,6 @@ test('selects the organization from the url when only the organization cookie is
   let organizationSelected = false
   const { client, paths } = createTestApiClient((_request, path) => {
     switch (path) {
-      // Signed in as a user, but with no organization chosen yet.
       case '/api/organizations/current':
         return organizationSelected
           ? {

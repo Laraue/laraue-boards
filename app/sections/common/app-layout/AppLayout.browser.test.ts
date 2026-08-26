@@ -4,7 +4,7 @@ import { page } from 'vitest/browser'
 
 import type { TourStateDeps } from '~/composables/useTour'
 
-import type { AppLayoutDeps } from './AppLayout.deps'
+import type { AppLayoutDeps, RoutableProblem } from './AppLayout.deps'
 import type { AppLayoutData } from './AppLayout.types'
 import AppLayout from './AppLayout.vue'
 
@@ -45,7 +45,7 @@ const mount = async (deps: AppLayoutDeps, onLoggedOut = vi.fn<() => void>()) => 
       deps,
       onLoggedOut,
       onOrganizationSwitched: vi.fn<() => void>(),
-      onViewError: vi.fn<(code: number) => void>(),
+      onViewProblem: vi.fn<(problem: RoutableProblem) => void>(),
       organizationKey: 'acme-ab12',
     },
     route: '/organizations/acme-ab12/issues',
