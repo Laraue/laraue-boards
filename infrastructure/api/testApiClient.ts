@@ -1,12 +1,17 @@
-import { createApiClient } from '#infrastructure/api/client'
+import {
+  createApiClient,
+  createRetroApiClient,
+  type CreateApiClientOptions,
+} from '#infrastructure/api/client'
 
 export const TEST_API_BASE_URL = 'https://api.test'
 
-export const createTestApiClient = (
-  respond: (request: Request, path: string) => unknown = () => ({}),
+const createTestClient = <Client>(
+  createClient: (options: CreateApiClientOptions) => Client,
+  respond: (request: Request, path: string) => unknown,
 ) => {
   const requests: Request[] = []
-  const client = createApiClient({
+  const client = createClient({
     baseUrl: TEST_API_BASE_URL,
     fetch: async (input, init) => {
       const request = input instanceof Request ? input : new Request(input, init)
@@ -22,3 +27,13 @@ export const createTestApiClient = (
     requests,
   }
 }
+
+const emptyResponse = () => ({})
+
+export const createTestApiClient = (
+  respond: (request: Request, path: string) => unknown = emptyResponse,
+) => createTestClient(createApiClient, respond)
+
+export const createTestRetroApiClient = (
+  respond: (request: Request, path: string) => unknown = emptyResponse,
+) => createTestClient(createRetroApiClient, respond)

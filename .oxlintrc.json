@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": ["infrastructure/api/generated.ts"],
+  "ignorePatterns": ["infrastructure/api/generated.ts", "infrastructure/api/retro.generated.ts"],
   "plugins": ["eslint", "typescript", "unicorn", "oxc", "vue", "vitest", "import"],
   "jsPlugins": ["eslint-plugin-perfectionist"],
   "env": {

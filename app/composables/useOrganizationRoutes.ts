@@ -106,6 +106,16 @@ export const useOrganizationRoutes = () => {
         name: 'organizations-organizationKey-settings-permissions',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
+    retro: (retroId: string) =>
+      ({
+        name: 'organizations-organizationKey-retro-retroId',
+        params: { ...organizationParams(), retroId },
+      }) satisfies RouteLocationRaw,
+    retros: () =>
+      ({
+        name: 'organizations-organizationKey-retro',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
     settings: () =>
       ({
         name: 'organizations-organizationKey-settings',

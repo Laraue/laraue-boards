@@ -19,6 +19,7 @@ Create `.env` in the repository root:
 
 ```env
 NUXT_PUBLIC_BOARDS_API_BASE_URL=http://localhost:5200
+NUXT_PUBLIC_RETRO_API_BASE_URL=http://localhost:5201
 NUXT_PUBLIC_BOT_NAME=msgboard_bot
 NUXT_PUBLIC_TEST_USER_TOKEN=
 ```
@@ -26,7 +27,7 @@ NUXT_PUBLIC_TEST_USER_TOKEN=
 The browser calls the backend directly. The API base URL must therefore be the backend origin
 without a trailing `/api` path.
 
-Start the backend on port `5200`, then start the frontend:
+Start the boards API on port `5200`, the retro API on port `5201`, then start the frontend:
 
 ```bash
 pnpm dev
