@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppLayoutDeps } from '~/sections/common/app-layout/AppLayout.deps'
+import type { AppLayoutDeps, RoutableProblem } from '~/sections/common/app-layout/AppLayout.deps'
 import AppLayoutContent from '~/sections/common/app-layout/components/AppLayoutContent.vue'
 import { useAppLayoutTour } from '~/sections/common/app-layout/useAppLayoutTour'
 
@@ -26,7 +26,7 @@ const props = defineProps<{
   deps: AppLayoutDeps
   onLoggedOut: () => Promise<void> | void
   onOrganizationSwitched: () => void
-  onViewError: (code: number) => Promise<void> | void
+  onViewProblem: (problem: RoutableProblem) => Promise<void> | void
   organizationKey: string
 }>()
 const query = await useAsyncData(
@@ -38,18 +38,22 @@ const data = computed(() =>
   query.data.value?.status === 'success' ? query.data.value.data : undefined,
 )
 useAppLayoutTour(data, props.deps.tour)
-const errorCode = computed(() =>
-  query.data.value?.status === 'error' ? query.data.value.code : undefined,
+const problem = computed(() =>
+  query.data.value?.status === 'problem' ? query.data.value.problem : undefined,
 )
-const switchingOrganization = computed(() => errorCode.value === 409)
+const switchingOrganization = computed(() => problem.value?.kind === 'selecting-organization')
 
-if (errorCode.value !== undefined && !switchingOrganization.value) {
-  await props.onViewError(errorCode.value)
+const routableProblem = computed(() =>
+  problem.value?.kind === 'selecting-organization' ? undefined : problem.value,
+)
+
+if (routableProblem.value) {
+  await props.onViewProblem(routableProblem.value)
 }
 
-watch(errorCode, (code) => {
-  if (code !== undefined && code !== 409) {
-    void props.onViewError(code)
+watch(routableProblem, (next) => {
+  if (next) {
+    void props.onViewProblem(next)
   }
 })
 
