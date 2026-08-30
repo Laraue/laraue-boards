@@ -28,9 +28,9 @@ const toMember = (member: HubMember): PresenceMember => ({
   userId: member.userId,
 })
 
-const createHubChannel = (baseUrl: string, retroId: string) => {
+const createHubChannel = (hubUrl: string, retroId: string) => {
   const connection = new HubConnectionBuilder()
-    .withUrl(`${baseUrl}/hubs/retro`, { withCredentials: true })
+    .withUrl(hubUrl, { withCredentials: true })
     .withAutomaticReconnect()
     .build()
 
@@ -95,5 +95,5 @@ const inertChannel: RetroChannel = {
   publishCursor: noop,
 }
 
-export const createRetroChannel = (baseUrl: string, retroId: string): RetroChannel =>
-  import.meta.client ? createHubChannel(baseUrl, retroId) : inertChannel
+export const createRetroChannel = (hubUrl: string, retroId: string): RetroChannel =>
+  import.meta.client ? createHubChannel(hubUrl, retroId) : inertChannel

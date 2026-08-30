@@ -41,9 +41,10 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      boardsApiBaseUrl: 'http://localhost:5200',
-      botName: 'msgboard_bot',
-      retroApiBaseUrl: 'http://localhost:5201',
+      boardsApiBaseUrl: '',
+      botName: '',
+      retroApiBaseUrl: '',
+      retroHubUrl: '',
       testUserToken: '',
     },
   },

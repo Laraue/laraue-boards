@@ -17,10 +17,10 @@ import { createViewRetro } from './viewRetro'
 
 export const createRetroBoardPageDeps = (
   client: RetroApiClient,
-  realtimeBaseUrl: string,
+  retroHubUrl: string,
 ): RetroBoardPageDeps => ({
   createCard: createCreateCard(client),
-  createChannel: createCreateChannel(realtimeBaseUrl),
+  createChannel: createCreateChannel(retroHubUrl),
   finishRetro: createFinishRetro(client),
   moveCard: createMoveCard(client),
   removeCard: createRemoveCard(client),
