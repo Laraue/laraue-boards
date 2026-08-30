@@ -41,7 +41,8 @@ jobs:
       - name: Build SSR app
         env:
           NUXT_PUBLIC_BOARDS_API_BASE_URL: ${{ vars.BOARDS_API_BASE_URL }}
-        run: test -n "$NUXT_PUBLIC_BOARDS_API_BASE_URL" && pnpm build
+          NUXT_PUBLIC_RETRO_API_BASE_URL: ${{ vars.RETRO_API_BASE_URL }}
+        run: test -n "$NUXT_PUBLIC_BOARDS_API_BASE_URL" && test -n "$NUXT_PUBLIC_RETRO_API_BASE_URL" && pnpm build
 
       - name: Pack build output
         if: github.ref == 'refs/heads/master'
