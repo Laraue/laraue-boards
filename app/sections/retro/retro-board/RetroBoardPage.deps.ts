@@ -1,0 +1,37 @@
+import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+
+import type { RetroBoardViewModel, RetroChannel, RetroPhase } from './RetroBoardPage.types'
+
+export type RetroBoardPageDeps = {
+  createCard: (input: {
+    retroId: string
+    sectionId: string
+    text: string
+    x: number
+    y: number
+  }) => Promise<ActionResult<{ id: string }>>
+  createChannel: (retroId: string) => RetroChannel
+  finishRetro: (input: { retroId: string }) => Promise<ActionResult<true>>
+  moveCard: (input: {
+    id: string
+    sectionId: string
+    x: number
+    y: number
+  }) => Promise<ActionResult<true>>
+  removeCard: (input: { id: string }) => Promise<ActionResult<true>>
+  setMyCardsRevealed: (input: { retroId: string; revealed: boolean }) => Promise<ActionResult<true>>
+  setVoteTimer: (input: { minutes: null | number; retroId: string }) => Promise<ActionResult<true>>
+  toggleDone: (input: { done: boolean; id: string }) => Promise<ActionResult<true>>
+  toggleReveal: (input: { id: string; revealed: boolean }) => Promise<ActionResult<true>>
+  toggleVote: (input: { id: string; voted: boolean }) => Promise<ActionResult<true>>
+  updateCard: (input: { id: string; text: string }) => Promise<ActionResult<true>>
+  updateSettings: (input: {
+    phase: RetroPhase
+    retroId: string
+    votesPerUser: number
+  }) => Promise<ActionResult<true>>
+  view: (input: {
+    retroId: string
+    signal?: AbortSignal
+  }) => Promise<QueryResult<RetroBoardViewModel>>
+}

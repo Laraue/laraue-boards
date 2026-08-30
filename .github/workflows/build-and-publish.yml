@@ -39,9 +39,7 @@ jobs:
       - name: Run tests
         run: pnpm test
       - name: Build SSR app
-        env:
-          NUXT_PUBLIC_BOARDS_API_BASE_URL: ${{ vars.BOARDS_API_BASE_URL }}
-        run: test -n "$NUXT_PUBLIC_BOARDS_API_BASE_URL" && pnpm build
+        run: pnpm build
 
       - name: Pack build output
         if: github.ref == 'refs/heads/master'

@@ -5,7 +5,13 @@ import pluginVue from 'eslint-plugin-vue'
 
 export default [
   {
-    ignores: ['.nuxt/', '.output/', 'dist/', 'infrastructure/api/generated.ts'],
+    ignores: [
+      '.nuxt/',
+      '.output/',
+      'dist/',
+      'infrastructure/api/generated.ts',
+      'infrastructure/api/retro.generated.ts',
+    ],
   },
 
   ...pluginVue.configs['flat/base'],
