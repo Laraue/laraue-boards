@@ -204,12 +204,10 @@ it('blocks management and freezes cards during voting', async () => {
     data: { ...board, canManage: false, phase: 'Vote' },
   })
 
-  await expect
-    .element(page.getByRole('button', { exact: true, name: 'Finish' }))
-    .not.toBeInTheDocument()
+  await expect.element(page.getByRole('button', { exact: true, name: 'Finish' })).toBeDisabled()
   await expect.element(page.getByRole('button', { name: 'Collect' })).toBeDisabled()
-  await expect.element(page.getByLabelText('Votes')).toBeDisabled()
-  await expect.element(page.getByRole('button', { name: 'Start timer' })).toBeDisabled()
+  await expect.element(page.getByLabelText('Votes per person')).toBeDisabled()
+  await expect.element(page.getByRole('button', { exact: true, name: 'Start' })).toBeDisabled()
 
   await cardWithText('Other note')?.trigger('click')
   await expect.element(page.getByRole('textbox', { name: 'Edit note' })).not.toBeInTheDocument()
@@ -439,7 +437,7 @@ it('shows voting actions only after the timer starts', async () => {
   await mount({ createChannel: () => channel, view })
   await expect.element(page.getByRole('button', { name: 'Vote for note' })).not.toBeInTheDocument()
 
-  await buttonWithText('Start timer')?.trigger('click')
+  await buttonWithText('Start')?.trigger('click')
 
   await expect
     .element(page.getByRole('button', { name: 'Vote for note' }).first())
@@ -883,12 +881,12 @@ it('runs a timer in the collect phase too', async () => {
   const setPhaseTimer = vi.fn<RetroBoardPageDeps['setPhaseTimer']>(successfulAction)
 
   await mount({ createChannel: () => channel, setPhaseTimer })
-  await buttonWithText('Start timer')?.trigger('click')
+  await buttonWithText('Start')?.trigger('click')
 
   expect(setPhaseTimer).toHaveBeenCalledWith({ minutes: 5, retroId: '7' })
 })
 
-it('extends a running timer from now', async () => {
+it('stops a running timer', async () => {
   const { channel } = createTestChannel()
   const setPhaseTimer = vi.fn<RetroBoardPageDeps['setPhaseTimer']>(successfulAction)
 
@@ -897,9 +895,9 @@ it('extends a running timer from now', async () => {
     data: { ...board, phase: 'Group', phaseEndsAt: '2099-01-01T00:00:00Z' },
     setPhaseTimer,
   })
-  await buttonWithText('Extend')?.trigger('click')
+  await buttonWithText('Stop')?.trigger('click')
 
-  expect(setPhaseTimer).toHaveBeenCalledWith({ minutes: 5, retroId: '7' })
+  expect(setPhaseTimer).toHaveBeenCalledWith({ minutes: null, retroId: '7' })
 })
 
 it('lets the facilitator pick the topic under discussion', async () => {
