@@ -123,6 +123,13 @@
           <ArrowRightLeft />
           Data movement
         </NuxtLink>
+        <NuxtLink
+          :class="{ active: within('organizations-organizationKey-retro') }"
+          :to="organizationRoutes.retros()">
+          <RetroIcon />
+          Retro
+          <span class="muted nav-badge">alpha</span>
+        </NuxtLink>
         <a
           aria-label="Documentation (opens in a new tab)"
           class="sidebar-documentation"
@@ -205,7 +212,7 @@ import {
   Tags,
 } from '@lucide/vue'
 
-import { SpaceIcon } from '~/constants/icons'
+import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const props = defineProps<{
@@ -284,6 +291,15 @@ nav button {
   text-decoration: none;
   transition: var(--transition-press);
   width: 100%;
+}
+
+/* Retro is still finding its shape, so the sidebar says so out loud. */
+.nav-badge {
+  border: 1px solid currentcolor;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs, 11px);
+  margin-left: auto;
+  padding: 0 var(--space-2);
 }
 
 nav a:hover,
