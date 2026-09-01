@@ -262,24 +262,26 @@
                 width: `${group.width}px`,
               }"
               @pointerdown="startGroupDrag($event, group.cardIds, startNodeDrag)">
-              <input
-                aria-label="Topic title"
-                class="group-title"
-                :disabled="!canGroup(board)"
-                :placeholder="`Topic of ${group.cardIds.length} notes`"
-                :value="group.title"
-                @change="renameGroup(group.id, $event)"
-                @pointerdown.stop />
-              <button
-                v-if="canGroup(board)"
-                aria-label="Ungroup topic"
-                class="icon-btn small group-ungroup"
-                title="Ungroup"
-                type="button"
-                @click.stop="splitGroup(group.id)"
-                @pointerdown.stop>
-                <Ungroup />
-              </button>
+              <div class="group-header">
+                <input
+                  aria-label="Topic title"
+                  class="group-title"
+                  :disabled="!canGroup(board)"
+                  :placeholder="`Topic of ${group.cardIds.length} notes`"
+                  :value="group.title"
+                  @change="renameGroup(group.id, $event)"
+                  @pointerdown.stop />
+                <button
+                  v-if="canGroup(board)"
+                  aria-label="Ungroup topic"
+                  class="icon-btn small group-ungroup"
+                  title="Ungroup"
+                  type="button"
+                  @click.stop="splitGroup(group.id)"
+                  @pointerdown.stop>
+                  <Ungroup />
+                </button>
+              </div>
             </div>
 
             <article
@@ -526,7 +528,7 @@ type DiscussionTopic = {
 const CARD_SIZE = 160
 // Not a cap on the discussion - just how many topics are marked as the ones to start with.
 const PRIORITY_TOPICS = 3
-const GROUP_PADDING = 14
+const GROUP_PADDING = 8
 const MAX_CARD_FONT_SIZE = 30
 const MIN_CARD_FONT_SIZE = 12
 
@@ -871,6 +873,13 @@ watch(data, (board) => {
     }
   }
 })
+
+// Where a note currently sits on the board, overlays included.
+const drawnPosition = (board: RetroBoardViewModel, cardId: string) => {
+  const card = visibleCards(board).find((item) => item.id === cardId)
+
+  return card && { x: card.x, y: card.y }
+}
 
 // A note being dragged, or one carried along because its topic is: everything moves as one.
 const draggedPosition = (cardId: string) => {
@@ -1319,7 +1328,9 @@ const startCardDrag = (
   state.dragDistance = 0
   state.selectedId = card.id
   state.dragId = card.id
-  state.dragPosition = { x: card.x, y: card.y }
+  // Where the note is drawn, not where the last answer put it: a live move from someone else
+  // would otherwise make it jump back the moment it is picked up.
+  state.dragPosition = drawnPosition(board, card.id) ?? { x: card.x, y: card.y }
   state.dragOffsets.clear()
   startNodeDrag(event)
 }
@@ -1331,7 +1342,7 @@ const startGroupDrag = (
   startNodeDrag: (event: PointerEvent) => void,
 ) => {
   const board = data.value
-  const members = board && boardCards(board).filter((card) => cardIds.includes(card.id))
+  const members = board && visibleCards(board).filter((card) => cardIds.includes(card.id))
   const lead = members?.[0]
 
   if (!board || !lead || !members || !canMoveCard(board, lead)) {
@@ -2142,25 +2153,35 @@ button.phase-chip:hover:not(:disabled) {
   pointer-events: auto;
 }
 
+.group-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  left: 50%;
+  max-width: calc(100% - var(--space-4));
+  pointer-events: auto;
+  position: absolute;
+  top: -40px;
+  transform: translateX(-50%);
+  width: max-content;
+  z-index: 1;
+}
+
 .group-title {
-  background: transparent;
-  border: 0;
-  border-bottom: 2px solid color-mix(in srgb, var(--color-accent) 44%, transparent);
-  border-radius: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
   box-shadow: none;
   color: var(--color-text);
   field-sizing: content;
   font-family: inherit;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-small);
   font-weight: var(--font-weight-semibold);
   height: var(--control-height-small);
-  left: 0;
-  max-width: calc(100% - 80px);
+  max-width: 100%;
   padding: 0 var(--space-2);
-  position: absolute;
-  top: -40px;
+  position: static;
   width: fit-content;
-  z-index: 1;
 }
 
 .group-title:focus {
@@ -2170,19 +2191,17 @@ button.phase-chip:hover:not(:disabled) {
 }
 
 .group-ungroup {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  position: absolute;
-  right: 0;
-  top: -40px;
-  z-index: 1;
+  position: static;
 }
 
 .card.group-picked {
   background-color: color-mix(in srgb, var(--color-accent) 7%, var(--card-color));
   outline: 2px solid var(--color-accent);
   outline-offset: 4px;
+}
+
+.card.group-member {
+  border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
 }
 
 .merge-bar {
