@@ -290,7 +290,7 @@
                 discussed: board.discussedCardId === card.id,
                 'group-member': card.groupId !== null,
                 'group-picked': state.groupSelection.includes(card.id),
-                dragging: state.dragId === card.id,
+                dragging: state.dragId === card.id || state.dragOffsets.has(card.id),
                 editing: state.editingId === card.id,
                 hidden: card.hidden,
                 selected: state.selectedId === card.id,
@@ -431,13 +431,21 @@
 
         <div
           v-if="state.groupSelection.length > 0"
-          class="merge-bar">
-          <span>{{ state.groupSelection.length }} selected</span>
+          aria-label="Group selection"
+          class="merge-bar"
+          role="toolbar">
+          <Group />
+          <span>
+            {{ state.groupSelection.length }}
+            {{ state.groupSelection.length === 1 ? 'note' : 'notes' }}
+            selected
+          </span>
           <button
             class="primary small"
             :disabled="state.groupSelection.length < 2"
             type="button"
             @click="mergeSelection()">
+            <Group />
             Merge into a topic
           </button>
           <button
@@ -555,6 +563,8 @@ const state = reactive({
   draft: '',
   dragDistance: 0,
   dragId: undefined as string | undefined,
+  // Notes of the dragged group, kept at their distance from the one under the pointer.
+  dragOffsets: new Map<string, { x: number; y: number }>(),
   dragPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
   // Notes the server has not told us about yet: one created here, or one deleted here. They keep
@@ -592,10 +602,15 @@ let channel: RetroChannel | undefined
 let lastCardClickAt = 0
 let lastCardClickId: string | undefined
 
+const endDrag = () => {
+  state.dragId = undefined
+  state.dragOffsets.clear()
+  state.dragPosition = undefined
+}
+
 const clearBoardState = () => {
   state.dragDistance = 0
-  state.dragId = undefined
-  state.dragPosition = undefined
+  endDrag()
   state.draft = ''
   state.editingId = undefined
   state.hoveredId = undefined
@@ -843,6 +858,9 @@ watch(data, (board) => {
   if (!board) {
     return
   }
+  if (!canGroup(board)) {
+    state.groupSelection = []
+  }
   const known = new Set(board.cards.map((card) => card.id))
 
   state.draftCards = state.draftCards.filter((draft) => !known.has(draft.id))
@@ -853,13 +871,26 @@ watch(data, (board) => {
   }
 })
 
+// A note being dragged, or one carried along because its topic is: everything moves as one.
+const draggedPosition = (cardId: string) => {
+  const position = state.dragPosition
+
+  if (!position) {
+    return undefined
+  }
+  if (cardId === state.dragId) {
+    return position
+  }
+  const offset = state.dragOffsets.get(cardId)
+
+  return offset && { x: position.x + offset.x, y: position.y + offset.y }
+}
+
 const visibleCards = (board: RetroBoardViewModel) =>
   boardCards(board).map((card) => {
     // While dragging, the note already wears the colour of the zone it is heading into.
     const moved = state.remoteMoves.get(card.id)
-    const dragged =
-      (card.id === state.dragId ? state.dragPosition : undefined) ??
-      (moved && { x: moved.x, y: moved.y })
+    const dragged = draggedPosition(card.id) ?? (moved && { x: moved.x, y: moved.y })
     const remoteText =
       state.editingId === card.id
         ? undefined
@@ -943,12 +974,19 @@ const canChangeSection = (board: RetroBoardViewModel, sectionId: string) =>
 const canChangeCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   canChangeSection(board, card.sectionId)
 
-const canMoveSection = (board: RetroBoardViewModel, sectionId: string) =>
-  !board.finished &&
-  (board.canManage || (board.phase === 'Collect' && !isActionsSection(board, sectionId)))
-
+// Sliding a note around is layout, not content, so it works in every phase. Only crossing the
+// actions border turns the note into something else, and that still obeys the phase.
 const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  canMoveSection(board, card.sectionId)
+  !board.finished && !card.hidden
+
+const canDropOn = (
+  board: RetroBoardViewModel,
+  card: RetroCardViewModel,
+  sectionId: string,
+) =>
+  canMoveCard(board, card) &&
+  (isActionsSection(board, sectionId) === isActionsSection(board, card.sectionId) ||
+    canChangeSection(board, sectionId))
 
 const { execute: executeCreate } = useAction(props.deps.createCard)
 const { execute: executeMove } = useAction(props.deps.moveCard)
@@ -1281,6 +1319,14 @@ const startCardDrag = (
   state.selectedId = card.id
   state.dragId = card.id
   state.dragPosition = { x: card.x, y: card.y }
+  // A topic is one thing on the board, so it travels as one.
+  state.dragOffsets = new Map(
+    boardCards(board)
+      .filter(
+        (item) => card.groupId !== null && item.groupId === card.groupId && item.id !== card.id,
+      )
+      .map((item) => [item.id, { x: item.x - card.x, y: item.y - card.y }]),
+  )
   startNodeDrag(event)
 }
 
@@ -1291,10 +1337,19 @@ const moveDraggedCard = (deltaX: number, deltaY: number) => {
   state.dragDistance += Math.hypot(deltaX, deltaY)
   state.dragPosition = { x: state.dragPosition.x + deltaX, y: state.dragPosition.y + deltaY }
 
-  const { dragId, dragPosition } = state
+  const { dragId } = state
   const current = channel
+  const moved = [dragId, ...state.dragOffsets.keys()]
 
-  moveFrame.schedule(() => current?.publishCardMove(dragId, dragPosition.x, dragPosition.y))
+  moveFrame.schedule(() => {
+    for (const id of moved) {
+      const position = draggedPosition(id)
+
+      if (position) {
+        current?.publishCardMove(id, position.x, position.y)
+      }
+    }
+  })
 }
 
 const commitDraggedCard = async () => {
@@ -1305,8 +1360,8 @@ const commitDraggedCard = async () => {
     return
   }
   if (state.dragDistance <= 4) {
-    state.dragId = undefined
-    state.dragPosition = undefined
+    endDrag()
+
     return
   }
   const board = data.value
@@ -1314,19 +1369,29 @@ const commitDraggedCard = async () => {
   const index = zoneIndexAt(position.x + CARD_SIZE / 2, position.y + CARD_SIZE / 2, sections.length)
   const sectionId = sections[index]?.id
 
-  if (!board || !sectionId || !canMoveSection(board, sectionId)) {
-    state.dragId = undefined
-    state.dragPosition = undefined
+  const dragged = board && boardCards(board).find((item) => item.id === id)
+
+  if (!board || !sectionId || !dragged || !canDropOn(board, dragged, sectionId)) {
+    endDrag()
+
     return
   }
+  const carried = [...state.dragOffsets.entries()].map(([cardId, offset]) => ({
+    cardId,
+    x: position.x + offset.x,
+    y: position.y + offset.y,
+  }))
+
   try {
     await executeMove({ id, sectionId, x: position.x, y: position.y })
+    for (const item of carried) {
+      await executeMove({ id: item.cardId, sectionId, x: item.x, y: item.y })
+    }
     // The dropped position has to hold until the stored one arrives, or the card snaps back
     // to where the drag started for as long as the reload takes.
     await refresh()
   } finally {
-    state.dragId = undefined
-    state.dragPosition = undefined
+    endDrag()
   }
 }
 
@@ -2042,8 +2107,10 @@ button.phase-chip:hover:not(:disabled) {
 }
 
 .group-box {
-  border: 2px dashed var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+  border: 2px solid color-mix(in srgb, var(--color-accent) 58%, transparent);
   border-radius: var(--radius-lg);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 12%, transparent);
   pointer-events: none;
   position: absolute;
   z-index: 0;
@@ -2056,36 +2123,46 @@ button.phase-chip:hover:not(:disabled) {
 
 .group-title {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 44%, var(--color-border));
   border-radius: var(--radius-pill);
   font-family: inherit;
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   left: var(--space-3);
   max-width: calc(100% - 80px);
   padding: 2px var(--space-3);
   position: absolute;
-  top: -14px;
+  top: -48px;
+  z-index: 1;
+}
+
+.group-title:focus {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 .group-ungroup {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 44%, var(--color-border));
   position: absolute;
   right: var(--space-3);
-  top: -14px;
+  top: -48px;
+  z-index: 1;
 }
 
 .card.group-picked {
-  outline: 3px dashed var(--color-accent);
-  outline-offset: 3px;
+  background-color: color-mix(in srgb, var(--color-accent) 7%, var(--card-color));
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
 }
 
 .merge-bar {
   align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  bottom: var(--space-5);
+  background: color-mix(in srgb, var(--color-accent) 9%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
+  border-radius: var(--radius-card);
+  bottom: calc(var(--space-4) + var(--icon-btn-size) + var(--space-2));
   box-shadow: var(--shadow-card);
   display: flex;
   gap: var(--space-3);
@@ -2094,6 +2171,22 @@ button.phase-chip:hover:not(:disabled) {
   position: fixed;
   transform: translateX(-50%);
   z-index: 5;
+}
+
+.merge-bar > svg {
+  color: var(--color-accent);
+  flex: none;
+}
+
+.merge-bar .primary {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-1);
+}
+
+.merge-bar .primary svg {
+  height: 15px;
+  width: 15px;
 }
 
 .card.discussed {

@@ -178,6 +178,11 @@ const mount = async ({
   return { advancePhase, finishRetro, revertPhase, setPhaseTimer, updateSettings, view }
 }
 
+// The phases live behind a picker now, so the test has to open it before reading them.
+const openPhasePicker = async () => {
+  await currentWrapper?.find('.phase-picker-trigger').trigger('click')
+}
+
 const cardWithText = (text: string) =>
   currentWrapper
     ?.findAll('.card')
@@ -204,6 +209,7 @@ it('blocks management and freezes cards during voting', async () => {
     data: { ...board, canManage: false, phase: 'Vote' },
   })
 
+  await openPhasePicker()
   await expect.element(page.getByRole('button', { exact: true, name: 'Finish' })).toBeDisabled()
   await expect.element(page.getByRole('button', { name: 'Collect' })).toBeDisabled()
   await expect.element(page.getByLabelText('Votes per person')).toBeDisabled()
@@ -214,8 +220,9 @@ it('blocks management and freezes cards during voting', async () => {
 
   await cardWithText('My note')?.trigger('click')
   await expect.element(page.getByRole('textbox', { name: 'Edit note' })).not.toBeInTheDocument()
+  // Text is frozen, but the board can still be tidied up: dragging stays open in every phase.
   await cardWithText('My note')?.find('.card-text').trigger('pointerdown')
-  expect(cardWithText('My note')?.classes()).not.toContain('dragging')
+  expect(cardWithText('My note')?.classes()).toContain('dragging')
 })
 
 it('shows only recorded participants after finish', async () => {
@@ -628,6 +635,15 @@ it('draws the topic around its notes and renames it', async () => {
     retroId: '7',
     title: 'Slow releases',
   })
+})
+
+it('carries the whole topic when one of its notes is dragged', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({ createChannel: () => channel, data: groupedBoard })
+  await cardWithText('My note')?.find('.card-text').trigger('pointerdown')
+
+  expect(cardWithText('Other note')?.classes()).toContain('dragging')
 })
 
 it('splits the topic back into notes', async () => {
