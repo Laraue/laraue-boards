@@ -577,8 +577,8 @@ it('merges the picked notes into a topic', async () => {
 
   expect(buttonWithText('Merge into a topic')).toBeUndefined()
 
-  await cardWithText('My note')?.trigger('click')
-  await cardWithText('Other note')?.trigger('click')
+  await cardWithText('My note')?.trigger('click', { ctrlKey: true })
+  await cardWithText('Other note')?.trigger('click', { ctrlKey: true })
 
   expect(cardWithText('My note')?.classes()).toContain('group-picked')
   await buttonWithText('Merge into a topic')?.trigger('click')
@@ -637,13 +637,18 @@ it('draws the topic around its notes and renames it', async () => {
   })
 })
 
-it('carries the whole topic when one of its notes is dragged', async () => {
+it('drags a topic by its frame and a note on its own', async () => {
   const { channel } = createTestChannel()
 
   await mount({ createChannel: () => channel, data: groupedBoard })
-  await cardWithText('My note')?.find('.card-text').trigger('pointerdown')
+  await currentWrapper?.find('.group-box').trigger('pointerdown')
 
+  expect(cardWithText('My note')?.classes()).toContain('dragging')
   expect(cardWithText('Other note')?.classes()).toContain('dragging')
+
+  await currentWrapper?.find('.card-text').trigger('pointerdown')
+
+  expect(cardWithText('Other note')?.classes()).not.toContain('dragging')
 })
 
 it('splits the topic back into notes', async () => {

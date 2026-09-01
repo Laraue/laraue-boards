@@ -260,7 +260,8 @@
                 left: `${group.left}px`,
                 top: `${group.top}px`,
                 width: `${group.width}px`,
-              }">
+              }"
+              @pointerdown="startGroupDrag($event, group.cardIds, startNodeDrag)">
               <input
                 aria-label="Topic title"
                 class="group-title"
@@ -301,7 +302,7 @@
                 left: `${card.x}px`,
                 top: `${card.y}px`,
               }"
-              @click="selectCard(card)"
+              @click="selectCard(card, $event)"
               @dblclick.stop
               @pointerdown.stop="startCardDrag($event, card, startNodeDrag)"
               @pointerenter="state.hoveredId = card.id"
@@ -1319,13 +1320,28 @@ const startCardDrag = (
   state.selectedId = card.id
   state.dragId = card.id
   state.dragPosition = { x: card.x, y: card.y }
-  // A topic is one thing on the board, so it travels as one.
+  state.dragOffsets.clear()
+  startNodeDrag(event)
+}
+
+// Dragging a note moves that note; dragging the frame around a topic moves the whole topic.
+const startGroupDrag = (
+  event: PointerEvent,
+  cardIds: string[],
+  startNodeDrag: (event: PointerEvent) => void,
+) => {
+  const board = data.value
+  const members = board && boardCards(board).filter((card) => cardIds.includes(card.id))
+  const lead = members?.[0]
+
+  if (!board || !lead || !members || !canMoveCard(board, lead)) {
+    return
+  }
+  state.dragDistance = 0
+  state.dragId = lead.id
+  state.dragPosition = { x: lead.x, y: lead.y }
   state.dragOffsets = new Map(
-    boardCards(board)
-      .filter(
-        (item) => card.groupId !== null && item.groupId === card.groupId && item.id !== card.id,
-      )
-      .map((item) => [item.id, { x: item.x - card.x, y: item.y - card.y }]),
+    members.slice(1).map((card) => [card.id, { x: card.x - lead.x, y: card.y - lead.y }]),
   )
   startNodeDrag(event)
 }
@@ -1395,10 +1411,15 @@ const commitDraggedCard = async () => {
   }
 }
 
-const selectCard = (card: RetroCardViewModel) => {
+const selectCard = (card: RetroCardViewModel, event: MouseEvent) => {
   const board = data.value
 
-  if (board && canGroup(board) && !isActionsSection(board, card.sectionId)) {
+  if (
+    board &&
+    canGroup(board) &&
+    !isActionsSection(board, card.sectionId) &&
+    (event.ctrlKey || event.metaKey)
+  ) {
     toggleGroupSelection(card)
   }
   const now = Date.now()
@@ -1743,12 +1764,12 @@ const finish = async () => {
   display: grid;
   font-size: var(--font-size-small);
   gap: var(--space-2);
+  left: 0;
   min-width: 200px;
   opacity: 0;
   padding: var(--space-3);
   pointer-events: none;
   position: absolute;
-  left: 0;
   top: calc(100% + var(--space-2));
   transition: opacity 0.12s ease;
   z-index: 5;
@@ -1786,11 +1807,11 @@ const finish = async () => {
   align-items: center;
   border-radius: var(--radius-card);
   display: flex;
+  left: var(--space-4);
   min-height: var(--control-height);
   padding: var(--space-1) var(--space-3);
   pointer-events: auto;
   position: absolute;
-  left: var(--space-4);
   top: calc(var(--space-4) + var(--control-height) + var(--space-1));
 }
 
@@ -2111,7 +2132,7 @@ button.phase-chip:hover:not(:disabled) {
   border: 2px solid color-mix(in srgb, var(--color-accent) 58%, transparent);
   border-radius: var(--radius-lg);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 12%, transparent);
-  pointer-events: none;
+  cursor: grab;
   position: absolute;
   z-index: 0;
 }
@@ -2122,32 +2143,39 @@ button.phase-chip:hover:not(:disabled) {
 }
 
 .group-title {
-  background: var(--color-surface);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 44%, var(--color-border));
-  border-radius: var(--radius-pill);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid color-mix(in srgb, var(--color-accent) 44%, transparent);
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--color-text);
+  field-sizing: content;
   font-family: inherit;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
-  left: var(--space-3);
+  height: var(--control-height-small);
+  left: 0;
   max-width: calc(100% - 80px);
-  padding: 2px var(--space-3);
+  padding: 0 var(--space-2);
   position: absolute;
-  top: -48px;
+  top: -40px;
+  width: fit-content;
   z-index: 1;
 }
 
 .group-title:focus {
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-focus);
+  box-shadow: none;
   outline: none;
 }
 
 .group-ungroup {
-  background: var(--color-surface);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 44%, var(--color-border));
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   position: absolute;
-  right: var(--space-3);
-  top: -48px;
+  right: 0;
+  top: -40px;
   z-index: 1;
 }
 
