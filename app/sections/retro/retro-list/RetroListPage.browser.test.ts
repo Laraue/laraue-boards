@@ -7,8 +7,22 @@ import type { RetroListItemViewModel } from './RetroListPage.types'
 import RetroListPage from './RetroListPage.vue'
 
 const retros: RetroListItemViewModel[] = [
-  { cardCount: 12, createdAt: '2026-08-20T10:00:00Z', finished: false, id: '7', name: 'Sprint 42' },
-  { cardCount: 8, createdAt: '2026-08-06T10:00:00Z', finished: true, id: '6', name: 'Sprint 41' },
+  {
+    cardCount: 12,
+    createdAt: '2026-08-20T10:00:00Z',
+    finished: false,
+    id: '7',
+    name: 'Sprint 42',
+    openActionCount: 0,
+  },
+  {
+    cardCount: 8,
+    createdAt: '2026-08-06T10:00:00Z',
+    finished: true,
+    id: '6',
+    name: 'Sprint 41',
+    openActionCount: 2,
+  },
 ]
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
@@ -40,18 +54,45 @@ it('lists past retros with their state and links to each board', async () => {
   await expect.element(page.getByText('Finished')).toBeInTheDocument()
 })
 
-it('opens the new board after starting a retro', async () => {
-  const startRetro = vi.fn<RetroListPageDeps['startRetro']>(async () => ({
+const startingDeps = (startRetro: RetroListPageDeps['startRetro'], data = retros) => ({
+  startRetro,
+  view: vi.fn<RetroListPageDeps['view']>(async () => ({ data, status: 'success' })),
+})
+
+const successfulStart = () =>
+  vi.fn<RetroListPageDeps['startRetro']>(async () => ({
     data: { retroId: '9' },
     status: 'success',
   }))
-  const onOpen = await mount({
-    startRetro,
-    view: vi.fn<RetroListPageDeps['view']>(async () => ({ data: [], status: 'success' })),
-  })
+
+it('opens the new board after starting a retro from scratch', async () => {
+  const startRetro = successfulStart()
+  const onOpen = await mount(startingDeps(startRetro, []))
 
   await page.getByRole('button', { name: 'Start retro' }).click()
 
   await vi.waitFor(() => expect(startRetro).toHaveBeenCalledOnce())
+  // Nothing is carried over unless the team asks for it on a specific retro.
+  expect(startRetro).toHaveBeenCalledWith({ basedOnRetroId: null, name: expect.any(String) })
+  expect(onOpen).toHaveBeenCalledWith('9')
+})
+
+it('offers to continue only from a retro that still has open actions', async () => {
+  await mount(startingDeps(successfulStart()))
+
+  // Sprint 42 has nothing open, so continuing from it would carry nothing.
+  expect(
+    [...document.querySelectorAll('.continue-btn')].map((button) => button.textContent?.trim()),
+  ).toEqual(['Continue from here (2)'])
+})
+
+it('carries the open actions of the retro the button belongs to', async () => {
+  const startRetro = successfulStart()
+  const onOpen = await mount(startingDeps(startRetro))
+
+  await currentWrapper!.find('.continue-btn').trigger('click')
+
+  await vi.waitFor(() => expect(startRetro).toHaveBeenCalledOnce())
+  expect(startRetro).toHaveBeenCalledWith({ basedOnRetroId: '6', name: expect.any(String) })
   expect(onOpen).toHaveBeenCalledWith('9')
 })

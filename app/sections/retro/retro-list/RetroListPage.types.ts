@@ -4,4 +4,5 @@ export type RetroListItemViewModel = {
   finished: boolean
   id: string
   name: string
+  openActionCount: number
 }

@@ -824,6 +824,8 @@ export interface components {
         };
         CreateRetroRequest: {
             name: string;
+            /** Format: int64 */
+            basedOnRetroId?: null | number | string;
         };
         CreateRetroResponse: {
             /** Format: int64 */
@@ -913,6 +915,8 @@ export interface components {
             finishedAt: null | string;
             /** Format: int32 */
             cardCount: number | string;
+            /** Format: int32 */
+            openActionCount: number | string;
         };
         /** @enum {unknown} */
         RetroPhase: "Collect" | "Vote" | "Discuss" | "Group" | "Actions";

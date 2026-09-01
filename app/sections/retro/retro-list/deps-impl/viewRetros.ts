@@ -14,6 +14,7 @@ export const createViewRetros =
           finished: retro.finishedAt !== null,
           id: String(retro.id),
           name: retro.name,
+          openActionCount: Number(retro.openActionCount),
         })),
       request: () => client.GET('/api/retro', { signal }),
     })
