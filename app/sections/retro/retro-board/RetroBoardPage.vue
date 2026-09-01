@@ -34,10 +34,12 @@
               <span
                 v-if="!presence.length"
                 class="muted presence-alone">
-                Only you
+                {{ board.finished && !board.participants.length ? 'No participants' : 'Only you' }}
               </span>
               <div class="presence-list">
-                <p class="presence-title">On this retro</p>
+                <p class="presence-title">
+                  {{ board.finished ? 'Participants' : 'On this retro' }}
+                </p>
                 <span
                   v-for="member in everyone(board)"
                   :key="member.userId"
@@ -65,13 +67,13 @@
                 :key="option"
                 class="secondary small"
                 :class="{ active: board.phase === option }"
-                :disabled="!board.canManage || board.phase === option"
+                :disabled="!board.canManage || !canChangePhase(board.phase, option)"
                 type="button"
-                @click="setPhase(option)">
+                @click="changePhase(option)">
                 {{ option }}
               </button>
               <button
-                v-if="board.canManage"
+                v-if="board.canManage && board.phase === 'Actions'"
                 class="secondary danger small"
                 type="button"
                 @click="finish">
@@ -260,7 +262,7 @@
                 "
                 class="card-toolbar">
                 <button
-                  v-if="board.phase === 'Discuss' && isActionsSection(board, card.sectionId)"
+                  v-if="board.phase === 'Actions' && isActionsSection(board, card.sectionId)"
                   class="icon-btn small"
                   :title="card.done ? 'Mark as not done' : 'Mark as done'"
                   type="button"
@@ -325,7 +327,12 @@ const props = defineProps<{ deps: RetroBoardPageDeps; retroId: string }>()
 const CURSOR_TTL_MS = 5000
 const LIVE_TTL_MS = 2000
 
-const PHASES: RetroPhase[] = ['Collect', 'Vote', 'Discuss']
+const PHASES: RetroPhase[] = ['Collect', 'Group', 'Vote', 'Discuss', 'Actions']
+
+const previousPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) - 1]
+const nextPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) + 1]
+const canChangePhase = (current: RetroPhase, target: RetroPhase) =>
+  target === previousPhase(current) || target === nextPhase(current)
 
 const ZONE_WIDTH = 880
 const ZONE_HEIGHT = 720
@@ -499,7 +506,8 @@ const presence = computed(() => {
 })
 
 // Avatars stand for the teammates next to you; the hover list names everyone, you included.
-const everyone = (board: RetroBoardViewModel) => [board.me, ...presence.value]
+const everyone = (board: RetroBoardViewModel) =>
+  board.finished ? board.participants : [board.me, ...presence.value]
 
 useHead({ title: computed(() => data.value?.name ?? 'Retro') })
 
@@ -618,10 +626,17 @@ const isActionsSection = (board: RetroBoardViewModel, sectionId: string) =>
 const canChangeSection = (board: RetroBoardViewModel, sectionId: string) =>
   !board.finished &&
   ((board.phase === 'Collect' && !isActionsSection(board, sectionId)) ||
-    (board.phase === 'Discuss' && isActionsSection(board, sectionId)))
+    (board.phase === 'Actions' && isActionsSection(board, sectionId)))
 
 const canChangeCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   canChangeSection(board, card.sectionId)
+
+const canMoveSection = (board: RetroBoardViewModel, sectionId: string) =>
+  !board.finished &&
+  (board.canManage || (board.phase === 'Collect' && !isActionsSection(board, sectionId)))
+
+const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
+  canMoveSection(board, card.sectionId)
 
 const { execute: executeCreate } = useAction(props.deps.createCard)
 const { execute: executeMove } = useAction(props.deps.moveCard)
@@ -632,39 +647,44 @@ const { execute: executeRemove } = useAction(props.deps.removeCard)
 const { execute: executeReveal } = useAction(props.deps.toggleReveal)
 const { execute: executeRevealMine } = useAction(props.deps.setMyCardsRevealed)
 const { execute: executeFinish } = useAction(props.deps.finishRetro)
+const { execute: executeAdvancePhase } = useAction(props.deps.advancePhase)
+const { execute: executeRevertPhase } = useAction(props.deps.revertPhase)
 const { execute: executeSettings } = useAction(props.deps.updateSettings)
 const { execute: executeTimer } = useAction(props.deps.setVoteTimer)
 
-// Phase and the vote budget always travel together, so one of them never overwrites the other.
-const saveSettings = async (phase: RetroPhase, votesPerUser: number) => {
-  if (!data.value?.canManage) {
+const saveSettings = async (votesPerUser: number) => {
+  const board = data.value
+
+  if (!board?.canManage) {
     return
   }
-  await executeSettings({ phase, retroId: props.retroId, votesPerUser })
+  await executeSettings({ phase: board.phase, retroId: props.retroId, votesPerUser })
   await refresh()
 }
 
-const setPhase = async (phase: RetroPhase) => {
+const changePhase = async (phase: RetroPhase) => {
   const board = data.value
+  const reverting = board && phase === previousPhase(board.phase)
 
-  if (!board?.canManage || board.phase === phase) {
+  if (!board?.canManage || !canChangePhase(board.phase, phase)) {
     return
   }
-  if (board.phase === 'Vote' && phase !== 'Vote' && board.voteEndsAt) {
+  if (board.phase === 'Vote' && board.voteEndsAt) {
     const stopped = await executeTimer({ minutes: null, retroId: props.retroId })
 
     if (!stopped) {
       return
     }
   }
-  await saveSettings(phase, board.votesPerUser)
+  const executePhase = reverting ? executeRevertPhase : executeAdvancePhase
+
+  if (await executePhase({ phase, retroId: props.retroId })) {
+    await refresh()
+  }
 }
 
 const setVotesPerUser = (event: Event) =>
-  saveSettings(
-    data.value?.phase ?? 'Vote',
-    Math.max(1, Number((event.target as HTMLInputElement).value)),
-  )
+  saveSettings(Math.max(1, Number((event.target as HTMLInputElement).value)))
 
 // The timer lives on its own endpoint: editing settings mid-vote must not restart the countdown.
 const setTimer = async (minutes: null | number) => {
@@ -869,7 +889,7 @@ const startCardDrag = (
 ) => {
   const board = data.value
 
-  if (!board || state.editingId === card.id || !canChangeCard(board, card)) {
+  if (!board || state.editingId === card.id || !canMoveCard(board, card)) {
     return
   }
   state.dragDistance = 0
@@ -909,7 +929,7 @@ const commitDraggedCard = async () => {
   const index = zoneIndexAt(position.x + CARD_SIZE / 2, position.y + CARD_SIZE / 2, sections.length)
   const sectionId = sections[index]?.id
 
-  if (!board || !sectionId || !canChangeSection(board, sectionId)) {
+  if (!board || !sectionId || !canMoveSection(board, sectionId)) {
     state.dragId = undefined
     state.dragPosition = undefined
     return
@@ -1006,7 +1026,7 @@ const vote = async (card: RetroCardViewModel) => {
 const done = async (card: RetroCardViewModel) => {
   const board = data.value
 
-  if (!board || board.phase !== 'Discuss' || !isActionsSection(board, card.sectionId)) {
+  if (!board || board.phase !== 'Actions' || !isActionsSection(board, card.sectionId)) {
     return
   }
   await executeDone({ done: !card.done, id: card.id })

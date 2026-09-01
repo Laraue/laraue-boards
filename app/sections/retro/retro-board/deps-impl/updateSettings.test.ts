@@ -4,7 +4,7 @@ import { createTestRetroApiClient } from '#infrastructure/api/testApiClient'
 
 import { createUpdateSettings } from './updateSettings'
 
-test('updates the phase and vote budget together', async () => {
+test('updates the vote budget for the current phase', async () => {
   const { client, paths, requests } = createTestRetroApiClient()
 
   await createUpdateSettings(client)({ phase: 'Vote', retroId: '7', votesPerUser: 5 })

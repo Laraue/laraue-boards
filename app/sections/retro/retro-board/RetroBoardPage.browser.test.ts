@@ -91,25 +91,30 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 let testHost: HTMLDivElement | undefined
 
 const mount = async ({
+  advancePhase = vi.fn<RetroBoardPageDeps['advancePhase']>(successfulAction),
   createChannel,
   data = board,
   finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
+  revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction),
   setVoteTimer = vi.fn<RetroBoardPageDeps['setVoteTimer']>(successfulAction),
   updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction),
   updateSettings = vi.fn<RetroBoardPageDeps['updateSettings']>(successfulAction),
   view = vi.fn<RetroBoardPageDeps['view']>(async () => ({ data, status: 'success' })),
 }: {
+  advancePhase?: RetroBoardPageDeps['advancePhase']
   createChannel: RetroBoardPageDeps['createChannel']
   data?: RetroBoardViewModel
   finishRetro?: RetroBoardPageDeps['finishRetro']
   removeCard?: RetroBoardPageDeps['removeCard']
+  revertPhase?: RetroBoardPageDeps['revertPhase']
   setVoteTimer?: RetroBoardPageDeps['setVoteTimer']
   updateCard?: RetroBoardPageDeps['updateCard']
   updateSettings?: RetroBoardPageDeps['updateSettings']
   view?: RetroBoardPageDeps['view']
 }) => {
   const deps: RetroBoardPageDeps = {
+    advancePhase,
     createCard: vi.fn<RetroBoardPageDeps['createCard']>(async () => ({
       data: { id: 'new-card' },
       status: 'success',
@@ -118,6 +123,7 @@ const mount = async ({
     finishRetro,
     moveCard: vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
     removeCard,
+    revertPhase,
     setMyCardsRevealed: vi.fn<RetroBoardPageDeps['setMyCardsRevealed']>(successfulAction),
     setVoteTimer,
     toggleDone: vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction),
@@ -138,7 +144,7 @@ const mount = async ({
     props: { deps, retroId: '7' },
     route: '/organizations/acme-ab12/retro/7',
   })
-  return { finishRetro, setVoteTimer, updateSettings, view }
+  return { advancePhase, finishRetro, revertPhase, setVoteTimer, updateSettings, view }
 }
 
 const cardWithText = (text: string) =>
@@ -183,6 +189,24 @@ it('blocks management and freezes cards during voting', async () => {
   expect(cardWithText('My note')?.classes()).not.toContain('dragging')
 })
 
+it('shows only recorded participants after finish', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...board,
+      finished: true,
+      participants: [{ color: '#a44', initials: 'GH', name: 'Grace Hopper', userId: 'user-2' }],
+    },
+  })
+
+  const participants = currentWrapper?.get('.presence-list').text()
+
+  expect(participants).toContain('Grace Hopper')
+  expect(participants).not.toContain('Ada Lovelace')
+})
+
 it('starts dragging a card from its text', async () => {
   const { channel } = createTestChannel()
 
@@ -195,7 +219,35 @@ it('starts dragging a card from its text', async () => {
   window.dispatchEvent(new PointerEvent('pointerup'))
 })
 
-it('edits only action cards during discussion', async () => {
+it('lets the facilitator move cards outside collect', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, phase: 'Group' },
+  })
+
+  const card = cardWithText('My note')
+  await card?.find('.card-text').trigger('pointerdown')
+  expect(card?.classes()).toContain('dragging')
+  window.dispatchEvent(new PointerEvent('pointerup'))
+})
+
+it('lets the facilitator move cards during voting', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, phase: 'Vote' },
+  })
+
+  const card = cardWithText('My note')
+  await card?.find('.card-text').trigger('pointerdown')
+  expect(card?.classes()).toContain('dragging')
+  window.dispatchEvent(new PointerEvent('pointerup'))
+})
+
+it('edits only action cards during actions', async () => {
   const { channel } = createTestChannel()
 
   await mount({
@@ -206,7 +258,7 @@ it('edits only action cards during discussion', async () => {
         ...board.cards,
         { ...board.cards[0]!, id: 'action', sectionId: '2', text: 'Ship the fix' },
       ],
-      phase: 'Discuss',
+      phase: 'Actions',
     },
   })
 
@@ -456,6 +508,7 @@ it('summarizes top topics and warns before finishing without actions', async () 
     data: {
       ...board,
       cards: board.cards.map((card, index) => ({ ...card, votes: 2 - index })),
+      phase: 'Actions',
       sections: [
         { color: '#489c61', id: '1', name: 'Good' },
         { color: '#4774d4', id: '2', name: 'Actions' },
@@ -470,27 +523,43 @@ it('summarizes top topics and warns before finishing without actions', async () 
   await vi.waitFor(() => expect(finishRetro).toHaveBeenCalledWith({ retroId: '7' }))
 })
 
-it('stops the timer before leaving the vote phase', async () => {
+it('stops the timer before advancing from the vote phase', async () => {
   const { channel } = createTestChannel()
   const calls: string[] = []
   const setVoteTimer = vi.fn<RetroBoardPageDeps['setVoteTimer']>(async () => {
     calls.push('timer')
     return successfulAction()
   })
-  const updateSettings = vi.fn<RetroBoardPageDeps['updateSettings']>(async () => {
+  const advancePhase = vi.fn<RetroBoardPageDeps['advancePhase']>(async () => {
     calls.push('phase')
     return successfulAction()
   })
 
   await mount({
+    advancePhase,
     createChannel: () => channel,
     data: { ...board, phase: 'Vote', voteEndsAt: '2099-01-01T00:00:00Z' },
     setVoteTimer,
-    updateSettings,
   })
   await buttonWithText('Discuss')?.trigger('click')
 
-  await vi.waitFor(() => expect(updateSettings).toHaveBeenCalledOnce())
+  await vi.waitFor(() => expect(advancePhase).toHaveBeenCalledOnce())
+  expect(advancePhase).toHaveBeenCalledWith({ phase: 'Discuss', retroId: '7' })
   expect(setVoteTimer).toHaveBeenCalledWith({ minutes: null, retroId: '7' })
   expect(calls).toEqual(['timer', 'phase'])
+})
+
+it('returns to the previous phase directly', async () => {
+  const { channel } = createTestChannel()
+  const revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction)
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, phase: 'Group' },
+    revertPhase,
+  })
+  await buttonWithText('Collect')?.trigger('click')
+
+  await vi.waitFor(() => expect(revertPhase).toHaveBeenCalledOnce())
+  expect(revertPhase).toHaveBeenCalledWith({ phase: 'Collect', retroId: '7' })
 })

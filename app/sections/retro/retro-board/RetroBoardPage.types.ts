@@ -1,4 +1,4 @@
-export type RetroPhase = 'Collect' | 'Discuss' | 'Vote'
+export type RetroPhase = 'Actions' | 'Collect' | 'Discuss' | 'Group' | 'Vote'
 
 export type RetroCardViewModel = {
   authorColor: string

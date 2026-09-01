@@ -183,6 +183,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/retro/{id}/phase/next": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetRetroPhaseRequest"];
+                    "text/json": components["schemas"]["SetRetroPhaseRequest"];
+                    "application/*+json": components["schemas"]["SetRetroPhaseRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/retro/{id}/phase/back": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetRetroPhaseRequest"];
+                    "text/json": components["schemas"]["SetRetroPhaseRequest"];
+                    "application/*+json": components["schemas"]["SetRetroPhaseRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/retro/{id}/timer": {
         parameters: {
             query?: never;
@@ -620,7 +702,7 @@ export interface components {
             cardCount: number | string;
         };
         /** @enum {unknown} */
-        RetroPhase: "Collect" | "Vote" | "Discuss";
+        RetroPhase: "Collect" | "Vote" | "Discuss" | "Group" | "Actions";
         RetroSectionDto: {
             /** Format: int64 */
             id: number | string;
@@ -645,6 +727,9 @@ export interface components {
         };
         SetRetroCardVoteRequest: {
             voted: boolean;
+        };
+        SetRetroPhaseRequest: {
+            phase: components["schemas"]["RetroPhase"];
         };
         SetRetroRevealRequest: {
             revealed: boolean;
