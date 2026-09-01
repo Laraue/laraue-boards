@@ -522,7 +522,6 @@ it('keeps the owner readable but locked on a finished retro', async () => {
       finished: true,
     },
   })
-  await buttonWithText('Board')?.trigger('click')
 
   const ownerWrapper = currentWrapper!.find('.card-assignee')
   const owner = ownerWrapper.element as HTMLSelectElement
@@ -820,103 +819,29 @@ it('keeps the topic list out of the other phases', async () => {
   expect(currentWrapper?.find('.topic-list').exists()).toBe(false)
 })
 
-const summaryBoard: RetroBoardViewModel = {
-  ...board,
-  cards: [
-    { ...board.cards[0]!, text: 'Deploys hurt', votes: 3 },
-    {
-      ...board.cards[0]!,
-      assignee: member,
-      id: 'action-owned',
-      sectionId: '2',
-      text: 'Automate the release',
-    },
-    { ...board.cards[0]!, done: true, id: 'action-done', sectionId: '2', text: 'Fix the alert' },
-    { ...board.cards[0]!, id: 'action-orphan', sectionId: '2', text: 'Nobody took this' },
-  ],
-  phase: 'Actions',
-}
-
-it('shows the topics and the action items on the summary', async () => {
-  const { channel } = createTestChannel()
-
-  await mount({ createChannel: () => channel, data: summaryBoard })
-  await buttonWithText('Summary')?.trigger('click')
-
-  expect(
-    currentWrapper!
-      .findAll('.summary-topics .summary-text')
-      .map((row: DOMWrapper<Element>) => row.text()),
-  ).toEqual(['Deploys hurt'])
-  expect(
-    currentWrapper!
-      .findAll('.summary-actions .summary-text')
-      .map((row: DOMWrapper<Element>) => row.text()),
-  ).toEqual(['Automate the release', 'Fix the alert', 'Nobody took this'])
-  expect(
-    currentWrapper!.findAll('.summary-actions li').map((row: DOMWrapper<Element>) => ({
-      owner: row.find('.summary-owner').exists()
-        ? row.find('.summary-owner').text()
-        : row.find('.summary-gap').text(),
-      status: row.find('.summary-status').text(),
-    })),
-  ).toEqual([
-    { owner: 'Ada Lovelace', status: 'Open' },
-    { owner: 'No owner', status: 'Done' },
-    { owner: 'No owner - assign', status: 'Open' },
-  ])
-})
-
-it('sends the facilitator back to an action nobody owns', async () => {
-  const { channel } = createTestChannel()
-
-  await mount({ createChannel: () => channel, data: summaryBoard })
-  await buttonWithText('Summary')?.trigger('click')
-  await currentWrapper!.find('.summary-gap').trigger('click')
-
-  expect(currentWrapper?.find('.summary').exists()).toBe(false)
-  expect(cardWithText('Nobody took this')?.classes()).toContain('selected')
-})
-
-it('opens a finished retro on its summary and keeps the board reachable', async () => {
-  const { channel } = createTestChannel()
-
-  await mount({ createChannel: () => channel, data: { ...summaryBoard, finished: true } })
-
-  expect(currentWrapper?.find('.summary').exists()).toBe(true)
-
-  await buttonWithText('Board')?.trigger('click')
-
-  expect(currentWrapper?.find('.summary').exists()).toBe(false)
-  expect(cardWithText('Deploys hurt')).toBeDefined()
-})
-
-it('finishes the retro after a plain confirmation', async () => {
+it('summarizes top topics and warns before finishing without actions', async () => {
   const { channel } = createTestChannel()
   const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
   const finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction)
 
-  await mount({ createChannel: () => channel, data: summaryBoard, finishRetro })
-  await buttonWithText('Finish')?.trigger('click')
-
-  expect(confirm).toHaveBeenCalledWith(expect.stringContaining('becomes read-only'))
-  await vi.waitFor(() => expect(finishRetro).toHaveBeenCalledWith({ retroId: '7' }))
-})
-
-it('asks again when finishing without a single action item', async () => {
-  const { channel } = createTestChannel()
-  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
-  const finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction)
-
   await mount({
     createChannel: () => channel,
-    data: { ...summaryBoard, cards: [summaryBoard.cards[0]!] },
+    data: {
+      ...board,
+      cards: board.cards.map((card, index) => ({ ...card, votes: 2 - index })),
+      phase: 'Actions',
+      sections: [
+        { color: '#489c61', id: '1', name: 'Good' },
+        { color: '#4774d4', id: '2', name: 'Actions' },
+      ],
+    },
     finishRetro,
   })
   await buttonWithText('Finish')?.trigger('click')
 
-  expect(confirm).toHaveBeenCalledWith(expect.stringContaining('No action items were created'))
-  expect(finishRetro).not.toHaveBeenCalled()
+  expect(confirm).toHaveBeenCalledWith(expect.stringContaining('Top topics:\n• My note'))
+  expect(confirm).toHaveBeenCalledWith(expect.stringContaining('No action items created'))
+  await vi.waitFor(() => expect(finishRetro).toHaveBeenCalledWith({ retroId: '7' }))
 })
 
 it('advances the phase without stopping the timer by hand', async () => {
