@@ -75,101 +75,128 @@
             </div>
           </div>
 
-          <div
-            aria-label="Phase"
-            class="phase-rail"
-            role="group">
-            <button
-              v-for="option in PHASES"
-              :key="option"
-              class="secondary small"
-              :class="{ active: board.phase === option }"
-              :disabled="board.finished || !board.canManage || !canChangePhase(board.phase, option)"
-              type="button"
-              @click="changePhase(option)">
-              <component :is="PHASE_ICONS[option]" />
-              {{ option }}
-            </button>
-            <button
-              class="secondary danger small"
-              :disabled="board.finished || !board.canManage || board.phase !== 'Actions'"
-              type="button"
-              @click="finish">
-              <Archive />
-              Finish
-            </button>
-          </div>
-
-          <div
-            v-if="!board.finished && board.phase !== 'Actions'"
-            class="phase-controls">
-            <button
-              v-if="board.phase === 'Collect'"
-              :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
-              class="phase-chip"
-              :class="{ 'phase-chip--warn': board.hiddenMine > 0 }"
-              :disabled="board.hiddenMine + board.revealedMine === 0"
-              type="button"
-              @click="setMineRevealed(board.hiddenMine > 0)">
-              <EyeOff v-if="board.hiddenMine > 0" />
-              <Eye v-else />
-              {{ board.hiddenMine > 0 ? 'Notes private' : 'Notes visible' }}
-            </button>
-
-            <div
-              v-if="board.phase === 'Vote'"
-              class="phase-chip">
-              <ThumbsUp />
-              <span>{{ board.myVotes }} of</span>
-              <input
-                aria-label="Votes per person"
-                class="phase-chip-number"
-                :disabled="!board.canManage"
-                min="1"
-                type="number"
-                :value="board.votesPerUser"
-                @change="setVotesPerUser($event)" />
-              <span>used</span>
+          <div class="phase-stack">
+            <div class="phase-navigation">
+              <button
+                aria-label="Previous phase"
+                class="icon-btn secondary small phase-step"
+                :disabled="board.finished || !board.canManage || !previousPhase(board.phase)"
+                type="button"
+                @click="movePhase(previousPhase(board.phase))">
+                <ChevronLeft />
+              </button>
+              <details class="phase-picker">
+                <summary class="phase-picker-trigger">
+                  <component :is="PHASE_ICONS[board.phase]" />
+                  {{ board.phase }}
+                </summary>
+                <div
+                  aria-label="Phase"
+                  class="phase-rail"
+                  role="group"
+                  @click="closePhaseMenu($event)">
+              <button
+                v-for="option in PHASES"
+                :key="option"
+                class="secondary small"
+                :class="{ active: board.phase === option }"
+                :disabled="board.finished || !board.canManage || !canChangePhase(board.phase, option)"
+                type="button"
+                @click="changePhase(option)">
+                <component :is="PHASE_ICONS[option]" />
+                {{ option }}
+              </button>
+              <button
+                class="secondary danger small"
+                :disabled="board.finished || !board.canManage || board.phase !== 'Actions'"
+                type="button"
+                @click="finish">
+                <Archive />
+                Finish
+              </button>
+                </div>
+              </details>
+              <button
+                aria-label="Next phase"
+                class="icon-btn secondary small phase-step"
+                :disabled="board.finished || !board.canManage || !nextPhase(board.phase)"
+                type="button"
+                @click="movePhase(nextPhase(board.phase))">
+                <ChevronRight />
+              </button>
             </div>
 
             <div
-              v-if="canRunTimer(board)"
-              class="phase-chip"
-              :class="{ 'phase-chip--warn': countdown === '00:00' }">
-              <Timer />
-              <template v-if="countdown === undefined">
-                <button
-                  class="phase-chip-action"
-                  :disabled="!board.canManage"
-                  type="button"
-                  @click="startTimer()">
-                  Start
-                </button>
-                <span class="phase-chip-separator">·</span>
+              v-if="!board.finished && board.phase !== 'Actions'"
+              class="phase-controls">
+              <button
+                v-if="board.phase === 'Collect'"
+                :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
+                class="phase-chip"
+                :class="{ 'phase-chip--warn': board.hiddenMine > 0 }"
+                :disabled="board.hiddenMine + board.revealedMine === 0"
+                type="button"
+                @click="setMineRevealed(board.hiddenMine > 0)">
+                <EyeOff v-if="board.hiddenMine > 0" />
+                <Eye v-else />
+                {{ board.hiddenMine > 0 ? 'Notes private' : 'Notes visible' }}
+              </button>
+
+              <div
+                v-if="board.phase === 'Vote'"
+                class="phase-chip">
+                <ThumbsUp />
+                <span>{{ board.myVotes }} of</span>
                 <input
-                  v-model.number="state.timerMinutes"
-                  aria-label="Timer duration in minutes"
+                  aria-label="Votes per person"
                   class="phase-chip-number"
                   :disabled="!board.canManage"
                   min="1"
-                  type="number" />
-                <span>min</span>
-              </template>
-              <template v-else>
-                <span
-                  class="countdown"
-                  :class="{ over: countdown === '00:00' }">
-                  {{ countdown }}
-                </span>
-                <span class="phase-chip-separator">·</span>
-                <button
-                  class="phase-chip-action"
-                  :disabled="!board.canManage"
-                  type="button"
-                  @click="stopTimer()">
-                  Stop
-                </button>
-              </template>
+                  type="number"
+                  :value="board.votesPerUser"
+                  @change="setVotesPerUser($event)" />
+                <span>used</span>
+              </div>
+
+              <div
+                v-if="canRunTimer(board)"
+                class="phase-chip"
+                :class="{ 'phase-chip--warn': countdown === '00:00' }">
+                <Timer />
+                <template v-if="countdown === undefined">
+                  <button
+                    class="phase-chip-action"
+                    :disabled="!board.canManage"
+                    type="button"
+                    @click="startTimer()">
+                    Start
+                  </button>
+                  <span class="phase-chip-separator">·</span>
+                  <input
+                    v-model.number="state.timerMinutes"
+                    aria-label="Timer duration in minutes"
+                    class="phase-chip-number"
+                    :disabled="!board.canManage"
+                    min="1"
+                    type="number" />
+                  <span>min</span>
+                </template>
+                <template v-else>
+                  <span
+                    class="countdown"
+                    :class="{ over: countdown === '00:00' }">
+                    {{ countdown }}
+                  </span>
+                  <span class="phase-chip-separator">·</span>
+                  <button
+                    class="phase-chip-action"
+                    :disabled="!board.canManage"
+                    type="button"
+                    @click="stopTimer()">
+                    Stop
+                  </button>
+                </template>
+              </div>
             </div>
           </div>
         </header>
@@ -428,6 +455,8 @@
 <script setup lang="ts">
 import {
   Archive,
+  ChevronLeft,
+  ChevronRight,
   CircleCheck,
   Eye,
   EyeOff,
@@ -952,6 +981,9 @@ const saveSettings = async (votesPerUser: number) => {
   await refresh()
 }
 
+const closePhaseMenu = (event: MouseEvent) =>
+  (event.currentTarget as HTMLElement).closest('details')?.removeAttribute('open')
+
 const changePhase = async (phase: RetroPhase) => {
   const board = data.value
   const reverting = board && phase === previousPhase(board.phase)
@@ -965,6 +997,8 @@ const changePhase = async (phase: RetroPhase) => {
     await refresh()
   }
 }
+
+const movePhase = (phase: RetroPhase | undefined) => phase && changePhase(phase)
 
 // A retro is born named after its date; the facilitator renames it to what it was about.
 const canRename = (board: RetroBoardViewModel) => board.canManage && !board.finished
@@ -1537,6 +1571,7 @@ const finish = async () => {
 }
 
 .retro-header {
+  --retro-title-size: clamp(24px, 2.2vw, 30px);
   inset: 0;
   pointer-events: none;
   position: absolute;
@@ -1545,6 +1580,7 @@ const finish = async () => {
 
 .retro-actions,
 .phase-chip,
+.phase-picker-trigger,
 .phase-rail {
   backdrop-filter: blur(14px);
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
@@ -1570,7 +1606,7 @@ const finish = async () => {
 
 .retro-title h1,
 .retro-name-input {
-  font-size: clamp(24px, 2.2vw, 30px);
+  font-size: var(--retro-title-size);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.04em;
   line-height: 1.1;
@@ -1647,7 +1683,7 @@ const finish = async () => {
   padding: var(--space-3);
   pointer-events: none;
   position: absolute;
-  right: 0;
+  left: 0;
   top: calc(100% + var(--space-2));
   transition: opacity 0.12s ease;
   z-index: 5;
@@ -1689,41 +1725,104 @@ const finish = async () => {
   padding: var(--space-1) var(--space-3);
   pointer-events: auto;
   position: absolute;
+  left: var(--space-4);
+  top: calc(var(--space-4) + var(--control-height) + var(--space-1));
+}
+
+.phase-stack {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+  position: absolute;
   right: var(--space-4);
   top: var(--space-4);
+  width: 200px;
+}
+
+.phase-navigation {
+  align-items: start;
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 32px 128px 32px;
+  justify-content: end;
+  pointer-events: auto;
+  width: 100%;
+}
+
+.phase-step {
+  height: calc(var(--retro-title-size) * 1.1 + 2px);
+  width: 32px;
+}
+
+.phase-picker {
+  width: 128px;
+}
+
+.phase-picker-trigger {
+  align-items: center;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  border-radius: var(--radius-control);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  height: calc(var(--retro-title-size) * 1.1 + 2px);
+  list-style: none;
+  padding: 0 var(--space-3);
+  pointer-events: auto;
+}
+
+.phase-picker-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.phase-picker-trigger:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 /* A single segmented control keeps the meeting sequence readable without covering the board. */
 .phase-rail {
   border-radius: var(--radius-card);
-  bottom: var(--space-4);
-  display: flex;
+  display: none;
+  flex-direction: column;
   gap: var(--space-1);
-  left: var(--space-4);
-  max-width: calc(50% - 80px);
+  margin-top: var(--space-2);
+  max-width: none;
+  overflow: visible;
   padding: var(--space-1);
   pointer-events: auto;
-  position: absolute;
+}
+
+.phase-picker[open] > .phase-rail {
+  display: flex;
 }
 
 .phase-rail button {
   background: transparent;
   border-color: transparent;
   color: var(--color-muted);
+  flex: none;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .phase-controls {
   align-items: center;
-  bottom: calc(var(--space-4) + var(--control-height) + var(--space-2));
+  align-self: flex-end;
   display: flex;
+  flex-direction: row;
   flex-wrap: nowrap;
   gap: var(--space-2);
-  justify-content: center;
-  left: var(--space-4);
-  max-width: calc(100% - var(--space-8));
+  justify-content: flex-end;
+  max-width: calc(100vw - var(--space-8));
   overflow-x: auto;
   pointer-events: auto;
-  position: absolute;
   white-space: nowrap;
   width: max-content;
 }
@@ -1747,8 +1846,10 @@ const finish = async () => {
   font-size: var(--font-size-small);
   gap: var(--space-1);
   height: 36px;
+  justify-content: center;
   padding: 0 var(--space-3);
   white-space: nowrap;
+  width: auto;
 }
 
 button.phase-chip {
@@ -2230,25 +2331,18 @@ textarea.card-text:focus {
   width: 20px;
 }
 
-@media (max-width: 1180px) {
-  .phase-rail {
-    max-width: calc(100% - 220px);
-    overflow-x: auto;
-  }
-}
-
-@media (max-width: 640px) {
+@media (max-width: 760px) {
   .retro-title {
     left: var(--space-3);
-    max-width: calc(100% - 112px);
+    max-width: calc(100% - 228px);
     padding-left: calc(var(--icon-btn-size) + var(--space-4));
     top: var(--space-3);
   }
 
   .retro-actions {
+    left: var(--space-3);
     padding-inline: var(--space-2);
-    right: var(--space-3);
-    top: var(--space-3);
+    top: calc(var(--space-3) + var(--control-height));
   }
 
   .presence {
@@ -2259,27 +2353,9 @@ textarea.card-text:focus {
     display: none;
   }
 
-  .phase-controls {
-    bottom: 108px;
-    justify-content: flex-start;
-    left: var(--space-3);
-    max-width: none;
+  .phase-stack {
     right: var(--space-3);
-    translate: 0;
-    width: auto;
-  }
-
-  .phase-rail {
-    bottom: 60px;
-    left: var(--space-3);
-    max-width: none;
-    overflow-x: auto;
-    right: var(--space-3);
-    translate: 0;
-  }
-
-  .phase-rail button {
-    flex: none;
+    top: var(--space-3);
   }
 }
 </style>
