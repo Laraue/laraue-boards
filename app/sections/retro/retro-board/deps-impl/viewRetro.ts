@@ -20,6 +20,13 @@ export const createViewRetro =
             id: String(section.id),
             name: section.name,
           }))
+        const groups = retro.groups.map((group) => ({
+          cardIds: group.cardIds,
+          id: String(group.id),
+          title: group.title,
+          votedByMe: group.votedByMe,
+          votes: Number(group.votes),
+        }))
         const cards = retro.cards.map((card) => ({
           assignee: card.assignee
             ? {
@@ -33,6 +40,7 @@ export const createViewRetro =
           authorInitials: card.author.initials,
           authorName: card.author.displayName,
           done: card.done,
+          groupId: card.groupId === null ? null : String(card.groupId),
           hidden: card.hidden,
           id: card.id,
           isMine: card.isMine,
@@ -51,6 +59,7 @@ export const createViewRetro =
           color: retro.color,
           discussedCardId: retro.discussedCardId,
           finished: retro.finishedAt !== null,
+          groups,
           hiddenMine: mine.filter((card) => !card.revealed).length,
           id: String(retro.id),
           me: {

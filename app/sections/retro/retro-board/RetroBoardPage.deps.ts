@@ -13,6 +13,10 @@ export type RetroBoardPageDeps = {
   }) => Promise<ActionResult<{ id: string }>>
   createChannel: (retroId: string) => RetroChannel
   finishRetro: (input: { retroId: string }) => Promise<ActionResult<true>>
+  groupCards: (input: {
+    cardIds: string[]
+    retroId: string
+  }) => Promise<ActionResult<{ id: string }>>
   moveCard: (input: {
     id: string
     sectionId: string
@@ -26,11 +30,17 @@ export type RetroBoardPageDeps = {
     cardId: null | string
     retroId: string
   }) => Promise<ActionResult<true>>
+  setGroupTitle: (input: {
+    groupId: string
+    retroId: string
+    title: string
+  }) => Promise<ActionResult<true>>
   setMyCardsRevealed: (input: { retroId: string; revealed: boolean }) => Promise<ActionResult<true>>
   setPhaseTimer: (input: { minutes: null | number; retroId: string }) => Promise<ActionResult<true>>
   toggleDone: (input: { done: boolean; id: string }) => Promise<ActionResult<true>>
   toggleReveal: (input: { id: string; revealed: boolean }) => Promise<ActionResult<true>>
   toggleVote: (input: { id: string; voted: boolean }) => Promise<ActionResult<true>>
+  ungroup: (input: { groupId: string; retroId: string }) => Promise<ActionResult<true>>
   updateCard: (input: { id: string; text: string }) => Promise<ActionResult<true>>
   updateSettings: (input: {
     phase: RetroPhase

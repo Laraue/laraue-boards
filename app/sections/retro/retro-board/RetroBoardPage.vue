@@ -190,6 +190,36 @@
               </header>
             </section>
 
+            <div
+              v-for="group in groupBoxes(board)"
+              :key="group.id"
+              class="group-box"
+              :style="{
+                height: `${group.height}px`,
+                left: `${group.left}px`,
+                top: `${group.top}px`,
+                width: `${group.width}px`,
+              }">
+              <input
+                aria-label="Topic title"
+                class="group-title"
+                :disabled="!canGroup(board)"
+                :placeholder="`Topic of ${group.cardIds.length} notes`"
+                :value="group.title"
+                @change="renameGroup(group.id, $event)"
+                @pointerdown.stop />
+              <button
+                v-if="canGroup(board)"
+                aria-label="Ungroup topic"
+                class="icon-btn small group-ungroup"
+                title="Ungroup"
+                type="button"
+                @click.stop="splitGroup(group.id)"
+                @pointerdown.stop>
+                <Ungroup />
+              </button>
+            </div>
+
             <article
               v-for="card in visibleCards(board)"
               :key="card.id"
@@ -198,6 +228,8 @@
               :class="{
                 done: card.done,
                 discussed: board.discussedCardId === card.id,
+                'group-member': card.groupId !== null,
+                'group-picked': state.groupSelection.includes(card.id),
                 dragging: state.dragId === card.id,
                 editing: state.editingId === card.id,
                 hidden: card.hidden,
@@ -269,18 +301,22 @@
               </span>
               <button
                 v-if="state.editingId !== card.id && showVoteBadge(board, card)"
-                :aria-label="card.votedByMe ? 'Remove vote from note' : 'Vote for note'"
+                :aria-label="votedByMe(board, card) ? 'Remove vote from note' : 'Vote for note'"
                 class="vote-badge"
-                :class="{ voted: card.votedByMe }"
+                :class="{ voted: votedByMe(board, card) }"
                 :disabled="!votingOpen"
                 :title="
-                  votingOpen ? (card.votedByMe ? 'Remove vote' : 'Vote') : 'Start the timer to vote'
+                  votingOpen
+                    ? votedByMe(board, card)
+                      ? 'Remove vote'
+                      : 'Vote'
+                    : 'Start the timer to vote'
                 "
                 type="button"
                 @click.stop="vote(card)"
                 @pointerdown.stop>
                 <ThumbsUp />
-                <template v-if="showVoteResults(board)">{{ card.votes }}</template>
+                <template v-if="showVoteResults(board)">{{ topicVotes(board, card) }}</template>
               </button>
 
               <div
@@ -332,6 +368,25 @@
             </article>
           </template>
         </RetroCanvas>
+
+        <div
+          v-if="state.groupSelection.length > 0"
+          class="merge-bar">
+          <span>{{ state.groupSelection.length }} selected</span>
+          <button
+            class="primary small"
+            :disabled="state.groupSelection.length < 2"
+            type="button"
+            @click="mergeSelection()">
+            Merge into a topic
+          </button>
+          <button
+            class="secondary small"
+            type="button"
+            @click="state.groupSelection = []">
+            Clear
+          </button>
+        </div>
       </section>
     </template>
   </QueryState>
@@ -345,6 +400,7 @@ import {
   EyeOff,
   Medal,
   MessagesSquare,
+  Ungroup,
   MousePointer2,
   ThumbsUp,
   Timer,
@@ -378,6 +434,7 @@ const ZONE_WIDTH = 880
 const ZONE_HEIGHT = 720
 const ZONE_GAP = 24
 const CARD_SIZE = 160
+const GROUP_PADDING = 14
 const MAX_CARD_FONT_SIZE = 30
 const MIN_CARD_FONT_SIZE = 12
 
@@ -417,6 +474,7 @@ const state = reactive({
   dragId: undefined as string | undefined,
   dragPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
+  groupSelection: [] as string[],
   hoveredId: undefined as string | undefined,
   joined: new Map<string, RetroMember>(),
   now: Date.now(),
@@ -660,6 +718,49 @@ const SECTION_HINTS: Record<string, string> = {
 const sectionHint = (name: string) =>
   SECTION_HINTS[name.toLowerCase()] ?? 'Double-click the area to add a note'
 
+// Merging is the facilitator's call and freezes with the notes themselves once voting starts.
+const canGroup = (board: RetroBoardViewModel) =>
+  !board.finished && board.canManage && board.phase === 'Group'
+
+const groupOf = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
+  card.groupId === null ? undefined : board.groups.find((group) => group.id === card.groupId)
+
+// A grouped note shows the score of its whole topic - that is what the vote counts for.
+const topicVotes = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
+  groupOf(board, card)?.votes ?? card.votes
+
+const votedByMe = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
+  groupOf(board, card)?.votedByMe ?? card.votedByMe
+
+// The topic is drawn as the box that holds every note of the group.
+const groupBoxes = (board: RetroBoardViewModel) => {
+  const positions = new Map(visibleCards(board).map((card) => [card.id, card]))
+
+  return board.groups.flatMap((group) => {
+    const members = group.cardIds
+      .map((cardId) => positions.get(cardId))
+      .filter((card) => card !== undefined)
+
+    if (members.length === 0) {
+      return []
+    }
+    const left = Math.min(...members.map((card) => card.x))
+    const top = Math.min(...members.map((card) => card.y))
+
+    return [
+      {
+        cardIds: group.cardIds,
+        height: Math.max(...members.map((card) => card.y)) + CARD_SIZE - top + GROUP_PADDING * 2,
+        id: group.id,
+        left: left - GROUP_PADDING,
+        title: group.title,
+        top: top - GROUP_PADDING,
+        width: Math.max(...members.map((card) => card.x)) + CARD_SIZE - left + GROUP_PADDING * 2,
+      },
+    ]
+  })
+}
+
 const isActionsSection = (board: RetroBoardViewModel, sectionId: string) =>
   board.sections.at(-1)?.id === sectionId
 
@@ -684,6 +785,9 @@ const { execute: executeUpdate } = useAction(props.deps.updateCard)
 const { execute: executeVote } = useAction(props.deps.toggleVote)
 const { execute: executeAssign } = useAction(props.deps.setCardAssignee)
 const { execute: executeDiscuss } = useAction(props.deps.setDiscussedCard)
+const { execute: executeGroup } = useAction(props.deps.groupCards)
+const { execute: executeUngroup } = useAction(props.deps.ungroup)
+const { execute: executeGroupTitle } = useAction(props.deps.setGroupTitle)
 const { execute: executeDone } = useAction(props.deps.toggleDone)
 const { execute: executeRemove } = useAction(props.deps.removeCard)
 const { execute: executeReveal } = useAction(props.deps.toggleReveal)
@@ -833,9 +937,11 @@ const showVoteBadge = (board: RetroBoardViewModel, card: RetroCardViewModel) => 
     return false
   }
   if (showVoteResults(board)) {
-    return card.votes > 0
+    return topicVotes(board, card) > 0
   }
-  return countdown.value !== undefined && (card.votedByMe || board.myVotes < board.votesPerUser)
+  return (
+    countdown.value !== undefined && (votedByMe(board, card) || board.myVotes < board.votesPerUser)
+  )
 }
 
 const startEdit = (card: RetroCardViewModel) => {
@@ -985,6 +1091,11 @@ const commitDraggedCard = async () => {
 }
 
 const selectCard = (card: RetroCardViewModel) => {
+  const board = data.value
+
+  if (board && canGroup(board) && !isActionsSection(board, card.sectionId)) {
+    toggleGroupSelection(card)
+  }
   const now = Date.now()
   const repeatedClick = lastCardClickId === card.id && now - lastCardClickAt <= 500
 
@@ -1044,6 +1155,47 @@ const canPickTopic = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   board.canManage &&
   board.phase === 'Discuss' &&
   !isActionsSection(board, card.sectionId)
+
+const toggleGroupSelection = (card: RetroCardViewModel) => {
+  state.groupSelection = state.groupSelection.includes(card.id)
+    ? state.groupSelection.filter((id) => id !== card.id)
+    : [...state.groupSelection, card.id]
+}
+
+const mergeSelection = async () => {
+  const board = data.value
+
+  if (!board || !canGroup(board) || state.groupSelection.length < 2) {
+    return
+  }
+  await executeGroup({ cardIds: state.groupSelection, retroId: props.retroId })
+  state.groupSelection = []
+  await refresh()
+}
+
+const splitGroup = async (groupId: string) => {
+  const board = data.value
+
+  if (!board || !canGroup(board)) {
+    return
+  }
+  await executeUngroup({ groupId, retroId: props.retroId })
+  await refresh()
+}
+
+const renameGroup = async (groupId: string, event: Event) => {
+  const board = data.value
+
+  if (!board || !canGroup(board)) {
+    return
+  }
+  await executeGroupTitle({
+    groupId,
+    retroId: props.retroId,
+    title: (event.target as HTMLInputElement).value,
+  })
+  await refresh()
+}
 
 const discuss = async (card: RetroCardViewModel) => {
   const board = data.value
@@ -1477,6 +1629,61 @@ const finish = async () => {
 .card.pending {
   opacity: 0.55;
   pointer-events: none;
+}
+
+.group-box {
+  border: 2px dashed var(--color-accent);
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.group-title,
+.group-ungroup {
+  pointer-events: auto;
+}
+
+.group-title {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  left: var(--space-3);
+  max-width: calc(100% - 80px);
+  padding: 2px var(--space-3);
+  position: absolute;
+  top: -14px;
+}
+
+.group-ungroup {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  position: absolute;
+  right: var(--space-3);
+  top: -14px;
+}
+
+.card.group-picked {
+  outline: 3px dashed var(--color-accent);
+  outline-offset: 3px;
+}
+
+.merge-bar {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  bottom: var(--space-5);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  gap: var(--space-3);
+  left: 50%;
+  padding: var(--space-2) var(--space-4);
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 5;
 }
 
 .card.discussed {

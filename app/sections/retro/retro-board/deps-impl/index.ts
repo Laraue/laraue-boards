@@ -5,16 +5,19 @@ import { createAdvancePhase } from './advancePhase'
 import { createCreateCard } from './createCard'
 import { createCreateChannel } from './createChannel'
 import { createFinishRetro } from './finishRetro'
+import { createGroupCards } from './groupCards'
 import { createMoveCard } from './moveCard'
 import { createRemoveCard } from './removeCard'
 import { createRevertPhase } from './revertPhase'
 import { createSetCardAssignee } from './setCardAssignee'
 import { createSetDiscussedCard } from './setDiscussedCard'
+import { createSetGroupTitle } from './setGroupTitle'
 import { createSetMyCardsRevealed } from './setMyCardsRevealed'
 import { createSetPhaseTimer } from './setPhaseTimer'
 import { createToggleDone } from './toggleDone'
 import { createToggleReveal } from './toggleReveal'
 import { createToggleVote } from './toggleVote'
+import { createUngroup } from './ungroup'
 import { createUpdateCard } from './updateCard'
 import { createUpdateSettings } from './updateSettings'
 import { createViewRetro } from './viewRetro'
@@ -27,16 +30,19 @@ export const createRetroBoardPageDeps = (
   createCard: createCreateCard(client),
   createChannel: createCreateChannel(retroHubUrl),
   finishRetro: createFinishRetro(client),
+  groupCards: createGroupCards(client),
   moveCard: createMoveCard(client),
   removeCard: createRemoveCard(client),
   revertPhase: createRevertPhase(client),
   setCardAssignee: createSetCardAssignee(client),
   setDiscussedCard: createSetDiscussedCard(client),
+  setGroupTitle: createSetGroupTitle(client),
   setMyCardsRevealed: createSetMyCardsRevealed(client),
   setPhaseTimer: createSetPhaseTimer(client),
   toggleDone: createToggleDone(client),
   toggleReveal: createToggleReveal(client),
   toggleVote: createToggleVote(client),
+  ungroup: createUngroup(client),
   updateCard: createUpdateCard(client),
   updateSettings: createUpdateSettings(client),
   view: createViewRetro(client),

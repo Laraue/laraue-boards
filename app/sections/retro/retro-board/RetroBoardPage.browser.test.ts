@@ -23,6 +23,7 @@ const board: RetroBoardViewModel = {
       authorInitials: member.initials,
       authorName: member.name,
       done: false,
+      groupId: null,
       hidden: false,
       id: 'mine',
       isMine: true,
@@ -40,6 +41,7 @@ const board: RetroBoardViewModel = {
       authorInitials: 'GH',
       authorName: 'Grace Hopper',
       done: false,
+      groupId: null,
       hidden: false,
       id: 'other',
       isMine: false,
@@ -55,6 +57,7 @@ const board: RetroBoardViewModel = {
   color: '#4774d4',
   discussedCardId: null,
   finished: false,
+  groups: [],
   hiddenMine: 0,
   id: '7',
   me: member,
@@ -98,11 +101,17 @@ const mount = async ({
   createChannel,
   data = board,
   finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction),
+  groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => ({
+    data: { id: 'group-1' },
+    status: 'success',
+  })),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
   revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction),
   setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction),
   setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction),
+  setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(successfulAction),
   setPhaseTimer = vi.fn<RetroBoardPageDeps['setPhaseTimer']>(successfulAction),
+  ungroup = vi.fn<RetroBoardPageDeps['ungroup']>(successfulAction),
   updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction),
   updateSettings = vi.fn<RetroBoardPageDeps['updateSettings']>(successfulAction),
   view = vi.fn<RetroBoardPageDeps['view']>(async () => ({ data, status: 'success' })),
@@ -111,11 +120,14 @@ const mount = async ({
   createChannel: RetroBoardPageDeps['createChannel']
   data?: RetroBoardViewModel
   finishRetro?: RetroBoardPageDeps['finishRetro']
+  groupCards?: RetroBoardPageDeps['groupCards']
   removeCard?: RetroBoardPageDeps['removeCard']
   revertPhase?: RetroBoardPageDeps['revertPhase']
   setCardAssignee?: RetroBoardPageDeps['setCardAssignee']
   setDiscussedCard?: RetroBoardPageDeps['setDiscussedCard']
+  setGroupTitle?: RetroBoardPageDeps['setGroupTitle']
   setPhaseTimer?: RetroBoardPageDeps['setPhaseTimer']
+  ungroup?: RetroBoardPageDeps['ungroup']
   updateCard?: RetroBoardPageDeps['updateCard']
   updateSettings?: RetroBoardPageDeps['updateSettings']
   view?: RetroBoardPageDeps['view']
@@ -128,16 +140,19 @@ const mount = async ({
     })),
     createChannel,
     finishRetro,
+    groupCards,
     moveCard: vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
     removeCard,
     revertPhase,
     setCardAssignee,
     setDiscussedCard,
+    setGroupTitle,
     setMyCardsRevealed: vi.fn<RetroBoardPageDeps['setMyCardsRevealed']>(successfulAction),
     setPhaseTimer,
     toggleDone: vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction),
     toggleReveal: vi.fn<RetroBoardPageDeps['toggleReveal']>(successfulAction),
     toggleVote: vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction),
+    ungroup,
     updateCard,
     updateSettings,
     view,
@@ -521,6 +536,114 @@ it('shows no owner picker on a topic note', async () => {
   await mount({ createChannel: () => channel })
 
   expect(currentWrapper?.find('.card-assignee').exists()).toBe(false)
+})
+
+const groupingBoard: RetroBoardViewModel = { ...board, phase: 'Group' }
+
+it('merges the picked notes into a topic', async () => {
+  const { channel } = createTestChannel()
+  const groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => ({
+    data: { id: 'group-1' },
+    status: 'success',
+  }))
+
+  await mount({ createChannel: () => channel, data: groupingBoard, groupCards })
+
+  expect(buttonWithText('Merge into a topic')).toBeUndefined()
+
+  await cardWithText('My note')?.trigger('click')
+  await cardWithText('Other note')?.trigger('click')
+
+  expect(cardWithText('My note')?.classes()).toContain('group-picked')
+  await buttonWithText('Merge into a topic')?.trigger('click')
+
+  expect(groupCards).toHaveBeenCalledWith({ cardIds: ['mine', 'other'], retroId: '7' })
+})
+
+it('does not offer merging to a participant', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...groupingBoard, canManage: false },
+  })
+  await cardWithText('My note')?.trigger('click')
+
+  expect(cardWithText('My note')?.classes()).not.toContain('group-picked')
+  expect(buttonWithText('Merge into a topic')).toBeUndefined()
+})
+
+const groupedBoard: RetroBoardViewModel = {
+  ...groupingBoard,
+  cards: groupingBoard.cards.map((card) => ({ ...card, groupId: 'group-1' })),
+  groups: [
+    {
+      cardIds: ['mine', 'other'],
+      id: 'group-1',
+      title: 'Painful releases',
+      votedByMe: false,
+      votes: 4,
+    },
+  ],
+}
+
+it('draws the topic around its notes and renames it', async () => {
+  const { channel } = createTestChannel()
+  const setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: groupedBoard, setGroupTitle })
+
+  const box = currentWrapper!.find('.group-box')
+
+  expect(box.exists()).toBe(true)
+
+  const title = box.find('input')
+
+  expect((title.element as HTMLInputElement).value).toBe('Painful releases')
+
+  ;(title.element as HTMLInputElement).value = 'Slow releases'
+  await title.trigger('change')
+
+  expect(setGroupTitle).toHaveBeenCalledWith({
+    groupId: 'group-1',
+    retroId: '7',
+    title: 'Slow releases',
+  })
+})
+
+it('splits the topic back into notes', async () => {
+  const { channel } = createTestChannel()
+  const ungroup = vi.fn<RetroBoardPageDeps['ungroup']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: groupedBoard, ungroup })
+  await currentWrapper?.find('.group-ungroup').trigger('click')
+
+  expect(ungroup).toHaveBeenCalledWith({ groupId: 'group-1', retroId: '7' })
+})
+
+it('freezes the topic once voting has started', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...groupedBoard, phase: 'Vote', phaseEndsAt: '2099-01-01T00:00:00Z' },
+  })
+
+  expect(currentWrapper?.find('.group-ungroup').exists()).toBe(false)
+  expect((currentWrapper!.find('.group-title').element as HTMLInputElement).disabled).toBe(true)
+})
+
+it('shows one score for every note of a topic', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...groupedBoard, phase: 'Discuss' },
+  })
+
+  expect(
+    currentWrapper!.findAll('.vote-badge').map((badge: DOMWrapper<Element>) => badge.text()),
+  ).toEqual(['4', '4'])
 })
 
 it('keeps vote totals hidden while the phase is still Vote', async () => {

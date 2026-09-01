@@ -616,6 +616,113 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/retro/{id}/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GroupRetroCardsRequest"];
+                    "text/json": components["schemas"]["GroupRetroCardsRequest"];
+                    "application/*+json": components["schemas"]["GroupRetroCardsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GroupRetroCardsResponse"];
+                        "application/json": components["schemas"]["GroupRetroCardsResponse"];
+                        "text/json": components["schemas"]["GroupRetroCardsResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/retro/{id}/groups/{groupId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    groupId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetRetroGroupTitleRequest"];
+                    "text/json": components["schemas"]["SetRetroGroupTitleRequest"];
+                    "application/*+json": components["schemas"]["SetRetroGroupTitleRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    groupId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/retro/cards/{cardId}/assignee": {
         parameters: {
             query?: never;
@@ -746,6 +853,14 @@ export interface components {
             participants: components["schemas"]["RetroUser"][];
             sections: components["schemas"]["RetroSectionDto"][];
             cards: components["schemas"]["RetroCardDto"][];
+            groups: components["schemas"]["RetroCardGroupDto"][];
+        };
+        GroupRetroCardsRequest: {
+            cardIds: string[];
+        };
+        GroupRetroCardsResponse: {
+            /** Format: int64 */
+            id: number | string;
         };
         MoveRetroCardRequest: {
             /** Format: int64 */
@@ -772,10 +887,21 @@ export interface components {
             revealed: boolean;
             isMine: boolean;
             assignee: null | components["schemas"]["RetroUser"];
+            /** Format: int64 */
+            groupId: null | number | string;
             /** Format: int32 */
             votes: number | string;
             votedByMe: boolean;
             author: components["schemas"]["RetroUser"];
+        };
+        RetroCardGroupDto: {
+            /** Format: int64 */
+            id: number | string;
+            title: string;
+            cardIds: string[];
+            /** Format: int32 */
+            votes: number | string;
+            votedByMe: boolean;
         };
         RetroListItem: {
             /** Format: int64 */
@@ -822,6 +948,9 @@ export interface components {
         SetRetroDiscussedCardRequest: {
             /** Format: uuid */
             cardId: null | string;
+        };
+        SetRetroGroupTitleRequest: {
+            title: string;
         };
         SetRetroPhaseRequest: {
             phase: components["schemas"]["RetroPhase"];
