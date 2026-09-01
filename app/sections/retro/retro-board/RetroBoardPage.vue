@@ -20,6 +20,25 @@
               Finished
             </span>
           </div>
+          <div
+            aria-label="Retro view"
+            class="view-switch"
+            role="group">
+            <button
+              class="secondary small"
+              :class="{ active: view(board) === 'board' }"
+              type="button"
+              @click="state.view = 'board'">
+              Board
+            </button>
+            <button
+              class="secondary small"
+              :class="{ active: view(board) === 'summary' }"
+              type="button"
+              @click="state.view = 'summary'">
+              Summary
+            </button>
+          </div>
           <div class="retro-actions">
             <div
               aria-label="People on this retro"
@@ -153,6 +172,7 @@
         </header>
 
         <RetroCanvas
+          v-if="view(board) === 'board'"
           class="retro-canvas"
           :on-background-pointer-down="() => (state.selectedId = undefined)"
           :on-canvas-double-click="(point) => addCardAt(board, point)"
@@ -369,8 +389,67 @@
           </template>
         </RetroCanvas>
 
+        <section
+          v-if="view(board) === 'summary'"
+          class="summary">
+          <h2>Topics</h2>
+          <ol
+            v-if="orderedTopics(board).length > 0"
+            class="summary-topics">
+            <li
+              v-for="topic in orderedTopics(board)"
+              :key="topic.id">
+              <span class="summary-text">{{ topic.title }}</span>
+              <span class="summary-votes">
+                <ThumbsUp />
+                {{ topic.votes }}
+              </span>
+            </li>
+          </ol>
+          <p
+            v-else
+            class="muted">
+            Nothing was collected.
+          </p>
+
+          <h2>Action items</h2>
+          <ul
+            v-if="actionCards(board).length > 0"
+            class="summary-actions">
+            <li
+              v-for="action in actionCards(board)"
+              :key="action.id"
+              :class="{ done: action.done }">
+              <span class="summary-text">{{ action.text }}</span>
+              <span
+                v-if="action.assignee"
+                class="summary-owner">
+                {{ action.assignee.name }}
+              </span>
+              <button
+                v-else-if="!action.done && !board.finished && board.canManage"
+                class="secondary small summary-gap"
+                type="button"
+                @click="editAction(action)">
+                No owner - assign
+              </button>
+              <span
+                v-else
+                class="muted summary-owner">
+                No owner
+              </span>
+              <span class="summary-status">{{ action.done ? 'Done' : 'Open' }}</span>
+            </li>
+          </ul>
+          <p
+            v-else
+            class="muted">
+            No action items were created.
+          </p>
+        </section>
+
         <aside
-          v-if="board.phase === 'Discuss' && discussionTopics.length > 0"
+          v-if="view(board) === 'board' && board.phase === 'Discuss' && discussionTopics.length > 0"
           class="topic-list">
           <h2>Topics by votes</h2>
           <ol>
@@ -398,7 +477,7 @@
         </aside>
 
         <div
-          v-if="state.groupSelection.length > 0"
+          v-if="view(board) === 'board' && state.groupSelection.length > 0"
           class="merge-bar">
           <span>{{ state.groupSelection.length }} selected</span>
           <button
@@ -524,6 +603,7 @@ const state = reactive({
   remoteTexts: new Map<string, { at: number; text: string }>(),
   selectedId: undefined as string | undefined,
   timerMinutes: 5,
+  view: undefined as 'board' | 'summary' | undefined,
 })
 
 const {
@@ -868,6 +948,15 @@ const groupBoxes = (board: RetroBoardViewModel) => {
       },
     ]
   })
+}
+
+// A finished retro is a record, so it opens on its summary; the board stays one click away.
+const view = (board: RetroBoardViewModel) => state.view ?? (board.finished ? 'summary' : 'board')
+
+// An action nobody owns is worth fixing before the retro closes, so the summary links back to it.
+const editAction = (card: RetroCardViewModel) => {
+  state.view = 'board'
+  state.selectedId = card.id
 }
 
 const isActionsSection = (board: RetroBoardViewModel, sectionId: string) =>
@@ -1400,24 +1489,18 @@ const finish = async () => {
   if (!board?.canManage) {
     return
   }
-  const topics = orderedTopics(board).slice(0, PRIORITY_TOPICS)
   const actions = actionCards(board)
-  const summary = [
-    'Finish this retro?',
-    '',
-    'Top topics:',
-    ...(topics.length ? topics.map((topic) => `• ${topic.title} (${topic.votes})`) : ['• None']),
-    '',
-    'Actions:',
-    ...(actions.length
-      ? actions.map((card) => `• ${card.text}${card.done ? ' (done)' : ''}`)
-      : ['• No action items created. Finish anyway?']),
-  ].join('\n')
+  const question =
+    actions.length === 0
+      ? 'No action items were created. Finish the retro anyway?'
+      : 'Finish this retro? It becomes read-only for everyone.'
 
-  if (!confirm(summary)) {
+  if (!confirm(question)) {
     return
   }
   await executeFinish({ retroId: props.retroId })
+  // The summary is what the team keeps, so that is where they land.
+  state.view = 'summary'
   await refresh()
 }
 </script>
@@ -1774,6 +1857,74 @@ const finish = async () => {
 .card.group-picked {
   outline: 3px dashed var(--color-accent);
   outline-offset: 3px;
+}
+
+.view-switch {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.view-switch .active {
+  border-color: var(--color-accent);
+}
+
+.summary {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0 auto;
+  max-width: 760px;
+  padding: var(--space-5) var(--space-4);
+  width: 100%;
+}
+
+.summary h2 {
+  font-size: var(--font-size-md);
+  margin: 0;
+}
+
+.summary ol,
+.summary ul {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.summary li {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.summary li.done .summary-text {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.summary-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.summary-owner,
+.summary-status,
+.summary-votes {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.summary-gap {
+  border-color: var(--color-danger, #d65f63);
+  color: var(--color-danger, #d65f63);
 }
 
 .topic-list {
