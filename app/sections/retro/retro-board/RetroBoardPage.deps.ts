@@ -21,6 +21,7 @@ export type RetroBoardPageDeps = {
   }) => Promise<ActionResult<true>>
   removeCard: (input: { id: string }) => Promise<ActionResult<true>>
   revertPhase: (input: { phase: RetroPhase; retroId: string }) => Promise<ActionResult<true>>
+  setCardAssignee: (input: { assigneeId: null | string; id: string }) => Promise<ActionResult<true>>
   setMyCardsRevealed: (input: { retroId: string; revealed: boolean }) => Promise<ActionResult<true>>
   setVoteTimer: (input: { minutes: null | number; retroId: string }) => Promise<ActionResult<true>>
   toggleDone: (input: { done: boolean; id: string }) => Promise<ActionResult<true>>

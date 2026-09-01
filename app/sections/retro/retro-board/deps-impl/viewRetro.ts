@@ -21,6 +21,14 @@ export const createViewRetro =
             name: section.name,
           }))
         const cards = retro.cards.map((card) => ({
+          assignee: card.assignee
+            ? {
+                color: card.assignee.color,
+                initials: card.assignee.initials,
+                name: card.assignee.displayName,
+                userId: card.assignee.userId,
+              }
+            : null,
           authorColor: card.author.color,
           authorInitials: card.author.initials,
           authorName: card.author.displayName,

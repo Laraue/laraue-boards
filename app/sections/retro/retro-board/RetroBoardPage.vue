@@ -231,6 +231,23 @@
                 :class="{ placeholder: !card.text }">
                 {{ card.text || 'Add a note' }}
               </p>
+              <select
+                v-if="isActionsSection(board, card.sectionId)"
+                aria-label="Action owner"
+                class="card-assignee"
+                :disabled="!canAssign(board)"
+                :value="card.assignee?.userId ?? ''"
+                @change="assign(card, $event)"
+                @click.stop
+                @pointerdown.stop>
+                <option value="">No owner</option>
+                <option
+                  v-for="one of board.participants"
+                  :key="one.userId"
+                  :value="one.userId">
+                  {{ one.name }}
+                </option>
+              </select>
               <span
                 v-if="discussionRanks.get(card.id)"
                 :aria-label="discussionRanks.get(card.id) + ' place'"
@@ -642,6 +659,7 @@ const { execute: executeCreate } = useAction(props.deps.createCard)
 const { execute: executeMove } = useAction(props.deps.moveCard)
 const { execute: executeUpdate } = useAction(props.deps.updateCard)
 const { execute: executeVote } = useAction(props.deps.toggleVote)
+const { execute: executeAssign } = useAction(props.deps.setCardAssignee)
 const { execute: executeDone } = useAction(props.deps.toggleDone)
 const { execute: executeRemove } = useAction(props.deps.removeCard)
 const { execute: executeReveal } = useAction(props.deps.toggleReveal)
@@ -1031,6 +1049,20 @@ const done = async (card: RetroCardViewModel) => {
     return
   }
   await executeDone({ done: !card.done, id: card.id })
+  await refresh()
+}
+
+// An action item without an owner is fine - the team may not have picked one yet.
+const canAssign = (board: RetroBoardViewModel) => !board.finished && board.phase === 'Actions'
+
+const assign = async (card: RetroCardViewModel, event: Event) => {
+  const board = data.value
+  const assigneeId = (event.target as HTMLSelectElement).value || null
+
+  if (!board || !canAssign(board) || !isActionsSection(board, card.sectionId)) {
+    return
+  }
+  await executeAssign({ assigneeId, id: card.id })
   await refresh()
 }
 
@@ -1488,6 +1520,25 @@ textarea.card-text:focus {
   position: absolute;
   top: 12px;
   white-space: nowrap;
+}
+
+.card-assignee {
+  background: #ffffff5c;
+  border: 1px solid #10182824;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  margin-top: auto;
+  max-width: 100%;
+  padding: 2px var(--space-2);
+  width: 100%;
+}
+
+.card-assignee:disabled {
+  background: transparent;
+  border-color: transparent;
+  opacity: 1;
 }
 
 .card-toolbar {

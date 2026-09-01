@@ -18,6 +18,7 @@ const board: RetroBoardViewModel = {
   canManage: true,
   cards: [
     {
+      assignee: null,
       authorColor: member.color,
       authorInitials: member.initials,
       authorName: member.name,
@@ -34,6 +35,7 @@ const board: RetroBoardViewModel = {
       y: 80,
     },
     {
+      assignee: null,
       authorColor: '#a44',
       authorInitials: 'GH',
       authorName: 'Grace Hopper',
@@ -97,6 +99,7 @@ const mount = async ({
   finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
   revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction),
+  setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction),
   setVoteTimer = vi.fn<RetroBoardPageDeps['setVoteTimer']>(successfulAction),
   updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction),
   updateSettings = vi.fn<RetroBoardPageDeps['updateSettings']>(successfulAction),
@@ -108,6 +111,7 @@ const mount = async ({
   finishRetro?: RetroBoardPageDeps['finishRetro']
   removeCard?: RetroBoardPageDeps['removeCard']
   revertPhase?: RetroBoardPageDeps['revertPhase']
+  setCardAssignee?: RetroBoardPageDeps['setCardAssignee']
   setVoteTimer?: RetroBoardPageDeps['setVoteTimer']
   updateCard?: RetroBoardPageDeps['updateCard']
   updateSettings?: RetroBoardPageDeps['updateSettings']
@@ -124,6 +128,7 @@ const mount = async ({
     moveCard: vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
     removeCard,
     revertPhase,
+    setCardAssignee,
     setMyCardsRevealed: vi.fn<RetroBoardPageDeps['setMyCardsRevealed']>(successfulAction),
     setVoteTimer,
     toggleDone: vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction),
@@ -424,6 +429,94 @@ it('hides new vote actions after the vote budget is spent', async () => {
     .element(page.getByRole('button', { name: 'Remove vote from note' }))
     .toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Vote for note' })).not.toBeInTheDocument()
+})
+
+const grace = {
+  color: '#a44',
+  initials: 'GH',
+  name: 'Grace Hopper',
+  userId: 'user-2',
+}
+
+const actionBoard: RetroBoardViewModel = {
+  ...board,
+  cards: [{ ...board.cards[0]!, id: 'action', sectionId: '2', text: 'Automate the release' }],
+  participants: [member, grace],
+  phase: 'Actions',
+}
+
+it('assigns an action item to a participant of the retro', async () => {
+  const { channel } = createTestChannel()
+  const setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: actionBoard, setCardAssignee })
+
+  const ownerWrapper = currentWrapper!.find('.card-assignee')
+  const owner = ownerWrapper.element as HTMLSelectElement
+
+  expect(ownerWrapper.exists()).toBe(true)
+  expect(owner.disabled).toBe(false)
+  expect([...owner.options].map((option) => option.text)).toEqual([
+    'No owner',
+    member.name,
+    grace.name,
+  ])
+
+  owner.value = grace.userId
+  await ownerWrapper.trigger('change')
+
+  expect(setCardAssignee).toHaveBeenCalledWith({ assigneeId: grace.userId, id: 'action' })
+})
+
+it('clears the owner of an action item', async () => {
+  const { channel } = createTestChannel()
+  const setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction)
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...actionBoard,
+      cards: actionBoard.cards.map((card) => ({ ...card, assignee: grace })),
+    },
+    setCardAssignee,
+  })
+
+  const ownerWrapper = currentWrapper!.find('.card-assignee')
+  const owner = ownerWrapper.element as HTMLSelectElement
+
+  expect(owner.value).toBe(grace.userId)
+
+  owner.value = ''
+  await ownerWrapper.trigger('change')
+
+  expect(setCardAssignee).toHaveBeenCalledWith({ assigneeId: null, id: 'action' })
+})
+
+it('keeps the owner readable but locked on a finished retro', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...actionBoard,
+      cards: actionBoard.cards.map((card) => ({ ...card, assignee: grace })),
+      finished: true,
+    },
+  })
+
+  const ownerWrapper = currentWrapper!.find('.card-assignee')
+  const owner = ownerWrapper.element as HTMLSelectElement
+
+  expect(owner.disabled).toBe(true)
+  expect(owner.value).toBe(grace.userId)
+})
+
+it('shows no owner picker on a topic note', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({ createChannel: () => channel })
+
+  expect(currentWrapper?.find('.card-assignee').exists()).toBe(false)
 })
 
 it('keeps vote totals hidden while the phase is still Vote', async () => {

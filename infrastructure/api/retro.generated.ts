@@ -575,6 +575,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/retro/cards/{cardId}/assignee": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    cardId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetRetroCardAssigneeRequest"];
+                    "text/json": components["schemas"]["SetRetroCardAssigneeRequest"];
+                    "application/*+json": components["schemas"]["SetRetroCardAssigneeRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/retro/cards/{cardId}/reveal": {
         parameters: {
             query?: never;
@@ -685,6 +726,7 @@ export interface components {
             hidden: boolean;
             revealed: boolean;
             isMine: boolean;
+            assignee: null | components["schemas"]["RetroUser"];
             /** Format: int32 */
             votes: number | string;
             votedByMe: boolean;
@@ -718,6 +760,10 @@ export interface components {
             initials: string;
             color: string;
             isCurrentUser: boolean;
+        };
+        SetRetroCardAssigneeRequest: {
+            /** Format: uuid */
+            assigneeId: null | string;
         };
         SetRetroCardDoneRequest: {
             done: boolean;

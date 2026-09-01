@@ -1,6 +1,7 @@
 export type RetroPhase = 'Actions' | 'Collect' | 'Discuss' | 'Group' | 'Vote'
 
 export type RetroCardViewModel = {
+  assignee: null | RetroMember
   authorColor: string
   authorInitials: string
   authorName: string

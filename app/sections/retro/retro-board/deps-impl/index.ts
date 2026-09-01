@@ -8,6 +8,7 @@ import { createFinishRetro } from './finishRetro'
 import { createMoveCard } from './moveCard'
 import { createRemoveCard } from './removeCard'
 import { createRevertPhase } from './revertPhase'
+import { createSetCardAssignee } from './setCardAssignee'
 import { createSetMyCardsRevealed } from './setMyCardsRevealed'
 import { createSetVoteTimer } from './setVoteTimer'
 import { createToggleDone } from './toggleDone'
@@ -28,6 +29,7 @@ export const createRetroBoardPageDeps = (
   moveCard: createMoveCard(client),
   removeCard: createRemoveCard(client),
   revertPhase: createRevertPhase(client),
+  setCardAssignee: createSetCardAssignee(client),
   setMyCardsRevealed: createSetMyCardsRevealed(client),
   setVoteTimer: createSetVoteTimer(client),
   toggleDone: createToggleDone(client),
