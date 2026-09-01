@@ -8,6 +8,7 @@ import { createFinishRetro } from './finishRetro'
 import { createGroupCards } from './groupCards'
 import { createMoveCard } from './moveCard'
 import { createRemoveCard } from './removeCard'
+import { createRenameRetro } from './renameRetro'
 import { createRevertPhase } from './revertPhase'
 import { createSetCardAssignee } from './setCardAssignee'
 import { createSetDiscussedCard } from './setDiscussedCard'
@@ -34,6 +35,7 @@ export const createRetroBoardPageDeps = (
   groupCards: createGroupCards(client),
   moveCard: createMoveCard(client),
   removeCard: createRemoveCard(client),
+  renameRetro: createRenameRetro(client),
   revertPhase: createRevertPhase(client),
   setCardAssignee: createSetCardAssignee(client),
   setDiscussedCard: createSetDiscussedCard(client),

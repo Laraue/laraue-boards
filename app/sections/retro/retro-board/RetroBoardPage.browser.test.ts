@@ -107,6 +107,7 @@ const mount = async ({
     status: 'success',
   })),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
+  renameRetro = vi.fn<RetroBoardPageDeps['renameRetro']>(successfulAction),
   revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction),
   setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction),
   setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction),
@@ -124,6 +125,7 @@ const mount = async ({
   finishRetro?: RetroBoardPageDeps['finishRetro']
   groupCards?: RetroBoardPageDeps['groupCards']
   removeCard?: RetroBoardPageDeps['removeCard']
+  renameRetro?: RetroBoardPageDeps['renameRetro']
   revertPhase?: RetroBoardPageDeps['revertPhase']
   setCardAssignee?: RetroBoardPageDeps['setCardAssignee']
   setDiscussedCard?: RetroBoardPageDeps['setDiscussedCard']
@@ -146,6 +148,7 @@ const mount = async ({
     groupCards,
     moveCard: vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
     removeCard,
+    renameRetro,
     revertPhase,
     setCardAssignee,
     setDiscussedCard,
@@ -745,6 +748,29 @@ const twoPeopleBoard: RetroBoardViewModel = {
   ...board,
   participants: [member, grace],
 }
+
+it('renames the retro from its default date name', async () => {
+  const { channel } = createTestChannel()
+  const renameRetro = vi.fn<RetroBoardPageDeps['renameRetro']>(successfulAction)
+
+  await mount({ createChannel: () => channel, renameRetro })
+
+  const input = currentWrapper!.find('.retro-name-input')
+
+  ;(input.element as HTMLInputElement).value = '  Sprint 43  '
+  await input.trigger('change')
+
+  expect(renameRetro).toHaveBeenCalledWith({ name: 'Sprint 43', retroId: '7' })
+})
+
+it('shows the name as plain text to everyone but the facilitator', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({ createChannel: () => channel, data: { ...board, canManage: false } })
+
+  expect(currentWrapper?.find('.retro-name-input').exists()).toBe(false)
+  expect(currentWrapper?.find('h1').text()).toBe('Sprint 42')
+})
 
 it('hands the retro over to another participant', async () => {
   const { channel } = createTestChannel()

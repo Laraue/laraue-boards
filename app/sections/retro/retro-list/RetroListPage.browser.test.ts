@@ -41,8 +41,11 @@ afterEach(async () => {
   currentWrapper = undefined
 })
 
+const successfulRemove = async () => ({ data: true as const, status: 'success' as const })
+
 it('lists past retros with their state and links to each board', async () => {
   await mount({
+    removeRetro: vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove),
     startRetro: vi.fn<RetroListPageDeps['startRetro']>(),
     view: vi.fn<RetroListPageDeps['view']>(async () => ({ data: retros, status: 'success' })),
   })
@@ -55,6 +58,7 @@ it('lists past retros with their state and links to each board', async () => {
 })
 
 const startingDeps = (startRetro: RetroListPageDeps['startRetro'], data = retros) => ({
+  removeRetro: vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove),
   startRetro,
   view: vi.fn<RetroListPageDeps['view']>(async () => ({ data, status: 'success' })),
 })
@@ -64,6 +68,27 @@ const successfulStart = () =>
     data: { retroId: '9' },
     status: 'success',
   }))
+
+it('deletes a retro after a confirmation', async () => {
+  const removeRetro = vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove)
+  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+  await mount({ ...startingDeps(successfulStart()), removeRetro })
+  await currentWrapper!.findAll('.retro-row-actions button')[0]!.trigger('click')
+
+  expect(confirm).toHaveBeenCalledWith('Delete "Sprint 42" with all its notes and votes?')
+  await vi.waitFor(() => expect(removeRetro).toHaveBeenCalledWith({ retroId: '7' }))
+})
+
+it('keeps the retro when the confirmation is declined', async () => {
+  const removeRetro = vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove)
+
+  vi.spyOn(window, 'confirm').mockReturnValue(false)
+  await mount({ ...startingDeps(successfulStart()), removeRetro })
+  await currentWrapper!.findAll('.retro-row-actions button')[0]!.trigger('click')
+
+  expect(removeRetro).not.toHaveBeenCalled()
+})
 
 it('opens the new board after starting a retro from scratch', async () => {
   const startRetro = successfulStart()
@@ -80,17 +105,21 @@ it('opens the new board after starting a retro from scratch', async () => {
 it('offers to continue only from a retro that still has open actions', async () => {
   await mount(startingDeps(successfulStart()))
 
-  // Sprint 42 has nothing open, so continuing from it would carry nothing.
+  // Sprint 42 has nothing open, so continuing from it would carry nothing. The count lives in the
+  // row itself - a number glued to the button read as something else entirely.
   expect(
-    [...document.querySelectorAll('.continue-btn')].map((button) => button.textContent?.trim()),
-  ).toEqual(['Continue from here (2)'])
+    [...document.querySelectorAll('.retro-row-actions button')].map(
+      (button) => button.getAttribute('aria-label') ?? button.textContent?.trim(),
+    ),
+  ).toEqual(['Delete retro', 'Continue', 'Delete retro'])
+  expect(document.body.textContent).toContain('2 open actions')
 })
 
 it('carries the open actions of the retro the button belongs to', async () => {
   const startRetro = successfulStart()
   const onOpen = await mount(startingDeps(startRetro))
 
-  await currentWrapper!.find('.continue-btn').trigger('click')
+  await currentWrapper!.findAll('.retro-row-actions button')[1]!.trigger('click')
 
   await vi.waitFor(() => expect(startRetro).toHaveBeenCalledOnce())
   expect(startRetro).toHaveBeenCalledWith({ basedOnRetroId: '6', name: expect.any(String) })

@@ -13,7 +13,14 @@
             <RetroIcon
               class="page-heading-icon"
               :style="{ color: board.color }" />
-            <h1>{{ board.name }}</h1>
+            <h1 v-if="!canRename(board)">{{ board.name }}</h1>
+            <input
+              v-else
+              aria-label="Retro name"
+              class="retro-name-input"
+              maxlength="128"
+              :value="board.name"
+              @change="rename($event)" />
             <span
               v-if="board.finished"
               class="retro-finished">
@@ -877,6 +884,7 @@ const { execute: executeGroupTitle } = useAction(props.deps.setGroupTitle)
 const { execute: executeDone } = useAction(props.deps.toggleDone)
 const { execute: executeRemove } = useAction(props.deps.removeCard)
 const { execute: executeReveal } = useAction(props.deps.toggleReveal)
+const { execute: executeRename } = useAction(props.deps.renameRetro)
 const { execute: executeRevealMine } = useAction(props.deps.setMyCardsRevealed)
 const { execute: executeFinish } = useAction(props.deps.finishRetro)
 const { execute: executeHandOver } = useAction(props.deps.transferOwnership)
@@ -907,6 +915,26 @@ const changePhase = async (phase: RetroPhase) => {
   if (await executePhase({ phase, retroId: props.retroId })) {
     await refresh()
   }
+}
+
+// A retro is born named after its date; the facilitator renames it to what it was about.
+const canRename = (board: RetroBoardViewModel) => board.canManage && !board.finished
+
+const rename = async (event: Event) => {
+  const board = data.value
+  const input = event.target as HTMLInputElement
+  const name = input.value.trim()
+
+  if (!board || !canRename(board) || name === board.name) {
+    return
+  }
+  if (name.length === 0) {
+    input.value = board.name
+
+    return
+  }
+  await executeRename({ name, retroId: props.retroId })
+  await refresh()
 }
 
 // Running the retro is a role, not a birthright of whoever pressed "Start retro".
@@ -1451,6 +1479,24 @@ const finish = async () => {
   padding: var(--space-1) var(--space-3);
   pointer-events: auto;
   width: fit-content;
+}
+
+.retro-name-input {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  min-width: 0;
+  padding: 0 var(--space-2);
+}
+
+.retro-name-input:hover,
+.retro-name-input:focus {
+  border-color: var(--color-border);
+  outline: none;
 }
 
 .retro-finished {

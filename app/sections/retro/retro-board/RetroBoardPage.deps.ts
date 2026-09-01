@@ -24,6 +24,7 @@ export type RetroBoardPageDeps = {
     y: number
   }) => Promise<ActionResult<true>>
   removeCard: (input: { id: string }) => Promise<ActionResult<true>>
+  renameRetro: (input: { name: string; retroId: string }) => Promise<ActionResult<true>>
   revertPhase: (input: { phase: RetroPhase; retroId: string }) => Promise<ActionResult<true>>
   setCardAssignee: (input: { assigneeId: null | string; id: string }) => Promise<ActionResult<true>>
   setDiscussedCard: (input: {

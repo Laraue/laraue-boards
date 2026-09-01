@@ -124,6 +124,7 @@
           Data movement
         </NuxtLink>
         <NuxtLink
+          class="sidebar-bottom"
           :class="{ active: within('organizations-organizationKey-retro') }"
           :to="organizationRoutes.retros()">
           <RetroIcon />
@@ -388,7 +389,8 @@ main :deep(.page-load-state) {
   padding: var(--space-2);
 }
 
-.sidebar-documentation {
+/* Retro and the docs live together at the bottom, away from the settings block. */
+.sidebar-bottom {
   margin-top: auto;
 }
 
