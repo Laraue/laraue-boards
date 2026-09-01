@@ -795,7 +795,7 @@ it('keeps medals and vote counts on a finished board', async () => {
   expect(cardWithText('Other note')?.find('.vote-badge').text()).toBe('2')
 })
 
-it('summarizes top topics and warns before finishing without actions', async () => {
+it('asks once before finishing, because finishing cannot be undone', async () => {
   const { channel } = createTestChannel()
   const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
   const finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction)
@@ -815,8 +815,7 @@ it('summarizes top topics and warns before finishing without actions', async () 
   })
   await buttonWithText('Finish')?.trigger('click')
 
-  expect(confirm).toHaveBeenCalledWith(expect.stringContaining('Top topics:\n• My note'))
-  expect(confirm).toHaveBeenCalledWith(expect.stringContaining('No action items created'))
+  expect(confirm).toHaveBeenCalledWith('Finish this retro? It becomes read-only for everyone.')
   await vi.waitFor(() => expect(finishRetro).toHaveBeenCalledWith({ retroId: '7' }))
 })
 

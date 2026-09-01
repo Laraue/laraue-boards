@@ -1391,21 +1391,9 @@ const finish = async () => {
   if (!board?.canManage) {
     return
   }
-  const topics = orderedTopics(board).slice(0, PRIORITY_TOPICS)
-  const actions = actionCards(board)
-  const summary = [
-    'Finish this retro?',
-    '',
-    'Top topics:',
-    ...(topics.length ? topics.map((topic) => `• ${topic.title} (${topic.votes})`) : ['• None']),
-    '',
-    'Actions:',
-    ...(actions.length
-      ? actions.map((card) => `• ${card.text}${card.done ? ' (done)' : ''}`)
-      : ['• No action items created. Finish anyway?']),
-  ].join('\n')
-
-  if (!confirm(summary)) {
+  // Finishing cannot be undone, so the click is worth one question - but the board itself is the
+  // summary, and nobody reads a listing pasted into a browser dialog.
+  if (!confirm('Finish this retro? It becomes read-only for everyone.')) {
     return
   }
   await executeFinish({ retroId: props.retroId })
