@@ -722,6 +722,8 @@ export interface components {
             x: number | string;
             /** Format: double */
             y: number | string;
+            /** Format: int32 */
+            stackOrder: number | string;
             done: boolean;
             hidden: boolean;
             revealed: boolean;
