@@ -306,6 +306,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/retro/{id}/discussed-card": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SetRetroDiscussedCardRequest"];
+                    "text/json": components["schemas"]["SetRetroDiscussedCardRequest"];
+                    "application/*+json": components["schemas"]["SetRetroDiscussedCardRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/retro/{id}/reveal-mine": {
         parameters: {
             query?: never;
@@ -696,7 +737,9 @@ export interface components {
             /** Format: int32 */
             myVotes: number | string;
             /** Format: date-time */
-            voteEndsAt: null | string;
+            phaseEndsAt: null | string;
+            /** Format: uuid */
+            discussedCardId: null | string;
             canManage: boolean;
             owner: components["schemas"]["RetroUser"];
             currentUser: components["schemas"]["RetroUser"];
@@ -775,6 +818,10 @@ export interface components {
         };
         SetRetroCardVoteRequest: {
             voted: boolean;
+        };
+        SetRetroDiscussedCardRequest: {
+            /** Format: uuid */
+            cardId: null | string;
         };
         SetRetroPhaseRequest: {
             phase: components["schemas"]["RetroPhase"];

@@ -106,39 +106,49 @@
                   @change="setVotesPerUser($event)" />
               </label>
               <span class="muted">{{ board.myVotes }} / {{ board.votesPerUser }} votes</span>
-              <span class="phase-control">
+            </template>
+
+            <span
+              v-if="canRunTimer(board)"
+              class="phase-control">
+              <button
+                v-if="countdown === undefined"
+                class="secondary small"
+                :disabled="!board.canManage"
+                type="button"
+                @click="startTimer()">
+                <Timer />
+                Start timer
+              </button>
+              <template v-else>
+                <span
+                  class="countdown"
+                  :class="{ over: countdown === '00:00' }">
+                  {{ countdown }}
+                </span>
                 <button
-                  v-if="countdown === undefined"
                   class="secondary small"
                   :disabled="!board.canManage"
                   type="button"
                   @click="startTimer()">
-                  <Timer />
-                  Start timer
+                  Extend
                 </button>
-                <template v-else>
-                  <span
-                    class="countdown"
-                    :class="{ over: countdown === '00:00' }">
-                    {{ countdown }}
-                  </span>
-                  <button
-                    class="secondary small"
-                    :disabled="!board.canManage"
-                    type="button"
-                    @click="stopTimer()">
-                    Stop
-                  </button>
-                </template>
-                <input
-                  v-model.number="state.timerMinutes"
-                  class="votes-input"
+                <button
+                  class="secondary small"
                   :disabled="!board.canManage"
-                  min="1"
-                  type="number" />
-                min
-              </span>
-            </template>
+                  type="button"
+                  @click="stopTimer()">
+                  Stop
+                </button>
+              </template>
+              <input
+                v-model.number="state.timerMinutes"
+                class="votes-input"
+                :disabled="!board.canManage"
+                min="1"
+                type="number" />
+              min
+            </span>
           </div>
         </header>
 
@@ -187,6 +197,7 @@
               class="card"
               :class="{
                 done: card.done,
+                discussed: board.discussedCardId === card.id,
                 dragging: state.dragId === card.id,
                 editing: state.editingId === card.id,
                 hidden: card.hidden,
@@ -288,6 +299,17 @@
                   <CircleCheck />
                 </button>
                 <button
+                  v-if="canPickTopic(board, card)"
+                  class="icon-btn small"
+                  :title="
+                    board.discussedCardId === card.id ? 'Stop discussing' : 'Discuss this topic'
+                  "
+                  type="button"
+                  @click.stop="discuss(card)"
+                  @pointerdown.stop>
+                  <MessagesSquare />
+                </button>
+                <button
                   v-if="card.isMine && board.phase === 'Collect'"
                   class="icon-btn small"
                   :title="card.revealed ? 'Hide from the team' : 'Show to the team'"
@@ -322,6 +344,7 @@ import {
   Eye,
   EyeOff,
   Medal,
+  MessagesSquare,
   MousePointer2,
   ThumbsUp,
   Timer,
@@ -660,6 +683,7 @@ const { execute: executeMove } = useAction(props.deps.moveCard)
 const { execute: executeUpdate } = useAction(props.deps.updateCard)
 const { execute: executeVote } = useAction(props.deps.toggleVote)
 const { execute: executeAssign } = useAction(props.deps.setCardAssignee)
+const { execute: executeDiscuss } = useAction(props.deps.setDiscussedCard)
 const { execute: executeDone } = useAction(props.deps.toggleDone)
 const { execute: executeRemove } = useAction(props.deps.removeCard)
 const { execute: executeReveal } = useAction(props.deps.toggleReveal)
@@ -668,7 +692,7 @@ const { execute: executeFinish } = useAction(props.deps.finishRetro)
 const { execute: executeAdvancePhase } = useAction(props.deps.advancePhase)
 const { execute: executeRevertPhase } = useAction(props.deps.revertPhase)
 const { execute: executeSettings } = useAction(props.deps.updateSettings)
-const { execute: executeTimer } = useAction(props.deps.setVoteTimer)
+const { execute: executeTimer } = useAction(props.deps.setPhaseTimer)
 
 const saveSettings = async (votesPerUser: number) => {
   const board = data.value
@@ -687,13 +711,6 @@ const changePhase = async (phase: RetroPhase) => {
   if (!board?.canManage || !canChangePhase(board.phase, phase)) {
     return
   }
-  if (board.phase === 'Vote' && board.voteEndsAt) {
-    const stopped = await executeTimer({ minutes: null, retroId: props.retroId })
-
-    if (!stopped) {
-      return
-    }
-  }
   const executePhase = reverting ? executeRevertPhase : executeAdvancePhase
 
   if (await executePhase({ phase, retroId: props.retroId })) {
@@ -703,6 +720,9 @@ const changePhase = async (phase: RetroPhase) => {
 
 const setVotesPerUser = (event: Event) =>
   saveSettings(Math.max(1, Number((event.target as HTMLInputElement).value)))
+
+// Timing a phase is the facilitator's call, so it makes no sense once the retro is read-only.
+const canRunTimer = (board: RetroBoardViewModel) => !board.finished && board.phase !== 'Actions'
 
 // The timer lives on its own endpoint: editing settings mid-vote must not restart the countdown.
 const setTimer = async (minutes: null | number) => {
@@ -788,9 +808,9 @@ const publishDraft = (card: RetroCardViewModel) => {
 }
 
 const countdown = computed(() => {
-  const endsAt = data.value?.voteEndsAt
+  const endsAt = data.value?.phaseEndsAt
 
-  if (!endsAt || data.value?.phase !== 'Vote') {
+  if (!endsAt) {
     return undefined
   }
   const left = Math.max(0, Math.floor((Date.parse(endsAt) - state.now) / 1000))
@@ -799,7 +819,7 @@ const countdown = computed(() => {
 })
 
 const votingOpen = computed(() => {
-  const endsAt = data.value?.voteEndsAt
+  const endsAt = data.value?.phaseEndsAt
 
   return data.value?.phase === 'Vote' && !!endsAt && Date.parse(endsAt) > state.now
 })
@@ -1015,7 +1035,28 @@ const paperStyle = (id: string) => {
 }
 
 const hasActions = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  canChangeCard(board, card) && (card.isMine || isActionsSection(board, card.sectionId))
+  canPickTopic(board, card) ||
+  (canChangeCard(board, card) && (card.isMine || isActionsSection(board, card.sectionId)))
+
+// Walking the team through topics is the facilitator's job, and only during Discuss.
+const canPickTopic = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
+  !board.finished &&
+  board.canManage &&
+  board.phase === 'Discuss' &&
+  !isActionsSection(board, card.sectionId)
+
+const discuss = async (card: RetroCardViewModel) => {
+  const board = data.value
+
+  if (!board || !canPickTopic(board, card)) {
+    return
+  }
+  await executeDiscuss({
+    cardId: board.discussedCardId === card.id ? null : card.id,
+    retroId: props.retroId,
+  })
+  await refresh()
+}
 
 const toggleReveal = async (card: RetroCardViewModel) => {
   const board = data.value
@@ -1436,6 +1477,11 @@ const finish = async () => {
 .card.pending {
   opacity: 0.55;
   pointer-events: none;
+}
+
+.card.discussed {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .card.done .card-text {

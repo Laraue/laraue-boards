@@ -52,6 +52,7 @@ export type RetroBoardViewModel = {
   canManage: boolean
   cards: RetroCardViewModel[]
   color: string
+  discussedCardId: null | string
   finished: boolean
   hiddenMine: number
   id: string
@@ -60,8 +61,8 @@ export type RetroBoardViewModel = {
   name: string
   participants: RetroMember[]
   phase: RetroPhase
+  phaseEndsAt: null | string
   revealedMine: number
   sections: RetroSectionViewModel[]
-  voteEndsAt: null | string
   votesPerUser: number
 }

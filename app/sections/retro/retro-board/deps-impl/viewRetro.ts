@@ -49,6 +49,7 @@ export const createViewRetro =
           canManage: retro.canManage,
           cards,
           color: retro.color,
+          discussedCardId: retro.discussedCardId,
           finished: retro.finishedAt !== null,
           hiddenMine: mine.filter((card) => !card.revealed).length,
           id: String(retro.id),
@@ -69,9 +70,9 @@ export const createViewRetro =
             }),
           ),
           phase: retro.phase,
+          phaseEndsAt: retro.phaseEndsAt,
           revealedMine: mine.filter((card) => card.revealed).length,
           sections,
-          voteEndsAt: retro.voteEndsAt,
           votesPerUser: Number(retro.votesPerUser),
         }
       },

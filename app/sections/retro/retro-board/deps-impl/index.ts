@@ -9,8 +9,9 @@ import { createMoveCard } from './moveCard'
 import { createRemoveCard } from './removeCard'
 import { createRevertPhase } from './revertPhase'
 import { createSetCardAssignee } from './setCardAssignee'
+import { createSetDiscussedCard } from './setDiscussedCard'
 import { createSetMyCardsRevealed } from './setMyCardsRevealed'
-import { createSetVoteTimer } from './setVoteTimer'
+import { createSetPhaseTimer } from './setPhaseTimer'
 import { createToggleDone } from './toggleDone'
 import { createToggleReveal } from './toggleReveal'
 import { createToggleVote } from './toggleVote'
@@ -30,8 +31,9 @@ export const createRetroBoardPageDeps = (
   removeCard: createRemoveCard(client),
   revertPhase: createRevertPhase(client),
   setCardAssignee: createSetCardAssignee(client),
+  setDiscussedCard: createSetDiscussedCard(client),
   setMyCardsRevealed: createSetMyCardsRevealed(client),
-  setVoteTimer: createSetVoteTimer(client),
+  setPhaseTimer: createSetPhaseTimer(client),
   toggleDone: createToggleDone(client),
   toggleReveal: createToggleReveal(client),
   toggleVote: createToggleVote(client),
