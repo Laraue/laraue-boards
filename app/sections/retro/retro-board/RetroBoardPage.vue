@@ -369,34 +369,6 @@
           </template>
         </RetroCanvas>
 
-        <aside
-          v-if="board.phase === 'Discuss' && discussionTopics.length > 0"
-          class="topic-list">
-          <h2>Topics by votes</h2>
-          <ol>
-            <li
-              v-for="(topic, index) in discussionTopics"
-              :key="topic.id"
-              :class="{ discussed: topic.discussed, spare: index >= PRIORITY_TOPICS }">
-              <button
-                class="topic-row"
-                :disabled="!board.canManage || board.finished"
-                type="button"
-                @click="discussTopic(topic)">
-                <span class="topic-rank">{{ index + 1 }}</span>
-                <span class="topic-title">{{ topic.title }}</span>
-                <span class="topic-votes">
-                  <ThumbsUp />
-                  {{ topic.votes }}
-                </span>
-              </button>
-            </li>
-          </ol>
-          <p class="muted">
-            The first {{ PRIORITY_TOPICS }} carry the most votes - the rest stay available.
-          </p>
-        </aside>
-
         <div
           v-if="state.groupSelection.length > 0"
           class="merge-bar">
@@ -741,24 +713,17 @@ const orderedTopics = (board: RetroBoardViewModel) => {
     }))
 }
 
-const discussionTopics = computed(() => {
-  const board = data.value
-
-  if (board?.phase !== 'Discuss') {
-    return []
-  }
-  return orderedTopics(board).map((topic) => ({
-    ...topic,
-    discussed: board.discussedCardId !== null && topic.cardIds.includes(board.discussedCardId),
-  }))
-})
-
 // Every note of the leading topics wears its medal; ties never hand out a fourth one, because the
-// order is total.
+// order is total. Scores are zero until the facilitator closes Vote, so the medals appear together
+// with the results and stay on the board for the rest of the retro, finished included.
 const discussionRanks = computed(() => {
+  const board = data.value
   const ranks = new Map<string, number>()
 
-  discussionTopics.value
+  if (!board) {
+    return ranks
+  }
+  orderedTopics(board)
     .filter((topic) => topic.votes > 0)
     .slice(0, PRIORITY_TOPICS)
     .forEach((topic, index) => {
@@ -769,19 +734,6 @@ const discussionRanks = computed(() => {
 
   return ranks
 })
-
-const discussTopic = async (topic: { cardIds: string[]; discussed: boolean }) => {
-  const board = data.value
-
-  if (!board?.canManage || board.finished) {
-    return
-  }
-  await executeDiscuss({
-    cardId: topic.discussed ? null : (topic.cardIds[0] ?? null),
-    retroId: props.retroId,
-  })
-  await refresh()
-}
 
 const cardsOf = (board: RetroBoardViewModel, sectionId: string) =>
   board.cards.filter((card) => card.sectionId === sectionId)
@@ -1774,83 +1726,6 @@ const finish = async () => {
 .card.group-picked {
   outline: 3px dashed var(--color-accent);
   outline-offset: 3px;
-}
-
-.topic-list {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  max-height: 60vh;
-  overflow-y: auto;
-  padding: var(--space-3) var(--space-4);
-  position: fixed;
-  right: var(--space-5);
-  top: 120px;
-  width: 280px;
-  z-index: 5;
-}
-
-.topic-list h2 {
-  font-size: var(--font-size-sm);
-  margin: 0 0 var(--space-2);
-}
-
-.topic-list ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.topic-list li.spare {
-  opacity: 0.65;
-}
-
-/* The cut-off is a hint about where to start, not a wall: everything below stays clickable. */
-.topic-list li.spare:first-of-type {
-  border-top: 1px dashed var(--color-border);
-  margin-top: var(--space-2);
-  padding-top: var(--space-2);
-}
-
-.topic-row {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-sm);
-  display: flex;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  text-align: left;
-  width: 100%;
-}
-
-.topic-row:hover:enabled {
-  background: var(--color-hover);
-}
-
-.topic-list li.discussed .topic-row {
-  background: var(--color-hover);
-  outline: 2px solid var(--color-accent);
-}
-
-.topic-rank {
-  color: var(--color-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.topic-title {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.topic-votes {
-  align-items: center;
-  color: var(--color-muted);
-  display: flex;
-  gap: 2px;
 }
 
 .merge-bar {
