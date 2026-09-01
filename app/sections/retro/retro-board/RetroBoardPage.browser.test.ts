@@ -777,7 +777,7 @@ it('hands the retro over to another participant', async () => {
   const transferOwnership = vi.fn<RetroBoardPageDeps['transferOwnership']>(successfulAction)
 
   await mount({ createChannel: () => channel, data: twoPeopleBoard, transferOwnership })
-  await buttonWithText('Make facilitator')?.trigger('click')
+  await buttonWithText('Make owner')?.trigger('click')
 
   expect(transferOwnership).toHaveBeenCalledWith({ retroId: '7', userId: grace.userId })
 })
@@ -790,12 +790,12 @@ it('offers no hand-over to a participant or on a finished retro', async () => {
     data: { ...twoPeopleBoard, canManage: false },
   })
 
-  expect(buttonWithText('Make facilitator')).toBeUndefined()
+  expect(buttonWithText('Make owner')).toBeUndefined()
 
   await currentWrapper?.unmount()
   await mount({ createChannel: () => channel, data: { ...twoPeopleBoard, finished: true } })
 
-  expect(buttonWithText('Make facilitator')).toBeUndefined()
+  expect(buttonWithText('Make owner')).toBeUndefined()
 })
 
 it('keeps medals and vote counts on a finished board', async () => {

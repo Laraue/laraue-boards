@@ -7,7 +7,9 @@
     :on-retry="refresh"
     :pending="pending && !data">
     <template #default="{ data: board }">
-      <section class="retro">
+      <section
+        class="retro"
+        :class="{ 'retro--focused': state.fullscreen }">
         <header class="retro-header">
           <div class="page-heading">
             <RetroIcon
@@ -61,14 +63,14 @@
                   <span
                     v-if="member.userId === board.owner.userId"
                     class="muted presence-role">
-                    facilitator
+                    owner
                   </span>
                   <button
                     v-else-if="canHandOver(board)"
                     class="secondary small"
                     type="button"
                     @click="handOver(member)">
-                    Make facilitator
+                    Make owner
                   </button>
                 </span>
               </div>
@@ -77,41 +79,54 @@
 
           <div
             v-if="!board.finished"
-            class="phase-bar">
+            aria-label="Phase"
+            class="phase-rail"
+            role="group">
+            <button
+              v-for="option in PHASES"
+              :key="option"
+              class="secondary small"
+              :class="{ active: board.phase === option }"
+              :disabled="!board.canManage || !canChangePhase(board.phase, option)"
+              type="button"
+              @click="changePhase(option)">
+              <component :is="PHASE_ICONS[option]" />
+              {{ option }}
+            </button>
+            <button
+              v-if="board.canManage && board.phase === 'Actions'"
+              class="secondary danger small"
+              type="button"
+              @click="finish">
+              <Archive />
+              Finish
+            </button>
+          </div>
+
+          <div
+            v-if="!board.finished"
+            class="phase-controls">
             <div
-              class="phases"
-              role="group">
+              v-if="board.phase === 'Collect'"
+              class="phase-group"
+              :class="{ 'phase-group--warn': board.hiddenMine > 0 }">
+              <EyeOff v-if="board.hiddenMine > 0" />
+              <Eye v-else />
+              <span>
+                {{
+                  board.hiddenMine > 0
+                    ? `${board.hiddenMine} of your notes are hidden`
+                    : 'Your notes are visible'
+                }}
+              </span>
               <button
-                v-for="option in PHASES"
-                :key="option"
                 class="secondary small"
-                :class="{ active: board.phase === option }"
-                :disabled="!board.canManage || !canChangePhase(board.phase, option)"
+                :disabled="board.hiddenMine + board.revealedMine === 0"
                 type="button"
-                @click="changePhase(option)">
-                {{ option }}
-              </button>
-              <button
-                v-if="board.canManage && board.phase === 'Actions'"
-                class="secondary danger small"
-                type="button"
-                @click="finish">
-                <Archive />
-                Finish
+                @click="setMineRevealed(board.hiddenMine > 0)">
+                {{ board.hiddenMine > 0 ? 'Show them' : 'Hide them' }}
               </button>
             </div>
-
-            <button
-              v-if="board.phase === 'Collect'"
-              class="secondary small"
-              :disabled="board.hiddenMine + board.revealedMine === 0"
-              type="button"
-              @click="setMineRevealed(board.hiddenMine > 0)">
-              <Eye v-if="board.hiddenMine > 0" />
-              <EyeOff v-else />
-              {{ board.hiddenMine > 0 ? 'Reveal my notes' : 'Hide my notes' }}
-              <template v-if="board.hiddenMine > 0">({{ board.hiddenMine }})</template>
-            </button>
 
             <template v-if="board.phase === 'Vote'">
               <label class="phase-control">
@@ -129,7 +144,8 @@
 
             <span
               v-if="canRunTimer(board)"
-              class="phase-control">
+              class="phase-group"
+              :class="{ 'phase-group--warn': countdown === '00:00' }">
               <button
                 v-if="countdown === undefined"
                 class="secondary small"
@@ -178,6 +194,18 @@
           :on-cursor-move="publishCursor"
           :on-node-move="moveDraggedCard"
           :on-node-move-end="commitDraggedCard">
+          <template #controls>
+            <button
+              :aria-label="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
+              class="icon-btn"
+              :title="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
+              type="button"
+              @click="toggleFullscreen">
+              <Minimize v-if="state.fullscreen" />
+              <Maximize v-else />
+            </button>
+          </template>
+
           <template #default="{ startNodeDrag }">
             <span
               v-for="cursor in cursors"
@@ -417,13 +445,18 @@ import {
   CircleCheck,
   Eye,
   EyeOff,
+  Group,
+  ListChecks,
+  Maximize,
   Medal,
   MessagesSquare,
-  Ungroup,
+  Minimize,
   MousePointer2,
+  StickyNote,
   ThumbsUp,
   Timer,
   Trash2,
+  Ungroup,
 } from '@lucide/vue'
 
 import { RetroIcon } from '~/constants/icons'
@@ -443,6 +476,13 @@ const CURSOR_TTL_MS = 5000
 const LIVE_TTL_MS = 2000
 
 const PHASES: RetroPhase[] = ['Collect', 'Group', 'Vote', 'Discuss', 'Actions']
+const PHASE_ICONS = {
+  Actions: ListChecks,
+  Collect: StickyNote,
+  Discuss: MessagesSquare,
+  Group,
+  Vote: ThumbsUp,
+}
 
 const previousPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) - 1]
 const nextPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) + 1]
@@ -503,6 +543,7 @@ const state = reactive({
   dragId: undefined as string | undefined,
   dragPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
+  fullscreen: false,
   groupSelection: [] as string[],
   hoveredId: undefined as string | undefined,
   joined: new Map<string, RetroMember>(),
@@ -1017,6 +1058,12 @@ const onNextFrame = () => {
   }
 }
 
+// The board fills the browser window rather than the screen: the team keeps its tabs, its
+// bookmarks and its other windows, and just loses the app chrome around the board.
+const toggleFullscreen = () => {
+  state.fullscreen = !state.fullscreen
+}
+
 const cursorFrame = onNextFrame()
 const moveFrame = onNextFrame()
 
@@ -1439,6 +1486,16 @@ const finish = async () => {
   width: calc(100% + var(--layout-content-padding) + var(--layout-content-padding));
 }
 
+.retro--focused {
+  background: var(--color-background);
+  height: 100%;
+  inset: 0;
+  margin: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 20;
+}
+
 .retro-canvas {
   border: 0;
   border-radius: 0;
@@ -1460,8 +1517,7 @@ const finish = async () => {
 }
 
 .retro-header .page-heading,
-.retro-actions,
-.phase-bar {
+.retro-actions {
   backdrop-filter: blur(14px);
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-border) 76%, transparent);
@@ -1493,9 +1549,10 @@ const finish = async () => {
   padding: 0 var(--space-2);
 }
 
+/* The heading is already a bordered pill - a second frame around the input reads as a glitch. */
 .retro-name-input:hover,
 .retro-name-input:focus {
-  border-color: var(--color-border);
+  background: var(--color-soft);
   outline: none;
 }
 
@@ -1561,6 +1618,7 @@ const finish = async () => {
   align-items: center;
   display: flex;
   gap: var(--space-2);
+  white-space: nowrap;
 }
 
 .presence-row .entity-avatar {
@@ -1581,17 +1639,41 @@ const finish = async () => {
   position: relative;
 }
 
-.phase-bar {
-  align-items: center;
+/* Phases run down the right edge: they are the spine of the meeting, not one more toolbar. */
+.phase-rail {
+  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 76%, transparent);
   border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: start;
+  padding: var(--space-2);
+  pointer-events: auto;
+}
+
+.phase-rail button {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+/* What the current phase asks of the team sits in the middle, where the eye already is. Each
+   control carries its own chip, so the strip itself stays invisible. */
+.phase-controls {
+  align-items: center;
   column-gap: var(--space-2);
   display: flex;
   flex-wrap: nowrap;
   font-size: var(--font-size-caption);
   grid-column: 2;
   grid-row: 1;
-  justify-content: flex-start;
-  justify-self: start;
+  justify-content: center;
+  justify-self: center;
   max-width: 100%;
   overflow-x: auto;
   padding: var(--space-1) var(--space-2);
@@ -1600,19 +1682,32 @@ const finish = async () => {
   width: max-content;
 }
 
-.phases {
-  display: flex;
-  gap: var(--space-1);
-}
-
-.phases .active {
+.phase-rail .active {
   background: var(--color-accent-soft);
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
 
-.phases .active:disabled {
+.phase-rail .active:disabled {
   opacity: 1;
+}
+
+/* Timing and note visibility are states, not commands - they say where the team stands. */
+.phase-group {
+  align-items: center;
+  background: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  display: flex;
+  gap: var(--space-2);
+  padding: 2px var(--space-2) 2px var(--space-3);
+  white-space: nowrap;
+}
+
+.phase-group--warn {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .phase-control {
@@ -2065,7 +2160,7 @@ textarea.card-text:focus {
     grid-column: 2;
   }
 
-  .phase-bar {
+  .phase-controls {
     grid-column: 1 / -1;
     grid-row: 2;
   }
@@ -2094,8 +2189,14 @@ textarea.card-text:focus {
     display: none;
   }
 
-  .phase-bar {
+  .phase-controls {
     max-width: 100%;
+  }
+
+  .phase-rail {
+    grid-column: 1 / -1;
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   .phase-control {
