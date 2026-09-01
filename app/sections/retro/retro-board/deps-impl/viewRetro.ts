@@ -70,6 +70,12 @@ export const createViewRetro =
           },
           myVotes: Number(retro.myVotes),
           name: retro.name,
+          owner: {
+            color: retro.owner.color,
+            initials: retro.owner.initials,
+            name: retro.owner.displayName,
+            userId: retro.owner.userId,
+          },
           participants: retro.participants.map(
             (participant): RetroMember => ({
               color: participant.color,

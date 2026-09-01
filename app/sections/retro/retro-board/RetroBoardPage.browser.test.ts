@@ -63,6 +63,7 @@ const board: RetroBoardViewModel = {
   me: member,
   myVotes: 0,
   name: 'Sprint 42',
+  owner: member,
   participants: [member],
   phase: 'Collect',
   phaseEndsAt: null,
@@ -111,6 +112,7 @@ const mount = async ({
   setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction),
   setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(successfulAction),
   setPhaseTimer = vi.fn<RetroBoardPageDeps['setPhaseTimer']>(successfulAction),
+  transferOwnership = vi.fn<RetroBoardPageDeps['transferOwnership']>(successfulAction),
   ungroup = vi.fn<RetroBoardPageDeps['ungroup']>(successfulAction),
   updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction),
   updateSettings = vi.fn<RetroBoardPageDeps['updateSettings']>(successfulAction),
@@ -127,6 +129,7 @@ const mount = async ({
   setDiscussedCard?: RetroBoardPageDeps['setDiscussedCard']
   setGroupTitle?: RetroBoardPageDeps['setGroupTitle']
   setPhaseTimer?: RetroBoardPageDeps['setPhaseTimer']
+  transferOwnership?: RetroBoardPageDeps['transferOwnership']
   ungroup?: RetroBoardPageDeps['ungroup']
   updateCard?: RetroBoardPageDeps['updateCard']
   updateSettings?: RetroBoardPageDeps['updateSettings']
@@ -152,6 +155,7 @@ const mount = async ({
     toggleDone: vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction),
     toggleReveal: vi.fn<RetroBoardPageDeps['toggleReveal']>(successfulAction),
     toggleVote: vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction),
+    transferOwnership,
     ungroup,
     updateCard,
     updateSettings,
@@ -735,6 +739,37 @@ it('keeps all topics visible during discussion when nobody voted', async () => {
     currentWrapper?.findAll('.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['My note', 'Other note'])
   expect(currentWrapper?.find('.rank-badge').exists()).toBe(false)
+})
+
+const twoPeopleBoard: RetroBoardViewModel = {
+  ...board,
+  participants: [member, grace],
+}
+
+it('hands the retro over to another participant', async () => {
+  const { channel } = createTestChannel()
+  const transferOwnership = vi.fn<RetroBoardPageDeps['transferOwnership']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: twoPeopleBoard, transferOwnership })
+  await buttonWithText('Make facilitator')?.trigger('click')
+
+  expect(transferOwnership).toHaveBeenCalledWith({ retroId: '7', userId: grace.userId })
+})
+
+it('offers no hand-over to a participant or on a finished retro', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...twoPeopleBoard, canManage: false },
+  })
+
+  expect(buttonWithText('Make facilitator')).toBeUndefined()
+
+  await currentWrapper?.unmount()
+  await mount({ createChannel: () => channel, data: { ...twoPeopleBoard, finished: true } })
+
+  expect(buttonWithText('Make facilitator')).toBeUndefined()
 })
 
 it('keeps medals and vote counts on a finished board', async () => {

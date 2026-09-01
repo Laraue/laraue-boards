@@ -51,6 +51,18 @@
                   </span>
                   {{ member.name }}
                   <template v-if="member.userId === board.me.userId">(you)</template>
+                  <span
+                    v-if="member.userId === board.owner.userId"
+                    class="muted presence-role">
+                    facilitator
+                  </span>
+                  <button
+                    v-else-if="canHandOver(board)"
+                    class="secondary small"
+                    type="button"
+                    @click="handOver(member)">
+                    Make facilitator
+                  </button>
                 </span>
               </div>
             </div>
@@ -614,8 +626,21 @@ const presence = computed(() => {
 })
 
 // Avatars stand for the teammates next to you; the hover list names everyone, you included.
-const everyone = (board: RetroBoardViewModel) =>
-  board.finished ? board.participants : [board.me, ...presence.value]
+// Everyone who belongs to this retro: whoever is connected right now plus whoever joined earlier
+// and stepped away - handing the retro over to them is still valid.
+const everyone = (board: RetroBoardViewModel) => {
+  if (board.finished) {
+    return board.participants
+  }
+  const seen = new Map([[board.me.userId, board.me]])
+
+  for (const member of [...presence.value, ...board.participants]) {
+    if (!seen.has(member.userId)) {
+      seen.set(member.userId, member)
+    }
+  }
+  return [...seen.values()]
+}
 
 useHead({ title: computed(() => data.value?.name ?? 'Retro') })
 
@@ -854,6 +879,7 @@ const { execute: executeRemove } = useAction(props.deps.removeCard)
 const { execute: executeReveal } = useAction(props.deps.toggleReveal)
 const { execute: executeRevealMine } = useAction(props.deps.setMyCardsRevealed)
 const { execute: executeFinish } = useAction(props.deps.finishRetro)
+const { execute: executeHandOver } = useAction(props.deps.transferOwnership)
 const { execute: executeAdvancePhase } = useAction(props.deps.advancePhase)
 const { execute: executeRevertPhase } = useAction(props.deps.revertPhase)
 const { execute: executeSettings } = useAction(props.deps.updateSettings)
@@ -881,6 +907,19 @@ const changePhase = async (phase: RetroPhase) => {
   if (await executePhase({ phase, retroId: props.retroId })) {
     await refresh()
   }
+}
+
+// Running the retro is a role, not a birthright of whoever pressed "Start retro".
+const canHandOver = (board: RetroBoardViewModel) => board.canManage && !board.finished
+
+const handOver = async (member: RetroMember) => {
+  const board = data.value
+
+  if (!board || !canHandOver(board)) {
+    return
+  }
+  await executeHandOver({ retroId: props.retroId, userId: member.userId })
+  await refresh()
 }
 
 const setVotesPerUser = (event: Event) =>
@@ -1478,6 +1517,10 @@ const finish = async () => {
   color: var(--color-muted);
   font-size: var(--font-size-caption);
   margin: 0;
+}
+
+.presence-role {
+  margin-left: auto;
 }
 
 .presence-row {

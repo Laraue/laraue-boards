@@ -69,6 +69,7 @@ export type RetroBoardViewModel = {
   me: RetroMember
   myVotes: number
   name: string
+  owner: RetroMember
   participants: RetroMember[]
   phase: RetroPhase
   phaseEndsAt: null | string

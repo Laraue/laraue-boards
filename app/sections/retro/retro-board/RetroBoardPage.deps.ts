@@ -40,6 +40,7 @@ export type RetroBoardPageDeps = {
   toggleDone: (input: { done: boolean; id: string }) => Promise<ActionResult<true>>
   toggleReveal: (input: { id: string; revealed: boolean }) => Promise<ActionResult<true>>
   toggleVote: (input: { id: string; voted: boolean }) => Promise<ActionResult<true>>
+  transferOwnership: (input: { retroId: string; userId: string }) => Promise<ActionResult<true>>
   ungroup: (input: { groupId: string; retroId: string }) => Promise<ActionResult<true>>
   updateCard: (input: { id: string; text: string }) => Promise<ActionResult<true>>
   updateSettings: (input: {

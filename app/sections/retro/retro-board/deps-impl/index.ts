@@ -17,6 +17,7 @@ import { createSetPhaseTimer } from './setPhaseTimer'
 import { createToggleDone } from './toggleDone'
 import { createToggleReveal } from './toggleReveal'
 import { createToggleVote } from './toggleVote'
+import { createTransferOwnership } from './transferOwnership'
 import { createUngroup } from './ungroup'
 import { createUpdateCard } from './updateCard'
 import { createUpdateSettings } from './updateSettings'
@@ -42,6 +43,7 @@ export const createRetroBoardPageDeps = (
   toggleDone: createToggleDone(client),
   toggleReveal: createToggleReveal(client),
   toggleVote: createToggleVote(client),
+  transferOwnership: createTransferOwnership(client),
   ungroup: createUngroup(client),
   updateCard: createUpdateCard(client),
   updateSettings: createUpdateSettings(client),
