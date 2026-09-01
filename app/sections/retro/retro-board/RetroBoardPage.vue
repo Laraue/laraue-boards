@@ -84,9 +84,7 @@
               :key="option"
               class="secondary small"
               :class="{ active: board.phase === option }"
-              :disabled="
-                board.finished || !board.canManage || !canChangePhase(board.phase, option)
-              "
+              :disabled="board.finished || !board.canManage || !canChangePhase(board.phase, option)"
               type="button"
               @click="changePhase(option)">
               <component :is="PHASE_ICONS[option]" />
@@ -1699,8 +1697,8 @@ const finish = async () => {
 
 /* A single segmented control keeps the meeting sequence readable without covering the board. */
 .phase-rail {
-  bottom: var(--space-4);
   border-radius: var(--radius-card);
+  bottom: var(--space-4);
   display: flex;
   gap: var(--space-1);
   left: var(--space-4);
@@ -1718,14 +1716,14 @@ const finish = async () => {
 
 .phase-controls {
   align-items: center;
-  bottom: calc(var(--space-4) + var(--control-height) + var(--space-2));
   border-radius: var(--radius-card);
+  bottom: calc(var(--space-4) + var(--control-height) + var(--space-2));
   column-gap: var(--space-2);
   display: flex;
   flex-wrap: nowrap;
   font-size: var(--font-size-caption);
-  left: var(--space-4);
   justify-content: center;
+  left: var(--space-4);
   max-width: calc(100% - var(--space-8));
   overflow-x: auto;
   padding: var(--space-1);
@@ -2202,7 +2200,6 @@ textarea.card-text:focus {
     max-width: calc(100% - 220px);
     overflow-x: auto;
   }
-
 }
 
 @media (max-width: 640px) {
