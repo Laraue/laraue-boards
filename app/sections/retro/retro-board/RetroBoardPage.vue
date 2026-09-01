@@ -11,10 +11,7 @@
         class="retro"
         :class="{ 'retro--focused': state.fullscreen }">
         <header class="retro-header">
-          <div class="page-heading">
-            <RetroIcon
-              class="page-heading-icon"
-              :style="{ color: board.color }" />
+          <div class="retro-title">
             <h1 v-if="!canRename(board)">{{ board.name }}</h1>
             <input
               v-else
@@ -32,7 +29,8 @@
           <div class="retro-actions">
             <div
               aria-label="People on this retro"
-              class="presence">
+              class="presence"
+              tabindex="0">
               <span
                 v-for="member in presence"
                 :key="member.userId"
@@ -78,7 +76,6 @@
           </div>
 
           <div
-            v-if="!board.finished"
             aria-label="Phase"
             class="phase-rail"
             role="group">
@@ -87,15 +84,17 @@
               :key="option"
               class="secondary small"
               :class="{ active: board.phase === option }"
-              :disabled="!board.canManage || !canChangePhase(board.phase, option)"
+              :disabled="
+                board.finished || !board.canManage || !canChangePhase(board.phase, option)
+              "
               type="button"
               @click="changePhase(option)">
               <component :is="PHASE_ICONS[option]" />
               {{ option }}
             </button>
             <button
-              v-if="board.canManage && board.phase === 'Actions'"
               class="secondary danger small"
+              :disabled="board.finished || !board.canManage || board.phase !== 'Actions'"
               type="button"
               @click="finish">
               <Archive />
@@ -104,7 +103,7 @@
           </div>
 
           <div
-            v-if="!board.finished"
+            v-if="!board.finished && board.phase !== 'Actions'"
             class="phase-controls">
             <div
               v-if="board.phase === 'Collect'"
@@ -161,13 +160,6 @@
                   :class="{ over: countdown === '00:00' }">
                   {{ countdown }}
                 </span>
-                <button
-                  class="secondary small"
-                  :disabled="!board.canManage"
-                  type="button"
-                  @click="startTimer()">
-                  Extend
-                </button>
                 <button
                   class="secondary small"
                   :disabled="!board.canManage"
@@ -270,7 +262,6 @@
             <article
               v-for="card in visibleCards(board)"
               :key="card.id"
-              :aria-busy="state.pendingCardIds.has(card.id) || undefined"
               class="card"
               :class="{
                 done: card.done,
@@ -280,7 +271,6 @@
                 dragging: state.dragId === card.id,
                 editing: state.editingId === card.id,
                 hidden: card.hidden,
-                pending: state.pendingCardIds.has(card.id),
                 selected: state.selectedId === card.id,
               }"
               :style="{
@@ -459,7 +449,6 @@ import {
   Ungroup,
 } from '@lucide/vue'
 
-import { RetroIcon } from '~/constants/icons'
 import RetroCanvas from '~/sections/retro/retro-board/components/RetroCanvas/RetroCanvas.vue'
 import type { RetroBoardPageDeps } from '~/sections/retro/retro-board/RetroBoardPage.deps'
 import type {
@@ -543,17 +532,20 @@ const state = reactive({
   dragId: undefined as string | undefined,
   dragPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
+  // Notes the server has not told us about yet: one created here, or one deleted here. They keep
+  // the board honest while the request is still on the wire.
+  draftCards: [] as RetroCardViewModel[],
   fullscreen: false,
   groupSelection: [] as string[],
   hoveredId: undefined as string | undefined,
   joined: new Map<string, RetroMember>(),
   now: Date.now(),
-  pendingCardIds: new Set<string>(),
   pendingTexts: new Map<string, string>(),
   refreshPending: false,
   remoteCursors: new Map<string, { at: number; member: RetroMember; x: number; y: number }>(),
   remoteMoves: new Map<string, { at: number; x: number; y: number }>(),
   remoteTexts: new Map<string, { at: number; text: string }>(),
+  removedCardIds: new Set<string>(),
   selectedId: undefined as string | undefined,
   timerMinutes: 5,
 })
@@ -583,7 +575,6 @@ const clearBoardState = () => {
   state.editingId = undefined
   state.hoveredId = undefined
   state.joined.clear()
-  state.pendingCardIds.clear()
   state.pendingTexts.clear()
   state.refreshPending = false
   state.remoteCursors.clear()
@@ -732,7 +723,7 @@ const zoneIndexAt = (x: number, y: number, sectionCount: number) => {
 }
 
 const actionCards = (board: RetroBoardViewModel) =>
-  board.cards.filter((card) => card.sectionId === board.sections.at(-1)?.id)
+  boardCards(board).filter((card) => card.sectionId === board.sections.at(-1)?.id)
 
 // A topic is a group of notes or a single ungrouped note - never a note inside a group, so a
 // merged topic is one line with one score.
@@ -809,15 +800,36 @@ const discussionRanks = computed(() => {
 })
 
 const cardsOf = (board: RetroBoardViewModel, sectionId: string) =>
-  board.cards.filter((card) => card.sectionId === sectionId)
+  boardCards(board).filter((card) => card.sectionId === sectionId)
 
 const sectionColorAt = (board: RetroBoardViewModel, x: number, y: number) =>
   board.sections[zoneIndexAt(x + CARD_SIZE / 2, y + CARD_SIZE / 2, board.sections.length)]?.color
 
 const HIDDEN_TEXT = '•••••• ••••• ••••••'
 
+// What the board actually holds right now: the server's answer, minus what we just deleted, plus
+// what we just created. A refresh drops each patch as soon as the answer carries it.
+const boardCards = (board: RetroBoardViewModel) => [
+  ...board.cards.filter((card) => !state.removedCardIds.has(card.id)),
+  ...state.draftCards.filter((draft) => !board.cards.some((card) => card.id === draft.id)),
+]
+
+watch(data, (board) => {
+  if (!board) {
+    return
+  }
+  const known = new Set(board.cards.map((card) => card.id))
+
+  state.draftCards = state.draftCards.filter((draft) => !known.has(draft.id))
+  for (const id of state.removedCardIds) {
+    if (!known.has(id)) {
+      state.removedCardIds.delete(id)
+    }
+  }
+})
+
 const visibleCards = (board: RetroBoardViewModel) =>
-  board.cards.map((card) => {
+  boardCards(board).map((card) => {
     // While dragging, the note already wears the colour of the zone it is heading into.
     const moved = state.remoteMoves.get(card.id)
     const dragged =
@@ -1137,16 +1149,17 @@ const cancelEdit = () => {
 }
 
 const removeCard = async (card: RetroCardViewModel) => {
-  if (state.pendingCardIds.has(card.id)) {
+  if (state.removedCardIds.has(card.id)) {
     return
   }
-  state.pendingCardIds.add(card.id)
-  try {
-    await executeRemove({ id: card.id })
-    await refresh()
-  } finally {
-    state.pendingCardIds.delete(card.id)
+  // The note goes now; if the server says no, it comes back.
+  state.removedCardIds.add(card.id)
+  if (await executeRemove({ id: card.id })) {
+    void refresh()
+
+    return
   }
+  state.removedCardIds.delete(card.id)
 }
 
 const saveDraft = async (card: RetroCardViewModel) => {
@@ -1183,14 +1196,36 @@ const saveDraft = async (card: RetroCardViewModel) => {
 }
 
 const createCardAt = async (sectionId: string, x: number, y: number) => {
+  const board = data.value
   const created = await executeCreate({ retroId: props.retroId, sectionId, text: '', x, y })
 
-  await refresh()
-
-  const card = created && data.value?.cards.find((item) => item.id === created.id)
-  if (card) {
-    startEdit(card)
+  if (!board || !created) {
+    return
   }
+  // Waiting for the whole board to come back before showing one empty note is a second round trip
+  // the writer has to sit through - we know everything about the note we just asked for.
+  const draft: RetroCardViewModel = {
+    assignee: null,
+    authorColor: board.me.color,
+    authorInitials: board.me.initials,
+    authorName: board.me.name,
+    done: false,
+    groupId: null,
+    hidden: false,
+    id: created.id,
+    isMine: true,
+    revealed: false,
+    sectionId,
+    text: '',
+    votedByMe: false,
+    votes: 0,
+    x,
+    y,
+  }
+
+  state.draftCards.push(draft)
+  startEdit(draft)
+  void refresh()
 }
 
 const addCardAt = async (board: RetroBoardViewModel, point: { x: number; y: number }) => {
@@ -1506,53 +1541,69 @@ const finish = async () => {
 }
 
 .retro-header {
-  align-items: center;
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: max-content minmax(0, 1fr) max-content;
-  inset: var(--space-4) var(--space-4) auto;
+  inset: 0;
   pointer-events: none;
   position: absolute;
   z-index: 7;
 }
 
-.retro-header .page-heading,
-.retro-actions {
+.retro-actions,
+.phase-controls,
+.phase-rail {
   backdrop-filter: blur(14px);
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-border) 76%, transparent);
   box-shadow: var(--shadow-card);
   box-sizing: border-box;
-  height: var(--control-height);
 }
 
-.retro-header .page-heading {
-  border-radius: var(--radius-card);
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: start;
-  max-width: min(360px, 32vw);
-  padding: var(--space-1) var(--space-3);
+.retro-title {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  left: var(--space-4);
+  max-width: min(360px, 30vw);
+  min-height: var(--control-height);
+  min-width: 0;
+  padding: var(--space-1) 0;
   pointer-events: auto;
+  position: absolute;
+  top: var(--space-4);
   width: fit-content;
+}
+
+.retro-title h1,
+.retro-name-input {
+  font-size: clamp(24px, 2.2vw, 30px);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 
 .retro-name-input {
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
   color: inherit;
+  field-sizing: content;
   font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  min-width: 0;
-  padding: 0 var(--space-2);
+  height: auto;
+  max-width: 100%;
+  min-width: 4ch;
+  padding: 0;
+  width: auto;
 }
 
-/* The heading is already a bordered pill - a second frame around the input reads as a glitch. */
-.retro-name-input:hover,
+.retro-name-input:hover {
+  background: transparent;
+  border-bottom-color: var(--color-border);
+}
+
 .retro-name-input:focus {
-  background: var(--color-soft);
+  background: transparent;
+  border-bottom-color: var(--color-accent);
   outline: none;
 }
 
@@ -1568,10 +1619,17 @@ const finish = async () => {
 .presence {
   align-items: center;
   display: flex;
+  max-width: 220px;
   min-height: var(--control-height-small);
+  outline: none;
 }
 
-.presence .entity-avatar {
+.presence:focus-visible {
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-focus);
+}
+
+.presence > .entity-avatar {
   margin-right: -8px;
   outline: 2px solid var(--color-surface);
 }
@@ -1599,7 +1657,8 @@ const finish = async () => {
   z-index: 5;
 }
 
-.presence:hover .presence-list {
+.presence:hover .presence-list,
+.presence:focus-within .presence-list {
   opacity: 1;
   pointer-events: auto;
 }
@@ -1630,83 +1689,75 @@ const finish = async () => {
   align-items: center;
   border-radius: var(--radius-card);
   display: flex;
-  gap: var(--space-2);
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: end;
+  min-height: var(--control-height);
   padding: var(--space-1) var(--space-3);
   pointer-events: auto;
-  position: relative;
+  position: absolute;
+  right: var(--space-4);
+  top: var(--space-4);
 }
 
-/* Phases run down the right edge: they are the spine of the meeting, not one more toolbar. */
+/* A single segmented control keeps the meeting sequence readable without covering the board. */
 .phase-rail {
-  backdrop-filter: blur(14px);
-  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 76%, transparent);
+  bottom: var(--space-4);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
   gap: var(--space-1);
-  grid-column: 1;
-  grid-row: 2;
-  justify-self: start;
-  padding: var(--space-2);
+  left: var(--space-4);
+  max-width: calc(50% - 80px);
+  padding: var(--space-1);
   pointer-events: auto;
+  position: absolute;
 }
 
 .phase-rail button {
-  justify-content: flex-start;
-  width: 100%;
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-muted);
 }
 
-/* What the current phase asks of the team sits in the middle, where the eye already is. Each
-   control carries its own chip, so the strip itself stays invisible. */
 .phase-controls {
   align-items: center;
+  bottom: calc(var(--space-4) + var(--control-height) + var(--space-2));
+  border-radius: var(--radius-card);
   column-gap: var(--space-2);
   display: flex;
   flex-wrap: nowrap;
   font-size: var(--font-size-caption);
-  grid-column: 2;
-  grid-row: 1;
+  left: var(--space-4);
   justify-content: center;
-  justify-self: center;
-  max-width: 100%;
+  max-width: calc(100% - var(--space-8));
   overflow-x: auto;
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1);
   pointer-events: auto;
+  position: absolute;
   white-space: nowrap;
   width: max-content;
 }
 
 .phase-rail .active {
-  background: var(--color-accent-soft);
+  background: var(--color-accent);
   border-color: var(--color-accent);
-  color: var(--color-accent);
+  color: #fff;
 }
 
 .phase-rail .active:disabled {
   opacity: 1;
 }
 
-/* Timing and note visibility are states, not commands - they say where the team stands. */
 .phase-group {
   align-items: center;
-  background: var(--color-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
+  background: transparent;
   display: flex;
   gap: var(--space-2);
-  padding: 2px var(--space-2) 2px var(--space-3);
+  min-height: var(--control-height-small);
+  padding: 0 var(--space-2);
   white-space: nowrap;
 }
 
 .phase-group--warn {
   background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+  border-radius: var(--radius-control);
   color: var(--color-accent);
 }
 
@@ -1854,11 +1905,6 @@ const finish = async () => {
   box-shadow: var(--sticky-shadow-lift);
   cursor: grabbing;
   z-index: 4;
-}
-
-.card.pending {
-  opacity: 0.55;
-  pointer-events: none;
 }
 
 .group-box {
@@ -2151,52 +2197,57 @@ textarea.card-text:focus {
   width: 20px;
 }
 
-@media (max-width: 1100px) {
-  .retro-header {
-    grid-template-columns: minmax(0, 1fr) auto;
+@media (max-width: 1180px) {
+  .phase-rail {
+    max-width: calc(100% - 220px);
+    overflow-x: auto;
   }
 
-  .retro-actions {
-    grid-column: 2;
-  }
-
-  .phase-controls {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
 }
 
 @media (max-width: 640px) {
-  .retro-header {
-    inset: var(--space-3) var(--space-3) auto;
-  }
-
-  .retro-header .page-heading {
-    max-width: calc(100% - 72px);
+  .retro-title {
+    left: var(--space-3);
+    max-width: calc(100% - 112px);
     padding-left: calc(var(--icon-btn-size) + var(--space-4));
-  }
-
-  .retro-header .page-heading > .muted,
-  .retro-header .page-heading-icon {
-    display: none;
+    top: var(--space-3);
   }
 
   .retro-actions {
     padding-inline: var(--space-2);
+    right: var(--space-3);
+    top: var(--space-3);
   }
 
-  .presence > .entity-avatar {
+  .presence {
+    max-width: 76px;
+  }
+
+  .presence > .entity-avatar:nth-of-type(n + 3) {
     display: none;
   }
 
   .phase-controls {
-    max-width: 100%;
+    bottom: 108px;
+    justify-content: flex-start;
+    left: var(--space-3);
+    max-width: none;
+    right: var(--space-3);
+    translate: 0;
+    width: auto;
   }
 
   .phase-rail {
-    grid-column: 1 / -1;
-    max-width: 100%;
+    bottom: 60px;
+    left: var(--space-3);
+    max-width: none;
     overflow-x: auto;
+    right: var(--space-3);
+    translate: 0;
+  }
+
+  .phase-rail button {
+    flex: none;
   }
 
   .phase-control {

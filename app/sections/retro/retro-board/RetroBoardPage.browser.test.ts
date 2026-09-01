@@ -338,7 +338,7 @@ it('keeps edited text visible while a slow save is pending', async () => {
   resolveUpdate({ data: true, status: 'success' })
 })
 
-it('selects on one click and disables a card while deleting it', async () => {
+it('selects on one click and drops a deleted card before the server answers', async () => {
   const { channel } = createTestChannel()
   type RemoveResult = Awaited<ReturnType<RetroBoardPageDeps['removeCard']>>
   let resolveRemove!: (result: RemoveResult) => void
@@ -358,10 +358,24 @@ it('selects on one click and disables a card while deleting it', async () => {
 
   await currentWrapper?.find('button[aria-label="Delete note"]').trigger('click')
   await vi.waitFor(() => expect(removeCard).toHaveBeenCalledWith({ id: 'mine' }))
-  expect(card?.classes()).toContain('pending')
-  expect(card?.attributes('aria-busy')).toBe('true')
+  // Gone straight away - the request is still on the wire.
+  expect(cardWithText('My note')).toBeUndefined()
 
   resolveRemove({ data: true, status: 'success' })
+})
+
+it('brings a deleted card back when the server refuses', async () => {
+  const { channel } = createTestChannel()
+  const removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(async () => ({
+    code: 500,
+    status: 'error' as const,
+  }))
+
+  await mount({ createChannel: () => channel, removeCard })
+  await cardWithText('My note')?.trigger('click')
+  await currentWrapper?.find('button[aria-label="Delete note"]').trigger('click')
+
+  await vi.waitFor(() => expect(cardWithText('My note')).toBeDefined())
 })
 
 it('deduplicates simultaneous realtime refreshes', async () => {
