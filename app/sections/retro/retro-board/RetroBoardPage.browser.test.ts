@@ -706,10 +706,13 @@ it('keeps all topics visible and ranks vote leaders during discussion', async ()
   expect(
     currentWrapper?.findAll('.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['First', 'Second', 'Third', 'Also third', 'Fifth', 'Ship the fix'])
+  // Equal votes no longer widen the leading set: the board order breaks the tie, so exactly
+  // three medals are handed out however many topics share a score.
   expect(cardWithText('First')?.find('.rank-badge').text()).toBe('1')
-  expect(cardWithText('Second')?.find('.rank-badge').text()).toBe('1')
-  expect(cardWithText('Third')?.find('.rank-badge').text()).toBe('2')
-  expect(cardWithText('Fifth')?.find('.rank-badge').text()).toBe('3')
+  expect(cardWithText('Second')?.find('.rank-badge').text()).toBe('2')
+  expect(cardWithText('Third')?.find('.rank-badge').text()).toBe('3')
+  expect(cardWithText('Also third')?.find('.rank-badge').exists()).toBe(false)
+  expect(cardWithText('Fifth')?.find('.rank-badge').exists()).toBe(false)
   expect(cardWithText('Ship the fix')?.find('.rank-badge').exists()).toBe(false)
 })
 
@@ -732,6 +735,88 @@ it('keeps all topics visible during discussion when nobody voted', async () => {
     currentWrapper?.findAll('.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['My note', 'Other note'])
   expect(currentWrapper?.find('.rank-badge').exists()).toBe(false)
+})
+
+const discussionBoard: RetroBoardViewModel = {
+  ...board,
+  cards: ['First', 'Second', 'Third', 'Also third', 'Fifth'].map((text, index) => ({
+    ...board.cards[0]!,
+    id: `topic-${index}`,
+    text,
+    votes: [4, 4, 2, 2, 1][index]!,
+  })),
+  phase: 'Discuss',
+}
+
+const topicRows = () =>
+  currentWrapper!.findAll('.topic-row').map((row: DOMWrapper<Element>) => row.text())
+
+it('lists every topic ordered by votes, with the leaders on top', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({ createChannel: () => channel, data: discussionBoard })
+
+  // Nothing is cut off - the list keeps all five, the tie is broken by the board order.
+  expect(topicRows()).toEqual(['1First 4', '2Second 4', '3Third 2', '4Also third 2', '5Fifth 1'])
+  expect(
+    currentWrapper!.findAll('.topic-list li').map((row: DOMWrapper<Element>) => row.classes()),
+  ).toEqual([[], [], [], ['spare'], ['spare']])
+})
+
+it('shows a merged topic as one line with one score', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...discussionBoard,
+      cards: discussionBoard.cards.map((card, index) =>
+        index < 2 ? { ...card, groupId: 'group-1', votes: 0 } : card,
+      ),
+      groups: [
+        {
+          cardIds: ['topic-0', 'topic-1'],
+          id: 'group-1',
+          title: 'Painful releases',
+          votedByMe: false,
+          votes: 5,
+        },
+      ],
+    },
+  })
+
+  expect(topicRows()).toEqual(['1Painful releases 5', '2Third 2', '3Also third 2', '4Fifth 1'])
+})
+
+it('starts discussing the topic picked from the list', async () => {
+  const { channel } = createTestChannel()
+  const setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: discussionBoard, setDiscussedCard })
+  await currentWrapper!.findAll('.topic-row')[1]!.trigger('click')
+
+  expect(setDiscussedCard).toHaveBeenCalledWith({ cardId: 'topic-1', retroId: '7' })
+})
+
+it('marks the topic under discussion in the list', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...discussionBoard, discussedCardId: 'topic-2' },
+  })
+
+  expect(
+    currentWrapper!.findAll('.topic-list li').map((row: DOMWrapper<Element>) => row.classes()),
+  ).toEqual([[], [], ['discussed'], ['spare'], ['spare']])
+})
+
+it('keeps the topic list out of the other phases', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({ createChannel: () => channel, data: { ...discussionBoard, phase: 'Vote' } })
+
+  expect(currentWrapper?.find('.topic-list').exists()).toBe(false)
 })
 
 it('summarizes top topics and warns before finishing without actions', async () => {

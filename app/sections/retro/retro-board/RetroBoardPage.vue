@@ -369,6 +369,34 @@
           </template>
         </RetroCanvas>
 
+        <aside
+          v-if="board.phase === 'Discuss' && discussionTopics.length > 0"
+          class="topic-list">
+          <h2>Topics by votes</h2>
+          <ol>
+            <li
+              v-for="(topic, index) in discussionTopics"
+              :key="topic.id"
+              :class="{ discussed: topic.discussed, spare: index >= PRIORITY_TOPICS }">
+              <button
+                class="topic-row"
+                :disabled="!board.canManage || board.finished"
+                type="button"
+                @click="discussTopic(topic)">
+                <span class="topic-rank">{{ index + 1 }}</span>
+                <span class="topic-title">{{ topic.title }}</span>
+                <span class="topic-votes">
+                  <ThumbsUp />
+                  {{ topic.votes }}
+                </span>
+              </button>
+            </li>
+          </ol>
+          <p class="muted">
+            The first {{ PRIORITY_TOPICS }} carry the most votes - the rest stay available.
+          </p>
+        </aside>
+
         <div
           v-if="state.groupSelection.length > 0"
           class="merge-bar">
@@ -433,7 +461,17 @@ const canChangePhase = (current: RetroPhase, target: RetroPhase) =>
 const ZONE_WIDTH = 880
 const ZONE_HEIGHT = 720
 const ZONE_GAP = 24
+type DiscussionTopic = {
+  cardIds: string[]
+  id: string
+  order: number
+  title: string
+  votes: number
+}
+
 const CARD_SIZE = 160
+// Not a cap on the discussion - just how many topics are marked as the ones to start with.
+const PRIORITY_TOPICS = 3
 const GROUP_PADDING = 14
 const MAX_CARD_FONT_SIZE = 30
 const MIN_CARD_FONT_SIZE = 12
@@ -651,28 +689,99 @@ const zoneIndexAt = (x: number, y: number, sectionCount: number) => {
 const actionCards = (board: RetroBoardViewModel) =>
   board.cards.filter((card) => card.sectionId === board.sections.at(-1)?.id)
 
-const topicRanks = (board: RetroBoardViewModel) => {
-  const topics = board.cards.filter((card) => card.sectionId !== board.sections.at(-1)?.id)
-  const scores = [...new Set(topics.map((card) => card.votes).filter((votes) => votes > 0))]
-    .toSorted((left, right) => right - left)
-    .slice(0, 3)
-  const ranks = new Map<string, number>()
+// A topic is a group of notes or a single ungrouped note - never a note inside a group, so a
+// merged topic is one line with one score.
+const orderedTopics = (board: RetroBoardViewModel) => {
+  const actionsSectionId = board.sections.at(-1)?.id
+  const topics = new Map<string, DiscussionTopic>()
 
-  for (const card of topics) {
-    const rank = scores.indexOf(card.votes) + 1
-
-    if (rank > 0) {
-      ranks.set(card.id, rank)
+  // board.cards arrives in the server's stacking order, so its index is a stable tie-breaker that
+  // every client sees the same way.
+  board.cards.forEach((card, index) => {
+    if (card.sectionId === actionsSectionId) {
+      return
     }
-  }
-  return ranks
+    const group = groupOf(board, card)
+
+    if (!group) {
+      topics.set(card.id, {
+        cardIds: [card.id],
+        id: card.id,
+        order: index,
+        title: card.text,
+        votes: card.votes,
+      })
+
+      return
+    }
+    const existing = topics.get(group.id)
+
+    if (existing) {
+      existing.cardIds.push(card.id)
+
+      return
+    }
+    topics.set(group.id, {
+      cardIds: [card.id],
+      id: group.id,
+      order: index,
+      title: group.title,
+      votes: group.votes,
+    })
+  })
+
+  return [...topics.values()]
+    .toSorted(
+      (left, right) =>
+        right.votes - left.votes || left.order - right.order || left.id.localeCompare(right.id),
+    )
+    .map((topic) => ({
+      ...topic,
+      title: topic.title || `${topic.cardIds.length} notes`,
+    }))
 }
 
-const discussionRanks = computed(() => {
+const discussionTopics = computed(() => {
   const board = data.value
 
-  return board?.phase === 'Discuss' ? topicRanks(board) : new Map<string, number>()
+  if (board?.phase !== 'Discuss') {
+    return []
+  }
+  return orderedTopics(board).map((topic) => ({
+    ...topic,
+    discussed: board.discussedCardId !== null && topic.cardIds.includes(board.discussedCardId),
+  }))
 })
+
+// Every note of the leading topics wears its medal; ties never hand out a fourth one, because the
+// order is total.
+const discussionRanks = computed(() => {
+  const ranks = new Map<string, number>()
+
+  discussionTopics.value
+    .filter((topic) => topic.votes > 0)
+    .slice(0, PRIORITY_TOPICS)
+    .forEach((topic, index) => {
+      for (const cardId of topic.cardIds) {
+        ranks.set(cardId, index + 1)
+      }
+    })
+
+  return ranks
+})
+
+const discussTopic = async (topic: { cardIds: string[]; discussed: boolean }) => {
+  const board = data.value
+
+  if (!board?.canManage || board.finished) {
+    return
+  }
+  await executeDiscuss({
+    cardId: topic.discussed ? null : (topic.cardIds[0] ?? null),
+    retroId: props.retroId,
+  })
+  await refresh()
+}
 
 const cardsOf = (board: RetroBoardViewModel, sectionId: string) =>
   board.cards.filter((card) => card.sectionId === sectionId)
@@ -1291,16 +1400,13 @@ const finish = async () => {
   if (!board?.canManage) {
     return
   }
-  const ranks = topicRanks(board)
-  const topics = board.cards
-    .filter((card) => ranks.has(card.id))
-    .toSorted((left, right) => (ranks.get(left.id) ?? 4) - (ranks.get(right.id) ?? 4))
+  const topics = orderedTopics(board).slice(0, PRIORITY_TOPICS)
   const actions = actionCards(board)
   const summary = [
     'Finish this retro?',
     '',
     'Top topics:',
-    ...(topics.length ? topics.map((card) => `• ${card.text}`) : ['• None']),
+    ...(topics.length ? topics.map((topic) => `• ${topic.title} (${topic.votes})`) : ['• None']),
     '',
     'Actions:',
     ...(actions.length
@@ -1668,6 +1774,83 @@ const finish = async () => {
 .card.group-picked {
   outline: 3px dashed var(--color-accent);
   outline-offset: 3px;
+}
+
+.topic-list {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+  position: fixed;
+  right: var(--space-5);
+  top: 120px;
+  width: 280px;
+  z-index: 5;
+}
+
+.topic-list h2 {
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--space-2);
+}
+
+.topic-list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.topic-list li.spare {
+  opacity: 0.65;
+}
+
+/* The cut-off is a hint about where to start, not a wall: everything below stays clickable. */
+.topic-list li.spare:first-of-type {
+  border-top: 1px dashed var(--color-border);
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+.topic-row {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  text-align: left;
+  width: 100%;
+}
+
+.topic-row:hover:enabled {
+  background: var(--color-hover);
+}
+
+.topic-list li.discussed .topic-row {
+  background: var(--color-hover);
+  outline: 2px solid var(--color-accent);
+}
+
+.topic-rank {
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.topic-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topic-votes {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  gap: 2px;
 }
 
 .merge-bar {
