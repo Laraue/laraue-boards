@@ -426,7 +426,7 @@ it('hides new vote actions after the vote budget is spent', async () => {
   await expect.element(page.getByRole('button', { name: 'Vote for note' })).not.toBeInTheDocument()
 })
 
-it('shows vote totals after voting ends', async () => {
+it('keeps vote totals hidden while the phase is still Vote', async () => {
   const { channel } = createTestChannel()
 
   await mount({
@@ -436,6 +436,22 @@ it('shows vote totals after voting ends', async () => {
       cards: board.cards.map((card) => ({ ...card, votes: 2 })),
       phase: 'Vote',
       voteEndsAt: '2000-01-01T00:00:00Z',
+    },
+  })
+
+  expect(currentWrapper?.find('.vote-badge').text()).toBe('')
+})
+
+it('shows vote totals once the facilitator moves on to discussion', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...board,
+      cards: board.cards.map((card) => ({ ...card, votes: 2 })),
+      phase: 'Discuss',
+      voteEndsAt: null,
     },
   })
 

@@ -786,8 +786,9 @@ const votingOpen = computed(() => {
   return data.value?.phase === 'Vote' && !!endsAt && Date.parse(endsAt) > state.now
 })
 
-const showVoteResults = (board: RetroBoardViewModel) =>
-  board.finished || board.phase !== 'Vote' || countdown.value === '00:00'
+// Only the facilitator closing Vote reveals the totals - a local countdown hitting zero is not
+// enough, and the API keeps them at zero until then anyway.
+const showVoteResults = (board: RetroBoardViewModel) => board.finished || board.phase !== 'Vote'
 
 const showVoteBadge = (board: RetroBoardViewModel, card: RetroCardViewModel) => {
   if (isActionsSection(board, card.sectionId)) {
