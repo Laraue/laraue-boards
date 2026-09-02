@@ -112,6 +112,7 @@ const mount = async ({
   moveGroup = vi.fn<RetroBoardPageDeps['moveGroup']>(successfulAction),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
   renameRetro = vi.fn<RetroBoardPageDeps['renameRetro']>(successfulAction),
+  resetVotes = vi.fn<RetroBoardPageDeps['resetVotes']>(successfulAction),
   revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction),
   setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction),
   setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction),
@@ -132,6 +133,7 @@ const mount = async ({
   moveGroup?: RetroBoardPageDeps['moveGroup']
   removeCard?: RetroBoardPageDeps['removeCard']
   renameRetro?: RetroBoardPageDeps['renameRetro']
+  resetVotes?: RetroBoardPageDeps['resetVotes']
   revertPhase?: RetroBoardPageDeps['revertPhase']
   setCardAssignee?: RetroBoardPageDeps['setCardAssignee']
   setDiscussedCard?: RetroBoardPageDeps['setDiscussedCard']
@@ -157,6 +159,7 @@ const mount = async ({
     moveGroup,
     removeCard,
     renameRetro,
+    resetVotes,
     revertPhase,
     setCardAssignee,
     setDiscussedCard,
@@ -689,7 +692,7 @@ it('splits the topic back into notes', async () => {
   expect(ungroup).toHaveBeenCalledWith({ groupId: 'group-1', retroId: '7' })
 })
 
-it('freezes the topic once voting has started', async () => {
+it('leaves the topic in the owner hands once voting has started', async () => {
   const { channel } = createTestChannel()
 
   await mount({
@@ -697,8 +700,24 @@ it('freezes the topic once voting has started', async () => {
     data: { ...groupedBoard, phase: 'Vote', phaseEndsAt: '2099-01-01T00:00:00Z' },
   })
 
-  expect(currentWrapper?.find('.group-ungroup').exists()).toBe(false)
-  expect((currentWrapper!.find('.group-title').element as HTMLInputElement).disabled).toBe(true)
+  // A topic cut the wrong way has to be fixable while the team is already voting on it.
+  expect(currentWrapper?.find('.group-ungroup').exists()).toBe(true)
+  expect((currentWrapper!.find('.group-title').element as HTMLInputElement).disabled).toBe(false)
+})
+
+it('clears every vote for the owner', async () => {
+  const { channel } = createTestChannel()
+  const resetVotes = vi.fn<RetroBoardPageDeps['resetVotes']>(successfulAction)
+  vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...groupedBoard, phase: 'Discuss' },
+    resetVotes,
+  })
+  await buttonWithText('Reset votes')?.trigger('click')
+
+  expect(resetVotes).toHaveBeenCalledWith({ retroId: '7' })
 })
 
 it('takes the vote off a topic from any of its notes', async () => {

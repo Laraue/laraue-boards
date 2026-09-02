@@ -20,6 +20,7 @@ import { createToggleDone } from './toggleDone'
 import { createToggleReveal } from './toggleReveal'
 import { createToggleVote } from './toggleVote'
 import { createTransferOwnership } from './transferOwnership'
+import { createResetVotes } from './resetVotes'
 import { createUngroup } from './ungroup'
 import { createUpdateCard } from './updateCard'
 import { createUpdateSettings } from './updateSettings'
@@ -38,6 +39,7 @@ export const createRetroBoardPageDeps = (
   moveGroup: createMoveGroup(client),
   removeCard: createRemoveCard(client),
   renameRetro: createRenameRetro(client),
+  resetVotes: createResetVotes(client),
   revertPhase: createRevertPhase(client),
   setCardAssignee: createSetCardAssignee(client),
   setDiscussedCard: createSetDiscussedCard(client),

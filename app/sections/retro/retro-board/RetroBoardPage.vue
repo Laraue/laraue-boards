@@ -160,6 +160,16 @@
                 <span>used</span>
               </div>
 
+              <button
+                v-if="canResetVotes(board)"
+                class="phase-chip"
+                title="Clear every vote so the team can vote again"
+                type="button"
+                @click="resetVotes()">
+                <RotateCcw />
+                Reset votes
+              </button>
+
               <div
                 v-if="canRunTimer(board)"
                 class="phase-chip"
@@ -476,6 +486,7 @@ import {
   ListChecks,
   Maximize,
   Medal,
+  RotateCcw,
   MessagesSquare,
   Minimize,
   MousePointer2,
@@ -935,9 +946,9 @@ const SECTION_HINTS: Record<string, string> = {
 const sectionHint = (name: string) =>
   SECTION_HINTS[name.toLowerCase()] ?? 'Double-click the area to add a note'
 
-// Merging is the facilitator's call and freezes with the notes themselves once voting starts.
-const canGroup = (board: RetroBoardViewModel) =>
-  !board.finished && board.canManage && board.phase === 'Group'
+// Topics are how the owner runs the room, not a step of it: a badly cut topic has to be fixable
+// while the team is already talking about it.
+const canGroup = (board: RetroBoardViewModel) => !board.finished && board.canManage
 
 const groupOf = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   card.groupId === null ? undefined : board.groups.find((group) => group.id === card.groupId)
@@ -1008,6 +1019,7 @@ const { execute: executeAssign } = useAction(props.deps.setCardAssignee)
 const { execute: executeDiscuss } = useAction(props.deps.setDiscussedCard)
 const { execute: executeGroup } = useAction(props.deps.groupCards)
 const { execute: executeUngroup } = useAction(props.deps.ungroup)
+const { execute: executeResetVotes } = useAction(props.deps.resetVotes)
 const { execute: executeGroupTitle } = useAction(props.deps.setGroupTitle)
 const { execute: executeDone } = useAction(props.deps.toggleDone)
 const { execute: executeRemove } = useAction(props.deps.removeCard)
@@ -1609,6 +1621,20 @@ const vote = async (card: RetroCardViewModel) => {
   // A vote belongs to the whole topic, so the note toggles what the topic shows - not its own
   // flag, which only the note the server keeps the vote on ever carries.
   await executeVote({ id: card.id, voted: !votedByMe(board, card) })
+  await refresh()
+}
+
+// A vote that went wrong is the owner's to undo - the room votes again from a clean board.
+const canResetVotes = (board: RetroBoardViewModel) =>
+  !board.finished && board.canManage && (board.phase === 'Vote' || board.phase === 'Discuss')
+
+const resetVotes = async () => {
+  const board = data.value
+
+  if (!board || !canResetVotes(board) || !confirm('Clear every vote on this board?')) {
+    return
+  }
+  await executeResetVotes({ retroId: props.retroId })
   await refresh()
 }
 
