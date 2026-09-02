@@ -38,6 +38,7 @@
         @click="zoomBy(1)">
         <Plus />
       </button>
+      <slot name="controls" />
     </div>
   </div>
 </template>

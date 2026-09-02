@@ -1,10 +1,20 @@
-export type RetroPhase = 'Collect' | 'Discuss' | 'Vote'
+export type RetroPhase = 'Actions' | 'Collect' | 'Discuss' | 'Group' | 'Vote'
+
+export type RetroGroupViewModel = {
+  cardIds: string[]
+  id: string
+  title: string
+  votedByMe: boolean
+  votes: number
+}
 
 export type RetroCardViewModel = {
+  assignee: null | RetroMember
   authorColor: string
   authorInitials: string
   authorName: string
   done: boolean
+  groupId: null | string
   hidden: boolean
   id: string
   isMine: boolean
@@ -52,15 +62,17 @@ export type RetroBoardViewModel = {
   cards: RetroCardViewModel[]
   color: string
   finished: boolean
+  groups: RetroGroupViewModel[]
   hiddenMine: number
   id: string
   me: RetroMember
   myVotes: number
   name: string
+  owner: RetroMember
   participants: RetroMember[]
   phase: RetroPhase
+  phaseEndsAt: null | string
   revealedMine: number
   sections: RetroSectionViewModel[]
-  voteEndsAt: null | string
   votesPerUser: number
 }

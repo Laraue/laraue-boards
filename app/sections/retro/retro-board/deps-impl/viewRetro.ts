@@ -20,11 +20,27 @@ export const createViewRetro =
             id: String(section.id),
             name: section.name,
           }))
+        const groups = retro.groups.map((group) => ({
+          cardIds: group.cardIds,
+          id: String(group.id),
+          title: group.title,
+          votedByMe: group.votedByMe,
+          votes: Number(group.votes),
+        }))
         const cards = retro.cards.map((card) => ({
+          assignee: card.assignee
+            ? {
+                color: card.assignee.color,
+                initials: card.assignee.initials,
+                name: card.assignee.displayName,
+                userId: card.assignee.userId,
+              }
+            : null,
           authorColor: card.author.color,
           authorInitials: card.author.initials,
           authorName: card.author.displayName,
           done: card.done,
+          groupId: card.groupId === null ? null : String(card.groupId),
           hidden: card.hidden,
           id: card.id,
           isMine: card.isMine,
@@ -42,6 +58,7 @@ export const createViewRetro =
           cards,
           color: retro.color,
           finished: retro.finishedAt !== null,
+          groups,
           hiddenMine: mine.filter((card) => !card.revealed).length,
           id: String(retro.id),
           me: {
@@ -52,6 +69,12 @@ export const createViewRetro =
           },
           myVotes: Number(retro.myVotes),
           name: retro.name,
+          owner: {
+            color: retro.owner.color,
+            initials: retro.owner.initials,
+            name: retro.owner.displayName,
+            userId: retro.owner.userId,
+          },
           participants: retro.participants.map(
             (participant): RetroMember => ({
               color: participant.color,
@@ -61,9 +84,9 @@ export const createViewRetro =
             }),
           ),
           phase: retro.phase,
+          phaseEndsAt: retro.phaseEndsAt,
           revealedMine: mine.filter((card) => card.revealed).length,
           sections,
-          voteEndsAt: retro.voteEndsAt,
           votesPerUser: Number(retro.votesPerUser),
         }
       },

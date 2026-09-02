@@ -13,8 +13,10 @@ const author = {
 }
 
 const card = {
+  assignee: null,
   author,
   done: false,
+  groupId: null,
   hidden: false,
   id: 'card-1',
   isMine: true,
@@ -39,16 +41,18 @@ test('maps the retro and counts the cards the current user still keeps covered',
     createdAt: '2026-08-20T10:00:00Z',
     currentUser: author,
     finishedAt: null,
+    groups: [],
     id: 7,
     myVotes: 2,
     name: 'Sprint 42',
+    owner: author,
     participants: [author],
     phase: 'Collect',
+    phaseEndsAt: null,
     sections: [
       { color: '#a44', id: 6, name: 'Actions', sortOrder: 2 },
       { color: '#489c61', id: 5, name: 'Good', sortOrder: 1 },
     ],
-    voteEndsAt: null,
     votesPerUser: 3,
   }))
 

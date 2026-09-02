@@ -6,7 +6,7 @@
     :message="message"
     :on-retry="refresh"
     :pending="pending">
-    <template #default="{ data: retros }">
+    <template #default="{ data: listing }">
       <section class="retro-list-page">
         <div class="title-row">
           <div class="page-heading">
@@ -20,7 +20,7 @@
               class="primary"
               :disabled="starting"
               type="button"
-              @click="start">
+              @click="start(null)">
               <Plus />
               <span class="btn-label">Start retro</span>
             </button>
@@ -28,57 +28,122 @@
         </div>
 
         <div
-          v-if="retros.length"
+          v-if="listing.retros.length"
           class="retro-rows">
-          <NuxtLink
-            v-for="retro in retros"
+          <div
+            v-for="retro in listing.retros"
             :key="retro.id"
-            class="retro-row"
-            :to="organizationRoutes.retro(retro.id)">
-            <strong class="retro-name">{{ retro.name }}</strong>
-            <span
-              class="retro-status"
-              :class="{ 'retro-status--active': !retro.finished }">
-              {{ retro.finished ? 'Finished' : 'Active' }}
-            </span>
-            <span class="muted retro-meta">{{ retro.cardCount }} cards</span>
-            <span class="muted retro-meta">{{ formatDate(retro.createdAt) }}</span>
-          </NuxtLink>
+            class="retro-row-item">
+            <NuxtLink
+              class="retro-row"
+              :to="organizationRoutes.retro(retro.id)">
+              <strong class="retro-name">{{ retro.name }}</strong>
+              <span
+                class="retro-status"
+                :class="{ 'retro-status--active': !retro.finished }">
+                {{ retro.finished ? 'Finished' : 'Active' }}
+              </span>
+              <span class="muted retro-meta">{{ retro.cardCount }} cards</span>
+              <span
+                v-if="retro.openActionCount > 0"
+                class="muted retro-meta">
+                {{ retro.openActionCount }} open
+                {{ retro.openActionCount === 1 ? 'action' : 'actions' }}
+              </span>
+              <span class="muted retro-meta">{{ formatDate(retro.createdAt) }}</span>
+            </NuxtLink>
+            <div class="retro-row-actions">
+              <button
+                v-if="retro.openActionCount > 0"
+                class="secondary small"
+                :disabled="starting"
+                :title="`Start a new retro carrying the open actions of ${retro.name}`"
+                type="button"
+                @click="start(retro)">
+                Continue
+              </button>
+              <button
+                aria-label="Delete retro"
+                class="icon-btn small"
+                :disabled="removing"
+                title="Delete retro"
+                type="button"
+                @click="remove(retro)">
+                <Trash2 />
+              </button>
+            </div>
+          </div>
         </div>
         <AppEmptyState
           v-else
           hint="A retro is a shared board where the team collects what went well, what hurt, and what to do next."
           title="No retros yet" />
+        <PaginationControl
+          :has-next-page="listing.hasNextPage"
+          :page="page"
+          @update:page="updatePage" />
       </section>
     </template>
   </QueryState>
 </template>
 
 <script setup lang="ts">
-import { Plus } from '@lucide/vue'
+import { Plus, Trash2 } from '@lucide/vue'
+import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { RetroIcon } from '~/constants/icons'
 import type { RetroListPageDeps } from '~/sections/retro/retro-list/RetroListPage.deps'
+import type { RetroListItemViewModel } from '~/sections/retro/retro-list/RetroListPage.types'
 
 const props = defineProps<{
   deps: RetroListPageDeps
   onOpen: (retroId: string) => Promise<void> | void
+  onUpdateQuery: (query: LocationQueryRaw) => Promise<void> | void
+  routeQuery: LocationQuery
 }>()
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery('retros', (_nuxtApp, { signal }) =>
-  props.deps.view({ signal }),
+const page = computed(() => Math.max(1, Number(props.routeQuery.page) || 1))
+
+const { data, message, pending, refresh } = await useQuery(
+  'retros',
+  (_nuxtApp, { signal }) => props.deps.view({ page: page.value, signal }),
+  { watch: [page] },
 )
 
 const { execute: startRetro, pending: starting } = useAction(props.deps.startRetro, {
   onSuccess: ({ retroId }) => props.onOpen(retroId),
 })
+const { execute: removeRetro, pending: removing } = useAction(props.deps.removeRetro)
 
 const formatDate = (value: string) => new Date(value).toLocaleDateString()
 
-const start = () => {
-  void startRetro({ name: new Date().toLocaleDateString() })
+// Nothing is carried over unless the team says so by continuing from a specific retro.
+// Deleting a retro takes its whole board with it and cannot be undone.
+const remove = async (retro: RetroListItemViewModel) => {
+  if (!confirm(`Delete "${retro.name}" with all its notes and votes?`)) {
+    return
+  }
+  await removeRetro({ retroId: retro.id })
+  await refresh()
+}
+
+const updatePage = (value: number) => {
+  const nextQuery: LocationQueryRaw = { ...props.routeQuery }
+  if (value > 1) {
+    nextQuery.page = String(value)
+  } else {
+    delete nextQuery.page
+  }
+  void props.onUpdateQuery(nextQuery)
+}
+
+const start = (basedOn: null | RetroListItemViewModel) => {
+  void startRetro({
+    basedOnRetroId: basedOn?.id ?? null,
+    name: new Date().toLocaleDateString(),
+  })
 }
 
 useHead({ title: 'Retro' })
@@ -95,6 +160,33 @@ useHead({ title: 'Retro' })
 .retro-rows {
   display: grid;
   gap: var(--space-2);
+}
+
+.retro-row-item {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  display: flex;
+  padding-right: var(--space-3);
+  transition: var(--transition-press);
+}
+
+.retro-row-item:hover {
+  border-color: var(--color-accent);
+}
+
+.retro-row-item .retro-row {
+  background: transparent;
+  border: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.retro-row-actions {
+  display: flex;
+  gap: var(--space-2);
+  white-space: nowrap;
 }
 
 .retro-row {
