@@ -2503,18 +2503,21 @@ textarea.card-text:focus {
   width: 14px;
 }
 
+/* The list belongs to a note, not to the page - it stays as small as the names it holds. */
 .assignee-list {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-control);
   bottom: calc(100% + var(--space-1));
   box-shadow: var(--shadow-popover);
   display: grid;
-  gap: 2px;
-  left: 0;
-  min-width: 180px;
-  padding: var(--space-2);
+  gap: 1px;
+  left: 50%;
+  max-width: 180px;
+  padding: 3px;
   position: absolute;
+  translate: -50% 0;
+  width: max-content;
   z-index: 7;
 }
 
@@ -2522,14 +2525,27 @@ textarea.card-text:focus {
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-sm);
   color: inherit;
   display: flex;
-  font-size: var(--font-size-small);
-  gap: var(--space-2);
+  font-size: var(--font-size-caption);
+  gap: var(--space-1);
   justify-content: flex-start;
-  padding: var(--space-1) var(--space-2);
+  min-height: 0;
+  padding: 3px var(--space-2) 3px 3px;
   white-space: nowrap;
+}
+
+.assignee-row .entity-avatar.small {
+  font-size: 9px;
+  height: 18px;
+  width: 18px;
+}
+
+.assignee-row > .lucide {
+  height: 12px;
+  margin: 3px;
+  width: 12px;
 }
 
 .assignee-row:hover {
