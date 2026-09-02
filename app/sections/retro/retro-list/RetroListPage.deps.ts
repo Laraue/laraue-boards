@@ -1,6 +1,6 @@
 import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
 
-import type { RetroListItemViewModel } from './RetroListPage.types'
+import type { RetroListPageData } from './RetroListPage.types'
 
 export type RetroListPageDeps = {
   removeRetro: (input: { retroId: string }) => Promise<ActionResult<true>>
@@ -8,5 +8,5 @@ export type RetroListPageDeps = {
     basedOnRetroId: null | string
     name: string
   }) => Promise<ActionResult<{ retroId: string }>>
-  view: (input: { signal?: AbortSignal }) => Promise<QueryResult<RetroListItemViewModel[]>>
+  view: (input: { page: number; signal?: AbortSignal }) => Promise<QueryResult<RetroListPageData>>
 }

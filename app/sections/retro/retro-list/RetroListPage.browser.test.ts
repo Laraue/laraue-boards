@@ -27,14 +27,26 @@ const retros: RetroListItemViewModel[] = [
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (deps: RetroListPageDeps, onOpen = vi.fn<(retroId: string) => void>()) => {
+const onUpdateQuery = vi.fn<(query: Record<string, unknown>) => void>()
+
+const mount = async (
+  deps: RetroListPageDeps,
+  onOpen = vi.fn<(retroId: string) => void>(),
+  routeQuery: Record<string, string> = {},
+) => {
   currentWrapper = await mountSuspended(RetroListPage, {
     attachTo: document.body,
-    props: { deps, onOpen },
+    props: { deps, onOpen, onUpdateQuery, routeQuery },
     route: '/organizations/acme-ab12/retro',
   })
   return onOpen
 }
+
+const listing = (data = retros, hasNextPage = false) =>
+  vi.fn<RetroListPageDeps['view']>(async () => ({
+    data: { hasNextPage, retros: data },
+    status: 'success',
+  }))
 
 afterEach(async () => {
   await currentWrapper?.unmount()
@@ -47,7 +59,7 @@ it('lists past retros with their state and links to each board', async () => {
   await mount({
     removeRetro: vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove),
     startRetro: vi.fn<RetroListPageDeps['startRetro']>(),
-    view: vi.fn<RetroListPageDeps['view']>(async () => ({ data: retros, status: 'success' })),
+    view: listing(),
   })
 
   await expect
@@ -60,7 +72,7 @@ it('lists past retros with their state and links to each board', async () => {
 const startingDeps = (startRetro: RetroListPageDeps['startRetro'], data = retros) => ({
   removeRetro: vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove),
   startRetro,
-  view: vi.fn<RetroListPageDeps['view']>(async () => ({ data, status: 'success' })),
+  view: listing(data),
 })
 
 const successfulStart = () =>
@@ -124,4 +136,16 @@ it('carries the open actions of the retro the button belongs to', async () => {
   await vi.waitFor(() => expect(startRetro).toHaveBeenCalledOnce())
   expect(startRetro).toHaveBeenCalledWith({ basedOnRetroId: '6', name: expect.any(String) })
   expect(onOpen).toHaveBeenCalledWith('9')
+})
+
+it('asks for the page the route points at and walks to the next one', async () => {
+  const view = listing(retros, true)
+
+  await mount({ ...startingDeps(successfulStart()), view }, undefined, { page: '2' })
+
+  expect(view).toHaveBeenCalledWith({ page: 2, signal: expect.anything() })
+
+  await page.getByRole('button', { name: 'Next page' }).click()
+
+  expect(onUpdateQuery).toHaveBeenCalledWith({ page: '3' })
 })

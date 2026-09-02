@@ -6,7 +6,7 @@
     :message="message"
     :on-retry="refresh"
     :pending="pending">
-    <template #default="{ data: retros }">
+    <template #default="{ data: listing }">
       <section class="retro-list-page">
         <div class="title-row">
           <div class="page-heading">
@@ -28,10 +28,10 @@
         </div>
 
         <div
-          v-if="retros.length"
+          v-if="listing.retros.length"
           class="retro-rows">
           <div
-            v-for="retro in retros"
+            v-for="retro in listing.retros"
             :key="retro.id"
             class="retro-row-item">
             <NuxtLink
@@ -78,6 +78,10 @@
           v-else
           hint="A retro is a shared board where the team collects what went well, what hurt, and what to do next."
           title="No retros yet" />
+        <PaginationControl
+          :has-next-page="listing.hasNextPage"
+          :page="page"
+          @update:page="updatePage" />
       </section>
     </template>
   </QueryState>
@@ -85,6 +89,7 @@
 
 <script setup lang="ts">
 import { Plus, Trash2 } from '@lucide/vue'
+import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { RetroIcon } from '~/constants/icons'
 import type { RetroListPageDeps } from '~/sections/retro/retro-list/RetroListPage.deps'
@@ -93,12 +98,18 @@ import type { RetroListItemViewModel } from '~/sections/retro/retro-list/RetroLi
 const props = defineProps<{
   deps: RetroListPageDeps
   onOpen: (retroId: string) => Promise<void> | void
+  onUpdateQuery: (query: LocationQueryRaw) => Promise<void> | void
+  routeQuery: LocationQuery
 }>()
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery('retros', (_nuxtApp, { signal }) =>
-  props.deps.view({ signal }),
+const page = computed(() => Math.max(1, Number(props.routeQuery.page) || 1))
+
+const { data, message, pending, refresh } = await useQuery(
+  'retros',
+  (_nuxtApp, { signal }) => props.deps.view({ page: page.value, signal }),
+  { watch: [page] },
 )
 
 const { execute: startRetro, pending: starting } = useAction(props.deps.startRetro, {
@@ -116,6 +127,16 @@ const remove = async (retro: RetroListItemViewModel) => {
   }
   await removeRetro({ retroId: retro.id })
   await refresh()
+}
+
+const updatePage = (value: number) => {
+  const nextQuery: LocationQueryRaw = { ...props.routeQuery }
+  if (value > 1) {
+    nextQuery.page = String(value)
+  } else {
+    delete nextQuery.page
+  }
+  void props.onUpdateQuery(nextQuery)
 }
 
 const start = (basedOn: null | RetroListItemViewModel) => {

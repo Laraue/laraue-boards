@@ -11,28 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["RetroListItem"][];
-                        "application/json": components["schemas"]["RetroListItem"][];
-                        "text/json": components["schemas"]["RetroListItem"][];
-                    };
-                };
-            };
-        };
+        get?: never;
         put?: never;
         post: {
             parameters: {
@@ -58,6 +37,49 @@ export interface paths {
                         "text/plain": components["schemas"]["CreateRetroResponse"];
                         "application/json": components["schemas"]["CreateRetroResponse"];
                         "text/json": components["schemas"]["CreateRetroResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/retro/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetRetrosRequest"];
+                    "text/json": components["schemas"]["GetRetrosRequest"];
+                    "application/*+json": components["schemas"]["GetRetrosRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfRetroListItem"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfRetroListItem"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfRetroListItem"];
                     };
                 };
             };
@@ -1050,6 +1072,24 @@ export interface components {
             /** Format: int32 */
             votes: number | string;
             votedByMe: boolean;
+        };
+        GetRetrosRequest: {
+            pagination: components["schemas"]["PaginationData"];
+        };
+        PaginationData: {
+            /** Format: int32 */
+            page?: number | string;
+            /** Format: int32 */
+            perPage?: number | string;
+        };
+        ShortPaginatedResultOfRetroListItem: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["RetroListItem"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
         };
         RetroListItem: {
             /** Format: int64 */

@@ -1,3 +1,8 @@
+export type RetroListPageData = {
+  hasNextPage: boolean
+  retros: RetroListItemViewModel[]
+}
+
 export type RetroListItemViewModel = {
   cardCount: number
   createdAt: string
