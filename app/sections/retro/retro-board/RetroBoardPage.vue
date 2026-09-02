@@ -2160,9 +2160,10 @@ button.phase-chip:hover:not(:disabled) {
       #00000070;
 }
 
+/* The note under the pointer is the one being read, so nothing overlaps it. */
 .card:hover {
   box-shadow: var(--sticky-shadow-lift);
-  z-index: 2;
+  z-index: 4;
 }
 
 .card.selected,
