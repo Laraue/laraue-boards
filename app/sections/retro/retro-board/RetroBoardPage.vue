@@ -561,7 +561,6 @@ const ZONE_GAP = 24
 type DiscussionTopic = {
   cardIds: string[]
   id: string
-  order: number
   title: string
   votes: number
 }
@@ -832,9 +831,9 @@ const orderedTopics = (board: RetroBoardViewModel) => {
   const actionsSectionId = board.sections.at(-1)?.id
   const topics = new Map<string, DiscussionTopic>()
 
-  // board.cards arrives in the server's stacking order, so its index is a stable tie-breaker that
-  // every client sees the same way.
-  board.cards.forEach((card, index) => {
+  // Tied topics are ordered by id: dragging a note changes its place in the stack, and the board
+  // would reshuffle the medals under the team every time someone tidied it up.
+  board.cards.forEach((card) => {
     if (card.sectionId === actionsSectionId) {
       return
     }
@@ -844,7 +843,6 @@ const orderedTopics = (board: RetroBoardViewModel) => {
       topics.set(card.id, {
         cardIds: [card.id],
         id: card.id,
-        order: index,
         title: card.text,
         votes: card.votes,
       })
@@ -861,7 +859,6 @@ const orderedTopics = (board: RetroBoardViewModel) => {
     topics.set(group.id, {
       cardIds: [card.id],
       id: group.id,
-      order: index,
       title: group.title,
       votes: group.votes,
     })
@@ -869,8 +866,7 @@ const orderedTopics = (board: RetroBoardViewModel) => {
 
   return [...topics.values()]
     .toSorted(
-      (left, right) =>
-        right.votes - left.votes || left.order - right.order || left.id.localeCompare(right.id),
+      (left, right) => right.votes - left.votes || left.id.localeCompare(right.id),
     )
     .map((topic) => ({
       ...topic,
@@ -2161,6 +2157,8 @@ button.phase-chip:hover:not(:disabled) {
   --sticky-dx: var(--card-shadow-x, 0px);
   --curl-light: #ffffff47;
   --curl-dark: #10182818;
+  /* Height of every badge straddling the bottom edge - rank, assignee, votes. */
+  --card-strip: var(--space-5);
   /* Lifted paper either catches the light or folds into shade; --card-curl-out picks which. */
   --curl-base: color-mix(
     in srgb,
@@ -2205,8 +2203,7 @@ button.phase-chip:hover:not(:disabled) {
   display: flex;
   height: 160px;
   justify-content: flex-start;
-  /* The bottom strip belongs to the badges - rank, assignee, votes, whatever comes next. */
-  padding: var(--space-3) var(--space-3) var(--space-5);
+  padding: var(--space-3);
   position: absolute;
   rotate: var(--card-tilt, 0deg);
   transition:
@@ -2461,7 +2458,7 @@ textarea.card-text:focus {
   gap: 4px;
   list-style: none;
   min-width: 0;
-  padding: 2px var(--space-2) 2px 2px;
+  padding: 0 var(--space-2) 0 2px;
 }
 
 .assignee-trigger--empty {
@@ -2469,9 +2466,9 @@ textarea.card-text:focus {
 }
 
 .assignee-trigger .entity-avatar.small {
-  font-size: 9px;
-  height: 18px;
-  width: 18px;
+  font-size: 8px;
+  height: 14px;
+  width: 14px;
 }
 
 .assignee-trigger > .lucide {
@@ -2586,14 +2583,14 @@ textarea.card-text:focus {
 .rank-badge,
 .assignee-trigger {
   box-sizing: border-box;
-  height: 25px;
+  height: var(--card-strip);
 }
 
 .vote-badge,
 .rank-badge {
   justify-content: center;
   min-height: 0;
-  padding: 3px var(--space-2);
+  padding: 2px var(--space-2);
 }
 
 .vote-badge {
@@ -2609,9 +2606,9 @@ textarea.card-text:focus {
   font-weight: var(--font-weight-semibold);
   gap: 4px;
   position: absolute;
-  right: 0;
+  right: var(--space-3);
   transition: var(--transition-press);
-  translate: 50% 50%;
+  translate: 0 50%;
 }
 
 .vote-badge:not(:disabled):hover {
@@ -2619,7 +2616,7 @@ textarea.card-text:focus {
 }
 
 .vote-badge:not(:disabled):active {
-  translate: 50% calc(50% + var(--press-offset));
+  translate: 0 calc(50% + var(--press-offset));
 }
 
 .vote-badge:disabled {
@@ -2652,10 +2649,10 @@ textarea.card-text:focus {
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-semibold);
   gap: 4px;
-  left: 0;
+  left: var(--space-3);
   pointer-events: none;
   position: absolute;
-  translate: -50% 50%;
+  translate: 0 50%;
 }
 
 .rank-badge.rank-1 {
