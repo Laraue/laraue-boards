@@ -1848,6 +1848,9 @@ const finish = async () => {
   max-width: 220px;
   min-height: var(--control-height-small);
   outline: none;
+  /* The list hangs off the avatars, not off the whole bar: anchored to the bar it started a
+     padding's width further down, and the bridge below could not span the gap. */
+  position: relative;
 }
 
 .presence:focus-visible {
