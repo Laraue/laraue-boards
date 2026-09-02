@@ -865,9 +865,7 @@ const orderedTopics = (board: RetroBoardViewModel) => {
   })
 
   return [...topics.values()]
-    .toSorted(
-      (left, right) => right.votes - left.votes || left.id.localeCompare(right.id),
-    )
+    .toSorted((left, right) => right.votes - left.votes || left.id.localeCompare(right.id))
     .map((topic) => ({
       ...topic,
       title: topic.title || `${topic.cardIds.length} notes`,
