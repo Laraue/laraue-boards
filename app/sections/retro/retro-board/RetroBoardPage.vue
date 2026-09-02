@@ -1043,10 +1043,12 @@ const canChangeCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   !board.finished && !card.hidden
 
+// Crossing the actions border turns a note into a commitment or back, so it belongs to the
+// Actions phase - both ways, or a note dropped there by mistake would be stuck.
 const canDropOn = (board: RetroBoardViewModel, card: RetroCardViewModel, sectionId: string) =>
   canMoveCard(board, card) &&
   (isActionsSection(board, sectionId) === isActionsSection(board, card.sectionId) ||
-    canChangeSection(board, sectionId))
+    board.phase === 'Actions')
 
 const { execute: executeCreate } = useAction(props.deps.createCard)
 const { execute: executeMove } = useAction(props.deps.moveCard)
@@ -2606,7 +2608,7 @@ textarea.card-text:focus {
   font-weight: var(--font-weight-semibold);
   gap: 4px;
   position: absolute;
-  right: var(--space-3);
+  right: var(--space-2);
   transition: var(--transition-press);
   translate: 0 50%;
 }
@@ -2649,7 +2651,7 @@ textarea.card-text:focus {
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-semibold);
   gap: 4px;
-  left: var(--space-3);
+  left: var(--space-2);
   pointer-events: none;
   position: absolute;
   translate: 0 50%;
