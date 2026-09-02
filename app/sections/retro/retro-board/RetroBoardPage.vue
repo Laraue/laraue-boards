@@ -39,34 +39,36 @@
                 :style="{ background: member.color }">
                 {{ member.initials }}
               </span>
-              <div class="presence-list">
-                <p class="presence-title">
-                  {{ board.finished ? 'Participants' : 'On this retro' }}
-                </p>
-                <span
-                  v-for="member in everyone(board)"
-                  :key="member.userId"
-                  class="presence-row">
+              <div class="presence-menu">
+                <div class="presence-list">
+                  <p class="presence-title">
+                    {{ board.finished ? 'Participants' : 'On this retro' }}
+                  </p>
                   <span
-                    class="entity-avatar small"
-                    :style="{ background: member.color }">
-                    {{ member.initials }}
+                    v-for="member in everyone(board)"
+                    :key="member.userId"
+                    class="presence-row">
+                    <span
+                      class="entity-avatar small"
+                      :style="{ background: member.color }">
+                      {{ member.initials }}
+                    </span>
+                    {{ member.name }}
+                    <template v-if="member.userId === board.me.userId">(you)</template>
+                    <span
+                      v-if="member.userId === board.owner.userId"
+                      class="muted presence-role">
+                      owner
+                    </span>
+                    <button
+                      v-else-if="canHandOver(board)"
+                      class="secondary small"
+                      type="button"
+                      @click="handOver(member)">
+                      Make owner
+                    </button>
                   </span>
-                  {{ member.name }}
-                  <template v-if="member.userId === board.me.userId">(you)</template>
-                  <span
-                    v-if="member.userId === board.owner.userId"
-                    class="muted presence-role">
-                    owner
-                  </span>
-                  <button
-                    v-else-if="canHandOver(board)"
-                    class="secondary small"
-                    type="button"
-                    @click="handOver(member)">
-                    Make owner
-                  </button>
-                </span>
+                </div>
               </div>
             </div>
           </div>
@@ -1877,12 +1879,23 @@ const finish = async () => {
   margin-right: 0;
 }
 
-/* The gap under the avatars is dead space for the pointer: the list has to bridge it, or it
-   closes on the way in and its buttons are unreachable. */
-.presence-list::before {
-  content: '';
-  inset: calc(var(--space-2) * -1) 0 100% 0;
+/* The gap under the avatars belongs to the menu as transparent padding, not to the board: the
+   pointer crosses it without leaving the trigger, so the list stays open on the way in. */
+.presence-menu {
+  left: 0;
+  opacity: 0;
+  padding-top: var(--space-2);
+  pointer-events: none;
   position: absolute;
+  top: 100%;
+  transition: opacity 0.12s ease;
+  z-index: 5;
+}
+
+.presence:hover .presence-menu,
+.presence:focus-within .presence-menu {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .presence-list {
@@ -1893,21 +1906,8 @@ const finish = async () => {
   display: grid;
   font-size: var(--font-size-small);
   gap: var(--space-2);
-  left: 0;
   min-width: 200px;
-  opacity: 0;
   padding: var(--space-3);
-  pointer-events: none;
-  position: absolute;
-  top: calc(100% + var(--space-2));
-  transition: opacity 0.12s ease;
-  z-index: 5;
-}
-
-.presence:hover .presence-list,
-.presence:focus-within .presence-list {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .presence-title {
