@@ -302,7 +302,6 @@
               class="card"
               :class="{
                 done: card.done,
-                discussed: board.discussedCardId === card.id,
                 'group-picked': state.groupSelection.includes(card.id),
                 dragging: state.dragId === card.id || state.dragOffsets.has(card.id),
                 editing: state.editingId === card.id,
@@ -435,17 +434,6 @@
                   @click.stop="done(card)"
                   @pointerdown.stop>
                   <CircleCheck />
-                </button>
-                <button
-                  v-if="canPickTopic(board, card)"
-                  class="icon-btn small"
-                  :title="
-                    board.discussedCardId === card.id ? 'Stop discussing' : 'Discuss this topic'
-                  "
-                  type="button"
-                  @click.stop="discuss(card)"
-                  @pointerdown.stop>
-                  <MessagesSquare />
                 </button>
                 <button
                   v-if="card.isMine && board.phase === 'Collect'"
@@ -1054,7 +1042,6 @@ const { execute: executeMoveGroup } = useAction(props.deps.moveGroup)
 const { execute: executeUpdate } = useAction(props.deps.updateCard)
 const { execute: executeVote } = useAction(props.deps.toggleVote)
 const { execute: executeAssign } = useAction(props.deps.setCardAssignee)
-const { execute: executeDiscuss } = useAction(props.deps.setDiscussedCard)
 const { execute: executeGroup } = useAction(props.deps.groupCards)
 const { execute: executeUngroup } = useAction(props.deps.ungroup)
 const { execute: executeResetVotes } = useAction(props.deps.resetVotes)
@@ -1571,15 +1558,7 @@ const paperStyle = (id: string) => {
 }
 
 const hasActions = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  canPickTopic(board, card) ||
-  (canChangeCard(board, card) && (card.isMine || isActionsSection(board, card.sectionId)))
-
-// Walking the team through topics is the facilitator's job, and only during Discuss.
-const canPickTopic = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  !board.finished &&
-  board.canManage &&
-  board.phase === 'Discuss' &&
-  !isActionsSection(board, card.sectionId)
+  canChangeCard(board, card) && (card.isMine || isActionsSection(board, card.sectionId))
 
 const toggleGroupSelection = (card: RetroCardViewModel) => {
   state.groupSelection = state.groupSelection.includes(card.id)
@@ -1618,19 +1597,6 @@ const renameGroup = async (groupId: string, event: Event) => {
     groupId,
     retroId: props.retroId,
     title: (event.target as HTMLInputElement).value,
-  })
-  await refresh()
-}
-
-const discuss = async (card: RetroCardViewModel) => {
-  const board = data.value
-
-  if (!board || !canPickTopic(board, card)) {
-    return
-  }
-  await executeDiscuss({
-    cardId: board.discussedCardId === card.id ? null : card.id,
-    retroId: props.retroId,
   })
   await refresh()
 }
@@ -2342,11 +2308,6 @@ button.phase-chip:hover:not(:disabled) {
 .merge-bar .primary svg {
   height: 15px;
   width: 15px;
-}
-
-.card.discussed {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 3px;
 }
 
 .card.done .card-text {

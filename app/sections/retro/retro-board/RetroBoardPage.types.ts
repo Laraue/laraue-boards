@@ -61,7 +61,6 @@ export type RetroBoardViewModel = {
   canManage: boolean
   cards: RetroCardViewModel[]
   color: string
-  discussedCardId: null | string
   finished: boolean
   groups: RetroGroupViewModel[]
   hiddenMine: number

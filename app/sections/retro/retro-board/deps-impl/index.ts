@@ -13,7 +13,6 @@ import { createRenameRetro } from './renameRetro'
 import { createResetVotes } from './resetVotes'
 import { createRevertPhase } from './revertPhase'
 import { createSetCardAssignee } from './setCardAssignee'
-import { createSetDiscussedCard } from './setDiscussedCard'
 import { createSetGroupTitle } from './setGroupTitle'
 import { createSetMyCardsRevealed } from './setMyCardsRevealed'
 import { createSetPhaseTimer } from './setPhaseTimer'
@@ -42,7 +41,6 @@ export const createRetroBoardPageDeps = (
   resetVotes: createResetVotes(client),
   revertPhase: createRevertPhase(client),
   setCardAssignee: createSetCardAssignee(client),
-  setDiscussedCard: createSetDiscussedCard(client),
   setGroupTitle: createSetGroupTitle(client),
   setMyCardsRevealed: createSetMyCardsRevealed(client),
   setPhaseTimer: createSetPhaseTimer(client),

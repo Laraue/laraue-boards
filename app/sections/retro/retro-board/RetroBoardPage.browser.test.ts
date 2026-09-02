@@ -55,7 +55,6 @@ const board: RetroBoardViewModel = {
     },
   ],
   color: '#4774d4',
-  discussedCardId: null,
   finished: false,
   groups: [],
   hiddenMine: 0,
@@ -115,7 +114,6 @@ const mount = async ({
   resetVotes = vi.fn<RetroBoardPageDeps['resetVotes']>(successfulAction),
   revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction),
   setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction),
-  setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction),
   setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(successfulAction),
   setPhaseTimer = vi.fn<RetroBoardPageDeps['setPhaseTimer']>(successfulAction),
   toggleVote = vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction),
@@ -136,7 +134,6 @@ const mount = async ({
   resetVotes?: RetroBoardPageDeps['resetVotes']
   revertPhase?: RetroBoardPageDeps['revertPhase']
   setCardAssignee?: RetroBoardPageDeps['setCardAssignee']
-  setDiscussedCard?: RetroBoardPageDeps['setDiscussedCard']
   setGroupTitle?: RetroBoardPageDeps['setGroupTitle']
   setPhaseTimer?: RetroBoardPageDeps['setPhaseTimer']
   toggleVote?: RetroBoardPageDeps['toggleVote']
@@ -162,7 +159,6 @@ const mount = async ({
     resetVotes,
     revertPhase,
     setCardAssignee,
-    setDiscussedCard,
     setGroupTitle,
     setMyCardsRevealed: vi.fn<RetroBoardPageDeps['setMyCardsRevealed']>(successfulAction),
     setPhaseTimer,
@@ -978,32 +974,6 @@ it('stops a running timer', async () => {
   await buttonWithText('Stop')?.trigger('click')
 
   expect(setPhaseTimer).toHaveBeenCalledWith({ minutes: null, retroId: '7' })
-})
-
-it('lets the facilitator pick the topic under discussion', async () => {
-  const { channel } = createTestChannel()
-  const setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction)
-
-  await mount({
-    createChannel: () => channel,
-    data: { ...board, phase: 'Discuss' },
-    setDiscussedCard,
-  })
-  await cardWithText('My note')?.trigger('click')
-  await currentWrapper?.find('.card-toolbar .icon-btn').trigger('click')
-
-  expect(setDiscussedCard).toHaveBeenCalledWith({ cardId: 'mine', retroId: '7' })
-})
-
-it('outlines the topic the team is discussing', async () => {
-  const { channel } = createTestChannel()
-
-  await mount({
-    createChannel: () => channel,
-    data: { ...board, discussedCardId: 'mine', phase: 'Discuss' },
-  })
-
-  expect(cardWithText('My note')?.classes()).toContain('discussed')
 })
 
 it('returns to the previous phase directly', async () => {
