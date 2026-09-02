@@ -1063,3 +1063,21 @@ it('draws everyone on the retro as one square, yourself included', async () => {
       .map((avatar: DOMWrapper<Element>) => avatar.text()),
   ).toEqual(['AL', 'GH'])
 })
+
+it('slides the squares further under each other as the room fills up', async () => {
+  const { channel } = createTestChannel()
+  const crowd = Array.from({ length: 12 }, (_value, index) => ({
+    color: '#a44',
+    initials: `U${index}`,
+    name: `User ${index}`,
+    userId: `crowd-${index}`,
+  }))
+
+  await mount({ createChannel: () => channel, data: { ...board, participants: crowd } })
+
+  // Thirteen squares of 32px would run to 320px at the natural 24px step; the strip holds 220,
+  // so the step shrinks to (220 - 32) / 12.
+  const strip = currentWrapper!.get('.presence')
+
+  expect(strip.attributes('style')).toContain('--presence-step: 15.666666666666666px')
+})

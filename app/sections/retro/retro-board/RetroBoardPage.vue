@@ -30,6 +30,7 @@
             <div
               aria-label="People on this retro"
               class="presence"
+              :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
               tabindex="0">
               <span
                 v-for="member in everyone(board)"
@@ -734,6 +735,15 @@ const presence = computed(() => {
 
   return members?.filter((member) => member.userId !== board?.me.userId) ?? []
 })
+
+const PRESENCE_WIDTH = 220
+const AVATAR_SIZE = 32
+const PRESENCE_STEP = 24
+
+// The strip is the same width whoever shows up: past the point where the squares would push it
+// wider, they slide further under each other instead. A sliver each is enough to count heads.
+const presenceStep = (count: number) =>
+  Math.max(8, Math.min(PRESENCE_STEP, (PRESENCE_WIDTH - AVATAR_SIZE) / Math.max(1, count - 1)))
 
 // Everyone on the retro wears the same square, you included: singling yourself out with a label
 // only asks the reader to work out who the odd one is.
@@ -1859,8 +1869,12 @@ const finish = async () => {
 }
 
 .presence > .entity-avatar {
-  margin-right: -8px;
+  margin-right: calc(var(--presence-step, 24px) - var(--icon-btn-size));
   outline: 2px solid var(--color-surface);
+}
+
+.presence > .entity-avatar:last-of-type {
+  margin-right: 0;
 }
 
 /* The gap under the avatars is dead space for the pointer: the list has to bridge it, or it
