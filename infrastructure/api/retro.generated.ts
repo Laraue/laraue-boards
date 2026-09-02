@@ -4,49 +4,6 @@
  */
 
 export interface paths {
-    "/api/retro": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateRetroRequest"];
-                    "text/json": components["schemas"]["CreateRetroRequest"];
-                    "application/*+json": components["schemas"]["CreateRetroRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["CreateRetroResponse"];
-                        "application/json": components["schemas"]["CreateRetroResponse"];
-                        "text/json": components["schemas"]["CreateRetroResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/retro/list": {
         parameters: {
             query?: never;
@@ -143,6 +100,49 @@ export interface paths {
                 };
             };
         };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/retro": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateRetroRequest"];
+                    "text/json": components["schemas"]["CreateRetroRequest"];
+                    "application/*+json": components["schemas"]["CreateRetroRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CreateRetroResponse"];
+                        "application/json": components["schemas"]["CreateRetroResponse"];
+                        "text/json": components["schemas"]["CreateRetroResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1014,6 +1014,9 @@ export interface components {
             cards: components["schemas"]["RetroCardDto"][];
             groups: components["schemas"]["RetroCardGroupDto"][];
         };
+        GetRetrosRequest: {
+            pagination: components["schemas"]["PaginationData"];
+        };
         GroupRetroCardsRequest: {
             cardIds: string[];
         };
@@ -1036,6 +1039,12 @@ export interface components {
             deltaX: number | string;
             /** Format: double */
             deltaY: number | string;
+        };
+        PaginationData: {
+            /** Format: int32 */
+            page?: number | string;
+            /** Format: int32 */
+            perPage?: number | string;
         };
         RenameRetroRequest: {
             name: string;
@@ -1072,24 +1081,6 @@ export interface components {
             /** Format: int32 */
             votes: number | string;
             votedByMe: boolean;
-        };
-        GetRetrosRequest: {
-            pagination: components["schemas"]["PaginationData"];
-        };
-        PaginationData: {
-            /** Format: int32 */
-            page?: number | string;
-            /** Format: int32 */
-            perPage?: number | string;
-        };
-        ShortPaginatedResultOfRetroListItem: {
-            /** Format: int64 */
-            page: number | string;
-            /** Format: int32 */
-            perPage: number | string;
-            data: components["schemas"]["RetroListItem"][];
-            hasNextPage: boolean;
-            hasPreviousPage?: boolean;
         };
         RetroListItem: {
             /** Format: int64 */
@@ -1147,6 +1138,15 @@ export interface components {
         SetRetroTimerRequest: {
             /** Format: int32 */
             minutes: null | number | string;
+        };
+        ShortPaginatedResultOfRetroListItem: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["RetroListItem"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
         };
         TransferRetroOwnershipRequest: {
             /** Format: uuid */
