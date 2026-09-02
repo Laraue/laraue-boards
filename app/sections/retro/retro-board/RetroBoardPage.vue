@@ -426,7 +426,7 @@
                 "
                 class="card-toolbar">
                 <button
-                  v-if="board.phase === 'Actions' && isActionsSection(board, card.sectionId)"
+                  v-if="canTickOff(board, card)"
                   class="icon-btn small"
                   :title="card.done ? 'Mark as not done' : 'Mark as done'"
                   type="button"
@@ -435,7 +435,11 @@
                   <CircleCheck />
                 </button>
                 <button
-                  v-if="card.isMine && board.phase === 'Collect'"
+                  v-if="
+                    card.isMine &&
+                    board.phase === 'Collect' &&
+                    !isActionsSection(board, card.sectionId)
+                  "
                   class="icon-btn small"
                   :title="card.revealed ? 'Hide from the team' : 'Show to the team'"
                   type="button"
@@ -1050,15 +1054,18 @@ const canChangeSection = (board: RetroBoardViewModel, sectionId: string) =>
 const canChangeCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   canChangeSection(board, card.sectionId)
 
-// Sliding a note around is layout, not content, so it works in every phase. Only crossing the
-// actions border turns the note into something else, and that still obeys the phase.
+// Moving a note is a change like any other: the team may do it while that kind of note is open,
+// the owner whenever the room needs it.
 const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  !board.finished && !card.hidden
+  !board.finished && !card.hidden && canChangeCard(board, card)
 
 // Crossing the actions border turns a note into a commitment or back, so it belongs to the
 // Actions phase - both ways, or a note dropped there by mistake would be stuck.
+// A topic is a cluster inside one section: carrying one of its notes into another section would
+// break the topic up and strand the votes it holds, so the whole topic travels, by its frame.
 const canDropOn = (board: RetroBoardViewModel, card: RetroCardViewModel, sectionId: string) =>
   canMoveCard(board, card) &&
+  (card.groupId === null || sectionId === card.sectionId) &&
   (isActionsSection(board, sectionId) === isActionsSection(board, card.sectionId) ||
     board.phase === 'Actions' ||
     board.canManage)
@@ -1594,8 +1601,14 @@ const paperStyle = (id: string) => {
   }
 }
 
+// Actions carried over from the last retro are the first thing a new one looks at, so ticking one
+// off belongs to no single phase - and the whole team keeps that within reach.
+const canTickOff = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
+  !board.finished && isActionsSection(board, card.sectionId)
+
 const hasActions = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  canChangeCard(board, card) && (card.isMine || isActionsSection(board, card.sectionId))
+  canTickOff(board, card) ||
+  (canChangeCard(board, card) && (card.isMine || isActionsSection(board, card.sectionId)))
 
 const toggleGroupSelection = (card: RetroCardViewModel) => {
   state.groupSelection = state.groupSelection.includes(card.id)
@@ -1638,10 +1651,15 @@ const renameGroup = async (groupId: string, event: Event) => {
   await refresh()
 }
 
+// Covering a note is for what its author is still writing: a commitment the team already agreed
+// on has nothing left to hide.
 const toggleReveal = async (card: RetroCardViewModel) => {
   const board = data.value
 
-  if (!board || !card.isMine || !canChangeCard(board, card)) {
+  if (!board || !card.isMine || isActionsSection(board, card.sectionId)) {
+    return
+  }
+  if (!canChangeCard(board, card)) {
     return
   }
   await executeReveal({ id: card.id, revealed: !card.revealed })
@@ -1682,7 +1700,7 @@ const resetVotes = async () => {
 const done = async (card: RetroCardViewModel) => {
   const board = data.value
 
-  if (!board || board.phase !== 'Actions' || !isActionsSection(board, card.sectionId)) {
+  if (!board || !canTickOff(board, card)) {
     return
   }
   await executeDone({ done: !card.done, id: card.id })

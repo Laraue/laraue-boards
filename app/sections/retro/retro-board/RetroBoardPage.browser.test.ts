@@ -117,6 +117,7 @@ const mount = async ({
   setCardAssignee = vi.fn<RetroBoardPageDeps['setCardAssignee']>(successfulAction),
   setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(successfulAction),
   setPhaseTimer = vi.fn<RetroBoardPageDeps['setPhaseTimer']>(successfulAction),
+  toggleDone = vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction),
   toggleVote = vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction),
   transferOwnership = vi.fn<RetroBoardPageDeps['transferOwnership']>(successfulAction),
   ungroup = vi.fn<RetroBoardPageDeps['ungroup']>(successfulAction),
@@ -138,6 +139,7 @@ const mount = async ({
   setCardAssignee?: RetroBoardPageDeps['setCardAssignee']
   setGroupTitle?: RetroBoardPageDeps['setGroupTitle']
   setPhaseTimer?: RetroBoardPageDeps['setPhaseTimer']
+  toggleDone?: RetroBoardPageDeps['toggleDone']
   toggleVote?: RetroBoardPageDeps['toggleVote']
   transferOwnership?: RetroBoardPageDeps['transferOwnership']
   ungroup?: RetroBoardPageDeps['ungroup']
@@ -164,7 +166,7 @@ const mount = async ({
     setGroupTitle,
     setMyCardsRevealed: vi.fn<RetroBoardPageDeps['setMyCardsRevealed']>(successfulAction),
     setPhaseTimer,
-    toggleDone: vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction),
+    toggleDone,
     toggleReveal: vi.fn<RetroBoardPageDeps['toggleReveal']>(successfulAction),
     toggleVote,
     transferOwnership,
@@ -229,9 +231,10 @@ it('blocks management and freezes cards during voting', async () => {
 
   await cardWithText('My note')?.trigger('click')
   await expect.element(page.getByRole('textbox', { name: 'Edit note' })).not.toBeInTheDocument()
-  // Text is frozen, but the board can still be tidied up: dragging stays open in every phase.
+  // The whole note is frozen, dragging included: a phase the team may not write in is a phase it
+  // may not rearrange either.
   await cardWithText('My note')?.find('.card-text').trigger('pointerdown')
-  expect(cardWithText('My note')?.classes()).toContain('dragging')
+  expect(cardWithText('My note')?.classes()).not.toContain('dragging')
 })
 
 it('shows only recorded participants after finish', async () => {
@@ -1025,7 +1028,7 @@ it('shows a participant the actions section will not take the note, and keeps it
 
   await mount({
     createChannel: () => channel,
-    data: { ...board, canManage: false, phase: 'Vote' },
+    data: { ...board, canManage: false },
     moveCard,
   })
   await dragMyNoteIntoActions()
@@ -1080,4 +1083,69 @@ it('slides the squares further under each other as the room fills up', async () 
   const strip = currentWrapper!.get('.presence')
 
   expect(strip.attributes('style')).toContain('--presence-step: 15.666666666666666px')
+})
+
+it('keeps a note of a topic inside its section, frame or nothing', async () => {
+  const { channel } = createTestChannel()
+  const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: groupedBoard, moveCard })
+  cardWithText('My note')!.element.dispatchEvent(pointer('pointerdown', 100, 100))
+  window.dispatchEvent(pointer('pointermove', 1100, 100))
+  await nextTick()
+
+  // Dragging one note out would break the topic up and strand the votes it holds.
+  expect(currentWrapper!.findAll('.zone')[1]!.classes()).toContain('zone--closed')
+
+  window.dispatchEvent(pointer('pointerup', 1100, 100))
+  await nextTick()
+
+  expect(moveCard).not.toHaveBeenCalled()
+})
+
+const carriedActionBoard: RetroBoardViewModel = {
+  ...board,
+  canManage: false,
+  cards: [
+    {
+      assignee: null,
+      authorColor: member.color,
+      authorInitials: member.initials,
+      authorName: member.name,
+      done: false,
+      groupId: null,
+      hidden: false,
+      id: 'carried',
+      isMine: true,
+      revealed: true,
+      sectionId: '2',
+      text: 'Ship the fix',
+      votedByMe: false,
+      votes: 0,
+      x: 900,
+      y: 40,
+    },
+  ],
+}
+
+it('ticks off an action carried over from the last retro before Actions', async () => {
+  const { channel } = createTestChannel()
+  const toggleDone = vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: carriedActionBoard, toggleDone })
+  await cardWithText('Ship the fix')?.trigger('click')
+
+  const buttons = currentWrapper!
+    .findAll('.card-toolbar .icon-btn')
+    .map(
+      (button: DOMWrapper<Element>) =>
+        button.attributes('title') ?? button.attributes('aria-label'),
+    )
+
+  // Nothing is left to hide about a commitment the team already agreed on.
+  expect(buttons).toEqual(['Mark as done', 'Delete note'])
+
+  await currentWrapper?.find('.card-toolbar .icon-btn').trigger('click')
+
+  await vi.waitFor(() => expect(toggleDone).toHaveBeenCalledWith({ done: true, id: 'carried' }))
 })
