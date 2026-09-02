@@ -117,6 +117,7 @@ const mount = async ({
   setDiscussedCard = vi.fn<RetroBoardPageDeps['setDiscussedCard']>(successfulAction),
   setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(successfulAction),
   setPhaseTimer = vi.fn<RetroBoardPageDeps['setPhaseTimer']>(successfulAction),
+  toggleVote = vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction),
   transferOwnership = vi.fn<RetroBoardPageDeps['transferOwnership']>(successfulAction),
   ungroup = vi.fn<RetroBoardPageDeps['ungroup']>(successfulAction),
   updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction),
@@ -136,6 +137,7 @@ const mount = async ({
   setDiscussedCard?: RetroBoardPageDeps['setDiscussedCard']
   setGroupTitle?: RetroBoardPageDeps['setGroupTitle']
   setPhaseTimer?: RetroBoardPageDeps['setPhaseTimer']
+  toggleVote?: RetroBoardPageDeps['toggleVote']
   transferOwnership?: RetroBoardPageDeps['transferOwnership']
   ungroup?: RetroBoardPageDeps['ungroup']
   updateCard?: RetroBoardPageDeps['updateCard']
@@ -163,7 +165,7 @@ const mount = async ({
     setPhaseTimer,
     toggleDone: vi.fn<RetroBoardPageDeps['toggleDone']>(successfulAction),
     toggleReveal: vi.fn<RetroBoardPageDeps['toggleReveal']>(successfulAction),
-    toggleVote: vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction),
+    toggleVote,
     transferOwnership,
     ungroup,
     updateCard,
@@ -697,6 +699,25 @@ it('freezes the topic once voting has started', async () => {
 
   expect(currentWrapper?.find('.group-ungroup').exists()).toBe(false)
   expect((currentWrapper!.find('.group-title').element as HTMLInputElement).disabled).toBe(true)
+})
+
+it('takes the vote off a topic from any of its notes', async () => {
+  const { channel } = createTestChannel()
+  const toggleVote = vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction)
+  const votedTopic: RetroBoardViewModel = {
+    ...groupedBoard,
+    // The server keeps the vote on one note of the topic; the others carry no flag of their own.
+    cards: groupedBoard.cards.map((card) => ({ ...card, votedByMe: card.id === 'mine' })),
+    groups: groupedBoard.groups.map((group) => ({ ...group, votedByMe: true })),
+    myVotes: 1,
+    phase: 'Vote',
+    phaseEndsAt: '2099-01-01T00:00:00Z',
+  }
+
+  await mount({ createChannel: () => channel, data: votedTopic, toggleVote })
+  await cardWithText('Other note')?.find('.vote-badge').trigger('click')
+
+  expect(toggleVote).toHaveBeenCalledWith({ id: 'other', voted: false })
 })
 
 it('shows one score for every note of a topic', async () => {

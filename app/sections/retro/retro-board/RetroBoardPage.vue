@@ -1606,7 +1606,9 @@ const vote = async (card: RetroCardViewModel) => {
   if (!board || !votingOpen.value || isActionsSection(board, card.sectionId)) {
     return
   }
-  await executeVote({ id: card.id, voted: !card.votedByMe })
+  // A vote belongs to the whole topic, so the note toggles what the topic shows - not its own
+  // flag, which only the note the server keeps the vote on ever carries.
+  await executeVote({ id: card.id, voted: !votedByMe(board, card) })
   await refresh()
 }
 
