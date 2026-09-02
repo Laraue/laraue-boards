@@ -1921,7 +1921,7 @@ const finish = async () => {
   display: flex;
   left: var(--space-4);
   min-height: var(--control-height);
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-2);
   pointer-events: auto;
   position: absolute;
   top: calc(var(--space-4) + var(--control-height) + var(--space-1));
