@@ -94,6 +94,9 @@ const createTestChannel = () => {
 
 const successfulAction = async () => ({ data: true as const, status: 'success' as const })
 
+const pointer = (type: string, clientX: number, clientY: number) =>
+  new PointerEvent(type, { bubbles: true, buttons: 1, clientX, clientY })
+
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 let testHost: HTMLDivElement | undefined
 
@@ -106,6 +109,7 @@ const mount = async ({
     data: { id: 'group-1' },
     status: 'success',
   })),
+  moveGroup = vi.fn<RetroBoardPageDeps['moveGroup']>(successfulAction),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
   renameRetro = vi.fn<RetroBoardPageDeps['renameRetro']>(successfulAction),
   revertPhase = vi.fn<RetroBoardPageDeps['revertPhase']>(successfulAction),
@@ -124,6 +128,7 @@ const mount = async ({
   data?: RetroBoardViewModel
   finishRetro?: RetroBoardPageDeps['finishRetro']
   groupCards?: RetroBoardPageDeps['groupCards']
+  moveGroup?: RetroBoardPageDeps['moveGroup']
   removeCard?: RetroBoardPageDeps['removeCard']
   renameRetro?: RetroBoardPageDeps['renameRetro']
   revertPhase?: RetroBoardPageDeps['revertPhase']
@@ -147,6 +152,7 @@ const mount = async ({
     finishRetro,
     groupCards,
     moveCard: vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
+    moveGroup,
     removeCard,
     renameRetro,
     revertPhase,
@@ -649,6 +655,26 @@ it('drags a topic by its frame and a note on its own', async () => {
   await currentWrapper?.find('.card-text').trigger('pointerdown')
 
   expect(cardWithText('Other note')?.classes()).not.toContain('dragging')
+})
+
+it('stores a topic drag as one group movement', async () => {
+  const { channel } = createTestChannel()
+  const moveGroup = vi.fn<RetroBoardPageDeps['moveGroup']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: groupedBoard, moveGroup })
+  currentWrapper?.find('.group-box').element.dispatchEvent(pointer('pointerdown', 100, 100))
+  window.dispatchEvent(pointer('pointermove', 120, 130))
+  window.dispatchEvent(pointer('pointerup', 120, 130))
+
+  await vi.waitFor(() =>
+    expect(moveGroup).toHaveBeenCalledWith({
+      deltaX: 20,
+      deltaY: 30,
+      groupId: 'group-1',
+      retroId: '7',
+      sectionId: '1',
+    }),
+  )
 })
 
 it('splits the topic back into notes', async () => {

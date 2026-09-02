@@ -95,25 +95,27 @@
                   class="phase-rail"
                   role="group"
                   @click="closePhaseMenu($event)">
-              <button
-                v-for="option in PHASES"
-                :key="option"
-                class="secondary small"
-                :class="{ active: board.phase === option }"
-                :disabled="board.finished || !board.canManage || !canChangePhase(board.phase, option)"
-                type="button"
-                @click="changePhase(option)">
-                <component :is="PHASE_ICONS[option]" />
-                {{ option }}
-              </button>
-              <button
-                class="secondary danger small"
-                :disabled="board.finished || !board.canManage || board.phase !== 'Actions'"
-                type="button"
-                @click="finish">
-                <Archive />
-                Finish
-              </button>
+                  <button
+                    v-for="option in PHASES"
+                    :key="option"
+                    class="secondary small"
+                    :class="{ active: board.phase === option }"
+                    :disabled="
+                      board.finished || !board.canManage || !canChangePhase(board.phase, option)
+                    "
+                    type="button"
+                    @click="changePhase(option)">
+                    <component :is="PHASE_ICONS[option]" />
+                    {{ option }}
+                  </button>
+                  <button
+                    class="secondary danger small"
+                    :disabled="board.finished || !board.canManage || board.phase !== 'Actions'"
+                    type="button"
+                    @click="finish">
+                    <Archive />
+                    Finish
+                  </button>
                 </div>
               </details>
               <button
@@ -261,7 +263,7 @@
                 top: `${group.top}px`,
                 width: `${group.width}px`,
               }"
-              @pointerdown="startGroupDrag($event, group.cardIds, startNodeDrag)">
+              @pointerdown="startGroupDrag($event, group.id, group.cardIds, startNodeDrag)">
               <div class="group-header">
                 <input
                   aria-label="Topic title"
@@ -291,7 +293,6 @@
               :class="{
                 done: card.done,
                 discussed: board.discussedCardId === card.id,
-                'group-member': card.groupId !== null,
                 'group-picked': state.groupSelection.includes(card.id),
                 dragging: state.dragId === card.id || state.dragOffsets.has(card.id),
                 editing: state.editingId === card.id,
@@ -565,10 +566,12 @@ const setEditorRef = (element: unknown) => {
 const state = reactive({
   draft: '',
   dragDistance: 0,
+  dragGroupId: undefined as string | undefined,
   dragId: undefined as string | undefined,
   // Notes of the dragged group, kept at their distance from the one under the pointer.
   dragOffsets: new Map<string, { x: number; y: number }>(),
   dragPosition: undefined as undefined | { x: number; y: number },
+  dragStartPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
   // Notes the server has not told us about yet: one created here, or one deleted here. They keep
   // the board honest while the request is still on the wire.
@@ -606,9 +609,11 @@ let lastCardClickAt = 0
 let lastCardClickId: string | undefined
 
 const endDrag = () => {
+  state.dragGroupId = undefined
   state.dragId = undefined
   state.dragOffsets.clear()
   state.dragPosition = undefined
+  state.dragStartPosition = undefined
 }
 
 const clearBoardState = () => {
@@ -989,17 +994,14 @@ const canChangeCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   !board.finished && !card.hidden
 
-const canDropOn = (
-  board: RetroBoardViewModel,
-  card: RetroCardViewModel,
-  sectionId: string,
-) =>
+const canDropOn = (board: RetroBoardViewModel, card: RetroCardViewModel, sectionId: string) =>
   canMoveCard(board, card) &&
   (isActionsSection(board, sectionId) === isActionsSection(board, card.sectionId) ||
     canChangeSection(board, sectionId))
 
 const { execute: executeCreate } = useAction(props.deps.createCard)
 const { execute: executeMove } = useAction(props.deps.moveCard)
+const { execute: executeMoveGroup } = useAction(props.deps.moveGroup)
 const { execute: executeUpdate } = useAction(props.deps.updateCard)
 const { execute: executeVote } = useAction(props.deps.toggleVote)
 const { execute: executeAssign } = useAction(props.deps.setCardAssignee)
@@ -1327,10 +1329,12 @@ const startCardDrag = (
   }
   state.dragDistance = 0
   state.selectedId = card.id
+  state.dragGroupId = undefined
   state.dragId = card.id
   // Where the note is drawn, not where the last answer put it: a live move from someone else
   // would otherwise make it jump back the moment it is picked up.
   state.dragPosition = drawnPosition(board, card.id) ?? { x: card.x, y: card.y }
+  state.dragStartPosition = undefined
   state.dragOffsets.clear()
   startNodeDrag(event)
 }
@@ -1338,6 +1342,7 @@ const startCardDrag = (
 // Dragging a note moves that note; dragging the frame around a topic moves the whole topic.
 const startGroupDrag = (
   event: PointerEvent,
+  groupId: string,
   cardIds: string[],
   startNodeDrag: (event: PointerEvent) => void,
 ) => {
@@ -1349,8 +1354,10 @@ const startGroupDrag = (
     return
   }
   state.dragDistance = 0
+  state.dragGroupId = groupId
   state.dragId = lead.id
   state.dragPosition = { x: lead.x, y: lead.y }
+  state.dragStartPosition = { x: lead.x, y: lead.y }
   state.dragOffsets = new Map(
     members.slice(1).map((card) => [card.id, { x: card.x - lead.x, y: card.y - lead.y }]),
   )
@@ -1382,6 +1389,8 @@ const moveDraggedCard = (deltaX: number, deltaY: number) => {
 const commitDraggedCard = async () => {
   const id = state.dragId
   const position = state.dragPosition
+  const groupId = state.dragGroupId
+  const startPosition = state.dragStartPosition
 
   if (!id || !position) {
     return
@@ -1392,13 +1401,42 @@ const commitDraggedCard = async () => {
     return
   }
   const board = data.value
-  const sections = board?.sections ?? []
+  const dragged = board && boardCards(board).find((item) => item.id === id)
+
+  if (!board || !dragged) {
+    endDrag()
+
+    return
+  }
+  const sections = board.sections
   const index = zoneIndexAt(position.x + CARD_SIZE / 2, position.y + CARD_SIZE / 2, sections.length)
   const sectionId = sections[index]?.id
 
-  const dragged = board && boardCards(board).find((item) => item.id === id)
+  if (groupId && startPosition) {
+    // The topic follows the note under the pointer, section and all, so its notes keep wearing
+    // the colour of the category they now sit in.
+    if (!sectionId || !canDropOn(board, dragged, sectionId)) {
+      endDrag()
 
-  if (!board || !sectionId || !dragged || !canDropOn(board, dragged, sectionId)) {
+      return
+    }
+    try {
+      await executeMoveGroup({
+        deltaX: position.x - startPosition.x,
+        deltaY: position.y - startPosition.y,
+        groupId,
+        retroId: props.retroId,
+        sectionId,
+      })
+      await refresh()
+    } finally {
+      endDrag()
+    }
+
+    return
+  }
+
+  if (!sectionId || !canDropOn(board, dragged, sectionId)) {
     endDrag()
 
     return
@@ -2198,10 +2236,6 @@ button.phase-chip:hover:not(:disabled) {
   background-color: color-mix(in srgb, var(--color-accent) 7%, var(--card-color));
   outline: 2px solid var(--color-accent);
   outline-offset: 4px;
-}
-
-.card.group-member {
-  border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
 }
 
 .merge-bar {

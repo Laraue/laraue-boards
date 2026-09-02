@@ -824,6 +824,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/retro/{id}/groups/{groupId}/position": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    groupId: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MoveRetroGroupRequest"];
+                    "text/json": components["schemas"]["MoveRetroGroupRequest"];
+                    "application/*+json": components["schemas"]["MoveRetroGroupRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/retro/cards/{cardId}/assignee": {
         parameters: {
             query?: never;
@@ -972,6 +1014,14 @@ export interface components {
             x: number | string;
             /** Format: double */
             y: number | string;
+        };
+        MoveRetroGroupRequest: {
+            /** Format: int64 */
+            sectionId: number | string;
+            /** Format: double */
+            deltaX: number | string;
+            /** Format: double */
+            deltaY: number | string;
         };
         RenameRetroRequest: {
             name: string;

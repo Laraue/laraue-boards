@@ -7,6 +7,7 @@ import { createCreateChannel } from './createChannel'
 import { createFinishRetro } from './finishRetro'
 import { createGroupCards } from './groupCards'
 import { createMoveCard } from './moveCard'
+import { createMoveGroup } from './moveGroup'
 import { createRemoveCard } from './removeCard'
 import { createRenameRetro } from './renameRetro'
 import { createRevertPhase } from './revertPhase'
@@ -34,6 +35,7 @@ export const createRetroBoardPageDeps = (
   finishRetro: createFinishRetro(client),
   groupCards: createGroupCards(client),
   moveCard: createMoveCard(client),
+  moveGroup: createMoveGroup(client),
   removeCard: createRemoveCard(client),
   renameRetro: createRenameRetro(client),
   revertPhase: createRevertPhase(client),

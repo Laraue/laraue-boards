@@ -23,6 +23,13 @@ export type RetroBoardPageDeps = {
     x: number
     y: number
   }) => Promise<ActionResult<true>>
+  moveGroup: (input: {
+    deltaX: number
+    deltaY: number
+    groupId: string
+    retroId: string
+    sectionId: string
+  }) => Promise<ActionResult<true>>
   removeCard: (input: { id: string }) => Promise<ActionResult<true>>
   renameRetro: (input: { name: string; retroId: string }) => Promise<ActionResult<true>>
   revertPhase: (input: { phase: RetroPhase; retroId: string }) => Promise<ActionResult<true>>
