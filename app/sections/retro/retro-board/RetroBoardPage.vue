@@ -1860,9 +1860,6 @@ const finish = async () => {
   max-width: 220px;
   min-height: var(--control-height-small);
   outline: none;
-  /* The list hangs off the avatars, not off the whole bar: anchored to the bar it started a
-     padding's width further down, and the bridge below could not span the gap. */
-  position: relative;
 }
 
 .presence:focus-visible {
@@ -1879,8 +1876,9 @@ const finish = async () => {
   margin-right: 0;
 }
 
-/* The gap under the avatars belongs to the menu as transparent padding, not to the board: the
-   pointer crosses it without leaving the trigger, so the list stays open on the way in. */
+/* The chip is the trigger, not the avatars inside it: hanging the menu off the chip lines it up
+   with the edge the eye reads, and the chip's own padding is already part of the way down, so the
+   pointer never leaves the trigger. The rest of the gap is the menu's transparent padding. */
 .presence-menu {
   left: 0;
   opacity: 0;
@@ -1892,8 +1890,8 @@ const finish = async () => {
   z-index: 5;
 }
 
-.presence:hover .presence-menu,
-.presence:focus-within .presence-menu {
+.retro-actions:hover .presence-menu,
+.retro-actions:focus-within .presence-menu {
   opacity: 1;
   pointer-events: auto;
 }
