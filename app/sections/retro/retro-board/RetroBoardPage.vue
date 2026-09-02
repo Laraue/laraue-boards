@@ -348,23 +348,51 @@
                 :class="{ placeholder: !card.text }">
                 {{ card.text || 'Add a note' }}
               </p>
-              <select
+              <details
                 v-if="isActionsSection(board, card.sectionId)"
-                aria-label="Action owner"
-                class="card-assignee"
-                :disabled="!canAssign(board)"
-                :value="card.assignee?.userId ?? ''"
-                @change="assign(card, $event)"
+                class="assignee"
                 @click.stop
                 @pointerdown.stop>
-                <option value="">No owner</option>
-                <option
-                  v-for="one of board.participants"
-                  :key="one.userId"
-                  :value="one.userId">
-                  {{ one.name }}
-                </option>
-              </select>
+                <summary
+                  aria-label="Action owner"
+                  class="assignee-trigger"
+                  :class="{ 'assignee-trigger--empty': !card.assignee }">
+                  <span
+                    v-if="card.assignee"
+                    class="entity-avatar small"
+                    :style="{ background: card.assignee.color }">
+                    {{ card.assignee.initials }}
+                  </span>
+                  <UserRound v-else />
+                  <span class="assignee-name">{{ card.assignee?.name ?? 'No owner' }}</span>
+                </summary>
+                <div
+                  v-if="canAssign(board)"
+                  class="assignee-list">
+                  <button
+                    v-for="one of board.participants"
+                    :key="one.userId"
+                    class="assignee-row"
+                    :class="{ active: card.assignee?.userId === one.userId }"
+                    type="button"
+                    @click="assign(card, one.userId, $event)">
+                    <span
+                      class="entity-avatar small"
+                      :style="{ background: one.color }">
+                      {{ one.initials }}
+                    </span>
+                    {{ one.name }}
+                  </button>
+                  <button
+                    class="assignee-row"
+                    :class="{ active: !card.assignee }"
+                    type="button"
+                    @click="assign(card, null, $event)">
+                    <UserRound />
+                    No owner
+                  </button>
+                </div>
+              </details>
               <span
                 v-if="discussionRanks.get(card.id)"
                 :aria-label="discussionRanks.get(card.id) + ' place'"
@@ -493,6 +521,7 @@ import {
   StickyNote,
   ThumbsUp,
   Timer,
+  UserRound,
   Trash2,
   Ungroup,
 } from '@lucide/vue'
@@ -767,6 +796,19 @@ const zoneStyle = (index: number) => {
 }
 
 const zoneIndexAt = (x: number, y: number, sectionCount: number) => {
+  // The zones are not a grid of equal cells - the actions column is twice as tall as the ones
+  // beside it - so the zone a point sits in wins over the zone whose middle is nearest.
+  const inside = Array.from({ length: sectionCount }, (_value, index) => index).find((index) => {
+    const rect = zoneRect(index)
+
+    return (
+      x >= rect.left && x <= rect.left + rect.width && y >= rect.top && y <= rect.top + rect.height
+    )
+  })
+
+  if (inside !== undefined) {
+    return inside
+  }
   const distance = (index: number) => {
     const rect = zoneRect(index)
     const centerX = rect.left + rect.width / 2
@@ -1651,10 +1693,11 @@ const done = async (card: RetroCardViewModel) => {
 // An action item without an owner is fine - the team may not have picked one yet.
 const canAssign = (board: RetroBoardViewModel) => !board.finished && board.phase === 'Actions'
 
-const assign = async (card: RetroCardViewModel, event: Event) => {
+const assign = async (card: RetroCardViewModel, assigneeId: null | string, event: MouseEvent) => {
   const board = data.value
-  const assigneeId = (event.target as HTMLSelectElement).value || null
 
+  // The list is a popover of its own; picking from it closes it.
+  ;(event.currentTarget as HTMLElement).closest('details')?.removeAttribute('open')
   if (!board || !canAssign(board) || !isActionsSection(board, card.sectionId)) {
     return
   }
@@ -2198,6 +2241,11 @@ button.phase-chip:hover:not(:disabled) {
   z-index: 3;
 }
 
+/* An open owner list must not slide under the note next to it. */
+.card:has(details[open]) {
+  z-index: 5;
+}
+
 .card.dragging {
   box-shadow: var(--sticky-shadow-lift);
   cursor: grabbing;
@@ -2325,7 +2373,8 @@ button.phase-chip:hover:not(:disabled) {
   outline: none;
   overflow: hidden;
   overflow-wrap: anywhere;
-  padding: 0 0 var(--space-3);
+  /* The bottom strip belongs to the badges - rank, votes, owner, whatever comes next. */
+  padding: 0 0 var(--space-5);
   text-align: left;
   user-select: none;
   white-space: pre-wrap;
@@ -2387,23 +2436,109 @@ textarea.card-text:focus {
   white-space: nowrap;
 }
 
-.card-assignee {
-  background: #ffffff5c;
-  border: 1px solid #10182824;
-  border-radius: var(--radius-sm);
-  color: inherit;
-  font-family: inherit;
-  font-size: var(--font-size-sm);
-  margin-top: auto;
-  max-width: 100%;
-  padding: 2px var(--space-2);
-  width: 100%;
+/*
+ * Who owns the action is a person, so it is picked from the faces of the room, not a dropdown.
+ * It rides the bottom edge between the rank and the vote, the way every other badge does, so the
+ * note itself keeps all of its writing space.
+ */
+.assignee {
+  bottom: 0;
+  left: 50%;
+  max-width: calc(100% - var(--icon-btn-size) * 2);
+  position: absolute;
+  translate: -50% 50%;
 }
 
-.card-assignee:disabled {
+.assignee-trigger {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  display: flex;
+  font-size: var(--font-size-caption);
+  gap: 4px;
+  list-style: none;
+  min-width: 0;
+  padding: 2px var(--space-2) 2px 2px;
+}
+
+.assignee-trigger--empty {
+  padding-left: var(--space-2);
+}
+
+.assignee-trigger .entity-avatar.small {
+  font-size: 9px;
+  height: 18px;
+  width: 18px;
+}
+
+.assignee-trigger > .lucide {
+  height: 12px;
+  width: 12px;
+}
+
+.assignee-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assignee-trigger .entity-avatar {
+  flex: none;
+}
+
+.assignee-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.assignee-trigger--empty {
+  color: var(--color-muted);
+}
+
+.assignee-trigger > svg {
+  height: 14px;
+  width: 14px;
+}
+
+.assignee-list {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  bottom: calc(100% + var(--space-1));
+  box-shadow: var(--shadow-popover);
+  display: grid;
+  gap: 2px;
+  left: 0;
+  min-width: 180px;
+  padding: var(--space-2);
+  position: absolute;
+  z-index: 7;
+}
+
+.assignee-row {
+  align-items: center;
   background: transparent;
-  border-color: transparent;
-  opacity: 1;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: inherit;
+  display: flex;
+  font-size: var(--font-size-small);
+  gap: var(--space-2);
+  justify-content: flex-start;
+  padding: var(--space-1) var(--space-2);
+  white-space: nowrap;
+}
+
+.assignee-row:hover {
+  background: var(--color-soft);
+}
+
+.assignee-row.active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .card-toolbar {

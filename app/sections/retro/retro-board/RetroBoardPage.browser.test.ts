@@ -507,19 +507,15 @@ it('assigns an action item to a participant of the retro', async () => {
 
   await mount({ createChannel: () => channel, data: actionBoard, setCardAssignee })
 
-  const ownerWrapper = currentWrapper!.find('.card-assignee')
-  const owner = ownerWrapper.element as HTMLSelectElement
+  expect(currentWrapper!.find('.assignee-trigger').text()).toBe('No owner')
+  expect(
+    currentWrapper!.findAll('.assignee-row').map((row: DOMWrapper<Element>) => row.text()),
+  ).toEqual([`${member.initials} ${member.name}`, `${grace.initials} ${grace.name}`, 'No owner'])
 
-  expect(ownerWrapper.exists()).toBe(true)
-  expect(owner.disabled).toBe(false)
-  expect([...owner.options].map((option) => option.text)).toEqual([
-    'No owner',
-    member.name,
-    grace.name,
-  ])
-
-  owner.value = grace.userId
-  await ownerWrapper.trigger('change')
+  await currentWrapper!
+    .findAll('.assignee-row')
+    .find((row: DOMWrapper<Element>) => row.text().includes(grace.name))
+    ?.trigger('click')
 
   expect(setCardAssignee).toHaveBeenCalledWith({ assigneeId: grace.userId, id: 'action' })
 })
@@ -537,13 +533,12 @@ it('clears the owner of an action item', async () => {
     setCardAssignee,
   })
 
-  const ownerWrapper = currentWrapper!.find('.card-assignee')
-  const owner = ownerWrapper.element as HTMLSelectElement
+  expect(currentWrapper!.find('.assignee-trigger').text()).toContain(grace.name)
 
-  expect(owner.value).toBe(grace.userId)
-
-  owner.value = ''
-  await ownerWrapper.trigger('change')
+  await currentWrapper!
+    .findAll('.assignee-row')
+    .find((row: DOMWrapper<Element>) => row.text() === 'No owner')
+    ?.trigger('click')
 
   expect(setCardAssignee).toHaveBeenCalledWith({ assigneeId: null, id: 'action' })
 })
@@ -560,11 +555,9 @@ it('keeps the owner readable but locked on a finished retro', async () => {
     },
   })
 
-  const ownerWrapper = currentWrapper!.find('.card-assignee')
-  const owner = ownerWrapper.element as HTMLSelectElement
-
-  expect(owner.disabled).toBe(true)
-  expect(owner.value).toBe(grace.userId)
+  // A finished retro still says who owns what, it just does not let anyone change it.
+  expect(currentWrapper!.find('.assignee-trigger').text()).toContain(grace.name)
+  expect(currentWrapper!.findAll('.assignee-row')).toEqual([])
 })
 
 it('shows no owner picker on a topic note', async () => {
@@ -572,7 +565,7 @@ it('shows no owner picker on a topic note', async () => {
 
   await mount({ createChannel: () => channel })
 
-  expect(currentWrapper?.find('.card-assignee').exists()).toBe(false)
+  expect(currentWrapper?.find('.assignee').exists()).toBe(false)
 })
 
 const groupingBoard: RetroBoardViewModel = { ...board, phase: 'Group' }
