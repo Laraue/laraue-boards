@@ -2160,10 +2160,9 @@ button.phase-chip:hover:not(:disabled) {
       #00000070;
 }
 
-/* The note under the pointer is the one being read, so nothing overlaps it. */
+/* Hovering reads a note, it does not reorder the board - a click brings one to the front. */
 .card:hover {
   box-shadow: var(--sticky-shadow-lift);
-  z-index: 4;
 }
 
 .card.selected,
