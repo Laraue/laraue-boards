@@ -354,7 +354,7 @@
                 @click.stop
                 @pointerdown.stop>
                 <summary
-                  aria-label="Action owner"
+                  aria-label="Assignee"
                   class="assignee-trigger"
                   :class="{ 'assignee-trigger--empty': !card.assignee }">
                   <span
@@ -364,7 +364,7 @@
                     {{ card.assignee.initials }}
                   </span>
                   <UserRound v-else />
-                  <span class="assignee-name">{{ card.assignee?.name ?? 'No owner' }}</span>
+                  <span class="assignee-name">{{ card.assignee?.name ?? 'Unassigned' }}</span>
                 </summary>
                 <div
                   v-if="canAssign(board)"
@@ -389,7 +389,7 @@
                     type="button"
                     @click="assign(card, null, $event)">
                     <UserRound />
-                    No owner
+                    Unassigned
                   </button>
                 </div>
               </details>
@@ -2205,7 +2205,8 @@ button.phase-chip:hover:not(:disabled) {
   display: flex;
   height: 160px;
   justify-content: flex-start;
-  padding: var(--space-3);
+  /* The bottom strip belongs to the badges - rank, assignee, votes, whatever comes next. */
+  padding: var(--space-3) var(--space-3) var(--space-5);
   position: absolute;
   rotate: var(--card-tilt, 0deg);
   transition:
@@ -2373,8 +2374,7 @@ button.phase-chip:hover:not(:disabled) {
   outline: none;
   overflow: hidden;
   overflow-wrap: anywhere;
-  /* The bottom strip belongs to the badges - rank, votes, owner, whatever comes next. */
-  padding: 0 0 var(--space-5);
+  padding: 0;
   text-align: left;
   user-select: none;
   white-space: pre-wrap;
@@ -2580,12 +2580,20 @@ textarea.card-text:focus {
   background: var(--color-hover);
 }
 
+/* One badge size all along the bottom edge: rank on the left, assignee in the middle, votes on
+   the right. */
+.vote-badge,
+.rank-badge,
+.assignee-trigger {
+  box-sizing: border-box;
+  height: 25px;
+}
+
 .vote-badge,
 .rank-badge {
-  height: var(--icon-btn-size);
   justify-content: center;
-  padding: 0;
-  width: var(--icon-btn-size);
+  min-height: 0;
+  padding: 3px var(--space-2);
 }
 
 .vote-badge {
@@ -2625,7 +2633,8 @@ textarea.card-text:focus {
   color: var(--color-accent);
 }
 
-.vote-badge .lucide {
+.vote-badge .lucide,
+.rank-badge .lucide {
   height: 12px;
   width: 12px;
 }

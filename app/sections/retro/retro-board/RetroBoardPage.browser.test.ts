@@ -507,10 +507,10 @@ it('assigns an action item to a participant of the retro', async () => {
 
   await mount({ createChannel: () => channel, data: actionBoard, setCardAssignee })
 
-  expect(currentWrapper!.find('.assignee-trigger').text()).toBe('No owner')
+  expect(currentWrapper!.find('.assignee-trigger').text()).toBe('Unassigned')
   expect(
     currentWrapper!.findAll('.assignee-row').map((row: DOMWrapper<Element>) => row.text()),
-  ).toEqual([`${member.initials} ${member.name}`, `${grace.initials} ${grace.name}`, 'No owner'])
+  ).toEqual([`${member.initials} ${member.name}`, `${grace.initials} ${grace.name}`, 'Unassigned'])
 
   await currentWrapper!
     .findAll('.assignee-row')
@@ -537,7 +537,7 @@ it('clears the owner of an action item', async () => {
 
   await currentWrapper!
     .findAll('.assignee-row')
-    .find((row: DOMWrapper<Element>) => row.text() === 'No owner')
+    .find((row: DOMWrapper<Element>) => row.text() === 'Unassigned')
     ?.trigger('click')
 
   expect(setCardAssignee).toHaveBeenCalledWith({ assigneeId: null, id: 'action' })
