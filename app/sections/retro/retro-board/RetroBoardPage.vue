@@ -250,6 +250,7 @@
               v-for="(section, index) in board.sections"
               :key="section.id"
               class="zone"
+              :class="{ 'zone--closed': dragRejects(board, section.id) }"
               :style="zoneStyle(index)">
               <header class="zone-header">
                 <span class="zone-title">
@@ -885,8 +886,22 @@ const discussionRanks = computed(() => {
 const cardsOf = (board: RetroBoardViewModel, sectionId: string) =>
   boardCards(board).filter((card) => card.sectionId === sectionId)
 
-const sectionColorAt = (board: RetroBoardViewModel, x: number, y: number) =>
-  board.sections[zoneIndexAt(x + CARD_SIZE / 2, y + CARD_SIZE / 2, board.sections.length)]?.color
+// The colour of the zone a dragged note is heading into - unless that zone refuses the note, and
+// then it keeps its own, so the colour never promises a move that will not happen.
+const draggedColor = (
+  board: RetroBoardViewModel,
+  card: RetroCardViewModel,
+  position: { x: number; y: number },
+) => {
+  const index = zoneIndexAt(
+    position.x + CARD_SIZE / 2,
+    position.y + CARD_SIZE / 2,
+    board.sections.length,
+  )
+  const section = board.sections[index]
+
+  return section && canDropOn(board, card, section.id) ? section.color : undefined
+}
 
 const HIDDEN_TEXT = '•••••• ••••• ••••••'
 
@@ -953,9 +968,9 @@ const visibleCards = (board: RetroBoardViewModel) =>
       ...(card.hidden ? { text: HIDDEN_TEXT } : {}),
       ...dragged,
       color:
-        (dragged
-          ? sectionColorAt(board, dragged.x, dragged.y)
-          : board.sections.find((section) => section.id === card.sectionId)?.color) ?? board.color,
+        (dragged ? draggedColor(board, card, dragged) : undefined) ??
+        board.sections.find((section) => section.id === card.sectionId)?.color ??
+        board.color,
     }
   })
 
@@ -1016,9 +1031,12 @@ const groupBoxes = (board: RetroBoardViewModel) => {
 const isActionsSection = (board: RetroBoardViewModel, sectionId: string) =>
   board.sections.at(-1)?.id === sectionId
 
+// The phases pace the team, not the facilitator: running the room means fixing whatever the room
+// got wrong, whenever it comes up, so the owner is bound by none of them.
 const canChangeSection = (board: RetroBoardViewModel, sectionId: string) =>
   !board.finished &&
-  ((board.phase === 'Collect' && !isActionsSection(board, sectionId)) ||
+  (board.canManage ||
+    (board.phase === 'Collect' && !isActionsSection(board, sectionId)) ||
     (board.phase === 'Actions' && isActionsSection(board, sectionId)))
 
 const canChangeCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
@@ -1034,7 +1052,18 @@ const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 const canDropOn = (board: RetroBoardViewModel, card: RetroCardViewModel, sectionId: string) =>
   canMoveCard(board, card) &&
   (isActionsSection(board, sectionId) === isActionsSection(board, card.sectionId) ||
-    board.phase === 'Actions')
+    board.phase === 'Actions' ||
+    board.canManage)
+
+// While a note is in the air, a section that will not take it says so: a drop that silently snaps
+// the note back reads as a bug, not as a rule.
+const dragRejects = (board: RetroBoardViewModel, sectionId: string) => {
+  const dragged = state.dragPosition
+    ? boardCards(board).find((card) => card.id === state.dragId)
+    : undefined
+
+  return dragged !== undefined && !canDropOn(board, dragged, sectionId)
+}
 
 const { execute: executeCreate } = useAction(props.deps.createCard)
 const { execute: executeMove } = useAction(props.deps.moveCard)
@@ -1653,7 +1682,8 @@ const done = async (card: RetroCardViewModel) => {
 }
 
 // An action item without an owner is fine - the team may not have picked one yet.
-const canAssign = (board: RetroBoardViewModel) => !board.finished && board.phase === 'Actions'
+const canAssign = (board: RetroBoardViewModel) =>
+  !board.finished && (board.canManage || board.phase === 'Actions')
 
 const assign = async (card: RetroCardViewModel, assigneeId: null | string, event: MouseEvent) => {
   const board = data.value
@@ -2102,6 +2132,16 @@ button.phase-chip:hover:not(:disabled) {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   position: absolute;
+}
+
+/* A section that refuses the note in the air: dimmed and struck out with a hatch. */
+.zone--closed {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent 0 8px,
+    color-mix(in srgb, var(--color-border) 60%, transparent) 8px 10px
+  );
+  opacity: 0.55;
 }
 
 .zone-header {

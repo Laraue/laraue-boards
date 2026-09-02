@@ -108,6 +108,7 @@ const mount = async ({
     data: { id: 'group-1' },
     status: 'success',
   })),
+  moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
   moveGroup = vi.fn<RetroBoardPageDeps['moveGroup']>(successfulAction),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
   renameRetro = vi.fn<RetroBoardPageDeps['renameRetro']>(successfulAction),
@@ -128,6 +129,7 @@ const mount = async ({
   data?: RetroBoardViewModel
   finishRetro?: RetroBoardPageDeps['finishRetro']
   groupCards?: RetroBoardPageDeps['groupCards']
+  moveCard?: RetroBoardPageDeps['moveCard']
   moveGroup?: RetroBoardPageDeps['moveGroup']
   removeCard?: RetroBoardPageDeps['removeCard']
   renameRetro?: RetroBoardPageDeps['renameRetro']
@@ -152,7 +154,7 @@ const mount = async ({
     createChannel,
     finishRetro,
     groupCards,
-    moveCard: vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
+    moveCard,
     moveGroup,
     removeCard,
     renameRetro,
@@ -989,4 +991,54 @@ it('returns to the previous phase directly', async () => {
 
   await vi.waitFor(() => expect(revertPhase).toHaveBeenCalledOnce())
   expect(revertPhase).toHaveBeenCalledWith({ phase: 'Collect', retroId: '7' })
+})
+
+// The actions column is the second zone: its left edge sits a whole zone plus the gap to the
+// right, so a note has to travel that far to reach it.
+const dragMyNoteIntoActions = async () => {
+  cardWithText('My note')!.element.dispatchEvent(pointer('pointerdown', 100, 100))
+  window.dispatchEvent(pointer('pointermove', 1100, 100))
+  await nextTick()
+}
+
+it('lets the owner carry a note into the actions section in any phase', async () => {
+  const { channel } = createTestChannel()
+  const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: { ...board, phase: 'Vote' }, moveCard })
+  await dragMyNoteIntoActions()
+  window.dispatchEvent(pointer('pointerup', 1100, 100))
+
+  await vi.waitFor(() =>
+    expect(moveCard).toHaveBeenCalledWith({
+      id: 'mine',
+      sectionId: '2',
+      x: 1040,
+      y: 80,
+    }),
+  )
+})
+
+it('shows a participant the actions section will not take the note, and keeps it out', async () => {
+  const { channel } = createTestChannel()
+  const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, canManage: false, phase: 'Vote' },
+    moveCard,
+  })
+  await dragMyNoteIntoActions()
+
+  const zones = currentWrapper!.findAll('.zone')
+
+  expect(zones[0]!.classes()).not.toContain('zone--closed')
+  expect(zones[1]!.classes()).toContain('zone--closed')
+  // The note keeps its own colour rather than promising the move it will not be allowed to make.
+  expect(cardWithText('My note')?.attributes('style')).toContain('#489c61')
+
+  window.dispatchEvent(pointer('pointerup', 1100, 100))
+  await nextTick()
+
+  expect(moveCard).not.toHaveBeenCalled()
 })
