@@ -1042,3 +1042,24 @@ it('shows a participant the actions section will not take the note, and keeps it
 
   expect(moveCard).not.toHaveBeenCalled()
 })
+
+it('draws everyone on the retro as one square, yourself included', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...board,
+      participants: [
+        member,
+        { color: '#a44', initials: 'GH', name: 'Grace Hopper', userId: 'user-2' },
+      ],
+    },
+  })
+
+  expect(
+    currentWrapper!
+      .findAll('.presence > .entity-avatar')
+      .map((avatar: DOMWrapper<Element>) => avatar.text()),
+  ).toEqual(['AL', 'GH'])
+})

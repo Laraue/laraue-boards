@@ -32,16 +32,11 @@
               class="presence"
               tabindex="0">
               <span
-                v-for="member in presence"
+                v-for="member in everyone(board)"
                 :key="member.userId"
                 class="entity-avatar"
                 :style="{ background: member.color }">
                 {{ member.initials }}
-              </span>
-              <span
-                v-if="!presence.length"
-                class="muted presence-alone">
-                {{ board.finished && !board.participants.length ? 'No participants' : 'Only you' }}
               </span>
               <div class="presence-list">
                 <p class="presence-title">
@@ -740,7 +735,8 @@ const presence = computed(() => {
   return members?.filter((member) => member.userId !== board?.me.userId) ?? []
 })
 
-// Avatars stand for the teammates next to you; the hover list names everyone, you included.
+// Everyone on the retro wears the same square, you included: singling yourself out with a label
+// only asks the reader to work out who the odd one is.
 // Everyone who belongs to this retro: whoever is connected right now plus whoever joined earlier
 // and stepped away - handing the retro over to them is still valid.
 const everyone = (board: RetroBoardViewModel) => {
@@ -1864,8 +1860,12 @@ const finish = async () => {
   outline: 2px solid var(--color-surface);
 }
 
-.presence-alone {
-  font-size: var(--font-size-caption);
+/* The gap under the avatars is dead space for the pointer: the list has to bridge it, or it
+   closes on the way in and its buttons are unreachable. */
+.presence-list::before {
+  content: '';
+  inset: calc(var(--space-2) * -1) 0 100% 0;
+  position: absolute;
 }
 
 .presence-list {
