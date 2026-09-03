@@ -34,9 +34,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ShortPaginatedResultOfRetroListItem"];
-                        "application/json": components["schemas"]["ShortPaginatedResultOfRetroListItem"];
-                        "text/json": components["schemas"]["ShortPaginatedResultOfRetroListItem"];
+                        "text/plain": components["schemas"]["GetRetrosResponse"];
+                        "application/json": components["schemas"]["GetRetrosResponse"];
+                        "text/json": components["schemas"]["GetRetrosResponse"];
                     };
                 };
             };
@@ -1017,6 +1017,15 @@ export interface components {
         GetRetrosRequest: {
             pagination: components["schemas"]["PaginationData"];
         };
+        GetRetrosResponse: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            hasNextPage: boolean;
+            data: components["schemas"]["RetroListItem"][];
+            canCreate: boolean;
+        };
         GroupRetroCardsRequest: {
             cardIds: string[];
         };
@@ -1090,6 +1099,7 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             finishedAt: null | string;
+            canManage: boolean;
             /** Format: int32 */
             cardCount: number | string;
             /** Format: int32 */
@@ -1138,15 +1148,6 @@ export interface components {
         SetRetroTimerRequest: {
             /** Format: int32 */
             minutes: null | number | string;
-        };
-        ShortPaginatedResultOfRetroListItem: {
-            /** Format: int64 */
-            page: number | string;
-            /** Format: int32 */
-            perPage: number | string;
-            data: components["schemas"]["RetroListItem"][];
-            hasNextPage: boolean;
-            hasPreviousPage?: boolean;
         };
         TransferRetroOwnershipRequest: {
             /** Format: uuid */

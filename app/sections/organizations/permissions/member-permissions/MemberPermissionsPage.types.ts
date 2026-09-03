@@ -9,6 +9,7 @@ export type AdminPermissions = {
 export type GlobalPermissions = {
   canCreateBoards: boolean
   canCreateIssues: boolean
+  canCreateRetros: boolean
   canCreateSpaces: boolean
   canDeleteBoards: boolean
   canDeleteIssues: boolean

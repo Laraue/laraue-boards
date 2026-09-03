@@ -2943,6 +2943,7 @@ export interface components {
         };
         GlobalAccessLevels: {
             canRead?: boolean;
+            canCreateRetros?: boolean;
             canCreateSpaces?: boolean;
             canUpdateSpaces?: boolean;
             canDeleteSpaces?: boolean;

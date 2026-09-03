@@ -39,6 +39,15 @@
           <span>Read organization</span>
         </label>
       </div>
+      <div class="read-permission">
+        <strong>Retro</strong>
+        <label class="permission-option">
+          <input
+            v-model="state.draft.global.canCreateRetros"
+            type="checkbox" />
+          <span>Create retros</span>
+        </label>
+      </div>
       <PermissionTable
         :on-toggle="toggleGlobal"
         :rows="globalPermissionRows" />
@@ -221,6 +230,10 @@ legend {
   display: flex;
   justify-content: space-between;
   padding: var(--space-3);
+}
+
+.read-permission + .read-permission {
+  margin-top: var(--space-3);
 }
 
 .space-permissions {

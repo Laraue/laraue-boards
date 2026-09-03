@@ -63,6 +63,8 @@ const AUTOPAN_EDGE = 48
 const AUTOPAN_SPEED = 10
 
 const wrapper = useTemplateRef<HTMLDivElement>('wrapper')
+const pointers = new Map<number, { x: number; y: number }>()
+let pinch: undefined | { centerX: number; centerY: number; distance: number }
 
 const state = reactive({
   autoPan: { rafId: 0, x: 0, y: 0 },
@@ -75,22 +77,40 @@ const state = reactive({
 
 const startScenePan = (event: PointerEvent) => {
   props.onBackgroundPointerDown()
+  trackPointer(event)
+  if (startPinch()) {
+    return
+  }
   state.wheelInputType = null
   state.drag = 'scene'
   state.last = { x: event.clientX, y: event.clientY }
+  tapStart = { x: event.clientX, y: event.clientY }
 }
 
 const startNodeDrag = (event: PointerEvent) => {
   event.stopPropagation()
+  trackPointer(event)
+  if (startPinch()) {
+    return
+  }
   state.wheelInputType = null
   state.drag = 'node'
   state.last = { x: event.clientX, y: event.clientY }
 }
 
 const onPointerMove = (event: PointerEvent) => {
+  if (event.pointerType === 'touch' && pointers.has(event.pointerId)) {
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+    if (pointers.size > 1) {
+      event.preventDefault()
+      updatePinch()
+      return
+    }
+  }
   if (state.drag === 'none') {
     return
   }
+  event.preventDefault()
   const deltaX = event.clientX - state.last.x
   const deltaY = event.clientY - state.last.y
 
@@ -107,7 +127,17 @@ const onPointerMove = (event: PointerEvent) => {
   updateAutoPan(event.clientX, event.clientY)
 }
 
-const onPointerUp = () => {
+const onPointerUp = (event: PointerEvent) => {
+  pointers.delete(event.pointerId)
+  if (pinch) {
+    pinch = undefined
+    const remaining = pointers.values().next().value
+    state.drag = remaining ? 'scene' : 'none'
+    if (remaining) {
+      state.last = remaining
+    }
+    return
+  }
   const finished = state.drag
 
   state.drag = 'none'
@@ -116,6 +146,103 @@ const onPointerUp = () => {
   if (finished === 'node') {
     props.onNodeMoveEnd()
   }
+  if (finished === 'scene' && event.pointerType === 'touch') {
+    detectDoubleTap(event)
+  }
+  tapStart = undefined
+}
+
+// Mobile browsers don't synthesize dblclick from a double-tap once touch-action: none disables the
+// native zoom gesture that dblclick piggybacks on, so double-tap-to-create needs its own detection.
+const TAP_MOVE_LIMIT = 24
+const DOUBLE_TAP_MS = 300
+let lastTap: undefined | { time: number; x: number; y: number }
+let tapStart: undefined | { x: number; y: number }
+
+const detectDoubleTap = (event: PointerEvent) => {
+  if (
+    !tapStart ||
+    Math.hypot(event.clientX - tapStart.x, event.clientY - tapStart.y) > TAP_MOVE_LIMIT
+  ) {
+    lastTap = undefined
+    return
+  }
+  const point = toScene(event.clientX, event.clientY)
+  const now = Date.now()
+
+  if (
+    point &&
+    lastTap &&
+    now - lastTap.time < DOUBLE_TAP_MS &&
+    Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < TAP_MOVE_LIMIT
+  ) {
+    props.onCanvasDoubleClick(point)
+    lastTap = undefined
+    return
+  }
+  lastTap = { time: now, x: event.clientX, y: event.clientY }
+}
+
+const trackPointer = (event: PointerEvent) => {
+  if (event.pointerType === 'touch') {
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+  }
+}
+
+const pinchMetrics = () => {
+  const [first, second] = [...pointers.values()]
+
+  if (!first || !second) {
+    return undefined
+  }
+  return {
+    centerX: (first.x + second.x) / 2,
+    centerY: (first.y + second.y) / 2,
+    distance: Math.hypot(second.x - first.x, second.y - first.y),
+  }
+}
+
+const startPinch = () => {
+  const metrics = pinchMetrics()
+
+  if (!metrics) {
+    return false
+  }
+  if (state.drag === 'node') {
+    props.onNodeMoveEnd()
+  }
+  stopAutoPan()
+  state.drag = 'none'
+  pinch = metrics
+  return true
+}
+
+const updatePinch = () => {
+  const next = pinchMetrics()
+
+  if (!next) {
+    return
+  }
+  if (!pinch) {
+    pinch = next
+    return
+  }
+  const rect = wrapper.value?.getBoundingClientRect()
+
+  if (!rect || pinch.distance === 0) {
+    return
+  }
+  const previous = pinch
+  zoomAt(
+    state.scale * (next.distance / previous.distance),
+    next.centerX - rect.left,
+    next.centerY - rect.top,
+  )
+  state.offset = {
+    x: state.offset.x + next.centerX - previous.centerX,
+    y: state.offset.y + next.centerY - previous.centerY,
+  }
+  pinch = next
 }
 
 const autoPanStep = () => {
@@ -257,11 +384,14 @@ const reset = () => {
 onMounted(() => {
   window.addEventListener('pointermove', onPointerMove, { passive: false })
   window.addEventListener('pointerup', onPointerUp)
+  window.addEventListener('pointercancel', onPointerUp)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('pointermove', onPointerMove)
   window.removeEventListener('pointerup', onPointerUp)
+  window.removeEventListener('pointercancel', onPointerUp)
+  pointers.clear()
   stopAutoPan()
 })
 

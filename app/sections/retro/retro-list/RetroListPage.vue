@@ -17,6 +17,7 @@
           </div>
           <div class="title-actions">
             <button
+              v-if="listing.canCreate"
               class="primary"
               :disabled="starting"
               type="button"
@@ -54,7 +55,7 @@
             </NuxtLink>
             <div class="retro-row-actions">
               <button
-                v-if="retro.openActionCount > 0"
+                v-if="listing.canCreate && retro.openActionCount > 0"
                 class="secondary small"
                 :disabled="starting"
                 :title="`Start a new retro carrying the open actions of ${retro.name}`"
@@ -63,6 +64,7 @@
                 Continue
               </button>
               <button
+                v-if="retro.canManage"
                 aria-label="Delete retro"
                 class="icon-btn small"
                 :disabled="removing"
@@ -234,5 +236,29 @@ useHead({ title: 'Retro' })
 
 .retro-meta {
   font-size: var(--font-size-caption);
+}
+
+@media (max-width: 760px) {
+  .retro-row-item {
+    align-items: stretch;
+    flex-direction: column;
+    padding-right: 0;
+  }
+
+  .retro-row {
+    flex-wrap: wrap;
+    row-gap: var(--space-1);
+  }
+
+  .retro-name {
+    flex-basis: 100%;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  .retro-row-actions {
+    justify-content: flex-end;
+    padding: 0 var(--space-4) var(--space-3);
+  }
 }
 </style>

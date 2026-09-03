@@ -70,6 +70,7 @@ const mapMemberPermissions = (
     global: {
       canCreateBoards: global.canCreateEpics ?? false,
       canCreateIssues: global.canCreateIssues ?? false,
+      canCreateRetros: global.canCreateRetros ?? false,
       canCreateSpaces: global.canCreateSpaces ?? false,
       canDeleteBoards: global.canDeleteEpics ?? false,
       canDeleteIssues: global.canDeleteIssues ?? false,

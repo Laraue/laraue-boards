@@ -35,6 +35,7 @@ const mapMemberPermissionsRequest = (permissions: MemberPermissions): ApiUserPer
   global: {
     canCreateEpics: permissions.global.canCreateBoards,
     canCreateIssues: permissions.global.canCreateIssues,
+    canCreateRetros: permissions.global.canCreateRetros,
     canCreateSpaces: permissions.global.canCreateSpaces,
     canDeleteEpics: permissions.global.canDeleteBoards,
     canDeleteIssues: permissions.global.canDeleteIssues,

@@ -84,6 +84,7 @@ test('maps member permissions response', async () => {
         global: {
           canCreateBoards: true,
           canCreateIssues: false,
+          canCreateRetros: false,
           canCreateSpaces: false,
           canDeleteBoards: false,
           canDeleteIssues: false,

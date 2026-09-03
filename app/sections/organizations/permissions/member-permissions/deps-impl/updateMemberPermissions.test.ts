@@ -33,6 +33,7 @@ test('maps successful update', async () => {
       global: {
         canCreateBoards: false,
         canCreateIssues: false,
+        canCreateRetros: true,
         canCreateSpaces: false,
         canDeleteBoards: false,
         canDeleteIssues: false,
@@ -65,6 +66,7 @@ test('maps successful update', async () => {
     global: {
       canCreateEpics: false,
       canCreateIssues: false,
+      canCreateRetros: true,
       canCreateSpaces: false,
       canDeleteEpics: false,
       canDeleteIssues: false,

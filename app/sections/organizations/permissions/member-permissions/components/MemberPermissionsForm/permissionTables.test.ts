@@ -16,6 +16,7 @@ import {
 const noGlobal: GlobalPermissions = {
   canCreateBoards: false,
   canCreateIssues: false,
+  canCreateRetros: false,
   canCreateSpaces: false,
   canDeleteBoards: false,
   canDeleteIssues: false,
