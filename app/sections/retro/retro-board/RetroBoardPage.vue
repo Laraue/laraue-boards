@@ -35,6 +35,7 @@
               :key="phase">
               <button
                 v-if="board.canManage"
+                :aria-label="phase"
                 class="phase-step"
                 :class="{ active: board.phase === phase }"
                 :disabled="board.phase !== phase && !canChangePhase(board.phase, phase)"

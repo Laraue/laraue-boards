@@ -200,11 +200,6 @@ const mount = async ({
   return { advancePhase, finishRetro, revertPhase, setPhaseTimer, updateSettings, view }
 }
 
-// The phases live behind a picker now, so the test has to open it before reading them.
-const openPhasePicker = async () => {
-  await currentWrapper?.find('.phase-picker-trigger').trigger('click')
-}
-
 const cardWithText = (text: string) =>
   currentWrapper
     ?.findAll('.card')
@@ -240,7 +235,6 @@ it('blocks management and freezes cards during voting', async () => {
     data: { ...board, canManage: false, phase: 'Vote' },
   })
 
-  await openPhasePicker()
   await expect
     .element(page.getByRole('button', { exact: true, name: 'Finish' }))
     .not.toBeInTheDocument()
@@ -868,7 +862,7 @@ it('keeps vote totals hidden while the phase is still Vote', async () => {
   })
 
   expect(currentWrapper?.find('.vote-badge').exists()).toBe(false)
-  expect(currentWrapper?.find('.phase-guide').text()).toContain('Voting closed')
+  expect(currentWrapper?.find('.phase-guide-center').text()).toContain('Voting is closed')
 })
 
 it('shows vote totals once the facilitator moves on to discussion', async () => {
@@ -1057,7 +1051,7 @@ it('advances the phase without stopping the timer by hand', async () => {
     data: { ...board, phase: 'Vote', phaseEndsAt: '2099-01-01T00:00:00Z' },
     setPhaseTimer,
   })
-  await buttonWithText('Discuss')?.trigger('click')
+  await currentWrapper?.find('button[aria-label="Discuss"]').trigger('click')
 
   await vi.waitFor(() => expect(advancePhase).toHaveBeenCalledOnce())
   expect(advancePhase).toHaveBeenCalledWith({ phase: 'Discuss', retroId: '7' })
@@ -1098,7 +1092,7 @@ it('returns to the previous phase directly', async () => {
     data: { ...board, phase: 'Group' },
     revertPhase,
   })
-  await buttonWithText('Collect')?.trigger('click')
+  await currentWrapper?.find('button[aria-label="Collect"]').trigger('click')
 
   await vi.waitFor(() => expect(revertPhase).toHaveBeenCalledOnce())
   expect(revertPhase).toHaveBeenCalledWith({ phase: 'Collect', retroId: '7' })
