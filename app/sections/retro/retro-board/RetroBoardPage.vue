@@ -108,10 +108,30 @@
                 </template>
                 <p class="board-help-heading">Keyboard shortcuts</p>
                 <ul class="board-help-list">
-                  <li><kbd>Delete</kbd> / <kbd>Backspace</kbd> deletes the selected note</li>
-                  <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + click picks notes to merge into a topic</li>
-                  <li><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> saves a note being edited</li>
-                  <li><kbd>Esc</kbd> cancels editing a note</li>
+                  <li>
+                    <kbd>Delete</kbd>
+                    /
+                    <kbd>Backspace</kbd>
+                    deletes the selected note
+                  </li>
+                  <li>
+                    <kbd>Ctrl</kbd>
+                    /
+                    <kbd>Cmd</kbd>
+                    + click picks notes to merge into a topic
+                  </li>
+                  <li>
+                    <kbd>Ctrl</kbd>
+                    /
+                    <kbd>Cmd</kbd>
+                    +
+                    <kbd>Enter</kbd>
+                    saves a note being edited
+                  </li>
+                  <li>
+                    <kbd>Esc</kbd>
+                    cancels editing a note
+                  </li>
                 </ul>
                 <p class="board-help-heading">On the board</p>
                 <ul class="board-help-list">
@@ -951,7 +971,7 @@ const everyone = (board: RetroBoardViewModel) => {
       seen.set(member.userId, member)
     }
   }
-  return [...seen.values()].sort(
+  return [...seen.values()].toSorted(
     (one, another) =>
       Number(another.userId === board.owner.userId) - Number(one.userId === board.owner.userId),
   )
