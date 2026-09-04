@@ -2431,7 +2431,7 @@ const finish = async () => {
   border-radius: var(--radius-card);
   display: flex;
   gap: var(--space-1);
-  left: var(--space-4);
+  left: var(--space-3);
   max-width: calc(100% - var(--facilitator-width) - var(--space-8));
   min-width: 0;
   overflow: hidden;
@@ -2807,7 +2807,7 @@ const finish = async () => {
 }
 
 :root[data-theme='dark'] .card {
-  --curl-light: #ffffff21;
+  --curl-light: #0000002e;
   --curl-dark: #00000047;
   --sticky-shadow:
     calc(var(--sticky-dx) * 0.2) 1px 1px #0000004d,
