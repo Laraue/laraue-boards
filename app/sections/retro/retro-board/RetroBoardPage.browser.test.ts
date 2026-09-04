@@ -283,7 +283,7 @@ it('hides the timer separator before an unavailable stop action', async () => {
     data: { ...board, canManage: false, phaseEndsAt: '2099-01-01T00:00:00Z' },
   })
 
-  expect(currentWrapper!.findAll('.phase-chip-separator')).toHaveLength(0)
+  expect(currentWrapper!.findAll('.phase-timer-separator')).toHaveLength(0)
 })
 
 it('confirms a created card before starting its edit', async () => {

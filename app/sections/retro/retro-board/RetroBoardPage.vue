@@ -214,8 +214,8 @@
           <button
             v-if="board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0"
             :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
-            class="phase-chip"
-            :class="{ 'phase-chip--warn': board.hiddenMine > 0 }"
+            class="notes-visibility"
+            :class="{ 'notes-visibility--private': board.hiddenMine > 0 }"
             type="button"
             @click="setMineRevealed(board.hiddenMine > 0)">
             <EyeOff v-if="board.hiddenMine > 0" />
@@ -225,13 +225,13 @@
 
           <div
             v-if="board.phase === 'Vote'"
-            class="phase-chip">
+            class="vote-counter">
             <ThumbsUp />
             <span>{{ board.myVotes }} of</span>
             <input
               v-if="board.canManage"
               aria-label="Votes per person"
-              class="phase-chip-number"
+              class="vote-counter-limit"
               min="1"
               type="number"
               :value="board.votesPerUser"
@@ -242,7 +242,7 @@
 
           <button
             v-if="canResetVotes(board)"
-            class="phase-chip"
+            class="reset-votes"
             title="Clear every vote so the team can vote again"
             type="button"
             @click="resetVotes()">
@@ -252,28 +252,29 @@
 
           <div
             v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
-            class="phase-chip"
-            :class="{ 'phase-chip--warn': countdown === '00:00' }">
+            class="phase-timer"
+            :class="{ 'phase-timer--over': countdown === '00:00' }">
             <template v-if="countdown === undefined">
-              <button
-                class="phase-chip-action"
-                :disabled="!board.canManage"
-                type="button"
-                @click="startTimer()">
-                <Timer />
-                Start
-              </button>
-              <span class="phase-chip-separator">·</span>
+              <Timer />
               <input
                 v-model.number="state.timerMinutes"
                 aria-label="Timer duration in minutes"
-                class="phase-chip-number"
+                class="phase-timer-minutes"
                 :disabled="!board.canManage"
                 min="1"
                 type="number" />
               <span>min</span>
+              <span class="phase-timer-separator">·</span>
+              <button
+                class="phase-timer-start"
+                :disabled="!board.canManage"
+                type="button"
+                @click="startTimer()">
+                Start
+              </button>
             </template>
             <template v-else>
+              <Timer />
               <span
                 class="countdown"
                 :class="{ over: countdown === '00:00' }">
@@ -281,15 +282,14 @@
               </span>
               <span
                 v-if="board.canManage"
-                class="phase-chip-separator">
+                class="phase-timer-separator">
                 ·
               </span>
               <button
                 v-if="board.canManage"
-                class="phase-chip-action"
+                class="phase-timer-stop"
                 type="button"
                 @click="stopTimer()">
-                <Timer />
                 Stop
               </button>
             </template>
@@ -334,7 +334,7 @@
               :key="section.id"
               class="zone"
               :class="{ 'zone--closed': dragRejects(board, section.id) }"
-              :style="zoneStyle(index)">
+              :style="{ ...zoneStyle(index), borderColor: section.color }">
               <header class="zone-header">
                 <span class="zone-title">
                   <span
@@ -1199,7 +1199,8 @@ const visibleCards = (board: RetroBoardViewModel) =>
       ...dragged,
       color:
         (dragged ? draggedColor(board, card, dragged) : undefined) ??
-        (section?.color ?? UNSECTIONED_CARD_COLOR),
+        section?.color ??
+        UNSECTIONED_CARD_COLOR,
     }
   })
 
@@ -2368,6 +2369,7 @@ const finish = async () => {
   margin-left: auto;
 }
 
+/* Retro toolbar: the header cluster with the guide popover and who is present. */
 .retro-toolbar {
   align-items: stretch;
   backdrop-filter: blur(16px);
@@ -2410,6 +2412,7 @@ const finish = async () => {
   width: var(--icon-btn-size-small);
 }
 
+/* Phase stepper: the header rail of phase steps, connectors and the finish action. */
 .phase-stepper {
   align-items: center;
   backdrop-filter: blur(16px);
@@ -2529,9 +2532,9 @@ button.phase-step:focus-visible {
     justify-self: center;
     min-width: 0;
   }
-
 }
 
+/* Phase controls: the floating bar of per-phase actions at the bottom of the board. */
 .phase-controls {
   align-items: center;
   backdrop-filter: blur(16px);
@@ -2556,69 +2559,99 @@ button.phase-step:focus-visible {
   z-index: 7;
 }
 
-.phase-chip {
+/* Its buttons wear the phase-step look: quiet until hovered, accent only to flag a state. */
+.notes-visibility,
+.reset-votes,
+.phase-timer-start,
+.phase-timer-stop {
   align-items: center;
   background: transparent;
   border: 0;
   border-radius: calc(var(--radius-control) - 2px);
   box-shadow: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+  flex: none;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  height: 34px;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+  white-space: nowrap;
+}
+
+.notes-visibility:hover:not(:disabled),
+.reset-votes:hover:not(:disabled),
+.phase-timer-start:hover:not(:disabled),
+.phase-timer-stop:hover:not(:disabled) {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.notes-visibility:disabled,
+.reset-votes:disabled,
+.phase-timer-start:disabled,
+.phase-timer-stop:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.notes-visibility:focus-visible,
+.reset-votes:focus-visible,
+.phase-timer-start:focus-visible,
+.phase-timer-stop:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+/* Notes still private to their author: filled like the active phase step. */
+.notes-visibility--private {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.notes-visibility--private:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-accent) 88%, #000);
+  color: #fff;
+}
+
+/* Readouts, not buttons: the vote budget and the timer. */
+.vote-counter,
+.phase-timer {
+  align-items: center;
+  border-radius: calc(var(--radius-control) - 2px);
   color: var(--color-text);
   display: flex;
   flex: none;
   font-size: var(--font-size-small);
   gap: var(--space-1);
-  height: var(--control-height-small);
+  height: 34px;
   justify-content: center;
   padding: 0 var(--space-2);
   white-space: nowrap;
-  width: auto;
 }
 
-button.phase-chip {
-  font-weight: var(--font-weight-semibold);
-}
-
-button.phase-chip:hover:not(:disabled) {
-  background: var(--color-hover);
-}
-
-.phase-chip--warn {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-}
-
-.phase-chip:has(.countdown.over) {
+.phase-timer--over {
   background: color-mix(in srgb, var(--color-danger) 10%, transparent);
   color: var(--color-danger);
 }
 
-.phase-chip-action {
-  align-items: center;
-  background: var(--color-accent);
-  border: 0;
-  border-radius: var(--radius-small);
-  color: #fff;
-  display: inline-flex;
-  font-weight: var(--font-weight-semibold);
-  gap: var(--space-1);
-  height: var(--control-height-small);
-  padding: 0 var(--space-2);
-}
-
-.phase-chip-action:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-accent) 88%, #000);
-}
-
-.phase-chip:has(.countdown) .phase-chip-action {
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+.phase-timer-stop {
   color: var(--color-danger);
 }
 
-.phase-chip:has(.countdown) .phase-chip-action:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger) 16%, transparent);
+.phase-timer-separator {
+  color: var(--color-muted);
 }
 
-.phase-chip-number {
+/* Editable numbers: votes per person, timer minutes. */
+.vote-counter-limit,
+.phase-timer-minutes {
   appearance: textfield;
   background: transparent;
   border: 0;
@@ -2634,24 +2667,24 @@ button.phase-chip:hover:not(:disabled) {
   width: auto;
 }
 
-.phase-chip-number:focus {
+.vote-counter-limit:focus,
+.phase-timer-minutes:focus {
   border-bottom-color: var(--color-accent);
   box-shadow: none;
 }
 
-.phase-chip-number:disabled {
+.vote-counter-limit:disabled,
+.phase-timer-minutes:disabled {
   border-bottom-color: transparent;
   color: inherit;
 }
 
-.phase-chip-number::-webkit-inner-spin-button,
-.phase-chip-number::-webkit-outer-spin-button {
+.vote-counter-limit::-webkit-inner-spin-button,
+.vote-counter-limit::-webkit-outer-spin-button,
+.phase-timer-minutes::-webkit-inner-spin-button,
+.phase-timer-minutes::-webkit-outer-spin-button {
   appearance: none;
   margin: 0;
-}
-
-.phase-chip-separator {
-  color: var(--color-muted);
 }
 
 .countdown {
@@ -3263,7 +3296,7 @@ textarea.card-text:focus {
     max-width: calc(100% - var(--space-6));
   }
 
-  .phase-controls .phase-chip {
+  .phase-controls > * {
     padding-inline: 0;
   }
 
