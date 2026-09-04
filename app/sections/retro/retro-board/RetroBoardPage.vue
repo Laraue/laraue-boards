@@ -199,11 +199,6 @@
               </div>
             </div>
           </div>
-          <p
-            v-if="!board.finished"
-            class="phase-guide-center">
-            {{ phaseGuide(board).action }}
-          </p>
         </header>
 
         <div
@@ -669,6 +664,8 @@ const PHASE_GUIDES: Record<RetroPhase, { action: string; title: string }> = {
     title: 'Vote on topics',
   },
 }
+
+const UNSECTIONED_CARD_COLOR = '#c99724'
 
 const previousPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) - 1]
 const nextPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) + 1]
@@ -1192,6 +1189,7 @@ const visibleCards = (board: RetroBoardViewModel) =>
       state.editingId === card.id
         ? undefined
         : (state.pendingTexts.get(card.id) ?? state.remoteTexts.get(card.id)?.text)
+    const section = board.sections.find((section) => section.id === card.sectionId)
 
     return {
       ...card,
@@ -1201,8 +1199,7 @@ const visibleCards = (board: RetroBoardViewModel) =>
       ...dragged,
       color:
         (dragged ? draggedColor(board, card, dragged) : undefined) ??
-        board.sections.find((section) => section.id === card.sectionId)?.color ??
-        board.color,
+        (section?.color ?? UNSECTIONED_CARD_COLOR),
     }
   })
 
@@ -2511,21 +2508,6 @@ button.phase-step:focus-visible {
   margin-left: 2px;
 }
 
-.phase-guide-center {
-  color: color-mix(in srgb, var(--color-text) 68%, transparent);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  grid-column: 1 / -1;
-  grid-row: 2;
-  margin: 0;
-  padding-inline: var(--space-3);
-  pointer-events: none;
-  position: static;
-  text-align: center;
-  translate: none;
-  z-index: 7;
-}
-
 @container (max-width: 603px) {
   .retro-header {
     grid-template-columns: minmax(0, 1fr) max-content;
@@ -2548,9 +2530,6 @@ button.phase-step:focus-visible {
     min-width: 0;
   }
 
-  .phase-guide-center {
-    grid-row: 3;
-  }
 }
 
 .phase-controls {
@@ -3273,10 +3252,6 @@ textarea.card-text:focus {
     grid-row: 2;
     justify-self: center;
     min-width: 0;
-  }
-
-  .phase-guide-center {
-    grid-row: 3;
   }
 
   .phase-controls {

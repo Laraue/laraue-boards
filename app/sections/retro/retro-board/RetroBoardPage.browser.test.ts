@@ -922,7 +922,6 @@ it('keeps vote totals hidden while the phase is still Vote', async () => {
   })
 
   expect(currentWrapper?.find('.vote-badge').exists()).toBe(false)
-  expect(currentWrapper?.find('.phase-guide-center').text()).toContain('Voting is closed')
 })
 
 it('shows vote totals once the facilitator moves on to discussion', async () => {
