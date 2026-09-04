@@ -22,8 +22,8 @@ const spaces = [
 
 const permissions = {
   admin: 'Manage, UpdateOrganization',
-  direct: { product: { canRead: true, canUpdate: true } },
-  global: { canCreateEpics: true, canRead: true },
+  direct: { product: { canManageRetros: true, canRead: true, canUpdate: true } },
+  global: { canCreateEpics: true, canManageRetros: true, canRead: true },
 }
 
 const respond = (_request: Request, path: string) => {
@@ -64,6 +64,7 @@ test('maps member permissions response', async () => {
             canDelete: false,
             canDeleteBoards: false,
             canDeleteIssues: false,
+            canManageRetros: false,
             canRead: false,
             canUpdate: false,
             canUpdateBoards: false,
@@ -75,6 +76,7 @@ test('maps member permissions response', async () => {
             canDelete: false,
             canDeleteBoards: false,
             canDeleteIssues: false,
+            canManageRetros: true,
             canRead: true,
             canUpdate: true,
             canUpdateBoards: false,
@@ -84,11 +86,11 @@ test('maps member permissions response', async () => {
         global: {
           canCreateBoards: true,
           canCreateIssues: false,
-          canCreateRetros: false,
           canCreateSpaces: false,
           canDeleteBoards: false,
           canDeleteIssues: false,
           canDeleteSpaces: false,
+          canManageRetros: true,
           canRead: true,
           canUpdateBoards: false,
           canUpdateIssues: false,

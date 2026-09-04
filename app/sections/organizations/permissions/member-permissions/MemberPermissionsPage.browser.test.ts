@@ -32,6 +32,7 @@ const pageData: MemberPermissionsPageData = {
         canDelete: false,
         canDeleteBoards: false,
         canDeleteIssues: false,
+        canManageRetros: false,
         canRead: false,
         canUpdate: false,
         canUpdateBoards: false,
@@ -41,11 +42,11 @@ const pageData: MemberPermissionsPageData = {
     global: {
       canCreateBoards: false,
       canCreateIssues: false,
-      canCreateRetros: false,
       canCreateSpaces: false,
       canDeleteBoards: false,
       canDeleteIssues: false,
       canDeleteSpaces: false,
+      canManageRetros: false,
       canRead: false,
       canUpdateBoards: false,
       canUpdateIssues: false,
@@ -95,6 +96,8 @@ it('shows the member and their current permissions', async () => {
 
   await expect.element(page.getByRole('heading', { name: 'Ada Lovelace' })).toBeInTheDocument()
   await expect.element(page.getByLabelText('Manage members and permissions')).not.toBeChecked()
+  await expect.element(page.getByLabelText('Manage retros in organization')).not.toBeChecked()
+  await expect.element(page.getByLabelText('Manage retros in Backlog')).not.toBeChecked()
 })
 
 it('submits updated permissions and reports success', async () => {

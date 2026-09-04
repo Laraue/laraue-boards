@@ -43,9 +43,10 @@
         <strong>Retro</strong>
         <label class="permission-option">
           <input
-            v-model="state.draft.global.canCreateRetros"
+            v-model="state.draft.global.canManageRetros"
+            aria-label="Manage retros in organization"
             type="checkbox" />
-          <span>Create retros</span>
+          <span>Manage retros</span>
         </label>
       </div>
       <PermissionTable
@@ -87,6 +88,25 @@
                   state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
                 " />
               <span>Read space</span>
+            </label>
+          </div>
+          <div class="read-permission">
+            <strong>Retro</strong>
+            <label class="permission-option">
+              <input
+                :aria-label="`Manage retros in ${space.name}`"
+                :checked="
+                  state.draft.direct[space.id]!.canManageRetros ||
+                  state.draft.global.canManageRetros
+                "
+                :disabled="state.draft.global.canManageRetros"
+                :title="state.draft.global.canManageRetros ? 'Inherited' : undefined"
+                type="checkbox"
+                @change="
+                  state.draft.direct[space.id]!.canManageRetros =
+                    !state.draft.direct[space.id]!.canManageRetros
+                " />
+              <span>Manage retros</span>
             </label>
           </div>
           <PermissionTable
