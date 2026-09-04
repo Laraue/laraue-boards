@@ -2298,15 +2298,15 @@ const finish = async () => {
 }
 
 .facilitator-current-title {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
   margin-top: var(--space-1);
 }
 
 .facilitator-current-title > svg {
   color: var(--color-accent);
+  display: inline-block;
   height: 17px;
+  margin-right: var(--space-2);
+  vertical-align: -0.2em;
   width: 17px;
 }
 
