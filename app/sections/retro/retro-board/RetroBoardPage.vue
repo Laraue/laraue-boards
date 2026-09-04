@@ -11,73 +11,73 @@
         class="retro"
         :class="{ 'retro--focused': state.fullscreen }">
         <div class="retro-title">
-            <h1 v-if="!canRename(board)">{{ board.name }}</h1>
-            <input
-              v-else
-              ref="nameInput"
-              aria-label="Retro name"
-              class="retro-name-input"
-              maxlength="128"
-              :value="board.name"
-              @change="rename($event)" />
-            <button
-              v-if="canRename(board)"
-              aria-label="Edit retro name"
-              class="icon-btn small retro-name-edit"
-              title="Edit retro name"
-              type="button"
-              @click.stop="focusNameInput"
-              @pointerdown.stop>
-              <Pencil />
-            </button>
-            <span
-              v-if="board.finished"
-              class="retro-finished">
-              Finished
-            </span>
+          <h1 v-if="!canRename(board)">{{ board.name }}</h1>
+          <input
+            v-else
+            ref="nameInput"
+            aria-label="Retro name"
+            class="retro-name-input"
+            maxlength="128"
+            :value="board.name"
+            @change="rename($event)" />
+          <button
+            v-if="canRename(board)"
+            aria-label="Edit retro name"
+            class="icon-btn small retro-name-edit"
+            title="Edit retro name"
+            type="button"
+            @click.stop="focusNameInput"
+            @pointerdown.stop>
+            <Pencil />
+          </button>
+          <span
+            v-if="board.finished"
+            class="retro-finished">
+            Finished
+          </span>
         </div>
         <div
           aria-label="People on this retro"
           class="presence"
           :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
           tabindex="0">
+          <span
+            v-for="member in everyone(board)"
+            :key="member.userId"
+            class="entity-avatar"
+            :style="{ background: member.color }">
+            {{ member.initials }}
+          </span>
+          <div class="presence-menu">
+            <div class="presence-list">
+              <p class="presence-title">
+                {{ board.finished ? 'Participants' : 'On this retro' }}
+              </p>
               <span
                 v-for="member in everyone(board)"
                 :key="member.userId"
-                class="entity-avatar"
-                :style="{ background: member.color }">
-                {{ member.initials }}
+                class="presence-row">
+                <span
+                  class="entity-avatar small"
+                  :style="{ background: member.color }">
+                  {{ member.initials }}
+                </span>
+                {{ member.name }}
+                <Crown
+                  v-if="member.userId === board.owner.userId"
+                  aria-label="Owner"
+                  class="presence-role"
+                  role="img" />
+                <button
+                  v-else-if="canHandOver(board)"
+                  class="secondary small"
+                  type="button"
+                  @click="handOver(member)">
+                  Make owner
+                </button>
               </span>
-              <div class="presence-menu">
-                <div class="presence-list">
-                  <p class="presence-title">
-                    {{ board.finished ? 'Participants' : 'On this retro' }}
-                  </p>
-                  <span
-                    v-for="member in everyone(board)"
-                    :key="member.userId"
-                    class="presence-row">
-                    <span
-                      class="entity-avatar small"
-                      :style="{ background: member.color }">
-                      {{ member.initials }}
-                    </span>
-                    {{ member.name }}
-                    <Crown
-                      v-if="member.userId === board.owner.userId"
-                      aria-label="Owner"
-                      class="presence-role"
-                      role="img" />
-                    <button
-                      v-else-if="canHandOver(board)"
-                      class="secondary small"
-                      type="button"
-                      @click="handOver(member)">
-                      Make owner
-                    </button>
-                  </span>
-                </div>
-              </div>
+            </div>
+          </div>
         </div>
 
         <aside
@@ -88,9 +88,7 @@
             <div>
               <h2>{{ board.canManage ? 'Retro plan' : 'Current phase' }}</h2>
             </div>
-            <div
-              v-if="board.canManage"
-              class="board-help">
+            <div class="board-help">
               <button
                 aria-label="Guide"
                 class="board-help-trigger"
@@ -106,7 +104,7 @@
                     <kbd>Backspace</kbd>
                     deletes the selected note
                   </li>
-                  <li>
+                  <li v-if="board.canManage">
                     <kbd>Ctrl</kbd>
                     /
                     <kbd>Cmd</kbd>
@@ -136,6 +134,7 @@
           </header>
 
           <nav
+            v-if="board.canManage"
             aria-label="Retro phases"
             class="facilitator-phases">
             <button
@@ -163,7 +162,6 @@
           </nav>
 
           <div class="facilitator-current">
-            <span class="facilitator-kicker">{{ board.canManage ? 'Now' : 'Your task' }}</span>
             <div class="facilitator-current-title">
               <component :is="PHASE_ICONS[board.phase]" />
               <strong>{{ phaseGuide(board).title }}</strong>
@@ -176,66 +174,80 @@
               board.phase !== 'Actions' &&
               ((board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0) ||
                 board.phase === 'Vote' ||
-                canResetVotes(board) ||
                 (canRunTimer(board) && (board.canManage || countdown !== undefined)))
             "
             class="phase-controls">
-            <button
+            <div
               v-if="board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0"
-              :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
-              class="notes-visibility"
-              :class="{ 'notes-visibility--private': board.hiddenMine > 0 }"
-              type="button"
-              @click="setMineRevealed(board.hiddenMine > 0)">
-              <EyeOff v-if="board.hiddenMine > 0" />
-              <Eye v-else />
-              {{ board.hiddenMine > 0 ? 'Notes private' : 'Notes visible' }}
-            </button>
+              class="phase-control">
+              <span class="phase-control-label">
+                <StickyNote aria-hidden="true" />
+                Notes:
+              </span>
+              <button
+                :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
+                class="secondary small"
+                :class="{ danger: board.hiddenMine > 0 }"
+                type="button"
+                @click="setMineRevealed(board.hiddenMine > 0)">
+                {{ board.hiddenMine > 0 ? 'Private' : 'Visible' }}
+              </button>
+            </div>
 
             <div
               v-if="board.phase === 'Vote'"
-              class="vote-counter">
-              <ThumbsUp />
-              <span>{{ board.myVotes }} of</span>
-              <input
-                v-if="board.canManage"
-                aria-label="Votes per person"
-                class="vote-counter-limit"
-                min="1"
-                type="number"
-                :value="board.votesPerUser"
-                @change="setVotesPerUser($event)" />
-              <strong v-else>{{ board.votesPerUser }}</strong>
-              <span>used</span>
-            </div>
+              class="phase-control vote-controls">
+              <span class="phase-control-label">
+                <ThumbsUp aria-hidden="true" />
+                Votes:
+              </span>
+              <div
+                class="vote-counter">
+                <span>{{ board.myVotes }} of</span>
+                <input
+                  v-if="board.canManage"
+                  aria-label="Votes per person"
+                  class="secondary small vote-counter-limit"
+                  min="1"
+                  max="99"
+                  type="number"
+                  :value="board.votesPerUser"
+                  @change="setVotesPerUser($event)" />
+                <strong v-else>{{ board.votesPerUser }}</strong>
+              </div>
 
-            <button
-              v-if="canResetVotes(board)"
-              class="reset-votes"
-              title="Clear every vote so the team can vote again"
-              type="button"
-              @click="resetVotes()">
-              <RotateCcw />
-              Reset votes
-            </button>
+              <button
+                v-if="canResetVotes(board)"
+                aria-label="Reset votes"
+                class="secondary small reset-votes"
+                title="Clear every vote so the team can vote again"
+                type="button"
+                @click="resetVotes()">
+                <RotateCcw />
+              </button>
+            </div>
 
             <div
               v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
-              class="phase-timer"
+              class="phase-control phase-timer"
               :class="{ 'phase-timer--over': countdown === '00:00' }">
+              <span class="phase-control-label">
+                <Timer aria-hidden="true" />
+                Timer:
+              </span>
               <template v-if="countdown === undefined">
-                <Timer />
                 <input
                   v-model.number="state.timerMinutes"
                   aria-label="Timer duration in minutes"
-                  class="phase-timer-minutes"
+                  class="secondary small phase-timer-minutes"
                   :disabled="!board.canManage"
                   min="1"
-                  type="number" />
+                  max="60"
+                  type="number"
+                  @change="state.timerMinutes = Math.min(60, Math.max(1, state.timerMinutes))" />
                 <span>min</span>
-                <span class="phase-timer-separator">·</span>
                 <button
-                  class="phase-timer-start"
+                  class="secondary small phase-timer-start"
                   :disabled="!board.canManage"
                   type="button"
                   @click="startTimer()">
@@ -249,14 +261,9 @@
                   :class="{ over: countdown === '00:00' }">
                   {{ countdown }}
                 </span>
-                <span
-                  v-if="board.canManage"
-                  class="phase-timer-separator">
-                  ·
-                </span>
                 <button
                   v-if="board.canManage"
-                  class="phase-timer-stop"
+                  class="secondary small danger phase-timer-stop"
                   type="button"
                   @click="stopTimer()">
                   Stop
@@ -265,7 +272,9 @@
             </div>
           </div>
 
-          <div class="facilitator-phase-actions">
+          <div
+            v-if="board.canManage"
+            class="facilitator-phase-actions">
             <button
               v-if="previousPhase(board.phase)"
               class="secondary small"
@@ -283,7 +292,7 @@
           </div>
 
           <button
-            v-if="board.phase === 'Actions'"
+            v-if="board.canManage && board.phase === 'Actions'"
             class="secondary danger small facilitator-finish"
             type="button"
             @click="finish">
@@ -1383,7 +1392,7 @@ const handOver = async (member: RetroMember) => {
 }
 
 const setVotesPerUser = (event: Event) =>
-  saveSettings(Math.max(1, Number((event.target as HTMLInputElement).value)))
+  saveSettings(Math.min(99, Math.max(1, Number((event.target as HTMLInputElement).value))))
 
 // Timing a phase is the facilitator's call, so it makes no sense once the retro is read-only.
 const canRunTimer = (board: RetroBoardViewModel) => !board.finished && board.phase !== 'Actions'
@@ -1397,7 +1406,7 @@ const setTimer = async (minutes: null | number) => {
   await refresh()
 }
 
-const startTimer = () => setTimer(Math.max(1, state.timerMinutes))
+const startTimer = () => setTimer(Math.min(60, Math.max(1, state.timerMinutes)))
 
 const stopTimer = () => setTimer(null)
 
@@ -1939,9 +1948,9 @@ const vote = async (card: RetroCardViewModel) => {
   await refresh()
 }
 
-// A vote that went wrong is the owner's to undo - the room votes again from a clean board.
+// Resetting votes is useful only while the room is still voting.
 const canResetVotes = (board: RetroBoardViewModel) =>
-  !board.finished && board.canManage && (board.phase === 'Vote' || board.phase === 'Discuss')
+  !board.finished && board.canManage && board.phase === 'Vote'
 
 const resetVotes = async () => {
   const board = data.value
@@ -2062,14 +2071,6 @@ const finish = async () => {
   inset: 0;
   position: absolute;
   width: 100%;
-}
-
-.facilitator-kicker {
-  color: var(--color-muted);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .facilitator-panel {
@@ -2516,134 +2517,85 @@ const finish = async () => {
 
 /* Phase controls: contextual actions inside the current panel. */
 .phase-controls {
-  align-items: stretch;
+  align-items: start;
   display: grid;
   gap: var(--space-1);
-  justify-items: stretch;
+  justify-items: start;
   min-height: 0;
   pointer-events: auto;
   position: static;
   width: 100%;
 }
 
-/* Quiet until hovered, accent only to flag an active state. */
-.notes-visibility,
-.reset-votes,
-.phase-timer-start,
-.phase-timer-stop {
+/* Technical status rows: label, value, then an optional action. */
+.phase-control {
   align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
-  box-shadow: none;
-  color: var(--color-muted);
-  cursor: pointer;
   display: flex;
-  flex: none;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
   gap: var(--space-2);
-  height: 34px;
-  justify-content: center;
-  padding: 0 var(--space-2);
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
-  white-space: nowrap;
+  min-height: var(--control-height-small);
+  width: 100%;
 }
 
-.notes-visibility:hover:not(:disabled),
-.reset-votes:hover:not(:disabled),
-.phase-timer-start:hover:not(:disabled),
-.phase-timer-stop:hover:not(:disabled) {
-  background: var(--color-hover);
-  color: var(--color-text);
+.phase-control-label {
+  align-items: center;
+  color: var(--color-muted);
+  display: inline-flex;
+  flex: 0 0 60px;
+  font-size: var(--font-size-small);
+  gap: var(--space-1);
 }
 
-.notes-visibility:disabled,
-.reset-votes:disabled,
-.phase-timer-start:disabled,
-.phase-timer-stop:disabled {
-  cursor: default;
-  opacity: 0.4;
+.phase-control-label > svg {
+  height: 14px;
+  width: 14px;
 }
 
-.notes-visibility:focus-visible,
-.reset-votes:focus-visible,
-.phase-timer-start:focus-visible,
-.phase-timer-stop:focus-visible {
-  box-shadow: var(--shadow-focus);
-  outline: none;
+.vote-controls {
+  justify-content: flex-start;
 }
 
-/* Notes still private to their author: filled like the active phase step. */
-.notes-visibility--private {
-  background: var(--color-accent);
-  color: #fff;
+.vote-controls .vote-counter {
+  flex: none;
+  justify-content: flex-start;
 }
 
-.notes-visibility--private:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-accent) 88%, #000);
-  color: #fff;
-}
-
-/* Readouts, not buttons: the vote budget and the timer. */
 .vote-counter,
 .phase-timer {
   align-items: center;
-  border-radius: calc(var(--radius-control) - 2px);
   color: var(--color-text);
   display: flex;
   flex: none;
   font-size: var(--font-size-small);
-  gap: var(--space-1);
-  height: 34px;
-  justify-content: center;
-  padding: 0 var(--space-2);
+  justify-content: flex-start;
   white-space: nowrap;
+}
+
+.vote-counter {
+  gap: var(--space-1);
 }
 
 .phase-timer--over {
   background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border-radius: calc(var(--radius-control) - 2px);
   color: var(--color-danger);
+  padding: 0 var(--space-2);
 }
 
-.phase-timer-stop {
-  color: var(--color-danger);
-}
-
-.phase-timer-separator {
-  color: var(--color-muted);
-}
-
-/* Editable numbers: votes per person, timer minutes. */
+/* Keep editable numbers compact while using the same control style as buttons. */
 .vote-counter-limit,
 .phase-timer-minutes {
   appearance: textfield;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--color-border);
-  border-radius: 0;
   field-sizing: content;
-  font-weight: var(--font-weight-semibold);
-  height: 24px;
-  max-width: 4ch;
-  min-width: 2ch;
-  padding: 0;
+  max-width: 34px;
+  min-width: 24px;
   text-align: center;
   width: auto;
 }
 
-.vote-counter-limit:focus,
-.phase-timer-minutes:focus {
-  border-bottom-color: var(--color-accent);
-  box-shadow: none;
-}
-
 .vote-counter-limit:disabled,
 .phase-timer-minutes:disabled {
-  border-bottom-color: transparent;
-  color: inherit;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .vote-counter-limit::-webkit-inner-spin-button,
