@@ -323,7 +323,7 @@
           <template #controls>
             <button
               :aria-label="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
-              class="icon-btn"
+              class="icon-btn retro-fullscreen-control"
               :title="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
               type="button"
               @click="toggleFullscreen">
@@ -3291,6 +3291,10 @@ textarea.card-text:focus {
     padding: var(--space-2);
     right: auto;
     top: auto;
+  }
+
+  .retro-fullscreen-control {
+    display: none;
   }
 
   .presence {
