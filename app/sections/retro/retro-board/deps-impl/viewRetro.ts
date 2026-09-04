@@ -75,14 +75,12 @@ export const createViewRetro =
             name: retro.owner.displayName,
             userId: retro.owner.userId,
           },
-          participants: retro.participants.map(
-            (participant): RetroMember => ({
-              color: participant.color,
-              initials: participant.initials,
-              name: participant.displayName,
-              userId: participant.userId,
-            }),
-          ),
+          participants: retro.participants.map((participant): RetroMember => ({
+            color: participant.color,
+            initials: participant.initials,
+            name: participant.displayName,
+            userId: participant.userId,
+          })),
           phase: retro.phase,
           phaseEndsAt: retro.phaseEndsAt,
           revealedMine: mine.filter((card) => card.revealed).length,
