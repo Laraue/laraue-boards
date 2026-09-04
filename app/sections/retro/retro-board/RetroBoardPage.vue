@@ -15,11 +15,22 @@
             <h1 v-if="!canRename(board)">{{ board.name }}</h1>
             <input
               v-else
+              ref="nameInput"
               aria-label="Retro name"
               class="retro-name-input"
               maxlength="128"
               :value="board.name"
               @change="rename($event)" />
+            <button
+              v-if="canRename(board)"
+              aria-label="Edit retro name"
+              class="icon-btn small retro-name-edit"
+              title="Edit retro name"
+              type="button"
+              @click.stop="focusNameInput"
+              @pointerdown.stop>
+              <Pencil />
+            </button>
             <span
               v-if="board.finished"
               class="retro-finished">
@@ -69,8 +80,10 @@
             </button>
           </nav>
 
-          <div class="retro-actions">
-            <details class="board-help">
+          <div class="retro-toolbar">
+            <details
+              v-if="!board.finished"
+              class="board-help">
               <summary
                 aria-label="Guide"
                 class="board-help-trigger">
@@ -186,13 +199,12 @@
               </div>
             </div>
           </div>
+          <p
+            v-if="!board.finished"
+            class="phase-guide-center">
+            {{ phaseGuide(board).action }}
+          </p>
         </header>
-
-        <p
-          v-if="!board.finished"
-          class="phase-guide-center">
-          {{ phaseGuide(board).action }}
-        </p>
 
         <div
           v-if="!board.finished && board.phase !== 'Actions'"
@@ -240,13 +252,13 @@
             v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
             class="phase-chip"
             :class="{ 'phase-chip--warn': countdown === '00:00' }">
-            <Timer />
             <template v-if="countdown === undefined">
               <button
                 class="phase-chip-action"
                 :disabled="!board.canManage"
                 type="button"
                 @click="startTimer()">
+                <Timer />
                 Start
               </button>
               <span class="phase-chip-separator">·</span>
@@ -271,22 +283,14 @@
                 class="phase-chip-action"
                 type="button"
                 @click="stopTimer()">
+                <Timer />
                 Stop
               </button>
             </template>
           </div>
         </div>
 
-        <div
-          v-if="board.finished"
-          class="finished-screen">
-          <Cat />
-          <h2>Retro complete</h2>
-          <p>The notes and action items are saved. Nice work, team.</p>
-        </div>
-
         <RetroCanvas
-          v-else
           class="retro-canvas"
           :on-background-pointer-down="() => (state.selectedId = undefined)"
           :on-canvas-double-click="(point) => addCardAt(board, point)"
@@ -586,7 +590,6 @@
 <script setup lang="ts">
 import {
   Archive,
-  Cat,
   CircleCheck,
   CircleHelp,
   Crown,
@@ -722,6 +725,12 @@ const vFitText = {
 const editor = shallowRef<HTMLTextAreaElement>()
 const setEditorRef = (element: unknown) => {
   editor.value = element instanceof HTMLTextAreaElement ? element : undefined
+}
+
+const nameInput = shallowRef<HTMLInputElement>()
+const focusNameInput = () => {
+  nameInput.value?.focus()
+  nameInput.value?.select()
 }
 
 const state = reactive({
@@ -2046,8 +2055,9 @@ const finish = async () => {
 
 <style scoped>
 .retro {
-  --retro-title-size: clamp(24px, 2.2vw, 30px);
+  --retro-title-size: clamp(22px, 2vw, 28px);
 
+  container-type: inline-size;
   height: calc(100% + var(--layout-content-padding) + var(--layout-content-padding));
   margin: calc(-1 * var(--layout-content-padding));
   min-height: 0;
@@ -2066,7 +2076,7 @@ const finish = async () => {
   z-index: 20;
 }
 
-.retro-canvas {
+.retro > .retro-canvas {
   border: 0;
   border-radius: 0;
   height: 100%;
@@ -2076,9 +2086,15 @@ const finish = async () => {
 }
 
 .retro-header {
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
+  align-items: center;
+  column-gap: var(--space-2);
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, auto) minmax(90px, 1fr);
+  inset: auto;
+  padding: var(--space-3) var(--space-3) 0;
+  pointer-events: auto;
+  position: relative;
+  row-gap: var(--space-2);
   z-index: 7;
 }
 
@@ -2087,6 +2103,8 @@ const finish = async () => {
 }
 
 .board-help {
+  align-items: center;
+  display: flex;
   position: static;
 }
 
@@ -2212,57 +2230,20 @@ const finish = async () => {
   padding: 1px 5px;
 }
 
-.finished-screen {
-  align-content: center;
-  background:
-    radial-gradient(circle at 50% 42%, var(--color-accent-soft), transparent 28%), var(--color-soft);
-  display: grid;
-  height: 100%;
-  justify-items: center;
-  padding: var(--space-8);
-  position: relative;
-  text-align: center;
-  z-index: 2;
-}
-
-.finished-screen > svg {
-  color: var(--color-accent);
-  height: 112px;
-  width: 112px;
-}
-
-.finished-screen h2 {
-  font-size: clamp(28px, 4vw, 48px);
-  margin: var(--space-3) 0 var(--space-2);
-}
-
-.finished-screen p {
-  color: var(--color-muted);
-  margin: 0;
-}
-
-.presence,
-.phase-chip,
-.board-help-trigger {
-  backdrop-filter: blur(14px);
-  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 76%, transparent);
-  box-shadow: var(--shadow-card);
-  box-sizing: border-box;
-}
-
 .retro-title {
   align-items: center;
   display: flex;
-  gap: var(--space-2);
-  left: var(--space-4);
-  max-width: min(360px, 30vw);
-  min-height: var(--control-height);
+  gap: var(--space-1);
+  grid-column: 1;
+  grid-row: 1;
+  left: auto;
+  max-width: 100%;
+  min-height: 42px;
   min-width: 0;
+  overflow: hidden;
   padding: var(--space-1) 0;
   pointer-events: auto;
-  position: absolute;
-  top: var(--space-4);
+  position: static;
   width: fit-content;
 }
 
@@ -2272,33 +2253,46 @@ const finish = async () => {
   font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.04em;
   line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .retro-name-input {
   background: transparent;
   border: 0;
-  border-bottom: 2px solid transparent;
   border-radius: 0;
   box-shadow: none;
   color: inherit;
   field-sizing: content;
+  flex: 1 1 auto;
   font-family: inherit;
   height: auto;
   max-width: 100%;
-  min-width: 4ch;
   padding: 0;
   width: auto;
 }
 
 .retro-name-input:hover {
   background: transparent;
-  border-bottom-color: var(--color-border);
 }
 
 .retro-name-input:focus {
   background: transparent;
-  border-bottom-color: var(--color-accent);
   outline: none;
+}
+
+.retro-name-edit {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--color-muted);
+}
+
+.retro-name-edit:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
 }
 
 .retro-finished {
@@ -2317,10 +2311,8 @@ const finish = async () => {
   border-radius: calc(var(--radius-control) - 2px);
   box-shadow: none;
   display: flex;
-  height: 34px;
   max-width: 220px;
   outline: none;
-  padding: 0 var(--space-2);
 }
 
 .presence:focus-visible {
@@ -2339,16 +2331,13 @@ const finish = async () => {
   margin-right: 0;
 }
 
-/* The chip is the trigger, not the avatars inside it: hanging the menu off the chip lines it up
-   with the edge the eye reads, and the chip's own padding is already part of the way down, so the
-   pointer never leaves the trigger. The rest of the gap is the menu's transparent padding. */
 .presence-menu {
   opacity: 0;
   padding-top: var(--space-2);
   pointer-events: none;
   position: absolute;
   right: 0;
-  top: 100%;
+  top: calc(100% - var(--space-1));
   transition: opacity 0.12s ease;
   z-index: 5;
 }
@@ -2397,7 +2386,7 @@ const finish = async () => {
   margin-left: auto;
 }
 
-.retro-actions {
+.retro-toolbar {
   align-items: stretch;
   backdrop-filter: blur(16px);
   background: color-mix(in srgb, var(--color-surface) 94%, transparent);
@@ -2406,33 +2395,37 @@ const finish = async () => {
   box-shadow: 0 4px 14px #10182814;
   display: flex;
   flex-direction: row;
-  gap: 2px;
-  padding: 3px;
+  gap: var(--space-1);
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  min-height: 42px;
+  padding: var(--space-1);
   pointer-events: auto;
-  position: absolute;
-  right: var(--space-4);
-  top: var(--space-4);
+  position: relative;
+  right: auto;
+  top: auto;
+  width: max-content;
   z-index: 8;
 }
 
-.retro-actions:has(.board-help[open]) {
+.retro-toolbar:has(.board-help[open]) {
   z-index: 100;
 }
 
-.retro-actions .presence,
-.retro-actions .board-help-trigger {
+.retro-toolbar .presence,
+.retro-toolbar .board-help-trigger {
   justify-content: center;
 }
 
-.retro-actions .board-help-trigger {
+.retro-toolbar .board-help-trigger {
   background: transparent;
   border: 0;
   border-radius: calc(var(--radius-control) - 2px) 0 0 calc(var(--radius-control) - 2px);
-  border-right: 1px solid var(--color-divider);
   box-shadow: none;
-  height: 34px;
+  height: var(--icon-btn-size-small);
   padding: 0;
-  width: 34px;
+  width: var(--icon-btn-size-small);
 }
 
 .phase-stepper {
@@ -2443,13 +2436,28 @@ const finish = async () => {
   border-radius: var(--radius-card);
   box-shadow: 0 4px 14px #10182814;
   display: flex;
+  flex-wrap: nowrap;
   gap: var(--space-1);
-  left: 50%;
+  grid-column: 2;
+  grid-row: 1;
+  justify-content: center;
+  left: auto;
+  margin: 0;
+  max-width: 100%;
+  min-height: 42px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 3px;
   pointer-events: auto;
-  position: absolute;
-  top: var(--space-4);
-  translate: -50% 0;
+  position: static;
+  scrollbar-width: none;
+  top: auto;
+  white-space: nowrap;
+}
+
+.phase-stepper::-webkit-scrollbar {
+  display: none;
 }
 
 .phase-step {
@@ -2460,6 +2468,7 @@ const finish = async () => {
   box-shadow: none;
   color: var(--color-muted);
   display: flex;
+  flex: none;
   gap: var(--space-2);
   height: 34px;
   justify-content: center;
@@ -2497,7 +2506,7 @@ button.phase-step:focus-visible {
   color: #fff;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
   width: auto;
 }
 
@@ -2512,6 +2521,7 @@ button.phase-step:focus-visible {
   border: 0;
   border-left: 1px solid var(--color-divider);
   border-radius: 0 calc(var(--radius-control) - 2px) calc(var(--radius-control) - 2px) 0;
+  flex: none;
   height: 34px;
   margin-left: 2px;
 }
@@ -2520,15 +2530,42 @@ button.phase-step:focus-visible {
   color: color-mix(in srgb, var(--color-text) 68%, transparent);
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-medium);
-  left: 50%;
+  grid-column: 1 / -1;
+  grid-row: 2;
   margin: 0;
+  padding-inline: var(--space-3);
   pointer-events: none;
-  position: absolute;
+  position: static;
   text-align: center;
-  top: calc(var(--space-4) + 42px + var(--space-2));
-  translate: -50% 0;
-  width: 100%;
+  translate: none;
   z-index: 7;
+}
+
+@container (max-width: 603px) {
+  .retro-header {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .retro-title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .retro-toolbar {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .phase-stepper {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    min-width: 0;
+  }
+
+  .phase-guide-center {
+    grid-row: 3;
+  }
 }
 
 .phase-controls {
@@ -2542,11 +2579,12 @@ button.phase-step:focus-visible {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: var(--space-1);
   justify-content: flex-start;
   left: var(--space-4);
   max-width: calc(100% - var(--space-8));
-  padding: 3px;
+  min-height: 42px;
+  padding: var(--space-1);
   pointer-events: auto;
   position: absolute;
   white-space: nowrap;
@@ -2556,7 +2594,6 @@ button.phase-step:focus-visible {
 
 .phase-chip {
   align-items: center;
-  backdrop-filter: none;
   background: transparent;
   border: 0;
   border-radius: calc(var(--radius-control) - 2px);
@@ -2566,9 +2603,9 @@ button.phase-step:focus-visible {
   flex: none;
   font-size: var(--font-size-small);
   gap: var(--space-1);
-  height: 34px;
+  height: var(--control-height-small);
   justify-content: center;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
   white-space: nowrap;
   width: auto;
 }
@@ -2599,7 +2636,8 @@ button.phase-chip:hover:not(:disabled) {
   color: #fff;
   display: inline-flex;
   font-weight: var(--font-weight-semibold);
-  height: 26px;
+  gap: var(--space-1);
+  height: var(--control-height-small);
   padding: 0 var(--space-2);
 }
 
@@ -2898,7 +2936,6 @@ button.phase-chip:hover:not(:disabled) {
   background: transparent;
   border: 0;
   border-radius: 0;
-  box-sizing: border-box;
   color: inherit;
   cursor: inherit;
   font-family: 'Caveat', 'Inter', cursive;
@@ -3002,6 +3039,7 @@ textarea.card-text:focus {
 }
 
 .assignee-trigger--empty {
+  color: var(--color-muted);
   padding-left: var(--space-2);
 }
 
@@ -3029,10 +3067,6 @@ textarea.card-text:focus {
 
 .assignee-trigger::-webkit-details-marker {
   display: none;
-}
-
-.assignee-trigger--empty {
-  color: var(--color-muted);
 }
 
 .assignee-trigger > svg {
@@ -3122,7 +3156,6 @@ textarea.card-text:focus {
 .vote-badge,
 .rank-badge,
 .assignee-trigger {
-  box-sizing: border-box;
   height: var(--card-strip);
 }
 
@@ -3211,11 +3244,6 @@ textarea.card-text:focus {
   --rank-color: #a15c35;
 }
 
-.rank-badge .lucide {
-  height: 12px;
-  width: 12px;
-}
-
 :root[data-theme='dark'] .rank-badge.rank-1 {
   --rank-color: #f2c14e;
 }
@@ -3234,68 +3262,31 @@ textarea.card-text:focus {
   width: 20px;
 }
 
-@media (max-width: 768px) {
-  /* The floating glass-chip header only works when there is room to spread chips out; on a phone
-     it becomes a normal stacked toolbar instead, so nothing has to share a row it doesn't fit in. */
+@media (max-width: 767px) {
   .retro-header {
-    align-items: center;
-    column-gap: var(--space-2);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    inset: auto;
-    padding: var(--space-3) var(--space-3) 0;
-    pointer-events: auto;
-    position: relative;
-    row-gap: var(--space-2);
+    grid-template-columns: minmax(0, 1fr) max-content;
   }
 
   .retro-title {
-    flex: 1 1 auto;
     grid-column: 1;
     grid-row: 1;
-    left: auto;
-    max-width: none;
-    order: 1;
     padding-left: calc(var(--icon-btn-size) + var(--space-3));
-    position: static;
-    top: auto;
   }
 
-  .retro-actions {
+  .retro-toolbar {
     grid-column: 2;
     grid-row: 1;
-    justify-self: end;
-    order: 2;
-    padding-inline: var(--space-2);
-    position: relative;
-    right: auto;
-    top: auto;
   }
 
   .phase-stepper {
-    flex-wrap: wrap;
     grid-column: 1 / -1;
     grid-row: 2;
-    justify-content: center;
     justify-self: center;
-    left: auto;
-    margin: 0 auto;
-    max-width: 100%;
-    order: 3;
-    position: static;
-    row-gap: var(--space-1);
-    top: auto;
-    translate: none;
+    min-width: 0;
   }
 
   .phase-guide-center {
-    left: auto;
-    margin: var(--space-2) 0 0;
-    max-width: none;
-    padding-inline: var(--space-3);
-    position: static;
-    top: auto;
-    translate: none;
+    grid-row: 3;
   }
 
   .phase-controls {
@@ -3305,6 +3296,10 @@ textarea.card-text:focus {
     flex-wrap: nowrap;
     left: var(--space-3);
     max-width: calc(100% - var(--space-6));
+  }
+
+  .phase-controls .phase-chip {
+    padding-inline: 0;
   }
 
   .presence {

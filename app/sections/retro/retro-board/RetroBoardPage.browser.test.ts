@@ -646,7 +646,7 @@ it('clears the owner of an action item', async () => {
   expect(setCardAssignee).toHaveBeenCalledWith({ assigneeId: null, id: 'action' })
 })
 
-it('replaces action controls with the finished screen', async () => {
+it('keeps the board visible without editing controls after finish', async () => {
   const { channel } = createTestChannel()
 
   await mount({
@@ -658,9 +658,10 @@ it('replaces action controls with the finished screen', async () => {
     },
   })
 
-  expect(currentWrapper!.find('.finished-screen').text()).toContain('Retro complete')
-  expect(currentWrapper!.find('.retro-canvas').exists()).toBe(false)
-  expect(currentWrapper!.find('.assignee-trigger').exists()).toBe(false)
+  expect(currentWrapper!.find('.finished-screen').exists()).toBe(false)
+  expect(currentWrapper!.find('.retro-canvas').exists()).toBe(true)
+  expect(currentWrapper!.find('.board-help').exists()).toBe(false)
+  expect(currentWrapper!.find('.assignee-trigger').exists()).toBe(true)
 })
 
 it('shows no owner picker on a topic note', async () => {
@@ -994,7 +995,7 @@ it('offers no hand-over to a participant or on a finished retro', async () => {
   expect(buttonWithText('Make owner')).toBeUndefined()
 })
 
-it('shows the completion screen without the Actions phase after finish', async () => {
+it('shows vote results on a finished retro without the phase controls', async () => {
   const { channel } = createTestChannel()
 
   await mount({
@@ -1011,9 +1012,11 @@ it('shows the completion screen without the Actions phase after finish', async (
     },
   })
 
-  expect(currentWrapper!.find('.finished-screen').text()).toContain('Retro complete')
-  expect(currentWrapper!.find('.phase-stack').exists()).toBe(false)
-  expect(currentWrapper!.find('.retro-canvas').exists()).toBe(false)
+  expect(currentWrapper!.find('.finished-screen').exists()).toBe(false)
+  expect(currentWrapper!.find('.retro-canvas').exists()).toBe(true)
+  expect(currentWrapper!.find('.board-help').exists()).toBe(false)
+  expect(currentWrapper!.find('.phase-stepper').exists()).toBe(false)
+  expect(currentWrapper!.findAll('.vote-result')).toHaveLength(2)
 })
 
 it('asks once before finishing, because finishing cannot be undone', async () => {
