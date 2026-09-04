@@ -85,8 +85,18 @@
           :aria-label="board.canManage ? 'Facilitator controls' : 'Current phase controls'"
           class="facilitator-panel">
           <header class="facilitator-panel-header">
-            <div>
-              <h2>{{ board.canManage ? 'Retro plan' : 'Current phase' }}</h2>
+            <button
+              v-if="board.canManage"
+              aria-controls="facilitator-phases"
+              :aria-expanded="!state.phasesCollapsed"
+              class="facilitator-panel-toggle"
+              type="button"
+              @click="state.phasesCollapsed = !state.phasesCollapsed">
+              <h2>Retro plan</h2>
+              <ChevronDown aria-hidden="true" />
+            </button>
+            <div v-else>
+              <h2>Current phase</h2>
             </div>
             <div class="board-help">
               <button
@@ -136,6 +146,8 @@
           <nav
             v-if="board.canManage"
             aria-label="Retro phases"
+            id="facilitator-phases"
+            v-show="!state.phasesCollapsed"
             class="facilitator-phases">
             <button
               v-for="(phase, index) in PHASES"
@@ -601,6 +613,7 @@
 <script setup lang="ts">
 import {
   Archive,
+  ChevronDown,
   CircleCheck,
   CircleHelp,
   Crown,
@@ -761,6 +774,7 @@ const state = reactive({
   joined: new Map<string, RetroMember>(),
   now: Date.now(),
   pendingTexts: new Map<string, string>(),
+  phasesCollapsed: false,
   refreshPending: false,
   remoteCursors: new Map<string, { at: number; member: RetroMember; x: number; y: number }>(),
   remoteMoves: new Map<string, { at: number; x: number; y: number }>(),
@@ -2108,6 +2122,37 @@ const finish = async () => {
   margin: 0;
 }
 
+.facilitator-panel-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: flex;
+  flex: 1;
+  gap: var(--space-1);
+  justify-content: flex-start;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.facilitator-panel-toggle:focus-visible {
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.facilitator-panel-toggle > svg {
+  color: var(--color-muted);
+  height: 14px;
+  transition: transform var(--duration-fast) var(--ease-standard);
+  width: 14px;
+}
+
+.facilitator-panel-toggle[aria-expanded='false'] > svg {
+  transform: rotate(-90deg);
+}
+
 .facilitator-phases {
   display: grid;
   gap: 2px;
@@ -3186,73 +3231,6 @@ textarea.card-text:focus {
 @media (max-width: 767px) {
   .retro-title {
     padding-left: calc(var(--icon-btn-size) + var(--space-3));
-  }
-
-  .facilitator-panel {
-    gap: var(--space-2);
-    padding: var(--space-2);
-    right: var(--space-4);
-    top: var(--space-4);
-    width: min(var(--facilitator-width), calc(100% - var(--space-6)));
-  }
-
-  .facilitator-panel-header h2 {
-    font-size: var(--font-size-body);
-  }
-
-  .facilitator-phases {
-    display: flex;
-    gap: 2px;
-  }
-
-  .facilitator-phase {
-    display: flex;
-    flex: 1 1 0;
-    flex-direction: column;
-    gap: 3px;
-    justify-content: center;
-    min-height: 48px;
-    padding: var(--space-1) 2px;
-    text-align: center;
-  }
-
-  .facilitator-phase-index {
-    display: none;
-  }
-
-  .facilitator-phase-title > svg {
-    height: 12px;
-    width: 12px;
-  }
-
-  .facilitator-phase-copy {
-    display: block;
-  }
-
-  .facilitator-phase-copy strong {
-    display: block;
-    font-size: 10px;
-  }
-
-  .facilitator-phase-copy small {
-    display: none;
-  }
-
-  .facilitator-current {
-    margin-top: 0;
-    padding-top: var(--space-2);
-  }
-
-  .facilitator-current p {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-  }
-
-  .facilitator-finish {
-    align-self: flex-end;
-    width: auto;
   }
 
   .presence {
