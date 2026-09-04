@@ -3275,13 +3275,22 @@ textarea.card-text:focus {
 
 @media (max-width: 767px) {
   .retro {
+    --facilitator-width: 220px;
     --retro-title-size: 18px;
   }
 
   .retro-title {
     height: var(--icon-btn-size);
     left: calc(var(--icon-btn-size) + var(--space-4));
-    max-width: calc(100% - var(--facilitator-width) - var(--space-8) - var(--icon-btn-size));
+    max-width: calc(100% - var(--space-8) - var(--icon-btn-size));
+  }
+
+  .facilitator-panel {
+    bottom: var(--space-3);
+    left: var(--space-3);
+    padding: var(--space-2);
+    right: auto;
+    top: auto;
   }
 
   .presence {
