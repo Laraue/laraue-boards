@@ -207,7 +207,14 @@
         </header>
 
         <div
-          v-if="!board.finished && board.phase !== 'Actions'"
+          v-if="
+            !board.finished &&
+            board.phase !== 'Actions' &&
+            ((board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0) ||
+              board.phase === 'Vote' ||
+              canResetVotes(board) ||
+              (canRunTimer(board) && (board.canManage || countdown !== undefined)))
+          "
           class="phase-controls">
           <button
             v-if="board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0"
@@ -277,7 +284,11 @@
                 :class="{ over: countdown === '00:00' }">
                 {{ countdown }}
               </span>
-              <span class="phase-chip-separator">·</span>
+              <span
+                v-if="board.canManage"
+                class="phase-chip-separator">
+                ·
+              </span>
               <button
                 v-if="board.canManage"
                 class="phase-chip-action"
@@ -743,9 +754,6 @@ const state = reactive({
   dragPosition: undefined as undefined | { x: number; y: number },
   dragStartPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
-  // Notes the server has not told us about yet: one created here, or one deleted here. They keep
-  // the board honest while the request is still on the wire.
-  draftCards: [] as RetroCardViewModel[],
   fullscreen: false,
   groupSelection: [] as string[],
   hoveredId: undefined as string | undefined,
@@ -790,7 +798,6 @@ const clearBoardState = () => {
   state.dragDistance = 0
   endDrag()
   state.draft = ''
-  state.draftCards = []
   state.editingId = undefined
   state.fullscreen = false
   state.groupSelection = []
@@ -879,7 +886,6 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
     } else {
       board.cards.splice(index, 1, card)
     }
-    state.draftCards = state.draftCards.filter((draft) => draft.id !== card.id)
     state.remoteTexts.delete(card.id)
     return
   }
@@ -1135,12 +1141,9 @@ const draggedColor = (
 
 const HIDDEN_TEXT = '•••••• ••••• ••••••'
 
-// What the board actually holds right now: the server's answer, minus what we just deleted, plus
-// what we just created. A refresh drops each patch as soon as the answer carries it.
-const boardCards = (board: RetroBoardViewModel) => [
-  ...board.cards.filter((card) => !state.removedCardIds.has(card.id)),
-  ...state.draftCards.filter((draft) => !board.cards.some((card) => card.id === draft.id)),
-]
+// What the board actually holds right now: the server's answer minus what we just deleted.
+const boardCards = (board: RetroBoardViewModel) =>
+  board.cards.filter((card) => !state.removedCardIds.has(card.id))
 
 watch(data, (board) => {
   if (!board) {
@@ -1151,7 +1154,6 @@ watch(data, (board) => {
   }
   const known = new Set(board.cards.map((card) => card.id))
 
-  state.draftCards = state.draftCards.filter((draft) => !known.has(draft.id))
   for (const id of state.removedCardIds) {
     if (!known.has(id)) {
       state.removedCardIds.delete(id)
@@ -1617,35 +1619,18 @@ const saveDraft = async (card: RetroCardViewModel) => {
 }
 
 const createCardAt = async (sectionId: string, x: number, y: number) => {
-  const board = data.value
   const created = await executeCreate({ retroId: props.retroId, sectionId, text: '', x, y })
 
-  if (!board || !created) {
+  if (!created) {
     return
   }
-  // Waiting for the whole board to come back before showing one empty note is a second round trip
-  // the writer has to sit through - we know everything about the note we just asked for.
-  const draft: RetroCardViewModel = {
-    assignee: null,
-    authorColor: board.me.color,
-    authorInitials: board.me.initials,
-    authorName: board.me.name,
-    done: false,
-    groupId: null,
-    hidden: false,
-    id: created.id,
-    isMine: true,
-    revealed: false,
-    sectionId,
-    text: '',
-    votedByMe: false,
-    votes: 0,
-    x,
-    y,
-  }
 
-  state.draftCards.push(draft)
-  startEdit(draft)
+  await refresh()
+  const card = data.value?.cards.find((item) => item.id === created.id)
+
+  if (card) {
+    startEdit(card)
+  }
 }
 
 const addCardAt = async (board: RetroBoardViewModel, point: { x: number; y: number }) => {
@@ -2727,9 +2712,14 @@ button.phase-chip:hover:not(:disabled) {
   padding: var(--space-3) var(--space-4);
 }
 
+.zone-header small {
+  font-size: var(--font-size-body);
+}
+
 .zone-title {
   align-items: center;
   display: flex;
+  font-size: 16px;
   gap: var(--space-2);
 }
 

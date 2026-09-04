@@ -53,7 +53,9 @@
               </span>
               <span class="muted retro-meta">{{ formatDate(retro.createdAt) }}</span>
             </NuxtLink>
-            <div class="retro-row-actions">
+            <div
+              v-if="(listing.canCreate && retro.openActionCount > 0) || retro.canManage"
+              class="retro-row-actions">
               <button
                 v-if="listing.canCreate && retro.openActionCount > 0"
                 class="secondary small"

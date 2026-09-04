@@ -111,6 +111,10 @@ let testHost: HTMLDivElement | undefined
 
 const mount = async ({
   advancePhase = vi.fn<RetroBoardPageDeps['advancePhase']>(successfulAction),
+  createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => ({
+    data: { id: 'new-card' },
+    status: 'success',
+  })),
   createChannel,
   data = board,
   finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction),
@@ -136,6 +140,7 @@ const mount = async ({
   view = vi.fn<RetroBoardPageDeps['view']>(async () => ({ data, status: 'success' })),
 }: {
   advancePhase?: RetroBoardPageDeps['advancePhase']
+  createCard?: RetroBoardPageDeps['createCard']
   createChannel: RetroBoardPageDeps['createChannel']
   data?: RetroBoardViewModel
   finishRetro?: RetroBoardPageDeps['finishRetro']
@@ -160,10 +165,7 @@ const mount = async ({
   data = structuredClone(data)
   const deps: RetroBoardPageDeps = {
     advancePhase,
-    createCard: vi.fn<RetroBoardPageDeps['createCard']>(async () => ({
-      data: { id: 'new-card' },
-      status: 'success',
-    })),
+    createCard,
     createChannel,
     finishRetro,
     groupCards,
@@ -253,6 +255,63 @@ it('blocks management and freezes cards during voting', async () => {
   // may not rearrange either.
   await cardWithText('My note')?.find('.card-text').trigger('pointerdown')
   expect(cardWithText('My note')?.classes()).not.toContain('dragging')
+})
+
+it('hides phase controls when they have no actions', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...board,
+      canManage: false,
+      hiddenMine: 0,
+      phase: 'Discuss',
+      phaseEndsAt: null,
+      revealedMine: 0,
+    },
+  })
+
+  expect(currentWrapper!.find('.phase-controls').exists()).toBe(false)
+})
+
+it('hides the timer separator before an unavailable stop action', async () => {
+  const { channel } = createTestChannel()
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, canManage: false, phaseEndsAt: '2099-01-01T00:00:00Z' },
+  })
+
+  expect(currentWrapper!.findAll('.phase-chip-separator')).toHaveLength(0)
+})
+
+it('confirms a created card before starting its edit', async () => {
+  const { channel } = createTestChannel()
+  let serverHasCard = false
+  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => {
+    serverHasCard = true
+
+    return { data: { id: 'new-card' }, status: 'success' }
+  })
+  const view = vi.fn<RetroBoardPageDeps['view']>(async () => ({
+    data: serverHasCard
+      ? { ...board, cards: [...board.cards, { ...board.cards[0]!, id: 'new-card', text: '' }] }
+      : board,
+    status: 'success',
+  }))
+
+  await mount({ createCard, createChannel: () => channel, view })
+  await currentWrapper!.find('.retro-canvas').trigger('dblclick', {
+    clientX: 1900,
+    clientY: 900,
+  })
+
+  await vi.waitFor(() => expect(view).toHaveBeenCalledTimes(2))
+  expect(currentWrapper!.find('textarea.card-text').exists()).toBe(true)
+
+  await currentWrapper!.find('textarea.card-text').trigger('blur')
+  await vi.waitFor(() => expect(currentWrapper!.findAll('.card')).toHaveLength(board.cards.length))
 })
 
 it('shows only recorded participants after finish', async () => {
