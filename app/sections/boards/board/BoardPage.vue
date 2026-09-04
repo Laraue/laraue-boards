@@ -794,7 +794,7 @@ const resolveIssueDialogCloseTarget = (input: {
   padding-bottom: var(--space-4);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .board {
     gap: var(--space-2);
     grid-auto-columns: 100%;

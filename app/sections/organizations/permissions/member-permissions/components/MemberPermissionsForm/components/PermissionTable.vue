@@ -89,7 +89,7 @@ withDefaults(
   width: 18%;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .permission-table th,
   .permission-table td {
     padding: var(--space-2);

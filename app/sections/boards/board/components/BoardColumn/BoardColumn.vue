@@ -205,7 +205,7 @@ onBeforeUnmount(() => observer?.disconnect())
   color: var(--color-accent);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .column {
     scroll-snap-align: start;
   }

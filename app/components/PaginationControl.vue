@@ -62,7 +62,7 @@ const changePage = (event: Event) =>
   margin: 0;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .pagination {
     justify-content: center;
   }

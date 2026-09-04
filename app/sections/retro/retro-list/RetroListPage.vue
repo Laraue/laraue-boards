@@ -240,7 +240,7 @@ useHead({ title: 'Retro' })
   font-size: var(--font-size-caption);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .retro-row-item {
     align-items: stretch;
     flex-direction: column;

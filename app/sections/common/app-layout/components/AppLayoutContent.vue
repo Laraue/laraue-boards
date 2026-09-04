@@ -477,7 +477,7 @@ main :deep(.page-load-state) {
   flex-shrink: 0;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .shell {
     --layout-content-padding: var(--space-3);
 
