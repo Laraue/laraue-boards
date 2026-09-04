@@ -170,9 +170,11 @@
               type="button"
               @click="board.phase !== phase && changePhase(phase)">
               <span class="facilitator-phase-index">{{ index + 1 }}</span>
-              <component :is="PHASE_ICONS[phase]" />
               <span class="facilitator-phase-copy">
-                <strong>{{ phase }}</strong>
+                <span class="facilitator-phase-title">
+                  <component :is="PHASE_ICONS[phase]" />
+                  <strong>{{ phase }}</strong>
+                </span>
                 <small>{{ PHASE_GUIDES[phase].title }}</small>
               </span>
             </button>
@@ -206,7 +208,7 @@
 
           <button
             v-if="board.phase === 'Actions'"
-            class="secondary danger facilitator-finish"
+            class="secondary danger small facilitator-finish"
             type="button"
             @click="finish">
             <Archive />
@@ -2050,7 +2052,7 @@ const finish = async () => {
 
 <style scoped>
 .retro {
-  --facilitator-width: 260px;
+  --facilitator-width: 240px;
   --retro-title-size: clamp(22px, 2vw, 28px);
 
   container-type: inline-size;
@@ -2139,12 +2141,11 @@ const finish = async () => {
   box-shadow: 0 4px 14px #10182814;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
   left: var(--space-3);
   padding: var(--space-3);
   position: absolute;
   top: 72px;
-  bottom: var(--space-3);
   width: var(--facilitator-width);
   z-index: 6;
 }
@@ -2181,7 +2182,7 @@ const finish = async () => {
   cursor: pointer;
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: 24px 18px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0, 1fr);
   min-height: 48px;
   padding: var(--space-1) var(--space-2);
   text-align: left;
@@ -2232,9 +2233,15 @@ const finish = async () => {
   color: #fff;
 }
 
-.facilitator-phase > svg {
-  height: 16px;
-  width: 16px;
+.facilitator-phase-title {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.facilitator-phase-title > svg {
+  height: 12px;
+  width: 12px;
 }
 
 .facilitator-phase-copy {
@@ -3405,7 +3412,6 @@ textarea.card-text:focus {
   }
 
   .facilitator-panel {
-    bottom: auto;
     gap: var(--space-2);
     left: var(--space-3);
     padding: var(--space-2);
@@ -3438,9 +3444,9 @@ textarea.card-text:focus {
     display: none;
   }
 
-  .facilitator-phase > svg {
-    height: 16px;
-    width: 16px;
+  .facilitator-phase-title > svg {
+    height: 12px;
+    width: 12px;
   }
 
   .facilitator-phase-copy {
