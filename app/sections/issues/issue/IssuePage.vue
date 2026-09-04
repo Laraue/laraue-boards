@@ -659,7 +659,7 @@ watch(dirty, setDirty, { immediate: true })
   color: var(--color-accent);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .page-heading-text {
     align-items: center;
     flex-direction: row;

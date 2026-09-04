@@ -263,7 +263,7 @@ useHead({
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .board-grid {
     grid-template-columns: 1fr;
   }

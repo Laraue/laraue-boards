@@ -218,7 +218,7 @@ const loginWidget = async (input: TelegramUser): Promise<void> => {
   min-height: 48px;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .auth {
     grid-template-columns: 1fr;
   }

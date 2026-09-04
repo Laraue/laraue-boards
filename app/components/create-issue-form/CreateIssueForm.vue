@@ -182,7 +182,7 @@ const submit = () => {
   padding: 0 var(--space-3);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .issue-form {
     column-gap: 0;
     grid-template-areas:

@@ -440,4 +440,11 @@ defineExpose({ reset })
   min-width: 60px;
   padding: 0 var(--space-2);
 }
+
+@media (max-width: 767px) {
+  .zoom-controls {
+    bottom: var(--space-3);
+    right: var(--space-3);
+  }
+}
 </style>

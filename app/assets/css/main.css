@@ -500,7 +500,7 @@ button:disabled {
 
 /* Responsive layout */
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   dialog {
     padding: var(--space-4);
   }

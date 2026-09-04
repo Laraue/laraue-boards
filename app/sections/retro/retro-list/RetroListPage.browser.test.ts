@@ -142,6 +142,7 @@ it('hides creation and deletion actions without their permissions', async () => 
 
   await expect.element(page.getByRole('button', { name: 'Start retro' })).not.toBeInTheDocument()
   expect(currentWrapper!.findAll('.retro-row-actions button')).toHaveLength(0)
+  expect(currentWrapper!.findAll('.retro-row-actions')).toHaveLength(0)
 })
 
 it('carries the open actions of the retro the button belongs to', async () => {

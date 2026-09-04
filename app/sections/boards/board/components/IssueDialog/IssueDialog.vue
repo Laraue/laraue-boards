@@ -160,7 +160,7 @@ watch(
     transition: none;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .issue-dialog {
     border: 0;
     box-shadow: none;

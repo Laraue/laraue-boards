@@ -224,7 +224,7 @@ useHead({ title: 'Organization history' })
   justify-self: start;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .history-filters {
     grid-template-columns: 1fr;
   }

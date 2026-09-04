@@ -279,7 +279,7 @@ import { ImagePlus } from '@lucide/vue'
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .skeleton-content {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;

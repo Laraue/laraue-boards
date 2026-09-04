@@ -10,116 +10,102 @@
       <section
         class="retro"
         :class="{ 'retro--focused': state.fullscreen }">
-        <header class="retro-header">
-          <div class="retro-title">
-            <h1 v-if="!canRename(board)">{{ board.name }}</h1>
-            <input
-              v-else
-              ref="nameInput"
-              aria-label="Retro name"
-              class="retro-name-input"
-              maxlength="128"
-              :value="board.name"
-              @change="rename($event)" />
-            <button
-              v-if="canRename(board)"
-              aria-label="Edit retro name"
-              class="icon-btn small retro-name-edit"
-              title="Edit retro name"
-              type="button"
-              @click.stop="focusNameInput"
-              @pointerdown.stop>
-              <Pencil />
-            </button>
-            <span
-              v-if="board.finished"
-              class="retro-finished">
-              Finished
-            </span>
-          </div>
-          <nav
-            v-if="!board.finished"
-            aria-label="Retro phase"
-            class="phase-stepper">
-            <template
-              v-for="(phase, index) in PHASES"
-              :key="phase">
-              <button
-                v-if="board.canManage"
-                :aria-label="phase"
-                class="phase-step"
-                :class="{ active: board.phase === phase }"
-                :disabled="board.phase !== phase && !canChangePhase(board.phase, phase)"
-                :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`"
-                type="button"
-                @click="board.phase !== phase && changePhase(phase)">
-                <component :is="PHASE_ICONS[phase]" />
-                <span v-if="board.phase === phase">{{ phase }}</span>
-              </button>
+        <div class="retro-title">
+          <h1 v-if="!canRename(board)">{{ board.name }}</h1>
+          <input
+            v-else
+            ref="nameInput"
+            aria-label="Retro name"
+            class="retro-name-input"
+            maxlength="128"
+            :value="board.name"
+            @change="rename($event)" />
+          <button
+            v-if="canRename(board)"
+            aria-label="Edit retro name"
+            class="icon-btn small retro-name-edit"
+            title="Edit retro name"
+            type="button"
+            @click.stop="focusNameInput"
+            @pointerdown.stop>
+            <Pencil />
+          </button>
+          <span
+            v-if="board.finished"
+            class="retro-finished">
+            Finished
+          </span>
+        </div>
+        <div
+          aria-label="People on this retro"
+          class="presence"
+          :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
+          tabindex="0">
+          <span
+            v-for="member in everyone(board)"
+            :key="member.userId"
+            class="entity-avatar"
+            :style="{ background: member.color }">
+            {{ member.initials }}
+          </span>
+          <div class="presence-menu">
+            <div class="presence-list">
+              <p class="presence-title">
+                {{ board.finished ? 'Participants' : 'On this retro' }}
+              </p>
               <span
-                v-else
-                class="phase-step"
-                :class="{ active: board.phase === phase }"
-                :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`">
-                <component :is="PHASE_ICONS[phase]" />
-                <span v-if="board.phase === phase">{{ phase }}</span>
+                v-for="member in everyone(board)"
+                :key="member.userId"
+                class="presence-row">
+                <span
+                  class="entity-avatar small"
+                  :style="{ background: member.color }">
+                  {{ member.initials }}
+                </span>
+                {{ member.name }}
+                <Crown
+                  v-if="member.userId === board.owner.userId"
+                  aria-label="Owner"
+                  class="presence-role"
+                  role="img" />
+                <button
+                  v-else-if="canHandOver(board)"
+                  class="secondary small"
+                  type="button"
+                  @click="handOver(member)">
+                  Make owner
+                </button>
               </span>
-              <span
-                v-if="index < PHASES.length - 1"
-                aria-hidden="true"
-                class="phase-step-connector"
-                :class="{ done: PHASES.indexOf(board.phase) > index }" />
-            </template>
-            <button
-              v-if="board.canManage && board.phase === 'Actions'"
-              class="secondary danger small phase-finish"
-              type="button"
-              @click="finish">
-              <Archive />
-              Finish
-            </button>
-          </nav>
+            </div>
+          </div>
+        </div>
 
-          <div class="retro-toolbar">
-            <details
-              v-if="!board.finished"
-              class="board-help">
-              <summary
+        <aside
+          v-if="!board.finished"
+          :aria-label="board.canManage ? 'Facilitator controls' : 'Current phase controls'"
+          class="facilitator-panel">
+          <header class="facilitator-panel-header">
+            <button
+              v-if="board.canManage"
+              aria-controls="facilitator-phases"
+              :aria-expanded="!state.phasesCollapsed"
+              class="facilitator-panel-toggle"
+              type="button"
+              @click="state.phasesCollapsed = !state.phasesCollapsed">
+              <h2>Retro plan</h2>
+              <ChevronDown aria-hidden="true" />
+            </button>
+            <div v-else>
+              <h2>Current phase</h2>
+            </div>
+            <div class="board-help">
+              <button
                 aria-label="Guide"
-                class="board-help-trigger">
+                class="board-help-trigger"
+                type="button">
                 <CircleHelp />
-              </summary>
+              </button>
               <div class="board-help-panel">
-                <template v-if="!board.finished">
-                  <p class="board-help-heading">Current phase</p>
-                  <div class="board-help-phase board-help-phase--current">
-                    <component :is="PHASE_ICONS[board.phase]" />
-                    <span>
-                      <strong>{{ phaseGuide(board).title }}</strong>
-                      <small>{{ phaseGuide(board).action }}</small>
-                    </span>
-                  </div>
-                  <span class="phase-facilitator">
-                    <Crown />
-                    <span
-                      class="entity-avatar small"
-                      :style="{ background: board.owner.color }">
-                      {{ board.owner.initials }}
-                    </span>
-                    {{ board.owner.name }} is facilitating
-                  </span>
-                  <p class="board-help-heading">All phases</p>
-                  <div
-                    v-for="phase in PHASES"
-                    :key="phase"
-                    class="board-help-phase">
-                    <component :is="PHASE_ICONS[phase]" />
-                    <span>
-                      <strong>{{ PHASE_GUIDES[phase].title }}</strong>
-                      <small>{{ PHASE_GUIDES[phase].action }}</small>
-                    </span>
-                  </div>
-                </template>
                 <p class="board-help-heading">Keyboard shortcuts</p>
                 <ul class="board-help-list">
                   <li>
@@ -128,7 +114,7 @@
                     <kbd>Backspace</kbd>
                     deletes the selected note
                   </li>
-                  <li>
+                  <li v-if="board.canManage">
                     <kbd>Ctrl</kbd>
                     /
                     <kbd>Cmd</kbd>
@@ -154,141 +140,178 @@
                   <li>Pinch, or scroll with a modifier, to zoom - drag the background to pan</li>
                 </ul>
               </div>
-            </details>
-            <div
-              aria-label="People on this retro"
-              class="presence"
-              :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
-              tabindex="0">
-              <span
-                v-for="member in everyone(board)"
-                :key="member.userId"
-                class="entity-avatar"
-                :style="{ background: member.color }">
-                {{ member.initials }}
+            </div>
+          </header>
+
+          <nav
+            v-if="board.canManage"
+            v-show="!state.phasesCollapsed"
+            id="facilitator-phases"
+            aria-label="Retro phases"
+            class="facilitator-phases">
+            <button
+              v-for="(phase, index) in PHASES"
+              :key="phase"
+              :aria-current="board.phase === phase ? 'step' : undefined"
+              :aria-label="phase"
+              class="facilitator-phase"
+              :class="{
+                active: board.phase === phase,
+                done: PHASES.indexOf(board.phase) > index,
+              }"
+              :disabled="phase !== board.phase && !canChangePhase(board.phase, phase)"
+              :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`"
+              type="button"
+              @click="board.phase !== phase && changePhase(phase)">
+              <span class="facilitator-phase-index">{{ index + 1 }}</span>
+              <span class="facilitator-phase-copy">
+                <span class="facilitator-phase-title">
+                  <component :is="PHASE_ICONS[phase]" />
+                  <strong>{{ phase }}</strong>
+                </span>
+                <small>{{ PHASE_GUIDES[phase].title }}</small>
               </span>
-              <div class="presence-menu">
-                <div class="presence-list">
-                  <p class="presence-title">
-                    {{ board.finished ? 'Participants' : 'On this retro' }}
-                  </p>
-                  <span
-                    v-for="member in everyone(board)"
-                    :key="member.userId"
-                    class="presence-row">
-                    <span
-                      class="entity-avatar small"
-                      :style="{ background: member.color }">
-                      {{ member.initials }}
-                    </span>
-                    {{ member.name }}
-                    <Crown
-                      v-if="member.userId === board.owner.userId"
-                      aria-label="Owner"
-                      class="presence-role"
-                      role="img" />
-                    <button
-                      v-else-if="canHandOver(board)"
-                      class="secondary small"
-                      type="button"
-                      @click="handOver(member)">
-                      Make owner
-                    </button>
-                  </span>
-                </div>
+            </button>
+          </nav>
+
+          <div class="facilitator-current">
+            <div class="facilitator-current-title">
+              <component :is="PHASE_ICONS[board.phase]" />
+              <strong>{{ phaseGuide(board).title }}</strong>
+            </div>
+            <p>{{ phaseGuide(board).action }}</p>
+          </div>
+
+          <div
+            v-if="
+              board.phase !== 'Actions' &&
+              ((board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0) ||
+                board.phase === 'Vote' ||
+                (canRunTimer(board) && (board.canManage || countdown !== undefined)))
+            "
+            class="phase-controls">
+            <div
+              v-if="board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0"
+              class="phase-control">
+              <span class="phase-control-label">
+                <StickyNote aria-hidden="true" />
+                Notes:
+              </span>
+              <button
+                :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
+                class="secondary small"
+                :class="{ danger: board.hiddenMine > 0 }"
+                type="button"
+                @click="setMineRevealed(board.hiddenMine > 0)">
+                {{ board.hiddenMine > 0 ? 'Private' : 'Visible' }}
+              </button>
+            </div>
+
+            <div
+              v-if="board.phase === 'Vote'"
+              class="phase-control vote-controls">
+              <span class="phase-control-label">
+                <ThumbsUp aria-hidden="true" />
+                Votes:
+              </span>
+              <div class="vote-counter">
+                <span>{{ board.myVotes }} of</span>
+                <input
+                  v-if="board.canManage"
+                  aria-label="Votes per person"
+                  class="secondary small vote-counter-limit"
+                  max="99"
+                  min="1"
+                  type="number"
+                  :value="board.votesPerUser"
+                  @change="setVotesPerUser($event)" />
+                <strong v-else>{{ board.votesPerUser }}</strong>
               </div>
+
+              <button
+                v-if="canResetVotes(board)"
+                aria-label="Reset votes"
+                class="secondary small reset-votes"
+                title="Clear every vote so the team can vote again"
+                type="button"
+                @click="resetVotes()">
+                <RotateCcw />
+              </button>
+            </div>
+
+            <div
+              v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
+              class="phase-control phase-timer"
+              :class="{ 'phase-timer--over': countdown === '00:00' }">
+              <span class="phase-control-label">
+                <Timer aria-hidden="true" />
+                Timer:
+              </span>
+              <template v-if="countdown === undefined">
+                <input
+                  v-model.number="state.timerMinutes"
+                  aria-label="Timer duration in minutes"
+                  class="secondary small phase-timer-minutes"
+                  :disabled="!board.canManage"
+                  max="60"
+                  min="1"
+                  type="number"
+                  @change="state.timerMinutes = Math.min(60, Math.max(1, state.timerMinutes))" />
+                <span>min</span>
+                <button
+                  class="secondary small phase-timer-start"
+                  :disabled="!board.canManage"
+                  type="button"
+                  @click="startTimer()">
+                  Start
+                </button>
+              </template>
+              <template v-else>
+                <Timer />
+                <span
+                  class="countdown"
+                  :class="{ over: countdown === '00:00' }">
+                  {{ countdown }}
+                </span>
+                <button
+                  v-if="board.canManage"
+                  class="secondary small danger phase-timer-stop"
+                  type="button"
+                  @click="stopTimer()">
+                  Stop
+                </button>
+              </template>
             </div>
           </div>
-          <p
-            v-if="!board.finished"
-            class="phase-guide-center">
-            {{ phaseGuide(board).action }}
-          </p>
-        </header>
-
-        <div
-          v-if="!board.finished && board.phase !== 'Actions'"
-          class="phase-controls">
-          <button
-            v-if="board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0"
-            :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
-            class="phase-chip"
-            :class="{ 'phase-chip--warn': board.hiddenMine > 0 }"
-            type="button"
-            @click="setMineRevealed(board.hiddenMine > 0)">
-            <EyeOff v-if="board.hiddenMine > 0" />
-            <Eye v-else />
-            {{ board.hiddenMine > 0 ? 'Notes private' : 'Notes visible' }}
-          </button>
 
           <div
-            v-if="board.phase === 'Vote'"
-            class="phase-chip">
-            <ThumbsUp />
-            <span>{{ board.myVotes }} of</span>
-            <input
-              v-if="board.canManage"
-              aria-label="Votes per person"
-              class="phase-chip-number"
-              min="1"
-              type="number"
-              :value="board.votesPerUser"
-              @change="setVotesPerUser($event)" />
-            <strong v-else>{{ board.votesPerUser }}</strong>
-            <span>used</span>
+            v-if="board.canManage"
+            class="facilitator-phase-actions">
+            <button
+              v-if="previousPhase(board.phase)"
+              class="secondary small"
+              type="button"
+              @click="changePreviousPhase(board.phase)">
+              Back
+            </button>
+            <button
+              v-if="nextPhase(board.phase)"
+              class="primary small"
+              type="button"
+              @click="changeNextPhase(board.phase)">
+              Next phase
+            </button>
           </div>
 
           <button
-            v-if="canResetVotes(board)"
-            class="phase-chip"
-            title="Clear every vote so the team can vote again"
+            v-if="board.canManage && board.phase === 'Actions'"
+            class="secondary danger small facilitator-finish"
             type="button"
-            @click="resetVotes()">
-            <RotateCcw />
-            Reset votes
+            @click="finish">
+            <Archive />
+            Finish retro
           </button>
-
-          <div
-            v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
-            class="phase-chip"
-            :class="{ 'phase-chip--warn': countdown === '00:00' }">
-            <template v-if="countdown === undefined">
-              <button
-                class="phase-chip-action"
-                :disabled="!board.canManage"
-                type="button"
-                @click="startTimer()">
-                <Timer />
-                Start
-              </button>
-              <span class="phase-chip-separator">·</span>
-              <input
-                v-model.number="state.timerMinutes"
-                aria-label="Timer duration in minutes"
-                class="phase-chip-number"
-                :disabled="!board.canManage"
-                min="1"
-                type="number" />
-              <span>min</span>
-            </template>
-            <template v-else>
-              <span
-                class="countdown"
-                :class="{ over: countdown === '00:00' }">
-                {{ countdown }}
-              </span>
-              <span class="phase-chip-separator">·</span>
-              <button
-                v-if="board.canManage"
-                class="phase-chip-action"
-                type="button"
-                @click="stopTimer()">
-                <Timer />
-                Stop
-              </button>
-            </template>
-          </div>
-        </div>
+        </aside>
 
         <RetroCanvas
           class="retro-canvas"
@@ -300,7 +323,7 @@
           <template #controls>
             <button
               :aria-label="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
-              class="icon-btn"
+              class="icon-btn retro-fullscreen-control"
               :title="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
               type="button"
               @click="toggleFullscreen">
@@ -590,6 +613,7 @@
 <script setup lang="ts">
 import {
   Archive,
+  ChevronDown,
   CircleCheck,
   CircleHelp,
   Crown,
@@ -658,6 +682,8 @@ const PHASE_GUIDES: Record<RetroPhase, { action: string; title: string }> = {
     title: 'Vote on topics',
   },
 }
+
+const UNSECTIONED_CARD_COLOR = '#c99724'
 
 const previousPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) - 1]
 const nextPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) + 1]
@@ -730,7 +756,6 @@ const setEditorRef = (element: unknown) => {
 const nameInput = shallowRef<HTMLInputElement>()
 const focusNameInput = () => {
   nameInput.value?.focus()
-  nameInput.value?.select()
 }
 
 const state = reactive({
@@ -743,8 +768,7 @@ const state = reactive({
   dragPosition: undefined as undefined | { x: number; y: number },
   dragStartPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
-  // Notes the server has not told us about yet: one created here, or one deleted here. They keep
-  // the board honest while the request is still on the wire.
+  // Keep a newly created note visible while the server response is on the wire.
   draftCards: [] as RetroCardViewModel[],
   fullscreen: false,
   groupSelection: [] as string[],
@@ -752,13 +776,14 @@ const state = reactive({
   joined: new Map<string, RetroMember>(),
   now: Date.now(),
   pendingTexts: new Map<string, string>(),
+  phasesCollapsed: true,
   refreshPending: false,
   remoteCursors: new Map<string, { at: number; member: RetroMember; x: number; y: number }>(),
   remoteMoves: new Map<string, { at: number; x: number; y: number }>(),
   remoteTexts: new Map<string, { at: number; text: string }>(),
   removedCardIds: new Set<string>(),
   selectedId: undefined as string | undefined,
-  timerMinutes: 5,
+  timerMinutes: 1,
 })
 
 const {
@@ -880,6 +905,7 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
       board.cards.splice(index, 1, card)
     }
     state.draftCards = state.draftCards.filter((draft) => draft.id !== card.id)
+    triggerRef(data)
     state.remoteTexts.delete(card.id)
     return
   }
@@ -1135,8 +1161,7 @@ const draggedColor = (
 
 const HIDDEN_TEXT = '•••••• ••••• ••••••'
 
-// What the board actually holds right now: the server's answer, minus what we just deleted, plus
-// what we just created. A refresh drops each patch as soon as the answer carries it.
+// What the board actually holds right now: the server's answer plus a note just created here.
 const boardCards = (board: RetroBoardViewModel) => [
   ...board.cards.filter((card) => !state.removedCardIds.has(card.id)),
   ...state.draftCards.filter((draft) => !board.cards.some((card) => card.id === draft.id)),
@@ -1190,6 +1215,7 @@ const visibleCards = (board: RetroBoardViewModel) =>
       state.editingId === card.id
         ? undefined
         : (state.pendingTexts.get(card.id) ?? state.remoteTexts.get(card.id)?.text)
+    const cardSection = board.sections.find((candidate) => candidate.id === card.sectionId)
 
     return {
       ...card,
@@ -1199,8 +1225,8 @@ const visibleCards = (board: RetroBoardViewModel) =>
       ...dragged,
       color:
         (dragged ? draggedColor(board, card, dragged) : undefined) ??
-        board.sections.find((section) => section.id === card.sectionId)?.color ??
-        board.color,
+        cardSection?.color ??
+        UNSECTIONED_CARD_COLOR,
     }
   })
 
@@ -1354,6 +1380,20 @@ const changePhase = async (phase: RetroPhase) => {
   }
 }
 
+const changePreviousPhase = (phase: RetroPhase) => {
+  const target = previousPhase(phase)
+  if (target) {
+    return changePhase(target)
+  }
+}
+
+const changeNextPhase = (phase: RetroPhase) => {
+  const target = nextPhase(phase)
+  if (target) {
+    return changePhase(target)
+  }
+}
+
 // A retro is born named after its date; the facilitator renames it to what it was about.
 const canRename = (board: RetroBoardViewModel) => board.canManage && !board.finished
 
@@ -1388,7 +1428,7 @@ const handOver = async (member: RetroMember) => {
 }
 
 const setVotesPerUser = (event: Event) =>
-  saveSettings(Math.max(1, Number((event.target as HTMLInputElement).value)))
+  saveSettings(Math.min(99, Math.max(1, Number((event.target as HTMLInputElement).value))))
 
 // Timing a phase is the facilitator's call, so it makes no sense once the retro is read-only.
 const canRunTimer = (board: RetroBoardViewModel) => !board.finished && board.phase !== 'Actions'
@@ -1402,7 +1442,7 @@ const setTimer = async (minutes: null | number) => {
   await refresh()
 }
 
-const startTimer = () => setTimer(Math.max(1, state.timerMinutes))
+const startTimer = () => setTimer(Math.min(60, Math.max(1, state.timerMinutes)))
 
 const stopTimer = () => setTimer(null)
 
@@ -1623,8 +1663,7 @@ const createCardAt = async (sectionId: string, x: number, y: number) => {
   if (!board || !created) {
     return
   }
-  // Waiting for the whole board to come back before showing one empty note is a second round trip
-  // the writer has to sit through - we know everything about the note we just asked for.
+
   const draft: RetroCardViewModel = {
     assignee: null,
     authorColor: board.me.color,
@@ -1646,6 +1685,7 @@ const createCardAt = async (sectionId: string, x: number, y: number) => {
 
   state.draftCards.push(draft)
   startEdit(draft)
+  void refresh()
 }
 
 const addCardAt = async (board: RetroBoardViewModel, point: { x: number; y: number }) => {
@@ -1961,9 +2001,9 @@ const vote = async (card: RetroCardViewModel) => {
   await refresh()
 }
 
-// A vote that went wrong is the owner's to undo - the room votes again from a clean board.
+// Resetting votes is useful only while the room is still voting.
 const canResetVotes = (board: RetroBoardViewModel) =>
-  !board.finished && board.canManage && (board.phase === 'Vote' || board.phase === 'Discuss')
+  !board.finished && board.canManage && board.phase === 'Vote'
 
 const resetVotes = async () => {
   const board = data.value
@@ -2055,7 +2095,8 @@ const finish = async () => {
 
 <style scoped>
 .retro {
-  --retro-title-size: clamp(22px, 2vw, 28px);
+  --facilitator-width: 240px;
+  --retro-title-size: 24px;
 
   container-type: inline-size;
   height: calc(100% + var(--layout-content-padding) + var(--layout-content-padding));
@@ -2085,27 +2126,216 @@ const finish = async () => {
   width: 100%;
 }
 
-.retro-header {
-  align-items: center;
-  column-gap: var(--space-2);
-  display: grid;
-  grid-template-columns: minmax(120px, 1fr) minmax(0, auto) minmax(90px, 1fr);
-  inset: auto;
-  padding: var(--space-3) var(--space-3) 0;
-  pointer-events: auto;
-  position: relative;
-  row-gap: var(--space-2);
-  z-index: 7;
+.facilitator-panel {
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 14px #10182814;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  position: absolute;
+  right: var(--space-3);
+  top: var(--space-4);
+  width: var(--facilitator-width);
+  z-index: 6;
 }
 
-.retro-header:has(.board-help[open]) {
+.facilitator-panel:has(.board-help:hover),
+.facilitator-panel:has(.board-help:focus-within) {
   z-index: 100;
+}
+
+.facilitator-panel-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.facilitator-panel-header h2 {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+}
+
+.facilitator-panel-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: flex;
+  flex: 1;
+  gap: var(--space-1);
+  justify-content: flex-start;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.facilitator-panel-toggle:focus-visible {
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.facilitator-panel-toggle > svg {
+  color: var(--color-muted);
+  height: 14px;
+  transition: transform var(--duration-fast) var(--ease-standard);
+  width: 14px;
+}
+
+.facilitator-panel-toggle[aria-expanded='false'] > svg {
+  transform: rotate(-90deg);
+}
+
+.facilitator-phases {
+  display: grid;
+  gap: 2px;
+}
+
+.facilitator-phase {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  cursor: pointer;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 24px minmax(0, 1fr);
+  min-height: 48px;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.facilitator-phase:hover:not(:disabled):not(.active) {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.facilitator-phase:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.facilitator-phase:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.facilitator-phase.active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.facilitator-phase-index {
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  display: flex;
+  font-size: var(--font-size-caption);
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+.facilitator-phase.done .facilitator-phase-index {
+  background: var(--color-soft);
+  color: var(--color-muted);
+}
+
+.facilitator-phase.active .facilitator-phase-index {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.facilitator-phase-title {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
+.facilitator-phase-title > svg {
+  height: 12px;
+  width: 12px;
+}
+
+.facilitator-phase-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.facilitator-phase-copy strong {
+  color: var(--color-text);
+  font-size: var(--font-size-small);
+}
+
+.facilitator-phase.active .facilitator-phase-copy strong {
+  color: var(--color-accent);
+}
+
+.facilitator-phase-copy small {
+  color: var(--color-muted);
+  font-size: var(--font-size-caption);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.facilitator-current {
+  border-top: 1px solid var(--color-border);
+  margin-top: 0;
+  padding-top: var(--space-3);
+}
+
+.facilitator-current-title {
+  margin-top: var(--space-1);
+}
+
+.facilitator-current-title > svg {
+  color: var(--color-accent);
+  display: inline-block;
+  height: 17px;
+  margin-right: var(--space-2);
+  vertical-align: -0.2em;
+  width: 17px;
+}
+
+.facilitator-current p {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+  margin: var(--space-1) 0 0;
+}
+
+.facilitator-phase-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.facilitator-phase-actions > button {
+  flex: 1;
+  justify-content: center;
+}
+
+.facilitator-finish {
+  justify-content: center;
+  width: 100%;
 }
 
 .board-help {
   align-items: center;
   display: flex;
-  position: static;
+  position: relative;
 }
 
 .board-help-trigger {
@@ -2117,7 +2347,6 @@ const finish = async () => {
   gap: var(--space-2);
   height: var(--icon-btn-size);
   justify-content: center;
-  list-style: none;
   padding: 0 var(--space-3);
 }
 
@@ -2126,21 +2355,17 @@ const finish = async () => {
   color: var(--color-text);
 }
 
-.board-help-trigger::-webkit-details-marker {
-  display: none;
-}
-
 .board-help-trigger:focus-visible {
   box-shadow: var(--shadow-focus);
   outline: none;
 }
 
-.board-help[open] .board-help-panel {
+.board-help-panel {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
-  display: grid;
+  display: none;
   gap: var(--space-2);
   margin-top: var(--space-2);
   max-height: calc(100dvh - 96px);
@@ -2152,6 +2377,11 @@ const finish = async () => {
   top: 100%;
   width: 400px;
   z-index: 100;
+}
+
+.board-help:hover .board-help-panel,
+.board-help:focus-within .board-help-panel {
+  display: grid;
 }
 
 .board-help-heading {
@@ -2167,42 +2397,6 @@ const finish = async () => {
   margin-top: var(--space-1);
 }
 
-.board-help-phase {
-  align-items: flex-start;
-  display: flex;
-  gap: var(--space-2);
-}
-
-.board-help-phase > svg {
-  color: var(--color-accent);
-  flex: none;
-  margin-top: 2px;
-}
-
-.board-help-phase span {
-  display: grid;
-  gap: 2px;
-}
-
-.board-help-phase small {
-  color: var(--color-muted);
-  line-height: 1.35;
-}
-
-.board-help-phase--current strong {
-  color: var(--color-accent);
-}
-
-.phase-facilitator {
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  font-size: var(--font-size-caption);
-  gap: var(--space-1);
-  padding-bottom: var(--space-2);
-}
-
-.phase-facilitator > svg,
 .presence-role {
   color: #b7791f;
   height: 14px;
@@ -2232,31 +2426,36 @@ const finish = async () => {
 
 .retro-title {
   align-items: center;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 10%, transparent);
+  border-radius: var(--radius-card);
   display: flex;
   gap: var(--space-1);
-  grid-column: 1;
-  grid-row: 1;
-  left: auto;
-  max-width: 100%;
-  min-height: 42px;
+  left: var(--space-3);
+  max-width: calc(100% - var(--facilitator-width) - var(--space-8));
   min-width: 0;
   overflow: hidden;
-  padding: var(--space-1) 0;
+  padding: var(--space-1) var(--space-2);
   pointer-events: auto;
-  position: static;
+  position: absolute;
+  top: var(--space-4);
   width: fit-content;
+  z-index: 8;
 }
 
 .retro-title h1,
 .retro-name-input {
   font-size: var(--retro-title-size);
-  font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.04em;
   line-height: 1.1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.retro-title h1 {
+  font-weight: var(--font-weight-extrabold);
 }
 
 .retro-name-input {
@@ -2268,6 +2467,7 @@ const finish = async () => {
   field-sizing: content;
   flex: 1 1 auto;
   font-family: inherit;
+  font-weight: var(--font-weight-bold);
   height: auto;
   max-width: 100%;
   padding: 0;
@@ -2311,8 +2511,12 @@ const finish = async () => {
   border-radius: calc(var(--radius-control) - 2px);
   box-shadow: none;
   display: flex;
+  left: var(--space-4);
   max-width: 220px;
   outline: none;
+  position: absolute;
+  top: calc(var(--space-4) + 42px + var(--space-2));
+  z-index: 8;
 }
 
 .presence:focus-visible {
@@ -2332,11 +2536,11 @@ const finish = async () => {
 }
 
 .presence-menu {
+  left: 0;
   opacity: 0;
   padding-top: var(--space-2);
   pointer-events: none;
   position: absolute;
-  right: 0;
   top: calc(100% - var(--space-1));
   transition: opacity 0.12s ease;
   z-index: 5;
@@ -2386,308 +2590,110 @@ const finish = async () => {
   margin-left: auto;
 }
 
-.retro-toolbar {
-  align-items: stretch;
-  backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
-  border-radius: var(--radius-card);
-  box-shadow: 0 4px 14px #10182814;
-  display: flex;
-  flex-direction: row;
-  gap: var(--space-1);
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: end;
-  min-height: 42px;
-  padding: var(--space-1);
-  pointer-events: auto;
-  position: relative;
-  right: auto;
-  top: auto;
-  width: max-content;
-  z-index: 8;
-}
-
-.retro-toolbar:has(.board-help[open]) {
-  z-index: 100;
-}
-
-.retro-toolbar .presence,
-.retro-toolbar .board-help-trigger {
-  justify-content: center;
-}
-
-.retro-toolbar .board-help-trigger {
-  background: transparent;
-  border: 0;
-  border-radius: calc(var(--radius-control) - 2px) 0 0 calc(var(--radius-control) - 2px);
-  box-shadow: none;
-  height: var(--icon-btn-size-small);
-  padding: 0;
-  width: var(--icon-btn-size-small);
-}
-
-.phase-stepper {
-  align-items: center;
-  backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
-  border-radius: var(--radius-card);
-  box-shadow: 0 4px 14px #10182814;
-  display: flex;
-  flex-wrap: nowrap;
-  gap: var(--space-1);
-  grid-column: 2;
-  grid-row: 1;
-  justify-content: center;
-  left: auto;
-  margin: 0;
-  max-width: 100%;
-  min-height: 42px;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 3px;
-  pointer-events: auto;
-  position: static;
-  scrollbar-width: none;
-  top: auto;
-  white-space: nowrap;
-}
-
-.phase-stepper::-webkit-scrollbar {
-  display: none;
-}
-
-.phase-step {
-  align-items: center;
+.facilitator-panel-header .board-help-trigger {
   background: transparent;
   border: 0;
   border-radius: calc(var(--radius-control) - 2px);
   box-shadow: none;
-  color: var(--color-muted);
-  display: flex;
-  flex: none;
-  gap: var(--space-2);
-  height: 34px;
-  justify-content: center;
-  padding: 0 var(--space-2);
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    translate var(--duration-fast) var(--ease-standard);
-  width: 34px;
+  height: 16px;
+  padding: 0;
+  width: 16px;
 }
 
-button.phase-step {
-  cursor: pointer;
+.facilitator-panel-header .board-help-trigger > svg {
+  height: 16px;
+  width: 16px;
 }
 
-button.phase-step:hover:not(:disabled):not(.active) {
-  background: var(--color-hover);
-  color: var(--color-text);
-}
-
-button.phase-step:disabled {
-  cursor: default;
-  opacity: 0.4;
-}
-
-button.phase-step:focus-visible {
-  box-shadow: var(--shadow-focus);
-  outline: none;
-}
-
-.phase-step.active {
-  background: var(--color-accent);
-  border: 1px solid var(--color-accent);
-  box-shadow: none;
-  color: #fff;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  padding: 0 var(--space-2);
-  width: auto;
-}
-
-.phase-step-connector {
-  background: var(--color-border);
-  flex: none;
-  height: 8px;
-  width: 1px;
-}
-
-.phase-finish {
-  border: 0;
-  border-left: 1px solid var(--color-divider);
-  border-radius: 0 calc(var(--radius-control) - 2px) calc(var(--radius-control) - 2px) 0;
-  flex: none;
-  height: 34px;
-  margin-left: 2px;
-}
-
-.phase-guide-center {
-  color: color-mix(in srgb, var(--color-text) 68%, transparent);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  grid-column: 1 / -1;
-  grid-row: 2;
-  margin: 0;
-  padding-inline: var(--space-3);
-  pointer-events: none;
-  position: static;
-  text-align: center;
-  translate: none;
-  z-index: 7;
-}
-
-@container (max-width: 603px) {
-  .retro-header {
-    grid-template-columns: minmax(0, 1fr) max-content;
-  }
-
-  .retro-title {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .retro-toolbar {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .phase-stepper {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
-    min-width: 0;
-  }
-
-  .phase-guide-center {
-    grid-row: 3;
-  }
-}
-
+/* Phase controls: contextual actions inside the current panel. */
 .phase-controls {
-  align-items: center;
-  backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
-  border-radius: var(--radius-card);
-  bottom: var(--space-4);
-  box-shadow: 0 4px 14px #10182814;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  align-items: start;
+  display: grid;
   gap: var(--space-1);
-  justify-content: flex-start;
-  left: var(--space-4);
-  max-width: calc(100% - var(--space-8));
-  min-height: 42px;
-  padding: var(--space-1);
+  justify-items: start;
+  min-height: 0;
   pointer-events: auto;
-  position: absolute;
-  white-space: nowrap;
-  width: max-content;
-  z-index: 7;
+  position: static;
+  width: 100%;
 }
 
-.phase-chip {
+/* Technical status rows: label, value, then an optional action. */
+.phase-control {
   align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
-  box-shadow: none;
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--control-height-small);
+  width: 100%;
+}
+
+.phase-control-label {
+  align-items: center;
+  color: var(--color-muted);
+  display: inline-flex;
+  flex: 0 0 60px;
+  font-size: var(--font-size-small);
+  gap: var(--space-1);
+}
+
+.phase-control-label > svg {
+  height: 14px;
+  width: 14px;
+}
+
+.vote-controls {
+  justify-content: flex-start;
+}
+
+.vote-controls .vote-counter {
+  flex: none;
+  justify-content: flex-start;
+}
+
+.vote-counter,
+.phase-timer {
+  align-items: center;
   color: var(--color-text);
   display: flex;
   flex: none;
   font-size: var(--font-size-small);
-  gap: var(--space-1);
-  height: var(--control-height-small);
-  justify-content: center;
-  padding: 0 var(--space-2);
+  justify-content: flex-start;
   white-space: nowrap;
-  width: auto;
 }
 
-button.phase-chip {
-  font-weight: var(--font-weight-semibold);
-}
-
-button.phase-chip:hover:not(:disabled) {
-  background: var(--color-hover);
-}
-
-.phase-chip--warn {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-}
-
-.phase-chip:has(.countdown.over) {
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-  color: var(--color-danger);
-}
-
-.phase-chip-action {
-  align-items: center;
-  background: var(--color-accent);
-  border: 0;
-  border-radius: var(--radius-small);
-  color: #fff;
-  display: inline-flex;
-  font-weight: var(--font-weight-semibold);
+.vote-counter {
   gap: var(--space-1);
-  height: var(--control-height-small);
+}
+
+.phase-timer--over {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border-radius: calc(var(--radius-control) - 2px);
+  color: var(--color-danger);
   padding: 0 var(--space-2);
 }
 
-.phase-chip-action:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-accent) 88%, #000);
-}
-
-.phase-chip:has(.countdown) .phase-chip-action {
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-  color: var(--color-danger);
-}
-
-.phase-chip:has(.countdown) .phase-chip-action:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger) 16%, transparent);
-}
-
-.phase-chip-number {
+/* Keep editable numbers compact while using the same control style as buttons. */
+.vote-counter-limit,
+.phase-timer-minutes {
   appearance: textfield;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--color-border);
-  border-radius: 0;
   field-sizing: content;
-  font-weight: var(--font-weight-semibold);
-  height: 24px;
-  max-width: 4ch;
-  min-width: 2ch;
-  padding: 0;
+  max-width: 34px;
+  min-width: 24px;
   text-align: center;
   width: auto;
 }
 
-.phase-chip-number:focus {
-  border-bottom-color: var(--color-accent);
-  box-shadow: none;
+.vote-counter-limit:disabled,
+.phase-timer-minutes:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
-.phase-chip-number:disabled {
-  border-bottom-color: transparent;
-  color: inherit;
-}
-
-.phase-chip-number::-webkit-inner-spin-button,
-.phase-chip-number::-webkit-outer-spin-button {
+.vote-counter-limit::-webkit-inner-spin-button,
+.vote-counter-limit::-webkit-outer-spin-button,
+.phase-timer-minutes::-webkit-inner-spin-button,
+.phase-timer-minutes::-webkit-outer-spin-button {
   appearance: none;
   margin: 0;
-}
-
-.phase-chip-separator {
-  color: var(--color-muted);
 }
 
 .countdown {
@@ -2727,9 +2733,14 @@ button.phase-chip:hover:not(:disabled) {
   padding: var(--space-3) var(--space-4);
 }
 
+.zone-header small {
+  font-size: var(--font-size-body);
+}
+
 .zone-title {
   align-items: center;
   display: flex;
+  font-size: 16px;
   gap: var(--space-2);
 }
 
@@ -2796,7 +2807,7 @@ button.phase-chip:hover:not(:disabled) {
 }
 
 :root[data-theme='dark'] .card {
-  --curl-light: #ffffff21;
+  --curl-light: #0000002e;
   --curl-dark: #00000047;
   --sticky-shadow:
     calc(var(--sticky-dx) * 0.2) 1px 1px #0000004d,
@@ -3263,43 +3274,27 @@ textarea.card-text:focus {
 }
 
 @media (max-width: 767px) {
-  .retro-header {
-    grid-template-columns: minmax(0, 1fr) max-content;
+  .retro {
+    --facilitator-width: 220px;
+    --retro-title-size: 18px;
   }
 
   .retro-title {
-    grid-column: 1;
-    grid-row: 1;
-    padding-left: calc(var(--icon-btn-size) + var(--space-3));
+    height: var(--icon-btn-size);
+    left: calc(var(--icon-btn-size) + var(--space-4));
+    max-width: calc(100% - var(--space-8) - var(--icon-btn-size));
   }
 
-  .retro-toolbar {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .phase-stepper {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
-    min-width: 0;
-  }
-
-  .phase-guide-center {
-    grid-row: 3;
-  }
-
-  .phase-controls {
-    align-items: stretch;
-    bottom: var(--space-4);
-    flex-direction: column;
-    flex-wrap: nowrap;
+  .facilitator-panel {
+    bottom: var(--space-3);
     left: var(--space-3);
-    max-width: calc(100% - var(--space-6));
+    padding: var(--space-2);
+    right: auto;
+    top: auto;
   }
 
-  .phase-controls .phase-chip {
-    padding-inline: 0;
+  .retro-fullscreen-control {
+    display: none;
   }
 
   .presence {

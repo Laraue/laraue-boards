@@ -322,7 +322,7 @@ legend {
   padding: var(--space-4) 0 var(--space-1) var(--space-6);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 767px) {
   .permissions-editor {
     margin-top: var(--space-4);
   }
