@@ -92,7 +92,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            cd /home/laraue && docker build -f BoardsSsrDockerfile -t boardsssrhost .
+            cd /home/laraue && docker compose build boardsssrhost
             docker compose up -d --force-recreate boardsssrhost
 
       - name: Notify deploy finished
