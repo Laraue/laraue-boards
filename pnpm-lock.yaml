@@ -21,8 +21,8 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0(vue@3.5.42(typescript@6.0.3))
       '@lucide/vue':
-        specifier: ^1.40.0
-        version: 1.40.0(vue@3.5.42(typescript@6.0.3))
+        specifier: ^1.26.0
+        version: 1.26.0(vue@3.5.42(typescript@6.0.3))
       '@microsoft/signalr':
         specifier: ^10.0.11
         version: 10.0.11
@@ -702,8 +702,8 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@lucide/vue@1.40.0':
-    resolution: {integrity: sha512-d4Qpgu0yn5SqebZm62ySuIWeXq1QFBfNcjhxIVspxa16OMQCnQGNpwim+pyj1CIz9DiTPhGLoIHRhgKV068j2A==}
+  '@lucide/vue@1.26.0':
+    resolution: {integrity: sha512-jz00zLm8+i7VzBuQTbmjChIvIKehaIK5YbOVC+bab7qTh4JTkCd0XJQ4l5TY57gT08fMPVlvUITROB/vm/xImA==}
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -5634,7 +5634,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@lucide/vue@1.40.0(vue@3.5.42(typescript@6.0.3))':
+  '@lucide/vue@1.26.0(vue@3.5.42(typescript@6.0.3))':
     dependencies:
       vue: 3.5.42(typescript@6.0.3)
 
