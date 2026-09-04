@@ -868,10 +868,10 @@ it('clears every vote for the owner', async () => {
 
   await mount({
     createChannel: () => channel,
-    data: { ...groupedBoard, phase: 'Discuss' },
+    data: { ...groupedBoard, phase: 'Vote' },
     resetVotes,
   })
-  await buttonWithText('Reset votes')?.trigger('click')
+  await currentWrapper!.find('button[aria-label="Reset votes"]').trigger('click')
 
   expect(resetVotes).toHaveBeenCalledWith({ retroId: '7' })
 })
@@ -1095,7 +1095,7 @@ it('asks once before finishing, because finishing cannot be undone', async () =>
     },
     finishRetro,
   })
-  await buttonWithText('Finish')?.trigger('click')
+  await buttonWithText('Finish retro')?.trigger('click')
 
   expect(confirm).toHaveBeenCalledWith('Finish this retro? It becomes read-only for everyone.')
   await vi.waitFor(() => expect(finishRetro).toHaveBeenCalledWith({ retroId: '7' }))

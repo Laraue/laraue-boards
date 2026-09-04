@@ -145,14 +145,15 @@
 
           <nav
             v-if="board.canManage"
-            aria-label="Retro phases"
-            id="facilitator-phases"
             v-show="!state.phasesCollapsed"
+            id="facilitator-phases"
+            aria-label="Retro phases"
             class="facilitator-phases">
             <button
               v-for="(phase, index) in PHASES"
               :key="phase"
               :aria-current="board.phase === phase ? 'step' : undefined"
+              :aria-label="phase"
               class="facilitator-phase"
               :class="{
                 active: board.phase === phase,
@@ -213,15 +214,14 @@
                 <ThumbsUp aria-hidden="true" />
                 Votes:
               </span>
-              <div
-                class="vote-counter">
+              <div class="vote-counter">
                 <span>{{ board.myVotes }} of</span>
                 <input
                   v-if="board.canManage"
                   aria-label="Votes per person"
                   class="secondary small vote-counter-limit"
-                  min="1"
                   max="99"
+                  min="1"
                   type="number"
                   :value="board.votesPerUser"
                   @change="setVotesPerUser($event)" />
@@ -253,8 +253,8 @@
                   aria-label="Timer duration in minutes"
                   class="secondary small phase-timer-minutes"
                   :disabled="!board.canManage"
-                  min="1"
                   max="60"
+                  min="1"
                   type="number"
                   @change="state.timerMinutes = Math.min(60, Math.max(1, state.timerMinutes))" />
                 <span>min</span>
@@ -291,14 +291,14 @@
               v-if="previousPhase(board.phase)"
               class="secondary small"
               type="button"
-              @click="changePhase(previousPhase(board.phase))">
+              @click="changePreviousPhase(board.phase)">
               Back
             </button>
             <button
               v-if="nextPhase(board.phase)"
               class="primary small"
               type="button"
-              @click="changePhase(nextPhase(board.phase))">
+              @click="changeNextPhase(board.phase)">
               Next phase
             </button>
           </div>
@@ -768,13 +768,15 @@ const state = reactive({
   dragPosition: undefined as undefined | { x: number; y: number },
   dragStartPosition: undefined as undefined | { x: number; y: number },
   editingId: undefined as string | undefined,
+  // Keep a newly created note visible while the server response is on the wire.
+  draftCards: [] as RetroCardViewModel[],
   fullscreen: false,
   groupSelection: [] as string[],
   hoveredId: undefined as string | undefined,
   joined: new Map<string, RetroMember>(),
   now: Date.now(),
   pendingTexts: new Map<string, string>(),
-  phasesCollapsed: false,
+  phasesCollapsed: true,
   refreshPending: false,
   remoteCursors: new Map<string, { at: number; member: RetroMember; x: number; y: number }>(),
   remoteMoves: new Map<string, { at: number; x: number; y: number }>(),
@@ -813,6 +815,7 @@ const clearBoardState = () => {
   state.dragDistance = 0
   endDrag()
   state.draft = ''
+  state.draftCards = []
   state.editingId = undefined
   state.fullscreen = false
   state.groupSelection = []
@@ -901,6 +904,8 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
     } else {
       board.cards.splice(index, 1, card)
     }
+    state.draftCards = state.draftCards.filter((draft) => draft.id !== card.id)
+    triggerRef(data)
     state.remoteTexts.delete(card.id)
     return
   }
@@ -1156,9 +1161,11 @@ const draggedColor = (
 
 const HIDDEN_TEXT = '•••••• ••••• ••••••'
 
-// What the board actually holds right now: the server's answer minus what we just deleted.
-const boardCards = (board: RetroBoardViewModel) =>
-  board.cards.filter((card) => !state.removedCardIds.has(card.id))
+// What the board actually holds right now: the server's answer plus a note just created here.
+const boardCards = (board: RetroBoardViewModel) => [
+  ...board.cards.filter((card) => !state.removedCardIds.has(card.id)),
+  ...state.draftCards.filter((draft) => !board.cards.some((card) => card.id === draft.id)),
+]
 
 watch(data, (board) => {
   if (!board) {
@@ -1169,6 +1176,7 @@ watch(data, (board) => {
   }
   const known = new Set(board.cards.map((card) => card.id))
 
+  state.draftCards = state.draftCards.filter((draft) => !known.has(draft.id))
   for (const id of state.removedCardIds) {
     if (!known.has(id)) {
       state.removedCardIds.delete(id)
@@ -1207,7 +1215,7 @@ const visibleCards = (board: RetroBoardViewModel) =>
       state.editingId === card.id
         ? undefined
         : (state.pendingTexts.get(card.id) ?? state.remoteTexts.get(card.id)?.text)
-    const section = board.sections.find((section) => section.id === card.sectionId)
+    const cardSection = board.sections.find((candidate) => candidate.id === card.sectionId)
 
     return {
       ...card,
@@ -1217,7 +1225,7 @@ const visibleCards = (board: RetroBoardViewModel) =>
       ...dragged,
       color:
         (dragged ? draggedColor(board, card, dragged) : undefined) ??
-        section?.color ??
+        cardSection?.color ??
         UNSECTIONED_CARD_COLOR,
     }
   })
@@ -1369,6 +1377,20 @@ const changePhase = async (phase: RetroPhase) => {
 
   if (await executePhase({ phase, retroId: props.retroId })) {
     await refresh()
+  }
+}
+
+const changePreviousPhase = (phase: RetroPhase) => {
+  const target = previousPhase(phase)
+  if (target) {
+    return changePhase(target)
+  }
+}
+
+const changeNextPhase = (phase: RetroPhase) => {
+  const target = nextPhase(phase)
+  if (target) {
+    return changePhase(target)
   }
 }
 
@@ -1635,18 +1657,35 @@ const saveDraft = async (card: RetroCardViewModel) => {
 }
 
 const createCardAt = async (sectionId: string, x: number, y: number) => {
+  const board = data.value
   const created = await executeCreate({ retroId: props.retroId, sectionId, text: '', x, y })
 
-  if (!created) {
+  if (!board || !created) {
     return
   }
 
-  await refresh()
-  const card = data.value?.cards.find((item) => item.id === created.id)
-
-  if (card) {
-    startEdit(card)
+  const draft: RetroCardViewModel = {
+    assignee: null,
+    authorColor: board.me.color,
+    authorInitials: board.me.initials,
+    authorName: board.me.name,
+    done: false,
+    groupId: null,
+    hidden: false,
+    id: created.id,
+    isMine: true,
+    revealed: false,
+    sectionId,
+    text: '',
+    votedByMe: false,
+    votes: 0,
+    x,
+    y,
   }
+
+  state.draftCards.push(draft)
+  startEdit(draft)
+  void refresh()
 }
 
 const addCardAt = async (board: RetroBoardViewModel, point: { x: number; y: number }) => {
@@ -2057,7 +2096,7 @@ const finish = async () => {
 <style scoped>
 .retro {
   --facilitator-width: 240px;
-  --retro-title-size: clamp(22px, 2vw, 28px);
+  --retro-title-size: 24px;
 
   container-type: inline-size;
   height: calc(100% + var(--layout-content-padding) + var(--layout-content-padding));
@@ -2387,14 +2426,16 @@ const finish = async () => {
 
 .retro-title {
   align-items: center;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 10%, transparent);
+  border-radius: var(--radius-card);
   display: flex;
   gap: var(--space-1);
   left: var(--space-4);
-  max-width: 100%;
-  min-height: 42px;
+  max-width: calc(100% - var(--facilitator-width) - var(--space-8));
   min-width: 0;
   overflow: hidden;
-  padding: var(--space-1) 0;
+  padding: var(--space-1) var(--space-2);
   pointer-events: auto;
   position: absolute;
   top: var(--space-4);
@@ -2405,13 +2446,16 @@ const finish = async () => {
 .retro-title h1,
 .retro-name-input {
   font-size: var(--retro-title-size);
-  font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.04em;
   line-height: 1.1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.retro-title h1 {
+  font-weight: var(--font-weight-extrabold);
 }
 
 .retro-name-input {
@@ -2423,6 +2467,7 @@ const finish = async () => {
   field-sizing: content;
   flex: 1 1 auto;
   font-family: inherit;
+  font-weight: var(--font-weight-bold);
   height: auto;
   max-width: 100%;
   padding: 0;
@@ -3229,8 +3274,14 @@ textarea.card-text:focus {
 }
 
 @media (max-width: 767px) {
+  .retro {
+    --retro-title-size: 18px;
+  }
+
   .retro-title {
-    padding-left: calc(var(--icon-btn-size) + var(--space-3));
+    height: var(--icon-btn-size);
+    left: calc(var(--icon-btn-size) + var(--space-4));
+    max-width: calc(100% - var(--facilitator-width) - var(--space-8) - var(--icon-btn-size));
   }
 
   .presence {
