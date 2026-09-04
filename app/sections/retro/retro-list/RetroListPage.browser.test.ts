@@ -8,6 +8,7 @@ import RetroListPage from './RetroListPage.vue'
 
 const retros: RetroListItemViewModel[] = [
   {
+    canManage: true,
     cardCount: 12,
     createdAt: '2026-08-20T10:00:00Z',
     finished: false,
@@ -16,6 +17,7 @@ const retros: RetroListItemViewModel[] = [
     openActionCount: 0,
   },
   {
+    canManage: true,
     cardCount: 8,
     createdAt: '2026-08-06T10:00:00Z',
     finished: true,
@@ -42,9 +44,9 @@ const mount = async (
   return onOpen
 }
 
-const listing = (data = retros, hasNextPage = false) =>
+const listing = (data = retros, hasNextPage = false, canCreate = true) =>
   vi.fn<RetroListPageDeps['view']>(async () => ({
-    data: { hasNextPage, retros: data },
+    data: { canCreate, hasNextPage, retros: data },
     status: 'success',
   }))
 
@@ -125,6 +127,21 @@ it('offers to continue only from a retro that still has open actions', async () 
     ),
   ).toEqual(['Delete retro', 'Continue', 'Delete retro'])
   expect(document.body.textContent).toContain('2 open actions')
+})
+
+it('hides creation and deletion actions without their permissions', async () => {
+  await mount({
+    removeRetro: vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove),
+    startRetro: successfulStart(),
+    view: listing(
+      retros.map((retro) => ({ ...retro, canManage: false })),
+      false,
+      false,
+    ),
+  })
+
+  await expect.element(page.getByRole('button', { name: 'Start retro' })).not.toBeInTheDocument()
+  expect(currentWrapper!.findAll('.retro-row-actions button')).toHaveLength(0)
 })
 
 it('carries the open actions of the retro the button belongs to', async () => {

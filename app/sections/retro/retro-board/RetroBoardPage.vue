@@ -15,18 +15,146 @@
             <h1 v-if="!canRename(board)">{{ board.name }}</h1>
             <input
               v-else
+              ref="nameInput"
               aria-label="Retro name"
               class="retro-name-input"
               maxlength="128"
               :value="board.name"
               @change="rename($event)" />
+            <button
+              v-if="canRename(board)"
+              aria-label="Edit retro name"
+              class="icon-btn small retro-name-edit"
+              title="Edit retro name"
+              type="button"
+              @click.stop="focusNameInput"
+              @pointerdown.stop>
+              <Pencil />
+            </button>
             <span
               v-if="board.finished"
               class="retro-finished">
               Finished
             </span>
           </div>
-          <div class="retro-actions">
+          <nav
+            v-if="!board.finished"
+            aria-label="Retro phase"
+            class="phase-stepper">
+            <template
+              v-for="(phase, index) in PHASES"
+              :key="phase">
+              <button
+                v-if="board.canManage"
+                :aria-label="phase"
+                class="phase-step"
+                :class="{ active: board.phase === phase }"
+                :disabled="board.phase !== phase && !canChangePhase(board.phase, phase)"
+                :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`"
+                type="button"
+                @click="board.phase !== phase && changePhase(phase)">
+                <component :is="PHASE_ICONS[phase]" />
+                <span v-if="board.phase === phase">{{ phase }}</span>
+              </button>
+              <span
+                v-else
+                class="phase-step"
+                :class="{ active: board.phase === phase }"
+                :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`">
+                <component :is="PHASE_ICONS[phase]" />
+                <span v-if="board.phase === phase">{{ phase }}</span>
+              </span>
+              <span
+                v-if="index < PHASES.length - 1"
+                aria-hidden="true"
+                class="phase-step-connector"
+                :class="{ done: PHASES.indexOf(board.phase) > index }" />
+            </template>
+            <button
+              v-if="board.canManage && board.phase === 'Actions'"
+              class="secondary danger small phase-finish"
+              type="button"
+              @click="finish">
+              <Archive />
+              Finish
+            </button>
+          </nav>
+
+          <div class="retro-toolbar">
+            <details
+              v-if="!board.finished"
+              class="board-help">
+              <summary
+                aria-label="Guide"
+                class="board-help-trigger">
+                <CircleHelp />
+              </summary>
+              <div class="board-help-panel">
+                <template v-if="!board.finished">
+                  <p class="board-help-heading">Current phase</p>
+                  <div class="board-help-phase board-help-phase--current">
+                    <component :is="PHASE_ICONS[board.phase]" />
+                    <span>
+                      <strong>{{ phaseGuide(board).title }}</strong>
+                      <small>{{ phaseGuide(board).action }}</small>
+                    </span>
+                  </div>
+                  <span class="phase-facilitator">
+                    <Crown />
+                    <span
+                      class="entity-avatar small"
+                      :style="{ background: board.owner.color }">
+                      {{ board.owner.initials }}
+                    </span>
+                    {{ board.owner.name }} is facilitating
+                  </span>
+                  <p class="board-help-heading">All phases</p>
+                  <div
+                    v-for="phase in PHASES"
+                    :key="phase"
+                    class="board-help-phase">
+                    <component :is="PHASE_ICONS[phase]" />
+                    <span>
+                      <strong>{{ PHASE_GUIDES[phase].title }}</strong>
+                      <small>{{ PHASE_GUIDES[phase].action }}</small>
+                    </span>
+                  </div>
+                </template>
+                <p class="board-help-heading">Keyboard shortcuts</p>
+                <ul class="board-help-list">
+                  <li>
+                    <kbd>Delete</kbd>
+                    /
+                    <kbd>Backspace</kbd>
+                    deletes the selected note
+                  </li>
+                  <li>
+                    <kbd>Ctrl</kbd>
+                    /
+                    <kbd>Cmd</kbd>
+                    + click picks notes to merge into a topic
+                  </li>
+                  <li>
+                    <kbd>Ctrl</kbd>
+                    /
+                    <kbd>Cmd</kbd>
+                    +
+                    <kbd>Enter</kbd>
+                    saves a note being edited
+                  </li>
+                  <li>
+                    <kbd>Esc</kbd>
+                    cancels editing a note
+                  </li>
+                </ul>
+                <p class="board-help-heading">On the board</p>
+                <ul class="board-help-list">
+                  <li>Double-click (or double-tap) an empty spot to add a note</li>
+                  <li>Drag a note to move it between sections</li>
+                  <li>Pinch, or scroll with a modifier, to zoom - drag the background to pan</li>
+                </ul>
+              </div>
+            </details>
             <div
               aria-label="People on this retro"
               class="presence"
@@ -54,12 +182,11 @@
                       {{ member.initials }}
                     </span>
                     {{ member.name }}
-                    <template v-if="member.userId === board.me.userId">(you)</template>
-                    <span
+                    <Crown
                       v-if="member.userId === board.owner.userId"
-                      class="muted presence-role">
-                      owner
-                    </span>
+                      aria-label="Owner"
+                      class="presence-role"
+                      role="img" />
                     <button
                       v-else-if="canHandOver(board)"
                       class="secondary small"
@@ -72,144 +199,96 @@
               </div>
             </div>
           </div>
-
-          <div class="phase-stack">
-            <div class="phase-navigation">
-              <button
-                aria-label="Previous phase"
-                class="icon-btn secondary small phase-step"
-                :disabled="board.finished || !board.canManage || !previousPhase(board.phase)"
-                type="button"
-                @click="movePhase(previousPhase(board.phase))">
-                <ChevronLeft />
-              </button>
-              <details class="phase-picker">
-                <summary class="phase-picker-trigger">
-                  <component :is="PHASE_ICONS[board.phase]" />
-                  {{ board.phase }}
-                </summary>
-                <div
-                  aria-label="Phase"
-                  class="phase-rail"
-                  role="group"
-                  @click="closePhaseMenu($event)">
-                  <button
-                    v-for="option in PHASES"
-                    :key="option"
-                    class="secondary small"
-                    :class="{ active: board.phase === option }"
-                    :disabled="
-                      board.finished || !board.canManage || !canChangePhase(board.phase, option)
-                    "
-                    type="button"
-                    @click="changePhase(option)">
-                    <component :is="PHASE_ICONS[option]" />
-                    {{ option }}
-                  </button>
-                  <button
-                    class="secondary danger small"
-                    :disabled="board.finished || !board.canManage || board.phase !== 'Actions'"
-                    type="button"
-                    @click="finish">
-                    <Archive />
-                    Finish
-                  </button>
-                </div>
-              </details>
-              <button
-                aria-label="Next phase"
-                class="icon-btn secondary small phase-step"
-                :disabled="board.finished || !board.canManage || !nextPhase(board.phase)"
-                type="button"
-                @click="movePhase(nextPhase(board.phase))">
-                <ChevronRight />
-              </button>
-            </div>
-
-            <div
-              v-if="!board.finished && board.phase !== 'Actions'"
-              class="phase-controls">
-              <button
-                v-if="board.phase === 'Collect'"
-                :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
-                class="phase-chip"
-                :class="{ 'phase-chip--warn': board.hiddenMine > 0 }"
-                :disabled="board.hiddenMine + board.revealedMine === 0"
-                type="button"
-                @click="setMineRevealed(board.hiddenMine > 0)">
-                <EyeOff v-if="board.hiddenMine > 0" />
-                <Eye v-else />
-                {{ board.hiddenMine > 0 ? 'Notes private' : 'Notes visible' }}
-              </button>
-
-              <div
-                v-if="board.phase === 'Vote'"
-                class="phase-chip">
-                <ThumbsUp />
-                <span>{{ board.myVotes }} of</span>
-                <input
-                  aria-label="Votes per person"
-                  class="phase-chip-number"
-                  :disabled="!board.canManage"
-                  min="1"
-                  type="number"
-                  :value="board.votesPerUser"
-                  @change="setVotesPerUser($event)" />
-                <span>used</span>
-              </div>
-
-              <button
-                v-if="canResetVotes(board)"
-                class="phase-chip"
-                title="Clear every vote so the team can vote again"
-                type="button"
-                @click="resetVotes()">
-                <RotateCcw />
-                Reset votes
-              </button>
-
-              <div
-                v-if="canRunTimer(board)"
-                class="phase-chip"
-                :class="{ 'phase-chip--warn': countdown === '00:00' }">
-                <Timer />
-                <template v-if="countdown === undefined">
-                  <button
-                    class="phase-chip-action"
-                    :disabled="!board.canManage"
-                    type="button"
-                    @click="startTimer()">
-                    Start
-                  </button>
-                  <span class="phase-chip-separator">·</span>
-                  <input
-                    v-model.number="state.timerMinutes"
-                    aria-label="Timer duration in minutes"
-                    class="phase-chip-number"
-                    :disabled="!board.canManage"
-                    min="1"
-                    type="number" />
-                  <span>min</span>
-                </template>
-                <template v-else>
-                  <span
-                    class="countdown"
-                    :class="{ over: countdown === '00:00' }">
-                    {{ countdown }}
-                  </span>
-                  <span class="phase-chip-separator">·</span>
-                  <button
-                    class="phase-chip-action"
-                    :disabled="!board.canManage"
-                    type="button"
-                    @click="stopTimer()">
-                    Stop
-                  </button>
-                </template>
-              </div>
-            </div>
-          </div>
+          <p
+            v-if="!board.finished"
+            class="phase-guide-center">
+            {{ phaseGuide(board).action }}
+          </p>
         </header>
+
+        <div
+          v-if="!board.finished && board.phase !== 'Actions'"
+          class="phase-controls">
+          <button
+            v-if="board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0"
+            :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
+            class="phase-chip"
+            :class="{ 'phase-chip--warn': board.hiddenMine > 0 }"
+            type="button"
+            @click="setMineRevealed(board.hiddenMine > 0)">
+            <EyeOff v-if="board.hiddenMine > 0" />
+            <Eye v-else />
+            {{ board.hiddenMine > 0 ? 'Notes private' : 'Notes visible' }}
+          </button>
+
+          <div
+            v-if="board.phase === 'Vote'"
+            class="phase-chip">
+            <ThumbsUp />
+            <span>{{ board.myVotes }} of</span>
+            <input
+              v-if="board.canManage"
+              aria-label="Votes per person"
+              class="phase-chip-number"
+              min="1"
+              type="number"
+              :value="board.votesPerUser"
+              @change="setVotesPerUser($event)" />
+            <strong v-else>{{ board.votesPerUser }}</strong>
+            <span>used</span>
+          </div>
+
+          <button
+            v-if="canResetVotes(board)"
+            class="phase-chip"
+            title="Clear every vote so the team can vote again"
+            type="button"
+            @click="resetVotes()">
+            <RotateCcw />
+            Reset votes
+          </button>
+
+          <div
+            v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
+            class="phase-chip"
+            :class="{ 'phase-chip--warn': countdown === '00:00' }">
+            <template v-if="countdown === undefined">
+              <button
+                class="phase-chip-action"
+                :disabled="!board.canManage"
+                type="button"
+                @click="startTimer()">
+                <Timer />
+                Start
+              </button>
+              <span class="phase-chip-separator">·</span>
+              <input
+                v-model.number="state.timerMinutes"
+                aria-label="Timer duration in minutes"
+                class="phase-chip-number"
+                :disabled="!board.canManage"
+                min="1"
+                type="number" />
+              <span>min</span>
+            </template>
+            <template v-else>
+              <span
+                class="countdown"
+                :class="{ over: countdown === '00:00' }">
+                {{ countdown }}
+              </span>
+              <span class="phase-chip-separator">·</span>
+              <button
+                v-if="board.canManage"
+                class="phase-chip-action"
+                type="button"
+                @click="stopTimer()">
+                <Timer />
+                Stop
+              </button>
+            </template>
+          </div>
+        </div>
 
         <RetroCanvas
           class="retro-canvas"
@@ -347,7 +426,7 @@
                 {{ card.text || 'Add a note' }}
               </p>
               <details
-                v-if="isActionsSection(board, card.sectionId)"
+                v-if="state.editingId !== card.id && isActionsSection(board, card.sectionId)"
                 class="assignee"
                 @click.stop
                 @pointerdown.stop>
@@ -400,31 +479,46 @@
                 {{ discussionRanks.get(card.id) }}
               </span>
               <button
-                v-if="state.editingId !== card.id && showVoteBadge(board, card)"
-                :aria-label="votedByMe(board, card) ? 'Remove vote from note' : 'Vote for note'"
+                v-if="state.editingId !== card.id && votingOpen && showVoteBadge(board, card)"
+                :aria-label="votedByMe(board, card) ? 'Remove vote from topic' : 'Vote for topic'"
                 class="vote-badge"
                 :class="{ voted: votedByMe(board, card) }"
-                :disabled="!votingOpen"
-                :title="
-                  votingOpen
-                    ? votedByMe(board, card)
-                      ? 'Remove vote'
-                      : 'Vote'
-                    : 'Start the timer to vote'
-                "
+                :title="votedByMe(board, card) ? 'Remove vote' : 'Vote for this topic'"
                 type="button"
                 @click.stop="vote(card)"
                 @pointerdown.stop>
                 <ThumbsUp />
-                <template v-if="showVoteResults(board)">{{ topicVotes(board, card) }}</template>
+                <template v-if="votedByMe(board, card)">Voted</template>
               </button>
+              <span
+                v-else-if="
+                  state.editingId !== card.id &&
+                  showVoteResults(board) &&
+                  showVoteBadge(board, card)
+                "
+                :aria-label="`${topicVotes(board, card)} votes`"
+                class="vote-badge vote-result">
+                <ThumbsUp />
+                {{ topicVotes(board, card) }}
+              </span>
 
               <div
                 v-if="
-                  (state.selectedId === card.id || state.editingId === card.id) &&
+                  state.editingId !== card.id &&
+                  state.selectedId === card.id &&
                   hasActions(board, card)
                 "
                 class="card-toolbar">
+                <button
+                  v-if="canEditCard(board, card)"
+                  aria-label="Edit note"
+                  class="icon-btn small"
+                  title="Edit note"
+                  type="button"
+                  @click.stop="startEdit(card)"
+                  @pointerdown.stop>
+                  <Pencil />
+                </button>
                 <button
                   v-if="canTickOff(board, card)"
                   class="icon-btn small"
@@ -449,7 +543,7 @@
                   <EyeOff v-else />
                 </button>
                 <button
-                  v-if="card.isMine"
+                  v-if="card.isMine || board.canManage"
                   aria-label="Delete note"
                   class="icon-btn small"
                   type="button"
@@ -496,9 +590,9 @@
 <script setup lang="ts">
 import {
   Archive,
-  ChevronLeft,
-  ChevronRight,
   CircleCheck,
+  CircleHelp,
+  Crown,
   Eye,
   EyeOff,
   Group,
@@ -509,6 +603,7 @@ import {
   MessagesSquare,
   Minimize,
   MousePointer2,
+  Pencil,
   StickyNote,
   ThumbsUp,
   Timer,
@@ -541,10 +636,49 @@ const PHASE_ICONS = {
   Vote: ThumbsUp,
 }
 
+const PHASE_GUIDES: Record<RetroPhase, { action: string; title: string }> = {
+  Actions: {
+    action: 'Turn the discussion into clear commitments and assign an owner.',
+    title: 'Create action items',
+  },
+  Collect: {
+    action: 'Add notes to the board. Your covered notes stay private until you reveal them.',
+    title: 'Share your perspective',
+  },
+  Discuss: {
+    action: 'Start with the highlighted topics and agree on what matters most.',
+    title: 'Discuss the results',
+  },
+  Group: {
+    action: 'The facilitator combines related notes into topics.',
+    title: 'Group similar notes',
+  },
+  Vote: {
+    action: 'Choose the topics worth discussing. Voting opens while the timer is running.',
+    title: 'Vote on topics',
+  },
+}
+
 const previousPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) - 1]
 const nextPhase = (phase: RetroPhase) => PHASES[PHASES.indexOf(phase) + 1]
 const canChangePhase = (current: RetroPhase, target: RetroPhase) =>
   target === previousPhase(current) || target === nextPhase(current)
+
+const phaseGuide = (board: RetroBoardViewModel) => {
+  if (board.phase === 'Vote' && votingOpen.value) {
+    return {
+      action: `${Math.max(0, board.votesPerUser - board.myVotes)} votes left while the timer runs.`,
+      title: PHASE_GUIDES.Vote.title,
+    }
+  }
+  if (board.phase === 'Vote' && board.phaseEndsAt) {
+    return {
+      action: 'Voting is closed. The facilitator can move to the results.',
+      title: 'Voting closed',
+    }
+  }
+  return PHASE_GUIDES[board.phase]
+}
 
 const ZONE_WIDTH = 880
 const ZONE_HEIGHT = 720
@@ -569,7 +703,7 @@ const fitCardText = (element: HTMLElement) => {
   element.style.fontSize = `${fontSize}px`
   while (
     fontSize > MIN_CARD_FONT_SIZE &&
-    (element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth)
+    (element.scrollHeight > element.clientHeight + 4 || element.scrollWidth > element.clientWidth)
   ) {
     fontSize -= 1
     element.style.fontSize = `${fontSize}px`
@@ -591,6 +725,12 @@ const vFitText = {
 const editor = shallowRef<HTMLTextAreaElement>()
 const setEditorRef = (element: unknown) => {
   editor.value = element instanceof HTMLTextAreaElement ? element : undefined
+}
+
+const nameInput = shallowRef<HTMLInputElement>()
+const focusNameInput = () => {
+  nameInput.value?.focus()
+  nameInput.value?.select()
 }
 
 const state = reactive({
@@ -650,7 +790,10 @@ const clearBoardState = () => {
   state.dragDistance = 0
   endDrag()
   state.draft = ''
+  state.draftCards = []
   state.editingId = undefined
+  state.fullscreen = false
+  state.groupSelection = []
   state.hoveredId = undefined
   state.joined.clear()
   state.pendingTexts.clear()
@@ -658,6 +801,7 @@ const clearBoardState = () => {
   state.remoteCursors.clear()
   state.remoteMoves.clear()
   state.remoteTexts.clear()
+  state.removedCardIds.clear()
   state.selectedId = undefined
   lastCardClickAt = 0
   lastCardClickId = undefined
@@ -697,6 +841,72 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
     state.remoteTexts.set(incoming.cardId, { at: Date.now(), text: incoming.text })
     return
   }
+  if (incoming.type === 'card-upserted') {
+    const board = data.value
+
+    if (!board || board.finished) {
+      return
+    }
+    const current = board.cards.find((card) => card.id === incoming.card.id)
+    const isMine = incoming.card.authorId === board.me.userId
+    const text =
+      isMine && incoming.card.covered
+        ? (state.pendingTexts.get(incoming.card.id) ?? current?.text ?? incoming.card.text)
+        : incoming.card.text
+    const card: RetroCardViewModel = {
+      assignee: current?.assignee ?? null,
+      authorColor: incoming.card.author.color,
+      authorInitials: incoming.card.author.initials,
+      authorName: incoming.card.author.name,
+      done: incoming.card.done,
+      groupId: incoming.card.groupId,
+      hidden: incoming.card.covered && !isMine,
+      id: incoming.card.id,
+      isMine,
+      revealed: incoming.card.revealed,
+      sectionId: incoming.card.sectionId,
+      text,
+      votedByMe: current?.votedByMe ?? false,
+      votes: current?.votes ?? 0,
+      x: incoming.card.x,
+      y: incoming.card.y,
+    }
+
+    const index = board.cards.findIndex((existing) => existing.id === card.id)
+
+    if (index === -1) {
+      board.cards.push(card)
+    } else {
+      board.cards.splice(index, 1, card)
+    }
+    state.draftCards = state.draftCards.filter((draft) => draft.id !== card.id)
+    state.remoteTexts.delete(card.id)
+    return
+  }
+  if (incoming.type === 'group-upserted') {
+    const board = data.value
+
+    if (!board || board.finished) {
+      return
+    }
+    if (!board.groups.some((group) => group.id === incoming.id)) {
+      board.groups = [
+        ...board.groups,
+        {
+          cardIds: incoming.cardIds,
+          id: incoming.id,
+          title: '',
+          votedByMe: false,
+          votes: 0,
+        },
+      ]
+    }
+    board.cards = board.cards.map((card) =>
+      incoming.cardIds.includes(card.id) ? { ...card, groupId: incoming.id } : card,
+    )
+    triggerRef(data)
+    return
+  }
   if (incoming.type === 'changed') {
     // A refresh mid-typing would replace the text node under the caret.
     if (state.editingId === undefined) {
@@ -710,6 +920,11 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
 const openChannel = () => {
   channel?.close()
   clearBoardState()
+
+  if (data.value?.finished) {
+    channel = undefined
+    return
+  }
 
   const next = props.deps.createChannel(props.retroId)
 
@@ -743,7 +958,7 @@ const presence = computed(() => {
 })
 
 const PRESENCE_WIDTH = 220
-const AVATAR_SIZE = 32
+const AVATAR_SIZE = 28
 const PRESENCE_STEP = 24
 
 // The strip is the same width whoever shows up: past the point where the squares would push it
@@ -756,17 +971,20 @@ const presenceStep = (count: number) =>
 // Everyone who belongs to this retro: whoever is connected right now plus whoever joined earlier
 // and stepped away - handing the retro over to them is still valid.
 const everyone = (board: RetroBoardViewModel) => {
-  if (board.finished) {
-    return board.participants
-  }
-  const seen = new Map([[board.me.userId, board.me]])
+  const members = board.finished
+    ? board.participants
+    : [board.me, ...presence.value, ...board.participants]
+  const seen = new Map<string, RetroMember>()
 
-  for (const member of [...presence.value, ...board.participants]) {
+  for (const member of members) {
     if (!seen.has(member.userId)) {
       seen.set(member.userId, member)
     }
   }
-  return [...seen.values()]
+  return [...seen.values()].toSorted(
+    (one, another) =>
+      Number(another.userId === board.owner.userId) - Number(one.userId === board.owner.userId),
+  )
 }
 
 useHead({ title: computed(() => data.value?.name ?? 'Retro') })
@@ -1054,10 +1272,17 @@ const canChangeSection = (board: RetroBoardViewModel, sectionId: string) =>
 const canChangeCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   canChangeSection(board, card.sectionId)
 
+const canEditCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
+  card.isMine && canChangeCard(board, card)
+
 // Moving a note is a change like any other: the team may do it while that kind of note is open,
 // the owner whenever the room needs it.
 const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  !board.finished && !card.hidden && canChangeCard(board, card)
+  !board.finished &&
+  !card.hidden &&
+  (board.canManage ||
+    (board.phase === 'Collect' && !isActionsSection(board, card.sectionId)) ||
+    board.phase === 'Actions')
 
 // Crossing the actions border turns a note into a commitment or back, so it belongs to the
 // Actions phase - both ways, or a note dropped there by mistake would be stuck.
@@ -1066,9 +1291,12 @@ const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 const canDropOn = (board: RetroBoardViewModel, card: RetroCardViewModel, sectionId: string) =>
   canMoveCard(board, card) &&
   (card.groupId === null || sectionId === card.sectionId) &&
-  (isActionsSection(board, sectionId) === isActionsSection(board, card.sectionId) ||
-    board.phase === 'Actions' ||
-    board.canManage)
+  (board.canManage ||
+    (board.phase === 'Collect' &&
+      !isActionsSection(board, card.sectionId) &&
+      !isActionsSection(board, sectionId)) ||
+    (board.phase === 'Actions' &&
+      (isActionsSection(board, card.sectionId) || isActionsSection(board, sectionId))))
 
 // While a note is in the air, a section that will not take it says so: a drop that silently snaps
 // the note back reads as a bug, not as a rule.
@@ -1112,9 +1340,6 @@ const saveSettings = async (votesPerUser: number) => {
   await refresh()
 }
 
-const closePhaseMenu = (event: MouseEvent) =>
-  (event.currentTarget as HTMLElement).closest('details')?.removeAttribute('open')
-
 const changePhase = async (phase: RetroPhase) => {
   const board = data.value
   const reverting = board && phase === previousPhase(board.phase)
@@ -1128,8 +1353,6 @@ const changePhase = async (phase: RetroPhase) => {
     await refresh()
   }
 }
-
-const movePhase = (phase: RetroPhase | undefined) => phase && changePhase(phase)
 
 // A retro is born named after its date; the facilitator renames it to what it was about.
 const canRename = (board: RetroBoardViewModel) => board.canManage && !board.finished
@@ -1186,7 +1409,10 @@ const stopTimer = () => setTimer(null)
 let ticker: number | undefined
 
 // The countdown and the expiry of remote cursors only tick in front of a user.
-onMounted(() => {
+const startTicker = () => {
+  if (ticker !== undefined || data.value?.finished) {
+    return
+  }
   ticker = window.setInterval(() => {
     state.now = Date.now()
     for (const [userId, cursor] of state.remoteCursors) {
@@ -1208,9 +1434,32 @@ onMounted(() => {
       }
     }
   }, 1000)
-})
+}
 
-onBeforeUnmount(() => clearInterval(ticker))
+const stopTicker = () => {
+  clearInterval(ticker)
+  ticker = undefined
+}
+
+onMounted(startTicker)
+onBeforeUnmount(stopTicker)
+
+watch(
+  () => data.value?.finished,
+  (finished) => {
+    if (!finished) {
+      startTicker()
+      return
+    }
+    const current = channel
+
+    channel = undefined
+    current?.close()
+    clearBoardState()
+    stopTicker()
+    window.removeEventListener('keydown', onKeyDown)
+  },
+)
 
 const cursors = computed(() => [...state.remoteCursors.values()])
 
@@ -1284,6 +1533,11 @@ const showVoteBadge = (board: RetroBoardViewModel, card: RetroCardViewModel) => 
   if (isActionsSection(board, card.sectionId)) {
     return false
   }
+  const group = groupOf(board, card)
+
+  if (group && group.cardIds[0] !== card.id) {
+    return false
+  }
   if (showVoteResults(board)) {
     return topicVotes(board, card) > 0
   }
@@ -1295,7 +1549,7 @@ const showVoteBadge = (board: RetroBoardViewModel, card: RetroCardViewModel) => 
 const startEdit = (card: RetroCardViewModel) => {
   const board = data.value
 
-  if (!board || !card.isMine || !canChangeCard(board, card)) {
+  if (!board || !canEditCard(board, card)) {
     return
   }
   state.draft = card.text
@@ -1304,9 +1558,13 @@ const startEdit = (card: RetroCardViewModel) => {
 }
 
 const cancelEdit = () => {
+  const refreshPending = state.refreshPending
+
   state.editingId = undefined
   state.refreshPending = false
-  void refresh()
+  if (refreshPending) {
+    void refresh()
+  }
 }
 
 const removeCard = async (card: RetroCardViewModel) => {
@@ -1350,7 +1608,9 @@ const saveDraft = async (card: RetroCardViewModel) => {
     } else if (!refreshPending) {
       return
     }
-    await refresh()
+    if (refreshPending) {
+      await refresh()
+    }
   } finally {
     state.pendingTexts.delete(card.id)
   }
@@ -1386,7 +1646,6 @@ const createCardAt = async (sectionId: string, x: number, y: number) => {
 
   state.draftCards.push(draft)
   startEdit(draft)
-  void refresh()
 }
 
 const addCardAt = async (board: RetroBoardViewModel, point: { x: number; y: number }) => {
@@ -1431,7 +1690,13 @@ const startGroupDrag = (
   const members = board && visibleCards(board).filter((card) => cardIds.includes(card.id))
   const lead = members?.[0]
 
-  if (!board || !lead || !members || !canMoveCard(board, lead)) {
+  if (
+    !board ||
+    !lead ||
+    !members ||
+    members.some((card) => card.id === state.editingId) ||
+    !canMoveCard(board, lead)
+  ) {
     return
   }
   state.dragDistance = 0
@@ -1608,7 +1873,8 @@ const canTickOff = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 
 const hasActions = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   canTickOff(board, card) ||
-  (canChangeCard(board, card) && (card.isMine || isActionsSection(board, card.sectionId)))
+  (canChangeCard(board, card) &&
+    (card.isMine || board.canManage || isActionsSection(board, card.sectionId)))
 
 const toggleGroupSelection = (card: RetroCardViewModel) => {
   state.groupSelection = state.groupSelection.includes(card.id)
@@ -1622,9 +1888,21 @@ const mergeSelection = async () => {
   if (!board || !canGroup(board) || state.groupSelection.length < 2) {
     return
   }
-  await executeGroup({ cardIds: state.groupSelection, retroId: props.retroId })
+  const cardIds = [...state.groupSelection]
+  const created = await executeGroup({ cardIds, retroId: props.retroId })
+
+  if (created) {
+    if (!board.groups.some((group) => group.id === created.id)) {
+      board.groups.push({ cardIds, id: created.id, title: '', votedByMe: false, votes: 0 })
+    }
+    for (const card of board.cards) {
+      if (cardIds.includes(card.id)) {
+        card.groupId = created.id
+      }
+    }
+    triggerRef(data)
+  }
   state.groupSelection = []
-  await refresh()
 }
 
 const splitGroup = async (groupId: string) => {
@@ -1726,7 +2004,7 @@ const assign = async (card: RetroCardViewModel, assigneeId: null | string, event
 const destroy = async (card: RetroCardViewModel) => {
   const board = data.value
 
-  if (!board || !card.isMine || !canChangeCard(board, card)) {
+  if (!board || (!card.isMine && !board.canManage) || !canChangeCard(board, card)) {
     return
   }
   state.selectedId = undefined
@@ -1740,13 +2018,23 @@ const onKeyDown = (event: KeyboardEvent) => {
   const board = data.value
   const card = data.value?.cards.find((item) => item.id === state.selectedId)
 
-  if (board && card?.isMine && state.editingId === undefined && canChangeCard(board, card)) {
+  if (
+    board &&
+    card &&
+    (card.isMine || board.canManage) &&
+    state.editingId === undefined &&
+    canChangeCard(board, card)
+  ) {
     event.preventDefault()
     void destroy(card)
   }
 }
 
-onMounted(() => window.addEventListener('keydown', onKeyDown))
+onMounted(() => {
+  if (!data.value?.finished) {
+    window.addEventListener('keydown', onKeyDown)
+  }
+})
 onBeforeUnmount(() => window.removeEventListener('keydown', onKeyDown))
 
 const finish = async () => {
@@ -1767,6 +2055,9 @@ const finish = async () => {
 
 <style scoped>
 .retro {
+  --retro-title-size: clamp(22px, 2vw, 28px);
+
+  container-type: inline-size;
   height: calc(100% + var(--layout-content-padding) + var(--layout-content-padding));
   margin: calc(-1 * var(--layout-content-padding));
   min-height: 0;
@@ -1785,7 +2076,7 @@ const finish = async () => {
   z-index: 20;
 }
 
-.retro-canvas {
+.retro > .retro-canvas {
   border: 0;
   border-radius: 0;
   height: 100%;
@@ -1795,36 +2086,164 @@ const finish = async () => {
 }
 
 .retro-header {
-  --retro-title-size: clamp(24px, 2.2vw, 30px);
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
+  align-items: center;
+  column-gap: var(--space-2);
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, auto) minmax(90px, 1fr);
+  inset: auto;
+  padding: var(--space-3) var(--space-3) 0;
+  pointer-events: auto;
+  position: relative;
+  row-gap: var(--space-2);
   z-index: 7;
 }
 
-.retro-actions,
-.phase-chip,
-.phase-picker-trigger,
-.phase-rail {
-  backdrop-filter: blur(14px);
-  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 76%, transparent);
-  box-shadow: var(--shadow-card);
-  box-sizing: border-box;
+.retro-header:has(.board-help[open]) {
+  z-index: 100;
+}
+
+.board-help {
+  align-items: center;
+  display: flex;
+  position: static;
+}
+
+.board-help-trigger {
+  align-items: center;
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+  height: var(--icon-btn-size);
+  justify-content: center;
+  list-style: none;
+  padding: 0 var(--space-3);
+}
+
+.board-help-trigger:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.board-help-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.board-help-trigger:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.board-help[open] .board-help-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-popover);
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  max-height: calc(100dvh - 96px);
+  max-width: calc(100vw - var(--space-4));
+  overflow-y: auto;
+  padding: var(--space-3);
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 400px;
+  z-index: 100;
+}
+
+.board-help-heading {
+  color: var(--color-muted);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.board-help-heading:not(:first-child) {
+  margin-top: var(--space-1);
+}
+
+.board-help-phase {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.board-help-phase > svg {
+  color: var(--color-accent);
+  flex: none;
+  margin-top: 2px;
+}
+
+.board-help-phase span {
+  display: grid;
+  gap: 2px;
+}
+
+.board-help-phase small {
+  color: var(--color-muted);
+  line-height: 1.35;
+}
+
+.board-help-phase--current strong {
+  color: var(--color-accent);
+}
+
+.phase-facilitator {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  font-size: var(--font-size-caption);
+  gap: var(--space-1);
+  padding-bottom: var(--space-2);
+}
+
+.phase-facilitator > svg,
+.presence-role {
+  color: #b7791f;
+  height: 14px;
+  width: 14px;
+}
+
+.board-help-list {
+  display: grid;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.board-help-list li {
+  line-height: 1.4;
+}
+
+.board-help-list kbd {
+  background: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  font-family: inherit;
+  font-size: var(--font-size-caption);
+  padding: 1px 5px;
 }
 
 .retro-title {
   align-items: center;
   display: flex;
-  gap: var(--space-2);
-  left: var(--space-4);
-  max-width: min(360px, 30vw);
-  min-height: var(--control-height);
+  gap: var(--space-1);
+  grid-column: 1;
+  grid-row: 1;
+  left: auto;
+  max-width: 100%;
+  min-height: 42px;
   min-width: 0;
+  overflow: hidden;
   padding: var(--space-1) 0;
   pointer-events: auto;
-  position: absolute;
-  top: var(--space-4);
+  position: static;
   width: fit-content;
 }
 
@@ -1834,33 +2253,46 @@ const finish = async () => {
   font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.04em;
   line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .retro-name-input {
   background: transparent;
   border: 0;
-  border-bottom: 2px solid transparent;
   border-radius: 0;
   box-shadow: none;
   color: inherit;
   field-sizing: content;
+  flex: 1 1 auto;
   font-family: inherit;
   height: auto;
   max-width: 100%;
-  min-width: 4ch;
   padding: 0;
   width: auto;
 }
 
 .retro-name-input:hover {
   background: transparent;
-  border-bottom-color: var(--color-border);
 }
 
 .retro-name-input:focus {
   background: transparent;
-  border-bottom-color: var(--color-accent);
   outline: none;
+}
+
+.retro-name-edit {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--color-muted);
+}
+
+.retro-name-edit:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
 }
 
 .retro-finished {
@@ -1874,9 +2306,12 @@ const finish = async () => {
 
 .presence {
   align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--radius-control) - 2px);
+  box-shadow: none;
   display: flex;
   max-width: 220px;
-  min-height: var(--control-height-small);
   outline: none;
 }
 
@@ -1886,30 +2321,29 @@ const finish = async () => {
 }
 
 .presence > .entity-avatar {
-  margin-right: calc(var(--presence-step, 24px) - var(--icon-btn-size));
+  height: 28px;
+  margin-right: calc(var(--presence-step, 24px) - 28px);
   outline: 2px solid var(--color-surface);
+  width: 28px;
 }
 
 .presence > .entity-avatar:last-of-type {
   margin-right: 0;
 }
 
-/* The chip is the trigger, not the avatars inside it: hanging the menu off the chip lines it up
-   with the edge the eye reads, and the chip's own padding is already part of the way down, so the
-   pointer never leaves the trigger. The rest of the gap is the menu's transparent padding. */
 .presence-menu {
-  left: 0;
   opacity: 0;
   padding-top: var(--space-2);
   pointer-events: none;
   position: absolute;
-  top: 100%;
+  right: 0;
+  top: calc(100% - var(--space-1));
   transition: opacity 0.12s ease;
   z-index: 5;
 }
 
-.retro-actions:hover .presence-menu,
-.retro-actions:focus-within .presence-menu {
+.presence:hover .presence-menu,
+.presence:focus-within .presence-menu {
   opacity: 1;
   pointer-events: auto;
 }
@@ -1948,137 +2382,230 @@ const finish = async () => {
   outline: none;
 }
 
-.retro-actions {
-  align-items: center;
-  border-radius: var(--radius-card);
-  display: flex;
-  left: var(--space-4);
-  min-height: var(--control-height);
-  padding: var(--space-2);
-  pointer-events: auto;
-  position: absolute;
-  top: calc(var(--space-4) + var(--control-height) + var(--space-1));
+.presence-row .secondary {
+  margin-left: auto;
 }
 
-.phase-stack {
+.retro-toolbar {
   align-items: stretch;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 14px #10182814;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  pointer-events: none;
-  position: absolute;
-  right: var(--space-4);
-  top: var(--space-4);
-  width: 200px;
-}
-
-.phase-navigation {
-  align-items: start;
-  display: grid;
+  flex-direction: row;
   gap: var(--space-1);
-  grid-template-columns: 32px 128px 32px;
-  justify-content: end;
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  min-height: 42px;
+  padding: var(--space-1);
   pointer-events: auto;
-  width: 100%;
+  position: relative;
+  right: auto;
+  top: auto;
+  width: max-content;
+  z-index: 8;
 }
 
-.phase-step {
-  height: calc(var(--retro-title-size) * 1.1 + 2px);
-  width: 32px;
+.retro-toolbar:has(.board-help[open]) {
+  z-index: 100;
 }
 
-.phase-picker {
-  width: 128px;
+.retro-toolbar .presence,
+.retro-toolbar .board-help-trigger {
+  justify-content: center;
 }
 
-.phase-picker-trigger {
+.retro-toolbar .board-help-trigger {
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--radius-control) - 2px) 0 0 calc(var(--radius-control) - 2px);
+  box-shadow: none;
+  height: var(--icon-btn-size-small);
+  padding: 0;
+  width: var(--icon-btn-size-small);
+}
+
+.phase-stepper {
   align-items: center;
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  border-radius: var(--radius-control);
-  color: #fff;
-  cursor: pointer;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 14px #10182814;
   display: flex;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  gap: var(--space-2);
-  height: calc(var(--retro-title-size) * 1.1 + 2px);
-  list-style: none;
-  padding: 0 var(--space-3);
+  flex-wrap: nowrap;
+  gap: var(--space-1);
+  grid-column: 2;
+  grid-row: 1;
+  justify-content: center;
+  left: auto;
+  margin: 0;
+  max-width: 100%;
+  min-height: 42px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 3px;
   pointer-events: auto;
+  position: static;
+  scrollbar-width: none;
+  top: auto;
+  white-space: nowrap;
 }
 
-.phase-picker-trigger::-webkit-details-marker {
+.phase-stepper::-webkit-scrollbar {
   display: none;
 }
 
-.phase-picker-trigger:focus-visible {
+.phase-step {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--radius-control) - 2px);
+  box-shadow: none;
+  color: var(--color-muted);
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  height: 34px;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    translate var(--duration-fast) var(--ease-standard);
+  width: 34px;
+}
+
+button.phase-step {
+  cursor: pointer;
+}
+
+button.phase-step:hover:not(:disabled):not(.active) {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+button.phase-step:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+button.phase-step:focus-visible {
   box-shadow: var(--shadow-focus);
   outline: none;
 }
 
-/* A single segmented control keeps the meeting sequence readable without covering the board. */
-.phase-rail {
-  border-radius: var(--radius-card);
-  display: none;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-top: var(--space-2);
-  max-width: none;
-  overflow: visible;
-  padding: var(--space-1);
-  pointer-events: auto;
+.phase-step.active {
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  box-shadow: none;
+  color: #fff;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  padding: 0 var(--space-2);
+  width: auto;
 }
 
-.phase-picker[open] > .phase-rail {
-  display: flex;
-}
-
-.phase-rail button {
-  background: transparent;
-  border-color: transparent;
-  color: var(--color-muted);
+.phase-step-connector {
+  background: var(--color-border);
   flex: none;
-  justify-content: flex-start;
-  width: 100%;
+  height: 8px;
+  width: 1px;
+}
+
+.phase-finish {
+  border: 0;
+  border-left: 1px solid var(--color-divider);
+  border-radius: 0 calc(var(--radius-control) - 2px) calc(var(--radius-control) - 2px) 0;
+  flex: none;
+  height: 34px;
+  margin-left: 2px;
+}
+
+.phase-guide-center {
+  color: color-mix(in srgb, var(--color-text) 68%, transparent);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  padding-inline: var(--space-3);
+  pointer-events: none;
+  position: static;
+  text-align: center;
+  translate: none;
+  z-index: 7;
+}
+
+@container (max-width: 603px) {
+  .retro-header {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .retro-title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .retro-toolbar {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .phase-stepper {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    min-width: 0;
+  }
+
+  .phase-guide-center {
+    grid-row: 3;
+  }
 }
 
 .phase-controls {
   align-items: center;
-  align-self: flex-end;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
+  border-radius: var(--radius-card);
+  bottom: var(--space-4);
+  box-shadow: 0 4px 14px #10182814;
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
-  gap: var(--space-2);
-  justify-content: flex-end;
-  max-width: calc(100vw - var(--space-8));
-  overflow-x: auto;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  justify-content: flex-start;
+  left: var(--space-4);
+  max-width: calc(100% - var(--space-8));
+  min-height: 42px;
+  padding: var(--space-1);
   pointer-events: auto;
+  position: absolute;
   white-space: nowrap;
   width: max-content;
-}
-
-.phase-rail .active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: #fff;
-}
-
-.phase-rail .active:disabled {
-  opacity: 1;
+  z-index: 7;
 }
 
 .phase-chip {
   align-items: center;
-  border-radius: var(--radius-control);
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--radius-control) - 2px);
+  box-shadow: none;
   color: var(--color-text);
   display: flex;
   flex: none;
   font-size: var(--font-size-small);
   gap: var(--space-1);
-  height: 36px;
+  height: var(--control-height-small);
   justify-content: center;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
   white-space: nowrap;
   width: auto;
 }
@@ -2093,21 +2620,38 @@ button.phase-chip:hover:not(:disabled) {
 
 .phase-chip--warn {
   background: var(--color-accent-soft);
-  border-color: var(--color-accent);
   color: var(--color-accent);
 }
 
+.phase-chip:has(.countdown.over) {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+}
+
 .phase-chip-action {
-  background: transparent;
+  align-items: center;
+  background: var(--color-accent);
   border: 0;
-  color: inherit;
+  border-radius: var(--radius-small);
+  color: #fff;
+  display: inline-flex;
   font-weight: var(--font-weight-semibold);
-  padding: 0;
+  gap: var(--space-1);
+  height: var(--control-height-small);
+  padding: 0 var(--space-2);
 }
 
 .phase-chip-action:hover:not(:disabled) {
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  background: color-mix(in srgb, var(--color-accent) 88%, #000);
+}
+
+.phase-chip:has(.countdown) .phase-chip-action {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+}
+
+.phase-chip:has(.countdown) .phase-chip-action:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 16%, transparent);
 }
 
 .phase-chip-number {
@@ -2292,7 +2836,7 @@ button.phase-chip:hover:not(:disabled) {
 .group-box {
   background: color-mix(in srgb, var(--color-accent) 5%, transparent);
   border: 2px solid color-mix(in srgb, var(--color-accent) 58%, transparent);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-card);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 12%, transparent);
   cursor: grab;
   position: absolute;
@@ -2392,7 +2936,6 @@ button.phase-chip:hover:not(:disabled) {
   background: transparent;
   border: 0;
   border-radius: 0;
-  box-sizing: border-box;
   color: inherit;
   cursor: inherit;
   font-family: 'Caveat', 'Inter', cursive;
@@ -2473,11 +3016,11 @@ textarea.card-text:focus {
  * note itself keeps all of its writing space.
  */
 .assignee {
-  bottom: 0;
+  bottom: calc(-1 * var(--card-strip) - 4px);
   left: 50%;
   max-width: calc(100% - var(--icon-btn-size) * 2);
   position: absolute;
-  translate: -50% 50%;
+  translate: -50% 0;
 }
 
 .assignee-trigger {
@@ -2496,6 +3039,7 @@ textarea.card-text:focus {
 }
 
 .assignee-trigger--empty {
+  color: var(--color-muted);
   padding-left: var(--space-2);
 }
 
@@ -2525,10 +3069,6 @@ textarea.card-text:focus {
   display: none;
 }
 
-.assignee-trigger--empty {
-  color: var(--color-muted);
-}
-
 .assignee-trigger > svg {
   height: 14px;
   width: 14px;
@@ -2556,7 +3096,7 @@ textarea.card-text:focus {
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-small);
   color: inherit;
   display: flex;
   font-size: var(--font-size-caption);
@@ -2616,7 +3156,6 @@ textarea.card-text:focus {
 .vote-badge,
 .rank-badge,
 .assignee-trigger {
-  box-sizing: border-box;
   height: var(--card-strip);
 }
 
@@ -2632,7 +3171,7 @@ textarea.card-text:focus {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  bottom: 0;
+  bottom: calc(-1 * var(--card-strip) - 4px);
   box-shadow: var(--shadow-card);
   color: var(--color-text);
   display: flex;
@@ -2642,7 +3181,7 @@ textarea.card-text:focus {
   position: absolute;
   right: var(--space-2);
   transition: var(--transition-press);
-  translate: 0 50%;
+  translate: 0;
 }
 
 .vote-badge:not(:disabled):hover {
@@ -2650,7 +3189,11 @@ textarea.card-text:focus {
 }
 
 .vote-badge:not(:disabled):active {
-  translate: 0 calc(50% + var(--press-offset));
+  translate: 0 var(--press-offset);
+}
+
+.vote-result {
+  pointer-events: none;
 }
 
 .vote-badge:disabled {
@@ -2676,7 +3219,7 @@ textarea.card-text:focus {
   background: var(--color-surface);
   border: 1px solid var(--rank-color);
   border-radius: var(--radius-pill);
-  bottom: 0;
+  bottom: calc(-1 * var(--card-strip) - 4px);
   box-shadow: var(--shadow-card);
   color: var(--rank-color);
   display: flex;
@@ -2686,7 +3229,7 @@ textarea.card-text:focus {
   left: var(--space-2);
   pointer-events: none;
   position: absolute;
-  translate: 0 50%;
+  translate: 0;
 }
 
 .rank-badge.rank-1 {
@@ -2699,11 +3242,6 @@ textarea.card-text:focus {
 
 .rank-badge.rank-3 {
   --rank-color: #a15c35;
-}
-
-.rank-badge .lucide {
-  height: 12px;
-  width: 12px;
 }
 
 :root[data-theme='dark'] .rank-badge.rank-1 {
@@ -2724,18 +3262,44 @@ textarea.card-text:focus {
   width: 20px;
 }
 
-@media (max-width: 760px) {
-  .retro-title {
-    left: var(--space-3);
-    max-width: calc(100% - 228px);
-    padding-left: calc(var(--icon-btn-size) + var(--space-4));
-    top: var(--space-3);
+@media (max-width: 767px) {
+  .retro-header {
+    grid-template-columns: minmax(0, 1fr) max-content;
   }
 
-  .retro-actions {
+  .retro-title {
+    grid-column: 1;
+    grid-row: 1;
+    padding-left: calc(var(--icon-btn-size) + var(--space-3));
+  }
+
+  .retro-toolbar {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .phase-stepper {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    min-width: 0;
+  }
+
+  .phase-guide-center {
+    grid-row: 3;
+  }
+
+  .phase-controls {
+    align-items: stretch;
+    bottom: var(--space-4);
+    flex-direction: column;
+    flex-wrap: nowrap;
     left: var(--space-3);
-    padding-inline: var(--space-2);
-    top: calc(var(--space-3) + var(--control-height));
+    max-width: calc(100% - var(--space-6));
+  }
+
+  .phase-controls .phase-chip {
+    padding-inline: 0;
   }
 
   .presence {
@@ -2744,11 +3308,6 @@ textarea.card-text:focus {
 
   .presence > .entity-avatar:nth-of-type(n + 3) {
     display: none;
-  }
-
-  .phase-stack {
-    right: var(--space-3);
-    top: var(--space-3);
   }
 }
 </style>

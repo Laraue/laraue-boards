@@ -26,22 +26,38 @@
     <fieldset :disabled="viewModel.member.isOwner">
       <legend>Organization access</legend>
       <p class="muted section-description">These permissions apply to every space.</p>
-      <div class="read-permission">
-        <strong>Read</strong>
-        <label class="permission-option">
-          <input
-            aria-label="Read organization"
-            :checked="state.draft.global.canRead || globalReadInherited"
-            :disabled="globalReadInherited"
-            :title="globalReadInherited ? 'Inherited' : undefined"
-            type="checkbox"
-            @change="state.draft.global.canRead = !state.draft.global.canRead" />
-          <span>Read organization</span>
-        </label>
+      <div class="product-section">
+        <h3>Boards</h3>
+        <div class="read-permission">
+          <strong>Read</strong>
+          <label class="permission-option">
+            <input
+              aria-label="Read organization"
+              :checked="state.draft.global.canRead || globalReadInherited"
+              :disabled="globalReadInherited"
+              :title="globalReadInherited ? 'Inherited' : undefined"
+              type="checkbox"
+              @change="state.draft.global.canRead = !state.draft.global.canRead" />
+            <span>Read organization</span>
+          </label>
+        </div>
+        <PermissionTable
+          :on-toggle="toggleGlobal"
+          :rows="globalPermissionRows" />
       </div>
-      <PermissionTable
-        :on-toggle="toggleGlobal"
-        :rows="globalPermissionRows" />
+      <div class="product-section">
+        <h3>Retro</h3>
+        <div class="read-permission">
+          <strong>Access</strong>
+          <label class="permission-option">
+            <input
+              v-model="state.draft.global.canManageRetros"
+              aria-label="Manage retros in organization"
+              type="checkbox" />
+            <span>Manage retros</span>
+          </label>
+        </div>
+      </div>
     </fieldset>
 
     <fieldset :disabled="viewModel.member.isOwner">
@@ -62,28 +78,53 @@
           </span>
         </summary>
         <div class="direct-permissions">
-          <div class="read-permission">
-            <strong>Read</strong>
-            <label class="permission-option">
-              <input
-                :aria-label="`Read ${space.name}`"
-                :checked="
-                  state.draft.direct[space.id]!.canRead ||
-                  directPermissionTables[space.id]!.readInherited
-                "
-                :disabled="directPermissionTables[space.id]!.readInherited"
-                :title="directPermissionTables[space.id]!.readInherited ? 'Inherited' : undefined"
-                type="checkbox"
-                @change="
-                  state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
-                " />
-              <span>Read space</span>
-            </label>
+          <div class="product-section">
+            <h3>Boards</h3>
+            <div class="read-permission">
+              <strong>Read</strong>
+              <label class="permission-option">
+                <input
+                  :aria-label="`Read ${space.name}`"
+                  :checked="
+                    state.draft.direct[space.id]!.canRead ||
+                    directPermissionTables[space.id]!.readInherited
+                  "
+                  :disabled="directPermissionTables[space.id]!.readInherited"
+                  :title="directPermissionTables[space.id]!.readInherited ? 'Inherited' : undefined"
+                  type="checkbox"
+                  @change="
+                    state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
+                  " />
+                <span>Read space</span>
+              </label>
+            </div>
+            <PermissionTable
+              :label-suffix="` in ${space.name}`"
+              :on-toggle="(key) => toggleDirect(space.id, key)"
+              :rows="directPermissionTables[space.id]!.rows" />
           </div>
-          <PermissionTable
-            :label-suffix="` in ${space.name}`"
-            :on-toggle="(key) => toggleDirect(space.id, key)"
-            :rows="directPermissionTables[space.id]!.rows" />
+          <div class="product-section">
+            <h3>Retro</h3>
+            <div class="read-permission">
+              <strong>Access</strong>
+              <label class="permission-option">
+                <input
+                  :aria-label="`Manage retros in ${space.name}`"
+                  :checked="
+                    state.draft.direct[space.id]!.canManageRetros ||
+                    state.draft.global.canManageRetros
+                  "
+                  :disabled="state.draft.global.canManageRetros"
+                  :title="state.draft.global.canManageRetros ? 'Inherited' : undefined"
+                  type="checkbox"
+                  @change="
+                    state.draft.direct[space.id]!.canManageRetros =
+                      !state.draft.direct[space.id]!.canManageRetros
+                  " />
+                <span>Manage retros</span>
+              </label>
+            </div>
+          </div>
         </div>
       </details>
     </fieldset>
@@ -221,6 +262,25 @@ legend {
   display: flex;
   justify-content: space-between;
   padding: var(--space-3);
+}
+
+.read-permission + .read-permission {
+  margin-top: var(--space-3);
+}
+
+.product-section + .product-section {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+}
+
+.product-section h3 {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  margin: 0 0 var(--space-3);
+  text-transform: uppercase;
 }
 
 .space-permissions {

@@ -150,12 +150,10 @@ it('offers one blank option for a list attribute without values', async () => {
 })
 
 it('keeps the form open and shows the validation message returned by the backend', async () => {
-  const update = vi.fn<AttributePageDeps['update']>(
-    async (): Promise<ActionResult<true>> => ({
-      message: 'Name is already taken.',
-      status: 'validation-error',
-    }),
-  )
+  const update = vi.fn<AttributePageDeps['update']>(async (): Promise<ActionResult<true>> => ({
+    message: 'Name is already taken.',
+    status: 'validation-error',
+  }))
   const onFinished = vi.fn<() => void>()
 
   await mount(createDeps({ update }), onFinished)

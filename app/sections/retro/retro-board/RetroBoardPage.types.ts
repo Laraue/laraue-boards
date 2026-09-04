@@ -41,8 +41,25 @@ export type RetroMember = {
 }
 
 export type RetroChannelMessage =
+  | {
+      card: {
+        author: RetroMember
+        authorId: string
+        covered: boolean
+        done: boolean
+        groupId: null | string
+        id: string
+        revealed: boolean
+        sectionId: string
+        text: string
+        x: number
+        y: number
+      }
+      type: 'card-upserted'
+    }
   | { cardId: string; text: string; type: 'card-text' }
   | { cardId: string; type: 'card-move'; x: number; y: number }
+  | { cardIds: string[]; id: string; type: 'group-upserted' }
   | { member: RetroMember; type: 'cursor'; x: number; y: number }
   | { member: RetroMember; type: 'join' | 'leave' | 'presence' }
   | { type: 'changed' }

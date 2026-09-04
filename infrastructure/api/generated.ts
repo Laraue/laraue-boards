@@ -2827,6 +2827,7 @@ export interface components {
             canRead?: boolean;
             canUpdate?: boolean;
             canDelete?: boolean;
+            canManageRetros?: boolean;
             canCreateEpics?: boolean;
             canUpdateEpics?: boolean;
             canDeleteEpics?: boolean;
@@ -2943,6 +2944,7 @@ export interface components {
         };
         GlobalAccessLevels: {
             canRead?: boolean;
+            canManageRetros?: boolean;
             canCreateSpaces?: boolean;
             canUpdateSpaces?: boolean;
             canDeleteSpaces?: boolean;

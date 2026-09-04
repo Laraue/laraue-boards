@@ -8,17 +8,51 @@ export type PresenceMember = {
 }
 
 export type ChannelMessage =
+  | { card: ChannelCard; type: 'card-upserted' }
   | { cardId: string; text: string; type: 'card-text' }
   | { cardId: string; type: 'card-move'; x: number; y: number }
+  | { cardIds: string[]; id: string; type: 'group-upserted' }
   | { member: PresenceMember; type: 'cursor'; x: number; y: number }
   | { member: PresenceMember; type: 'join' | 'leave' | 'presence' }
   | { type: 'changed' }
+
+export type ChannelCard = {
+  author: PresenceMember
+  authorId: string
+  covered: boolean
+  done: boolean
+  groupId: null | string
+  id: string
+  revealed: boolean
+  sectionId: string
+  text: string
+  x: number
+  y: number
+}
 
 type HubMember = {
   color: string
   displayName: string
   initials: string
   userId: string
+}
+
+type HubGroup = {
+  cardIds: string[]
+  id: number
+}
+
+type HubCard = {
+  author: HubMember
+  covered: boolean
+  done: boolean
+  groupId: null | number | string
+  id: string
+  revealed: boolean
+  sectionId: number | string
+  text: string
+  x: number
+  y: number
 }
 
 const toMember = (member: HubMember): PresenceMember => ({
@@ -53,12 +87,33 @@ const createHubChannel = (hubUrl: string, retroId: string) => {
   connection.on('card-text', (cardId: string, text: string) =>
     emit({ cardId, text, type: 'card-text' }),
   )
+  connection.on('card-upserted', (card: HubCard) =>
+    emit({
+      card: {
+        author: toMember(card.author),
+        authorId: card.author.userId,
+        covered: card.covered,
+        done: card.done,
+        groupId: card.groupId === null ? null : String(card.groupId),
+        id: card.id,
+        revealed: card.revealed,
+        sectionId: String(card.sectionId),
+        text: card.text,
+        x: Number(card.x),
+        y: Number(card.y),
+      },
+      type: 'card-upserted',
+    }),
+  )
+  connection.on('group-upserted', (group: HubGroup) =>
+    emit({ cardIds: group.cardIds, id: String(group.id), type: 'group-upserted' }),
+  )
   connection.on('changed', () => emit({ type: 'changed' }))
 
   const join = () => connection.invoke('Join', Number(retroId))
 
   // A reconnect starts a new connection, and group membership does not survive it.
-  connection.onreconnected(() => void join())
+  connection.onreconnected(() => void join().then(() => emit({ type: 'changed' })))
 
   const send = (method: string, ...args: unknown[]) => {
     if (connection.state === HubConnectionState.Connected) {
@@ -68,6 +123,7 @@ const createHubChannel = (hubUrl: string, retroId: string) => {
 
   return {
     close: () => {
+      handlers.clear()
       void connection.stop()
     },
     onMessage: (handler: (message: ChannelMessage) => void) => {

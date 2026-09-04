@@ -13,6 +13,7 @@ export type GlobalPermissions = {
   canDeleteBoards: boolean
   canDeleteIssues: boolean
   canDeleteSpaces: boolean
+  canManageRetros: boolean
   canRead: boolean
   canUpdateBoards: boolean
   canUpdateIssues: boolean
@@ -25,6 +26,7 @@ export type DirectSpacePermissions = {
   canDelete: boolean
   canDeleteBoards: boolean
   canDeleteIssues: boolean
+  canManageRetros: boolean
   canRead: boolean
   canUpdate: boolean
   canUpdateBoards: boolean

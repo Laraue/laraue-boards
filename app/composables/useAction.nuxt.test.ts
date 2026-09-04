@@ -41,12 +41,10 @@ test('tracks pending while the action runs', async () => {
 })
 
 test('sets the validation message on a validation error', async () => {
-  const { execute, message } = useAction(
-    async (): Promise<ActionResult<string>> => ({
-      message: 'Name is required.',
-      status: 'validation-error',
-    }),
-  )
+  const { execute, message } = useAction(async (): Promise<ActionResult<string>> => ({
+    message: 'Name is required.',
+    status: 'validation-error',
+  }))
 
   const result = await execute()
 
@@ -57,9 +55,10 @@ test('sets the validation message on a validation error', async () => {
 test('reports an opaque error as a toast instead of a form message', async () => {
   const { toasts } = useToast()
   toasts.value = []
-  const { execute, message } = useAction(
-    async (): Promise<ActionResult<string>> => ({ code: 500, status: 'error' }),
-  )
+  const { execute, message } = useAction(async (): Promise<ActionResult<string>> => ({
+    code: 500,
+    status: 'error',
+  }))
 
   await execute()
 
