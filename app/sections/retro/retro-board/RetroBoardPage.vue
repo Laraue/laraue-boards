@@ -10,8 +10,7 @@
       <section
         class="retro"
         :class="{ 'retro--focused': state.fullscreen }">
-        <header class="retro-header">
-          <div class="retro-title">
+        <div class="retro-title">
             <h1 v-if="!canRename(board)">{{ board.name }}</h1>
             <input
               v-else
@@ -36,13 +35,12 @@
               class="retro-finished">
               Finished
             </span>
-          </div>
-          <div class="retro-toolbar">
-            <div
-              aria-label="People on this retro"
-              class="presence"
-              :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
-              tabindex="0">
+        </div>
+        <div
+          aria-label="People on this retro"
+          class="presence"
+          :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
+          tabindex="0">
               <span
                 v-for="member in everyone(board)"
                 :key="member.userId"
@@ -80,9 +78,7 @@
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
-        </header>
+        </div>
 
         <aside
           v-if="!board.finished"
@@ -92,14 +88,15 @@
             <div>
               <h2>{{ board.canManage ? 'Retro plan' : 'Current phase' }}</h2>
             </div>
-            <details
+            <div
               v-if="board.canManage"
               class="board-help">
-              <summary
+              <button
                 aria-label="Guide"
-                class="board-help-trigger">
+                class="board-help-trigger"
+                type="button">
                 <CircleHelp />
-              </summary>
+              </button>
               <div class="board-help-panel">
                 <p class="board-help-heading">Keyboard shortcuts</p>
                 <ul class="board-help-list">
@@ -135,7 +132,7 @@
                   <li>Pinch, or scroll with a modifier, to zoom - drag the background to pan</li>
                 </ul>
               </div>
-            </details>
+            </div>
           </header>
 
           <nav
@@ -2084,15 +2081,16 @@ const finish = async () => {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  left: var(--space-3);
   padding: var(--space-3);
   position: absolute;
-  top: 72px;
+  right: var(--space-3);
+  top: var(--space-4);
   width: var(--facilitator-width);
   z-index: 6;
 }
 
-.facilitator-panel:has(.board-help[open]) {
+.facilitator-panel:has(.board-help:hover),
+.facilitator-panel:has(.board-help:focus-within) {
   z-index: 100;
 }
 
@@ -2249,23 +2247,10 @@ const finish = async () => {
   width: 100%;
 }
 
-.retro-header {
-  align-items: center;
-  column-gap: var(--space-2);
-  display: grid;
-  grid-template-columns: minmax(120px, 1fr) minmax(0, auto) minmax(90px, 1fr);
-  inset: auto;
-  padding: var(--space-3) var(--space-3) 0;
-  pointer-events: auto;
-  position: relative;
-  row-gap: var(--space-2);
-  z-index: 7;
-}
-
 .board-help {
   align-items: center;
   display: flex;
-  position: static;
+  position: relative;
 }
 
 .board-help-trigger {
@@ -2277,7 +2262,6 @@ const finish = async () => {
   gap: var(--space-2);
   height: var(--icon-btn-size);
   justify-content: center;
-  list-style: none;
   padding: 0 var(--space-3);
 }
 
@@ -2286,21 +2270,17 @@ const finish = async () => {
   color: var(--color-text);
 }
 
-.board-help-trigger::-webkit-details-marker {
-  display: none;
-}
-
 .board-help-trigger:focus-visible {
   box-shadow: var(--shadow-focus);
   outline: none;
 }
 
-.board-help[open] .board-help-panel {
+.board-help-panel {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
-  display: grid;
+  display: none;
   gap: var(--space-2);
   margin-top: var(--space-2);
   max-height: calc(100dvh - 96px);
@@ -2312,6 +2292,11 @@ const finish = async () => {
   top: 100%;
   width: 400px;
   z-index: 100;
+}
+
+.board-help:hover .board-help-panel,
+.board-help:focus-within .board-help-panel {
+  display: grid;
 }
 
 .board-help-heading {
@@ -2358,17 +2343,17 @@ const finish = async () => {
   align-items: center;
   display: flex;
   gap: var(--space-1);
-  grid-column: 1;
-  grid-row: 1;
-  left: auto;
+  left: var(--space-4);
   max-width: 100%;
   min-height: 42px;
   min-width: 0;
   overflow: hidden;
   padding: var(--space-1) 0;
   pointer-events: auto;
-  position: static;
+  position: absolute;
+  top: var(--space-4);
   width: fit-content;
+  z-index: 8;
 }
 
 .retro-title h1,
@@ -2435,8 +2420,12 @@ const finish = async () => {
   border-radius: calc(var(--radius-control) - 2px);
   box-shadow: none;
   display: flex;
+  left: var(--space-4);
   max-width: 220px;
   outline: none;
+  position: absolute;
+  top: calc(var(--space-4) + 42px + var(--space-2));
+  z-index: 8;
 }
 
 .presence:focus-visible {
@@ -2456,11 +2445,11 @@ const finish = async () => {
 }
 
 .presence-menu {
+  left: 0;
   opacity: 0;
   padding-top: var(--space-2);
   pointer-events: none;
   position: absolute;
-  right: 0;
   top: calc(100% - var(--space-1));
   transition: opacity 0.12s ease;
   z-index: 5;
@@ -2510,59 +2499,19 @@ const finish = async () => {
   margin-left: auto;
 }
 
-/* Retro toolbar: the header cluster with the guide popover and who is present. */
-.retro-toolbar {
-  align-items: stretch;
-  backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
-  border-radius: var(--radius-card);
-  box-shadow: 0 4px 14px #10182814;
-  display: flex;
-  flex-direction: row;
-  gap: var(--space-1);
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: end;
-  min-height: 42px;
-  padding: var(--space-1);
-  pointer-events: auto;
-  position: relative;
-  right: auto;
-  top: auto;
-  width: max-content;
-  z-index: 8;
-}
-
-.retro-toolbar .presence {
-  justify-content: center;
-}
-
 .facilitator-panel-header .board-help-trigger {
   background: transparent;
   border: 0;
   border-radius: calc(var(--radius-control) - 2px);
   box-shadow: none;
-  height: var(--icon-btn-size-small);
+  height: 16px;
   padding: 0;
-  width: var(--icon-btn-size-small);
+  width: 16px;
 }
 
-@container (max-width: 603px) {
-  .retro-header {
-    grid-template-columns: minmax(0, 1fr) max-content;
-  }
-
-  .retro-title {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .retro-toolbar {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
+.facilitator-panel-header .board-help-trigger > svg {
+  height: 16px;
+  width: 16px;
 }
 
 /* Phase controls: contextual actions inside the current panel. */
@@ -3283,28 +3232,16 @@ textarea.card-text:focus {
 }
 
 @media (max-width: 767px) {
-  .retro-header {
-    grid-template-columns: minmax(0, 1fr) max-content;
-  }
-
   .retro-title {
-    grid-column: 1;
-    grid-row: 1;
     padding-left: calc(var(--icon-btn-size) + var(--space-3));
-  }
-
-  .retro-toolbar {
-    grid-column: 2;
-    grid-row: 1;
   }
 
   .facilitator-panel {
     gap: var(--space-2);
-    left: var(--space-3);
     padding: var(--space-2);
-    right: var(--space-3);
-    top: 72px;
-    width: auto;
+    right: var(--space-4);
+    top: var(--space-4);
+    width: min(var(--facilitator-width), calc(100% - var(--space-6)));
   }
 
   .facilitator-panel-header h2 {
