@@ -334,7 +334,7 @@
               :key="section.id"
               class="zone"
               :class="{ 'zone--closed': dragRejects(board, section.id) }"
-              :style="{ ...zoneStyle(index), borderColor: section.color }">
+              :style="zoneStyle(index)">
               <header class="zone-header">
                 <span class="zone-title">
                   <span
@@ -738,7 +738,6 @@ const setEditorRef = (element: unknown) => {
 const nameInput = shallowRef<HTMLInputElement>()
 const focusNameInput = () => {
   nameInput.value?.focus()
-  nameInput.value?.select()
 }
 
 const state = reactive({
@@ -763,7 +762,7 @@ const state = reactive({
   remoteTexts: new Map<string, { at: number; text: string }>(),
   removedCardIds: new Set<string>(),
   selectedId: undefined as string | undefined,
-  timerMinutes: 5,
+  timerMinutes: 1,
 })
 
 const {

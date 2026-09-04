@@ -1127,7 +1127,7 @@ it('runs a timer in the collect phase too', async () => {
   await mount({ createChannel: () => channel, setPhaseTimer })
   await buttonWithText('Start')?.trigger('click')
 
-  expect(setPhaseTimer).toHaveBeenCalledWith({ minutes: 5, retroId: '7' })
+  expect(setPhaseTimer).toHaveBeenCalledWith({ minutes: 1, retroId: '7' })
 })
 
 it('stops a running timer', async () => {
