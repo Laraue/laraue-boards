@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.61.1-noble
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
       # Playwright's recommended docker flags: chromium runs out of memory without the
       # host IPC namespace, and --init reaps the browser processes it leaves behind.
       options: --ipc=host --init
