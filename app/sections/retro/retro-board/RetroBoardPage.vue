@@ -9,7 +9,10 @@
     <template #default="{ data: board }">
       <section
         class="retro"
-        :class="{ 'retro--focused': state.fullscreen }">
+        :class="{
+          'retro--focused': state.fullscreen,
+          'retro--managed': board.canManage && !board.finished,
+        }">
         <header class="retro-header">
           <div class="retro-title">
             <h1 v-if="!canRename(board)">{{ board.name }}</h1>
@@ -37,52 +40,9 @@
               Finished
             </span>
           </div>
-          <nav
-            v-if="!board.finished"
-            aria-label="Retro phase"
-            class="phase-stepper">
-            <template
-              v-for="(phase, index) in PHASES"
-              :key="phase">
-              <button
-                v-if="board.canManage"
-                :aria-label="phase"
-                class="phase-step"
-                :class="{ active: board.phase === phase }"
-                :disabled="board.phase !== phase && !canChangePhase(board.phase, phase)"
-                :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`"
-                type="button"
-                @click="board.phase !== phase && changePhase(phase)">
-                <component :is="PHASE_ICONS[phase]" />
-                <span v-if="board.phase === phase">{{ phase }}</span>
-              </button>
-              <span
-                v-else
-                class="phase-step"
-                :class="{ active: board.phase === phase }"
-                :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`">
-                <component :is="PHASE_ICONS[phase]" />
-                <span v-if="board.phase === phase">{{ phase }}</span>
-              </span>
-              <span
-                v-if="index < PHASES.length - 1"
-                aria-hidden="true"
-                class="phase-step-connector"
-                :class="{ done: PHASES.indexOf(board.phase) > index }" />
-            </template>
-            <button
-              v-if="board.canManage && board.phase === 'Actions'"
-              class="secondary danger small phase-finish"
-              type="button"
-              @click="finish">
-              <Archive />
-              Finish
-            </button>
-          </nav>
-
           <div class="retro-toolbar">
             <details
-              v-if="!board.finished"
+              v-if="board.canManage && !board.finished"
               class="board-help">
               <summary
                 aria-label="Guide"
@@ -90,36 +50,6 @@
                 <CircleHelp />
               </summary>
               <div class="board-help-panel">
-                <template v-if="!board.finished">
-                  <p class="board-help-heading">Current phase</p>
-                  <div class="board-help-phase board-help-phase--current">
-                    <component :is="PHASE_ICONS[board.phase]" />
-                    <span>
-                      <strong>{{ phaseGuide(board).title }}</strong>
-                      <small>{{ phaseGuide(board).action }}</small>
-                    </span>
-                  </div>
-                  <span class="phase-facilitator">
-                    <Crown />
-                    <span
-                      class="entity-avatar small"
-                      :style="{ background: board.owner.color }">
-                      {{ board.owner.initials }}
-                    </span>
-                    {{ board.owner.name }} is facilitating
-                  </span>
-                  <p class="board-help-heading">All phases</p>
-                  <div
-                    v-for="phase in PHASES"
-                    :key="phase"
-                    class="board-help-phase">
-                    <component :is="PHASE_ICONS[phase]" />
-                    <span>
-                      <strong>{{ PHASE_GUIDES[phase].title }}</strong>
-                      <small>{{ PHASE_GUIDES[phase].action }}</small>
-                    </span>
-                  </div>
-                </template>
                 <p class="board-help-heading">Keyboard shortcuts</p>
                 <ul class="board-help-list">
                   <li>
@@ -200,6 +130,89 @@
             </div>
           </div>
         </header>
+
+        <div
+          v-if="!board.finished && !board.canManage"
+          class="phase-brief">
+          <component :is="PHASE_ICONS[board.phase]" />
+          <span class="phase-brief-copy">
+            <small>Current phase</small>
+            <strong>{{ phaseGuide(board).title }}</strong>
+            <span>{{ phaseGuide(board).action }}</span>
+          </span>
+        </div>
+
+        <aside
+          v-if="board.canManage && !board.finished"
+          aria-label="Facilitator controls"
+          class="facilitator-panel">
+          <header class="facilitator-panel-header">
+            <div>
+              <h2>Retro plan</h2>
+            </div>
+            <Crown aria-hidden="true" />
+          </header>
+
+          <nav
+            aria-label="Retro phases"
+            class="facilitator-phases">
+            <button
+              v-for="(phase, index) in PHASES"
+              :key="phase"
+              :aria-current="board.phase === phase ? 'step' : undefined"
+              class="facilitator-phase"
+              :class="{
+                active: board.phase === phase,
+                done: PHASES.indexOf(board.phase) > index,
+              }"
+              :disabled="phase !== board.phase && !canChangePhase(board.phase, phase)"
+              :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`"
+              type="button"
+              @click="board.phase !== phase && changePhase(phase)">
+              <span class="facilitator-phase-index">{{ index + 1 }}</span>
+              <component :is="PHASE_ICONS[phase]" />
+              <span class="facilitator-phase-copy">
+                <strong>{{ phase }}</strong>
+                <small>{{ PHASE_GUIDES[phase].title }}</small>
+              </span>
+            </button>
+          </nav>
+
+          <div class="facilitator-current">
+            <span class="facilitator-kicker">Now</span>
+            <div class="facilitator-current-title">
+              <component :is="PHASE_ICONS[board.phase]" />
+              <strong>{{ phaseGuide(board).title }}</strong>
+            </div>
+            <p>{{ phaseGuide(board).action }}</p>
+          </div>
+
+          <div class="facilitator-phase-actions">
+            <button
+              v-if="previousPhase(board.phase)"
+              class="secondary small"
+              type="button"
+              @click="changePhase(previousPhase(board.phase))">
+              Back
+            </button>
+            <button
+              v-if="nextPhase(board.phase)"
+              class="primary small"
+              type="button"
+              @click="changePhase(nextPhase(board.phase))">
+              Next phase
+            </button>
+          </div>
+
+          <button
+            v-if="board.phase === 'Actions'"
+            class="secondary danger facilitator-finish"
+            type="button"
+            @click="finish">
+            <Archive />
+            Finish retro
+          </button>
+        </aside>
 
         <div
           v-if="
@@ -2037,6 +2050,7 @@ const finish = async () => {
 
 <style scoped>
 .retro {
+  --facilitator-width: 260px;
   --retro-title-size: clamp(22px, 2vw, 28px);
 
   container-type: inline-size;
@@ -2065,6 +2079,233 @@ const finish = async () => {
   inset: 0;
   position: absolute;
   width: 100%;
+}
+
+.phase-brief {
+  align-items: flex-start;
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 14px #10182814;
+  display: flex;
+  gap: var(--space-2);
+  left: 50%;
+  max-width: min(420px, calc(100% - var(--space-8)));
+  padding: var(--space-3);
+  pointer-events: none;
+  position: absolute;
+  top: 72px;
+  transform: translateX(-50%);
+  z-index: 6;
+}
+
+.phase-brief > svg {
+  color: var(--color-accent);
+  flex: none;
+  margin-top: 2px;
+}
+
+.phase-brief-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.phase-brief-copy small,
+.facilitator-kicker {
+  color: var(--color-muted);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.phase-brief-copy strong {
+  font-size: var(--font-size-body);
+}
+
+.phase-brief-copy > span {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+}
+
+.facilitator-panel {
+  backdrop-filter: blur(16px);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 14px #10182814;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  left: var(--space-3);
+  padding: var(--space-3);
+  position: absolute;
+  top: 72px;
+  bottom: var(--space-3);
+  width: var(--facilitator-width);
+  z-index: 6;
+}
+
+.facilitator-panel-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.facilitator-panel-header h2 {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+}
+
+.facilitator-panel-header > svg {
+  color: #b7791f;
+  height: 18px;
+  width: 18px;
+}
+
+.facilitator-phases {
+  display: grid;
+  gap: 2px;
+}
+
+.facilitator-phase {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  cursor: pointer;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 24px 18px minmax(0, 1fr);
+  min-height: 48px;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  transition:
+    background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.facilitator-phase:hover:not(:disabled):not(.active) {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.facilitator-phase:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.facilitator-phase:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.facilitator-phase.active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.facilitator-phase-index {
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  display: flex;
+  font-size: var(--font-size-caption);
+  height: 22px;
+  justify-content: center;
+  width: 22px;
+}
+
+.facilitator-phase.done .facilitator-phase-index {
+  background: var(--color-soft);
+  color: var(--color-muted);
+}
+
+.facilitator-phase.active .facilitator-phase-index {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+.facilitator-phase > svg {
+  height: 16px;
+  width: 16px;
+}
+
+.facilitator-phase-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.facilitator-phase-copy strong {
+  color: var(--color-text);
+  font-size: var(--font-size-small);
+}
+
+.facilitator-phase.active .facilitator-phase-copy strong {
+  color: var(--color-accent);
+}
+
+.facilitator-phase-copy small {
+  color: var(--color-muted);
+  font-size: var(--font-size-caption);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.facilitator-current {
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.facilitator-current-title {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.facilitator-current-title > svg {
+  color: var(--color-accent);
+  height: 17px;
+  width: 17px;
+}
+
+.facilitator-current p {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+  margin: var(--space-1) 0 0;
+}
+
+.facilitator-phase-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.facilitator-phase-actions > button {
+  flex: 1;
+  justify-content: center;
+}
+
+.facilitator-finish {
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .retro--managed .phase-controls {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .retro-header {
@@ -2149,42 +2390,6 @@ const finish = async () => {
   margin-top: var(--space-1);
 }
 
-.board-help-phase {
-  align-items: flex-start;
-  display: flex;
-  gap: var(--space-2);
-}
-
-.board-help-phase > svg {
-  color: var(--color-accent);
-  flex: none;
-  margin-top: 2px;
-}
-
-.board-help-phase span {
-  display: grid;
-  gap: 2px;
-}
-
-.board-help-phase small {
-  color: var(--color-muted);
-  line-height: 1.35;
-}
-
-.board-help-phase--current strong {
-  color: var(--color-accent);
-}
-
-.phase-facilitator {
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  font-size: var(--font-size-caption);
-  gap: var(--space-1);
-  padding-bottom: var(--space-2);
-}
-
-.phase-facilitator > svg,
 .presence-role {
   color: #b7791f;
   height: 14px;
@@ -2411,105 +2616,6 @@ const finish = async () => {
   width: var(--icon-btn-size-small);
 }
 
-/* Phase stepper: the header rail of phase steps, connectors and the finish action. */
-.phase-stepper {
-  align-items: center;
-  backdrop-filter: blur(16px);
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-border) 84%, transparent);
-  border-radius: var(--radius-card);
-  box-shadow: 0 4px 14px #10182814;
-  display: flex;
-  flex-wrap: nowrap;
-  gap: var(--space-1);
-  grid-column: 2;
-  grid-row: 1;
-  justify-content: center;
-  left: auto;
-  margin: 0;
-  max-width: 100%;
-  min-height: 42px;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 3px;
-  pointer-events: auto;
-  position: static;
-  scrollbar-width: none;
-  top: auto;
-  white-space: nowrap;
-}
-
-.phase-stepper::-webkit-scrollbar {
-  display: none;
-}
-
-.phase-step {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
-  box-shadow: none;
-  color: var(--color-muted);
-  display: flex;
-  flex: none;
-  gap: var(--space-2);
-  height: 34px;
-  justify-content: center;
-  padding: 0 var(--space-2);
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    translate var(--duration-fast) var(--ease-standard);
-  width: 34px;
-}
-
-button.phase-step {
-  cursor: pointer;
-}
-
-button.phase-step:hover:not(:disabled):not(.active) {
-  background: var(--color-hover);
-  color: var(--color-text);
-}
-
-button.phase-step:disabled {
-  cursor: default;
-  opacity: 0.4;
-}
-
-button.phase-step:focus-visible {
-  box-shadow: var(--shadow-focus);
-  outline: none;
-}
-
-.phase-step.active {
-  background: var(--color-accent);
-  border: 1px solid var(--color-accent);
-  box-shadow: none;
-  color: #fff;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  padding: 0 var(--space-2);
-  width: auto;
-}
-
-.phase-step-connector {
-  background: var(--color-border);
-  flex: none;
-  height: 8px;
-  width: 1px;
-}
-
-.phase-finish {
-  border: 0;
-  border-left: 1px solid var(--color-divider);
-  border-radius: 0 calc(var(--radius-control) - 2px) calc(var(--radius-control) - 2px) 0;
-  flex: none;
-  height: 34px;
-  margin-left: 2px;
-}
-
 @container (max-width: 603px) {
   .retro-header {
     grid-template-columns: minmax(0, 1fr) max-content;
@@ -2525,12 +2631,6 @@ button.phase-step:focus-visible {
     grid-row: 1;
   }
 
-  .phase-stepper {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
-    min-width: 0;
-  }
 }
 
 /* Phase controls: the floating bar of per-phase actions at the bottom of the board. */
@@ -2558,7 +2658,7 @@ button.phase-step:focus-visible {
   z-index: 7;
 }
 
-/* Its buttons wear the phase-step look: quiet until hovered, accent only to flag a state. */
+/* Quiet until hovered, accent only to flag an active state. */
 .notes-visibility,
 .reset-votes,
 .phase-timer-start,
@@ -3279,13 +3379,6 @@ textarea.card-text:focus {
     grid-row: 1;
   }
 
-  .phase-stepper {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-self: center;
-    min-width: 0;
-  }
-
   .phase-controls {
     align-items: stretch;
     bottom: var(--space-4);
@@ -3293,6 +3386,91 @@ textarea.card-text:focus {
     flex-wrap: nowrap;
     left: var(--space-3);
     max-width: calc(100% - var(--space-6));
+    max-height: calc(100% - 112px);
+    overflow-y: auto;
+  }
+
+  .retro--managed .phase-controls {
+    left: var(--space-3);
+    max-width: calc(100% - var(--space-6));
+    transform: none;
+  }
+
+  .phase-brief {
+    left: var(--space-3);
+    max-width: none;
+    right: var(--space-3);
+    top: 72px;
+    transform: none;
+  }
+
+  .facilitator-panel {
+    bottom: auto;
+    gap: var(--space-2);
+    left: var(--space-3);
+    padding: var(--space-2);
+    right: var(--space-3);
+    top: 72px;
+    width: auto;
+  }
+
+  .facilitator-panel-header h2 {
+    font-size: var(--font-size-body);
+  }
+
+  .facilitator-phases {
+    display: flex;
+    gap: 2px;
+  }
+
+  .facilitator-phase {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 3px;
+    justify-content: center;
+    min-height: 48px;
+    padding: var(--space-1) 2px;
+    text-align: center;
+  }
+
+  .facilitator-phase-index {
+    display: none;
+  }
+
+  .facilitator-phase > svg {
+    height: 16px;
+    width: 16px;
+  }
+
+  .facilitator-phase-copy {
+    display: block;
+  }
+
+  .facilitator-phase-copy strong {
+    display: block;
+    font-size: 10px;
+  }
+
+  .facilitator-phase-copy small {
+    display: none;
+  }
+
+  .facilitator-current {
+    margin-top: 0;
+    padding-top: var(--space-2);
+  }
+
+  .facilitator-current p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .facilitator-finish {
+    align-self: flex-end;
+    width: auto;
   }
 
   .phase-controls > * {
