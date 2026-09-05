@@ -4,7 +4,7 @@
     error-title="Could not load retro"
     loading-text="Loading retro…"
     :message="message"
-    :on-retry="refresh"
+    :on-retry="retry"
     :pending="pending && !data">
     <template #default="{ data: board }">
       <section
@@ -18,8 +18,9 @@
             aria-label="Retro name"
             class="retro-name-input"
             maxlength="128"
-            :value="board.name"
-            @change="rename($event)" />
+            :value="state.fieldDrafts.name ?? board.name"
+            @change="rename($event)"
+            @input="trackNameDraft($event)" />
           <button
             v-if="canRename(board)"
             aria-label="Edit retro name"
@@ -36,47 +37,95 @@
             Finished
           </span>
         </div>
-        <div
-          aria-label="People on this retro"
-          class="presence"
-          :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
-          tabindex="0">
-          <span
-            v-for="member in everyone(board)"
-            :key="member.userId"
-            class="entity-avatar"
-            :style="{ background: member.color }">
-            {{ member.initials }}
-          </span>
-          <div class="presence-menu">
-            <div class="presence-list">
-              <p class="presence-title">
-                {{ board.finished ? 'Participants' : 'On this retro' }}
-              </p>
-              <span
-                v-for="member in everyone(board)"
-                :key="member.userId"
-                class="presence-row">
+        <div class="retro-top-controls">
+          <div
+            aria-label="People on this retro"
+            class="presence"
+            :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
+            tabindex="0">
+            <span
+              v-for="member in everyone(board)"
+              :key="member.userId"
+              class="entity-avatar"
+              :style="{ background: member.color }">
+              {{ member.initials }}
+            </span>
+            <div class="presence-menu">
+              <div class="presence-list">
+                <p class="presence-title">
+                  {{ board.finished ? 'Participants' : 'On this retro' }}
+                </p>
                 <span
-                  class="entity-avatar small"
-                  :style="{ background: member.color }">
-                  {{ member.initials }}
+                  v-for="member in everyone(board)"
+                  :key="member.userId"
+                  class="presence-row">
+                  <span
+                    class="entity-avatar small"
+                    :style="{ background: member.color }">
+                    {{ member.initials }}
+                  </span>
+                  {{ member.name }}
+                  <Crown
+                    v-if="member.userId === board.owner.userId"
+                    aria-label="Owner"
+                    class="presence-role"
+                    role="img" />
+                  <button
+                    v-else-if="canHandOver(board)"
+                    class="secondary small"
+                    type="button"
+                    @click="handOver(member)">
+                    Make owner
+                  </button>
                 </span>
-                {{ member.name }}
-                <Crown
-                  v-if="member.userId === board.owner.userId"
-                  aria-label="Owner"
-                  class="presence-role"
-                  role="img" />
-                <button
-                  v-else-if="canHandOver(board)"
-                  class="secondary small"
-                  type="button"
-                  @click="handOver(member)">
-                  Make owner
-                </button>
-              </span>
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div
+          v-if="!board.finished"
+          class="board-help">
+          <button
+            class="secondary small"
+            type="button">
+            <CircleHelp aria-hidden="true" />
+            Guide
+          </button>
+          <div class="board-help-panel">
+            <p class="board-help-heading">Keyboard shortcuts</p>
+            <ul class="board-help-list">
+              <li>
+                <kbd>Delete</kbd>
+                /
+                <kbd>Backspace</kbd>
+                deletes the selected note
+              </li>
+              <li v-if="board.canManage">
+                <kbd>Ctrl</kbd>
+                /
+                <kbd>Cmd</kbd>
+                + click picks notes to merge into a topic
+              </li>
+              <li>
+                <kbd>Ctrl</kbd>
+                /
+                <kbd>Cmd</kbd>
+                +
+                <kbd>Enter</kbd>
+                saves a note being edited
+              </li>
+              <li>
+                <kbd>Esc</kbd>
+                cancels editing a note
+              </li>
+            </ul>
+            <p class="board-help-heading">On the board</p>
+            <ul class="board-help-list">
+              <li>Double-click (or double-tap) an empty spot to add a note</li>
+              <li>Drag a note to move it between sections</li>
+              <li>Pinch, or scroll with a modifier, to zoom - drag the background to pan</li>
+            </ul>
           </div>
         </div>
 
@@ -97,49 +146,6 @@
             </button>
             <div v-else>
               <h2>Current phase</h2>
-            </div>
-            <div class="board-help">
-              <button
-                aria-label="Guide"
-                class="board-help-trigger"
-                type="button">
-                <CircleHelp />
-              </button>
-              <div class="board-help-panel">
-                <p class="board-help-heading">Keyboard shortcuts</p>
-                <ul class="board-help-list">
-                  <li>
-                    <kbd>Delete</kbd>
-                    /
-                    <kbd>Backspace</kbd>
-                    deletes the selected note
-                  </li>
-                  <li v-if="board.canManage">
-                    <kbd>Ctrl</kbd>
-                    /
-                    <kbd>Cmd</kbd>
-                    + click picks notes to merge into a topic
-                  </li>
-                  <li>
-                    <kbd>Ctrl</kbd>
-                    /
-                    <kbd>Cmd</kbd>
-                    +
-                    <kbd>Enter</kbd>
-                    saves a note being edited
-                  </li>
-                  <li>
-                    <kbd>Esc</kbd>
-                    cancels editing a note
-                  </li>
-                </ul>
-                <p class="board-help-heading">On the board</p>
-                <ul class="board-help-list">
-                  <li>Double-click (or double-tap) an empty spot to add a note</li>
-                  <li>Drag a note to move it between sections</li>
-                  <li>Pinch, or scroll with a modifier, to zoom - drag the background to pan</li>
-                </ul>
-              </div>
             </div>
           </header>
 
@@ -185,25 +191,25 @@
           <div
             v-if="
               board.phase !== 'Actions' &&
-              ((board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0) ||
+              ((board.phase === 'Collect' && myNotes.total > 0) ||
                 board.phase === 'Vote' ||
                 (canRunTimer(board) && (board.canManage || countdown !== undefined)))
             "
             class="phase-controls">
             <div
-              v-if="board.phase === 'Collect' && board.hiddenMine + board.revealedMine > 0"
+              v-if="board.phase === 'Collect' && myNotes.total > 0"
               class="phase-control">
               <span class="phase-control-label">
                 <StickyNote aria-hidden="true" />
                 Notes:
               </span>
               <button
-                :aria-label="board.hiddenMine > 0 ? 'Show my notes' : 'Hide my notes'"
+                :aria-label="myNotes.hidden > 0 ? 'Show my notes' : 'Hide my notes'"
                 class="secondary small"
-                :class="{ danger: board.hiddenMine > 0 }"
+                :class="{ danger: myNotes.hidden > 0 }"
                 type="button"
-                @click="setMineRevealed(board.hiddenMine > 0)">
-                {{ board.hiddenMine > 0 ? 'Private' : 'Visible' }}
+                @click="setMineRevealed(myNotes.hidden > 0)">
+                {{ myNotes.hidden > 0 ? 'Private' : 'Visible' }}
               </button>
             </div>
 
@@ -223,8 +229,9 @@
                   max="99"
                   min="1"
                   type="number"
-                  :value="board.votesPerUser"
-                  @change="setVotesPerUser($event)" />
+                  :value="state.fieldDrafts.votesPerUser ?? board.votesPerUser"
+                  @change="setVotesPerUser($event)"
+                  @input="trackVotesDraft($event)" />
                 <strong v-else>{{ board.votesPerUser }}</strong>
               </div>
 
@@ -241,8 +248,7 @@
 
             <div
               v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
-              class="phase-control phase-timer"
-              :class="{ 'phase-timer--over': countdown === '00:00' }">
+              class="phase-control phase-timer">
               <span class="phase-control-label">
                 <Timer aria-hidden="true" />
                 Timer:
@@ -267,7 +273,6 @@
                 </button>
               </template>
               <template v-else>
-                <Timer />
                 <span
                   class="countdown"
                   :class="{ over: countdown === '00:00' }">
@@ -315,7 +320,7 @@
 
         <RetroCanvas
           class="retro-canvas"
-          :on-background-pointer-down="() => (state.selectedId = undefined)"
+          :on-background-pointer-down="handleBackgroundPointerDown"
           :on-canvas-double-click="(point) => addCardAt(board, point)"
           :on-cursor-move="publishCursor"
           :on-node-move="moveDraggedCard"
@@ -368,6 +373,7 @@
               v-for="group in groupBoxes(board)"
               :key="group.id"
               class="group-box"
+              :class="{ dragging: state.dragGroupId === group.id }"
               :style="{
                 height: `${group.height}px`,
                 left: `${group.left}px`,
@@ -375,25 +381,77 @@
                 width: `${group.width}px`,
               }"
               @pointerdown="startGroupDrag($event, group.id, group.cardIds, startNodeDrag)">
-              <div class="group-header">
+              <div
+                class="group-header"
+                @dblclick.stop>
                 <input
                   aria-label="Topic title"
-                  class="group-title"
+                  class="secondary small group-title"
                   :disabled="!canGroup(board)"
                   :placeholder="`Topic of ${group.cardIds.length} notes`"
-                  :value="group.title"
-                  @change="renameGroup(group.id, $event)"
+                  :value="
+                    state.editingGroupId === group.id
+                      ? (state.fieldDrafts.groupTitle ?? group.title)
+                      : group.title
+                  "
+                  @blur="renameGroup(group.id, $event)"
+                  @focus="state.editingGroupId = group.id"
+                  @input="trackGroupTitleDraft($event)"
                   @pointerdown.stop />
                 <button
                   v-if="canGroup(board)"
                   aria-label="Ungroup topic"
-                  class="icon-btn small group-ungroup"
+                  class="secondary small group-ungroup"
                   title="Ungroup"
                   type="button"
                   @click.stop="splitGroup(group.id)"
                   @pointerdown.stop>
-                  <Ungroup />
+                  <Layers2 />
                 </button>
+              </div>
+              <div
+                v-if="showGroupVoteBadge(board, group)"
+                class="card-toolbar card-toolbar--bottom-center group-vote-toolbar"
+                @dblclick.stop
+                @pointerdown.stop>
+                <button
+                  v-if="votingOpen"
+                  :aria-label="group.votedByMe ? 'Remove vote from topic' : 'Vote for topic'"
+                  :aria-pressed="group.votedByMe"
+                  class="icon-btn small vote-badge"
+                  :class="{ voted: group.votedByMe }"
+                  :title="group.votedByMe ? 'Remove vote' : 'Vote for this topic'"
+                  type="button"
+                  @click.stop="voteGroup(group)"
+                  @pointerdown.stop>
+                  <ThumbsUp />
+                </button>
+                <span
+                  v-else
+                  :aria-label="voteResultLabel(group.votes, groupRank(board, group))"
+                  :class="[
+                    'secondary',
+                    'small',
+                    'vote-badge',
+                    'vote-result',
+                    voteResultClasses(groupRank(board, group)),
+                  ]">
+                  <Trophy
+                    v-if="groupRank(board, group)"
+                    aria-hidden="true" />
+                  <span
+                    v-if="groupRank(board, group)"
+                    class="vote-result-rank">
+                    #{{ groupRank(board, group) }}
+                  </span>
+                  <span
+                    v-if="groupRank(board, group)"
+                    aria-hidden="true"
+                    class="vote-result-separator">
+                    ·
+                  </span>
+                  <span class="vote-result-count">{{ votesLabel(group.votes) }}</span>
+                </span>
               </div>
             </div>
 
@@ -417,9 +475,12 @@
               }"
               @click="selectCard(card, $event)"
               @dblclick.stop
+              @pointercancel="cancelCardTouch"
               @pointerdown.stop="startCardDrag($event, card, startNodeDrag)"
-              @pointerenter="state.hoveredId = card.id"
-              @pointerleave="state.hoveredId = undefined">
+              @pointerenter="setHoveredCard(card.id, $event)"
+              @pointerleave="clearHoveredCard(card.id, $event)"
+              @pointermove="handleCardPointerMove"
+              @pointerup="handleCardPointerUp($event, card)">
               <span
                 v-if="state.hoveredId === card.id || state.selectedId === card.id"
                 class="card-author"
@@ -427,27 +488,28 @@
                 :title="card.authorName">
                 {{ card.authorInitials }}
               </span>
+              <p
+                v-if="state.editingId !== card.id"
+                v-fit-text="card.text"
+                class="card-text"
+                :class="{ placeholder: !card.text }">
+                {{ card.text || 'Add a note' }}
+              </p>
               <textarea
-                v-if="state.editingId === card.id"
-                :ref="setEditorRef"
+                v-if="state.selectedId === card.id || state.editingId === card.id"
+                v-show="state.editingId === card.id"
+                :ref="(element) => setEditorRef(card.id, element)"
                 v-model="state.draft"
                 v-fit-text="state.draft"
                 aria-label="Edit note"
                 class="card-text"
-                maxlength="200"
+                maxlength="180"
                 placeholder="Add a note"
                 @blur="saveDraft(card)"
                 @input="publishDraft(card)"
                 @keydown.ctrl.enter.prevent="saveDraft(card)"
                 @keydown.esc.prevent="cancelEdit"
                 @keydown.meta.enter.prevent="saveDraft(card)" />
-              <p
-                v-else
-                v-fit-text="card.text"
-                class="card-text"
-                :class="{ placeholder: !card.text }">
-                {{ card.text || 'Add a note' }}
-              </p>
               <details
                 v-if="state.editingId !== card.id && isActionsSection(board, card.sectionId)"
                 class="assignee"
@@ -455,7 +517,7 @@
                 @pointerdown.stop>
                 <summary
                   aria-label="Assignee"
-                  class="assignee-trigger"
+                  class="secondary small assignee-trigger"
                   :class="{ 'assignee-trigger--empty': !card.assignee }">
                   <span
                     v-if="card.assignee"
@@ -493,55 +555,65 @@
                   </button>
                 </div>
               </details>
-              <span
-                v-if="discussionRanks.get(card.id)"
-                :aria-label="discussionRanks.get(card.id) + ' place'"
-                class="rank-badge"
-                :class="'rank-' + discussionRanks.get(card.id)">
-                <Medal />
-                {{ discussionRanks.get(card.id) }}
-              </span>
-              <button
-                v-if="state.editingId !== card.id && votingOpen && showVoteBadge(board, card)"
-                :aria-label="votedByMe(board, card) ? 'Remove vote from topic' : 'Vote for topic'"
-                class="vote-badge"
-                :class="{ voted: votedByMe(board, card) }"
-                :title="votedByMe(board, card) ? 'Remove vote' : 'Vote for this topic'"
-                type="button"
-                @click.stop="vote(card)"
-                @pointerdown.stop>
-                <ThumbsUp />
-                <template v-if="votedByMe(board, card)">Voted</template>
-              </button>
-              <span
-                v-else-if="
+              <div
+                v-if="
                   state.editingId !== card.id &&
-                  showVoteResults(board) &&
-                  showVoteBadge(board, card)
+                  ((votingOpen && showVoteBadge(board, card)) ||
+                    (showVoteResults(board) && showVoteBadge(board, card)))
                 "
-                :aria-label="`${topicVotes(board, card)} votes`"
-                class="vote-badge vote-result">
-                <ThumbsUp />
-                {{ topicVotes(board, card) }}
-              </span>
+                class="card-toolbar card-toolbar--bottom-center">
+                <button
+                  v-if="votingOpen"
+                  :aria-label="votedByMe(board, card) ? 'Remove vote from topic' : 'Vote for topic'"
+                  class="icon-btn small vote-badge"
+                  :class="{ voted: votedByMe(board, card) }"
+                  :title="votedByMe(board, card) ? 'Remove vote' : 'Vote for this topic'"
+                  type="button"
+                  @click.stop="vote(card)"
+                  @pointerdown.stop>
+                  <ThumbsUp />
+                </button>
+                <span
+                  v-else
+                  :aria-label="
+                    voteResultLabel(topicVotes(board, card), discussionRanks.get(card.id))
+                  "
+                  :class="[
+                    'secondary',
+                    'small',
+                    'vote-badge',
+                    'vote-result',
+                    voteResultClasses(discussionRanks.get(card.id)),
+                  ]">
+                  <Trophy
+                    v-if="discussionRanks.get(card.id)"
+                    aria-hidden="true" />
+                  <span
+                    v-if="discussionRanks.get(card.id)"
+                    class="vote-result-rank">
+                    #{{ discussionRanks.get(card.id) }}
+                  </span>
+                  <span
+                    v-if="discussionRanks.get(card.id)"
+                    aria-hidden="true"
+                    class="vote-result-separator">
+                    ·
+                  </span>
+                  <span class="vote-result-count">{{ votesLabel(topicVotes(board, card)) }}</span>
+                </span>
+              </div>
 
               <div
                 v-if="
                   state.editingId !== card.id &&
                   state.selectedId === card.id &&
-                  hasActions(board, card)
+                  hasActions(board, card) &&
+                  (canTickOff(board, card) ||
+                    (card.isMine &&
+                      board.phase === 'Collect' &&
+                      !isActionsSection(board, card.sectionId)))
                 "
-                class="card-toolbar">
-                <button
-                  v-if="canEditCard(board, card)"
-                  aria-label="Edit note"
-                  class="icon-btn small"
-                  title="Edit note"
-                  type="button"
-                  @click.stop="startEdit(card)"
-                  @pointerdown.stop>
-                  <Pencil />
-                </button>
+                class="card-toolbar card-toolbar--left">
                 <button
                   v-if="canTickOff(board, card)"
                   class="icon-btn small"
@@ -565,6 +637,25 @@
                   <Eye v-if="card.revealed" />
                   <EyeOff v-else />
                 </button>
+              </div>
+              <div
+                v-if="
+                  state.editingId !== card.id &&
+                  state.selectedId === card.id &&
+                  hasActions(board, card) &&
+                  (canEditCard(board, card) || card.isMine || board.canManage)
+                "
+                class="card-toolbar card-toolbar--right">
+                <button
+                  v-if="canEditCard(board, card)"
+                  aria-label="Edit note"
+                  class="icon-btn small"
+                  title="Edit note"
+                  type="button"
+                  @click.stop="startEdit(card)"
+                  @pointerdown.stop>
+                  <Pencil />
+                </button>
                 <button
                   v-if="card.isMine || board.canManage"
                   aria-label="Delete note"
@@ -584,12 +675,6 @@
           aria-label="Group selection"
           class="merge-bar"
           role="toolbar">
-          <Group />
-          <span>
-            {{ state.groupSelection.length }}
-            {{ state.groupSelection.length === 1 ? 'note' : 'notes' }}
-            selected
-          </span>
           <button
             class="primary small"
             :disabled="state.groupSelection.length < 2"
@@ -622,7 +707,6 @@ import {
   Group,
   ListChecks,
   Maximize,
-  Medal,
   RotateCcw,
   MessagesSquare,
   Minimize,
@@ -631,9 +715,10 @@ import {
   StickyNote,
   ThumbsUp,
   Timer,
+  Trophy,
   UserRound,
   Trash2,
-  Ungroup,
+  Layers2,
 } from '@lucide/vue'
 
 import RetroCanvas from '~/sections/retro/retro-board/components/RetroCanvas/RetroCanvas.vue'
@@ -643,6 +728,7 @@ import type {
   RetroCardViewModel,
   RetroChannel,
   RetroChannelMessage,
+  RetroGroupViewModel,
   RetroMember,
   RetroPhase,
 } from '~/sections/retro/retro-board/RetroBoardPage.types'
@@ -712,18 +798,22 @@ const ZONE_GAP = 24
 type DiscussionTopic = {
   cardIds: string[]
   id: string
-  title: string
   votes: number
 }
 
 const CARD_SIZE = 160
 // Not a cap on the discussion - just how many topics are marked as the ones to start with.
 const PRIORITY_TOPICS = 3
+const GROUP_CARD_GAP = 16
 const GROUP_PADDING = 8
-const MAX_CARD_FONT_SIZE = 30
-const MIN_CARD_FONT_SIZE = 12
+const GROUP_MAGNET_DISTANCE = 32
+const MAX_CARD_FONT_SIZE = 34
+const MIN_CARD_FONT_SIZE = 8
 
 const fitCardText = (element: HTMLElement) => {
+  if (element.clientWidth === 0 || element.clientHeight === 0) {
+    return
+  }
   let fontSize = MAX_CARD_FONT_SIZE
 
   element.style.fontSize = `${fontSize}px`
@@ -748,9 +838,21 @@ const vFitText = {
   },
 }
 
-const editor = shallowRef<HTMLTextAreaElement>()
-const setEditorRef = (element: unknown) => {
-  editor.value = element instanceof HTMLTextAreaElement ? element : undefined
+const editors = new Map<string, HTMLTextAreaElement>()
+const setEditorRef = (cardId: string, element: unknown) => {
+  if (element instanceof HTMLTextAreaElement) {
+    editors.set(cardId, element)
+  } else {
+    editors.delete(cardId)
+  }
+}
+const focusEditor = () => {
+  const target = state.editingId === undefined ? undefined : editors.get(state.editingId)
+
+  if (target) {
+    fitCardText(target)
+  }
+  target?.focus({ preventScroll: true })
 }
 
 const nameInput = shallowRef<HTMLInputElement>()
@@ -763,13 +865,19 @@ const state = reactive({
   dragDistance: 0,
   dragGroupId: undefined as string | undefined,
   dragId: undefined as string | undefined,
+  // The owner can preview a membership change while the card is still in the air.
+  dragPreviewGroupId: undefined as null | string | undefined,
   // Notes of the dragged group, kept at their distance from the one under the pointer.
   dragOffsets: new Map<string, { x: number; y: number }>(),
   dragPosition: undefined as undefined | { x: number; y: number },
   dragStartPosition: undefined as undefined | { x: number; y: number },
+  editingGroupId: undefined as string | undefined,
   editingId: undefined as string | undefined,
-  // Keep a newly created note visible while the server response is on the wire.
-  draftCards: [] as RetroCardViewModel[],
+  // Vue writes a bound value back into its input on every render, and the whole board re-renders
+  // whenever anyone moves a cursor or a note. A field someone is typing in therefore has to be
+  // bound to what they typed - these hold that until the edit is saved, the way the note editor
+  // holds its own draft in `draft` above.
+  fieldDrafts: {} as { groupTitle?: string; name?: string; votesPerUser?: number },
   fullscreen: false,
   groupSelection: [] as string[],
   hoveredId: undefined as string | undefined,
@@ -779,12 +887,24 @@ const state = reactive({
   phasesCollapsed: true,
   refreshPending: false,
   remoteCursors: new Map<string, { at: number; member: RetroMember; x: number; y: number }>(),
-  remoteMoves: new Map<string, { at: number; x: number; y: number }>(),
+  remoteMoves: new Map<string, { at: number; groupId: null | string; x: number; y: number }>(),
   remoteTexts: new Map<string, { at: number; text: string }>(),
   removedCardIds: new Set<string>(),
   selectedId: undefined as string | undefined,
   timerMinutes: 1,
 })
+
+watch(
+  () => state.editingId,
+  (editingId) => {
+    if (editingId === undefined) {
+      return
+    }
+    focusEditor()
+    requestAnimationFrame(focusEditor)
+  },
+  { flush: 'post' },
+)
 
 const {
   data,
@@ -796,16 +916,32 @@ const {
   (_nuxtApp, { signal }) => props.deps.view({ retroId: props.retroId, signal }),
   { watch: [() => props.retroId] },
 )
-const refresh = () => refreshQuery({ dedupe: 'defer' })
+const retry = () => refreshQuery({ dedupe: 'defer' })
 
 const toast = useToast()
 let channel: RetroChannel | undefined
+let syncingChannel: RetroChannel | undefined
+let syncQueued = false
 let lastCardClickAt = 0
 let lastCardClickId: string | undefined
+let lastTouchCardTap: undefined | { at: number; cardId: string; x: number; y: number }
+let cardPointerType = 'mouse'
+let pendingTouchEditId: string | undefined
+let touchCardStart:
+  | undefined
+  | {
+      cardId: string
+      moved: boolean
+      pointerId: number
+      startDrag: () => void
+      x: number
+      y: number
+    }
 
 const endDrag = () => {
   state.dragGroupId = undefined
   state.dragId = undefined
+  state.dragPreviewGroupId = undefined
   state.dragOffsets.clear()
   state.dragPosition = undefined
   state.dragStartPosition = undefined
@@ -815,8 +951,9 @@ const clearBoardState = () => {
   state.dragDistance = 0
   endDrag()
   state.draft = ''
-  state.draftCards = []
+  state.editingGroupId = undefined
   state.editingId = undefined
+  state.fieldDrafts = {}
   state.fullscreen = false
   state.groupSelection = []
   state.hoveredId = undefined
@@ -828,8 +965,68 @@ const clearBoardState = () => {
   state.remoteTexts.clear()
   state.removedCardIds.clear()
   state.selectedId = undefined
+  syncQueued = false
+  syncingChannel = undefined
   lastCardClickAt = 0
   lastCardClickId = undefined
+  lastTouchCardTap = undefined
+  touchCardStart = undefined
+  pendingTouchEditId = undefined
+}
+
+// Live updates land on the whole board, so anything half-typed - a note, a topic title - has to
+// hold them back until it is saved, or the board would swallow what is being written.
+const editingInPlace = () => state.editingId !== undefined || state.editingGroupId !== undefined
+
+const syncBoard = (source: RetroChannel | undefined) => {
+  if (!source || source !== channel) {
+    return
+  }
+  if (editingInPlace()) {
+    state.refreshPending = true
+
+    return
+  }
+  if (syncingChannel) {
+    if (syncingChannel === source) {
+      syncQueued = true
+    }
+
+    return
+  }
+
+  syncingChannel = source
+  void source
+    .sync()
+    .then((board) => {
+      if (source !== channel) {
+        return
+      }
+      if (editingInPlace()) {
+        state.refreshPending = true
+
+        return
+      }
+      if (data.value) {
+        Object.assign(data.value, board)
+        triggerRef(data)
+      }
+    })
+    .catch(() => {
+      if (source === channel) {
+        toast.show('Could not sync live updates')
+      }
+    })
+    .finally(() => {
+      if (syncingChannel !== source) {
+        return
+      }
+      syncingChannel = undefined
+      if (syncQueued) {
+        syncQueued = false
+        syncBoard(source)
+      }
+    })
 }
 
 const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) => {
@@ -859,7 +1056,12 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
     return
   }
   if (incoming.type === 'card-move') {
-    state.remoteMoves.set(incoming.cardId, { at: Date.now(), x: incoming.x, y: incoming.y })
+    state.remoteMoves.set(incoming.cardId, {
+      at: Date.now(),
+      groupId: incoming.groupId,
+      x: incoming.x,
+      y: incoming.y,
+    })
     return
   }
   if (incoming.type === 'card-text') {
@@ -904,42 +1106,12 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
     } else {
       board.cards.splice(index, 1, card)
     }
-    state.draftCards = state.draftCards.filter((draft) => draft.id !== card.id)
     triggerRef(data)
     state.remoteTexts.delete(card.id)
     return
   }
-  if (incoming.type === 'group-upserted') {
-    const board = data.value
-
-    if (!board || board.finished) {
-      return
-    }
-    if (!board.groups.some((group) => group.id === incoming.id)) {
-      board.groups = [
-        ...board.groups,
-        {
-          cardIds: incoming.cardIds,
-          id: incoming.id,
-          title: '',
-          votedByMe: false,
-          votes: 0,
-        },
-      ]
-    }
-    board.cards = board.cards.map((card) =>
-      incoming.cardIds.includes(card.id) ? { ...card, groupId: incoming.id } : card,
-    )
-    triggerRef(data)
-    return
-  }
   if (incoming.type === 'changed') {
-    // A refresh mid-typing would replace the text node under the caret.
-    if (state.editingId === undefined) {
-      void refresh()
-    } else {
-      state.refreshPending = true
-    }
+    syncBoard(source)
   }
 }
 
@@ -1067,28 +1239,22 @@ const zoneIndexAt = (x: number, y: number, sectionCount: number) => {
   )
 }
 
-const actionCards = (board: RetroBoardViewModel) =>
-  boardCards(board).filter((card) => card.sectionId === board.sections.at(-1)?.id)
-
 // A topic is a group of notes or a single ungrouped note - never a note inside a group, so a
 // merged topic is one line with one score.
 const orderedTopics = (board: RetroBoardViewModel) => {
-  const actionsSectionId = board.sections.at(-1)?.id
   const topics = new Map<string, DiscussionTopic>()
 
   // Tied topics are ordered by id: dragging a note changes its place in the stack, and the board
-  // would reshuffle the medals under the team every time someone tidied it up.
+  // would reshuffle the medals under the team every time someone tidied it up. Carrying a topic
+  // into the actions counts for the same reason - a place is what the room voted, not a queue of
+  // what is left, so a topic takes its medal with it instead of promoting the one behind it.
   board.cards.forEach((card) => {
-    if (card.sectionId === actionsSectionId) {
-      return
-    }
     const group = groupOf(board, card)
 
     if (!group) {
       topics.set(card.id, {
         cardIds: [card.id],
         id: card.id,
-        title: card.text,
         votes: card.votes,
       })
 
@@ -1104,21 +1270,17 @@ const orderedTopics = (board: RetroBoardViewModel) => {
     topics.set(group.id, {
       cardIds: [card.id],
       id: group.id,
-      title: group.title,
       votes: group.votes,
     })
   })
 
-  return [...topics.values()]
-    .toSorted((left, right) => right.votes - left.votes || left.id.localeCompare(right.id))
-    .map((topic) => ({
-      ...topic,
-      title: topic.title || `${topic.cardIds.length} notes`,
-    }))
+  return [...topics.values()].toSorted(
+    (left, right) => right.votes - left.votes || left.id.localeCompare(right.id),
+  )
 }
 
-// Every note of the leading topics wears its medal; ties never hand out a fourth one, because the
-// order is total. Scores are zero until the facilitator closes Vote, so the medals appear together
+// Every note of the leading topics gets a place; ties never hand out a fourth one, because the
+// order is total. Scores are zero until the facilitator closes Vote, so places appear together
 // with the results and stay on the board for the rest of the retro, finished included.
 const discussionRanks = computed(() => {
   const board = data.value
@@ -1139,6 +1301,13 @@ const discussionRanks = computed(() => {
   return ranks
 })
 
+const voteResultClasses = (rank: number | undefined) => (rank ? [`rank-${rank}`] : [])
+
+const votesLabel = (votes: number) => `${votes} ${votes === 1 ? 'vote' : 'votes'}`
+
+const voteResultLabel = (votes: number, rank: number | undefined) =>
+  rank ? `${rank} place, ${votesLabel(votes)}` : votesLabel(votes)
+
 const cardsOf = (board: RetroBoardViewModel, sectionId: string) =>
   boardCards(board).filter((card) => card.sectionId === sectionId)
 
@@ -1156,16 +1325,16 @@ const draggedColor = (
   )
   const section = board.sections[index]
 
-  return section && canDropOn(board, card, section.id) ? section.color : undefined
+  const canDrop = canDropOn(board, card, section?.id ?? '')
+
+  return section && canDrop ? section.color : undefined
 }
 
 const HIDDEN_TEXT = '•••••• ••••• ••••••'
 
-// What the board actually holds right now: the server's answer plus a note just created here.
-const boardCards = (board: RetroBoardViewModel) => [
-  ...board.cards.filter((card) => !state.removedCardIds.has(card.id)),
-  ...state.draftCards.filter((draft) => !board.cards.some((card) => card.id === draft.id)),
-]
+// What the board actually holds right now, excluding cards removed optimistically in this tab.
+const boardCards = (board: RetroBoardViewModel) =>
+  board.cards.filter((card) => !state.removedCardIds.has(card.id))
 
 watch(data, (board) => {
   if (!board) {
@@ -1174,11 +1343,8 @@ watch(data, (board) => {
   if (!canGroup(board)) {
     state.groupSelection = []
   }
-  const known = new Set(board.cards.map((card) => card.id))
-
-  state.draftCards = state.draftCards.filter((draft) => !known.has(draft.id))
   for (const id of state.removedCardIds) {
-    if (!known.has(id)) {
+    if (!board.cards.some((card) => card.id === id)) {
       state.removedCardIds.delete(id)
     }
   }
@@ -1216,6 +1382,13 @@ const visibleCards = (board: RetroBoardViewModel) =>
         ? undefined
         : (state.pendingTexts.get(card.id) ?? state.remoteTexts.get(card.id)?.text)
     const cardSection = board.sections.find((candidate) => candidate.id === card.sectionId)
+    const localGroupId =
+      card.id === state.dragId && state.dragGroupId === undefined
+        ? state.dragPreviewGroupId !== undefined
+          ? state.dragPreviewGroupId
+          : card.groupId
+        : undefined
+    const groupId = localGroupId !== undefined ? localGroupId : moved ? moved.groupId : card.groupId
 
     return {
       ...card,
@@ -1227,6 +1400,7 @@ const visibleCards = (board: RetroBoardViewModel) =>
         (dragged ? draggedColor(board, card, dragged) : undefined) ??
         cardSection?.color ??
         UNSECTIONED_CARD_COLOR,
+      groupId,
     }
   })
 
@@ -1248,6 +1422,15 @@ const canGroup = (board: RetroBoardViewModel) => !board.finished && board.canMan
 const groupOf = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   card.groupId === null ? undefined : board.groups.find((group) => group.id === card.groupId)
 
+const groupCard = (board: RetroBoardViewModel, group: RetroGroupViewModel) =>
+  visibleCards(board).find((card) => card.groupId === group.id)
+
+const groupRank = (board: RetroBoardViewModel, group: RetroGroupViewModel) => {
+  const card = groupCard(board, group)
+
+  return card ? discussionRanks.value.get(card.id) : undefined
+}
+
 // A grouped note shows the score of its whole topic - that is what the vote counts for.
 const topicVotes = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   groupOf(board, card)?.votes ?? card.votes
@@ -1257,31 +1440,130 @@ const votedByMe = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 
 // The topic is drawn as the box that holds every note of the group.
 const groupBoxes = (board: RetroBoardViewModel) => {
-  const positions = new Map(visibleCards(board).map((card) => [card.id, card]))
-
   return board.groups.flatMap((group) => {
-    const members = group.cardIds
-      .map((cardId) => positions.get(cardId))
-      .filter((card) => card !== undefined)
+    const bounds = groupBounds(board, group.id)
 
-    if (members.length === 0) {
+    if (!bounds) {
       return []
     }
-    const left = Math.min(...members.map((card) => card.x))
-    const top = Math.min(...members.map((card) => card.y))
 
     return [
       {
-        cardIds: group.cardIds,
-        height: Math.max(...members.map((card) => card.y)) + CARD_SIZE - top + GROUP_PADDING * 2,
-        id: group.id,
-        left: left - GROUP_PADDING,
-        title: group.title,
-        top: top - GROUP_PADDING,
-        width: Math.max(...members.map((card) => card.x)) + CARD_SIZE - left + GROUP_PADDING * 2,
+        ...group,
+        height: bounds.bottom - bounds.top,
+        left: bounds.left,
+        top: bounds.top,
+        width: bounds.right - bounds.left,
       },
     ]
   })
+}
+
+const groupBounds = (board: RetroBoardViewModel, groupId: string, excludeCardId?: string) => {
+  const members = visibleCards(board).filter(
+    (card) => card.groupId === groupId && card.id !== excludeCardId,
+  )
+
+  if (members.length === 0) {
+    return undefined
+  }
+
+  const left = Math.min(...members.map((card) => card.x)) - GROUP_PADDING
+  const top = Math.min(...members.map((card) => card.y)) - GROUP_PADDING
+  const right = Math.max(...members.map((card) => card.x)) + CARD_SIZE + GROUP_PADDING
+  const bottom = Math.max(...members.map((card) => card.y)) + CARD_SIZE + GROUP_PADDING
+
+  return { bottom, left, right, top }
+}
+
+const distanceToGroup = (
+  bounds: { bottom: number; left: number; right: number; top: number },
+  position: { x: number; y: number },
+) => {
+  const gapX = Math.max(bounds.left - (position.x + CARD_SIZE), position.x - bounds.right, 0)
+  const gapY = Math.max(bounds.top - (position.y + CARD_SIZE), position.y - bounds.bottom, 0)
+
+  return Math.hypot(gapX, gapY)
+}
+
+const groupAtPosition = (
+  board: RetroBoardViewModel,
+  card: RetroCardViewModel,
+  position: { x: number; y: number },
+  excludedGroupId?: string,
+) => {
+  const index = zoneIndexAt(
+    position.x + CARD_SIZE / 2,
+    position.y + CARD_SIZE / 2,
+    board.sections.length,
+  )
+  const sectionId = board.sections[index]?.id
+  if (!sectionId) {
+    return undefined
+  }
+
+  return board.groups.find((group) => {
+    if (group.id === excludedGroupId) {
+      return false
+    }
+    const member = boardCards(board).find(
+      (candidate) => candidate.groupId === group.id && candidate.sectionId === sectionId,
+    )
+    const bounds = groupBounds(board, group.id, card.id)
+
+    return (
+      member !== undefined &&
+      bounds !== undefined &&
+      distanceToGroup(bounds, position) <= GROUP_MAGNET_DISTANCE
+    )
+  })?.id
+}
+
+const dragPreviewGroup = (
+  board: RetroBoardViewModel,
+  card: RetroCardViewModel,
+  position: { x: number; y: number },
+) => {
+  if (state.dragGroupId !== undefined) {
+    return undefined
+  }
+
+  const activeGroupId =
+    state.dragPreviewGroupId !== undefined ? state.dragPreviewGroupId : card.groupId
+  const sectionId =
+    board.sections[
+      zoneIndexAt(position.x + CARD_SIZE / 2, position.y + CARD_SIZE / 2, board.sections.length)
+    ]?.id
+  const activeGroupSectionId = activeGroupId
+    ? boardCards(board).find((candidate) => candidate.groupId === activeGroupId)?.sectionId
+    : undefined
+
+  // A topic is a cluster inside one section, so carrying a note out of its section takes the note
+  // out of the topic - but the section it arrives in has topics of its own to land in.
+  const leftItsTopic =
+    activeGroupId !== null && activeGroupId !== undefined
+      ? sectionId !== activeGroupSectionId
+      : false
+
+  if (!board.canManage) {
+    return leftItsTopic ? null : undefined
+  }
+
+  const targetGroupId = groupAtPosition(board, card, position, activeGroupId ?? undefined)
+
+  if (targetGroupId !== undefined) {
+    return targetGroupId
+  }
+
+  if (!leftItsTopic && activeGroupId !== null && activeGroupId !== undefined) {
+    const bounds = groupBounds(board, activeGroupId, card.id)
+
+    if (bounds && distanceToGroup(bounds, position) <= GROUP_MAGNET_DISTANCE) {
+      return activeGroupId
+    }
+  }
+
+  return card.groupId === null ? undefined : null
 }
 
 const isActionsSection = (board: RetroBoardViewModel, sectionId: string) =>
@@ -1305,24 +1587,21 @@ const canEditCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 // the owner whenever the room needs it.
 const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   !board.finished &&
-  !card.hidden &&
+  (!card.hidden || board.canManage) &&
   (board.canManage ||
-    (board.phase === 'Collect' && !isActionsSection(board, card.sectionId)) ||
-    board.phase === 'Actions')
+    (board.phase === 'Collect' && card.isMine && !isActionsSection(board, card.sectionId)) ||
+    (board.phase === 'Actions' && card.isMine && isActionsSection(board, card.sectionId)))
 
-// Crossing the actions border turns a note into a commitment or back, so it belongs to the
-// Actions phase - both ways, or a note dropped there by mistake would be stuck.
-// A topic is a cluster inside one section: carrying one of its notes into another section would
-// break the topic up and strand the votes it holds, so the whole topic travels, by its frame.
+// Participants can move action notes only within Actions; the facilitator can cross the border.
 const canDropOn = (board: RetroBoardViewModel, card: RetroCardViewModel, sectionId: string) =>
   canMoveCard(board, card) &&
-  (card.groupId === null || sectionId === card.sectionId) &&
   (board.canManage ||
     (board.phase === 'Collect' &&
       !isActionsSection(board, card.sectionId) &&
       !isActionsSection(board, sectionId)) ||
     (board.phase === 'Actions' &&
-      (isActionsSection(board, card.sectionId) || isActionsSection(board, sectionId))))
+      isActionsSection(board, card.sectionId) &&
+      isActionsSection(board, sectionId)))
 
 // While a note is in the air, a section that will not take it says so: a drop that silently snaps
 // the note back reads as a bug, not as a rule.
@@ -1356,14 +1635,23 @@ const { execute: executeRevertPhase } = useAction(props.deps.revertPhase)
 const { execute: executeSettings } = useAction(props.deps.updateSettings)
 const { execute: executeTimer } = useAction(props.deps.setPhaseTimer)
 
+// The new limit is what the facilitator typed, from the moment they leave the field - showing the
+// old one again until the save comes back reads as the edit having been dropped.
 const saveSettings = async (votesPerUser: number) => {
   const board = data.value
 
   if (!board?.canManage) {
     return
   }
-  await executeSettings({ phase: board.phase, retroId: props.retroId, votesPerUser })
-  await refresh()
+  const previous = board.votesPerUser
+
+  board.votesPerUser = votesPerUser
+  triggerRef(data)
+
+  if (!(await executeSettings({ phase: board.phase, retroId: props.retroId, votesPerUser }))) {
+    board.votesPerUser = previous
+    triggerRef(data)
+  }
 }
 
 const changePhase = async (phase: RetroPhase) => {
@@ -1375,9 +1663,7 @@ const changePhase = async (phase: RetroPhase) => {
   }
   const executePhase = reverting ? executeRevertPhase : executeAdvancePhase
 
-  if (await executePhase({ phase, retroId: props.retroId })) {
-    await refresh()
-  }
+  await executePhase({ phase, retroId: props.retroId })
 }
 
 const changePreviousPhase = (phase: RetroPhase) => {
@@ -1397,21 +1683,38 @@ const changeNextPhase = (phase: RetroPhase) => {
 // A retro is born named after its date; the facilitator renames it to what it was about.
 const canRename = (board: RetroBoardViewModel) => board.canManage && !board.finished
 
+const trackNameDraft = (event: Event) => {
+  state.fieldDrafts.name = (event.target as HTMLInputElement).value
+}
+
+const trackVotesDraft = (event: Event) => {
+  state.fieldDrafts.votesPerUser = Number((event.target as HTMLInputElement).value)
+}
+
+const trackGroupTitleDraft = (event: Event) => {
+  state.fieldDrafts.groupTitle = (event.target as HTMLInputElement).value
+}
+
 const rename = async (event: Event) => {
   const board = data.value
-  const input = event.target as HTMLInputElement
-  const name = input.value.trim()
+  const name = (event.target as HTMLInputElement).value.trim()
 
-  if (!board || !canRename(board) || name === board.name) {
+  // Dropping the draft puts the field back on the board's own name, which is the right thing to
+  // show when the edit is refused - and the new name is put there first when it is not.
+  state.fieldDrafts.name = undefined
+
+  if (!board || !canRename(board) || name.length === 0 || name === board.name) {
     return
   }
-  if (name.length === 0) {
-    input.value = board.name
+  const previous = board.name
 
-    return
+  board.name = name
+  triggerRef(data)
+
+  if (!(await executeRename({ name, retroId: props.retroId }))) {
+    board.name = previous
+    triggerRef(data)
   }
-  await executeRename({ name, retroId: props.retroId })
-  await refresh()
 }
 
 // Running the retro is a role, not a birthright of whoever pressed "Start retro".
@@ -1424,11 +1727,13 @@ const handOver = async (member: RetroMember) => {
     return
   }
   await executeHandOver({ retroId: props.retroId, userId: member.userId })
-  await refresh()
 }
 
-const setVotesPerUser = (event: Event) =>
-  saveSettings(Math.min(99, Math.max(1, Number((event.target as HTMLInputElement).value))))
+const setVotesPerUser = (event: Event) => {
+  state.fieldDrafts.votesPerUser = undefined
+
+  return saveSettings(Math.min(99, Math.max(1, Number((event.target as HTMLInputElement).value))))
+}
 
 // Timing a phase is the facilitator's call, so it makes no sense once the retro is read-only.
 const canRunTimer = (board: RetroBoardViewModel) => !board.finished && board.phase !== 'Actions'
@@ -1439,7 +1744,6 @@ const setTimer = async (minutes: null | number) => {
     return
   }
   await executeTimer({ minutes, retroId: props.retroId })
-  await refresh()
 }
 
 const startTimer = () => setTimer(Math.min(60, Math.max(1, state.timerMinutes)))
@@ -1461,7 +1765,7 @@ const startTicker = () => {
       }
     }
     // An overlay outlives the drag or the sentence it belongs to by a moment: dropping it the
-    // instant a reload lands would snap the card back for the frame before the next message.
+    // instant a sync lands would snap the card back for the frame before the next message.
     // Once the messages stop, the stored data already says the same thing and it can go.
     for (const [cardId, move] of state.remoteMoves) {
       if (state.now - move.at > LIVE_TTL_MS) {
@@ -1575,7 +1879,7 @@ const showVoteBadge = (board: RetroBoardViewModel, card: RetroCardViewModel) => 
   }
   const group = groupOf(board, card)
 
-  if (group && group.cardIds[0] !== card.id) {
+  if (group) {
     return false
   }
   if (showVoteResults(board)) {
@@ -1586,15 +1890,35 @@ const showVoteBadge = (board: RetroBoardViewModel, card: RetroCardViewModel) => 
   )
 }
 
+const showGroupVoteBadge = (board: RetroBoardViewModel, group: RetroGroupViewModel) => {
+  const card = groupCard(board, group)
+
+  if (!card || isActionsSection(board, card.sectionId)) {
+    return false
+  }
+  if (showVoteResults(board)) {
+    return group.votes > 0
+  }
+
+  return votingOpen.value && (group.votedByMe || board.myVotes < board.votesPerUser)
+}
+
 const startEdit = (card: RetroCardViewModel) => {
   const board = data.value
 
   if (!board || !canEditCard(board, card)) {
     return
   }
+  state.selectedId = card.id
   state.draft = card.text
   state.editingId = card.id
-  void nextTick(() => editor.value?.focus())
+  const target = editors.get(card.id)
+  if (target) {
+    // The selected card already has an editor, so iOS can focus it within the tap gesture.
+    target.style.display = ''
+    target.value = card.text
+    target.focus({ preventScroll: true })
+  }
 }
 
 const cancelEdit = () => {
@@ -1603,7 +1927,7 @@ const cancelEdit = () => {
   state.editingId = undefined
   state.refreshPending = false
   if (refreshPending) {
-    void refresh()
+    syncBoard(channel)
   }
 }
 
@@ -1614,8 +1938,6 @@ const removeCard = async (card: RetroCardViewModel) => {
   // The note goes now; if the server says no, it comes back.
   state.removedCardIds.add(card.id)
   if (await executeRemove({ id: card.id })) {
-    void refresh()
-
     return
   }
   state.removedCardIds.delete(card.id)
@@ -1635,36 +1957,59 @@ const saveDraft = async (card: RetroCardViewModel) => {
 
   state.editingId = undefined
   state.refreshPending = false
-  if (text && changed) {
+  if (changed) {
     state.pendingTexts.set(card.id, text)
   }
   try {
-    if (!text) {
-      // An empty note is an abandoned one, whether it was just created or cleared.
-      await removeCard(card)
-      return
-    } else if (changed) {
+    if (changed) {
       await executeUpdate({ id: card.id, text })
     } else if (!refreshPending) {
       return
     }
     if (refreshPending) {
-      await refresh()
+      syncBoard(channel)
     }
   } finally {
     state.pendingTexts.delete(card.id)
   }
 }
 
+const handleBackgroundPointerDown = () => {
+  // Pressing the canvas does not reliably pull the focus out of an input, and everything that
+  // saves on blur - a topic title, the retro name - would quietly lose what was typed into it.
+  const focused = document.activeElement
+
+  if (focused instanceof HTMLElement) {
+    focused.blur()
+  }
+
+  const board = data.value
+  const card = board && boardCards(board).find((item) => item.id === state.editingId)
+
+  if (card) {
+    void saveDraft(card)
+  }
+  state.selectedId = undefined
+  lastCardClickAt = 0
+  lastCardClickId = undefined
+  lastTouchCardTap = undefined
+  touchCardStart = undefined
+  pendingTouchEditId = undefined
+}
+
 const createCardAt = async (sectionId: string, x: number, y: number) => {
   const board = data.value
-  const created = await executeCreate({ retroId: props.retroId, sectionId, text: '', x, y })
-
-  if (!board || !created) {
+  if (!board) {
     return
   }
 
-  const draft: RetroCardViewModel = {
+  const created = await executeCreate({ retroId: props.retroId, sectionId, text: '', x, y })
+
+  if (!created) {
+    return
+  }
+
+  const card: RetroCardViewModel = {
     assignee: null,
     authorColor: board.me.color,
     authorInitials: board.me.initials,
@@ -1683,9 +2028,13 @@ const createCardAt = async (sectionId: string, x: number, y: number) => {
     y,
   }
 
-  state.draftCards.push(draft)
-  startEdit(draft)
-  void refresh()
+  const existing = board.cards.find((item) => item.id === card.id)
+
+  if (!existing) {
+    board.cards.push(card)
+  }
+  triggerRef(data)
+  startEdit(existing ?? card)
 }
 
 const addCardAt = async (board: RetroBoardViewModel, point: { x: number; y: number }) => {
@@ -1702,14 +2051,43 @@ const startCardDrag = (
   card: RetroCardViewModel,
   startNodeDrag: (event: PointerEvent) => void,
 ) => {
+  cardPointerType = event.pointerType
+  pendingTouchEditId = undefined
+  if (event.target instanceof Element && event.target.closest('button, details, input, textarea')) {
+    return
+  }
+  state.dragDistance = 0
+  if (event.pointerType === 'touch') {
+    if (!event.isPrimary) {
+      cancelCardTouch()
+      return
+    }
+    touchCardStart = {
+      cardId: card.id,
+      moved: false,
+      pointerId: event.pointerId,
+      startDrag: () => beginCardDrag(event, card, startNodeDrag),
+      x: event.clientX,
+      y: event.clientY,
+    }
+    return
+  }
+  beginCardDrag(event, card, startNodeDrag)
+}
+
+const beginCardDrag = (
+  event: PointerEvent,
+  card: RetroCardViewModel,
+  startNodeDrag: (event: PointerEvent) => void,
+) => {
   const board = data.value
 
   if (!board || state.editingId === card.id || !canMoveCard(board, card)) {
     return
   }
-  state.dragDistance = 0
   state.selectedId = card.id
   state.dragGroupId = undefined
+  state.dragPreviewGroupId = undefined
   state.dragId = card.id
   // Where the note is drawn, not where the last answer put it: a live move from someone else
   // would otherwise make it jump back the moment it is picked up.
@@ -1757,19 +2135,65 @@ const moveDraggedCard = (deltaX: number, deltaY: number) => {
   state.dragDistance += Math.hypot(deltaX, deltaY)
   state.dragPosition = { x: state.dragPosition.x + deltaX, y: state.dragPosition.y + deltaY }
 
+  const board = data.value
+  const dragged = board && boardCards(board).find((card) => card.id === state.dragId)
+
+  if (!board || !dragged) {
+    return
+  }
+  state.dragPreviewGroupId = dragPreviewGroup(board, dragged, state.dragPosition)
+
   const { dragId } = state
   const current = channel
   const moved = [dragId, ...state.dragOffsets.keys()]
+  const cards = new Map(boardCards(board).map((card) => [card.id, card]))
 
   moveFrame.schedule(() => {
     for (const id of moved) {
       const position = draggedPosition(id)
 
       if (position) {
-        current?.publishCardMove(id, position.x, position.y)
+        const card = cards.get(id)
+        const groupId =
+          id === dragId && state.dragPreviewGroupId !== undefined
+            ? state.dragPreviewGroupId
+            : (card?.groupId ?? null)
+
+        current?.publishCardMove(id, groupId, position.x, position.y)
       }
     }
   })
+}
+
+const applyCardMove = (
+  board: RetroBoardViewModel,
+  cardId: string,
+  sectionId: string,
+  position: { x: number; y: number },
+  groupId: null | string,
+) => {
+  const card = board.cards.find((item) => item.id === cardId)
+
+  if (!card) {
+    return
+  }
+  card.sectionId = sectionId
+  card.x = position.x
+  card.y = position.y
+  if (card.groupId === groupId) {
+    return
+  }
+
+  for (const group of board.groups) {
+    group.cardIds = group.cardIds.filter((id) => id !== cardId)
+  }
+  card.groupId = groupId
+  const target = groupId && board.groups.find((group) => group.id === groupId)
+
+  if (target && !target.cardIds.includes(cardId)) {
+    target.cardIds.push(cardId)
+  }
+  board.groups = board.groups.filter((group) => group.cardIds.length > 0)
 }
 
 const commitDraggedCard = async () => {
@@ -1806,15 +2230,31 @@ const commitDraggedCard = async () => {
 
       return
     }
+    const positions = new Map(
+      board.cards
+        .filter((card) => card.groupId === groupId)
+        .map((card) => [card.id, draggedPosition(card.id) ?? { x: card.x, y: card.y }]),
+    )
     try {
-      await executeMoveGroup({
-        deltaX: position.x - startPosition.x,
-        deltaY: position.y - startPosition.y,
-        groupId,
-        retroId: props.retroId,
-        sectionId,
-      })
-      await refresh()
+      if (
+        await executeMoveGroup({
+          deltaX: position.x - startPosition.x,
+          deltaY: position.y - startPosition.y,
+          groupId,
+          retroId: props.retroId,
+          sectionId,
+        })
+      ) {
+        for (const card of board.cards) {
+          const target = positions.get(card.id)
+          if (target) {
+            card.sectionId = sectionId
+            card.x = target.x
+            card.y = target.y
+          }
+        }
+        triggerRef(data)
+      }
     } finally {
       endDrag()
     }
@@ -1827,27 +2267,52 @@ const commitDraggedCard = async () => {
 
     return
   }
-  const carried = [...state.dragOffsets.entries()].map(([cardId, offset]) => ({
-    cardId,
-    x: position.x + offset.x,
-    y: position.y + offset.y,
-  }))
+  // The board draws the topics, so it is the board that tells the server which one the note landed
+  // in - and it lands where the drag preview said it would, section change or not.
+  const nextGroupId =
+    state.dragPreviewGroupId !== undefined
+      ? state.dragPreviewGroupId
+      : sectionId === dragged.sectionId
+        ? dragged.groupId
+        : null
 
   try {
-    await executeMove({ id, sectionId, x: position.x, y: position.y })
-    for (const item of carried) {
-      await executeMove({ id: item.cardId, sectionId, x: item.x, y: item.y })
+    const moved = await executeMove({
+      groupId: nextGroupId,
+      id,
+      sectionId,
+      x: position.x,
+      y: position.y,
+    })
+
+    if (!moved) {
+      return
     }
-    // The dropped position has to hold until the stored one arrives, or the card snaps back
-    // to where the drag started for as long as the reload takes.
-    await refresh()
+    applyCardMove(board, id, sectionId, position, nextGroupId)
+    triggerRef(data)
   } finally {
     endDrag()
   }
 }
 
 const selectCard = (card: RetroCardViewModel, event: MouseEvent) => {
+  if (cardPointerType === 'touch') {
+    const shouldEdit = pendingTouchEditId === card.id
+    pendingTouchEditId = undefined
+    if (shouldEdit) {
+      startEdit(card)
+    }
+    return
+  }
   const board = data.value
+
+  if (board && state.editingId !== undefined && state.editingId !== card.id) {
+    const editingCard = boardCards(board).find((item) => item.id === state.editingId)
+
+    if (editingCard) {
+      void saveDraft(editingCard)
+    }
+  }
 
   if (
     board &&
@@ -1855,7 +2320,7 @@ const selectCard = (card: RetroCardViewModel, event: MouseEvent) => {
     !isActionsSection(board, card.sectionId) &&
     (event.ctrlKey || event.metaKey)
   ) {
-    toggleGroupSelection(card)
+    toggleGroupSelection(board, card)
   }
   const now = Date.now()
   const repeatedClick = lastCardClickId === card.id && now - lastCardClickAt <= 500
@@ -1866,6 +2331,74 @@ const selectCard = (card: RetroCardViewModel, event: MouseEvent) => {
   if (repeatedClick && state.dragDistance <= 4) {
     startEdit(card)
   }
+}
+
+const setHoveredCard = (cardId: string, event: PointerEvent) => {
+  if (event.pointerType === 'mouse') {
+    state.hoveredId = cardId
+  }
+}
+
+const clearHoveredCard = (cardId: string, event: PointerEvent) => {
+  if (event.pointerType === 'mouse' && state.hoveredId === cardId) {
+    state.hoveredId = undefined
+  }
+}
+
+const cancelCardTouch = () => {
+  touchCardStart = undefined
+  lastTouchCardTap = undefined
+  pendingTouchEditId = undefined
+}
+
+const handleCardPointerMove = (event: PointerEvent) => {
+  const touch = touchCardStart
+  if (!touch || touch.pointerId !== event.pointerId || touch.moved) {
+    return
+  }
+  if (Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 8) {
+    touch.moved = true
+    lastTouchCardTap = undefined
+    touch.startDrag()
+  }
+}
+
+const handleCardPointerUp = (event: PointerEvent, card: RetroCardViewModel) => {
+  if (event.pointerType !== 'touch') {
+    return
+  }
+  const touch = touchCardStart
+  touchCardStart = undefined
+  if (
+    !touch ||
+    touch.cardId !== card.id ||
+    touch.pointerId !== event.pointerId ||
+    touch.moved ||
+    Math.hypot(event.clientX - touch.x, event.clientY - touch.y) > 8
+  ) {
+    lastTouchCardTap = undefined
+
+    return
+  }
+  state.selectedId = card.id
+  if (state.editingId === card.id) {
+    return
+  }
+
+  const now = Date.now()
+  const repeated =
+    lastTouchCardTap?.cardId === card.id &&
+    now - lastTouchCardTap.at <= 300 &&
+    Math.hypot(event.clientX - lastTouchCardTap.x, event.clientY - lastTouchCardTap.y) <= 24
+
+  if (repeated) {
+    lastTouchCardTap = undefined
+    // Open the keyboard from the following native click, like the edit button.
+    pendingTouchEditId = card.id
+
+    return
+  }
+  lastTouchCardTap = { at: now, cardId: card.id, x: event.clientX, y: event.clientY }
 }
 
 /*
@@ -1916,10 +2449,40 @@ const hasActions = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   (canChangeCard(board, card) &&
     (card.isMine || board.canManage || isActionsSection(board, card.sectionId)))
 
-const toggleGroupSelection = (card: RetroCardViewModel) => {
-  state.groupSelection = state.groupSelection.includes(card.id)
-    ? state.groupSelection.filter((id) => id !== card.id)
-    : [...state.groupSelection, card.id]
+// A topic is a cluster inside one section, so a pick from another one starts a new selection
+// rather than a merge the server would have to turn down.
+const toggleGroupSelection = (board: RetroBoardViewModel, card: RetroCardViewModel) => {
+  if (state.groupSelection.includes(card.id)) {
+    state.groupSelection = state.groupSelection.filter((id) => id !== card.id)
+
+    return
+  }
+  const picked = board.cards.filter((item) => state.groupSelection.includes(item.id))
+  const sectionId = picked[0]?.sectionId
+
+  state.groupSelection =
+    sectionId === undefined || sectionId === card.sectionId
+      ? [...state.groupSelection, card.id]
+      : [card.id]
+}
+
+// Notes picked for a topic are scattered wherever they were written, so the topic packs them into
+// a square block starting at the top left of the selection - close enough to read as one cluster.
+const topicLayout = (board: RetroBoardViewModel, cardIds: string[]) => {
+  const selected = board.cards
+    .filter((card) => cardIds.includes(card.id))
+    .toSorted(
+      (left, right) => left.y - right.y || left.x - right.x || left.id.localeCompare(right.id),
+    )
+  const columns = Math.ceil(Math.sqrt(selected.length))
+  const left = Math.min(...selected.map((card) => card.x))
+  const top = Math.min(...selected.map((card) => card.y))
+
+  return selected.map((card, index) => ({
+    id: card.id,
+    x: left + (index % columns) * (CARD_SIZE + GROUP_CARD_GAP),
+    y: top + Math.floor(index / columns) * (CARD_SIZE + GROUP_CARD_GAP),
+  }))
 }
 
 const mergeSelection = async () => {
@@ -1929,15 +2492,22 @@ const mergeSelection = async () => {
     return
   }
   const cardIds = [...state.groupSelection]
-  const created = await executeGroup({ cardIds, retroId: props.retroId })
+  const cards = topicLayout(board, cardIds)
+  const created = await executeGroup({ cards, retroId: props.retroId })
 
   if (created) {
     if (!board.groups.some((group) => group.id === created.id)) {
       board.groups.push({ cardIds, id: created.id, title: '', votedByMe: false, votes: 0 })
     }
+    const positions = new Map(cards.map((card) => [card.id, card]))
+
     for (const card of board.cards) {
-      if (cardIds.includes(card.id)) {
+      const position = positions.get(card.id)
+
+      if (position) {
         card.groupId = created.id
+        card.x = position.x
+        card.y = position.y
       }
     }
     triggerRef(data)
@@ -1952,21 +2522,43 @@ const splitGroup = async (groupId: string) => {
     return
   }
   await executeUngroup({ groupId, retroId: props.retroId })
-  await refresh()
 }
 
+// The headline is what was typed the moment the field is left - waiting for the round trip would
+// show the old one again in the meantime, and the retro would look like it lost the edit.
 const renameGroup = async (groupId: string, event: Event) => {
   const board = data.value
+  const refreshPending = state.refreshPending
+
+  state.editingGroupId = undefined
+  state.fieldDrafts.groupTitle = undefined
+  state.refreshPending = false
 
   if (!board || !canGroup(board)) {
     return
   }
-  await executeGroupTitle({
+  const title = (event.target as HTMLInputElement).value.trim()
+  const group = board.groups.find((item) => item.id === groupId)
+  const previous = group?.title
+
+  if (group && group.title !== title) {
+    group.title = title
+    triggerRef(data)
+  }
+
+  const saved = await executeGroupTitle({
     groupId,
     retroId: props.retroId,
-    title: (event.target as HTMLInputElement).value,
+    title,
   })
-  await refresh()
+
+  if (!saved && group && previous !== undefined) {
+    group.title = previous
+    triggerRef(data)
+  }
+  if (refreshPending) {
+    syncBoard(channel)
+  }
 }
 
 // Covering a note is for what its author is still writing: a commitment the team already agreed
@@ -1981,12 +2573,18 @@ const toggleReveal = async (card: RetroCardViewModel) => {
     return
   }
   await executeReveal({ id: card.id, revealed: !card.revealed })
-  await refresh()
 }
+
+// Counted off the notes themselves rather than carried alongside them: a note written, deleted or
+// revealed while the board is open has to move this the moment it happens, not at the next refresh.
+const myNotes = computed(() => {
+  const mine = data.value?.cards.filter((card) => card.isMine) ?? []
+
+  return { hidden: mine.filter((card) => !card.revealed).length, total: mine.length }
+})
 
 const setMineRevealed = async (revealed: boolean) => {
   await executeRevealMine({ retroId: props.retroId, revealed })
-  await refresh()
 }
 
 const vote = async (card: RetroCardViewModel) => {
@@ -1998,7 +2596,16 @@ const vote = async (card: RetroCardViewModel) => {
   // A vote belongs to the whole topic, so the note toggles what the topic shows - not its own
   // flag, which only the note the server keeps the vote on ever carries.
   await executeVote({ id: card.id, voted: !votedByMe(board, card) })
-  await refresh()
+}
+
+const voteGroup = async (group: RetroGroupViewModel) => {
+  const board = data.value
+  const card = board && groupCard(board, group)
+
+  if (!board || !card || !votingOpen.value || isActionsSection(board, card.sectionId)) {
+    return
+  }
+  await executeVote({ id: card.id, voted: !group.votedByMe })
 }
 
 // Resetting votes is useful only while the room is still voting.
@@ -2012,7 +2619,6 @@ const resetVotes = async () => {
     return
   }
   await executeResetVotes({ retroId: props.retroId })
-  await refresh()
 }
 
 const done = async (card: RetroCardViewModel) => {
@@ -2022,7 +2628,6 @@ const done = async (card: RetroCardViewModel) => {
     return
   }
   await executeDone({ done: !card.done, id: card.id })
-  await refresh()
 }
 
 // An action item without an owner is fine - the team may not have picked one yet.
@@ -2038,7 +2643,6 @@ const assign = async (card: RetroCardViewModel, assigneeId: null | string, event
     return
   }
   await executeAssign({ assigneeId, id: card.id })
-  await refresh()
 }
 
 const destroy = async (card: RetroCardViewModel) => {
@@ -2052,6 +2656,12 @@ const destroy = async (card: RetroCardViewModel) => {
 }
 
 const onKeyDown = (event: KeyboardEvent) => {
+  if (
+    event.target instanceof HTMLElement &&
+    (event.target.isContentEditable || event.target.closest('input, textarea, select'))
+  ) {
+    return
+  }
   if (event.key !== 'Delete' && event.key !== 'Backspace') {
     return
   }
@@ -2089,11 +2699,16 @@ const finish = async () => {
     return
   }
   await executeFinish({ retroId: props.retroId })
-  await refresh()
 }
 </script>
 
 <style scoped>
+:global(main:has(.retro)) {
+  height: 100svh;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 .retro {
   --facilitator-width: 240px;
   --retro-title-size: 24px;
@@ -2109,7 +2724,7 @@ const finish = async () => {
 
 .retro--focused {
   background: var(--color-background);
-  height: 100%;
+  height: 100svh;
   inset: 0;
   margin: 0;
   position: fixed;
@@ -2141,11 +2756,6 @@ const finish = async () => {
   top: var(--space-4);
   width: var(--facilitator-width);
   z-index: 6;
-}
-
-.facilitator-panel:has(.board-help:hover),
-.facilitator-panel:has(.board-help:focus-within) {
-  z-index: 100;
 }
 
 .facilitator-panel-header {
@@ -2332,49 +2942,41 @@ const finish = async () => {
   width: 100%;
 }
 
+.retro-top-controls {
+  align-items: flex-start;
+  display: flex;
+  left: var(--space-4);
+  position: absolute;
+  top: calc(var(--space-4) + 42px + var(--space-2));
+  z-index: 8;
+}
+
 .board-help {
   align-items: center;
+  bottom: var(--space-4);
   display: flex;
-  position: relative;
-}
-
-.board-help-trigger {
-  align-items: center;
-  border-radius: var(--radius-pill);
-  color: var(--color-muted);
-  cursor: pointer;
-  display: flex;
-  gap: var(--space-2);
-  height: var(--icon-btn-size);
-  justify-content: center;
-  padding: 0 var(--space-3);
-}
-
-.board-help-trigger:hover {
-  background: var(--color-hover);
-  color: var(--color-text);
-}
-
-.board-help-trigger:focus-visible {
-  box-shadow: var(--shadow-focus);
-  outline: none;
+  left: var(--space-4);
+  position: absolute;
+  z-index: 8;
 }
 
 .board-help-panel {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
+  bottom: 100%;
   box-shadow: var(--shadow-popover);
   display: none;
   gap: var(--space-2);
-  margin-top: var(--space-2);
+  left: 0;
+  margin-bottom: var(--space-2);
   max-height: calc(100dvh - 96px);
   max-width: calc(100vw - var(--space-4));
   overflow-y: auto;
   padding: var(--space-3);
   position: absolute;
-  right: 0;
-  top: 100%;
+  right: auto;
+  top: auto;
   width: 400px;
   z-index: 100;
 }
@@ -2511,12 +3113,9 @@ const finish = async () => {
   border-radius: calc(var(--radius-control) - 2px);
   box-shadow: none;
   display: flex;
-  left: var(--space-4);
   max-width: 220px;
   outline: none;
-  position: absolute;
-  top: calc(var(--space-4) + 42px + var(--space-2));
-  z-index: 8;
+  position: relative;
 }
 
 .presence:focus-visible {
@@ -2590,21 +3189,6 @@ const finish = async () => {
   margin-left: auto;
 }
 
-.facilitator-panel-header .board-help-trigger {
-  background: transparent;
-  border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
-  box-shadow: none;
-  height: 16px;
-  padding: 0;
-  width: 16px;
-}
-
-.facilitator-panel-header .board-help-trigger > svg {
-  height: 16px;
-  width: 16px;
-}
-
 /* Phase controls: contextual actions inside the current panel. */
 .phase-controls {
   align-items: start;
@@ -2621,7 +3205,7 @@ const finish = async () => {
 .phase-control {
   align-items: center;
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-1);
   min-height: var(--control-height-small);
   width: 100%;
 }
@@ -2662,13 +3246,6 @@ const finish = async () => {
 
 .vote-counter {
   gap: var(--space-1);
-}
-
-.phase-timer--over {
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-  border-radius: calc(var(--radius-control) - 2px);
-  color: var(--color-danger);
-  padding: 0 var(--space-2);
 }
 
 /* Keep editable numbers compact while using the same control style as buttons. */
@@ -2751,8 +3328,6 @@ const finish = async () => {
   --sticky-dx: var(--card-shadow-x, 0px);
   --curl-light: #ffffff47;
   --curl-dark: #10182818;
-  /* Height of every badge straddling the bottom edge - rank, assignee, votes. */
-  --card-strip: var(--space-5);
   /* Lifted paper either catches the light or folds into shade; --card-curl-out picks which. */
   --curl-base: color-mix(
     in srgb,
@@ -2800,10 +3375,12 @@ const finish = async () => {
   padding: var(--space-3);
   position: absolute;
   rotate: var(--card-tilt, 0deg);
+  -webkit-tap-highlight-color: transparent;
   transition:
     box-shadow var(--duration-base) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
   width: 160px;
+  z-index: 1;
 }
 
 :root[data-theme='dark'] .card {
@@ -2824,13 +3401,15 @@ const finish = async () => {
 }
 
 /* Hovering reads a note, it does not reorder the board - a click brings one to the front. */
-.card:hover {
-  box-shadow: var(--sticky-shadow-lift);
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    box-shadow: var(--sticky-shadow-lift);
+  }
 }
 
 .card.selected,
 .card.editing {
-  z-index: 3;
+  z-index: 2;
 }
 
 /* An open owner list must not slide under the note next to it. */
@@ -2841,7 +3420,7 @@ const finish = async () => {
 .card.dragging {
   box-shadow: var(--sticky-shadow-lift);
   cursor: grabbing;
-  z-index: 4;
+  z-index: 3;
 }
 
 .group-box {
@@ -2851,53 +3430,31 @@ const finish = async () => {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 12%, transparent);
   cursor: grab;
   position: absolute;
-  z-index: 0;
 }
 
-.group-title,
-.group-ungroup {
-  pointer-events: auto;
+.group-box.dragging {
+  cursor: grabbing;
+  z-index: 6;
 }
 
 .group-header {
   align-items: center;
   display: flex;
-  gap: var(--space-2);
-  left: 50%;
+  gap: var(--space-1);
+  left: 0;
   max-width: calc(100% - var(--space-4));
   pointer-events: auto;
   position: absolute;
   top: -40px;
-  transform: translateX(-50%);
+  transform: none;
   width: max-content;
-  z-index: 1;
+  z-index: 0;
 }
 
 .group-title {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  box-shadow: none;
-  color: var(--color-text);
   field-sizing: content;
-  font-family: inherit;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  height: var(--control-height-small);
-  max-width: 100%;
-  padding: 0 var(--space-2);
-  position: static;
-  width: fit-content;
-}
-
-.group-title:focus {
-  border-color: var(--color-accent);
-  box-shadow: none;
-  outline: none;
-}
-
-.group-ungroup {
-  position: static;
+  min-width: 0;
+  width: auto;
 }
 
 .card.group-picked {
@@ -2914,17 +3471,12 @@ const finish = async () => {
   bottom: calc(var(--space-4) + var(--icon-btn-size) + var(--space-2));
   box-shadow: var(--shadow-card);
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
   left: 50%;
-  padding: var(--space-2) var(--space-4);
-  position: fixed;
+  padding: var(--space-2);
+  position: absolute;
   transform: translateX(-50%);
-  z-index: 5;
-}
-
-.merge-bar > svg {
-  color: var(--color-accent);
-  flex: none;
+  z-index: 8;
 }
 
 .merge-bar .primary {
@@ -2950,7 +3502,7 @@ const finish = async () => {
   color: inherit;
   cursor: inherit;
   font-family: 'Caveat', 'Inter', cursive;
-  font-size: 30px;
+  font-size: 34px;
   font-weight: var(--font-weight-semibold);
   line-height: 1.15;
   margin: 0;
@@ -2969,6 +3521,8 @@ const finish = async () => {
 textarea.card-text {
   caret-color: var(--color-accent);
   cursor: text;
+  height: 100%;
+  min-height: 100%;
   resize: none;
   user-select: text;
 }
@@ -3004,6 +3558,33 @@ textarea.card-text:focus {
   width: var(--icon-btn-size-small);
 }
 
+.card-toolbar {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+  position: absolute;
+  top: calc(-1 * var(--icon-btn-size-small) / 2);
+}
+
+.card-toolbar--left {
+  left: 0;
+}
+
+.card-toolbar--right {
+  right: 0;
+}
+
+.card-toolbar--bottom-center {
+  bottom: calc(-1 * var(--icon-btn-size-small) / 2);
+  left: 50%;
+  top: auto;
+  transform: translateX(-50%);
+}
+
+.group-vote-toolbar {
+  z-index: 7;
+}
+
 .remote-cursor {
   pointer-events: none;
   position: absolute;
@@ -3027,26 +3608,20 @@ textarea.card-text:focus {
  * note itself keeps all of its writing space.
  */
 .assignee {
-  bottom: calc(-1 * var(--card-strip) - 4px);
+  bottom: calc(-1 * var(--icon-btn-size-small) / 2);
   left: 50%;
-  max-width: calc(100% - var(--icon-btn-size) * 2);
   position: absolute;
   translate: -50% 0;
 }
 
 .assignee-trigger {
   align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  box-shadow: var(--shadow-card);
   cursor: pointer;
   display: flex;
-  font-size: var(--font-size-caption);
   gap: 4px;
   list-style: none;
   min-width: 0;
-  padding: 0 var(--space-2) 0 2px;
+  overflow: hidden;
 }
 
 .assignee-trigger--empty {
@@ -3139,132 +3714,66 @@ textarea.card-text:focus {
   color: var(--color-accent);
 }
 
-.card-toolbar {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  bottom: calc(100% + var(--space-2));
-  box-shadow: var(--shadow-card);
-  display: flex;
-  gap: 2px;
-  padding: 3px;
-  position: absolute;
-  right: 0;
-}
-
-.card-toolbar .icon-btn {
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-pill);
-}
-
-.card-toolbar .icon-btn:hover {
-  background: var(--color-hover);
-}
-
-/* One badge size all along the bottom edge: rank on the left, assignee in the middle, votes on
-   the right. */
-.vote-badge,
-.rank-badge,
-.assignee-trigger {
-  height: var(--card-strip);
-}
-
-.vote-badge,
-.rank-badge {
-  justify-content: center;
-  min-height: 0;
-  padding: 2px var(--space-2);
-}
-
 .vote-badge {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  bottom: calc(-1 * var(--card-strip) - 4px);
-  box-shadow: var(--shadow-card);
-  color: var(--color-text);
-  display: flex;
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  gap: 4px;
-  position: absolute;
-  right: var(--space-2);
-  transition: var(--transition-press);
-  translate: 0;
-}
-
-.vote-badge:not(:disabled):hover {
-  background: var(--color-hover);
-}
-
-.vote-badge:not(:disabled):active {
-  translate: 0 var(--press-offset);
+  gap: var(--space-1);
 }
 
 .vote-result {
+  --result-color: var(--color-text);
+  color: var(--result-color);
   pointer-events: none;
 }
 
-.vote-badge:disabled {
-  /* In Discuss the counter only reports results, so it stays fully readable. */
-  cursor: default;
-  opacity: 1;
+.vote-result .lucide {
+  height: 18px;
+  width: 18px;
+}
+
+.vote-result-rank,
+.vote-result-count {
+  font-weight: var(--font-weight-bold);
+}
+
+.vote-result-count {
+  color: var(--color-text);
+}
+
+.vote-result-rank {
+  color: var(--result-color);
+  font-size: var(--font-size-caption);
+  margin-left: calc(-1 * var(--space-1) / 2);
+}
+
+/* The three metals read apart by hue, not by shade: warm yellow gold, cold blue-grey silver and
+   red copper bronze. Neighbouring hues (gold next to bronze) blur into one brown at badge size. */
+.vote-result.rank-1 {
+  --result-color: #d4af37;
+}
+
+.vote-result.rank-2 {
+  --result-color: #6b7280;
+}
+
+.vote-result.rank-3 {
+  --result-color: #a14d28;
+}
+
+:root[data-theme='dark'] .vote-result.rank-1 {
+  --result-color: #ffd54a;
+}
+
+:root[data-theme='dark'] .vote-result.rank-2 {
+  --result-color: #c7ced9;
+}
+
+:root[data-theme='dark'] .vote-result.rank-3 {
+  --result-color: #c8763c;
 }
 
 .vote-badge.voted {
+  background: var(--color-accent-soft);
   border-color: var(--color-accent);
   color: var(--color-accent);
-}
-
-.vote-badge .lucide,
-.rank-badge .lucide {
-  height: 12px;
-  width: 12px;
-}
-
-.rank-badge {
-  --rank-color: var(--color-muted);
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--rank-color);
-  border-radius: var(--radius-pill);
-  bottom: calc(-1 * var(--card-strip) - 4px);
-  box-shadow: var(--shadow-card);
-  color: var(--rank-color);
-  display: flex;
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  gap: 4px;
-  left: var(--space-2);
-  pointer-events: none;
-  position: absolute;
-  translate: 0;
-}
-
-.rank-badge.rank-1 {
-  --rank-color: #b7791f;
-}
-
-.rank-badge.rank-2 {
-  --rank-color: #6b7280;
-}
-
-.rank-badge.rank-3 {
-  --rank-color: #a15c35;
-}
-
-:root[data-theme='dark'] .rank-badge.rank-1 {
-  --rank-color: #f2c14e;
-}
-
-:root[data-theme='dark'] .rank-badge.rank-2 {
-  --rank-color: #c7ced9;
-}
-
-:root[data-theme='dark'] .rank-badge.rank-3 {
-  --rank-color: #d9956a;
 }
 
 .entity-avatar.small {
@@ -3299,6 +3808,25 @@ textarea.card-text:focus {
 
   .presence {
     max-width: 76px;
+  }
+
+  .board-help {
+    bottom: auto;
+    left: auto;
+    right: var(--space-4);
+    top: var(--space-4);
+  }
+
+  .board-help-panel {
+    bottom: auto;
+    left: auto;
+    margin-bottom: 0;
+    margin-top: var(--space-2);
+    max-height: calc(100dvh - var(--space-8));
+    max-width: calc(100vw - var(--space-8));
+    right: 0;
+    top: 100%;
+    width: min(400px, calc(100vw - var(--space-8)));
   }
 
   .presence > .entity-avatar:nth-of-type(n + 3) {

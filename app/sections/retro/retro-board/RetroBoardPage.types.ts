@@ -57,9 +57,8 @@ export type RetroChannelMessage =
       }
       type: 'card-upserted'
     }
+  | { cardId: string; groupId: null | string; type: 'card-move'; x: number; y: number }
   | { cardId: string; text: string; type: 'card-text' }
-  | { cardId: string; type: 'card-move'; x: number; y: number }
-  | { cardIds: string[]; id: string; type: 'group-upserted' }
   | { member: RetroMember; type: 'cursor'; x: number; y: number }
   | { member: RetroMember; type: 'join' | 'leave' | 'presence' }
   | { type: 'changed' }
@@ -69,9 +68,10 @@ export type RetroChannel = {
   onMessage: (handler: (message: RetroChannelMessage) => void) => void
   open: () => Promise<void>
   publishAnnounce: () => void
-  publishCardMove: (cardId: string, x: number, y: number) => void
+  publishCardMove: (cardId: string, groupId: null | string, x: number, y: number) => void
   publishCardText: (cardId: string, text: string) => void
   publishCursor: (x: number, y: number) => void
+  sync: () => Promise<RetroBoardViewModel>
 }
 
 export type RetroBoardViewModel = {
@@ -80,7 +80,6 @@ export type RetroBoardViewModel = {
   color: string
   finished: boolean
   groups: RetroGroupViewModel[]
-  hiddenMine: number
   id: string
   me: RetroMember
   myVotes: number
@@ -89,7 +88,6 @@ export type RetroBoardViewModel = {
   participants: RetroMember[]
   phase: RetroPhase
   phaseEndsAt: null | string
-  revealedMine: number
   sections: RetroSectionViewModel[]
   votesPerUser: number
 }

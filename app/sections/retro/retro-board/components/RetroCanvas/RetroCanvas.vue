@@ -4,6 +4,7 @@
     class="canvas-wrapper"
     @dblclick="onDoubleClick"
     @pointerdown="startScenePan"
+    @pointerdown.capture="trackPointer"
     @pointermove="onScenePointerMove"
     @wheel.prevent="onWheel">
     <div
@@ -26,7 +27,7 @@
       </button>
       <button
         class="secondary zoom-value"
-        title="Reset view"
+        title="Reset zoom"
         type="button"
         @click="reset">
         {{ Math.round(state.scale * 100) }}%
@@ -76,11 +77,10 @@ const state = reactive({
 })
 
 const startScenePan = (event: PointerEvent) => {
-  props.onBackgroundPointerDown()
-  trackPointer(event)
-  if (startPinch()) {
+  if (pinch) {
     return
   }
+  props.onBackgroundPointerDown()
   state.wheelInputType = null
   state.drag = 'scene'
   state.last = { x: event.clientX, y: event.clientY }
@@ -89,8 +89,7 @@ const startScenePan = (event: PointerEvent) => {
 
 const startNodeDrag = (event: PointerEvent) => {
   event.stopPropagation()
-  trackPointer(event)
-  if (startPinch()) {
+  if (pinch) {
     return
   }
   state.wheelInputType = null
@@ -176,6 +175,7 @@ const detectDoubleTap = (event: PointerEvent) => {
     now - lastTap.time < DOUBLE_TAP_MS &&
     Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < TAP_MOVE_LIMIT
   ) {
+    event.preventDefault()
     props.onCanvasDoubleClick(point)
     lastTap = undefined
     return
@@ -186,6 +186,11 @@ const detectDoubleTap = (event: PointerEvent) => {
 const trackPointer = (event: PointerEvent) => {
   if (event.pointerType === 'touch') {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+    if (startPinch()) {
+      // Cancel any pending card tap before descendants handle the second finger.
+      props.onBackgroundPointerDown()
+      event.stopPropagation()
+    }
   }
 }
 
@@ -377,8 +382,9 @@ const onDoubleClick = (event: MouseEvent) => {
 }
 
 const reset = () => {
-  state.offset = { x: 32, y: 112 }
-  state.scale = 1
+  const rect = wrapper.value?.getBoundingClientRect()
+
+  zoomAt(1, (rect?.width ?? 0) / 2, (rect?.height ?? 0) / 2)
 }
 
 onMounted(() => {

@@ -5,12 +5,12 @@ import type { RetroBoardPageDeps } from '../RetroBoardPage.deps'
 
 export const createGroupCards =
   (client: RetroApiClient): RetroBoardPageDeps['groupCards'] =>
-  ({ cardIds, retroId }) =>
+  ({ cards, retroId }) =>
     executeAction({
       map: (created) => (created ? { id: String(created.id) } : undefined),
       request: () =>
         client.POST('/api/retro/{id}/groups', {
-          body: { cardIds },
+          body: { cards },
           params: { path: { id: Number(retroId) } },
         }),
     })

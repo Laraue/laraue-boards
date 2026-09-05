@@ -8,9 +8,17 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      link: [
+        { href: 'https://fonts.googleapis.com', rel: 'preconnect' },
+        { crossorigin: '', href: 'https://fonts.gstatic.com', rel: 'preconnect' },
+        {
+          href: 'https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap',
+          rel: 'stylesheet',
+        },
+      ],
       meta: [
         {
-          content: 'width=device-width, initial-scale=1',
+          content: 'width=device-width, initial-scale=1, maximum-scale=1',
           name: 'viewport',
         },
       ],

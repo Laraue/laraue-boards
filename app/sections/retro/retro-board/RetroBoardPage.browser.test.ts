@@ -57,7 +57,6 @@ const board: RetroBoardViewModel = {
   color: '#4774d4',
   finished: false,
   groups: [],
-  hiddenMine: 0,
   id: '7',
   me: member,
   myVotes: 0,
@@ -66,7 +65,6 @@ const board: RetroBoardViewModel = {
   participants: [member],
   phase: 'Collect',
   phaseEndsAt: null,
-  revealedMine: 1,
   sections: [
     { color: '#489c61', id: '1', name: 'Good' },
     { color: '#4774d4', id: '2', name: 'Actions' },
@@ -86,6 +84,7 @@ const createTestChannel = () => {
     publishCardMove: vi.fn<RetroChannel['publishCardMove']>(),
     publishCardText: vi.fn<RetroChannel['publishCardText']>(),
     publishCursor: vi.fn<RetroChannel['publishCursor']>(),
+    sync: vi.fn<RetroChannel['sync']>(async () => board),
   }
 
   return { channel, emit: (message: RetroChannelMessage) => handler?.(message) }
@@ -229,6 +228,50 @@ it('fits card text after the card has its layout', async () => {
   expect(text.style.fontSize).not.toBe('12px')
 })
 
+it('fits a long note again after deselecting and reopening its editor', async () => {
+  const { channel } = createTestChannel()
+  const text = 'W'.repeat(180)
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, cards: [{ ...board.cards[0]!, text }] },
+  })
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await cardWithText(text)!.trigger('click')
+    await cardWithText(text)!.trigger('click')
+    const input = currentWrapper!.get('textarea.card-text').element as HTMLTextAreaElement
+    expect(Number.parseFloat(input.style.fontSize)).toBeLessThan(34)
+    expect(input.scrollHeight).toBeLessThanOrEqual(input.clientHeight + 4)
+    expect(input.scrollWidth).toBeLessThanOrEqual(input.clientWidth)
+    await currentWrapper!.get('textarea.card-text').trigger('blur')
+    await currentWrapper!.get('.retro-canvas').trigger('pointerdown')
+    window.dispatchEvent(new PointerEvent('pointerup'))
+    await nextTick()
+  }
+})
+
+it('saves clearing an existing note but does not update an unchanged empty note', async () => {
+  const { channel } = createTestChannel()
+  const updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction)
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, cards: [...board.cards, { ...board.cards[0]!, id: 'empty', text: '' }] },
+    updateCard,
+  })
+  await cardWithText('My note')!.trigger('click')
+  await cardWithText('My note')!.trigger('click')
+  await currentWrapper!.get('textarea.card-text').setValue('')
+  await currentWrapper!.get('textarea.card-text').trigger('blur')
+  expect(updateCard).toHaveBeenCalledExactlyOnceWith({ id: 'mine', text: '' })
+
+  await currentWrapper!.get('.retro-canvas').trigger('pointerdown')
+  window.dispatchEvent(new PointerEvent('pointerup'))
+  await cardWithText('Add a note')!.trigger('click')
+  await cardWithText('Add a note')!.trigger('click')
+  await currentWrapper!.get('textarea.card-text').trigger('blur')
+  expect(updateCard).toHaveBeenCalledOnce()
+})
+
 it('blocks management and freezes cards during voting', async () => {
   const { channel } = createTestChannel()
 
@@ -265,10 +308,9 @@ it('hides phase controls when they have no actions', async () => {
     data: {
       ...board,
       canManage: false,
-      hiddenMine: 0,
+      cards: [],
       phase: 'Discuss',
       phaseEndsAt: null,
-      revealedMine: 0,
     },
   })
 
@@ -286,32 +328,43 @@ it('hides the timer separator before an unavailable stop action', async () => {
   expect(currentWrapper!.findAll('.phase-timer-separator')).toHaveLength(0)
 })
 
-it('confirms a created card before starting its edit', async () => {
+it('starts editing a created card', async () => {
   const { channel } = createTestChannel()
-  let serverHasCard = false
   const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => {
-    serverHasCard = true
-
     return { data: { id: 'new-card' }, status: 'success' }
   })
-  const view = vi.fn<RetroBoardPageDeps['view']>(async () => ({
-    data: serverHasCard
-      ? { ...board, cards: [...board.cards, { ...board.cards[0]!, id: 'new-card', text: '' }] }
-      : board,
-    status: 'success',
-  }))
 
-  await mount({ createCard, createChannel: () => channel, view })
+  await mount({ createCard, createChannel: () => channel })
   await currentWrapper!.find('.retro-canvas').trigger('dblclick', {
     clientX: 1900,
     clientY: 900,
   })
 
-  await vi.waitFor(() => expect(view).toHaveBeenCalledTimes(2))
+  await vi.waitFor(() => expect(createCard).toHaveBeenCalledOnce())
   expect(currentWrapper!.find('textarea.card-text').exists()).toBe(true)
 
   await currentWrapper!.find('textarea.card-text').trigger('blur')
-  await vi.waitFor(() => expect(currentWrapper!.findAll('.card')).toHaveLength(board.cards.length))
+  expect(currentWrapper!.findAll('.card')).toHaveLength(board.cards.length + 1)
+})
+
+it('turns the notes toggle back to private as soon as a note is written', async () => {
+  const { channel } = createTestChannel()
+  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => ({
+    data: { id: 'new-card' },
+    status: 'success',
+  }))
+
+  await mount({ createCard, createChannel: () => channel })
+
+  // Every note of mine is revealed, so the board says so.
+  expect(buttonWithText('Visible')).toBeDefined()
+
+  await currentWrapper!.find('.retro-canvas').trigger('dblclick', { clientX: 400, clientY: 300 })
+  await vi.waitFor(() => expect(createCard).toHaveBeenCalledOnce())
+
+  // A fresh note starts covered, and the toggle has to say that before it is moved or saved.
+  expect(buttonWithText('Private')).toBeDefined()
+  expect(buttonWithText('Visible')).toBeUndefined()
 })
 
 it('shows only recorded participants after finish', async () => {
@@ -360,6 +413,33 @@ it('zooms the board with a two-finger pinch', async () => {
   expect(currentWrapper!.get('.scene').attributes('style')).toContain('scale(2)')
   window.dispatchEvent(touchPointer('pointerup', 1, 200, 200))
   window.dispatchEvent(touchPointer('pointerup', 2, 400, 200))
+})
+
+it('zooms when both fingers start on a card without moving or editing it', async () => {
+  const { channel } = createTestChannel()
+  const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
+  await mount({ createChannel: () => channel, moveCard })
+  const card = cardWithText('My note')!
+  card.element.dispatchEvent(
+    new PointerEvent('pointerdown', {
+      bubbles: true,
+      clientX: 200,
+      clientY: 200,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'touch',
+    }),
+  )
+  card.element.dispatchEvent(touchPointer('pointerdown', 2, 300, 200))
+  card.element.dispatchEvent(touchPointer('pointermove', 2, 400, 200))
+  await nextTick()
+  expect(currentWrapper!.get('.scene').attributes('style')).toContain('scale(2)')
+  card.element.dispatchEvent(touchPointer('pointerup', 1, 200, 200))
+  card.element.dispatchEvent(touchPointer('pointerup', 2, 400, 200))
+  await card.trigger('click')
+  expect(moveCard).not.toHaveBeenCalled()
+  expect(card.classes()).not.toContain('editing')
+  expect(card.classes()).not.toContain('dragging')
 })
 
 it('opens card editing from the pencil action', async () => {
@@ -423,7 +503,7 @@ it('edits only action cards during actions', async () => {
   await expect.element(page.getByRole('textbox', { name: 'Edit note' })).toBeInTheDocument()
 })
 
-it('refreshes a realtime change after unchanged editing ends', async () => {
+it('syncs a realtime change after unchanged editing ends', async () => {
   const live = createTestChannel()
   const view = vi.fn<RetroBoardPageDeps['view']>(async () => ({ data: board, status: 'success' }))
 
@@ -433,9 +513,10 @@ it('refreshes a realtime change after unchanged editing ends', async () => {
   await cardWithText('My note')?.trigger('click')
   live.emit({ type: 'changed' })
   expect(view).toHaveBeenCalledOnce()
+  expect(live.channel.sync).not.toHaveBeenCalled()
 
   await currentWrapper?.find('textarea.card-text').trigger('blur')
-  await vi.waitFor(() => expect(view).toHaveBeenCalledTimes(2))
+  await vi.waitFor(() => expect(live.channel.sync).toHaveBeenCalledOnce())
 })
 
 it('applies a live card update without reloading the board', async () => {
@@ -468,19 +549,21 @@ it('applies a live card update without reloading the board', async () => {
   expect(view).toHaveBeenCalledOnce()
 })
 
-it('applies a live group without reloading the board', async () => {
+it('picks up a group made elsewhere on the next sync', async () => {
   const live = createTestChannel()
-  const view = vi.fn<RetroBoardPageDeps['view']>(async () => ({
-    data: { ...structuredClone(board), phase: 'Group' },
-    status: 'success',
-  }))
+  const grouped = structuredClone(board)
+  grouped.phase = 'Group'
+  grouped.cards = grouped.cards.map((card) =>
+    card.id === 'mine' || card.id === 'other' ? { ...card, groupId: 'group-live' } : card,
+  )
+  grouped.groups = [
+    { cardIds: ['mine', 'other'], id: 'group-live', title: '', votedByMe: false, votes: 0 },
+  ]
+  live.channel.sync = vi.fn<RetroChannel['sync']>(async () => grouped)
 
-  await mount({ createChannel: () => live.channel, view })
-  live.emit({ cardIds: ['mine', 'other'], id: 'group-live', type: 'group-upserted' })
-  await nextTick()
-
-  expect(currentWrapper!.find('.group-box').exists()).toBe(true)
-  expect(view).toHaveBeenCalledOnce()
+  await mount({ createChannel: () => live.channel, data: { ...board, phase: 'Group' } })
+  live.emit({ type: 'changed' })
+  await vi.waitFor(() => expect(currentWrapper!.find('.group-box').exists()).toBe(true))
 })
 
 it('keeps edited text visible while a slow save is pending', async () => {
@@ -503,6 +586,38 @@ it('keeps edited text visible while a slow save is pending', async () => {
   expect(cardWithText('Saved text')).toBeDefined()
   expect(cardWithText('Add a note')).toBeUndefined()
   resolveUpdate({ data: true, status: 'success' })
+})
+
+it('selects on touch and focuses from the click following the second tap', async () => {
+  const { channel } = createTestChannel()
+  await mount({ createChannel: () => channel })
+  const card = cardWithText('My note')!
+  const tap = () => {
+    for (const type of ['pointerdown', 'pointerup']) {
+      card.element.dispatchEvent(
+        new PointerEvent(type, {
+          bubbles: true,
+          clientX: 100,
+          clientY: 100,
+          isPrimary: true,
+          pointerId: 1,
+          pointerType: 'touch',
+        }),
+      )
+    }
+  }
+
+  tap()
+  await card.trigger('click')
+  await card.trigger('click')
+  expect(card.classes()).toContain('selected')
+  expect(card.find('textarea').isVisible()).toBe(false)
+
+  tap()
+  expect(document.activeElement).not.toBe(card.find('textarea').element)
+  await card.trigger('click')
+  expect(document.activeElement).toBe(card.find('textarea').element)
+  expect(card.find('textarea').isVisible()).toBe(true)
 })
 
 it('selects on one click and drops a deleted card before the server answers', async () => {
@@ -556,25 +671,22 @@ it('brings a deleted card back when the server refuses', async () => {
   await vi.waitFor(() => expect(cardWithText('My note')).toBeDefined())
 })
 
-it('deduplicates simultaneous realtime refreshes', async () => {
+it('deduplicates simultaneous realtime syncs', async () => {
   const live = createTestChannel()
-  type ViewResult = Awaited<ReturnType<RetroBoardPageDeps['view']>>
-  let resolveRefresh!: (result: ViewResult) => void
-  const pendingRefresh = new Promise<ViewResult>((resolve) => {
-    resolveRefresh = resolve
+  let resolveSync!: (result: RetroBoardViewModel) => void
+  const pendingSync = new Promise<RetroBoardViewModel>((resolve) => {
+    resolveSync = resolve
   })
-  const view = vi
-    .fn<RetroBoardPageDeps['view']>()
-    .mockResolvedValueOnce({ data: board, status: 'success' })
-    .mockReturnValue(pendingRefresh)
+  const sync = vi.fn<RetroChannel['sync']>().mockReturnValue(pendingSync)
+  live.channel.sync = sync
 
-  await mount({ createChannel: () => live.channel, view })
+  await mount({ createChannel: () => live.channel })
   live.emit({ type: 'changed' })
   live.emit({ type: 'changed' })
   await Promise.resolve()
 
-  expect(view).toHaveBeenCalledTimes(2)
-  resolveRefresh({ data: board, status: 'success' })
+  expect(sync).toHaveBeenCalledOnce()
+  resolveSync(board)
 })
 
 it('replaces the realtime channel when the retro id changes', async () => {
@@ -596,7 +708,7 @@ it('replaces the realtime channel when the retro id changes', async () => {
 })
 
 it('shows voting actions only after the timer starts', async () => {
-  const { channel } = createTestChannel()
+  const live = createTestChannel()
   const voting = {
     ...board,
     cards: [
@@ -606,18 +718,16 @@ it('shows voting actions only after the timer starts', async () => {
     phase: 'Vote' as const,
     phaseEndsAt: null,
   }
-  const view = vi
-    .fn<RetroBoardPageDeps['view']>()
-    .mockResolvedValueOnce({ data: voting, status: 'success' })
-    .mockResolvedValue({
-      data: { ...voting, phaseEndsAt: '2099-01-01T00:00:00Z' },
-      status: 'success',
-    })
 
-  await mount({ createChannel: () => channel, view })
+  await mount({ createChannel: () => live.channel, data: voting })
   await expect.element(page.getByRole('button', { name: 'Vote for topic' })).not.toBeInTheDocument()
 
+  live.channel.sync = vi.fn<RetroChannel['sync']>(async () => ({
+    ...voting,
+    phaseEndsAt: '2099-01-01T00:00:00Z',
+  }))
   await buttonWithText('Start')?.trigger('click')
+  live.emit({ type: 'changed' })
 
   await expect
     .element(page.getByRole('button', { name: 'Vote for topic' }).first())
@@ -726,7 +836,7 @@ it('keeps the board visible without editing controls after finish', async () => 
 it('shows no owner picker on a topic note', async () => {
   const { channel } = createTestChannel()
 
-  await mount({ createChannel: () => channel })
+  await mount({ createChannel: () => channel, data: groupedBoard })
 
   expect(currentWrapper?.find('.assignee').exists()).toBe(false)
 })
@@ -750,7 +860,65 @@ it('merges the picked notes into a topic', async () => {
   expect(cardWithText('My note')?.classes()).toContain('group-picked')
   await buttonWithText('Merge into a topic')?.trigger('click')
 
-  expect(groupCards).toHaveBeenCalledWith({ cardIds: ['mine', 'other'], retroId: '7' })
+  // The board lays the topic out, so it is the board that sends where each note goes.
+  expect(groupCards).toHaveBeenCalledWith({
+    cards: [
+      { id: 'mine', x: expect.any(Number), y: expect.any(Number) },
+      { id: 'other', x: expect.any(Number), y: expect.any(Number) },
+    ],
+    retroId: '7',
+  })
+})
+
+it('merges notes that already belong to different topics', async () => {
+  const { channel } = createTestChannel()
+  const groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => ({
+    data: { id: 'group-3' },
+    status: 'success',
+  }))
+  const twoTopics: RetroBoardViewModel = {
+    ...groupingBoard,
+    cards: [
+      { ...groupingBoard.cards[0]!, groupId: 'group-1' },
+      { ...groupingBoard.cards[1]!, groupId: 'group-2' },
+    ],
+    groups: [
+      { cardIds: ['mine'], id: 'group-1', title: 'One', votedByMe: false, votes: 0 },
+      { cardIds: ['other'], id: 'group-2', title: 'Two', votedByMe: false, votes: 0 },
+    ],
+  }
+
+  await mount({ createChannel: () => channel, data: twoTopics, groupCards })
+  await cardWithText('My note')?.trigger('click', { ctrlKey: true })
+  await cardWithText('Other note')?.trigger('click', { ctrlKey: true })
+  await buttonWithText('Merge into a topic')?.trigger('click')
+
+  expect(groupCards).toHaveBeenCalled()
+})
+
+it('starts a new selection when a note of another section is picked', async () => {
+  const { channel } = createTestChannel()
+  const acrossSections: RetroBoardViewModel = {
+    ...groupingBoard,
+    cards: [
+      { ...groupingBoard.cards[0]!, sectionId: '1' },
+      { ...groupingBoard.cards[1]!, sectionId: '2', x: 1000 },
+    ],
+    sections: [
+      { color: '#489c61', id: '1', name: 'Good' },
+      { color: '#d46f47', id: '2', name: 'Bad' },
+      { color: '#4774d4', id: '3', name: 'Actions' },
+    ],
+  }
+
+  await mount({ createChannel: () => channel, data: acrossSections })
+  await cardWithText('My note')?.trigger('click', { ctrlKey: true })
+  await cardWithText('Other note')?.trigger('click', { ctrlKey: true })
+
+  // A topic lives in one section, so the second pick replaces the first instead of joining it.
+  expect(cardWithText('My note')?.classes()).not.toContain('group-picked')
+  expect(cardWithText('Other note')?.classes()).toContain('group-picked')
+  expect(buttonWithText('Merge into a topic')?.attributes('disabled')).toBeDefined()
 })
 
 it('does not offer merging to a participant', async () => {
@@ -795,13 +963,121 @@ it('draws the topic around its notes and renames it', async () => {
   expect((title.element as HTMLInputElement).value).toBe('Painful releases')
 
   ;(title.element as HTMLInputElement).value = 'Slow releases'
-  await title.trigger('change')
+  await title.trigger('blur')
 
   expect(setGroupTitle).toHaveBeenCalledWith({
     groupId: 'group-1',
     retroId: '7',
     title: 'Slow releases',
   })
+})
+
+it('shows a new vote limit straight away, without the old number flashing back', async () => {
+  const { channel } = createTestChannel()
+  type SettingsResult = Awaited<ReturnType<RetroBoardPageDeps['updateSettings']>>
+  let resolveSave!: (result: SettingsResult) => void
+  const updateSettings = vi.fn<RetroBoardPageDeps['updateSettings']>(
+    () =>
+      new Promise<SettingsResult>((resolve) => {
+        resolveSave = resolve
+      }),
+  )
+
+  await mount({
+    createChannel: () => channel,
+    data: { ...board, phase: 'Vote' },
+    updateSettings,
+  })
+
+  const limit = currentWrapper!.get('.vote-counter-limit')
+  await limit.trigger('focus')
+  await limit.setValue('5')
+  await nextTick()
+  await nextTick()
+
+  expect(updateSettings).toHaveBeenCalledOnce()
+  expect((currentWrapper!.get('.vote-counter-limit').element as HTMLInputElement).value).toBe('5')
+
+  resolveSave({ data: true, status: 'success' })
+  await nextTick()
+
+  expect((currentWrapper!.get('.vote-counter-limit').element as HTMLInputElement).value).toBe('5')
+})
+
+it('shows a renamed topic straight away, without the old headline flashing back', async () => {
+  const { channel } = createTestChannel()
+  type TitleResult = Awaited<ReturnType<RetroBoardPageDeps['setGroupTitle']>>
+  let resolveSave!: (result: TitleResult) => void
+  const setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(
+    () =>
+      new Promise<TitleResult>((resolve) => {
+        resolveSave = resolve
+      }),
+  )
+
+  await mount({ createChannel: () => channel, data: groupedBoard, setGroupTitle })
+
+  const title = currentWrapper!.get('.group-box input')
+  await title.trigger('focus')
+  await title.setValue('Slow releases')
+  await title.trigger('blur')
+  await nextTick()
+  await nextTick()
+
+  // The save is still in flight, and the board already reads the way the room left it.
+  expect(setGroupTitle).toHaveBeenCalledOnce()
+  expect((currentWrapper!.get('.group-box input').element as HTMLInputElement).value).toBe(
+    'Slow releases',
+  )
+
+  resolveSave({ data: true, status: 'success' })
+  await nextTick()
+
+  expect((currentWrapper!.get('.group-box input').element as HTMLInputElement).value).toBe(
+    'Slow releases',
+  )
+})
+
+it('puts the old topic headline back when the rename is refused', async () => {
+  const { channel } = createTestChannel()
+  const setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(async () => ({
+    code: 500,
+    status: 'error' as const,
+  }))
+
+  await mount({ createChannel: () => channel, data: groupedBoard, setGroupTitle })
+
+  const title = currentWrapper!.get('.group-box input')
+  await title.trigger('focus')
+  await title.setValue('Slow releases')
+  await title.trigger('blur')
+  await vi.waitFor(() =>
+    expect((currentWrapper!.get('.group-box input').element as HTMLInputElement).value).toBe(
+      'Painful releases',
+    ),
+  )
+})
+
+it('saves a topic title when the click lands on the canvas', async () => {
+  const { channel } = createTestChannel()
+  const setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: groupedBoard, setGroupTitle })
+
+  const title = currentWrapper!.get('.group-box input').element as HTMLInputElement
+  title.focus()
+  title.value = 'Slow releases'
+
+  currentWrapper!.get('.canvas-wrapper').element.dispatchEvent(pointer('pointerdown', 20, 600))
+  await nextTick()
+
+  await vi.waitFor(() =>
+    expect(setGroupTitle).toHaveBeenCalledWith({
+      groupId: 'group-1',
+      retroId: '7',
+      title: 'Slow releases',
+    }),
+  )
 })
 
 it('drags a topic by its frame and a note on its own', async () => {
@@ -816,6 +1092,22 @@ it('drags a topic by its frame and a note on its own', async () => {
   await currentWrapper?.find('.card-text').trigger('pointerdown')
 
   expect(cardWithText('Other note')?.classes()).not.toContain('dragging')
+})
+
+it('uses the same 32px boundary to leave and rejoin a group', async () => {
+  const { channel } = createTestChannel()
+  await mount({ createChannel: () => channel, data: groupedBoard })
+  cardWithText('My note')!.element.dispatchEvent(pointer('pointerdown', 100, 100))
+  window.dispatchEvent(pointer('pointermove', 140, 100))
+  await nextTick()
+  expect(currentWrapper!.get('.group-box').attributes('style')).toContain('left: 72px')
+  window.dispatchEvent(pointer('pointermove', 139, 100))
+  await nextTick()
+  expect(currentWrapper!.get('.group-box').attributes('style')).toContain('left: 272px')
+  window.dispatchEvent(pointer('pointermove', 140, 100))
+  await nextTick()
+  expect(currentWrapper!.get('.group-box').attributes('style')).toContain('left: 72px')
+  window.dispatchEvent(pointer('pointerup', 140, 100))
 })
 
 it('stores a topic drag as one group movement', async () => {
@@ -836,6 +1128,70 @@ it('stores a topic drag as one group movement', async () => {
       sectionId: '1',
     }),
   )
+})
+
+it('does not apply a group movement twice when sync arrives before the API response', async () => {
+  const live = createTestChannel()
+  let resolveMove!: (value: Awaited<ReturnType<RetroBoardPageDeps['moveGroup']>>) => void
+  const moveGroup = vi.fn<RetroBoardPageDeps['moveGroup']>(
+    () =>
+      new Promise((resolve) => {
+        resolveMove = resolve
+      }),
+  )
+  await mount({ createChannel: () => live.channel, data: groupedBoard, moveGroup })
+  const box = currentWrapper!.get('.group-box')
+  expect(box.attributes('style')).toContain('left: 32px')
+  expect(box.attributes('style')).toContain('width: 416px')
+  box.element.dispatchEvent(pointer('pointerdown', 100, 100))
+  window.dispatchEvent(pointer('pointermove', 120, 130))
+  window.dispatchEvent(pointer('pointerup', 120, 130))
+  await vi.waitFor(() => expect(moveGroup).toHaveBeenCalledOnce())
+  live.channel.sync = vi.fn<RetroChannel['sync']>(async () => ({
+    ...structuredClone(groupedBoard),
+    cards: groupedBoard.cards.map((card) => ({ ...card, x: card.x + 20, y: card.y + 30 })),
+    name: 'Synced during drop',
+  }))
+  live.emit({ type: 'changed' })
+  await vi.waitFor(() =>
+    expect((currentWrapper!.get('.retro-name-input').element as HTMLInputElement).value).toBe(
+      'Synced during drop',
+    ),
+  )
+  resolveMove({ data: true, status: 'success' })
+  await vi.waitFor(() => expect(cardWithText('My note')!.classes()).not.toContain('dragging'))
+  expect(cardWithText('My note')!.attributes('style')).toContain('left: 60px')
+  expect(cardWithText('Other note')!.attributes('style')).toContain('left: 300px')
+  expect(currentWrapper!.get('.group-box').attributes('style')).toContain('left: 52px')
+  expect(currentWrapper!.get('.group-box').attributes('style')).toContain('width: 416px')
+})
+
+it('ignores deletion shortcuts in other editors while a card is selected', async () => {
+  const { channel } = createTestChannel()
+  const removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction)
+  await mount({ createChannel: () => channel, data: groupedBoard, removeCard })
+  await cardWithText('My note')!.trigger('click')
+  const editable = document.createElement('div')
+  editable.contentEditable = 'true'
+  const child = document.createElement('span')
+  editable.append(child)
+  testHost!.append(editable)
+  const targets = [
+    currentWrapper!.get('.group-title').element,
+    currentWrapper!.get('.retro-name-input').element,
+    currentWrapper!.get('.phase-timer-minutes').element,
+    child,
+  ]
+  for (const target of targets) {
+    for (const key of ['Backspace', 'Delete']) {
+      const event = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key })
+      target.dispatchEvent(event)
+      expect(event.defaultPrevented).toBe(false)
+    }
+  }
+  expect(removeCard).not.toHaveBeenCalled()
+  window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete' }))
+  expect(removeCard).toHaveBeenCalledExactlyOnceWith({ id: 'mine' })
 })
 
 it('splits the topic back into notes', async () => {
@@ -876,7 +1232,7 @@ it('clears every vote for the owner', async () => {
   expect(resetVotes).toHaveBeenCalledWith({ retroId: '7' })
 })
 
-it('takes the vote off a topic from its single topic control', async () => {
+it('takes the vote off a topic from its group control', async () => {
   const { channel } = createTestChannel()
   const toggleVote = vi.fn<RetroBoardPageDeps['toggleVote']>(successfulAction)
   const votedTopic: RetroBoardViewModel = {
@@ -890,7 +1246,7 @@ it('takes the vote off a topic from its single topic control', async () => {
   }
 
   await mount({ createChannel: () => channel, data: votedTopic, toggleVote })
-  await cardWithText('My note')?.find('.vote-badge').trigger('click')
+  await currentWrapper!.find('.group-vote-toolbar .vote-badge').trigger('click')
 
   expect(toggleVote).toHaveBeenCalledWith({ id: 'mine', voted: false })
 })
@@ -905,7 +1261,7 @@ it('shows one score for the whole topic', async () => {
 
   expect(
     currentWrapper!.findAll('.vote-badge').map((badge: DOMWrapper<Element>) => badge.text()),
-  ).toEqual(['4'])
+  ).toEqual(['#1 · 4 votes'])
 })
 
 it('keeps vote totals hidden while the phase is still Vote', async () => {
@@ -937,7 +1293,7 @@ it('shows vote totals once the facilitator moves on to discussion', async () => 
     },
   })
 
-  expect(currentWrapper?.find('.vote-badge').text()).toBe('2')
+  expect(currentWrapper?.find('.vote-badge').text()).toBe('#1 · 2 votes')
 })
 
 it('keeps all topics visible and ranks vote leaders during discussion', async () => {
@@ -969,13 +1325,143 @@ it('keeps all topics visible and ranks vote leaders during discussion', async ()
     currentWrapper?.findAll('.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['First', 'Second', 'Third', 'Also third', 'Fifth', 'Ship the fix'])
   // Equal votes no longer widen the leading set: the board order breaks the tie, so exactly
-  // three medals are handed out however many topics share a score.
-  expect(cardWithText('First')?.find('.rank-badge').text()).toBe('1')
-  expect(cardWithText('Second')?.find('.rank-badge').text()).toBe('2')
-  expect(cardWithText('Third')?.find('.rank-badge').text()).toBe('3')
-  expect(cardWithText('Also third')?.find('.rank-badge').exists()).toBe(false)
-  expect(cardWithText('Fifth')?.find('.rank-badge').exists()).toBe(false)
-  expect(cardWithText('Ship the fix')?.find('.rank-badge').exists()).toBe(false)
+  // three trophies are handed out however many topics share a score.
+  expect(cardWithText('First')?.find('.vote-result').classes()).toContain('rank-1')
+  expect(cardWithText('Second')?.find('.vote-result').classes()).toContain('rank-2')
+  expect(cardWithText('Third')?.find('.vote-result').classes()).toContain('rank-3')
+  expect(cardWithText('Also third')?.find('.vote-result .lucide-trophy').exists()).toBe(false)
+  expect(cardWithText('Fifth')?.find('.vote-result .lucide-trophy').exists()).toBe(false)
+  expect(cardWithText('Ship the fix')?.find('.vote-result').exists()).toBe(false)
+})
+
+it('lets a topic carried into the actions keep the place it won', async () => {
+  const { channel } = createTestChannel()
+  const topics = ['First', 'Second', 'Third'].map((text, index) => ({
+    ...board.cards[0]!,
+    id: `topic-${index}`,
+    // The winner has already been discussed and carried into the actions.
+    sectionId: index === 0 ? '2' : '1',
+    text,
+    votes: [4, 3, 2][index]!,
+  }))
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...board,
+      cards: topics,
+      phase: 'Discuss',
+      sections: [
+        { color: '#489c61', id: '1', name: 'Good' },
+        { color: '#4774d4', id: '2', name: 'Actions' },
+      ],
+    },
+  })
+
+  // A place is what the room voted, so the runner-up does not inherit the trophy - the winner
+  // simply stops showing one once it has become an action item.
+  expect(cardWithText('First')?.find('.vote-result').exists()).toBe(false)
+  expect(cardWithText('Second')?.find('.vote-result').classes()).toContain('rank-2')
+  expect(cardWithText('Third')?.find('.vote-result').classes()).toContain('rank-3')
+})
+
+it('holds a live refresh back while a topic title is being typed', async () => {
+  const live = createTestChannel()
+  const renamed = structuredClone(groupedBoard)
+  renamed.groups[0]!.title = 'Renamed elsewhere'
+  live.channel.sync = vi.fn<RetroChannel['sync']>(async () => renamed)
+
+  await mount({ createChannel: () => live.channel, data: groupedBoard })
+
+  const title = currentWrapper!.get('.group-box input')
+  await title.trigger('focus')
+  await title.setValue('Half typed')
+
+  live.emit({ type: 'changed' })
+  await nextTick()
+  await nextTick()
+
+  expect((title.element as HTMLInputElement).value).toBe('Half typed')
+  expect(live.channel.sync).not.toHaveBeenCalled()
+})
+
+it.each([
+  [
+    'a cursor',
+    {
+      member: { color: '#fff', initials: 'GH', name: 'G', userId: 'u2' },
+      type: 'cursor' as const,
+      x: 10,
+      y: 10,
+    },
+  ],
+  [
+    'a card move',
+    { cardId: 'other', groupId: 'group-1', type: 'card-move' as const, x: 300, y: 90 },
+  ],
+] as const)('survives %s while the topic title is being typed', async (_name, message) => {
+  const live = createTestChannel()
+
+  await mount({ createChannel: () => live.channel, data: groupedBoard })
+
+  const title = currentWrapper!.get('.group-box input')
+  ;(title.element as HTMLInputElement).focus()
+  await title.trigger('focus')
+  await title.setValue('Half typed')
+
+  live.emit(message as RetroChannelMessage)
+  await nextTick()
+  await nextTick()
+
+  expect((currentWrapper!.get('.group-box input').element as HTMLInputElement).value).toBe(
+    'Half typed',
+  )
+})
+
+it('keeps the timer duration being typed through a live update', async () => {
+  const live = createTestChannel()
+
+  await mount({ createChannel: () => live.channel, data: groupedBoard })
+
+  const timer = currentWrapper!.get('.phase-timer-minutes')
+  ;(timer.element as HTMLInputElement).focus()
+  await timer.setValue('42')
+
+  live.emit({
+    member: { color: '#fff', initials: 'GH', name: 'G', userId: 'u2' },
+    type: 'cursor',
+    x: 10,
+    y: 10,
+  })
+  await nextTick()
+  await nextTick()
+
+  expect((currentWrapper!.get('.phase-timer-minutes').element as HTMLInputElement).value).toBe('42')
+})
+
+it('keeps a note being edited through a live update', async () => {
+  const live = createTestChannel()
+
+  await mount({ createChannel: () => live.channel, data: groupedBoard })
+  await cardWithText('My note')?.trigger('click')
+  await cardWithText('My note')?.trigger('click')
+
+  const editor = currentWrapper!.get('.card-text')
+  ;(editor.element as HTMLTextAreaElement).focus()
+  await editor.setValue('Half typed')
+
+  live.emit({
+    member: { color: '#fff', initials: 'GH', name: 'G', userId: 'u2' },
+    type: 'cursor',
+    x: 10,
+    y: 10,
+  })
+  await nextTick()
+  await nextTick()
+
+  expect((currentWrapper!.get('.card-text').element as HTMLTextAreaElement).value).toBe(
+    'Half typed',
+  )
 })
 
 it('keeps all topics visible during discussion when nobody voted', async () => {
@@ -996,7 +1482,7 @@ it('keeps all topics visible during discussion when nobody voted', async () => {
   expect(
     currentWrapper?.findAll('.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['My note', 'Other note'])
-  expect(currentWrapper?.find('.rank-badge').exists()).toBe(false)
+  expect(currentWrapper?.find('.vote-result .lucide-trophy').exists()).toBe(false)
 })
 
 const twoPeopleBoard: RetroBoardViewModel = {
@@ -1177,15 +1663,19 @@ it('lets the owner carry a note into the actions section in any phase', async ()
 
   await vi.waitFor(() =>
     expect(moveCard).toHaveBeenCalledWith({
+      groupId: null,
       id: 'mine',
       sectionId: '2',
       x: 1040,
       y: 80,
     }),
   )
+  await vi.waitFor(() =>
+    expect(cardWithText('My note')?.attributes('style')).toContain('left: 1040px'),
+  )
 })
 
-it('lets a participant move a note into Actions during the Actions phase', async () => {
+it('keeps a participant from moving a topic note into Actions', async () => {
   const { channel } = createTestChannel()
   const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
 
@@ -1197,12 +1687,10 @@ it('lets a participant move a note into Actions during the Actions phase', async
   await dragMyNoteIntoActions()
   window.dispatchEvent(pointer('pointerup', 1100, 100))
 
-  await vi.waitFor(() =>
-    expect(moveCard).toHaveBeenCalledWith(expect.objectContaining({ sectionId: '2' })),
-  )
+  expect(moveCard).not.toHaveBeenCalled()
 })
 
-it('lets a participant move a note out of Actions during the Actions phase', async () => {
+it('keeps a participant action inside Actions', async () => {
   const { channel } = createTestChannel()
   const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
 
@@ -1220,8 +1708,29 @@ it('lets a participant move a note out of Actions during the Actions phase', asy
   window.dispatchEvent(pointer('pointermove', 100, 100))
   window.dispatchEvent(pointer('pointerup', 100, 100))
 
+  expect(moveCard).not.toHaveBeenCalled()
+})
+
+it('lets a participant move an action within Actions', async () => {
+  const { channel } = createTestChannel()
+  const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
+
+  await mount({
+    createChannel: () => channel,
+    data: {
+      ...board,
+      canManage: false,
+      cards: [{ ...board.cards[0]!, sectionId: '2', x: 940 }],
+      phase: 'Actions',
+    },
+    moveCard,
+  })
+  cardWithText('My note')!.element.dispatchEvent(pointer('pointerdown', 1000, 100))
+  window.dispatchEvent(pointer('pointermove', 1050, 100))
+  window.dispatchEvent(pointer('pointerup', 1050, 100))
+
   await vi.waitFor(() =>
-    expect(moveCard).toHaveBeenCalledWith(expect.objectContaining({ sectionId: '1' })),
+    expect(moveCard).toHaveBeenCalledWith(expect.objectContaining({ sectionId: '2' })),
   )
 })
 
@@ -1286,7 +1795,7 @@ it('slides the squares further under each other as the room fills up', async () 
   expect(strip.attributes('style')).toContain('--presence-step: 16px')
 })
 
-it('keeps a note of a topic inside its section, frame or nothing', async () => {
+it('lets the owner move a topic note out of its group', async () => {
   const { channel } = createTestChannel()
   const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
 
@@ -1295,13 +1804,66 @@ it('keeps a note of a topic inside its section, frame or nothing', async () => {
   window.dispatchEvent(pointer('pointermove', 1100, 100))
   await nextTick()
 
-  // Dragging one note out would break the topic up and strand the votes it holds.
-  expect(currentWrapper!.findAll('.zone')[1]!.classes()).toContain('zone--closed')
+  expect(currentWrapper!.findAll('.zone')[1]!.classes()).not.toContain('zone--closed')
 
   window.dispatchEvent(pointer('pointerup', 1100, 100))
+  await vi.waitFor(() =>
+    expect(moveCard).toHaveBeenCalledWith({
+      groupId: null,
+      id: 'mine',
+      sectionId: '2',
+      x: 1040,
+      y: 80,
+    }),
+  )
+})
+
+// A note in the first section, and a topic waiting in the second one, so a drag across the border
+// has a topic to land in.
+const crossSectionBoard: RetroBoardViewModel = {
+  ...board,
+  cards: [
+    { ...board.cards[0]!, sectionId: '1', x: 40, y: 80 },
+    { ...board.cards[1]!, groupId: 'group-2', sectionId: '2', x: 1000, y: 80 },
+    {
+      ...board.cards[1]!,
+      groupId: 'group-2',
+      id: 'third',
+      sectionId: '2',
+      text: 'Third note',
+      x: 1180,
+      y: 80,
+    },
+  ],
+  groups: [{ cardIds: ['other', 'third'], id: 'group-2', title: '', votedByMe: false, votes: 0 }],
+  phase: 'Group',
+  sections: [
+    { color: '#489c61', id: '1', name: 'Good' },
+    { color: '#d46f47', id: '2', name: 'Bad' },
+    { color: '#4774d4', id: '3', name: 'Actions' },
+  ],
+}
+
+it('drops a note into the topic of the section it was carried into', async () => {
+  const { channel } = createTestChannel()
+  const moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction)
+
+  await mount({ createChannel: () => channel, data: crossSectionBoard, moveCard })
+  cardWithText('My note')!.element.dispatchEvent(pointer('pointerdown', 100, 100))
+  window.dispatchEvent(pointer('pointermove', 1100, 100))
   await nextTick()
 
-  expect(moveCard).not.toHaveBeenCalled()
+  // What the preview promised while dragging is what the drop has to save.
+  window.dispatchEvent(pointer('pointerup', 1100, 100))
+  await vi.waitFor(() =>
+    expect(moveCard).toHaveBeenCalledWith({
+      groupId: 'group-2',
+      id: 'mine',
+      sectionId: '2',
+      x: 1040,
+      y: 80,
+    }),
+  )
 })
 
 const carriedActionBoard: RetroBoardViewModel = {

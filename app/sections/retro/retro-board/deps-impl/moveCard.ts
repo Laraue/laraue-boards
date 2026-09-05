@@ -5,12 +5,17 @@ import type { RetroBoardPageDeps } from '../RetroBoardPage.deps'
 
 export const createMoveCard =
   (client: RetroApiClient): RetroBoardPageDeps['moveCard'] =>
-  ({ id, sectionId, x, y }) =>
+  ({ groupId, id, sectionId, x, y }) =>
     executeAction({
       map: () => true as const,
       request: () =>
         client.PUT('/api/retro/cards/{cardId}/position', {
-          body: { sectionId: Number(sectionId), x, y },
+          body: {
+            groupId: groupId === null ? null : Number(groupId),
+            sectionId: Number(sectionId),
+            x,
+            y,
+          },
           params: { path: { cardId: id } },
         }),
     })
