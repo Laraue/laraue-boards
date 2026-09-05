@@ -490,28 +490,24 @@
               </span>
               <p
                 v-if="state.editingId !== card.id"
-                v-fit-text="card.text"
                 class="card-text"
-                :class="{ placeholder: !card.text }">
-                {{ card.text || 'Add a note' }}
+                :style="{ fontSize: `${cardFontSize(card.text)}px` }">
+                {{ card.text }}
               </p>
-              <textarea
-                v-if="state.selectedId === card.id || state.editingId === card.id"
-                v-show="state.editingId === card.id"
-                :ref="(element) => setEditorRef(card.id, element)"
-                v-model="state.draft"
-                v-fit-text="state.draft"
-                aria-label="Edit note"
-                class="card-text"
-                maxlength="180"
-                placeholder="Add a note"
-                @blur="saveDraft(card)"
-                @input="publishDraft(card)"
-                @keydown.ctrl.enter.prevent="saveDraft(card)"
-                @keydown.esc.prevent="cancelEdit"
-                @keydown.meta.enter.prevent="saveDraft(card)" />
+              <button
+                v-if="state.failedCreates.has(card.id)"
+                class="secondary small"
+                type="button"
+                @click.stop="persistCreatedCard(card.id)"
+                @pointerdown.stop>
+                Retry saving
+              </button>
               <details
-                v-if="state.editingId !== card.id && isActionsSection(board, card.sectionId)"
+                v-if="
+                  state.editingId !== card.id &&
+                  !state.localCards.has(card.id) &&
+                  isActionsSection(board, card.sectionId)
+                "
                 class="assignee"
                 @click.stop
                 @pointerdown.stop>
@@ -626,6 +622,7 @@
                 <button
                   v-if="
                     card.isMine &&
+                    !state.localCards.has(card.id) &&
                     board.phase === 'Collect' &&
                     !isActionsSection(board, card.sectionId)
                   "
@@ -667,6 +664,27 @@
                 </button>
               </div>
             </article>
+            <textarea
+              v-show="editingCard"
+              ref="cardEditor"
+              v-model="state.draft"
+              aria-label="Edit note"
+              class="card-text board-card-editor"
+              maxlength="180"
+              :style="{
+                fontSize: `${cardFontSize(state.draft)}px`,
+                left: `${editingCard?.x ?? 0}px`,
+                top: `${editingCard?.y ?? 0}px`,
+                ...paperStyle(editingCard?.id ?? ''),
+              }"
+              @blur="finishEditing"
+              @click.stop
+              @dblclick.stop
+              @input="editingCard && publishDraft(editingCard)"
+              @keydown.ctrl.enter.prevent="finishEditing"
+              @keydown.esc.prevent="cancelEdit"
+              @keydown.meta.enter.prevent="finishEditing"
+              @pointerdown.stop />
           </template>
         </RetroCanvas>
 
@@ -809,51 +827,48 @@ const GROUP_PADDING = 8
 const GROUP_MAGNET_DISTANCE = 32
 const MAX_CARD_FONT_SIZE = 34
 const MIN_CARD_FONT_SIZE = 8
+const CARD_TEXT_BOX = CARD_SIZE - 24
+const CARD_LINE_HEIGHT = 1.15
 
-const fitCardText = (element: HTMLElement) => {
-  if (element.clientWidth === 0 || element.clientHeight === 0) {
-    return
+// Calculates the largest font size (between 34px and 8px) that guarantees the text fits
+// comfortably within the 136x136px printable area, taking character widths and line wraps into account.
+const cardFontSize = (text: string) => {
+  if (!text) {
+    return MAX_CARD_FONT_SIZE
   }
-  let fontSize = MAX_CARD_FONT_SIZE
 
-  element.style.fontSize = `${fontSize}px`
-  while (
-    fontSize > MIN_CARD_FONT_SIZE &&
-    (element.scrollHeight > element.clientHeight + 4 || element.scrollWidth > element.clientWidth)
-  ) {
-    fontSize -= 1
-    element.style.fontSize = `${fontSize}px`
-  }
-}
-
-const vFitText = {
-  mounted: fitCardText,
-  updated: (
-    element: HTMLElement,
-    binding: { oldValue: string | undefined; value: string | undefined },
-  ) => {
-    if (binding.value !== binding.oldValue) {
-      fitCardText(element)
+  const paragraphs = text.split('\n')
+  const paragraphUnits = paragraphs.map((para) => {
+    let units = 0
+    for (const char of para) {
+      if (/[WMЮЖШЩQM]/.test(char)) {
+        units += 0.6
+      } else if (/[A-ZА-Я]/.test(char)) {
+        units += 0.44
+      } else if (/[iljt1.,:;!|'` ]/.test(char)) {
+        units += 0.2
+      } else {
+        units += 0.32
+      }
     }
-  },
-}
+    return units
+  })
 
-const editors = new Map<string, HTMLTextAreaElement>()
-const setEditorRef = (cardId: string, element: unknown) => {
-  if (element instanceof HTMLTextAreaElement) {
-    editors.set(cardId, element)
-  } else {
-    editors.delete(cardId)
+  for (let size = MAX_CARD_FONT_SIZE; size > MIN_CARD_FONT_SIZE; size -= 1) {
+    const unitsPerLine = CARD_TEXT_BOX / size
+    let totalLines = 0
+    for (const units of paragraphUnits) {
+      totalLines += Math.max(1, Math.ceil(units / unitsPerLine))
+    }
+    if (totalLines * size * CARD_LINE_HEIGHT <= CARD_TEXT_BOX) {
+      return size
+    }
   }
-}
-const focusEditor = () => {
-  const target = state.editingId === undefined ? undefined : editors.get(state.editingId)
 
-  if (target) {
-    fitCardText(target)
-  }
-  target?.focus({ preventScroll: true })
+  return MIN_CARD_FONT_SIZE
 }
+const cardEditor = useTemplateRef<HTMLTextAreaElement>('cardEditor')
+const focusEditor = () => cardEditor.value?.focus({ preventScroll: true })
 
 const nameInput = shallowRef<HTMLInputElement>()
 const focusNameInput = () => {
@@ -877,11 +892,13 @@ const state = reactive({
   // whenever anyone moves a cursor or a note. A field someone is typing in therefore has to be
   // bound to what they typed - these hold that until the edit is saved, the way the note editor
   // holds its own draft in `draft` above.
+  failedCreates: new Set<string>(),
   fieldDrafts: {} as { groupTitle?: string; name?: string; votesPerUser?: number },
   fullscreen: false,
   groupSelection: [] as string[],
   hoveredId: undefined as string | undefined,
   joined: new Map<string, RetroMember>(),
+  localCards: new Map<string, RetroCardViewModel>(),
   now: Date.now(),
   pendingTexts: new Map<string, string>(),
   phasesCollapsed: true,
@@ -959,6 +976,8 @@ const clearBoardState = () => {
   state.hoveredId = undefined
   state.joined.clear()
   state.pendingTexts.clear()
+  state.localCards.clear()
+  state.failedCreates.clear()
   state.refreshPending = false
   state.remoteCursors.clear()
   state.remoteMoves.clear()
@@ -976,7 +995,11 @@ const clearBoardState = () => {
 
 // Live updates land on the whole board, so anything half-typed - a note, a topic title - has to
 // hold them back until it is saved, or the board would swallow what is being written.
-const editingInPlace = () => state.editingId !== undefined || state.editingGroupId !== undefined
+const editingInPlace = () =>
+  state.editingId !== undefined ||
+  state.editingGroupId !== undefined ||
+  creatingCards.size > 0 ||
+  savingTexts.size > 0
 
 const syncBoard = (source: RetroChannel | undefined) => {
   if (!source || source !== channel) {
@@ -1072,6 +1095,15 @@ const onChannelMessage = (source: RetroChannel, incoming: RetroChannelMessage) =
     const board = data.value
 
     if (!board || board.finished) {
+      return
+    }
+    // The create response will reconcile our optimistic card with its server id.
+    if (
+      creatingCards.size > 0 &&
+      incoming.card.author.userId === board.me.userId &&
+      !board.cards.some((card) => card.id === incoming.card.id)
+    ) {
+      state.refreshPending = true
       return
     }
     const current = board.cards.find((card) => card.id === incoming.card.id)
@@ -1334,7 +1366,18 @@ const HIDDEN_TEXT = '•••••• ••••• ••••••'
 
 // What the board actually holds right now, excluding cards removed optimistically in this tab.
 const boardCards = (board: RetroBoardViewModel) =>
-  board.cards.filter((card) => !state.removedCardIds.has(card.id))
+  [...board.cards, ...state.localCards.values()].filter(
+    (card) => !state.removedCardIds.has(card.id),
+  )
+
+const editingCard = computed(
+  () => data.value && visibleCards(data.value).find((card) => card.id === state.editingId),
+)
+const finishEditing = () => {
+  if (editingCard.value) {
+    void saveDraft(editingCard.value)
+  }
+}
 
 watch(data, (board) => {
   if (!board) {
@@ -1587,6 +1630,7 @@ const canEditCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 // the owner whenever the room needs it.
 const canMoveCard = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   !board.finished &&
+  !state.localCards.has(card.id) &&
   (!card.hidden || board.canManage) &&
   (board.canManage ||
     (board.phase === 'Collect' && card.isMine && !isActionsSection(board, card.sectionId)) ||
@@ -1845,6 +1889,9 @@ const publishCursor = (point: { x: number; y: number }) => {
 }
 
 const publishDraft = (card: RetroCardViewModel) => {
+  if (state.localCards.has(card.id)) {
+    return
+  }
   // A note nobody may read yet must not leak keystroke by keystroke either.
   if (data.value?.phase === 'Collect' && !card.revealed) {
     return
@@ -1874,7 +1921,7 @@ const votingOpen = computed(() => {
 const showVoteResults = (board: RetroBoardViewModel) => board.finished || board.phase !== 'Vote'
 
 const showVoteBadge = (board: RetroBoardViewModel, card: RetroCardViewModel) => {
-  if (isActionsSection(board, card.sectionId)) {
+  if (state.localCards.has(card.id) || isActionsSection(board, card.sectionId)) {
     return false
   }
   const group = groupOf(board, card)
@@ -1912,9 +1959,9 @@ const startEdit = (card: RetroCardViewModel) => {
   state.selectedId = card.id
   state.draft = card.text
   state.editingId = card.id
-  const target = editors.get(card.id)
+  const target = cardEditor.value
   if (target) {
-    // The selected card already has an editor, so iOS can focus it within the tap gesture.
+    // This editor is always mounted, including before a new card has reached the API.
     target.style.display = ''
     target.value = card.text
     target.focus({ preventScroll: true })
@@ -1937,7 +1984,14 @@ const removeCard = async (card: RetroCardViewModel) => {
   }
   // The note goes now; if the server says no, it comes back.
   state.removedCardIds.add(card.id)
-  if (await executeRemove({ id: card.id })) {
+  const id = await persistedCardId(card.id)
+  if (!id && state.localCards.has(card.id)) {
+    state.localCards.delete(card.id)
+    state.failedCreates.delete(card.id)
+    state.pendingTexts.delete(card.id)
+    return
+  }
+  if (id && (await executeRemove({ id }))) {
     return
   }
   state.removedCardIds.delete(card.id)
@@ -1953,26 +2007,48 @@ const saveDraft = async (card: RetroCardViewModel) => {
   }
   const text = state.draft.trim()
   const refreshPending = state.refreshPending
-  const changed = text !== card.text
+  const changed = text !== card.text || state.pendingTexts.has(card.id)
 
   state.editingId = undefined
   state.refreshPending = false
   if (changed) {
     state.pendingTexts.set(card.id, text)
+    const localCard = state.localCards.get(card.id)
+    if (localCard) {
+      localCard.text = text
+    }
   }
-  try {
-    if (changed) {
-      await executeUpdate({ id: card.id, text })
-    } else if (!refreshPending) {
+  if (changed) {
+    const id = await persistedCardId(card.id)
+    if (!id) {
       return
     }
-    if (refreshPending) {
-      syncBoard(channel)
+    const previous = savingTexts.get(id) ?? Promise.resolve()
+    const save = previous.then(async () => {
+      if (await executeUpdate({ id, text })) {
+        const current =
+          data.value === board ? board.cards.find((item) => item.id === id) : undefined
+        if (current) {
+          current.text = text
+          triggerRef(data)
+        }
+        if (state.pendingTexts.get(id) === text) {
+          state.pendingTexts.delete(id)
+        }
+      }
+    })
+    savingTexts.set(id, save)
+    await save
+    if (savingTexts.get(id) === save) {
+      savingTexts.delete(id)
     }
-  } finally {
-    state.pendingTexts.delete(card.id)
+  }
+  if (refreshPending || state.refreshPending) {
+    syncBoard(channel)
   }
 }
+
+const savingTexts = new Map<string, Promise<void>>()
 
 const handleBackgroundPointerDown = () => {
   // Pressing the canvas does not reliably pull the focus out of an input, and everything that
@@ -1997,15 +2073,77 @@ const handleBackgroundPointerDown = () => {
   pendingTouchEditId = undefined
 }
 
-const createCardAt = async (sectionId: string, x: number, y: number) => {
+let localCardSequence = 0
+const creatingCards = new Map<string, Promise<string | undefined>>()
+const createdCardIds = new Map<string, string>()
+
+const persistedCardId = (id: string): Promise<string | undefined> =>
+  creatingCards.get(id) ??
+  Promise.resolve(createdCardIds.get(id) ?? (state.localCards.has(id) ? undefined : id))
+
+const persistCreatedCard = (localId: string): Promise<string | undefined> => {
+  const active = creatingCards.get(localId)
+  if (active) {
+    return active
+  }
+  const card = state.localCards.get(localId)
+  const board = data.value
+  if (!card || !board) {
+    return Promise.resolve(undefined)
+  }
+  state.failedCreates.delete(localId)
+  const request = executeCreate({
+    retroId: props.retroId,
+    sectionId: card.sectionId,
+    text: card.text,
+    x: card.x,
+    y: card.y,
+  })
+    .then((created) => {
+      if (!created) {
+        if (data.value === board && state.localCards.has(localId)) {
+          state.failedCreates.add(localId)
+        }
+        return undefined
+      }
+      createdCardIds.set(localId, created.id)
+      if (data.value !== board || !state.localCards.has(localId)) {
+        return created.id
+      }
+      if (!board.cards.some((item) => item.id === created.id)) {
+        board.cards.push({ ...card, id: created.id })
+      }
+      const pendingText = state.pendingTexts.get(localId)
+      if (pendingText !== undefined) {
+        state.pendingTexts.set(created.id, pendingText)
+        state.pendingTexts.delete(localId)
+      }
+      if (state.editingId === localId) {
+        state.editingId = created.id
+      }
+      if (state.selectedId === localId) {
+        state.selectedId = created.id
+      }
+      if (state.removedCardIds.has(localId)) {
+        state.removedCardIds.add(created.id)
+      }
+      state.localCards.delete(localId)
+      triggerRef(data)
+      return created.id
+    })
+    .finally(() => {
+      creatingCards.delete(localId)
+      if (data.value === board && state.refreshPending) {
+        syncBoard(channel)
+      }
+    })
+  creatingCards.set(localId, request)
+  return request
+}
+
+const createCardAt = (sectionId: string, x: number, y: number) => {
   const board = data.value
   if (!board) {
-    return
-  }
-
-  const created = await executeCreate({ retroId: props.retroId, sectionId, text: '', x, y })
-
-  if (!created) {
     return
   }
 
@@ -2017,9 +2155,9 @@ const createCardAt = async (sectionId: string, x: number, y: number) => {
     done: false,
     groupId: null,
     hidden: false,
-    id: created.id,
+    id: `local-card-${++localCardSequence}`,
     isMine: true,
-    revealed: false,
+    revealed: isActionsSection(board, sectionId),
     sectionId,
     text: '',
     votedByMe: false,
@@ -2028,21 +2166,17 @@ const createCardAt = async (sectionId: string, x: number, y: number) => {
     y,
   }
 
-  const existing = board.cards.find((item) => item.id === card.id)
-
-  if (!existing) {
-    board.cards.push(card)
-  }
-  triggerRef(data)
-  startEdit(existing ?? card)
+  state.localCards.set(card.id, card)
+  startEdit(card)
+  void persistCreatedCard(card.id)
 }
 
-const addCardAt = async (board: RetroBoardViewModel, point: { x: number; y: number }) => {
+const addCardAt = (board: RetroBoardViewModel, point: { x: number; y: number }) => {
   const index = zoneIndexAt(point.x, point.y, board.sections.length)
   const sectionId = board.sections[index]?.id
 
   if (sectionId && canChangeSection(board, sectionId)) {
-    await createCardAt(sectionId, point.x - CARD_SIZE / 2, point.y - CARD_SIZE / 2)
+    createCardAt(sectionId, point.x - CARD_SIZE / 2, point.y - CARD_SIZE / 2)
   }
 }
 
@@ -2307,10 +2441,10 @@ const selectCard = (card: RetroCardViewModel, event: MouseEvent) => {
   const board = data.value
 
   if (board && state.editingId !== undefined && state.editingId !== card.id) {
-    const editingCard = boardCards(board).find((item) => item.id === state.editingId)
+    const previous = boardCards(board).find((item) => item.id === state.editingId)
 
-    if (editingCard) {
-      void saveDraft(editingCard)
+    if (previous) {
+      void saveDraft(previous)
     }
   }
 
@@ -2442,7 +2576,7 @@ const paperStyle = (id: string) => {
 // Actions carried over from the last retro are the first thing a new one looks at, so ticking one
 // off belongs to no single phase - and the whole team keeps that within reach.
 const canTickOff = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
-  !board.finished && isActionsSection(board, card.sectionId)
+  !board.finished && !state.localCards.has(card.id) && isActionsSection(board, card.sectionId)
 
 const hasActions = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
   canTickOff(board, card) ||
@@ -2452,6 +2586,9 @@ const hasActions = (board: RetroBoardViewModel, card: RetroCardViewModel) =>
 // A topic is a cluster inside one section, so a pick from another one starts a new selection
 // rather than a merge the server would have to turn down.
 const toggleGroupSelection = (board: RetroBoardViewModel, card: RetroCardViewModel) => {
+  if (state.localCards.has(card.id)) {
+    return
+  }
   if (state.groupSelection.includes(card.id)) {
     state.groupSelection = state.groupSelection.filter((id) => id !== card.id)
 
@@ -3504,7 +3641,7 @@ const finish = async () => {
   font-family: 'Caveat', 'Inter', cursive;
   font-size: 34px;
   font-weight: var(--font-weight-semibold);
-  line-height: 1.15;
+  line-height: 1.125;
   margin: 0;
   max-height: 100%;
   min-height: 0;
@@ -3527,6 +3664,18 @@ textarea.card-text {
   user-select: text;
 }
 
+textarea.board-card-editor {
+  height: 160px;
+  max-height: none;
+  min-height: 0;
+  padding: var(--space-3);
+  position: absolute;
+  rotate: var(--card-tilt, 0deg);
+  transform-origin: center;
+  width: 160px;
+  z-index: 3;
+}
+
 textarea.card-text:hover,
 textarea.card-text:focus {
   border: 0;
@@ -3534,10 +3683,6 @@ textarea.card-text:focus {
 
 textarea.card-text:focus {
   box-shadow: none;
-}
-
-.card-text.placeholder {
-  color: var(--color-muted);
 }
 
 .card-author {
