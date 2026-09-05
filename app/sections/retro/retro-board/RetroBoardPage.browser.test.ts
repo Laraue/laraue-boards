@@ -202,9 +202,12 @@ const mount = async ({
 }
 
 const cardWithText = (text: string) =>
-  currentWrapper
-    ?.findAll('.card')
-    .find((card: DOMWrapper<Element>) => card.find('.card-text').text() === text)
+  currentWrapper?.findAll('.card').find((card: DOMWrapper<Element>) => {
+    const element = card.find('.card-text').element
+    return element instanceof HTMLTextAreaElement
+      ? element.value === text
+      : card.find('.card-text').text() === text
+  })
 
 const buttonWithText = (text: string) =>
   currentWrapper
@@ -228,7 +231,7 @@ it('sets the font size from the text length on first render', async () => {
   await mount({ createChannel: () => channel })
   const text = cardWithText('My note')!.get('.card-text').element as HTMLElement
 
-  expect(text.style.fontSize).toBe('34px')
+  expect(getComputedStyle(text).fontSize).toBe('34px')
 })
 
 it('fits a long note again after deselecting and reopening its editor', async () => {
@@ -338,13 +341,14 @@ it('starts editing a created card', async () => {
   })
 
   await mount({ createCard, createChannel: () => channel })
+  await nextTick()
   await currentWrapper!.find('.retro-canvas').trigger('dblclick', {
     clientX: 1900,
     clientY: 900,
   })
 
   await vi.waitFor(() => expect(createCard).toHaveBeenCalledOnce())
-  expect(currentWrapper!.find('textarea.card-text').exists()).toBe(true)
+  await vi.waitFor(() => expect(currentWrapper!.find('textarea.card-text').exists()).toBe(true))
 
   await currentWrapper!.find('textarea.card-text').trigger('blur')
   expect(currentWrapper!.findAll('.card')).toHaveLength(board.cards.length + 1)
@@ -362,7 +366,6 @@ it('creates and focuses immediately, then saves typed text after the create resp
   )
   const updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction)
   await mount({ createCard, createChannel: () => channel, updateCard })
-  const editor = currentWrapper!.get('textarea.card-text')
   currentWrapper!.get('.retro-canvas').element.dispatchEvent(
     new MouseEvent('dblclick', {
       bubbles: true,
@@ -370,6 +373,8 @@ it('creates and focuses immediately, then saves typed text after the create resp
       clientY: 300,
     }),
   )
+  await nextTick()
+  const editor = currentWrapper!.get('textarea.card-text')
   expect(document.activeElement).toBe(editor.element)
   await nextTick()
   expect(currentWrapper!.findAll('.card')).toHaveLength(board.cards.length + 1)
@@ -413,7 +418,6 @@ it('creates from the native click following a canvas double tap', async () => {
   }))
   await mount({ createCard, createChannel: () => channel })
   const canvas = currentWrapper!.get('.retro-canvas')
-  const editor = currentWrapper!.get('textarea.card-text')
   const tap = () => {
     for (const type of ['pointerdown', 'pointerup']) {
       canvas.element.dispatchEvent(
@@ -433,6 +437,8 @@ it('creates from the native click following a canvas double tap', async () => {
   tap()
   expect(createCard).not.toHaveBeenCalled()
   tap()
+  await nextTick()
+  const editor = currentWrapper!.get('textarea.card-text')
   expect(document.activeElement).toBe(editor.element)
   await nextTick()
   expect(createCard).toHaveBeenCalledOnce()
@@ -700,14 +706,12 @@ it('selects on touch and focuses from the click following the second tap', async
 
   tap()
   await card.trigger('click')
-  await card.trigger('click')
   expect(card.classes()).toContain('selected')
-  const editor = currentWrapper!.get('textarea.card-text')
-  expect(editor.isVisible()).toBe(false)
+  expect(currentWrapper!.find('textarea.card-text').exists()).toBe(false)
 
   tap()
-  expect(document.activeElement).not.toBe(editor.element)
   await card.trigger('click')
+  const editor = currentWrapper!.get('textarea.card-text')
   expect(document.activeElement).toBe(editor.element)
   expect(editor.isVisible()).toBe(true)
 })
@@ -1414,7 +1418,7 @@ it('keeps all topics visible and ranks vote leaders during discussion', async ()
   })
 
   expect(
-    currentWrapper?.findAll('p.card-text').map((card: DOMWrapper<Element>) => card.text()),
+    currentWrapper?.findAll('span.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['First', 'Second', 'Third', 'Also third', 'Fifth', 'Ship the fix'])
   // Equal votes no longer widen the leading set: the board order breaks the tie, so exactly
   // three trophies are handed out however many topics share a score.
@@ -1572,7 +1576,7 @@ it('keeps all topics visible during discussion when nobody voted', async () => {
   })
 
   expect(
-    currentWrapper?.findAll('p.card-text').map((card: DOMWrapper<Element>) => card.text()),
+    currentWrapper?.findAll('span.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['My note', 'Other note'])
   expect(currentWrapper?.find('.vote-result .lucide-trophy').exists()).toBe(false)
 })

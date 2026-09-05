@@ -488,12 +488,35 @@
                 :title="card.authorName">
                 {{ card.authorInitials }}
               </span>
-              <p
+              <span
                 v-if="state.editingId !== card.id"
+                ref="cardTexts"
                 class="card-text"
-                :style="{ fontSize: `${cardFontSize(card.text)}px` }">
+                :data-card-id="card.id"
+                :style="{ fontSize: `${getCardFontSize(card.text)}px` }">
                 {{ card.text }}
-              </p>
+              </span>
+              <textarea
+                v-else
+                ref="cardTexts"
+                aria-label="Edit note"
+                class="card-text"
+                :data-card-id="card.id"
+                maxlength="180"
+                spellcheck="false"
+                :style="{ fontSize: `${getCardFontSize(state.draft)}px` }"
+                :value="state.draft"
+                @blur="finishEditing"
+                @click.stop
+                @dblclick.stop.prevent
+                @input="updateCardDraft($event, card)"
+                @keydown.ctrl.enter.prevent="finishEditing"
+                @keydown.esc.prevent="cancelEdit"
+                @keydown.meta.enter.prevent="finishEditing"
+                @pointercancel.stop
+                @pointerdown.stop
+                @pointermove.stop
+                @pointerup.stop />
               <button
                 v-if="state.failedCreates.has(card.id)"
                 class="secondary small"
@@ -664,27 +687,6 @@
                 </button>
               </div>
             </article>
-            <textarea
-              v-show="editingCard"
-              ref="cardEditor"
-              v-model="state.draft"
-              aria-label="Edit note"
-              class="card-text board-card-editor"
-              maxlength="180"
-              :style="{
-                fontSize: `${cardFontSize(state.draft)}px`,
-                left: `${editingCard?.x ?? 0}px`,
-                top: `${editingCard?.y ?? 0}px`,
-                ...paperStyle(editingCard?.id ?? ''),
-              }"
-              @blur="finishEditing"
-              @click.stop
-              @dblclick.stop
-              @input="editingCard && publishDraft(editingCard)"
-              @keydown.ctrl.enter.prevent="finishEditing"
-              @keydown.esc.prevent="cancelEdit"
-              @keydown.meta.enter.prevent="finishEditing"
-              @pointerdown.stop />
           </template>
         </RetroCanvas>
 
@@ -826,49 +828,110 @@ const GROUP_CARD_GAP = 16
 const GROUP_PADDING = 8
 const GROUP_MAGNET_DISTANCE = 32
 const MAX_CARD_FONT_SIZE = 34
-const MIN_CARD_FONT_SIZE = 8
-const CARD_TEXT_BOX = CARD_SIZE - 24
-const CARD_LINE_HEIGHT = 1.15
+const CARD_TEXT_WIDTH = 136
+const CARD_TEXT_LINE_HEIGHT = 1.15
+const CARD_TEXT_CHAR_WIDTH = 0.55
+const CARD_TEXT_HEIGHT = 132
+const CARD_TEXT_BASE_LENGTH = 18
 
-// Calculates the largest font size (between 34px and 8px) that guarantees the text fits
-// comfortably within the 136x136px printable area, taking character widths and line wraps into account.
-const cardFontSize = (text: string) => {
-  if (!text) {
-    return MAX_CARD_FONT_SIZE
+const cardTextCharacterWeight = (character: string) => {
+  if (/\s/.test(character)) {
+    return 0.45
   }
+  if ('ilI1.,:;!|'.includes(character)) {
+    return 0.4
+  }
+  if ('MWЖШЩЮФ'.includes(character)) {
+    return 1.2
+  }
+  return 0.75
+}
 
-  const paragraphs = text.split('\n')
-  const paragraphUnits = paragraphs.map((para) => {
-    let units = 0
-    for (const char of para) {
-      if (/[WMЮЖШЩQM]/.test(char)) {
-        units += 0.6
-      } else if (/[A-ZА-Я]/.test(char)) {
-        units += 0.44
-      } else if (/[iljt1.,:;!|'` ]/.test(char)) {
-        units += 0.2
+const cardTextWeight = (text: string) =>
+  [...text].reduce((weight, character) => weight + cardTextCharacterWeight(character), 0)
+
+const estimateCardLines = (text: string, fontSize: number) => {
+  const maxLineWeight = CARD_TEXT_WIDTH / (fontSize * CARD_TEXT_CHAR_WIDTH)
+  const lines = text.split(/\r?\n/)
+  const lineCount = lines.reduce((total, line) => {
+    const tokens = line.match(/\S+|\s+/g) ?? []
+    let lineWeight = 0
+    let wrappedLines = 1
+
+    for (const token of tokens) {
+      if (/\s+/.test(token)) {
+        if (lineWeight > 0) {
+          lineWeight += cardTextWeight(token)
+        }
+        continue
+      }
+
+      const tokenWeight = cardTextWeight(token)
+
+      if (tokenWeight > maxLineWeight) {
+        if (lineWeight > 0) {
+          wrappedLines += 1
+          lineWeight = 0
+        }
+
+        for (const character of token) {
+          const characterWeight = cardTextCharacterWeight(character)
+
+          if (lineWeight > 0 && lineWeight + characterWeight > maxLineWeight) {
+            wrappedLines += 1
+            lineWeight = 0
+          }
+          lineWeight += characterWeight
+        }
+        continue
+      }
+
+      const nextLineWeight = lineWeight > 0 ? lineWeight + 0.45 + tokenWeight : tokenWeight
+
+      if (lineWeight > 0 && nextLineWeight > maxLineWeight) {
+        wrappedLines += 1
+        lineWeight = tokenWeight
       } else {
-        units += 0.32
+        lineWeight = nextLineWeight
       }
     }
-    return units
-  })
 
-  for (let size = MAX_CARD_FONT_SIZE; size > MIN_CARD_FONT_SIZE; size -= 1) {
-    const unitsPerLine = CARD_TEXT_BOX / size
-    let totalLines = 0
-    for (const units of paragraphUnits) {
-      totalLines += Math.max(1, Math.ceil(units / unitsPerLine))
-    }
-    if (totalLines * size * CARD_LINE_HEIGHT <= CARD_TEXT_BOX) {
-      return size
-    }
+    return total + wrappedLines
+  }, 0)
+
+  return lineCount
+}
+
+const getCardFontSize = (text: string) => {
+  const visualLength = Math.max(CARD_TEXT_BASE_LENGTH, cardTextWeight(text))
+  let size = Math.min(
+    MAX_CARD_FONT_SIZE,
+    Math.floor(MAX_CARD_FONT_SIZE * Math.sqrt(CARD_TEXT_BASE_LENGTH / visualLength)),
+  )
+  const fits = (fontSize: number) =>
+    estimateCardLines(text, fontSize) * fontSize * CARD_TEXT_LINE_HEIGHT <= CARD_TEXT_HEIGHT
+
+  while (size > 0 && !fits(size)) {
+    size -= 1
+  }
+  while (size < MAX_CARD_FONT_SIZE && fits(size + 1)) {
+    size += 1
   }
 
-  return MIN_CARD_FONT_SIZE
+  return size
 }
-const cardEditor = useTemplateRef<HTMLTextAreaElement>('cardEditor')
-const focusEditor = () => cardEditor.value?.focus({ preventScroll: true })
+
+const cardTexts = useTemplateRef<HTMLElement[]>('cardTexts')
+const cardEditor = computed(() =>
+  cardTexts.value?.find((element) => element.dataset.cardId === state.editingId),
+)
+const focusEditor = () => {
+  const target = cardEditor.value
+
+  if (target) {
+    target.focus({ preventScroll: true })
+  }
+}
 
 const nameInput = shallowRef<HTMLInputElement>()
 const focusNameInput = () => {
@@ -1373,9 +1436,16 @@ const boardCards = (board: RetroBoardViewModel) =>
 const editingCard = computed(
   () => data.value && visibleCards(data.value).find((card) => card.id === state.editingId),
 )
-const finishEditing = () => {
-  if (editingCard.value) {
-    void saveDraft(editingCard.value)
+
+const finishEditing = (event: Event) => {
+  const target = event.currentTarget
+
+  if (target instanceof HTMLTextAreaElement && target.dataset.cardId === state.editingId) {
+    const card = editingCard.value
+
+    if (card) {
+      void saveDraft(card)
+    }
   }
 }
 
@@ -1899,6 +1969,16 @@ const publishDraft = (card: RetroCardViewModel) => {
   channel?.publishCardText(card.id, state.draft)
 }
 
+const updateCardDraft = (event: Event, card: RetroCardViewModel) => {
+  const target = event.currentTarget
+
+  if (!(target instanceof HTMLTextAreaElement)) {
+    return
+  }
+  state.draft = target.value
+  publishDraft(card)
+}
+
 const countdown = computed(() => {
   const endsAt = data.value?.phaseEndsAt
 
@@ -1959,13 +2039,6 @@ const startEdit = (card: RetroCardViewModel) => {
   state.selectedId = card.id
   state.draft = card.text
   state.editingId = card.id
-  const target = cardEditor.value
-  if (target) {
-    // This editor is always mounted, including before a new card has reached the API.
-    target.style.display = ''
-    target.value = card.text
-    target.focus({ preventScroll: true })
-  }
 }
 
 const cancelEdit = () => {
@@ -2850,7 +2923,6 @@ const finish = async () => {
   --facilitator-width: 240px;
   --retro-title-size: 24px;
 
-  container-type: inline-size;
   height: calc(100% + var(--layout-content-padding) + var(--layout-content-padding));
   margin: calc(-1 * var(--layout-content-padding));
   min-height: 0;
@@ -3490,6 +3562,7 @@ const finish = async () => {
     var(--sticky-dx) calc(28px * var(--sticky-depth)) calc(44px * var(--sticky-depth)) -22px
       #10182836;
   align-items: flex-start;
+  aspect-ratio: 1;
   background:
     radial-gradient(
       112% 112% at var(--card-pin-x, 50%) var(--card-pin-y, 12%),
@@ -3641,7 +3714,7 @@ const finish = async () => {
   font-family: 'Caveat', 'Inter', cursive;
   font-size: 34px;
   font-weight: var(--font-weight-semibold);
-  line-height: 1.125;
+  line-height: 1.15;
   margin: 0;
   max-height: 100%;
   min-height: 0;
@@ -3664,16 +3737,12 @@ textarea.card-text {
   user-select: text;
 }
 
-textarea.board-card-editor {
-  height: 160px;
-  max-height: none;
+span.card-text {
+  display: block;
+  height: 100%;
   min-height: 0;
-  padding: var(--space-3);
-  position: absolute;
-  rotate: var(--card-tilt, 0deg);
-  transform-origin: center;
-  width: 160px;
-  z-index: 3;
+  pointer-events: none;
+  user-select: none;
 }
 
 textarea.card-text:hover,
