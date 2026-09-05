@@ -2,6 +2,7 @@
   <div
     ref="wrapper"
     class="canvas-wrapper"
+    @click="onCanvasClick"
     @dblclick="onDoubleClick"
     @pointerdown="startScenePan"
     @pointerdown.capture="trackPointer"
@@ -76,7 +77,37 @@ const state = reactive({
   wheelInputType: null as 'mouse' | 'trackpad' | null,
 })
 
+let pendingPanX = 0
+let pendingPanY = 0
+let panRafId = 0
+
+const flushScenePan = () => {
+  if (panRafId !== 0) {
+    cancelAnimationFrame(panRafId)
+    panRafId = 0
+  }
+  if (pendingPanX !== 0 || pendingPanY !== 0) {
+    state.offset = {
+      x: state.offset.x + pendingPanX,
+      y: state.offset.y + pendingPanY,
+    }
+    pendingPanX = 0
+    pendingPanY = 0
+  }
+}
+
+const scheduleScenePan = () => {
+  if (panRafId === 0) {
+    panRafId = requestAnimationFrame(() => {
+      panRafId = 0
+      flushScenePan()
+    })
+  }
+}
+
 const startScenePan = (event: PointerEvent) => {
+  flushScenePan()
+  pendingCanvasTap = undefined
   if (pinch) {
     return
   }
@@ -102,6 +133,7 @@ const onPointerMove = (event: PointerEvent) => {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
     if (pointers.size > 1) {
       event.preventDefault()
+      flushScenePan()
       updatePinch()
       return
     }
@@ -119,7 +151,9 @@ const onPointerMove = (event: PointerEvent) => {
   state.last = { x: event.clientX, y: event.clientY }
 
   if (state.drag === 'scene') {
-    state.offset = { x: state.offset.x + deltaX, y: state.offset.y + deltaY }
+    pendingPanX += deltaX
+    pendingPanY += deltaY
+    scheduleScenePan()
     return
   }
   props.onNodeMove(deltaX / state.scale, deltaY / state.scale)
@@ -128,6 +162,7 @@ const onPointerMove = (event: PointerEvent) => {
 
 const onPointerUp = (event: PointerEvent) => {
   pointers.delete(event.pointerId)
+  flushScenePan()
   if (pinch) {
     pinch = undefined
     const remaining = pointers.values().next().value
@@ -157,6 +192,16 @@ const TAP_MOVE_LIMIT = 24
 const DOUBLE_TAP_MS = 300
 let lastTap: undefined | { time: number; x: number; y: number }
 let tapStart: undefined | { x: number; y: number }
+let pendingCanvasTap: undefined | { x: number; y: number }
+let lastPointerType = 'mouse'
+
+const onCanvasClick = () => {
+  const point = pendingCanvasTap
+  pendingCanvasTap = undefined
+  if (point) {
+    props.onCanvasDoubleClick(point)
+  }
+}
 
 const detectDoubleTap = (event: PointerEvent) => {
   if (
@@ -175,8 +220,8 @@ const detectDoubleTap = (event: PointerEvent) => {
     now - lastTap.time < DOUBLE_TAP_MS &&
     Math.hypot(event.clientX - lastTap.x, event.clientY - lastTap.y) < TAP_MOVE_LIMIT
   ) {
-    event.preventDefault()
-    props.onCanvasDoubleClick(point)
+    // iOS opens the keyboard from the following native click, not pointerup.
+    pendingCanvasTap = point
     lastTap = undefined
     return
   }
@@ -184,6 +229,7 @@ const detectDoubleTap = (event: PointerEvent) => {
 }
 
 const trackPointer = (event: PointerEvent) => {
+  lastPointerType = event.pointerType
   if (event.pointerType === 'touch') {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
     if (startPinch()) {
@@ -374,6 +420,9 @@ const onScenePointerMove = (event: PointerEvent) => {
 }
 
 const onDoubleClick = (event: MouseEvent) => {
+  if (lastPointerType === 'touch') {
+    return
+  }
   const point = toScene(event.clientX, event.clientY)
 
   if (point) {
@@ -397,6 +446,10 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointermove', onPointerMove)
   window.removeEventListener('pointerup', onPointerUp)
   window.removeEventListener('pointercancel', onPointerUp)
+  if (panRafId !== 0) {
+    cancelAnimationFrame(panRafId)
+    panRafId = 0
+  }
   pointers.clear()
   stopAutoPan()
 })
