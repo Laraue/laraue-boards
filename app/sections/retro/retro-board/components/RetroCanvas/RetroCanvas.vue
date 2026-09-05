@@ -229,6 +229,12 @@ const detectDoubleTap = (event: PointerEvent) => {
 }
 
 const trackPointer = (event: PointerEvent) => {
+  if (
+    event.target instanceof Element &&
+    event.target.closest('input, textarea, button, select, details, [contenteditable]')
+  ) {
+    return
+  }
   lastPointerType = event.pointerType
   if (event.pointerType === 'touch') {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
