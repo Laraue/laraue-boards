@@ -1026,8 +1026,16 @@ export interface components {
             data: components["schemas"]["RetroListItem"][];
             canCreate: boolean;
         };
+        GroupRetroCardRequest: {
+            /** Format: uuid */
+            id: string;
+            /** Format: double */
+            x: number | string;
+            /** Format: double */
+            y: number | string;
+        };
         GroupRetroCardsRequest: {
-            cardIds: string[];
+            cards: components["schemas"]["GroupRetroCardRequest"][];
         };
         GroupRetroCardsResponse: {
             /** Format: int64 */
@@ -1040,6 +1048,8 @@ export interface components {
             x: number | string;
             /** Format: double */
             y: number | string;
+            /** Format: int64 */
+            groupId?: null | number | string;
         };
         MoveRetroGroupRequest: {
             /** Format: int64 */

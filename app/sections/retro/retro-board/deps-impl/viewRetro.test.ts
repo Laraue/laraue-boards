@@ -74,11 +74,11 @@ test('maps the retro and counts the cards the current user still keeps covered',
     result.status === 'success'
       ? {
           finished: result.data.finished,
-          hiddenMine: result.data.hiddenMine,
-          revealedMine: result.data.revealedMine,
+          hidden: result.data.cards.filter((mine) => mine.isMine && !mine.revealed).length,
+          revealed: result.data.cards.filter((mine) => mine.isMine && mine.revealed).length,
           sectionId: result.data.cards[0]?.sectionId,
         }
       : undefined,
-    { finished: false, hiddenMine: 1, revealedMine: 1, sectionId: '5' },
+    { finished: false, hidden: 1, revealed: 1, sectionId: '5' },
   )
 })

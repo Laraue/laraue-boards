@@ -14,10 +14,11 @@ export type RetroBoardPageDeps = {
   createChannel: (retroId: string) => RetroChannel
   finishRetro: (input: { retroId: string }) => Promise<ActionResult<true>>
   groupCards: (input: {
-    cardIds: string[]
+    cards: { id: string; x: number; y: number }[]
     retroId: string
   }) => Promise<ActionResult<{ id: string }>>
   moveCard: (input: {
+    groupId: null | string
     id: string
     sectionId: string
     x: number

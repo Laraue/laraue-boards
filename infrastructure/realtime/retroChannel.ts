@@ -9,9 +9,8 @@ export type PresenceMember = {
 
 export type ChannelMessage =
   | { card: ChannelCard; type: 'card-upserted' }
+  | { cardId: string; groupId: null | string; type: 'card-move'; x: number; y: number }
   | { cardId: string; text: string; type: 'card-text' }
-  | { cardId: string; type: 'card-move'; x: number; y: number }
-  | { cardIds: string[]; id: string; type: 'group-upserted' }
   | { member: PresenceMember; type: 'cursor'; x: number; y: number }
   | { member: PresenceMember; type: 'join' | 'leave' | 'presence' }
   | { type: 'changed' }
@@ -35,11 +34,6 @@ type HubMember = {
   displayName: string
   initials: string
   userId: string
-}
-
-type HubGroup = {
-  cardIds: string[]
-  id: number
 }
 
 type HubCard = {
@@ -81,8 +75,10 @@ const createHubChannel = (hubUrl: string, retroId: string) => {
   connection.on('cursor', (member: HubMember, x: number, y: number) =>
     emit({ member: toMember(member), type: 'cursor', x, y }),
   )
-  connection.on('card-move', (cardId: string, x: number, y: number) =>
-    emit({ cardId, type: 'card-move', x, y }),
+  connection.on(
+    'card-move',
+    (cardId: string, x: number, y: number, groupId: null | number | string | undefined) =>
+      emit({ cardId, groupId: groupId == null ? null : String(groupId), type: 'card-move', x, y }),
   )
   connection.on('card-text', (cardId: string, text: string) =>
     emit({ cardId, text, type: 'card-text' }),
@@ -104,9 +100,6 @@ const createHubChannel = (hubUrl: string, retroId: string) => {
       },
       type: 'card-upserted',
     }),
-  )
-  connection.on('group-upserted', (group: HubGroup) =>
-    emit({ cardIds: group.cardIds, id: String(group.id), type: 'group-upserted' }),
   )
   connection.on('changed', () => emit({ type: 'changed' }))
 
@@ -131,9 +124,11 @@ const createHubChannel = (hubUrl: string, retroId: string) => {
     },
     open: () => connection.start().then(join),
     publishAnnounce: () => send('Announce'),
-    publishCardMove: (cardId: string, x: number, y: number) => send('MoveCard', cardId, x, y),
+    publishCardMove: (cardId: string, groupId: null | string, x: number, y: number) =>
+      send('MoveCard', cardId, x, y, groupId),
     publishCardText: (cardId: string, text: string) => send('SetCardText', cardId, text),
     publishCursor: (x: number, y: number) => send('Cursor', x, y),
+    sync: <Response>() => connection.invoke<Response>('Sync'),
   }
 }
 
@@ -149,6 +144,8 @@ const inertChannel: RetroChannel = {
   publishCardMove: noop,
   publishCardText: noop,
   publishCursor: noop,
+  sync: <Response>() =>
+    Promise.reject(new Error('Realtime channel is unavailable')) as Promise<Response>,
 }
 
 export const createRetroChannel = (hubUrl: string, retroId: string): RetroChannel =>
