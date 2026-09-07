@@ -3714,6 +3714,7 @@ const finish = async () => {
   font-family: 'Caveat', 'Inter', cursive;
   font-size: 34px;
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.15px;
   line-height: 1.15;
   margin: 0;
   max-height: 100%;
