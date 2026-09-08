@@ -96,7 +96,7 @@ it('delegates theme and language changes to preferences', async () => {
   const preferences = createPreferences()
   await mount(createDeps({ preferences }))
 
-  await page.getByRole('button', { name: 'Light mode' }).click()
+  await page.getByRole('button', { name: 'Dark' }).click()
   await page.getByRole('button', { name: 'Switch language to Russian' }).click()
 
   expect(preferences.setTheme).toHaveBeenCalledWith('dark')

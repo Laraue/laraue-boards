@@ -142,47 +142,46 @@
         </a>
       </nav>
       <div class="sidebar-footer">
-        <button
-          class="secondary sidebar-action"
-          type="button"
-          @click="toggleTheme">
-          <span class="theme-action theme-action--light">
-            <Sun />
-            {{ t('lightMode') }}
-          </span>
-          <span class="theme-action theme-action--dark">
-            <Moon />
-            {{ t('darkMode') }}
-          </span>
-        </button>
-        <button
-          :aria-label="t('switchLanguage')"
-          class="secondary sidebar-action"
-          type="button"
-          @click="toggleLocale">
-          <img
-            alt=""
-            class="language-flag"
-            :src="locale === 'en' ? '/flags/ru.svg' : '/flags/us.svg'" />
-          {{ t('languageName') }}
-        </button>
         <div class="sidebar-user">
           <span
             class="avatar"
             :style="{ background: viewModel.user.color }">
             {{ viewModel.user.initials }}
           </span>
-          <span>
+          <span class="sidebar-user-info">
             <strong>{{ viewModel.user.name }}</strong>
             <small class="muted">Signed in</small>
           </span>
+        </div>
+        <div class="sidebar-preferences">
+          <button
+            :aria-label="t('switchLanguage')"
+            :title="t('switchLanguage')"
+            class="secondary sidebar-language"
+            type="button"
+            @click="toggleLocale">
+            <img
+              alt=""
+              class="language-flag"
+              :src="locale === 'en' ? '/flags/us.svg' : '/flags/ru.svg'" />
+            {{ t('languageName') }}
+          </button>
+          <button
+            :aria-label="theme === 'dark' ? t('lightMode') : t('darkMode')"
+            :title="theme === 'dark' ? t('lightMode') : t('darkMode')"
+            class="secondary sidebar-theme"
+            type="button"
+            @click="toggleTheme">
+            <Sun v-if="theme === 'dark'" />
+            <Moon v-else />
+          </button>
         </div>
         <button
           class="secondary danger sidebar-action"
           type="button"
           @click="props.onLogout">
           <LogOut />
-          Log out
+          {{ t('logOut') }}
         </button>
       </div>
     </aside>
@@ -240,15 +239,17 @@ const locale = props.preferences.locale
 const theme = props.preferences.theme
 const { t } = useI18n({
   en: {
-    darkMode: 'Dark mode',
-    languageName: 'Русский',
-    lightMode: 'Light mode',
+    darkMode: 'Dark',
+    languageName: 'English',
+    lightMode: 'Light',
+    logOut: 'Log out',
     switchLanguage: 'Switch language to Russian',
   },
   ru: {
-    darkMode: 'Тёмная тема',
-    languageName: 'English',
-    lightMode: 'Светлая тема',
+    darkMode: 'Тёмная',
+    languageName: 'Русский',
+    lightMode: 'Светлая',
+    logOut: 'Выйти',
     switchLanguage: 'Переключить язык на английский',
   },
 })
@@ -410,6 +411,20 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
+.sidebar-preferences {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.sidebar-language {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-theme {
+  flex: 0 0 auto;
+}
+
 .sidebar-user {
   align-items: center;
   display: flex;
@@ -423,8 +438,9 @@ main :deep(.page-load-state) {
   margin-top: auto;
 }
 
-.sidebar-user > span:last-child {
+.sidebar-user-info {
   display: grid;
+  flex: 1;
   min-width: 0;
 }
 
@@ -441,28 +457,11 @@ main :deep(.page-load-state) {
 }
 
 .language-flag {
+  border: 1px solid var(--color-border);
   border-radius: 2px;
   height: 16px;
   object-fit: cover;
-  width: 22px;
-}
-
-.theme-action {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-}
-
-.theme-action--light {
-  display: none;
-}
-
-:global(:root[data-theme='dark'] .theme-action--dark) {
-  display: none;
-}
-
-:global(:root[data-theme='dark'] .theme-action--light) {
-  display: flex;
+  width: 21px;
 }
 
 .organization {
