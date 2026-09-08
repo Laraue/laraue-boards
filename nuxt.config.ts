@@ -26,9 +26,6 @@ export default defineNuxtConfig({
         ...(process.env.NODE_ENV === 'test'
           ? []
           : [{ src: 'https://telegram.org/js/telegram-web-app.js?61' }]),
-        {
-          innerHTML: `const theme=localStorage.getItem('theme');if(theme)document.documentElement.dataset.theme=theme`,
-        },
       ],
     },
   },

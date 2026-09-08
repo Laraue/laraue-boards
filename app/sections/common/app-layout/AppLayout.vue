@@ -2,6 +2,7 @@
   <AppLayoutContent
     v-if="data"
     :on-logout="logout"
+    :preferences="props.deps.preferences"
     :view-model="data">
     <slot />
   </AppLayoutContent>

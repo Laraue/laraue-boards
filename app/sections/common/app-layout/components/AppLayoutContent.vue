@@ -142,6 +142,30 @@
         </a>
       </nav>
       <div class="sidebar-footer">
+        <button
+          class="secondary sidebar-action"
+          type="button"
+          @click="toggleTheme">
+          <span class="theme-action theme-action--light">
+            <Sun />
+            {{ t('lightMode') }}
+          </span>
+          <span class="theme-action theme-action--dark">
+            <Moon />
+            {{ t('darkMode') }}
+          </span>
+        </button>
+        <button
+          :aria-label="t('switchLanguage')"
+          class="secondary sidebar-action"
+          type="button"
+          @click="toggleLocale">
+          <img
+            alt=""
+            class="language-flag"
+            :src="locale === 'en' ? '/flags/ru.svg' : '/flags/us.svg'" />
+          {{ t('languageName') }}
+        </button>
         <div class="sidebar-user">
           <span
             class="avatar"
@@ -153,19 +177,6 @@
             <small class="muted">Signed in</small>
           </span>
         </div>
-        <button
-          class="secondary sidebar-action"
-          type="button"
-          @click="toggleTheme">
-          <span class="theme-action theme-action--light">
-            <Sun />
-            Light mode
-          </span>
-          <span class="theme-action theme-action--dark">
-            <Moon />
-            Dark mode
-          </span>
-        </button>
         <button
           class="secondary danger sidebar-action"
           type="button"
@@ -214,15 +225,33 @@ import {
 } from '@lucide/vue'
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
+import type { AppPreferences } from '~/composables/useAppPreferences'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const props = defineProps<{
   onLogout: () => void
+  preferences: AppPreferences
   viewModel: AppLayoutData
 }>()
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const state = reactive({ sidebarOpen: false })
+const locale = props.preferences.locale
+const theme = props.preferences.theme
+const { t } = useI18n({
+  en: {
+    darkMode: 'Dark mode',
+    languageName: 'Русский',
+    lightMode: 'Light mode',
+    switchLanguage: 'Switch language to Russian',
+  },
+  ru: {
+    darkMode: 'Тёмная тема',
+    languageName: 'English',
+    lightMode: 'Светлая тема',
+    switchLanguage: 'Переключить язык на английский',
+  },
+})
 const active = (name: OrganizationRouteName) => route.name === name
 const within = (name: OrganizationRouteName) =>
   typeof route.name === 'string' && route.name.startsWith(name)
@@ -231,10 +260,10 @@ const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   'spaceKey' in route.params &&
   route.params.spaceKey === space.key
 const toggleTheme = () => {
-  const root = document.documentElement
-  const theme = root.dataset.theme === 'dark' ? 'light' : 'dark'
-  root.dataset.theme = theme
-  localStorage.setItem('theme', theme)
+  props.preferences.setTheme(theme.value === 'dark' ? 'light' : 'dark')
+}
+const toggleLocale = () => {
+  props.preferences.setLocale(locale.value === 'en' ? 'ru' : 'en')
 }
 </script>
 
@@ -409,6 +438,13 @@ main :deep(.page-load-state) {
 .sidebar-action {
   justify-content: flex-start;
   width: 100%;
+}
+
+.language-flag {
+  border-radius: 2px;
+  height: 16px;
+  object-fit: cover;
+  width: 22px;
 }
 
 .theme-action {

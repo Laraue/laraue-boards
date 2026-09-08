@@ -1,4 +1,5 @@
 import type { ActionResult } from '#infrastructure/api/apiResult'
+import type { AppPreferences } from '~/composables/useAppPreferences'
 import type { TourStateDeps } from '~/composables/useTour'
 
 import type { AppLayoutData } from './AppLayout.types'
@@ -25,6 +26,7 @@ export type ViewAppLayout = (input: {
 
 export type AppLayoutDeps = {
   logout: Logout
+  preferences: AppPreferences
   tour: TourStateDeps
   view: ViewAppLayout
 }
