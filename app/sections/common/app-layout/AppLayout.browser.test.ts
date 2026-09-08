@@ -1,7 +1,7 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import { ref } from 'vue'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
+import { ref } from 'vue'
 
 import type { AppPreferences } from '~/composables/useAppPreferences'
 import type { TourStateDeps } from '~/composables/useTour'
@@ -35,7 +35,7 @@ const createPreferences = (): AppPreferences => ({
   locale: ref<'en' | 'ru'>('en'),
   setLocale: vi.fn<AppPreferences['setLocale']>(),
   setTheme: vi.fn<AppPreferences['setTheme']>(),
-  theme: ref<'light' | 'dark'>('light'),
+  theme: ref<'dark' | 'light'>('light'),
 })
 
 const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({

@@ -22,11 +22,10 @@ export default defineNuxtConfig({
           name: 'viewport',
         },
       ],
-      script: [
-        ...(process.env.NODE_ENV === 'test'
+      script:
+        process.env.NODE_ENV === 'test'
           ? []
-          : [{ src: 'https://telegram.org/js/telegram-web-app.js?61' }]),
-      ],
+          : [{ src: 'https://telegram.org/js/telegram-web-app.js?61' }],
     },
   },
 

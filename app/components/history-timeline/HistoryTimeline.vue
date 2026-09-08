@@ -104,8 +104,6 @@ const timeFormatter = new Intl.DateTimeFormat('en-US', {
 const utc = (date: string) => new Date(date).toISOString()
 
 // Entries written by one save land in the same minute — show them as a single event.
-// ponytail: minute buckets also merge two separate saves a few seconds apart; group by a
-// server-side save id if that ever matters.
 const groups = computed(() =>
   props.items.reduce<HistoryItemViewModel[]>((result, item) => {
     const last = result.at(-1)

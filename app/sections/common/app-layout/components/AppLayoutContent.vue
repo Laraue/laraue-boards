@@ -156,8 +156,8 @@
         <div class="sidebar-preferences">
           <button
             :aria-label="t('switchLanguage')"
-            :title="t('switchLanguage')"
             class="secondary sidebar-language"
+            :title="t('switchLanguage')"
             type="button"
             @click="toggleLocale">
             <img
@@ -168,8 +168,8 @@
           </button>
           <button
             :aria-label="theme === 'dark' ? t('lightMode') : t('darkMode')"
-            :title="theme === 'dark' ? t('lightMode') : t('darkMode')"
             class="secondary sidebar-theme"
+            :title="theme === 'dark' ? t('lightMode') : t('darkMode')"
             type="button"
             @click="toggleTheme">
             <Sun v-if="theme === 'dark'" />
@@ -223,8 +223,8 @@ import {
   Tags,
 } from '@lucide/vue'
 
-import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppPreferences } from '~/composables/useAppPreferences'
+import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const props = defineProps<{
@@ -316,6 +316,7 @@ nav button {
   color: var(--color-muted);
   display: flex;
   gap: var(--space-2);
+  height: var(--control-height);
   margin: 2px 0;
   padding: var(--space-2) var(--space-3);
   text-align: left;
@@ -328,7 +329,7 @@ nav button {
 .nav-badge {
   border: 1px solid currentcolor;
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-xs, 11px);
+  font-size: var(--font-size-caption);
   margin-left: auto;
   padding: 0 var(--space-2);
 }
@@ -418,6 +419,7 @@ main :deep(.page-load-state) {
 
 .sidebar-language {
   flex: 1;
+  justify-content: flex-start;
   min-width: 0;
 }
 

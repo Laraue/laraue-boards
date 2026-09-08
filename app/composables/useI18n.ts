@@ -14,6 +14,11 @@ const pluralRules: Record<Locale, Intl.PluralRules> = {
   ru: new Intl.PluralRules('ru'),
 }
 
+const PLURAL_INDEX = {
+  en: { few: 1, many: 1, one: 0, other: 1, two: 1, zero: 1 },
+  ru: { few: 1, many: 2, one: 0, other: 2, two: 2, zero: 2 },
+} as const satisfies Record<Locale, Record<Intl.LDMLPluralRule, number>>
+
 export const isLocale = (value: unknown): value is Locale =>
   typeof value === 'string' && locales.includes(value as Locale)
 
@@ -77,13 +82,7 @@ function choosePluralIndex(
   category: Intl.LDMLPluralRule,
   formsCount: number,
 ): number {
-  // ponytail: English/Russian only; add locale-specific maps when another grammar is needed.
-  const index =
-    locale === 'ru'
-      ? { few: 1, many: 2, one: 0, other: 2 }[category] ?? 2
-      : category === 'one'
-        ? 0
-        : 1
+  const index = PLURAL_INDEX[locale][category]
 
   return Math.min(index, formsCount - 1)
 }
