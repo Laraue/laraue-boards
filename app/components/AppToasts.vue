@@ -18,7 +18,7 @@
             {{ toast.count }}
           </span>
           <button
-            aria-label="Dismiss"
+            :aria-label="t('dismiss')"
             class="icon-btn small"
             type="button"
             @click="dismiss(toast.id)">
@@ -34,6 +34,10 @@
 import { AlertTriangle, Check, X } from '@lucide/vue'
 
 const { dismiss, toasts } = useToast()
+const { t } = useI18n({
+  en: { dismiss: 'Dismiss' },
+  ru: { dismiss: 'Закрыть' },
+})
 </script>
 
 <style scoped>

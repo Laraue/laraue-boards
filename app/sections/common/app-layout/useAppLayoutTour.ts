@@ -5,51 +5,81 @@ import { useTour } from '~/composables/useTour'
 
 import type { AppLayoutData } from './AppLayout.types'
 
-const buildSteps = (data: AppLayoutData | undefined): TourStep[] => {
-  const steps: TourStep[] = [
-    {
-      description: `Switch between organizations here — ${data?.organization.name ?? 'each one'} keeps its own spaces and issues.`,
-      placement: 'right',
-      target: '[data-tour="organization-switcher"]',
-      title: 'Your organization',
-    },
-    {
-      description:
-        'An issue is a task or request. All issues shows them across every space, so nothing gets lost between projects.',
-      placement: 'right',
-      target: '[data-tour="all-issues"]',
-      title: 'Issues are your tasks',
-    },
-    {
-      description:
-        'A space is a project or a large area of work — similar to an epic. Inside it, the backlog holds unscheduled issues and boards show their workflow.',
-      placement: 'right',
-      target: '[data-tour="spaces"]',
-      title: 'Spaces, backlog, and boards',
-    },
-  ]
-
-  if (
-    data?.organization.canUpdate ||
-    data?.organization.canManage ||
-    data?.organization.canManageAttributes ||
-    data?.organization.canMassMove
-  ) {
-    steps.push({
-      description: 'Members, attributes, and the rest of the organization settings live here.',
-      placement: 'right',
-      target: '[data-tour="organization-settings"]',
-      title: 'Workspace settings',
-    })
-  }
-
-  return steps
-}
-
 export const useAppLayoutTour = (
   data: Readonly<Ref<AppLayoutData | undefined>>,
   deps: TourStateDeps,
 ): void => {
+  const { t } = useI18n({
+    en: {
+      eachOrganization: 'each organization',
+      issuesDescription:
+        'An issue is a task or request. All issues shows them across every space, so nothing gets lost between projects.',
+      issuesTitle: 'Issues are your tasks',
+      organizationDescription:
+        'Switch between organizations here — {organization} has its own spaces and issues.',
+      organizationTitle: 'Your organization',
+      settingsDescription:
+        'Members, attributes, and the rest of the organization settings live here.',
+      settingsTitle: 'Workspace settings',
+      spacesDescription:
+        'A space is a project or a large area of work — similar to an epic. Inside it, the backlog holds unscheduled issues and boards show their workflow.',
+      spacesTitle: 'Spaces, backlog, and boards',
+    },
+    ru: {
+      eachOrganization: 'каждой организации',
+      issuesDescription:
+        'Задача — это поручение или запрос. В разделе «Все задачи» они собраны из всех пространств, чтобы ничего не потерялось между проектами.',
+      issuesTitle: 'Задачи — это ваша работа',
+      organizationDescription:
+        'Здесь можно переключаться между организациями. У {organization} свои пространства и задачи.',
+      organizationTitle: 'Ваша организация',
+      settingsDescription: 'Здесь находятся участники, атрибуты и остальные настройки организации.',
+      settingsTitle: 'Настройки рабочего пространства',
+      spacesDescription:
+        'Пространство — это проект или большая область работы, похожая на эпик. В бэклоге хранятся незапланированные задачи, а на досках показан ход работы.',
+      spacesTitle: 'Пространства, бэклог и доски',
+    },
+  })
+  const buildSteps = (current: AppLayoutData | undefined): TourStep[] => {
+    const organization = current?.organization.name ?? t('eachOrganization')
+    const steps: TourStep[] = [
+      {
+        description: t('organizationDescription').replace('{organization}', organization),
+        placement: 'right',
+        target: '[data-tour="organization-switcher"]',
+        title: t('organizationTitle'),
+      },
+      {
+        description: t('issuesDescription'),
+        placement: 'right',
+        target: '[data-tour="all-issues"]',
+        title: t('issuesTitle'),
+      },
+      {
+        description: t('spacesDescription'),
+        placement: 'right',
+        target: '[data-tour="spaces"]',
+        title: t('spacesTitle'),
+      },
+    ]
+
+    if (
+      current?.organization.canUpdate ||
+      current?.organization.canManage ||
+      current?.organization.canManageAttributes ||
+      current?.organization.canMassMove
+    ) {
+      steps.push({
+        description: t('settingsDescription'),
+        placement: 'right',
+        target: '[data-tour="organization-settings"]',
+        title: t('settingsTitle'),
+      })
+    }
+
+    return steps
+  }
+
   useTour({
     ready: () => import.meta.client && data.value !== undefined && innerWidth > 760,
     state: deps,

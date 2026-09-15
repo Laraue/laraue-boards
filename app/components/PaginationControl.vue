@@ -1,11 +1,11 @@
 <template>
   <div
     v-if="page > 1 || hasNextPage"
-    aria-label="Pagination"
+    :aria-label="t('pagination')"
     class="pagination"
     role="navigation">
     <button
-      aria-label="Previous page"
+      :aria-label="t('previousPage')"
       class="secondary"
       :disabled="page === 1"
       type="button"
@@ -13,13 +13,13 @@
       <ChevronLeft />
     </button>
     <input
-      aria-label="Page number"
+      :aria-label="t('pageNumber')"
       min="1"
       type="number"
       :value="page"
       @change="changePage" />
     <button
-      aria-label="Next page"
+      :aria-label="t('nextPage')"
       class="secondary"
       :disabled="!hasNextPage"
       type="button"
@@ -34,6 +34,20 @@ import { ChevronLeft, ChevronRight } from '@lucide/vue'
 
 defineProps<{ hasNextPage: boolean; page: number }>()
 const emit = defineEmits<{ 'update:page': [page: number] }>()
+const { t } = useI18n({
+  en: {
+    nextPage: 'Next page',
+    pageNumber: 'Page number',
+    pagination: 'Pagination',
+    previousPage: 'Previous page',
+  },
+  ru: {
+    nextPage: 'Следующая страница',
+    pageNumber: 'Номер страницы',
+    pagination: 'Пагинация',
+    previousPage: 'Предыдущая страница',
+  },
+})
 const changePage = (event: Event) =>
   emit(
     'update:page',
