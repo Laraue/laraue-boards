@@ -50,7 +50,7 @@
                 class="muted retro-meta">
                 {{ tp('openActions', retro.openActionCount) }}
               </span>
-              <span class="muted retro-meta">{{ formatDate(retro.createdAt) }}</span>
+              <span class="muted retro-meta">{{ formatLocalDate(retro.createdAt) }}</span>
             </NuxtLink>
             <div
               v-if="(listing.canCreate && retro.openActionCount > 0) || retro.canManage"
@@ -105,7 +105,7 @@ const props = defineProps<{
   routeQuery: LocationQuery
 }>()
 
-const { locale, t, tp } = useI18n({
+const { t, tp } = useI18n({
   en: {
     active: 'Active',
     cards: 'card|cards',
@@ -156,8 +156,7 @@ const { execute: startRetro, pending: starting } = useAction(props.deps.startRet
   onSuccess: ({ retroId }) => props.onOpen(retroId),
 })
 const { execute: removeRetro, pending: removing } = useAction(props.deps.removeRetro)
-
-const formatDate = (value: string) => new Date(value).toLocaleDateString(locale.value)
+const { formatLocalDate } = useFormatters()
 
 // Nothing is carried over unless the team says so by continuing from a specific retro.
 // Deleting a retro takes its whole board with it and cannot be undone.
@@ -182,7 +181,7 @@ const updatePage = (value: number) => {
 const start = (basedOn: null | RetroListItemViewModel) => {
   void startRetro({
     basedOnRetroId: basedOn?.id ?? null,
-    name: new Date().toLocaleDateString(locale.value),
+    name: formatLocalDate(new Date()),
   })
 }
 

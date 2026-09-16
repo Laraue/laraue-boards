@@ -24,7 +24,7 @@
         <div class="issue-comment-body">
           <div class="issue-comment-head">
             <span class="issue-comment-name">{{ comment.owner.name }}</span>
-            <time :datetime="comment.createdAt">{{ formatDate(comment.createdAt) }}</time>
+            <time :datetime="comment.createdAt">{{ formatDateTime(comment.createdAt) }}</time>
             <div
               v-if="comment.canModify && state.editingId !== comment.id"
               class="issue-comment-actions">
@@ -114,7 +114,7 @@ const props = defineProps<{
   issueKey: string
 }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: {
     addComment: 'Add comment',
     adding: 'Adding…',
@@ -151,11 +151,7 @@ const { locale, t } = useI18n({
   },
 })
 
-const dateTimeFormatter = new Intl.DateTimeFormat(locale.value, {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-  timeZone: 'UTC',
-})
+const { formatDateTime } = useFormatters()
 
 const state = reactive({
   comments: props.initialComments,
@@ -165,8 +161,6 @@ const state = reactive({
   newText: '',
   pendingId: '',
 })
-
-const formatDate = (value: string) => dateTimeFormatter.format(new Date(value))
 
 const refreshComments = async () => {
   const result = await props.deps.load({ issueKey: props.issueKey })

@@ -191,9 +191,9 @@
                 :attributes="issue.attributes"
                 :disabled="!issue.canEdit" />
               <span class="issue-date-label">{{ t('created') }}</span>
-              <time :datetime="issue.createdAt">{{ formatDate(issue.createdAt) }}</time>
+              <time :datetime="issue.createdAt">{{ formatDateTime(issue.createdAt) }}</time>
               <span class="issue-date-label">{{ t('updated') }}</span>
-              <time :datetime="issue.updatedAt">{{ formatDate(issue.updatedAt) }}</time>
+              <time :datetime="issue.updatedAt">{{ formatDateTime(issue.updatedAt) }}</time>
             </div>
           </div>
           <div
@@ -254,7 +254,7 @@ const props = defineProps<{
   onSaved?: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: {
     assignee: 'Assignee',
     back: 'Back',
@@ -309,11 +309,7 @@ const { locale, t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 const router = useRouter()
-const dateTimeFormatter = new Intl.DateTimeFormat(locale.value, {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-  timeZone: 'UTC',
-})
+const { formatDateTime } = useFormatters()
 
 const state = reactive({
   activeTab: 'comments' as 'comments' | 'history',
@@ -382,8 +378,6 @@ const dirty = computed(
 )
 
 const issueRoute = computed(() => organizationRoutes.issue(props.issueKey))
-
-const formatDate = (value: string) => dateTimeFormatter.format(new Date(value))
 
 const syncState = (issue: IssuePageViewModel) => {
   if (state.dirty) {

@@ -24,8 +24,8 @@
             </NuxtLink>
             <time
               :datetime="item.createdAt"
-              :title="formatDate(item.createdAt)">
-              {{ formatTime(item.createdAt) }}
+              :title="formatDateTime(item.createdAt)">
+              {{ formatHistoryTime(item.createdAt) }}
             </time>
           </div>
           <div class="history-changes">
@@ -87,21 +87,12 @@ const props = defineProps<{
   label?: string
 }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: { empty: 'No changes yet.', history: 'History' },
   ru: { empty: 'Изменений пока нет.', history: 'История' },
 })
 
-const dateTimeFormatter = new Intl.DateTimeFormat(locale.value, {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-  timeZone: 'UTC',
-})
-
-const timeFormatter = new Intl.DateTimeFormat(locale.value, {
-  timeStyle: 'short',
-  timeZone: 'UTC',
-})
+const { formatDateTime, formatTime } = useFormatters()
 
 const utc = (date: string) => new Date(date).toISOString()
 
@@ -127,12 +118,10 @@ const groups = computed(() =>
   }, []),
 )
 
-const formatDate = (date: string) => dateTimeFormatter.format(new Date(date))
-
-const formatTime = (date: string) =>
+const formatHistoryTime = (date: string) =>
   utc(date).slice(0, 10) === new Date().toISOString().slice(0, 10)
-    ? timeFormatter.format(new Date(date))
-    : dateTimeFormatter.format(new Date(date))
+    ? formatTime(date)
+    : formatDateTime(date)
 </script>
 
 <style scoped>

@@ -26,18 +26,12 @@ import type { HistoryPropertyChangeViewModel } from '../HistoryTimeline.types'
 
 const props = defineProps<{ change: HistoryPropertyChangeViewModel }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: { none: 'None' },
   ru: { none: 'Нет' },
 })
 
-const dateFormatter = props.change.format
-  ? new Intl.DateTimeFormat(locale.value, {
-      dateStyle: 'medium',
-      ...(props.change.format === 'dateTime' ? { timeStyle: 'short' } : {}),
-      timeZone: 'UTC',
-    })
-  : null
+const { formatDate, formatDateTime } = useFormatters()
 
 const display = (value: null | string) => {
   if (value === null) {
@@ -46,6 +40,10 @@ const display = (value: null | string) => {
 
   const date = new Date(value)
 
-  return dateFormatter && !Number.isNaN(date.getTime()) ? dateFormatter.format(date) : value
+  if (!props.change.format || Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return props.change.format === 'dateTime' ? formatDateTime(date) : formatDate(date)
 }
 </script>

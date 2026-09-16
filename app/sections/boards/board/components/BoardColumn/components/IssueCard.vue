@@ -47,17 +47,6 @@
   </article>
 </template>
 
-<script lang="ts">
-import { locales } from '~/composables/useI18n'
-
-const timeFormatters = Object.fromEntries(
-  locales.map((locale) => [
-    locale,
-    new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
-  ]),
-) as Record<(typeof locales)[number], Intl.DateTimeFormat>
-</script>
-
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
 import { Loader, Undo2 } from '@lucide/vue'
@@ -74,7 +63,7 @@ const props = defineProps<{
   viewModel: IssueCardViewModel
 }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: {
     moveToBacklog: 'Move to backlog',
     savingPosition: 'Saving issue position',
@@ -84,6 +73,8 @@ const { locale, t } = useI18n({
     savingPosition: 'Сохранение позиции задачи',
   },
 })
+
+const { formatTime } = useFormatters()
 
 const organizationRoutes = useOrganizationRoutes()
 
@@ -98,8 +89,6 @@ useSortable({
   index: computed(() => props.index),
   type: 'item',
 })
-
-const formatTime = (value: string) => timeFormatters[locale.value].format(new Date(value))
 </script>
 
 <style scoped>
