@@ -1,9 +1,9 @@
 <template>
   <span>{{ change.label }}:</span>
   <div class="history-value-change">
-    <span :title="change.oldValue">
+    <span :title="displayValue(change.oldValue)">
       <span
-        v-if="change.oldValue !== t('none')"
+        v-if="change.oldValue !== 'None'"
         class="avatar"
         :style="{ background: change.oldColor ?? 'var(--color-border)' }">
         {{ initials(change.oldValue) }}
@@ -11,14 +11,14 @@
       <i
         v-else-if="change.oldColor"
         :style="{ background: change.oldColor }" />
-      {{ change.oldValue }}
+      {{ displayValue(change.oldValue) }}
     </span>
     <ArrowRight />
     <span
       class="history-new-value"
-      :title="change.newValue">
+      :title="displayValue(change.newValue)">
       <span
-        v-if="change.newValue !== t('none')"
+        v-if="change.newValue !== 'None'"
         class="avatar"
         :style="{ background: change.newColor ?? 'var(--color-border)' }">
         {{ initials(change.newValue) }}
@@ -26,7 +26,7 @@
       <i
         v-else-if="change.newColor"
         :style="{ background: change.newColor }" />
-      {{ change.newValue }}
+      {{ displayValue(change.newValue) }}
     </span>
   </div>
 </template>
@@ -42,6 +42,8 @@ const { t } = useI18n({
   en: { none: 'None' },
   ru: { none: 'Нет' },
 })
+
+const displayValue = (value: string) => (value === 'None' ? t('none') : value)
 
 const initials = (name: string) =>
   name

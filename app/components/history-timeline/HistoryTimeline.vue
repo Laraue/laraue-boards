@@ -241,8 +241,12 @@ const localizedGroups = computed(() =>
     changes: item.changes.map((change) => ({
       ...change,
       label: translateLabel(change.label),
-      ...('newValue' in change ? { newValue: translateValue(change.newValue) } : {}),
-      ...('oldValue' in change ? { oldValue: translateValue(change.oldValue) } : {}),
+      ...('newValue' in change && change.kind !== 'assignee'
+        ? { newValue: translateValue(change.newValue) }
+        : {}),
+      ...('oldValue' in change && change.kind !== 'assignee'
+        ? { oldValue: translateValue(change.oldValue) }
+        : {}),
     })),
   })),
 )
