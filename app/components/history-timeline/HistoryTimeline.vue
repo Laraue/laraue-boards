@@ -95,6 +95,16 @@ const { t } = useI18n({
 const { formatDateTime, formatTime } = useFormatters()
 
 const utc = (date: string) => new Date(date).toISOString()
+const isToday = (date: string) => {
+  const value = new Date(date)
+  const now = new Date()
+
+  return (
+    value.getFullYear() === now.getFullYear() &&
+    value.getMonth() === now.getMonth() &&
+    value.getDate() === now.getDate()
+  )
+}
 
 // Entries written by one save land in the same minute — show them as a single event.
 // ponytail: minute buckets also merge two separate saves a few seconds apart; group by a
@@ -119,9 +129,7 @@ const groups = computed(() =>
 )
 
 const formatHistoryTime = (date: string) =>
-  utc(date).slice(0, 10) === new Date().toISOString().slice(0, 10)
-    ? formatTime(date)
-    : formatDateTime(date)
+  isToday(date) ? formatTime(date) : formatDateTime(date)
 </script>
 
 <style scoped>
