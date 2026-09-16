@@ -113,7 +113,7 @@ const { t } = useI18n({
   },
 })
 
-useHead(() => ({ title: t('organizations') }))
+useHead({ title: t('organizations') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-picker',

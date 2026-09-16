@@ -92,7 +92,7 @@ test('cascades a granted global operation down to the rows below it', () => {
     [true, false, false],
     [true, false, false],
   ])
-  assert.equal(rows[1]!.cells[0]!.title, 'Inherited')
+  assert.equal(rows[1]!.cells[0]!.title, 'inherited')
 })
 
 test('does not cascade an operation granted on a lower row upwards', () => {
@@ -135,7 +135,7 @@ test('inherits a direct cell from the matching global column', () => {
 
   assert.equal(cell.checked, true)
   assert.equal(cell.disabled, true)
-  assert.equal(cell.title, 'Inherited')
+  assert.equal(cell.title, 'inherited')
 })
 
 test('cascades a granted direct operation down to the rows below it', () => {
@@ -167,7 +167,7 @@ test('never allows deleting the default space', () => {
 
   assert.equal(defaultSpaceDelete.checked, false)
   assert.equal(defaultSpaceDelete.disabled, true)
-  assert.equal(defaultSpaceDelete.title, 'Not allowed')
+  assert.equal(defaultSpaceDelete.title, 'notAllowed')
   assert.equal(otherSpaceDelete.checked, true)
 })
 

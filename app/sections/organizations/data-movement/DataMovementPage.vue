@@ -58,7 +58,7 @@ const { t } = useI18n({
   },
 })
 
-useHead(() => ({ title: t('dataMovement') }))
+useHead({ title: t('dataMovement') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-data-movement',

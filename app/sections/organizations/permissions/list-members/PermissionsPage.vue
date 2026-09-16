@@ -133,7 +133,7 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-useHead(() => ({ title: t('permissions') }))
+useHead({ title: t('permissions') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-permissions',

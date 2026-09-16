@@ -86,7 +86,7 @@ const telegramWindow = globalThis as typeof globalThis & {
   onTelegramJoinAuth?: (user: TelegramUser) => void
 }
 
-useHead(() => ({ title: t('joinOrganization') }))
+useHead({ title: t('joinOrganization') })
 
 const { execute: join, message: joinMessage, pending } = useAction(props.deps.join)
 

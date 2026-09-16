@@ -142,7 +142,7 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-useHead(() => ({ title: t('createAttribute') }))
+useHead({ title: t('createAttribute') })
 
 const {
   execute: create,

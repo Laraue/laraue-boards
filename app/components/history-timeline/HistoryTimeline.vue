@@ -6,7 +6,7 @@
       v-if="groups.length"
       class="history-list">
       <article
-        v-for="(item, index) in localizedGroups"
+        v-for="(item, index) in groups"
         :key="`${item.createdAt}-${index}`"
         class="history-item">
         <span
@@ -81,35 +81,33 @@ import HistoryPropertyChange from './components/HistoryPropertyChange.vue'
 import HistorySpaceChange from './components/HistorySpaceChange.vue'
 import HistoryStatusChange from './components/HistoryStatusChange.vue'
 import type { HistoryItemViewModel } from './HistoryTimeline.types'
-import { historyMessages, translateHistoryChange } from './historyTimelineI18n'
 
 const props = defineProps<{
   items: HistoryItemViewModel[]
   label?: string
 }>()
 
-const { locale, t } = useI18n(historyMessages)
+const { locale, t } = useI18n({
+  en: { empty: 'No changes yet.', history: 'History' },
+  ru: { empty: 'Изменений пока нет.', history: 'История' },
+})
 
-const dateTimeFormatter = computed(
-  () =>
-    new Intl.DateTimeFormat(locale.value === 'ru' ? 'ru-RU' : 'en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-      timeZone: 'UTC',
-    }),
-)
+const dateTimeFormatter = new Intl.DateTimeFormat(locale.value, {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'UTC',
+})
 
-const timeFormatter = computed(
-  () =>
-    new Intl.DateTimeFormat(locale.value === 'ru' ? 'ru-RU' : 'en-US', {
-      timeStyle: 'short',
-      timeZone: 'UTC',
-    }),
-)
+const timeFormatter = new Intl.DateTimeFormat(locale.value, {
+  timeStyle: 'short',
+  timeZone: 'UTC',
+})
 
 const utc = (date: string) => new Date(date).toISOString()
 
 // Entries written by one save land in the same minute — show them as a single event.
+// ponytail: minute buckets also merge two separate saves a few seconds apart; group by a
+// server-side save id if that ever matters.
 const groups = computed(() =>
   props.items.reduce<HistoryItemViewModel[]>((result, item) => {
     const last = result.at(-1)
@@ -129,19 +127,12 @@ const groups = computed(() =>
   }, []),
 )
 
-const formatDate = (date: string) => dateTimeFormatter.value.format(new Date(date))
+const formatDate = (date: string) => dateTimeFormatter.format(new Date(date))
 
 const formatTime = (date: string) =>
   utc(date).slice(0, 10) === new Date().toISOString().slice(0, 10)
-    ? timeFormatter.value.format(new Date(date))
-    : dateTimeFormatter.value.format(new Date(date))
-
-const localizedGroups = computed(() =>
-  groups.value.map((item) => ({
-    ...item,
-    changes: item.changes.map((change) => translateHistoryChange(change, t)),
-  })),
-)
+    ? timeFormatter.format(new Date(date))
+    : dateTimeFormatter.format(new Date(date))
 </script>
 
 <style scoped>

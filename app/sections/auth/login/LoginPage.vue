@@ -70,11 +70,18 @@ import type { LoginPageDeps } from '~/sections/auth/login/LoginPage.deps'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
 import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLoginWidget'
 
+const props = defineProps<{
+  botName: string
+  deps: LoginPageDeps
+  onLoggedIn: () => Promise<void> | void
+}>()
+
 const { t } = useI18n({
   en: {
     continueWithTelegram: 'Use your Telegram account to continue.',
     done: 'Done',
-    heroDescription: 'Send Telegram messages to organized boards and keep every important request moving.',
+    heroDescription:
+      'Send Telegram messages to organized boards and keep every important request moving.',
     heroFooter: 'Your conversations stay in Telegram. Your work stays clear.',
     heroTitle: 'Turn messages into work.',
     issue: 'Issue',
@@ -86,7 +93,8 @@ const { t } = useI18n({
   ru: {
     continueWithTelegram: 'Используйте аккаунт Telegram, чтобы продолжить.',
     done: 'Готово',
-    heroDescription: 'Отправляйте сообщения из Telegram на организованные доски и не теряйте важные задачи.',
+    heroDescription:
+      'Отправляйте сообщения из Telegram на организованные доски и не теряйте важные задачи.',
     heroFooter: 'Ваши разговоры остаются в Telegram, а работа — под контролем.',
     heroTitle: 'Превращайте сообщения в работу.',
     issue: 'Задача',
@@ -97,11 +105,6 @@ const { t } = useI18n({
   },
 })
 
-const props = defineProps<{
-  botName: string
-  deps: LoginPageDeps
-  onLoggedIn: () => Promise<void> | void
-}>()
 const widgetContainer = useTemplateRef('widgetContainer')
 const telegramWindow = globalThis as typeof globalThis & {
   onTelegramAuth?: (user: TelegramUser) => void
@@ -120,7 +123,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => delete telegramWindow.onTelegramAuth)
 onMounted(() => void loginViaTelegramMiniApp())
-useHead(() => ({ title: t('signIn') }))
+useHead({ title: t('signIn') })
 
 const {
   execute: loginViaTelegramMiniApp,

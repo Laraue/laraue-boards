@@ -254,7 +254,7 @@ const props = defineProps<{
   onSaved?: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
 
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     assignee: 'Assignee',
     back: 'Back',
@@ -309,7 +309,7 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 const router = useRouter()
-const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+const dateTimeFormatter = new Intl.DateTimeFormat(locale.value, {
   dateStyle: 'medium',
   timeStyle: 'short',
   timeZone: 'UTC',

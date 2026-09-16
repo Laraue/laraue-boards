@@ -96,7 +96,7 @@ const form = reactive({
   slug: '',
 })
 
-useHead(() => ({ title: t('createOrganization') }))
+useHead({ title: t('createOrganization') })
 
 const {
   execute: submit,

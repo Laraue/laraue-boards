@@ -7,7 +7,7 @@
           v-for="column in PERMISSION_COLUMNS"
           :key="column"
           scope="col">
-          {{ t(column.toLowerCase() as PermissionColumnKey) }}
+          {{ t(column) }}
         </th>
       </tr>
     </thead>
@@ -26,12 +26,10 @@
           </span>
           <input
             v-else
-            :aria-label="`${t(PERMISSION_COLUMNS[index]!.toLowerCase() as PermissionColumnKey)} ${t(row.label)}${labelSuffix}`"
+            :aria-label="`${t(PERMISSION_COLUMNS[index]!)} ${t(row.label)}${labelSuffix}`"
             :checked="cell.checked"
             :disabled="cell.disabled"
-            :title="
-              cell.title === 'Inherited' ? t('inherited') : cell.title ? t('notAllowed') : undefined
-            "
+            :title="cell.title && t(cell.title)"
             type="checkbox"
             @change="onToggle(cell.key)" />
         </td>
@@ -42,8 +40,6 @@
 
 <script setup lang="ts" generic="Key extends string">
 import { PERMISSION_COLUMNS, type PermissionRow } from '../permissionTables'
-
-type PermissionColumnKey = 'create' | 'delete' | 'update'
 
 withDefaults(
   defineProps<{
@@ -63,6 +59,7 @@ const { t } = useI18n({
     issues: 'Issues',
     notAllowed: 'Not allowed',
     resource: 'Resource',
+    space: 'Space',
     spaces: 'Spaces',
     update: 'Update',
   },
@@ -74,6 +71,7 @@ const { t } = useI18n({
     issues: 'Задачи',
     notAllowed: 'Недоступно',
     resource: 'Ресурс',
+    space: 'Раздел',
     spaces: 'Разделы',
     update: 'Изменение',
   },

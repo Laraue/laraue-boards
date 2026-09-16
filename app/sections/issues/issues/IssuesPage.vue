@@ -123,11 +123,11 @@ const { t } = useI18n({
 })
 
 const organizationRoutes = useOrganizationRoutes()
-const epicStatusOptions = computed<Array<{ label: string; value: IssueBoardStatus }>>(() => [
+const epicStatusOptions: Array<{ label: string; value: IssueBoardStatus }> = [
   { label: t('new'), value: 'New' },
   { label: t('inProgress'), value: 'Active' },
   { label: t('done'), value: 'Done' },
-])
+]
 
 const request = computed(() => ({
   attributeQuery: readIssueAttributeQuery(props.routeQuery),
@@ -145,7 +145,7 @@ const { data, message, pending, refresh } = await useQuery(
   { watch: [() => props.organizationKey] },
 )
 
-useHead(() => ({ title: t('allIssues') }))
+useHead({ title: t('allIssues') })
 
 const attributes = computed(() => data.value?.attributes ?? [])
 const attributeFilters = computed(() =>

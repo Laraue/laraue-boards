@@ -97,19 +97,16 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-const typeLabels = computed(
-  () =>
-    ({
-      date: t('date'),
-      dateTime: t('dateTime'),
-      decimal: t('decimal'),
-      integer: t('integer'),
-      list: t('list'),
-      text: t('text'),
-    }) satisfies Record<AttributeListItem['type'], string>,
-)
+const typeLabels = {
+  date: t('date'),
+  dateTime: t('dateTime'),
+  decimal: t('decimal'),
+  integer: t('integer'),
+  list: t('list'),
+  text: t('text'),
+} satisfies Record<AttributeListItem['type'], string>
 
-useHead(() => ({ title: t('attributes') }))
+useHead({ title: t('attributes') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-attributes',

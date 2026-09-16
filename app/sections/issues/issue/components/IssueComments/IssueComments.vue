@@ -114,7 +114,7 @@ const props = defineProps<{
   issueKey: string
 }>()
 
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     addComment: 'Add comment',
     adding: 'Adding…',
@@ -151,7 +151,7 @@ const { t } = useI18n({
   },
 })
 
-const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+const dateTimeFormatter = new Intl.DateTimeFormat(locale.value, {
   dateStyle: 'medium',
   timeStyle: 'short',
   timeZone: 'UTC',

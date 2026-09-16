@@ -19,7 +19,7 @@
         <button
           v-for="color in COLOR_PALETTE"
           :key="color.value"
-          :aria-label="translatedColorName(color.name)"
+          :aria-label="t(color.key)"
           :aria-selected="color.value === model"
           class="color-swatch"
           :class="{ selected: color.value === model }"
@@ -70,33 +70,14 @@ const { t } = useI18n({
     pink: 'Розовый',
     purple: 'Фиолетовый',
     red: 'Красный',
-    rose: 'Розовый',
+    rose: 'Малиновый',
     sky: 'Небесно-синий',
     teal: 'Бирюзовый',
   },
 })
-const colorKeys = {
-  Amber: 'amber',
-  Blue: 'blue',
-  Coral: 'coral',
-  Cyan: 'cyan',
-  Emerald: 'emerald',
-  Gray: 'gray',
-  Green: 'green',
-  Indigo: 'indigo',
-  Lime: 'lime',
-  Orange: 'orange',
-  Pink: 'pink',
-  Purple: 'purple',
-  Red: 'red',
-  Rose: 'rose',
-  Sky: 'sky',
-  Teal: 'teal',
-} as const
-const translatedColorName = (name: keyof typeof colorKeys): string => t(colorKeys[name])
 const colorName = computed(() => {
   const color = COLOR_PALETTE.find((item) => item.value === model.value)
-  return color ? translatedColorName(color.name) : model.value
+  return color ? t(color.key) : model.value
 })
 const select = (value: string, close: () => void) => {
   model.value = value

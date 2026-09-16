@@ -32,21 +32,15 @@ export const useI18n = <const Schema extends TranslationSchema>(
   messages: TranslationMessages<Schema>,
 ) => {
   const locale = useLocale()
-  const localeCookie = useCookie<string>('locale')
   type Key = Extract<keyof Schema, string>
 
-  const getLocale = (): Locale => locale.value
+  const t = (key: Key, params?: Readonly<Record<string, number | string>>): string => {
+    const message = messages[locale.value][key] as string
 
-  const setLocale = (value: unknown): void => {
-    if (!isLocale(value)) {
-      throw new Error(`Locale "${value}" is not registered`)
-    }
-
-    locale.value = value
-    localeCookie.value = value
+    return params
+      ? message.replaceAll(/\{(\w+)\}/g, (match, name: string) => String(params[name] ?? match))
+      : message
   }
-
-  const t = (key: Key): string => messages[locale.value][key] as string
 
   const tc = (key: Key, count: number): string => {
     const forms = t(key)
@@ -74,7 +68,7 @@ export const useI18n = <const Schema extends TranslationSchema>(
     return form === '' ? '' : `${count} ${form}`
   }
 
-  return { getLocale, locale, setLocale, t, tc, tp }
+  return { locale, t, tp }
 }
 
 function choosePluralIndex(

@@ -146,7 +146,7 @@ const create = () => {
   })
 }
 
-useHead(() => ({ title: t('createBoard') }))
+useHead({ title: t('createBoard') })
 
 const {
   execute: submit,

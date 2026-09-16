@@ -19,6 +19,6 @@ const ERROR_MESSAGES: Record<Locale, Record<number, string>> = {
   },
 }
 
-export const getErrorMessage = (code: number, locale: Locale = 'en'): string =>
+export const getErrorMessage = (code: number, locale: Locale): string =>
   ERROR_MESSAGES[locale][code] ??
   (locale === 'ru' ? 'Не удалось выполнить запрос.' : 'Could not complete the request.')

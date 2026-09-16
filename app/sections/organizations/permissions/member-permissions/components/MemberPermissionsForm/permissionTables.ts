@@ -10,10 +10,10 @@ export type PermissionCell<Key extends string> = {
   checked: boolean
   disabled: boolean
   key: Key
-  title: string | undefined
+  title: 'inherited' | 'notAllowed' | undefined
 }
 
-export type PermissionLabelKey = 'boards' | 'issues' | 'spaces'
+export type PermissionLabelKey = 'boards' | 'issues' | 'space' | 'spaces'
 
 export type PermissionRow<Key extends string> = {
   cells: Array<null | PermissionCell<Key>>
@@ -43,7 +43,7 @@ export const ADMIN_PERMISSION_OPTIONS: Array<{
   { key: 'canManageAttributes', label: 'manageAttributes' },
 ]
 
-export const PERMISSION_COLUMNS = ['Create', 'Update', 'Delete'] as const
+export const PERMISSION_COLUMNS = ['create', 'update', 'delete'] as const
 
 const PERMISSION_DEFINITIONS: Array<{
   directKeys: Array<keyof DirectSpacePermissions | null>
@@ -53,7 +53,7 @@ const PERMISSION_DEFINITIONS: Array<{
 }> = [
   {
     directKeys: [null, 'canUpdate', 'canDelete'],
-    directLabel: 'spaces',
+    directLabel: 'space',
     globalKeys: ['canCreateSpaces', 'canUpdateSpaces', 'canDeleteSpaces'],
     globalLabel: 'spaces',
   },
@@ -85,7 +85,7 @@ export const getGlobalPermissionRows = (
         checked,
         disabled: isInherited,
         key,
-        title: isInherited ? 'Inherited' : undefined,
+        title: isInherited ? 'inherited' : undefined,
       }
     }),
     label: definition.globalLabel,
@@ -111,21 +111,23 @@ export const getDirectPermissionTables = ({
       const inherited = PERMISSION_COLUMNS.map(() => false)
 
       const rows = PERMISSION_DEFINITIONS.map((definition, rowIndex) => ({
-        cells: definition.directKeys.map((key, index) => {
-          if (!key) {
-            return null
-          }
-          const unavailable = space.isDefault && key === 'canDelete'
-          const isInherited = globalRows[rowIndex]!.cells[index]!.checked || inherited[index]!
-          const checked = !unavailable && ((direct?.[key] ?? false) || isInherited)
-          inherited[index] = checked
-          return {
-            checked,
-            disabled: unavailable || isInherited,
-            key,
-            title: unavailable ? 'Not allowed' : isInherited ? 'Inherited' : undefined,
-          }
-        }),
+        cells: definition.directKeys.map(
+          (key, index): null | PermissionCell<keyof DirectSpacePermissions> => {
+            if (!key) {
+              return null
+            }
+            const unavailable = space.isDefault && key === 'canDelete'
+            const isInherited = globalRows[rowIndex]!.cells[index]!.checked || inherited[index]!
+            const checked = !unavailable && ((direct?.[key] ?? false) || isInherited)
+            inherited[index] = checked
+            return {
+              checked,
+              disabled: unavailable || isInherited,
+              key,
+              title: unavailable ? 'notAllowed' : isInherited ? 'inherited' : undefined,
+            }
+          },
+        ),
         label: definition.directLabel,
       }))
 

@@ -59,7 +59,7 @@
                 v-if="listing.canCreate && retro.openActionCount > 0"
                 class="secondary small"
                 :disabled="starting"
-                :title="t('continueTitle').replace('{name}', retro.name)"
+                :title="t('continueTitle', { name: retro.name })"
                 type="button"
                 @click="start(retro)">
                 {{ t('continue') }}
@@ -105,7 +105,7 @@ const props = defineProps<{
   routeQuery: LocationQuery
 }>()
 
-const { t, tp } = useI18n({
+const { locale, t, tp } = useI18n({
   en: {
     active: 'Active',
     cards: 'card|cards',
@@ -157,12 +157,12 @@ const { execute: startRetro, pending: starting } = useAction(props.deps.startRet
 })
 const { execute: removeRetro, pending: removing } = useAction(props.deps.removeRetro)
 
-const formatDate = (value: string) => new Date(value).toLocaleDateString()
+const formatDate = (value: string) => new Date(value).toLocaleDateString(locale.value)
 
 // Nothing is carried over unless the team says so by continuing from a specific retro.
 // Deleting a retro takes its whole board with it and cannot be undone.
 const remove = async (retro: RetroListItemViewModel) => {
-  if (!confirm(t('deleteConfirm').replace('{name}', retro.name))) {
+  if (!confirm(t('deleteConfirm', { name: retro.name }))) {
     return
   }
   await removeRetro({ retroId: retro.id })
@@ -182,11 +182,11 @@ const updatePage = (value: number) => {
 const start = (basedOn: null | RetroListItemViewModel) => {
   void startRetro({
     basedOnRetroId: basedOn?.id ?? null,
-    name: new Date().toLocaleDateString(),
+    name: new Date().toLocaleDateString(locale.value),
   })
 }
 
-useHead(() => ({ title: t('retro') }))
+useHead({ title: t('retro') })
 </script>
 
 <style scoped>

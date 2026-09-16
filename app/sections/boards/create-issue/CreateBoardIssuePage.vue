@@ -60,7 +60,7 @@ const { t } = useI18n({
 })
 
 const organizationRoutes = useOrganizationRoutes()
-useHead(() => ({ title: t('addIssue') }))
+useHead({ title: t('addIssue') })
 
 const { data, message, pending, refresh } = await useQuery(
   () => `create-board-issue:${props.boardId}`,

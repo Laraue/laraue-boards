@@ -1,11 +1,7 @@
 <template>
   <dialog ref="dialog">
     <form @submit.prevent="move">
-      <h2>
-        {{ t('move') }}
-        {{ state.issueKeys.length }}
-        {{ state.issueKeys.length === 1 ? t('issue') : t('issues') }}
-      </h2>
+      <h2>{{ t('move') }} {{ tp('issues', state.issueKeys.length) }}</h2>
       <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
       <SpaceSelect
         :id="`${idPrefix}-space`"
@@ -67,15 +63,13 @@ const props = defineProps<{
   onMoved: () => Promise<void> | void
 }>()
 
-const { t } = useI18n({
+const { t, tp } = useI18n({
   en: {
     board: 'Board',
     cancel: 'Cancel',
     column: 'Column',
-    issue: 'issue',
-    issues: 'issues',
+    issues: 'issue|issues',
     move: 'Move',
-    moveIssues: 'Move issues',
     moving: 'Moving…',
     selectColumn: 'Select column',
     space: 'Space',
@@ -84,10 +78,8 @@ const { t } = useI18n({
     board: 'Доска',
     cancel: 'Отмена',
     column: 'Колонка',
-    issue: 'задачу',
-    issues: 'задачи',
+    issues: 'задачу|задачи|задач',
     move: 'Переместить',
-    moveIssues: 'Переместить задачи',
     moving: 'Перемещение…',
     selectColumn: 'Выберите колонку',
     space: 'Раздел',

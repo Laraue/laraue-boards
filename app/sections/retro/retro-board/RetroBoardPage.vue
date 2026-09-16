@@ -159,23 +159,23 @@
               v-for="(phase, index) in PHASES"
               :key="phase"
               :aria-current="board.phase === phase ? 'step' : undefined"
-              :aria-label="phaseLabel(phase)"
+              :aria-label="t(PHASE_KEYS[phase].label)"
               class="facilitator-phase"
               :class="{
                 active: board.phase === phase,
                 done: PHASES.indexOf(board.phase) > index,
               }"
               :disabled="phase !== board.phase && !canChangePhase(board.phase, phase)"
-              :title="`${phaseGuideText(phase).title} — ${phaseGuideText(phase).action}`"
+              :title="`${t(PHASE_KEYS[phase].title)} — ${t(PHASE_KEYS[phase].action)}`"
               type="button"
               @click="board.phase !== phase && changePhase(phase)">
               <span class="facilitator-phase-index">{{ index + 1 }}</span>
               <span class="facilitator-phase-copy">
                 <span class="facilitator-phase-title">
                   <component :is="PHASE_ICONS[phase]" />
-                  <strong>{{ phaseLabel(phase) }}</strong>
+                  <strong>{{ t(PHASE_KEYS[phase].label) }}</strong>
                 </span>
-                <small>{{ phaseGuideText(phase).title }}</small>
+                <small>{{ t(PHASE_KEYS[phase].title) }}</small>
               </span>
             </button>
           </nav>
@@ -789,7 +789,6 @@ const { t, tp } = useI18n({
     finished: 'Finished',
     finishRetro: 'Finish retro',
     goodHint: 'Add things that went well',
-    group: 'Group',
     groupAction: 'The facilitator combines related notes into topics.',
     groupSelection: 'Group selection',
     groupSimilar: 'Group similar notes',
@@ -844,7 +843,6 @@ const { t, tp } = useI18n({
     unassigned: 'Unassigned',
     ungroupTopic: 'Ungroup topic',
     visible: 'Visible',
-    vote: 'vote|votes',
     voteAction: 'Choose the topics worth discussing. Voting opens while the timer is running.',
     voteForThisTopic: 'Vote for this topic',
     voteForTopic: 'Vote for topic',
@@ -854,7 +852,6 @@ const { t, tp } = useI18n({
     voteTitle: 'Vote on topics',
     votingClosed: 'Voting is closed. The facilitator can move to the results.',
     votingClosedTitle: 'Voting closed',
-    zoom: 'Zoom',
   },
   ru: {
     actions: 'Действия',
@@ -880,7 +877,7 @@ const { t, tp } = useI18n({
     discussTitle: 'Обсудите результаты',
     doubleClickHint: 'Дважды щёлкните по области, чтобы добавить заметку',
     doubleClickToAdd: 'Дважды щёлкните или коснитесь пустого места, чтобы добавить заметку',
-    dragToMove: 'Перетащите заметку между разделами',
+    dragToMove: 'Перетащите заметку в другой блок',
     editNote: 'Изменить заметку',
     editRetroName: 'Изменить название ретроспективы',
     facilitatorControls: 'Управление ведущего',
@@ -888,7 +885,6 @@ const { t, tp } = useI18n({
     finished: 'Завершена',
     finishRetro: 'Завершить ретроспективу',
     goodHint: 'Добавьте то, что прошло хорошо',
-    group: 'Группировка',
     groupAction: 'Ведущий объединяет связанные заметки в темы.',
     groupSelection: 'Выбор группы',
     groupSimilar: 'Объедините похожие заметки',
@@ -944,7 +940,6 @@ const { t, tp } = useI18n({
     unassigned: 'Не назначен',
     ungroupTopic: 'Разгруппировать тему',
     visible: 'Видимы',
-    vote: 'голос|голоса|голосов',
     voteAction: 'Выберите темы для обсуждения. Голосование открыто, пока работает таймер.',
     voteForThisTopic: 'Проголосовать за эту тему',
     voteForTopic: 'Проголосовать за тему',
@@ -954,7 +949,6 @@ const { t, tp } = useI18n({
     voteTitle: 'Проголосуйте за темы',
     votingClosed: 'Голосование закрыто. Ведущий может перейти к результатам.',
     votingClosedTitle: 'Голосование закрыто',
-    zoom: 'Масштаб',
   },
 })
 
@@ -970,26 +964,13 @@ const PHASE_ICONS = {
   Vote: ThumbsUp,
 }
 
-const phaseLabel = (phase: RetroPhase) =>
-  ({
-    Actions: t('actions'),
-    Collect: t('phaseCollect'),
-    Discuss: t('discuss'),
-    Group: t('phaseGroup'),
-    Vote: t('phaseVote'),
-  })[phase]
-
-const phaseGuideText = (phase: RetroPhase) =>
-  ({
-    Actions: { action: t('actionsAction'), title: t('actionsTitle') },
-    Collect: {
-      action: t('collectAction'),
-      title: t('collectTitle'),
-    },
-    Discuss: { action: t('discussAction'), title: t('discussTitle') },
-    Group: { action: t('groupAction'), title: t('groupSimilar') },
-    Vote: { action: t('voteAction'), title: t('voteTitle') },
-  })[phase]
+const PHASE_KEYS = {
+  Actions: { action: 'actionsAction', label: 'actions', title: 'actionsTitle' },
+  Collect: { action: 'collectAction', label: 'phaseCollect', title: 'collectTitle' },
+  Discuss: { action: 'discussAction', label: 'discuss', title: 'discussTitle' },
+  Group: { action: 'groupAction', label: 'phaseGroup', title: 'groupSimilar' },
+  Vote: { action: 'voteAction', label: 'phaseVote', title: 'voteTitle' },
+} as const satisfies Record<RetroPhase, Record<'action' | 'label' | 'title', string>>
 
 const UNSECTIONED_CARD_COLOR = '#c99724'
 
@@ -1001,11 +982,8 @@ const canChangePhase = (current: RetroPhase, target: RetroPhase) =>
 const phaseGuide = (board: RetroBoardViewModel) => {
   if (board.phase === 'Vote' && votingOpen.value) {
     return {
-      action: t('votesLeft').replace(
-        '{count}',
-        String(Math.max(0, board.votesPerUser - board.myVotes)),
-      ),
-      title: phaseGuideText('Vote').title,
+      action: t('votesLeft', { count: Math.max(0, board.votesPerUser - board.myVotes) }),
+      title: t(PHASE_KEYS.Vote.title),
     }
   }
   if (board.phase === 'Vote' && board.phaseEndsAt) {
@@ -1014,7 +992,7 @@ const phaseGuide = (board: RetroBoardViewModel) => {
       title: t('votingClosedTitle'),
     }
   }
-  return phaseGuideText(board.phase)
+  return { action: t(PHASE_KEYS[board.phase].action), title: t(PHASE_KEYS[board.phase].title) }
 }
 
 const ZONE_WIDTH = 880

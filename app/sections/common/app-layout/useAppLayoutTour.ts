@@ -28,23 +28,23 @@ export const useAppLayoutTour = (
     ru: {
       eachOrganization: 'каждой организации',
       issuesDescription:
-        'Задача — это поручение или запрос. В разделе «Все задачи» они собраны из всех пространств, чтобы ничего не потерялось между проектами.',
+        'Задача — это поручение или запрос. На странице «Все задачи» они собраны из всех разделов, чтобы ничего не потерялось между проектами.',
       issuesTitle: 'Задачи — это ваша работа',
       organizationDescription:
-        'Здесь можно переключаться между организациями. У {organization} свои пространства и задачи.',
+        'Здесь можно переключаться между организациями. У {organization} свои разделы и задачи.',
       organizationTitle: 'Ваша организация',
       settingsDescription: 'Здесь находятся участники, атрибуты и остальные настройки организации.',
       settingsTitle: 'Настройки рабочего пространства',
       spacesDescription:
-        'Пространство — это проект или большая область работы, похожая на эпик. В бэклоге хранятся незапланированные задачи, а на досках показан ход работы.',
-      spacesTitle: 'Пространства, бэклог и доски',
+        'Раздел — это проект или большая область работы, похожая на эпик. В бэклоге хранятся незапланированные задачи, а на досках показан ход работы.',
+      spacesTitle: 'Разделы, бэклог и доски',
     },
   })
   const buildSteps = (current: AppLayoutData | undefined): TourStep[] => {
     const organization = current?.organization.name ?? t('eachOrganization')
     const steps: TourStep[] = [
       {
-        description: t('organizationDescription').replace('{organization}', organization),
+        description: t('organizationDescription', { organization }),
         placement: 'right',
         target: '[data-tour="organization-switcher"]',
         title: t('organizationTitle'),

@@ -23,7 +23,7 @@ export const useOrganizationTour = (
       teamTitle: 'Объедините команду',
     },
   })
-  const steps = computed<TourStep[]>(() => [
+  const steps: TourStep[] = [
     {
       description: t('personalDescription'),
       placement: 'right',
@@ -36,11 +36,11 @@ export const useOrganizationTour = (
       target: '[data-tour="create-organization"]',
       title: t('teamTitle'),
     },
-  ])
+  ]
 
   useTour({
     ready: () => organizations.value !== undefined,
     state: deps,
-    steps: () => steps.value,
+    steps: () => steps,
   })
 }

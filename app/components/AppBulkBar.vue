@@ -36,7 +36,7 @@ const { t } = useI18n({
   en: { clear: 'Clear', selected: '{count} selected' },
   ru: { clear: 'Очистить', selected: '{count} выбрано' },
 })
-const selectedLabel = computed(() => t('selected').replace('{count}', String(props.count)))
+const selectedLabel = computed(() => t('selected', { count: props.count }))
 </script>
 
 <style scoped>

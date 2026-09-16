@@ -11,6 +11,6 @@ export const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueL
   canMove: issue.canEdit,
   content: issue.content ?? '',
   issueKey: issue.key,
-  status: issue.status?.name ?? 'Backlog',
+  status: issue.status?.name ?? null,
   statusColor: issue.status?.color ?? COLORS.gray,
 })

@@ -48,11 +48,14 @@
 </template>
 
 <script lang="ts">
-const timeFormatter = new Intl.DateTimeFormat('en-US', {
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZone: 'UTC',
-})
+import { locales } from '~/composables/useI18n'
+
+const timeFormatters = Object.fromEntries(
+  locales.map((locale) => [
+    locale,
+    new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }),
+  ]),
+) as Record<(typeof locales)[number], Intl.DateTimeFormat>
 </script>
 
 <script setup lang="ts">
@@ -71,7 +74,7 @@ const props = defineProps<{
   viewModel: IssueCardViewModel
 }>()
 
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     moveToBacklog: 'Move to backlog',
     savingPosition: 'Saving issue position',
@@ -96,7 +99,7 @@ useSortable({
   type: 'item',
 })
 
-const formatTime = (value: string) => timeFormatter.format(new Date(value))
+const formatTime = (value: string) => timeFormatters[locale.value].format(new Date(value))
 </script>
 
 <style scoped>

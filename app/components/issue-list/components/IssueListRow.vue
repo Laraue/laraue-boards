@@ -84,7 +84,7 @@ const props = defineProps<{
   selected: boolean
   spaceColor?: string
   spaceName?: string
-  status: string
+  status: null | string
   statusColor: string
   to: RouteLocationRaw
 }>()
@@ -92,31 +92,18 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     backlog: 'Backlog',
-    done: 'Done',
-    inProgress: 'In progress',
     moveToBoard: 'Move to board',
-    new: 'New',
     selectIssue: 'Select issue',
   },
   ru: {
     backlog: 'Бэклог',
-    done: 'Готово',
-    inProgress: 'В работе',
     moveToBoard: 'Переместить на доску',
-    new: 'Новая',
     selectIssue: 'Выбрать задачу',
   },
 })
 
-const displayStatus = computed(
-  () =>
-    ({
-      Active: t('inProgress'),
-      Backlog: t('backlog'),
-      Done: t('done'),
-      New: t('new'),
-    })[props.status] ?? props.status,
-)
+// Issues without a status live in the backlog.
+const displayStatus = computed(() => props.status ?? t('backlog'))
 </script>
 
 <style scoped>

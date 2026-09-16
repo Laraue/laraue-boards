@@ -210,7 +210,7 @@ watch(data, (value) => {
   historyState.hasNextPage = value.history.hasNextPage
   historyState.page = 1
 })
-useHead(() => ({ title: t('history') }))
+useHead({ title: t('history') })
 </script>
 
 <style scoped>

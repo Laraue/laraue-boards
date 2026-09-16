@@ -56,7 +56,6 @@ const props = withDefaults(
     disabled: false,
     eager: false,
     initialOption: undefined,
-
     selectFirst: false,
   },
 )

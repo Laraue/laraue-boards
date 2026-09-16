@@ -70,7 +70,7 @@ const form = reactive({
   name: '',
 })
 
-useHead(() => ({ title: t('createSpace') }))
+useHead({ title: t('createSpace') })
 
 const {
   execute: submit,

@@ -1,9 +1,9 @@
 <template>
-  <span>{{ change.label }}:</span>
+  <span>{{ t('assignee') }}:</span>
   <div class="history-value-change">
-    <span :title="displayValue(change.oldValue)">
+    <span :title="change.oldValue ?? t('none')">
       <span
-        v-if="change.oldValue !== 'None'"
+        v-if="change.oldValue !== null"
         class="avatar"
         :style="{ background: change.oldColor ?? 'var(--color-border)' }">
         {{ initials(change.oldValue) }}
@@ -11,14 +11,14 @@
       <i
         v-else-if="change.oldColor"
         :style="{ background: change.oldColor }" />
-      {{ displayValue(change.oldValue) }}
+      {{ change.oldValue ?? t('none') }}
     </span>
     <ArrowRight />
     <span
       class="history-new-value"
-      :title="displayValue(change.newValue)">
+      :title="change.newValue ?? t('none')">
       <span
-        v-if="change.newValue !== 'None'"
+        v-if="change.newValue !== null"
         class="avatar"
         :style="{ background: change.newColor ?? 'var(--color-border)' }">
         {{ initials(change.newValue) }}
@@ -26,7 +26,7 @@
       <i
         v-else-if="change.newColor"
         :style="{ background: change.newColor }" />
-      {{ displayValue(change.newValue) }}
+      {{ change.newValue ?? t('none') }}
     </span>
   </div>
 </template>
@@ -39,11 +39,9 @@ import type { HistoryAssigneeChangeViewModel } from '../HistoryTimeline.types'
 defineProps<{ change: HistoryAssigneeChangeViewModel }>()
 
 const { t } = useI18n({
-  en: { none: 'None' },
-  ru: { none: 'Нет' },
+  en: { assignee: 'Assignee', none: 'None' },
+  ru: { assignee: 'Исполнитель', none: 'Нет' },
 })
-
-const displayValue = (value: string) => (value === 'None' ? t('none') : value)
 
 const initials = (name: string) =>
   name

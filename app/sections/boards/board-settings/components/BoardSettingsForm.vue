@@ -126,17 +126,14 @@ const { t } = useI18n({
   },
 })
 
-const statusOptions = computed(
-  () =>
-    [
-      { label: t('new'), value: 'New' },
-      { label: t('inProgress'), value: 'Active' },
-      { label: t('done'), value: 'Done' },
-    ] as const satisfies ReadonlyArray<{
-      label: string
-      value: BoardSettingsPageData['status']
-    }>,
-)
+const statusOptions = [
+  { label: t('new'), value: 'New' },
+  { label: t('inProgress'), value: 'Active' },
+  { label: t('done'), value: 'Done' },
+] as const satisfies ReadonlyArray<{
+  label: string
+  value: BoardSettingsPageData['status']
+}>
 const toDraftColumns = (columns: BoardSettingsPageData['columns']) =>
   columns.map((column) => ({
     ...column,
