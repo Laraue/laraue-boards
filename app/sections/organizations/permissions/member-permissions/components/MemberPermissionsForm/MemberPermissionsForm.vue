@@ -12,13 +12,13 @@
       <p class="muted section-description">{{ t('administrationDescription') }}</p>
       <div class="permission-grid">
         <label
-          v-for="permission in adminPermissionOptions"
+          v-for="permission in ADMIN_PERMISSION_OPTIONS"
           :key="permission.key"
           class="permission-option">
           <input
             v-model="state.draft.admin[permission.key]"
             type="checkbox" />
-          <span>{{ permission.label }}</span>
+          <span>{{ t(permission.label) }}</span>
         </label>
       </div>
     </fieldset>
@@ -186,15 +186,12 @@ const { t } = useI18n({
     administration: 'Administration',
     administrationDescription: 'Controls organization-level management tools.',
     boards: 'Boards',
-    create: 'Create',
     default: 'Default',
-    delete: 'Delete',
     deleteOrganization: 'Delete organization',
     directSpaceAccess: 'Direct space access',
     directSpaceAccessDescription: 'Adds permissions for individual spaces.',
     in: 'in',
     inherited: 'Inherited',
-    issues: 'Issues',
     manageAttributes: 'Manage attributes',
     manageMembers: 'Manage members and permissions',
     manageRetros: 'Manage retros',
@@ -210,8 +207,6 @@ const { t } = useI18n({
     retro: 'Retro',
     savePermissions: 'Save permissions',
     saving: 'Saving…',
-    spaces: 'Spaces',
-    update: 'Update',
     updateOrganization: 'Edit organization',
   },
   ru: {
@@ -219,15 +214,12 @@ const { t } = useI18n({
     administration: 'Администрирование',
     administrationDescription: 'Управление инструментами организации.',
     boards: 'Доски',
-    create: 'Создание',
     default: 'По умолчанию',
-    delete: 'Удаление',
     deleteOrganization: 'Удаление организации',
     directSpaceAccess: 'Прямой доступ к разделам',
     directSpaceAccessDescription: 'Добавляет права для отдельных разделов.',
     in: 'в',
     inherited: 'Унаследовано',
-    issues: 'Задачи',
     manageAttributes: 'Управление атрибутами',
     manageMembers: 'Управление участниками и правами',
     manageRetros: 'Управление ретроспективами',
@@ -243,57 +235,25 @@ const { t } = useI18n({
     retro: 'Ретро',
     savePermissions: 'Сохранить права',
     saving: 'Сохранение…',
-    spaces: 'Разделы',
-    update: 'Изменение',
     updateOrganization: 'Изменение организации',
   },
 })
-
-const adminPermissionOptions = computed(() =>
-  ADMIN_PERMISSION_OPTIONS.map((permission) => ({
-    ...permission,
-    label: {
-      canDeleteOrganization: t('deleteOrganization'),
-      canManageAttributes: t('manageAttributes'),
-      canManageMembers: t('manageMembers'),
-      canMoveData: t('moveData'),
-      canUpdateOrganization: t('updateOrganization'),
-    }[permission.key],
-  })),
-)
-
-const translateRows = <Row extends { label: string }>(rows: Row[]): Row[] =>
-  rows.map((row) => ({
-    ...row,
-    label:
-      ({ Boards: t('boards'), Issues: t('issues'), Space: t('spaces'), Spaces: t('spaces') }[
-        row.label
-      ] as string | undefined) ?? row.label,
-  }))
 
 const state = reactive({
   draft: structuredClone(toRaw(props.viewModel.permissions)),
 })
 
-const globalPermissionRows = computed(() =>
-  translateRows(getGlobalPermissionRows(state.draft.global)),
-)
+const globalPermissionRows = computed(() => getGlobalPermissionRows(state.draft.global))
 
 const globalReadInherited = computed(() => isGlobalReadInherited(globalPermissionRows.value))
 
-const directPermissionTables = computed(() => {
-  const tables = getDirectPermissionTables({
+const directPermissionTables = computed(() =>
+  getDirectPermissionTables({
     globalRows: globalPermissionRows.value,
     permissions: state.draft,
     spaces: props.viewModel.spaces,
-  })
-  return Object.fromEntries(
-    Object.entries(tables).map(([id, table]) => [
-      id,
-      { ...table, rows: translateRows(table.rows) },
-    ]),
-  )
-})
+  }),
+)
 
 const toggleGlobal = (key: keyof GlobalPermissions) => {
   state.draft.global[key] = !state.draft.global[key]

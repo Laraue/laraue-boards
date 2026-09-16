@@ -13,9 +13,11 @@ export type PermissionCell<Key extends string> = {
   title: string | undefined
 }
 
+export type PermissionLabelKey = 'boards' | 'issues' | 'spaces'
+
 export type PermissionRow<Key extends string> = {
   cells: Array<null | PermissionCell<Key>>
-  label: string
+  label: PermissionLabelKey
 }
 
 export type DirectPermissionTable = {
@@ -23,39 +25,49 @@ export type DirectPermissionTable = {
   rows: Array<PermissionRow<keyof DirectSpacePermissions>>
 }
 
-export const ADMIN_PERMISSION_OPTIONS: Array<{ key: keyof AdminPermissions; label: string }> = [
-  { key: 'canManageMembers', label: 'Manage members and permissions' },
-  { key: 'canUpdateOrganization', label: 'Edit organization' },
-  { key: 'canDeleteOrganization', label: 'Delete organization' },
-  { key: 'canMoveData', label: 'Move spaces and boards' },
-  { key: 'canManageAttributes', label: 'Manage attributes' },
+export type AdminPermissionLabelKey =
+  | 'deleteOrganization'
+  | 'manageAttributes'
+  | 'manageMembers'
+  | 'moveData'
+  | 'updateOrganization'
+
+export const ADMIN_PERMISSION_OPTIONS: Array<{
+  key: keyof AdminPermissions
+  label: AdminPermissionLabelKey
+}> = [
+  { key: 'canManageMembers', label: 'manageMembers' },
+  { key: 'canUpdateOrganization', label: 'updateOrganization' },
+  { key: 'canDeleteOrganization', label: 'deleteOrganization' },
+  { key: 'canMoveData', label: 'moveData' },
+  { key: 'canManageAttributes', label: 'manageAttributes' },
 ]
 
 export const PERMISSION_COLUMNS = ['Create', 'Update', 'Delete'] as const
 
 const PERMISSION_DEFINITIONS: Array<{
   directKeys: Array<keyof DirectSpacePermissions | null>
-  directLabel: string
+  directLabel: PermissionLabelKey
   globalKeys: Array<keyof GlobalPermissions>
-  globalLabel: string
+  globalLabel: PermissionLabelKey
 }> = [
   {
     directKeys: [null, 'canUpdate', 'canDelete'],
-    directLabel: 'Space',
+    directLabel: 'spaces',
     globalKeys: ['canCreateSpaces', 'canUpdateSpaces', 'canDeleteSpaces'],
-    globalLabel: 'Spaces',
+    globalLabel: 'spaces',
   },
   {
     directKeys: ['canCreateBoards', 'canUpdateBoards', 'canDeleteBoards'],
-    directLabel: 'Boards',
+    directLabel: 'boards',
     globalKeys: ['canCreateBoards', 'canUpdateBoards', 'canDeleteBoards'],
-    globalLabel: 'Boards',
+    globalLabel: 'boards',
   },
   {
     directKeys: ['canCreateIssues', 'canUpdateIssues', 'canDeleteIssues'],
-    directLabel: 'Issues',
+    directLabel: 'issues',
     globalKeys: ['canCreateIssues', 'canUpdateIssues', 'canDeleteIssues'],
-    globalLabel: 'Issues',
+    globalLabel: 'issues',
   },
 ]
 

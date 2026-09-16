@@ -81,64 +81,14 @@ import HistoryPropertyChange from './components/HistoryPropertyChange.vue'
 import HistorySpaceChange from './components/HistorySpaceChange.vue'
 import HistoryStatusChange from './components/HistoryStatusChange.vue'
 import type { HistoryItemViewModel } from './HistoryTimeline.types'
+import { historyMessages, translateHistoryChange } from './historyTimelineI18n'
 
 const props = defineProps<{
   items: HistoryItemViewModel[]
   label?: string
 }>()
 
-const { locale, t } = useI18n({
-  en: {
-    active: 'Active',
-    assignee: 'Assignee',
-    attachment: 'Attachment',
-    board: 'Board',
-    comment: 'Comment',
-    created: 'created',
-    deleted: 'deleted',
-    description: 'Description',
-    done: 'Done',
-    empty: 'No changes yet.',
-    history: 'History',
-    inProgress: 'Active',
-    issue: 'Issue',
-    new: 'New',
-    none: 'None',
-    open: 'Open',
-    organization: 'Organization',
-    removedAttachment: 'Removed attachment',
-    retro: 'Retro',
-    space: 'Space',
-    status: 'Status',
-    untitledFile: 'Untitled file',
-    updated: 'updated',
-  },
-  ru: {
-    active: 'Активна',
-    assignee: 'Ответственный',
-    attachment: 'Вложение',
-    board: 'Доска',
-    comment: 'Комментарий',
-    created: 'создан',
-    deleted: 'удалён',
-    description: 'Описание',
-    done: 'Выполнена',
-    empty: 'Изменений пока нет.',
-    history: 'История',
-    inProgress: 'В работе',
-    issue: 'Задача',
-    new: 'Новая',
-    none: 'Нет',
-    open: 'Открыть',
-    organization: 'Организация',
-    removedAttachment: 'Вложение удалено',
-    retro: 'Ретроспектива',
-    space: 'Раздел',
-    status: 'Статус',
-    untitledFile: 'Файл без названия',
-    updated: 'изменён',
-  },
-})
+const { locale, t } = useI18n(historyMessages)
 
 const dateTimeFormatter = computed(
   () =>
@@ -186,68 +136,10 @@ const formatTime = (date: string) =>
     ? timeFormatter.value.format(new Date(date))
     : dateTimeFormatter.value.format(new Date(date))
 
-const translateValue = (value: string) =>
-  ({
-    Active: t('active'),
-    Done: t('done'),
-    New: t('new'),
-    None: t('none'),
-    'Untitled file': t('untitledFile'),
-  })[value] ?? value
-
-const translateLabel = (label: string) => {
-  const direct = {
-    Assignee: t('assignee'),
-    Attachment: t('attachment'),
-    Board: t('board'),
-    Description: t('description'),
-    'Removed attachment': t('removedAttachment'),
-    Space: t('space'),
-    Status: t('status'),
-  }[label]
-
-  if (direct) {
-    return direct
-  }
-
-  const action = /^(Comment|Issue|Organization|Retro|Space|Board) (created|deleted|updated)$/.exec(
-    label,
-  )
-
-  if (!action) {
-    return label
-  }
-
-  const entity = {
-    Board: t('board'),
-    Comment: t('comment'),
-    Issue: t('issue'),
-    Organization: t('organization'),
-    Retro: t('retro'),
-    Space: t('space'),
-  }[action[1] as 'Board' | 'Comment' | 'Issue' | 'Organization' | 'Retro' | 'Space']
-  const verb = {
-    created: t('created'),
-    deleted: t('deleted'),
-    updated: t('updated'),
-  }[action[2] as 'created' | 'deleted' | 'updated']
-
-  return `${entity} ${verb}`
-}
-
 const localizedGroups = computed(() =>
   groups.value.map((item) => ({
     ...item,
-    changes: item.changes.map((change) => ({
-      ...change,
-      label: translateLabel(change.label),
-      ...('newValue' in change && change.kind !== 'assignee'
-        ? { newValue: translateValue(change.newValue) }
-        : {}),
-      ...('oldValue' in change && change.kind !== 'assignee'
-        ? { oldValue: translateValue(change.oldValue) }
-        : {}),
-    })),
+    changes: item.changes.map((change) => translateHistoryChange(change, t)),
   })),
 )
 </script>

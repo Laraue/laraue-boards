@@ -15,7 +15,7 @@
       <tr
         v-for="row in rows"
         :key="row.label">
-        <th scope="row">{{ row.label }}</th>
+        <th scope="row">{{ t(row.label) }}</th>
         <td
           v-for="(cell, index) in row.cells"
           :key="PERMISSION_COLUMNS[index]!">
@@ -26,7 +26,7 @@
           </span>
           <input
             v-else
-            :aria-label="`${t(PERMISSION_COLUMNS[index]!.toLowerCase() as PermissionColumnKey)} ${row.label}${labelSuffix}`"
+            :aria-label="`${t(PERMISSION_COLUMNS[index]!.toLowerCase() as PermissionColumnKey)} ${t(row.label)}${labelSuffix}`"
             :checked="cell.checked"
             :disabled="cell.disabled"
             :title="
@@ -56,19 +56,25 @@ withDefaults(
 
 const { t } = useI18n({
   en: {
+    boards: 'Boards',
     create: 'Create',
     delete: 'Delete',
     inherited: 'Inherited',
+    issues: 'Issues',
     notAllowed: 'Not allowed',
     resource: 'Resource',
+    spaces: 'Spaces',
     update: 'Update',
   },
   ru: {
+    boards: 'Доски',
     create: 'Создание',
     delete: 'Удаление',
     inherited: 'Унаследовано',
+    issues: 'Задачи',
     notAllowed: 'Недоступно',
     resource: 'Ресурс',
+    spaces: 'Разделы',
     update: 'Изменение',
   },
 })
