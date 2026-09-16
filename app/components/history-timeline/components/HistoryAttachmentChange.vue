@@ -6,7 +6,7 @@
       :title="change.newValue">
       <a
         v-if="change.imageUrl"
-        :aria-label="`Open ${change.newValue}`"
+        :aria-label="`${t('open')} ${change.newValue}`"
         class="history-attachment"
         :href="change.imageUrl"
         target="_blank">
@@ -23,6 +23,11 @@
 import type { HistoryAttachmentChangeViewModel } from '../HistoryTimeline.types'
 
 defineProps<{ change: HistoryAttachmentChangeViewModel }>()
+
+const { t } = useI18n({
+  en: { open: 'Open' },
+  ru: { open: 'Открыть' },
+})
 </script>
 
 <style scoped>

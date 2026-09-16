@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load retros"
-    loading-text="Loading retros…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -12,7 +12,7 @@
           <div class="page-heading">
             <RetroIcon class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>Retro</h1>
+              <h1>{{ t('retro') }}</h1>
             </div>
           </div>
           <div class="title-actions">
@@ -23,7 +23,7 @@
               type="button"
               @click="start(null)">
               <Plus />
-              <span class="btn-label">Start retro</span>
+              <span class="btn-label">{{ t('start') }}</span>
             </button>
           </div>
         </div>
@@ -42,14 +42,13 @@
               <span
                 class="retro-status"
                 :class="{ 'retro-status--active': !retro.finished }">
-                {{ retro.finished ? 'Finished' : 'Active' }}
+                {{ retro.finished ? t('finished') : t('active') }}
               </span>
-              <span class="muted retro-meta">{{ retro.cardCount }} cards</span>
+              <span class="muted retro-meta">{{ tp('cards', retro.cardCount) }}</span>
               <span
                 v-if="retro.openActionCount > 0"
                 class="muted retro-meta">
-                {{ retro.openActionCount }} open
-                {{ retro.openActionCount === 1 ? 'action' : 'actions' }}
+                {{ tp('openActions', retro.openActionCount) }}
               </span>
               <span class="muted retro-meta">{{ formatDate(retro.createdAt) }}</span>
             </NuxtLink>
@@ -60,17 +59,17 @@
                 v-if="listing.canCreate && retro.openActionCount > 0"
                 class="secondary small"
                 :disabled="starting"
-                :title="`Start a new retro carrying the open actions of ${retro.name}`"
+                :title="t('continueTitle').replace('{name}', retro.name)"
                 type="button"
                 @click="start(retro)">
-                Continue
+                {{ t('continue') }}
               </button>
               <button
                 v-if="retro.canManage"
-                aria-label="Delete retro"
+                :aria-label="t('delete')"
                 class="icon-btn small"
                 :disabled="removing"
-                title="Delete retro"
+                :title="t('delete')"
                 type="button"
                 @click="remove(retro)">
                 <Trash2 />
@@ -80,8 +79,8 @@
         </div>
         <AppEmptyState
           v-else
-          hint="A retro is a shared board where the team collects what went well, what hurt, and what to do next."
-          title="No retros yet" />
+          :hint="t('emptyHint')"
+          :title="t('empty')" />
         <PaginationControl
           :has-next-page="listing.hasNextPage"
           :page="page"
@@ -106,6 +105,43 @@ const props = defineProps<{
   routeQuery: LocationQuery
 }>()
 
+const { t, tp } = useI18n({
+  en: {
+    active: 'Active',
+    cards: 'card|cards',
+    continue: 'Continue',
+    continueTitle: 'Start a new retro carrying the open actions of {name}',
+    delete: 'Delete retro',
+    deleteConfirm: 'Delete "{name}" with all its notes and votes?',
+    empty: 'No retros yet',
+    emptyHint:
+      'A retro is a shared board where the team collects what went well, what hurt, and what to do next.',
+    finished: 'Finished',
+    loadError: 'Could not load retros',
+    loading: 'Loading retros…',
+    openActions: 'open action|open actions',
+    retro: 'Retro',
+    start: 'Start retro',
+  },
+  ru: {
+    active: 'Активна',
+    cards: 'карточка|карточки|карточек',
+    continue: 'Продолжить',
+    continueTitle: 'Начать новую ретроспективу с открытыми действиями из «{name}»',
+    delete: 'Удалить ретроспективу',
+    deleteConfirm: 'Удалить «{name}» со всеми заметками и голосами?',
+    empty: 'Ретроспектив пока нет',
+    emptyHint:
+      'Ретроспектива — это общая доска, где команда собирает удачи, проблемы и следующие шаги.',
+    finished: 'Завершена',
+    loadError: 'Не удалось загрузить ретроспективы',
+    loading: 'Загрузка ретроспектив…',
+    openActions: 'открытое действие|открытых действия|открытых действий',
+    retro: 'Ретроспектива',
+    start: 'Начать ретроспективу',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
 const page = computed(() => Math.max(1, Number(props.routeQuery.page) || 1))
@@ -126,7 +162,7 @@ const formatDate = (value: string) => new Date(value).toLocaleDateString()
 // Nothing is carried over unless the team says so by continuing from a specific retro.
 // Deleting a retro takes its whole board with it and cannot be undone.
 const remove = async (retro: RetroListItemViewModel) => {
-  if (!confirm(`Delete "${retro.name}" with all its notes and votes?`)) {
+  if (!confirm(t('deleteConfirm').replace('{name}', retro.name))) {
     return
   }
   await removeRetro({ retroId: retro.id })
@@ -150,7 +186,7 @@ const start = (basedOn: null | RetroListItemViewModel) => {
   })
 }
 
-useHead({ title: 'Retro' })
+useHead(() => ({ title: t('retro') }))
 </script>
 
 <style scoped>

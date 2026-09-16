@@ -3,7 +3,7 @@
   <div class="history-value-change">
     <span :title="change.oldValue">
       <span
-        v-if="change.oldValue !== 'None'"
+        v-if="change.oldValue !== t('none')"
         class="avatar"
         :style="{ background: change.oldColor ?? 'var(--color-border)' }">
         {{ initials(change.oldValue) }}
@@ -18,7 +18,7 @@
       class="history-new-value"
       :title="change.newValue">
       <span
-        v-if="change.newValue !== 'None'"
+        v-if="change.newValue !== t('none')"
         class="avatar"
         :style="{ background: change.newColor ?? 'var(--color-border)' }">
         {{ initials(change.newValue) }}
@@ -37,6 +37,11 @@ import { ArrowRight } from '@lucide/vue'
 import type { HistoryAssigneeChangeViewModel } from '../HistoryTimeline.types'
 
 defineProps<{ change: HistoryAssigneeChangeViewModel }>()
+
+const { t } = useI18n({
+  en: { none: 'None' },
+  ru: { none: 'Нет' },
+})
 
 const initials = (name: string) =>
   name
