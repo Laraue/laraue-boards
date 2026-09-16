@@ -19,7 +19,7 @@
         <button
           v-for="color in COLOR_PALETTE"
           :key="color.value"
-          :aria-label="color.name"
+          :aria-label="translatedColorName(color.name)"
           :aria-selected="color.value === model"
           class="color-swatch"
           :class="{ selected: color.value === model }"
@@ -37,9 +37,67 @@ import { COLOR_PALETTE } from '~/constants/colors'
 
 defineProps<{ disabled?: boolean }>()
 const model = defineModel<string>({ required: true })
-const colorName = computed(
-  () => COLOR_PALETTE.find((color) => color.value === model.value)?.name ?? model.value,
-)
+const { t } = useI18n({
+  en: {
+    amber: 'Amber',
+    blue: 'Blue',
+    coral: 'Coral',
+    cyan: 'Cyan',
+    emerald: 'Emerald',
+    gray: 'Gray',
+    green: 'Green',
+    indigo: 'Indigo',
+    lime: 'Lime',
+    orange: 'Orange',
+    pink: 'Pink',
+    purple: 'Purple',
+    red: 'Red',
+    rose: 'Rose',
+    sky: 'Sky',
+    teal: 'Teal',
+  },
+  ru: {
+    amber: 'Янтарный',
+    blue: 'Синий',
+    coral: 'Коралловый',
+    cyan: 'Циановый',
+    emerald: 'Изумрудный',
+    gray: 'Серый',
+    green: 'Зелёный',
+    indigo: 'Индиго',
+    lime: 'Лаймовый',
+    orange: 'Оранжевый',
+    pink: 'Розовый',
+    purple: 'Фиолетовый',
+    red: 'Красный',
+    rose: 'Розовый',
+    sky: 'Небесно-синий',
+    teal: 'Бирюзовый',
+  },
+})
+const colorKeys = {
+  Amber: 'amber',
+  Blue: 'blue',
+  Coral: 'coral',
+  Cyan: 'cyan',
+  Emerald: 'emerald',
+  Gray: 'gray',
+  Green: 'green',
+  Indigo: 'indigo',
+  Lime: 'lime',
+  Orange: 'orange',
+  Pink: 'pink',
+  Purple: 'purple',
+  Red: 'red',
+  Rose: 'rose',
+  Sky: 'sky',
+  Teal: 'teal',
+} as const
+const translatedColorName = (name: keyof typeof colorKeys): string => t(colorKeys[name])
+const colorName = computed(() => {
+  const color = COLOR_PALETTE.find((item) => item.value === model.value)
+  return color ? translatedColorName(color.name) : model.value
+})
 const select = (value: string, close: () => void) => {
   model.value = value
   close()

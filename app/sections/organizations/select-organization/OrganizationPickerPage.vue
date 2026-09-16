@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load organizations"
-    loading-text="Loading organizations…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -16,8 +16,8 @@
               src="/favicon.svg" />
             <span>Laraue Boards</span>
           </div>
-          <h1>Choose an organization</h1>
-          <p class="muted">Select where you want to work today.</p>
+          <h1>{{ t('chooseOrganization') }}</h1>
+          <p class="muted">{{ t('selectWhere') }}</p>
           <div class="org-list">
             <div
               v-for="organization in organizations"
@@ -41,10 +41,10 @@
               </button>
               <button
                 v-if="organization.canLeave"
-                :aria-label="`Leave ${organization.name}`"
+                :aria-label="`${t('leave')} ${organization.name}`"
                 class="icon-btn danger"
                 :disabled="selecting || leaving"
-                title="Leave organization"
+                :title="t('leaveOrganization')"
                 type="button"
                 @click="leave(organization.id, organization.name)">
                 <LogOut />
@@ -52,15 +52,15 @@
             </div>
             <AppEmptyState
               v-if="organizations.length === 0"
-              hint="An organization is your workspace — it holds your spaces, boards, and issues. Create one for yourself or your team, or open a teammate's invitation link to join theirs."
-              title="No organizations yet" />
+              :hint="t('emptyHint')"
+              :title="t('emptyTitle')" />
           </div>
           <NuxtLink
             class="secondary"
             data-tour="create-organization"
             to="/organizations/new">
             <Plus />
-            Create organization
+            {{ t('createOrganization') }}
           </NuxtLink>
           <p
             v-if="selectMessage || leaveMessage"
@@ -84,7 +84,36 @@ const props = defineProps<{
   onSelected: (organizationKey: string) => Promise<void> | void
 }>()
 
-useHead({ title: 'Organizations' })
+const { t } = useI18n({
+  en: {
+    chooseOrganization: 'Choose an organization',
+    createOrganization: 'Create organization',
+    emptyHint:
+      "An organization is your workspace — it holds your spaces, boards, and issues. Create one for yourself or your team, or open a teammate's invitation link to join theirs.",
+    emptyTitle: 'No organizations yet',
+    leave: 'Leave',
+    leaveOrganization: 'Leave organization',
+    loadError: 'Could not load organizations',
+    loading: 'Loading organizations…',
+    organizations: 'Organizations',
+    selectWhere: 'Select where you want to work today.',
+  },
+  ru: {
+    chooseOrganization: 'Выберите организацию',
+    createOrganization: 'Создать организацию',
+    emptyHint:
+      'Организация — это ваше рабочее пространство с разделами, досками и задачами. Создайте организацию для себя или команды либо откройте ссылку-приглашение от коллеги, чтобы присоединиться.',
+    emptyTitle: 'Организаций пока нет',
+    leave: 'Покинуть',
+    leaveOrganization: 'Покинуть организацию',
+    loadError: 'Не удалось загрузить организации',
+    loading: 'Загрузка организаций…',
+    organizations: 'Организации',
+    selectWhere: 'Выберите, где вы хотите работать сегодня.',
+  },
+})
+
+useHead(() => ({ title: t('organizations') }))
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-picker',
@@ -113,7 +142,7 @@ const select = async (organizationId: string, organizationKey: string): Promise<
 }
 
 const leave = (id: string, name: string): void => {
-  if (!selecting.value && !leaving.value && confirm(`Leave ${name}?`)) {
+  if (!selecting.value && !leaving.value && confirm(`${t('leave')} ${name}?`)) {
     void leaveOrganization({ id })
   }
 }

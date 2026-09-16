@@ -12,27 +12,27 @@
       </NuxtLink>
       <div class="page-heading">
         <AppBackLink
-          label="Back to organizations"
+          :label="t('backToOrganizations')"
           to="/organizations" />
         <div class="page-heading-text">
-          <h1>Create organization</h1>
+          <h1>{{ t('createOrganization') }}</h1>
         </div>
       </div>
-      <p class="muted">Create a new workspace for your team.</p>
+      <p class="muted">{{ t('createDescription') }}</p>
       <form @submit.prevent="submit({ color: form.color, name: form.name, slug: form.slug })">
-        <label for="create-organization-name">Name</label>
+        <label for="create-organization-name">{{ t('name') }}</label>
         <input
           id="create-organization-name"
           v-model="form.name"
           required />
-        <label for="create-organization-slug">Slug</label>
+        <label for="create-organization-slug">{{ t('slug') }}</label>
         <input
           id="create-organization-slug"
           v-model="form.slug"
           pattern="[a-z0-9-]+"
-          placeholder="acme-studio"
+          :placeholder="t('slugPlaceholder')"
           required />
-        <label>Color</label>
+        <label>{{ t('color') }}</label>
         <AppColorPicker v-model="form.color" />
         <p
           v-if="message"
@@ -43,12 +43,12 @@
           <button
             class="primary"
             :disabled="pending">
-            {{ pending ? 'Creating…' : 'Create organization' }}
+            {{ pending ? t('creating') : t('createOrganization') }}
           </button>
           <NuxtLink
             class="secondary"
             to="/organizations">
-            Cancel
+            {{ t('cancel') }}
           </NuxtLink>
         </div>
       </form>
@@ -65,13 +65,38 @@ const props = defineProps<{
   onCreated: () => Promise<void> | void
 }>()
 
+const { t } = useI18n({
+  en: {
+    backToOrganizations: 'Back to organizations',
+    cancel: 'Cancel',
+    color: 'Color',
+    createDescription: 'Create a new workspace for your team.',
+    createOrganization: 'Create organization',
+    creating: 'Creating…',
+    name: 'Name',
+    slug: 'Slug',
+    slugPlaceholder: 'acme-studio',
+  },
+  ru: {
+    backToOrganizations: 'Назад к организациям',
+    cancel: 'Отмена',
+    color: 'Цвет',
+    createDescription: 'Создайте новое рабочее пространство для своей команды.',
+    createOrganization: 'Создать организацию',
+    creating: 'Создание…',
+    name: 'Название',
+    slug: 'Идентификатор',
+    slugPlaceholder: 'acme-studio',
+  },
+})
+
 const form = reactive({
   color: DEFAULT_COLOR,
   name: '',
   slug: '',
 })
 
-useHead({ title: 'Create organization' })
+useHead(() => ({ title: t('createOrganization') }))
 
 const {
   execute: submit,
