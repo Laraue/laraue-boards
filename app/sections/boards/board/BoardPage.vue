@@ -187,6 +187,7 @@ const { locale, t } = useI18n({
     boardSettings: 'Board settings',
     loadError: 'Could not load board',
     loading: 'Loading board…',
+    moveError: 'Could not move the issue.',
     searchIssues: 'Search issues',
     settings: 'Settings',
   },
@@ -197,6 +198,7 @@ const { locale, t } = useI18n({
     boardSettings: 'Настройки доски',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
+    moveError: 'Не удалось переместить задачу.',
     searchIssues: 'Поиск задач',
     settings: 'Настройки',
   },
@@ -506,7 +508,7 @@ const moveIssue = async (input: {
   })
   if (result === undefined) {
     viewModel.value = input.revert
-    state.moveError = moveBoardIssueMessage.value ?? getErrorMessage(0, locale.value)
+    state.moveError = moveBoardIssueMessage.value ?? t('moveError')
   }
   state.movingIssueKeys.delete(input.issueKey)
 }
@@ -527,7 +529,7 @@ const moveToBacklog = async (issueKey: string) => {
   if (result) {
     viewModel.value = removeIssueFromBoard(current, issueKey)
   } else {
-    state.moveError = moveIssueToBacklogMessage.value ?? getErrorMessage(0, locale.value)
+    state.moveError = moveIssueToBacklogMessage.value ?? t('moveError')
   }
   state.movingIssueKeys.delete(issueKey)
 }

@@ -25,7 +25,7 @@ export const useAction = <Args extends unknown[], Data>(
       }
       // A validation error belongs to the form; anything else is a request failure with no field to attach to.
       if (result.status === 'validation-error') {
-        message.value = result.message
+        message.value = result.message || getErrorMessage(400, locale.value)
       } else {
         message.value = undefined
         toast.show(getErrorMessage(result.code, locale.value))

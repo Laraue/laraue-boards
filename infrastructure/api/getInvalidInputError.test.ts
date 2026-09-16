@@ -16,7 +16,7 @@ test('reads backend validation messages', () => {
     },
   )
   assert.deepEqual(getInvalidInputError({ title: 'Bad request' }), {
-    message: 'The submitted data is invalid.',
+    message: '',
     type: 'InvalidInput',
   })
 })

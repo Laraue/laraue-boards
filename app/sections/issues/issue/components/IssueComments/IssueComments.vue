@@ -105,6 +105,8 @@
 <script setup lang="ts">
 import { LoaderCircle, Pencil, Trash2 } from '@lucide/vue'
 
+import { getErrorMessage } from '~/utils/getErrorMessage'
+
 import type { IssueCommentsDeps } from './IssueComments.deps'
 import type { IssueCommentViewModel } from './IssueComments.types'
 
@@ -114,7 +116,7 @@ const props = defineProps<{
   issueKey: string
 }>()
 
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     addComment: 'Add comment',
     adding: 'Adding…',
@@ -179,7 +181,10 @@ const run = async (pendingId: string, action: () => ReturnType<IssueCommentsDeps
 
   if (result.status !== 'success') {
     state.pendingId = ''
-    state.message = result.status === 'validation-error' ? result.message : t('saveError')
+    state.message =
+      result.status === 'validation-error'
+        ? result.message || getErrorMessage(400, locale.value)
+        : t('saveError')
     return false
   }
 
