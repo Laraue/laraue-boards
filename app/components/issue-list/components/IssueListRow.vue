@@ -32,11 +32,11 @@
       </span>
       <span
         class="status-pill"
-        :title="status">
+        :title="displayStatus">
         <i
           class="dot"
           :style="{ background: statusColor }" />
-        <span class="truncate">{{ status }}</span>
+        <span class="truncate">{{ displayStatus }}</span>
       </span>
       <button
         v-if="canMove"
@@ -91,14 +91,32 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
+    backlog: 'Backlog',
+    done: 'Done',
+    inProgress: 'In progress',
     moveToBoard: 'Move to board',
+    new: 'New',
     selectIssue: 'Select issue',
   },
   ru: {
+    backlog: 'Бэклог',
+    done: 'Готово',
+    inProgress: 'В работе',
     moveToBoard: 'Переместить на доску',
+    new: 'Новая',
     selectIssue: 'Выбрать задачу',
   },
 })
+
+const displayStatus = computed(
+  () =>
+    ({
+      Active: t('inProgress'),
+      Backlog: t('backlog'),
+      Done: t('done'),
+      New: t('new'),
+    })[props.status] ?? props.status,
+)
 </script>
 
 <style scoped>

@@ -46,7 +46,7 @@
             :to="organizationRoutes.backlog(page.key)">
             <div class="summary-title">
               <ListTodo :style="{ color: backlog.color }" />
-              <strong>{{ backlog.name }}</strong>
+              <strong>{{ t('backlog') }}</strong>
               <span class="muted issue-count">{{ tp('issues', backlog.issueCount) }}</span>
             </div>
           </NuxtLink>

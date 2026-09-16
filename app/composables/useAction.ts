@@ -1,10 +1,12 @@
 import type { ActionResult } from '#infrastructure/api/apiResult'
+import { useLocale } from '~/composables/useI18n'
 import { getErrorMessage } from '~/utils/getErrorMessage'
 
 export const useAction = <Args extends unknown[], Data>(
   action: (...args: Args) => Promise<ActionResult<Data>>,
   options: { onSuccess?: (data: Data) => Promise<void> | void } = {},
 ) => {
+  const locale = useLocale()
   const pending = ref(false)
   const message = ref<string | undefined>()
   const toast = useToast()
@@ -26,7 +28,7 @@ export const useAction = <Args extends unknown[], Data>(
         message.value = result.message
       } else {
         message.value = undefined
-        toast.show(getErrorMessage(result.code))
+        toast.show(getErrorMessage(result.code, locale.value))
       }
       return undefined
     } finally {

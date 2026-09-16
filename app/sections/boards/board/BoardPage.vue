@@ -179,7 +179,7 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     addIssue: 'Add issue',
     backToSpace: 'Back to space',
@@ -396,7 +396,7 @@ const searchIssues = async () => {
   })
   state.filtering = false
   if (result.status === 'error') {
-    state.queryError = getErrorMessage(result.code)
+    state.queryError = getErrorMessage(result.code, locale.value)
     return
   }
   const current = viewModel.value
@@ -450,7 +450,10 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
   const refreshedColumns = new Map<string, LoadMoreBoardIssuesResult>()
   for (const response of columns) {
     if (response.result.status === 'error') {
-      state.loadMoreErrors.set(response.columnId, getErrorMessage(response.result.code))
+      state.loadMoreErrors.set(
+        response.columnId,
+        getErrorMessage(response.result.code, locale.value),
+      )
     } else {
       state.loadMoreErrors.delete(response.columnId)
       refreshedColumns.set(response.columnId, response.result.data)
@@ -503,7 +506,7 @@ const moveIssue = async (input: {
   })
   if (result === undefined) {
     viewModel.value = input.revert
-    state.moveError = moveBoardIssueMessage.value ?? getErrorMessage(0)
+    state.moveError = moveBoardIssueMessage.value ?? getErrorMessage(0, locale.value)
   }
   state.movingIssueKeys.delete(input.issueKey)
 }
@@ -524,7 +527,7 @@ const moveToBacklog = async (issueKey: string) => {
   if (result) {
     viewModel.value = removeIssueFromBoard(current, issueKey)
   } else {
-    state.moveError = moveIssueToBacklogMessage.value ?? getErrorMessage(0)
+    state.moveError = moveIssueToBacklogMessage.value ?? getErrorMessage(0, locale.value)
   }
   state.movingIssueKeys.delete(issueKey)
 }
@@ -555,7 +558,7 @@ const loadMoreIssues = async (statusId: string) => {
     return
   }
   if (result.status === 'error') {
-    state.loadMoreErrors.set(statusId, getErrorMessage(result.code))
+    state.loadMoreErrors.set(statusId, getErrorMessage(result.code, locale.value))
     return
   }
   const latest = viewModel.value
