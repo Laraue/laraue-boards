@@ -1,15 +1,15 @@
 <template>
   <dialog ref="dialog">
     <form @submit.prevent="confirmMove">
-      <h2>Move {{ ids.length === 1 ? 'board' : 'boards' }}</h2>
-      <label for="movement-board-organization">Organization</label>
+      <h2>{{ ids.length === 1 ? t('moveBoard') : t('moveBoards') }}</h2>
+      <label for="movement-board-organization">{{ t('organization') }}</label>
       <OrganizationSelect
         id="movement-board-organization"
         v-model="state.organizationId"
         :deps="deps.organizationSelect"
         :initial-option="{ label: currentOrganizationName, value: currentOrganizationId }"
         required />
-      <label for="movement-board-space">Space</label>
+      <label for="movement-board-space">{{ t('space') }}</label>
       <SpaceSelect
         id="movement-board-space"
         v-model="state.spaceKey"
@@ -27,12 +27,12 @@
           :disabled="moving"
           type="button"
           @click="dialog?.close()">
-          Cancel
+          {{ t('cancel') }}
         </button>
         <button
           class="primary"
           :disabled="moving || !state.spaceKey">
-          {{ moving ? 'Moving…' : 'Move' }}
+          {{ moving ? t('moving') : t('move') }}
         </button>
       </div>
     </form>
@@ -52,6 +52,27 @@ const props = defineProps<{
   ids: string[]
   onMoved: () => Promise<void> | void
 }>()
+
+const { t } = useI18n({
+  en: {
+    cancel: 'Cancel',
+    move: 'Move',
+    moveBoard: 'Move board',
+    moveBoards: 'Move boards',
+    moving: 'Moving…',
+    organization: 'Organization',
+    space: 'Space',
+  },
+  ru: {
+    cancel: 'Отмена',
+    move: 'Переместить',
+    moveBoard: 'Переместить доску',
+    moveBoards: 'Переместить доски',
+    moving: 'Перемещение…',
+    organization: 'Организация',
+    space: 'Раздел',
+  },
+})
 
 const state = reactive({
   organizationId: props.currentOrganizationId,

@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load member permissions"
-    loading-text="Loading member permissions…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,11 +11,11 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to members"
+              :label="t('backToMembers')"
               :to="organizationRoutes.permissions()" />
             <ShieldCheck class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>{{ page.member.name }} permissions</h1>
+              <h1>{{ page.member.name }} {{ t('permissions') }}</h1>
             </div>
           </div>
         </div>
@@ -43,6 +43,23 @@ const props = defineProps<{
   onSaved: () => Promise<void> | void
 }>()
 
+const { t } = useI18n({
+  en: {
+    backToMembers: 'Back to members',
+    loadError: 'Could not load member permissions',
+    loading: 'Loading member permissions…',
+    memberPermissions: 'Member permissions',
+    permissions: 'permissions',
+  },
+  ru: {
+    backToMembers: 'Назад к участникам',
+    loadError: 'Не удалось загрузить права участника',
+    loading: 'Загрузка прав участника…',
+    memberPermissions: 'Права участника',
+    permissions: 'права',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
 const { data, message, pending, refresh } = await useQuery(
@@ -53,7 +70,7 @@ const { data, message, pending, refresh } = await useQuery(
 
 useHead({
   title: computed(() =>
-    data.value ? `${data.value.member.name} permissions` : 'Member permissions',
+    data.value ? `${data.value.member.name} ${t('permissions')}` : t('memberPermissions'),
   ),
 })
 

@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load issue form"
-    loading-text="Loading issue form…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,10 +11,12 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to board"
+              :label="t('backToBoard')"
               :to="organizationRoutes.board(spaceKey, boardId)" />
             <ListPlus class="page-heading-icon" />
-            <div class="page-heading-text"><h1>Add issue</h1></div>
+            <div class="page-heading-text">
+              <h1>{{ t('addIssue') }}</h1>
+            </div>
           </div>
         </div>
         <CreateIssueForm
@@ -42,8 +44,23 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
+const { t } = useI18n({
+  en: {
+    addIssue: 'Add issue',
+    backToBoard: 'Back to board',
+    loadError: 'Could not load issue form',
+    loading: 'Loading issue form…',
+  },
+  ru: {
+    addIssue: 'Добавить задачу',
+    backToBoard: 'Назад к доске',
+    loadError: 'Не удалось загрузить форму задачи',
+    loading: 'Загрузка формы задачи…',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
-useHead({ title: 'Add issue' })
+useHead(() => ({ title: t('addIssue') }))
 
 const { data, message, pending, refresh } = await useQuery(
   () => `create-board-issue:${props.boardId}`,

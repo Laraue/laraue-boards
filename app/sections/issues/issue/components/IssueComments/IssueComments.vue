@@ -1,8 +1,8 @@
 <template>
   <section
-    aria-label="Comments"
+    :aria-label="t('comments')"
     class="issue-comments">
-    <strong class="section-label">Comments</strong>
+    <strong class="section-label">{{ t('comments') }}</strong>
     <p
       v-if="state.message"
       class="form-error"
@@ -29,19 +29,19 @@
               v-if="comment.canModify && state.editingId !== comment.id"
               class="issue-comment-actions">
               <button
-                :aria-label="`Edit comment by ${comment.owner.name}`"
+                :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
                 class="icon-btn small"
                 :disabled="state.pendingId === comment.id"
-                title="Edit"
+                :title="t('edit')"
                 type="button"
                 @click="startEdit(comment)">
                 <Pencil />
               </button>
               <button
-                :aria-label="`Delete comment by ${comment.owner.name}`"
+                :aria-label="`${t('deleteCommentBy')} ${comment.owner.name}`"
                 class="icon-btn danger small"
                 :disabled="state.pendingId === comment.id"
-                title="Delete"
+                :title="t('delete')"
                 type="button"
                 @click="remove(comment.id)">
                 <LoaderCircle
@@ -54,7 +54,7 @@
           <template v-if="state.editingId === comment.id">
             <textarea
               v-model="state.editText"
-              :aria-label="`Edit comment by ${comment.owner.name}`"
+              :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
               :disabled="state.pendingId === comment.id"
               rows="1" />
             <div class="form-actions issue-comment-form-actions">
@@ -63,14 +63,14 @@
                 :disabled="!state.editText.trim() || state.pendingId === comment.id"
                 type="button"
                 @click="update(comment.id)">
-                {{ state.pendingId === comment.id ? 'Saving…' : 'Save' }}
+                {{ state.pendingId === comment.id ? t('saving') : t('save') }}
               </button>
               <button
                 class="secondary small"
                 :disabled="state.pendingId === comment.id"
                 type="button"
                 @click="cancelEdit">
-                Cancel
+                {{ t('cancel') }}
               </button>
             </div>
           </template>
@@ -84,9 +84,9 @@
     </div>
     <textarea
       v-model="state.newText"
-      aria-label="Write a comment"
+      :aria-label="t('writeComment')"
       :disabled="!!state.pendingId"
-      placeholder="Write a comment…"
+      :placeholder="t('writeCommentPlaceholder')"
       rows="1" />
     <div
       v-if="state.newText.trim()"
@@ -96,7 +96,7 @@
         :disabled="!!state.pendingId"
         type="button"
         @click="create">
-        {{ state.pendingId === 'new' ? 'Adding…' : 'Add comment' }}
+        {{ state.pendingId === 'new' ? t('adding') : t('addComment') }}
       </button>
     </div>
   </section>
@@ -113,6 +113,43 @@ const props = defineProps<{
   initialComments: IssueCommentViewModel[]
   issueKey: string
 }>()
+
+const { t } = useI18n({
+  en: {
+    addComment: 'Add comment',
+    adding: 'Adding…',
+    cancel: 'Cancel',
+    comments: 'Comments',
+    delete: 'Delete',
+    deleteCommentBy: 'Delete comment by',
+    deleteConfirm: 'Delete this comment?',
+    edit: 'Edit',
+    editCommentBy: 'Edit comment by',
+    loadError: 'Could not load comments.',
+    save: 'Save',
+    saveError: 'Could not save comment.',
+    saving: 'Saving…',
+    writeComment: 'Write a comment',
+    writeCommentPlaceholder: 'Write a comment…',
+  },
+  ru: {
+    addComment: 'Добавить комментарий',
+    adding: 'Добавление…',
+    cancel: 'Отмена',
+    comments: 'Комментарии',
+    delete: 'Удалить',
+    deleteCommentBy: 'Удалить комментарий пользователя',
+    deleteConfirm: 'Удалить этот комментарий?',
+    edit: 'Изменить',
+    editCommentBy: 'Изменить комментарий пользователя',
+    loadError: 'Не удалось загрузить комментарии.',
+    save: 'Сохранить',
+    saveError: 'Не удалось сохранить комментарий.',
+    saving: 'Сохранение…',
+    writeComment: 'Написать комментарий',
+    writeCommentPlaceholder: 'Напишите комментарий…',
+  },
+})
 
 const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium',
@@ -137,7 +174,7 @@ const refreshComments = async () => {
   if (result.status === 'success') {
     state.comments = result.data
   } else {
-    state.message = 'Could not load comments.'
+    state.message = t('loadError')
   }
 }
 
@@ -148,8 +185,7 @@ const run = async (pendingId: string, action: () => ReturnType<IssueCommentsDeps
 
   if (result.status !== 'success') {
     state.pendingId = ''
-    state.message =
-      result.status === 'validation-error' ? result.message : 'Could not save comment.'
+    state.message = result.status === 'validation-error' ? result.message : t('saveError')
     return false
   }
 
@@ -183,7 +219,7 @@ const update = async (id: string) => {
 }
 
 const remove = async (id: string) => {
-  if (confirm('Delete this comment?')) {
+  if (confirm(t('deleteConfirm'))) {
     await run(id, () => props.deps.delete({ id }))
   }
 }

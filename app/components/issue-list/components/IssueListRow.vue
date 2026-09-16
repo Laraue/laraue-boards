@@ -8,7 +8,7 @@
         class="row-select-target"
         @click.stop>
         <input
-          aria-label="Select issue"
+          :aria-label="t('selectIssue')"
           :checked="selected"
           class="row-select"
           type="checkbox"
@@ -40,9 +40,9 @@
       </span>
       <button
         v-if="canMove"
-        aria-label="Move to board"
+        :aria-label="t('moveToBoard')"
         class="icon-btn small row-move"
-        title="Move to board"
+        :title="t('moveToBoard')"
         type="button"
         @click.stop.prevent="props.onMove">
         <ArrowRightLeft />
@@ -88,6 +88,17 @@ const props = defineProps<{
   statusColor: string
   to: RouteLocationRaw
 }>()
+
+const { t } = useI18n({
+  en: {
+    moveToBoard: 'Move to board',
+    selectIssue: 'Select issue',
+  },
+  ru: {
+    moveToBoard: 'Переместить на доску',
+    selectIssue: 'Выбрать задачу',
+  },
+})
 </script>
 
 <style scoped>

@@ -15,25 +15,25 @@
         v-if="!message"
         disabled
         value="">
-        {{ placeholder }}
+        {{ placeholder ?? t('select') }}
       </option>
       <option
         v-if="message"
         disabled
         value="">
-        Could not load assignees.
+        {{ t('loadError') }}
       </option>
       <option
         v-else-if="pending"
         disabled
         value="__loading">
-        Loading assignees…
+        {{ t('loading') }}
       </option>
       <option
         v-else-if="loaded && visibleOptions.length === 0"
         disabled
         value="__empty">
-        No assignees available
+        {{ t('empty') }}
       </option>
       <option
         v-for="option in visibleOptions"
@@ -63,10 +63,25 @@ const props = withDefaults(
     disabled: false,
     eager: false,
     initialOption: undefined,
-    placeholder: 'Select assignee',
+
     selectCurrentUser: false,
   },
 )
+
+const { t } = useI18n({
+  en: {
+    empty: 'No assignees available',
+    loadError: 'Could not load assignees.',
+    loading: 'Loading assignees…',
+    select: 'Select assignee',
+  },
+  ru: {
+    empty: 'Исполнители недоступны',
+    loadError: 'Не удалось загрузить исполнителей.',
+    loading: 'Загрузка исполнителей…',
+    select: 'Выберите исполнителя',
+  },
+})
 
 defineOptions({ inheritAttrs: false })
 

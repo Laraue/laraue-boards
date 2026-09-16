@@ -9,25 +9,25 @@
       v-if="!message"
       disabled
       value="">
-      {{ placeholder }}
+      {{ placeholder ?? t('select') }}
     </option>
     <option
       v-if="message"
       disabled
       value="">
-      Could not load spaces.
+      {{ t('loadError') }}
     </option>
     <option
       v-else-if="pending"
       disabled
       value="__loading">
-      Loading spaces…
+      {{ t('loading') }}
     </option>
     <option
       v-else-if="loaded && visibleOptions.length === 0"
       disabled
       value="__empty">
-      No spaces available
+      {{ t('empty') }}
     </option>
     <option
       v-for="option in visibleOptions"
@@ -54,9 +54,23 @@ const props = withDefaults(
     disabled: false,
     initialOption: undefined,
     organizationId: undefined,
-    placeholder: 'Select space',
   },
 )
+
+const { t } = useI18n({
+  en: {
+    empty: 'No spaces available',
+    loadError: 'Could not load spaces.',
+    loading: 'Loading spaces…',
+    select: 'Select space',
+  },
+  ru: {
+    empty: 'Разделы недоступны',
+    loadError: 'Не удалось загрузить разделы.',
+    loading: 'Загрузка разделов…',
+    select: 'Выберите раздел',
+  },
+})
 
 defineOptions({ inheritAttrs: false })
 

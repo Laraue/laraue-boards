@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Options</legend>
+    <legend>{{ t('options') }}</legend>
     <label
       v-for="option in options"
       :key="option.value">
@@ -15,6 +15,12 @@
 
 <script setup lang="ts">
 defineProps<{ options: Array<{ label: string; value: string }> }>()
+
+const { t } = useI18n({
+  en: { options: 'Options' },
+  ru: { options: 'Варианты' },
+})
+
 const model = defineModel<string[]>({ required: true })
 
 const toggle = (option: string) => {

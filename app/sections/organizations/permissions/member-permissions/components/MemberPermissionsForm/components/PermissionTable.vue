@@ -2,12 +2,12 @@
   <table class="permission-table">
     <thead>
       <tr>
-        <th scope="col">Resource</th>
+        <th scope="col">{{ t('resource') }}</th>
         <th
           v-for="column in PERMISSION_COLUMNS"
           :key="column"
           scope="col">
-          {{ column }}
+          {{ t(column.toLowerCase() as PermissionColumnKey) }}
         </th>
       </tr>
     </thead>
@@ -18,7 +18,7 @@
         <th scope="row">{{ row.label }}</th>
         <td
           v-for="(cell, index) in row.cells"
-          :key="PERMISSION_COLUMNS[index]">
+          :key="PERMISSION_COLUMNS[index]!">
           <span
             v-if="!cell"
             class="muted">
@@ -26,10 +26,12 @@
           </span>
           <input
             v-else
-            :aria-label="`${PERMISSION_COLUMNS[index]} ${row.label}${labelSuffix}`"
+            :aria-label="`${t(PERMISSION_COLUMNS[index]!.toLowerCase() as PermissionColumnKey)} ${row.label}${labelSuffix}`"
             :checked="cell.checked"
             :disabled="cell.disabled"
-            :title="cell.title"
+            :title="
+              cell.title === 'Inherited' ? t('inherited') : cell.title ? t('notAllowed') : undefined
+            "
             type="checkbox"
             @change="onToggle(cell.key)" />
         </td>
@@ -41,6 +43,8 @@
 <script setup lang="ts" generic="Key extends string">
 import { PERMISSION_COLUMNS, type PermissionRow } from '../permissionTables'
 
+type PermissionColumnKey = 'create' | 'delete' | 'update'
+
 withDefaults(
   defineProps<{
     labelSuffix?: string
@@ -49,6 +53,25 @@ withDefaults(
   }>(),
   { labelSuffix: '' },
 )
+
+const { t } = useI18n({
+  en: {
+    create: 'Create',
+    delete: 'Delete',
+    inherited: 'Inherited',
+    notAllowed: 'Not allowed',
+    resource: 'Resource',
+    update: 'Update',
+  },
+  ru: {
+    create: 'Создание',
+    delete: 'Удаление',
+    inherited: 'Унаследовано',
+    notAllowed: 'Недоступно',
+    resource: 'Ресурс',
+    update: 'Изменение',
+  },
+})
 </script>
 
 <style scoped>

@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="viewModel"
-    error-title="Could not load board"
-    loading-text="Loading board…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,7 +11,7 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to space"
+              :label="t('backToSpace')"
               :to="organizationRoutes.space(spaceKey)" />
             <BoardIcon
               class="page-heading-icon"
@@ -23,26 +23,26 @@
           <div class="title-actions">
             <NuxtLink
               v-if="page.canUpdate || page.canDelete"
-              aria-label="Board settings"
+              :aria-label="t('boardSettings')"
               class="secondary"
               :to="organizationRoutes.boardSettings(spaceKey, page.id)">
               <Settings />
-              <span class="btn-label">Settings</span>
+              <span class="btn-label">{{ t('settings') }}</span>
             </NuxtLink>
             <NuxtLink
               v-if="page.canCreateIssues"
               class="primary"
               :to="organizationRoutes.newBoardIssue(spaceKey, page.id)">
               <Plus />
-              <span class="btn-label">Add issue</span>
+              <span class="btn-label">{{ t('addIssue') }}</span>
             </NuxtLink>
           </div>
         </div>
 
         <div class="toolbar">
           <input
-            aria-label="Search issues"
-            placeholder="Search issues"
+            :aria-label="t('searchIssues')"
+            :placeholder="t('searchIssues')"
             type="search"
             :value="search"
             @input="updateSearch(($event.target as HTMLInputElement).value)" />
@@ -179,6 +179,29 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
+const { t } = useI18n({
+  en: {
+    addIssue: 'Add issue',
+    backToSpace: 'Back to space',
+    board: 'Board',
+    boardSettings: 'Board settings',
+    loadError: 'Could not load board',
+    loading: 'Loading board…',
+    searchIssues: 'Search issues',
+    settings: 'Settings',
+  },
+  ru: {
+    addIssue: 'Добавить задачу',
+    backToSpace: 'Назад к разделу',
+    board: 'Доска',
+    boardSettings: 'Настройки доски',
+    loadError: 'Не удалось загрузить доску',
+    loading: 'Загрузка доски…',
+    searchIssues: 'Поиск задач',
+    settings: 'Настройки',
+  },
+})
+
 const IssueDialog = defineAsyncComponent(
   () => import('~/sections/boards/board/components/IssueDialog/IssueDialog.vue'),
 )
@@ -286,7 +309,7 @@ const openIssue = (issueKey: string) => {
 }
 
 useHead({
-  title: computed(() => viewModel.value?.title ?? 'Board'),
+  title: computed(() => viewModel.value?.title ?? t('board')),
 })
 const scheduleSearch = debounce(() => void searchIssues(), 300)
 

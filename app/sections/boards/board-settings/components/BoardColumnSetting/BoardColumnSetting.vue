@@ -6,7 +6,7 @@
     <button
       v-if="canUpdate"
       ref="handle"
-      aria-label="Reorder column"
+      :aria-label="t('reorder')"
       class="icon-btn drag-handle"
       :disabled="disabled"
       type="button">
@@ -26,7 +26,7 @@
       @input="props.onUpdateName(($event.target as HTMLInputElement).value)" />
     <button
       v-if="canUpdate"
-      aria-label="Delete column"
+      :aria-label="t('delete')"
       class="icon-btn danger"
       :disabled="disabled"
       type="button"
@@ -51,6 +51,12 @@ const props = defineProps<{
   onUpdateColor: (color: string) => void
   onUpdateName: (name: string) => void
 }>()
+
+const { t } = useI18n({
+  en: { delete: 'Delete column', reorder: 'Reorder column' },
+  ru: { delete: 'Удалить колонку', reorder: 'Изменить порядок колонок' },
+})
+
 const element = useTemplateRef('element')
 const handle = useTemplateRef('handle')
 const { isDragging } = useSortable({

@@ -3,7 +3,7 @@
     :id="id"
     v-model="model"
     :disabled="disabled">
-    <option value="">None</option>
+    <option value="">{{ t('none') }}</option>
     <option
       v-for="option in options"
       :key="option.value"
@@ -19,5 +19,11 @@ defineProps<{
   id: string
   options: Array<{ label: string; value: string }>
 }>()
+
+const { t } = useI18n({
+  en: { none: 'None' },
+  ru: { none: 'Нет' },
+})
+
 const model = defineModel<string>({ required: true })
 </script>

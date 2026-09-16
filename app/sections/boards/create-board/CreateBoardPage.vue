@@ -2,26 +2,26 @@
   <section class="form-page">
     <div class="page-heading">
       <AppBackLink
-        label="Back to space"
+        :label="t('backToSpace')"
         :to="organizationRoutes.space(spaceKey)" />
       <div class="page-heading-text">
-        <h1>Create board</h1>
+        <h1>{{ t('createBoard') }}</h1>
       </div>
     </div>
     <form @submit.prevent="create">
-      <label for="create-board-name">Name</label>
+      <label for="create-board-name">{{ t('name') }}</label>
       <input
         id="create-board-name"
         v-model="form.name"
         required />
-      <label>Color</label>
+      <label>{{ t('color') }}</label>
       <AppColorPicker v-model="form.color" />
-      <label for="create-board-source">Copy statuses from</label>
+      <label for="create-board-source">{{ t('copyStatusesFrom') }}</label>
       <select
         id="create-board-source"
         v-model="form.sourceBoardId"
         @change="copyStatuses">
-        <option value="">Don't copy</option>
+        <option value="">{{ t('dontCopy') }}</option>
         <option
           v-for="board in data?.boards ?? []"
           :key="board.value"
@@ -29,7 +29,7 @@
           {{ board.label }}
         </option>
       </select>
-      <label>Statuses</label>
+      <label>{{ t('statuses') }}</label>
       <div
         v-for="(status, index) in form.statuses"
         :key="status.id"
@@ -37,10 +37,10 @@
         <AppColorPicker v-model="status.color" />
         <input
           v-model="status.name"
-          aria-label="Status name"
+          :aria-label="t('statusName')"
           required />
         <button
-          aria-label="Delete status"
+          :aria-label="t('deleteStatus')"
           class="icon-btn danger"
           type="button"
           @click="form.statuses.splice(index, 1)">
@@ -52,7 +52,7 @@
         type="button"
         @click="addStatus">
         <Plus />
-        Add status
+        {{ t('addStatus') }}
       </button>
       <p
         v-if="message"
@@ -63,7 +63,7 @@
         <button
           class="primary"
           :disabled="pending">
-          {{ pending ? 'Creating…' : 'Create board' }}
+          {{ pending ? t('creating') : t('createBoard') }}
         </button>
       </div>
     </form>
@@ -81,6 +81,35 @@ const props = defineProps<{
   onCreated: (boardId: string) => Promise<void> | void
   spaceKey: string
 }>()
+
+const { t } = useI18n({
+  en: {
+    addStatus: 'Add status',
+    backToSpace: 'Back to space',
+    color: 'Color',
+    copyStatusesFrom: 'Copy statuses from',
+    createBoard: 'Create board',
+    creating: 'Creating…',
+    deleteStatus: 'Delete status',
+    dontCopy: "Don't copy",
+    name: 'Name',
+    statuses: 'Statuses',
+    statusName: 'Status name',
+  },
+  ru: {
+    addStatus: 'Добавить статус',
+    backToSpace: 'Назад к разделу',
+    color: 'Цвет',
+    copyStatusesFrom: 'Скопировать статусы из',
+    createBoard: 'Создать доску',
+    creating: 'Создание…',
+    deleteStatus: 'Удалить статус',
+    dontCopy: 'Не копировать',
+    name: 'Название',
+    statuses: 'Статусы',
+    statusName: 'Название статуса',
+  },
+})
 
 const organizationRoutes = useOrganizationRoutes()
 
@@ -117,7 +146,7 @@ const create = () => {
   })
 }
 
-useHead({ title: 'Create board' })
+useHead(() => ({ title: t('createBoard') }))
 
 const {
   execute: submit,

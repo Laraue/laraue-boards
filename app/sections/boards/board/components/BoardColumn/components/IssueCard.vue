@@ -31,14 +31,14 @@
       <Loader
         v-if="moving"
         key="loader"
-        aria-label="Saving issue position"
+        :aria-label="t('savingPosition')"
         class="task-progress" />
       <button
         v-else-if="!disabled"
         key="backlog"
-        aria-label="Move to backlog"
+        :aria-label="t('moveToBacklog')"
         class="task-backlog-btn"
-        title="Move to backlog"
+        :title="t('moveToBacklog')"
         type="button"
         @click="onMoveToBacklog(viewModel.issueKey)">
         <Undo2 />
@@ -70,6 +70,18 @@ const props = defineProps<{
   onOpenIssue: (issueKey: string) => void
   viewModel: IssueCardViewModel
 }>()
+
+const { t } = useI18n({
+  en: {
+    moveToBacklog: 'Move to backlog',
+    savingPosition: 'Saving issue position',
+  },
+  ru: {
+    moveToBacklog: 'Переместить в бэклог',
+    savingPosition: 'Сохранение позиции задачи',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
 const element = useTemplateRef('element')

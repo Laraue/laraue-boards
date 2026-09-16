@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load attribute"
-    loading-text="Loading attribute…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,11 +11,11 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to attributes"
+              :label="t('backToAttributes')"
               :to="organizationRoutes.attributes()" />
             <Tags class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>Edit attribute</h1>
+              <h1>{{ t('editAttribute') }}</h1>
             </div>
           </div>
         </div>
@@ -23,18 +23,18 @@
           v-if="draft"
           class="attribute-editor"
           @submit.prevent="submit">
-          <label for="edit-attribute-name">Name</label>
+          <label for="edit-attribute-name">{{ t('name') }}</label>
           <input
             id="edit-attribute-name"
             v-model="draft.name"
             maxlength="64"
             required />
 
-          <label>Color</label>
+          <label>{{ t('color') }}</label>
           <AppColorPicker v-model="draft.color" />
 
           <fieldset v-if="draft.data.type === 'list'">
-            <legend>Options</legend>
+            <legend>{{ t('options') }}</legend>
             <TransitionGroup
               name="list"
               tag="div">
@@ -44,11 +44,11 @@
                 class="attribute-option">
                 <input
                   v-model="option.name"
-                  :aria-label="`Option ${index + 1}`"
+                  :aria-label="`${t('option')} ${index + 1}`"
                   maxlength="64"
                   required />
                 <button
-                  :aria-label="`Remove option ${index + 1}`"
+                  :aria-label="`${t('removeOption')} ${index + 1}`"
                   class="icon-btn danger"
                   :disabled="draft.data.listValues.length === 1"
                   type="button"
@@ -62,7 +62,7 @@
               type="button"
               @click="addOption">
               <Plus />
-              Add option
+              {{ t('addOption') }}
             </button>
           </fieldset>
 
@@ -75,7 +75,7 @@
             <button
               class="primary"
               :disabled="submitting">
-              {{ submitting ? 'Saving…' : 'Save changes' }}
+              {{ submitting ? t('saving') : t('saveChanges') }}
             </button>
             <button
               class="secondary danger"
@@ -83,7 +83,7 @@
               type="button"
               @click="remove(attribute)">
               <Trash2 />
-              Delete attribute
+              {{ t('deleteAttribute') }}
             </button>
           </div>
         </form>
@@ -108,6 +108,41 @@ const props = defineProps<{
   onFinished: () => Promise<void> | void
 }>()
 
+const { t } = useI18n({
+  en: {
+    addOption: 'Add option',
+    attribute: 'attribute',
+    backToAttributes: 'Back to attributes',
+    color: 'Color',
+    deleteAttribute: 'Delete attribute',
+    editAttribute: 'Edit attribute',
+    loadError: 'Could not load attribute',
+    loading: 'Loading attribute…',
+    name: 'Name',
+    option: 'Option',
+    options: 'Options',
+    removeOption: 'Remove option',
+    saveChanges: 'Save changes',
+    saving: 'Saving…',
+  },
+  ru: {
+    addOption: 'Добавить вариант',
+    attribute: 'атрибут',
+    backToAttributes: 'Назад к атрибутам',
+    color: 'Цвет',
+    deleteAttribute: 'Удалить атрибут',
+    editAttribute: 'Изменить атрибут',
+    loadError: 'Не удалось загрузить атрибут',
+    loading: 'Загрузка атрибута…',
+    name: 'Название',
+    option: 'Вариант',
+    options: 'Варианты',
+    removeOption: 'Удалить вариант',
+    saveChanges: 'Сохранить изменения',
+    saving: 'Сохранение…',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
 const { data, message, pending, refresh } = await useQuery(
@@ -117,7 +152,7 @@ const { data, message, pending, refresh } = await useQuery(
 )
 
 useHead({
-  title: computed(() => (data.value ? `${data.value.name} attribute` : 'Attribute')),
+  title: computed(() => (data.value ? `${data.value.name} ${t('attribute')}` : t('editAttribute'))),
 })
 
 const {
@@ -228,7 +263,7 @@ const remove = (attribute: Attribute) => {
   if (submitting.value) {
     return
   }
-  if (confirm(`Delete attribute "${attribute.name}"?`)) {
+  if (confirm(`${t('deleteAttribute')} "${attribute.name}"?`)) {
     void deleteAttribute({ id: attribute.id })
   }
 }

@@ -1,12 +1,12 @@
 <template>
-  <label :for="`${id}-from`">Minimum</label>
+  <label :for="`${id}-from`">{{ t('minimum') }}</label>
   <input
     :id="`${id}-from`"
     autofocus
     type="number"
     :value="model[0] ?? ''"
     @input="update(0, $event)" />
-  <label :for="`${id}-to`">Maximum</label>
+  <label :for="`${id}-to`">{{ t('maximum') }}</label>
   <input
     :id="`${id}-to`"
     type="number"
@@ -16,6 +16,12 @@
 
 <script setup lang="ts">
 defineProps<{ id: string }>()
+
+const { t } = useI18n({
+  en: { maximum: 'Maximum', minimum: 'Minimum' },
+  ru: { maximum: 'Максимум', minimum: 'Минимум' },
+})
+
 const model = defineModel<string[]>({ required: true })
 
 const update = (index: number, event: Event) => {

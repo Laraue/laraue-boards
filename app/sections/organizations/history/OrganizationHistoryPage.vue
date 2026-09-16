@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load organization history"
-    loading-text="Loading history…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="retry"
     :pending="pending">
@@ -11,7 +11,7 @@
         <div class="page-heading">
           <History class="page-heading-icon" />
           <div class="page-heading-text">
-            <h1>Organization history</h1>
+            <h1>{{ t('history') }}</h1>
           </div>
         </div>
         <form
@@ -19,9 +19,9 @@
           @change="applyFilters"
           @submit.prevent>
           <label>
-            User
+            {{ t('user') }}
             <select v-model="form.ownerId">
-              <option value="">All users</option>
+              <option value="">{{ t('allUsers') }}</option>
               <option
                 v-for="user in view.users"
                 :key="user.value"
@@ -31,13 +31,13 @@
             </select>
           </label>
           <label>
-            From
+            {{ t('from') }}
             <input
               v-model="form.dateFrom"
               type="date" />
           </label>
           <label>
-            To
+            {{ t('to') }}
             <input
               v-model="form.dateTo"
               :min="form.dateFrom || undefined"
@@ -47,7 +47,7 @@
         <HistoryTimeline
           v-if="data && (historyState.items.length || !pagePending)"
           :items="historyState.items"
-          label="Organization history entries" />
+          :label="t('entries')" />
         <p
           v-if="pageMessage"
           class="form-error"
@@ -59,14 +59,14 @@
           class="history-loading"
           role="status">
           <LoaderCircle class="spin" />
-          <span>Loading history…</span>
+          <span>{{ t('loading') }}</span>
         </div>
         <button
           v-else-if="pageMessage || historyState.hasNextPage"
           class="secondary small history-more"
           type="button"
           @click="loadMore">
-          {{ pageMessage ? 'Try again' : 'Load more' }}
+          {{ pageMessage ? t('tryAgain') : t('loadMore') }}
         </button>
       </section>
     </template>
@@ -87,6 +87,34 @@ const props = defineProps<{
   onUpdateQuery: (query: LocationQueryRaw) => Promise<void> | void
   routeQuery: LocationQuery
 }>()
+
+const { t } = useI18n({
+  en: {
+    allUsers: 'All users',
+    entries: 'Organization history entries',
+    from: 'From',
+    history: 'Organization history',
+    loadError: 'Could not load organization history',
+    loading: 'Loading history…',
+    loadMore: 'Load more',
+    to: 'To',
+    tryAgain: 'Try again',
+    user: 'User',
+  },
+  ru: {
+    allUsers: 'Все пользователи',
+    entries: 'Записи истории организации',
+    from: 'От',
+    history: 'История организации',
+    loadError: 'Не удалось загрузить историю организации',
+    loading: 'Загрузка истории…',
+    loadMore: 'Загрузить ещё',
+    to: 'До',
+    tryAgain: 'Повторить попытку',
+    user: 'Пользователь',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
 const queryValue = (value: LocationQuery[string] | undefined) =>
@@ -182,7 +210,7 @@ watch(data, (value) => {
   historyState.hasNextPage = value.history.hasNextPage
   historyState.page = 1
 })
-useHead({ title: 'Organization history' })
+useHead(() => ({ title: t('history') }))
 </script>
 
 <style scoped>

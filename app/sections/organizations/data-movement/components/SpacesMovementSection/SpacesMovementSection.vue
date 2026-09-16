@@ -1,11 +1,11 @@
 <template>
   <section class="movement-section">
     <div>
-      <h2>Spaces</h2>
-      <p class="muted">Move spaces to another organization.</p>
+      <h2>{{ t('spaces') }}</h2>
+      <p class="muted">{{ t('description') }}</p>
     </div>
     <AppBulkBar
-      action-label="Move spaces"
+      :action-label="t('moveSpaces')"
       :count="selectedIds.length"
       :on-action="() => openDialog(selectedIds)"
       :on-clear="() => state.selected.clear()" />
@@ -15,16 +15,16 @@
         :key="space.key"
         class="entity-row">
         <input
-          :aria-label="`Select ${space.name}`"
+          :aria-label="`${t('select')} ${space.name}`"
           :checked="state.selected.has(space.key)"
           type="checkbox"
           @change="toggle(space.key)" />
         <SpaceIcon :style="{ color: space.color }" />
         <strong>{{ space.name }}</strong>
         <button
-          :aria-label="`Move ${space.name}`"
+          :aria-label="`${t('move')} ${space.name}`"
           class="icon-btn"
-          title="Move space"
+          :title="t('moveSpace')"
           type="button"
           @click="openDialog([space.key])">
           <ArrowRightLeft />
@@ -33,7 +33,7 @@
       <p
         v-if="!movableSpaces.length"
         class="empty">
-        No movable spaces.
+        {{ t('empty') }}
       </p>
     </div>
 
@@ -59,6 +59,27 @@ const props = defineProps<{
   onMoved: () => Promise<void> | void
   spaces: DataMovementPageData['spaces']
 }>()
+
+const { t } = useI18n({
+  en: {
+    description: 'Move spaces to another organization.',
+    empty: 'No movable spaces.',
+    move: 'Move',
+    moveSpace: 'Move space',
+    moveSpaces: 'Move spaces',
+    select: 'Select',
+    spaces: 'Spaces',
+  },
+  ru: {
+    description: 'Перемещайте разделы в другую организацию.',
+    empty: 'Нет доступных для перемещения разделов.',
+    move: 'Переместить',
+    moveSpace: 'Переместить раздел',
+    moveSpaces: 'Переместить разделы',
+    select: 'Выбрать',
+    spaces: 'Разделы',
+  },
+})
 
 const dialog = useTemplateRef('dialog')
 

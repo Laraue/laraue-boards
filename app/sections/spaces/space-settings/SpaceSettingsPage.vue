@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load space"
-    loading-text="Loading space…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,28 +11,30 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to space"
+              :label="t('backToSpace')"
               :to="organizationRoutes.space(spaceKey)" />
             <SpaceIcon
               class="page-heading-icon"
               :style="{ color: form.color }" />
-            <div class="page-heading-text"><h1>Edit space</h1></div>
+            <div class="page-heading-text">
+              <h1>{{ t('editSpace') }}</h1>
+            </div>
           </div>
         </div>
         <form @submit.prevent="update">
-          <label for="space-settings-name">Name</label>
+          <label for="space-settings-name">{{ t('name') }}</label>
           <input
             id="space-settings-name"
             v-model="form.name"
             :disabled="!page.canUpdate"
             required />
-          <label for="space-settings-key">Key</label>
+          <label for="space-settings-key">{{ t('key') }}</label>
           <input
             id="space-settings-key"
             v-model="form.key"
             :disabled="!page.canUpdate"
             required />
-          <label>Color</label>
+          <label>{{ t('color') }}</label>
           <AppColorPicker
             v-model="form.color"
             :disabled="!page.canUpdate" />
@@ -47,7 +49,7 @@
               class="primary"
               :disabled="submitting"
               type="submit">
-              {{ updating ? 'Saving…' : 'Save changes' }}
+              {{ updating ? t('saving') : t('saveChanges') }}
             </button>
             <button
               v-if="page.canDelete"
@@ -55,7 +57,7 @@
               :disabled="submitting"
               type="button"
               @click="remove">
-              Delete space
+              {{ t('deleteSpace') }}
             </button>
           </div>
         </form>
@@ -74,6 +76,37 @@ const props = defineProps<{
   onUpdated: (spaceKey: string) => Promise<void> | void
   spaceKey: string
 }>()
+
+const { t } = useI18n({
+  en: {
+    backToSpace: 'Back to space',
+    color: 'Color',
+    deleteConfirm: 'Delete this space?',
+    deleteSpace: 'Delete space',
+    editSpace: 'Edit space',
+    key: 'Key',
+    loadError: 'Could not load space',
+    loading: 'Loading space…',
+    name: 'Name',
+    saveChanges: 'Save changes',
+    saving: 'Saving…',
+    settings: 'settings',
+  },
+  ru: {
+    backToSpace: 'Назад к разделу',
+    color: 'Цвет',
+    deleteConfirm: 'Удалить этот раздел?',
+    deleteSpace: 'Удалить раздел',
+    editSpace: 'Изменить раздел',
+    key: 'Ключ',
+    loadError: 'Не удалось загрузить раздел',
+    loading: 'Загрузка раздела…',
+    name: 'Название',
+    saveChanges: 'Сохранить изменения',
+    saving: 'Сохранение…',
+    settings: 'настройки',
+  },
+})
 
 const form = reactive({
   color: '',
@@ -103,7 +136,7 @@ watch(
 )
 
 useHead({
-  title: computed(() => (data.value ? `${data.value.name} settings` : 'Space settings')),
+  title: computed(() => (data.value ? `${data.value.name} ${t('settings')}` : t('editSpace'))),
 })
 
 const {
@@ -141,7 +174,7 @@ const submitting = computed(() => updating.value || removing.value)
 
 const remove = async (): Promise<void> => {
   const page = data.value
-  if (!page || submitting.value || !confirm('Delete this space?')) {
+  if (!page || submitting.value || !confirm(t('deleteConfirm'))) {
     return
   }
   void removeSpace({ spaceKey: page.spaceKey })

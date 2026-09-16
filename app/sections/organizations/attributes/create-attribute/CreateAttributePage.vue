@@ -3,41 +3,43 @@
     <div class="title-row">
       <div class="page-heading">
         <AppBackLink
-          label="Back to attributes"
+          :label="t('backToAttributes')"
           :to="organizationRoutes.attributes()" />
         <Tags class="page-heading-icon" />
-        <div class="page-heading-text"><h1>Create attribute</h1></div>
+        <div class="page-heading-text">
+          <h1>{{ t('createAttribute') }}</h1>
+        </div>
       </div>
     </div>
     <form
       class="attribute-editor"
       @submit.prevent="submit">
-      <label for="create-attribute-name">Name</label>
+      <label for="create-attribute-name">{{ t('name') }}</label>
       <input
         id="create-attribute-name"
         v-model="draft.name"
         maxlength="64"
         required />
 
-      <label>Color</label>
+      <label>{{ t('color') }}</label>
       <AppColorPicker v-model="draft.color" />
 
-      <label for="create-attribute-type">Type</label>
+      <label for="create-attribute-type">{{ t('type') }}</label>
       <select
         id="create-attribute-type"
         :value="draft.data.type"
         @change="changeType">
-        <option value="text">Text</option>
-        <option value="list">List</option>
-        <option value="integer">Integer</option>
-        <option value="decimal">Decimal</option>
-        <option value="date">Date</option>
-        <option value="dateTime">Date and time</option>
+        <option value="text">{{ t('text') }}</option>
+        <option value="list">{{ t('list') }}</option>
+        <option value="integer">{{ t('integer') }}</option>
+        <option value="decimal">{{ t('decimal') }}</option>
+        <option value="date">{{ t('date') }}</option>
+        <option value="dateTime">{{ t('dateTime') }}</option>
       </select>
 
       <Transition name="slide-fade">
         <fieldset v-if="draft.data.type === 'list'">
-          <legend>Options</legend>
+          <legend>{{ t('options') }}</legend>
           <TransitionGroup
             name="list"
             tag="div">
@@ -47,11 +49,11 @@
               class="attribute-option">
               <input
                 v-model="option.name"
-                :aria-label="`Option ${index + 1}`"
+                :aria-label="`${t('option')} ${index + 1}`"
                 maxlength="64"
                 required />
               <button
-                :aria-label="`Remove option ${index + 1}`"
+                :aria-label="`${t('removeOption')} ${index + 1}`"
                 class="icon-btn danger"
                 :disabled="draft.data.listValues.length === 1"
                 type="button"
@@ -65,7 +67,7 @@
             type="button"
             @click="addOption">
             <Plus />
-            Add option
+            {{ t('addOption') }}
           </button>
         </fieldset>
       </Transition>
@@ -79,7 +81,7 @@
         <button
           class="primary"
           :disabled="pending">
-          {{ pending ? 'Creating…' : 'Create attribute' }}
+          {{ pending ? t('creating') : t('createAttribute') }}
         </button>
       </div>
     </form>
@@ -99,9 +101,48 @@ const props = defineProps<{
   onCreated: () => Promise<void> | void
 }>()
 
+const { t } = useI18n({
+  en: {
+    addOption: 'Add option',
+    backToAttributes: 'Back to attributes',
+    color: 'Color',
+    createAttribute: 'Create attribute',
+    creating: 'Creating…',
+    date: 'Date',
+    dateTime: 'Date and time',
+    decimal: 'Decimal',
+    integer: 'Integer',
+    list: 'List',
+    name: 'Name',
+    option: 'Option',
+    options: 'Options',
+    removeOption: 'Remove option',
+    text: 'Text',
+    type: 'Type',
+  },
+  ru: {
+    addOption: 'Добавить вариант',
+    backToAttributes: 'Назад к атрибутам',
+    color: 'Цвет',
+    createAttribute: 'Создать атрибут',
+    creating: 'Создание…',
+    date: 'Дата',
+    dateTime: 'Дата и время',
+    decimal: 'Десятичное число',
+    integer: 'Целое число',
+    list: 'Список',
+    name: 'Название',
+    option: 'Вариант',
+    options: 'Варианты',
+    removeOption: 'Удалить вариант',
+    text: 'Текст',
+    type: 'Тип',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
-useHead({ title: 'Create attribute' })
+useHead(() => ({ title: t('createAttribute') }))
 
 const {
   execute: create,
