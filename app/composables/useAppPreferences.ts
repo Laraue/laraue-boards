@@ -36,7 +36,6 @@ export const useAppPreferences = (): AppPreferences => {
       throw new Error(`Locale "${value}" is not registered`)
     }
 
-    locale.value = value
     localeCookie.value = value
 
     if (import.meta.client) {
