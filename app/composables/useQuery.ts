@@ -1,6 +1,7 @@
 import type { WatchSource } from 'vue'
 
 import type { QueryResult } from '#infrastructure/api/apiResult'
+import { useLocale } from '~/composables/useI18n'
 import { getErrorMessage } from '~/utils/getErrorMessage'
 
 export const useQuery = async <Data>(
@@ -13,6 +14,7 @@ export const useQuery = async <Data>(
     watch?: WatchSource[]
   },
 ) => {
+  const locale = useLocale()
   const { cached, ...asyncDataOptions } = options ?? {}
   const asyncData = await useAsyncData(key, query, {
     ...asyncDataOptions,
@@ -32,7 +34,7 @@ export const useQuery = async <Data>(
 
   const message = computed(() =>
     asyncData.data.value?.status === 'error'
-      ? getErrorMessage(asyncData.data.value.code)
+      ? getErrorMessage(asyncData.data.value.code, locale.value)
       : undefined,
   )
 

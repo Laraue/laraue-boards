@@ -31,6 +31,20 @@ export const useTour = ({
   state: TourStateDeps
   steps: () => TourStep[]
 }): void => {
+  const { t } = useI18n({
+    en: {
+      back: 'Back',
+      next: 'Next',
+      progress: '{{current}} of {{total}}',
+      startWorking: 'Start working',
+    },
+    ru: {
+      back: 'Назад',
+      next: 'Далее',
+      progress: '{{current}} из {{total}}',
+      startWorking: 'Начать работу',
+    },
+  })
   let activeTour: ReturnType<typeof driver> | undefined
   let disposed = false
   let started = false
@@ -41,9 +55,9 @@ export const useTour = ({
       activeTour = driver({
         animate: animate(),
         disableActiveInteraction: true,
-        doneBtnText: 'Start working',
+        doneBtnText: t('startWorking'),
         duration: 200,
-        nextBtnText: 'Next',
+        nextBtnText: t('next'),
         onDestroyed: () => resolve(disposed ? undefined : 'dismissed'),
         onDoneClick: () => {
           resolve('completed')
@@ -52,8 +66,8 @@ export const useTour = ({
         onPopoverRender: renderCloseIcon,
         popoverClass: 'product-tour',
         popoverOffset: 24,
-        prevBtnText: 'Back',
-        progressText: '{{current}} of {{total}}',
+        prevBtnText: t('back'),
+        progressText: t('progress'),
         showProgress: true,
         skipMissingElement: true,
         smoothScroll: animate(),

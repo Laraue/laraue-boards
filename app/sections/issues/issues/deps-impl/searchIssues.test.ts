@@ -73,7 +73,7 @@ test('maps searched issues', async () => {
             issueKey: 'ISS-2',
             spaceColor: '#777',
             spaceName: 'Product',
-            status: 'Backlog',
+            status: null,
             statusColor: COLORS.gray,
           },
         ],

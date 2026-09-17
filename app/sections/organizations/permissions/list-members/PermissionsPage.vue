@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load permissions"
-    loading-text="Loading permissions…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -12,7 +12,7 @@
           <div class="page-heading">
             <ShieldCheck class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>Permissions</h1>
+              <h1>{{ t('permissions') }}</h1>
             </div>
           </div>
         </div>
@@ -20,24 +20,24 @@
           <div class="invitation-heading">
             <span class="invitation-icon"><TicketCheck /></span>
             <div>
-              <strong>Invite people</strong>
-              <p class="muted">Anyone with this link can join the organization.</p>
+              <strong>{{ t('invitePeople') }}</strong>
+              <p class="muted">{{ t('inviteDescription') }}</p>
             </div>
             <button
-              :aria-label="regenerating ? 'Creating new link' : 'Create a new link'"
+              :aria-label="regenerating ? t('creatingLink') : t('createLink')"
               class="regenerate-link"
               :disabled="regenerating"
               type="button"
               @click="regenerate">
               <RefreshCw />
               <span class="btn-label">
-                {{ regenerating ? 'Creating new link…' : 'Create a new link' }}
+                {{ regenerating ? t('creatingLinkProgress') : t('createLink') }}
               </span>
             </button>
           </div>
           <div class="invitation-link">
             <input
-              aria-label="Invitation link"
+              :aria-label="t('invitationLink')"
               readonly
               :value="invitationUrl"
               @focus="($event.target as HTMLInputElement).select()" />
@@ -48,7 +48,7 @@
               @click="copyInvitation">
               <Check v-if="state.copied" />
               <Copy v-else />
-              {{ state.copied ? 'Copied' : 'Copy link' }}
+              {{ state.copied ? t('copied') : t('copyLink') }}
             </button>
           </div>
           <p
@@ -58,7 +58,7 @@
             {{ regenerateMessage || state.copyError }}
           </p>
         </div>
-        <p class="section-label members-label">Members</p>
+        <p class="section-label members-label">{{ t('members') }}</p>
         <div class="member-list">
           <NuxtLink
             v-for="member in page.members"
@@ -72,7 +72,7 @@
             <span class="member-name">
               <strong>{{ member.name }}</strong>
               <small class="muted">
-                {{ member.isOwner ? 'Owner' : member.isAdmin ? 'Admin' : 'Member' }}
+                {{ member.isOwner ? t('owner') : member.isAdmin ? t('admin') : t('member') }}
               </small>
             </span>
             <ChevronRight />
@@ -90,9 +90,50 @@ import type { PermissionsPageDeps } from '~/sections/organizations/permissions/l
 
 const props = defineProps<{ deps: PermissionsPageDeps }>()
 
+const { t } = useI18n({
+  en: {
+    admin: 'Admin',
+    copied: 'Copied',
+    copyError: 'Could not copy the link. Select and copy it manually.',
+    copyLink: 'Copy link',
+    createLink: 'Create a new link',
+    creatingLink: 'Creating new link',
+    creatingLinkProgress: 'Creating new link…',
+    invitationLink: 'Invitation link',
+    inviteDescription: 'Anyone with this link can join the organization.',
+    invitePeople: 'Invite people',
+    loadError: 'Could not load permissions',
+    loading: 'Loading permissions…',
+    member: 'Member',
+    members: 'Members',
+    owner: 'Owner',
+    permissions: 'Permissions',
+    regenerateConfirm: 'Create a new invitation link? The current link will stop working.',
+  },
+  ru: {
+    admin: 'Администратор',
+    copied: 'Скопировано',
+    copyError: 'Не удалось скопировать ссылку. Выделите и скопируйте её вручную.',
+    copyLink: 'Копировать ссылку',
+    createLink: 'Создать новую ссылку',
+    creatingLink: 'Создание новой ссылки',
+    creatingLinkProgress: 'Создание новой ссылки…',
+    invitationLink: 'Ссылка-приглашение',
+    inviteDescription: 'Любой пользователь с этой ссылкой сможет присоединиться к организации.',
+    invitePeople: 'Пригласить участников',
+    loadError: 'Не удалось загрузить права доступа',
+    loading: 'Загрузка прав доступа…',
+    member: 'Участник',
+    members: 'Участники',
+    owner: 'Владелец',
+    permissions: 'Права доступа',
+    regenerateConfirm: 'Создать новую ссылку-приглашение? Текущая ссылка перестанет работать.',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
-useHead({ title: 'Permissions' })
+useHead({ title: t('permissions') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-permissions',
@@ -122,7 +163,7 @@ const copyInvitation = async (): Promise<void> => {
     clearTimeout(copiedTimer)
     copiedTimer = setTimeout(() => (state.copied = false), 2000)
   } catch {
-    state.copyError = 'Could not copy the link. Select and copy it manually.'
+    state.copyError = t('copyError')
   }
 }
 onBeforeUnmount(() => clearTimeout(copiedTimer))
@@ -139,7 +180,7 @@ const {
   },
 })
 const regenerate = (): void => {
-  if (confirm('Create a new invitation link? The current link will stop working.')) {
+  if (confirm(t('regenerateConfirm'))) {
     void regenerateJoinCode()
   }
 }

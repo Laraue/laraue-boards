@@ -5,21 +5,21 @@
         class="page-heading-icon"
         :style="{ color: form.color }" />
       <div class="page-heading-text">
-        <h1>Create space</h1>
+        <h1>{{ t('createSpace') }}</h1>
       </div>
     </div>
     <form @submit.prevent="submit({ color: form.color, key: form.key.trim(), name: form.name })">
-      <label for="create-space-name">Name</label>
+      <label for="create-space-name">{{ t('name') }}</label>
       <input
         id="create-space-name"
         v-model="form.name"
         required />
-      <label for="create-space-key">Key</label>
+      <label for="create-space-key">{{ t('key') }}</label>
       <input
         id="create-space-key"
         v-model="form.key"
         required />
-      <label>Color</label>
+      <label>{{ t('color') }}</label>
       <AppColorPicker v-model="form.color" />
       <p
         v-if="message"
@@ -30,7 +30,7 @@
         <button
           class="primary"
           :disabled="pending">
-          {{ pending ? 'Creating…' : 'Create space' }}
+          {{ pending ? t('creating') : t('createSpace') }}
         </button>
       </div>
     </form>
@@ -47,13 +47,30 @@ const props = defineProps<{
   onCreated: (spaceKey: string) => Promise<void> | void
 }>()
 
+const { t } = useI18n({
+  en: {
+    color: 'Color',
+    createSpace: 'Create space',
+    creating: 'Creating…',
+    key: 'Key',
+    name: 'Name',
+  },
+  ru: {
+    color: 'Цвет',
+    createSpace: 'Создать раздел',
+    creating: 'Создание…',
+    key: 'Ключ',
+    name: 'Название',
+  },
+})
+
 const form = reactive({
   color: DEFAULT_COLOR,
   key: '',
   name: '',
 })
 
-useHead({ title: 'Create space' })
+useHead({ title: t('createSpace') })
 
 const {
   execute: submit,

@@ -1,10 +1,12 @@
 import type { ActionResult } from '#infrastructure/api/apiResult'
+import { useLocale } from '~/composables/useI18n'
 import { getErrorMessage } from '~/utils/getErrorMessage'
 
 export const useAction = <Args extends unknown[], Data>(
   action: (...args: Args) => Promise<ActionResult<Data>>,
   options: { onSuccess?: (data: Data) => Promise<void> | void } = {},
 ) => {
+  const locale = useLocale()
   const pending = ref(false)
   const message = ref<string | undefined>()
   const toast = useToast()
@@ -23,10 +25,10 @@ export const useAction = <Args extends unknown[], Data>(
       }
       // A validation error belongs to the form; anything else is a request failure with no field to attach to.
       if (result.status === 'validation-error') {
-        message.value = result.message
+        message.value = result.message || getErrorMessage(400, locale.value)
       } else {
         message.value = undefined
-        toast.show(getErrorMessage(result.code))
+        toast.show(getErrorMessage(result.code, locale.value))
       }
       return undefined
     } finally {

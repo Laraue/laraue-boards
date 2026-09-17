@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load issue"
-    loading-text="Loading issue…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="viewMessage"
     :on-retry="refresh"
     :pending="pending && !data">
@@ -15,7 +15,7 @@
           <div class="page-heading">
             <slot name="leading">
               <button
-                aria-label="Back"
+                :aria-label="t('back')"
                 class="icon-btn"
                 type="button"
                 @click="leave">
@@ -29,10 +29,10 @@
                 </NuxtLink>
               </h1>
               <button
-                aria-label="Copy issue link"
+                :aria-label="t('copyIssueLink')"
                 class="issue-copy"
                 :class="{ 'issue-copy--copied': state.copied }"
-                title="Copy issue link"
+                :title="t('copyIssueLink')"
                 type="button"
                 @click="copyIssueLink">
                 <Transition
@@ -68,7 +68,7 @@
                 :removed-attachment-ids="state.removedAttachmentIds" />
               <section class="issue-activity">
                 <div
-                  aria-label="Issue activity"
+                  :aria-label="t('issueActivity')"
                   class="issue-tabs"
                   role="tablist">
                   <button
@@ -84,7 +84,7 @@
                     @keydown.left.prevent="activateTab('history', true)"
                     @keydown.right.prevent="activateTab('history', true)">
                     <MessageSquare />
-                    Comments
+                    {{ t('comments') }}
                   </button>
                   <button
                     id="history-tab"
@@ -99,7 +99,7 @@
                     @keydown.left.prevent="activateTab('comments', true)"
                     @keydown.right.prevent="activateTab('comments', true)">
                     <HistoryIcon />
-                    History
+                    {{ t('history') }}
                   </button>
                 </div>
                 <div
@@ -130,28 +130,28 @@
               </section>
             </div>
             <div class="issue-form-side">
-              <label>Space</label>
+              <label>{{ t('space') }}</label>
               <SpaceSelect
                 :key="`space-${issue.issueKey}`"
                 v-model="state.pickedSpaceId"
                 :deps="deps.spaceSelect"
                 :disabled="!issue.canEdit"
                 :initial-option="{
-                  label: issue.spaceLabel || 'Current space',
+                  label: issue.spaceLabel || t('currentSpace'),
                   value: issue.spaceId,
                 }" />
-              <label>Board</label>
+              <label>{{ t('board') }}</label>
               <BoardSelect
                 :key="`board-${issue.issueKey}`"
                 v-model="state.boardId"
                 :deps="deps.boardSelect"
                 :disabled="!issue.canEdit"
                 :initial-option="{
-                  label: issue.boardLabel || 'Current board',
+                  label: issue.boardLabel || t('currentBoard'),
                   value: issue.boardId,
                 }"
                 :space-key="state.pickedSpaceId" />
-              <label>Status</label>
+              <label>{{ t('status') }}</label>
               <StatusSelect
                 :key="`status-${issue.issueKey}`"
                 v-model="state.statusId"
@@ -159,10 +159,10 @@
                 :deps="deps.statusSelect"
                 :disabled="!issue.canEdit"
                 :initial-option="{
-                  label: issue.statusLabel || 'Current status',
+                  label: issue.statusLabel || t('currentStatus'),
                   value: issue.statusId,
                 }" />
-              <label>Assignee</label>
+              <label>{{ t('assignee') }}</label>
               <AssigneeSelect
                 :key="`assignee-${issue.issueKey}`"
                 v-model="state.assigneeId"
@@ -176,7 +176,7 @@
                   value: issue.assigneeId,
                 }"
                 :space-key="state.pickedSpaceId" />
-              <label>Owner</label>
+              <label>{{ t('owner') }}</label>
               <div class="issue-person">
                 <span
                   class="avatar"
@@ -190,10 +190,10 @@
                 v-model="state.attributeValues"
                 :attributes="issue.attributes"
                 :disabled="!issue.canEdit" />
-              <span class="issue-date-label">Created</span>
-              <time :datetime="issue.createdAt">{{ formatDate(issue.createdAt) }}</time>
-              <span class="issue-date-label">Updated</span>
-              <time :datetime="issue.updatedAt">{{ formatDate(issue.updatedAt) }}</time>
+              <span class="issue-date-label">{{ t('created') }}</span>
+              <time :datetime="issue.createdAt">{{ formatDateTime(issue.createdAt) }}</time>
+              <span class="issue-date-label">{{ t('updated') }}</span>
+              <time :datetime="issue.updatedAt">{{ formatDateTime(issue.updatedAt) }}</time>
             </div>
           </div>
           <div
@@ -209,14 +209,14 @@
                 class="primary"
                 :disabled="!canSave || saving || deleting"
                 type="submit">
-                {{ saving ? 'Saving…' : 'Save changes' }}
+                {{ saving ? t('saving') : t('saveChanges') }}
               </button>
               <button
                 class="secondary danger"
                 :disabled="saving || deleting"
                 type="button"
                 @click="remove">
-                Delete issue
+                {{ t('deleteIssue') }}
               </button>
             </div>
           </div>
@@ -254,13 +254,62 @@ const props = defineProps<{
   onSaved?: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
 
+const { t } = useI18n({
+  en: {
+    assignee: 'Assignee',
+    back: 'Back',
+    board: 'Board',
+    comments: 'Comments',
+    copyIssueLink: 'Copy issue link',
+    created: 'Created',
+    currentBoard: 'Current board',
+    currentSpace: 'Current space',
+    currentStatus: 'Current status',
+    deleteConfirm: 'Delete this issue?',
+    deleteIssue: 'Delete issue',
+    history: 'History',
+    issue: 'Issue',
+    issueActivity: 'Issue activity',
+    loadError: 'Could not load issue',
+    loading: 'Loading issue…',
+    owner: 'Owner',
+    saveChanges: 'Save changes',
+    saveWarning: 'Changes were saved, but the issue could not be moved. Try again.',
+    saving: 'Saving…',
+    space: 'Space',
+    status: 'Status',
+    updated: 'Updated',
+  },
+  ru: {
+    assignee: 'Исполнитель',
+    back: 'Назад',
+    board: 'Доска',
+    comments: 'Комментарии',
+    copyIssueLink: 'Копировать ссылку на задачу',
+    created: 'Создана',
+    currentBoard: 'Текущая доска',
+    currentSpace: 'Текущий раздел',
+    currentStatus: 'Текущий статус',
+    deleteConfirm: 'Удалить эту задачу?',
+    deleteIssue: 'Удалить задачу',
+    history: 'История',
+    issue: 'Задача',
+    issueActivity: 'Активность задачи',
+    loadError: 'Не удалось загрузить задачу',
+    loading: 'Загрузка задачи…',
+    owner: 'Владелец',
+    saveChanges: 'Сохранить изменения',
+    saveWarning: 'Изменения сохранены, но задачу не удалось переместить. Повторите попытку.',
+    saving: 'Сохранение…',
+    space: 'Раздел',
+    status: 'Статус',
+    updated: 'Изменена',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 const router = useRouter()
-const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-  timeZone: 'UTC',
-})
+const { formatDateTime } = useFormatters()
 
 const state = reactive({
   activeTab: 'comments' as 'comments' | 'history',
@@ -303,7 +352,7 @@ const {
   { lazy: props.lazy, watch: [() => props.issueKey] },
 )
 
-useHead({ title: computed(() => data.value?.issueKey ?? 'Issue') })
+useHead({ title: computed(() => data.value?.issueKey ?? t('issue')) })
 
 const currentIssue = computed(() => data.value)
 const canSave = computed(
@@ -329,8 +378,6 @@ const dirty = computed(
 )
 
 const issueRoute = computed(() => organizationRoutes.issue(props.issueKey))
-
-const formatDate = (value: string) => dateTimeFormatter.format(new Date(value))
 
 const syncState = (issue: IssuePageViewModel) => {
   if (state.dirty) {
@@ -365,7 +412,7 @@ const handleSaved = async (issue: IssuePageSavedIssue) => {
   await refresh()
   void history.value?.refresh()
   if (!issue.complete) {
-    saveMessage.value = 'Changes were saved, but the issue could not be moved. Try again.'
+    saveMessage.value = t('saveWarning')
   }
 }
 
@@ -411,7 +458,7 @@ const save = async () => {
 }
 
 const remove = async () => {
-  if (confirm('Delete this issue?')) {
+  if (confirm(t('deleteConfirm'))) {
     await deleteIssue({ issueKey: props.issueKey })
   }
 }
@@ -429,7 +476,7 @@ const copyIssueLink = async () => {
   try {
     await navigator.clipboard.writeText(url)
   } catch {
-    window.prompt('Copy issue link', url)
+    window.prompt(t('copyIssueLink'), url)
   }
   state.copied = true
   setTimeout(() => (state.copied = false), 1200)

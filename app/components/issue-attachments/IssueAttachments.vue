@@ -9,7 +9,7 @@
       multiple
       type="file"
       @change="changeFiles" />
-    <strong class="section-label">Attachments</strong>
+    <strong class="section-label">{{ t('attachments') }}</strong>
     <div class="issue-attachment-actions">
       <label
         :aria-disabled="disabled"
@@ -17,7 +17,7 @@
         :class="{ 'issue-attachment-picker--disabled': disabled }"
         :for="inputId">
         <ImagePlus />
-        {{ files.length ? 'Choose other images' : 'Choose images' }}
+        {{ files.length ? t('chooseOtherImages') : t('chooseImages') }}
       </label>
       <button
         v-if="files.length || attachmentError"
@@ -25,9 +25,9 @@
         :disabled="disabled"
         type="button"
         @click="clearFiles">
-        Clear
+        {{ t('clear') }}
       </button>
-      <span class="muted issue-attachment-paste-hint">or paste PNG/JPG with Ctrl+V</span>
+      <span class="muted issue-attachment-paste-hint">{{ t('pasteHint') }}</span>
     </div>
     <span
       v-if="attachmentError"
@@ -43,17 +43,17 @@
         :key="attachment.id"
         class="issue-attachment-preview">
         <button
-          :aria-label="`Open attachment ${index + 1}`"
+          :aria-label="`${t('openAttachment')} ${index + 1}`"
           class="issue-attachment-open"
           type="button"
-          @click="openLightbox(attachment.originalUrl, `Attachment ${index + 1}`)">
+          @click="openLightbox(attachment.originalUrl, `${t('attachment')} ${index + 1}`)">
           <img
-            :alt="`Attachment ${index + 1}`"
+            :alt="`${t('attachment')} ${index + 1}`"
             :src="attachment.previewUrl" />
         </button>
         <button
           v-if="onRemoveAttachment && !disabled"
-          :aria-label="`Remove attachment ${index + 1}`"
+          :aria-label="`${t('removeAttachment')} ${index + 1}`"
           class="icon-btn small issue-attachment-remove"
           type="button"
           @click="onRemoveAttachment(attachment.id)">
@@ -65,7 +65,7 @@
         :key="preview.url"
         class="issue-attachment-preview">
         <button
-          :aria-label="`Open ${preview.file.name}`"
+          :aria-label="`${t('open')} ${preview.file.name}`"
           class="issue-attachment-open"
           :disabled="disabled"
           type="button"
@@ -77,7 +77,7 @@
         </button>
         <button
           v-if="!disabled"
-          :aria-label="`Remove ${preview.file.name}`"
+          :aria-label="`${t('remove')} ${preview.file.name}`"
           class="icon-btn small issue-attachment-remove"
           type="button"
           @click="removeFile(index)">
@@ -85,7 +85,7 @@
         </button>
         <div
           v-if="disabled"
-          aria-label="Uploading attachment"
+          :aria-label="t('uploading')"
           class="issue-attachment-uploading"
           role="status">
           <Loader />
@@ -95,12 +95,12 @@
     <Teleport to="body">
       <dialog
         ref="lightboxEl"
-        aria-label="Attachment preview"
+        :aria-label="t('attachmentPreview')"
         class="issue-attachment-lightbox"
         @click="closeLightboxFromBackdrop"
         @close="closeLightboxPreview">
         <button
-          aria-label="Close attachment preview"
+          :aria-label="t('closePreview')"
           class="icon-btn issue-attachment-lightbox-close"
           type="button"
           @click="closeLightbox">
@@ -114,7 +114,7 @@
           @load="lightboxLoading = false" />
         <div
           v-if="lightboxLoading"
-          aria-label="Loading attachment preview"
+          :aria-label="t('loadingPreview')"
           class="issue-attachment-lightbox-loading"
           role="status">
           <Loader />
@@ -139,6 +139,43 @@ const props = defineProps<{
   onRemoveAttachment?: (id: string) => void
   removedAttachmentIds?: string[]
 }>()
+
+const { t } = useI18n({
+  en: {
+    attachment: 'Attachment',
+    attachmentPreview: 'Attachment preview',
+    attachments: 'Attachments',
+    chooseImages: 'Choose images',
+    chooseOtherImages: 'Choose other images',
+    clear: 'Clear',
+    closePreview: 'Close attachment preview',
+    loadingPreview: 'Loading attachment preview',
+    open: 'Open',
+    openAttachment: 'Open attachment',
+    pasteHint: 'or paste PNG/JPG with Ctrl+V',
+    remove: 'Remove',
+    removeAttachment: 'Remove attachment',
+    tooLarge: 'Some images were not added because they are larger than 3 MB.',
+    uploading: 'Uploading attachment',
+  },
+  ru: {
+    attachment: 'Вложение',
+    attachmentPreview: 'Предпросмотр вложения',
+    attachments: 'Вложения',
+    chooseImages: 'Выбрать изображения',
+    chooseOtherImages: 'Выбрать другие изображения',
+    clear: 'Очистить',
+    closePreview: 'Закрыть предпросмотр вложения',
+    loadingPreview: 'Загрузка предпросмотра вложения',
+    open: 'Открыть',
+    openAttachment: 'Открыть вложение',
+    pasteHint: 'или вставьте PNG/JPG через Ctrl+V',
+    remove: 'Удалить',
+    removeAttachment: 'Удалить вложение',
+    tooLarge: 'Некоторые изображения не добавлены: их размер превышает 3 МБ.',
+    uploading: 'Загрузка вложения',
+  },
+})
 
 const activeAttachment = ref<null | { alt: string; url: string }>(null)
 const attachmentError = ref('')
@@ -178,9 +215,7 @@ const pasteFiles = (event: ClipboardEvent) => {
 
 const getSupportedImages = (files: File[] | FileList) => {
   const images = Array.from(files).filter((file) => supportedImageTypes.has(file.type))
-  attachmentError.value = images.some((file) => file.size > MAX_IMAGE_SIZE)
-    ? 'Some images were not added because they are larger than 3 MB.'
-    : ''
+  attachmentError.value = images.some((file) => file.size > MAX_IMAGE_SIZE) ? t('tooLarge') : ''
   return images.filter((file) => file.size <= MAX_IMAGE_SIZE)
 }
 

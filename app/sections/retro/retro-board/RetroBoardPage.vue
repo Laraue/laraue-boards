@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load retro"
-    loading-text="Loading retro…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="retry"
     :pending="pending && !data">
@@ -15,7 +15,7 @@
           <input
             v-else
             ref="nameInput"
-            aria-label="Retro name"
+            :aria-label="t('retroName')"
             class="retro-name-input"
             maxlength="128"
             :value="state.fieldDrafts.name ?? board.name"
@@ -23,9 +23,9 @@
             @input="trackNameDraft($event)" />
           <button
             v-if="canRename(board)"
-            aria-label="Edit retro name"
+            :aria-label="t('editRetroName')"
             class="icon-btn small retro-name-edit"
-            title="Edit retro name"
+            :title="t('editRetroName')"
             type="button"
             @click.stop="focusNameInput"
             @pointerdown.stop>
@@ -34,12 +34,12 @@
           <span
             v-if="board.finished"
             class="retro-finished">
-            Finished
+            {{ t('finished') }}
           </span>
         </div>
         <div class="retro-top-controls">
           <div
-            aria-label="People on this retro"
+            :aria-label="t('peopleOnRetro')"
             class="presence"
             :style="{ '--presence-step': `${presenceStep(everyone(board).length)}px` }"
             tabindex="0">
@@ -53,7 +53,7 @@
             <div class="presence-menu">
               <div class="presence-list">
                 <p class="presence-title">
-                  {{ board.finished ? 'Participants' : 'On this retro' }}
+                  {{ board.finished ? t('participants') : t('onRetro') }}
                 </p>
                 <span
                   v-for="member in everyone(board)"
@@ -67,7 +67,7 @@
                   {{ member.name }}
                   <Crown
                     v-if="member.userId === board.owner.userId"
-                    aria-label="Owner"
+                    :aria-label="t('owner')"
                     class="presence-role"
                     role="img" />
                   <button
@@ -75,7 +75,7 @@
                     class="secondary small"
                     type="button"
                     @click="handOver(member)">
-                    Make owner
+                    {{ t('makeOwner') }}
                   </button>
                 </span>
               </div>
@@ -90,22 +90,22 @@
             class="secondary small"
             type="button">
             <CircleHelp aria-hidden="true" />
-            Guide
+            {{ t('guide') }}
           </button>
           <div class="board-help-panel">
-            <p class="board-help-heading">Keyboard shortcuts</p>
+            <p class="board-help-heading">{{ t('keyboardShortcuts') }}</p>
             <ul class="board-help-list">
               <li>
                 <kbd>Delete</kbd>
                 /
                 <kbd>Backspace</kbd>
-                deletes the selected note
+                {{ t('deletesSelectedNote') }}
               </li>
               <li v-if="board.canManage">
                 <kbd>Ctrl</kbd>
                 /
                 <kbd>Cmd</kbd>
-                + click picks notes to merge into a topic
+                {{ t('mergeShortcut') }}
               </li>
               <li>
                 <kbd>Ctrl</kbd>
@@ -113,25 +113,25 @@
                 <kbd>Cmd</kbd>
                 +
                 <kbd>Enter</kbd>
-                saves a note being edited
+                {{ t('saveShortcut') }}
               </li>
               <li>
                 <kbd>Esc</kbd>
-                cancels editing a note
+                {{ t('cancelShortcut') }}
               </li>
             </ul>
-            <p class="board-help-heading">On the board</p>
+            <p class="board-help-heading">{{ t('onBoard') }}</p>
             <ul class="board-help-list">
-              <li>Double-click (or double-tap) an empty spot to add a note</li>
-              <li>Drag a note to move it between sections</li>
-              <li>Pinch, or scroll with a modifier, to zoom - drag the background to pan</li>
+              <li>{{ t('doubleClickToAdd') }}</li>
+              <li>{{ t('dragToMove') }}</li>
+              <li>{{ t('pinchToZoom') }}</li>
             </ul>
           </div>
         </div>
 
         <aside
           v-if="!board.finished"
-          :aria-label="board.canManage ? 'Facilitator controls' : 'Current phase controls'"
+          :aria-label="board.canManage ? t('facilitatorControls') : t('currentPhaseControls')"
           class="facilitator-panel">
           <header class="facilitator-panel-header">
             <button
@@ -141,11 +141,11 @@
               class="facilitator-panel-toggle"
               type="button"
               @click="state.phasesCollapsed = !state.phasesCollapsed">
-              <h2>Retro plan</h2>
+              <h2>{{ t('retroPlan') }}</h2>
               <ChevronDown aria-hidden="true" />
             </button>
             <div v-else>
-              <h2>Current phase</h2>
+              <h2>{{ t('currentPhase') }}</h2>
             </div>
           </header>
 
@@ -153,29 +153,29 @@
             v-if="board.canManage"
             v-show="!state.phasesCollapsed"
             id="facilitator-phases"
-            aria-label="Retro phases"
+            :aria-label="t('retroPhases')"
             class="facilitator-phases">
             <button
               v-for="(phase, index) in PHASES"
               :key="phase"
               :aria-current="board.phase === phase ? 'step' : undefined"
-              :aria-label="phase"
+              :aria-label="t(PHASE_KEYS[phase].label)"
               class="facilitator-phase"
               :class="{
                 active: board.phase === phase,
                 done: PHASES.indexOf(board.phase) > index,
               }"
               :disabled="phase !== board.phase && !canChangePhase(board.phase, phase)"
-              :title="`${PHASE_GUIDES[phase].title} — ${PHASE_GUIDES[phase].action}`"
+              :title="`${t(PHASE_KEYS[phase].title)} — ${t(PHASE_KEYS[phase].action)}`"
               type="button"
               @click="board.phase !== phase && changePhase(phase)">
               <span class="facilitator-phase-index">{{ index + 1 }}</span>
               <span class="facilitator-phase-copy">
                 <span class="facilitator-phase-title">
                   <component :is="PHASE_ICONS[phase]" />
-                  <strong>{{ phase }}</strong>
+                  <strong>{{ t(PHASE_KEYS[phase].label) }}</strong>
                 </span>
-                <small>{{ PHASE_GUIDES[phase].title }}</small>
+                <small>{{ t(PHASE_KEYS[phase].title) }}</small>
               </span>
             </button>
           </nav>
@@ -201,15 +201,15 @@
               class="phase-control">
               <span class="phase-control-label">
                 <StickyNote aria-hidden="true" />
-                Notes:
+                {{ t('notes') }}:
               </span>
               <button
-                :aria-label="myNotes.hidden > 0 ? 'Show my notes' : 'Hide my notes'"
+                :aria-label="myNotes.hidden > 0 ? t('showMyNotes') : t('hideMyNotes')"
                 class="secondary small"
                 :class="{ danger: myNotes.hidden > 0 }"
                 type="button"
                 @click="setMineRevealed(myNotes.hidden > 0)">
-                {{ myNotes.hidden > 0 ? 'Private' : 'Visible' }}
+                {{ myNotes.hidden > 0 ? t('private') : t('visible') }}
               </button>
             </div>
 
@@ -218,13 +218,13 @@
               class="phase-control vote-controls">
               <span class="phase-control-label">
                 <ThumbsUp aria-hidden="true" />
-                Votes:
+                {{ t('votes') }}:
               </span>
               <div class="vote-counter">
                 <span>{{ board.myVotes }} of</span>
                 <input
                   v-if="board.canManage"
-                  aria-label="Votes per person"
+                  :aria-label="t('votesPerPerson')"
                   class="secondary small vote-counter-limit"
                   max="99"
                   min="1"
@@ -237,9 +237,9 @@
 
               <button
                 v-if="canResetVotes(board)"
-                aria-label="Reset votes"
+                :aria-label="t('resetVotes')"
                 class="secondary small reset-votes"
-                title="Clear every vote so the team can vote again"
+                :title="t('resetVotesTitle')"
                 type="button"
                 @click="resetVotes()">
                 <RotateCcw />
@@ -251,25 +251,25 @@
               class="phase-control phase-timer">
               <span class="phase-control-label">
                 <Timer aria-hidden="true" />
-                Timer:
+                {{ t('timer') }}:
               </span>
               <template v-if="countdown === undefined">
                 <input
                   v-model.number="state.timerMinutes"
-                  aria-label="Timer duration in minutes"
+                  :aria-label="t('timerDuration')"
                   class="secondary small phase-timer-minutes"
                   :disabled="!board.canManage"
                   max="60"
                   min="1"
                   type="number"
                   @change="state.timerMinutes = Math.min(60, Math.max(1, state.timerMinutes))" />
-                <span>min</span>
+                <span>{{ t('minutes') }}</span>
                 <button
                   class="secondary small phase-timer-start"
                   :disabled="!board.canManage"
                   type="button"
                   @click="startTimer()">
-                  Start
+                  {{ t('start') }}
                 </button>
               </template>
               <template v-else>
@@ -283,7 +283,7 @@
                   class="secondary small danger phase-timer-stop"
                   type="button"
                   @click="stopTimer()">
-                  Stop
+                  {{ t('stop') }}
                 </button>
               </template>
             </div>
@@ -297,14 +297,14 @@
               class="secondary small"
               type="button"
               @click="changePreviousPhase(board.phase)">
-              Back
+              {{ t('back') }}
             </button>
             <button
               v-if="nextPhase(board.phase)"
               class="primary small"
               type="button"
               @click="changeNextPhase(board.phase)">
-              Next phase
+              {{ t('nextPhase') }}
             </button>
           </div>
 
@@ -314,7 +314,7 @@
             type="button"
             @click="finish">
             <Archive />
-            Finish retro
+            {{ t('finishRetro') }}
           </button>
         </aside>
 
@@ -327,9 +327,9 @@
           :on-node-move-end="commitDraggedCard">
           <template #controls>
             <button
-              :aria-label="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
+              :aria-label="state.fullscreen ? t('leaveFullscreen') : t('openFullscreen')"
               class="icon-btn retro-fullscreen-control"
-              :title="state.fullscreen ? 'Leave full screen' : 'Open full screen'"
+              :title="state.fullscreen ? t('leaveFullscreen') : t('openFullscreen')"
               type="button"
               @click="toggleFullscreen">
               <Minimize v-if="state.fullscreen" />
@@ -385,10 +385,10 @@
                 class="group-header"
                 @dblclick.stop>
                 <input
-                  aria-label="Topic title"
+                  :aria-label="t('topicTitle')"
                   class="secondary small group-title"
                   :disabled="!canGroup(board)"
-                  :placeholder="`Topic of ${group.cardIds.length} notes`"
+                  :placeholder="tp('topicOf', group.cardIds.length)"
                   :value="
                     state.editingGroupId === group.id
                       ? (state.fieldDrafts.groupTitle ?? group.title)
@@ -400,9 +400,9 @@
                   @pointerdown.stop />
                 <button
                   v-if="canGroup(board)"
-                  aria-label="Ungroup topic"
+                  :aria-label="t('ungroupTopic')"
                   class="secondary small group-ungroup"
-                  title="Ungroup"
+                  :title="t('ungroupTopic')"
                   type="button"
                   @click.stop="splitGroup(group.id)"
                   @pointerdown.stop>
@@ -416,11 +416,11 @@
                 @pointerdown.stop>
                 <button
                   v-if="votingOpen"
-                  :aria-label="group.votedByMe ? 'Remove vote from topic' : 'Vote for topic'"
+                  :aria-label="group.votedByMe ? t('removeVoteFromTopic') : t('voteForTopic')"
                   :aria-pressed="group.votedByMe"
                   class="icon-btn small vote-badge"
                   :class="{ voted: group.votedByMe }"
-                  :title="group.votedByMe ? 'Remove vote' : 'Vote for this topic'"
+                  :title="group.votedByMe ? t('removeVote') : t('voteForThisTopic')"
                   type="button"
                   @click.stop="voteGroup(group)"
                   @pointerdown.stop>
@@ -499,7 +499,7 @@
               <textarea
                 v-else
                 ref="cardTexts"
-                aria-label="Edit note"
+                :aria-label="t('editNote')"
                 class="card-text"
                 :data-card-id="card.id"
                 maxlength="180"
@@ -523,7 +523,7 @@
                 type="button"
                 @click.stop="persistCreatedCard(card.id)"
                 @pointerdown.stop>
-                Retry saving
+                {{ t('retrySaving') }}
               </button>
               <details
                 v-if="
@@ -535,7 +535,7 @@
                 @click.stop
                 @pointerdown.stop>
                 <summary
-                  aria-label="Assignee"
+                  :aria-label="t('assignee')"
                   class="secondary small assignee-trigger"
                   :class="{ 'assignee-trigger--empty': !card.assignee }">
                   <span
@@ -545,7 +545,7 @@
                     {{ card.assignee.initials }}
                   </span>
                   <UserRound v-else />
-                  <span class="assignee-name">{{ card.assignee?.name ?? 'Unassigned' }}</span>
+                  <span class="assignee-name">{{ card.assignee?.name ?? t('unassigned') }}</span>
                 </summary>
                 <div
                   v-if="canAssign(board)"
@@ -570,7 +570,7 @@
                     type="button"
                     @click="assign(card, null, $event)">
                     <UserRound />
-                    Unassigned
+                    {{ t('unassigned') }}
                   </button>
                 </div>
               </details>
@@ -583,10 +583,12 @@
                 class="card-toolbar card-toolbar--bottom-center">
                 <button
                   v-if="votingOpen"
-                  :aria-label="votedByMe(board, card) ? 'Remove vote from topic' : 'Vote for topic'"
+                  :aria-label="
+                    votedByMe(board, card) ? t('removeVoteFromTopic') : t('voteForTopic')
+                  "
                   class="icon-btn small vote-badge"
                   :class="{ voted: votedByMe(board, card) }"
-                  :title="votedByMe(board, card) ? 'Remove vote' : 'Vote for this topic'"
+                  :title="votedByMe(board, card) ? t('removeVote') : t('voteForThisTopic')"
                   type="button"
                   @click.stop="vote(card)"
                   @pointerdown.stop>
@@ -636,7 +638,7 @@
                 <button
                   v-if="canTickOff(board, card)"
                   class="icon-btn small"
-                  :title="card.done ? 'Mark as not done' : 'Mark as done'"
+                  :title="card.done ? t('markNotDone') : t('markDone')"
                   type="button"
                   @click.stop="done(card)"
                   @pointerdown.stop>
@@ -650,7 +652,7 @@
                     !isActionsSection(board, card.sectionId)
                   "
                   class="icon-btn small"
-                  :title="card.revealed ? 'Hide from the team' : 'Show to the team'"
+                  :title="card.revealed ? t('hideFromTeam') : t('showToTeam')"
                   type="button"
                   @click.stop="toggleReveal(card)"
                   @pointerdown.stop>
@@ -668,9 +670,9 @@
                 class="card-toolbar card-toolbar--right">
                 <button
                   v-if="canEditCard(board, card)"
-                  aria-label="Edit note"
+                  :aria-label="t('editNote')"
                   class="icon-btn small"
-                  title="Edit note"
+                  :title="t('editNote')"
                   type="button"
                   @click.stop="startEdit(card)"
                   @pointerdown.stop>
@@ -678,7 +680,7 @@
                 </button>
                 <button
                   v-if="card.isMine || board.canManage"
-                  aria-label="Delete note"
+                  :aria-label="t('deleteNote')"
                   class="icon-btn small"
                   type="button"
                   @click.stop="destroy(card)"
@@ -692,7 +694,7 @@
 
         <div
           v-if="state.groupSelection.length > 0"
-          aria-label="Group selection"
+          :aria-label="t('groupSelection')"
           class="merge-bar"
           role="toolbar">
           <button
@@ -701,13 +703,13 @@
             type="button"
             @click="mergeSelection()">
             <Group />
-            Merge into a topic
+            {{ t('mergeIntoTopic') }}
           </button>
           <button
             class="secondary small"
             type="button"
             @click="state.groupSelection = []">
-            Clear
+            {{ t('clear') }}
           </button>
         </div>
       </section>
@@ -754,6 +756,202 @@ import type {
 } from '~/sections/retro/retro-board/RetroBoardPage.types'
 
 const props = defineProps<{ deps: RetroBoardPageDeps; retroId: string }>()
+
+const { t, tp } = useI18n({
+  en: {
+    actions: 'Actions',
+    actionsAction: 'Turn the discussion into clear commitments and assign an owner.',
+    actionsHint: 'Follow-ups the team commits to',
+    actionsTitle: 'Create action items',
+    assignee: 'Assignee',
+    back: 'Back',
+    badHint: 'Add things that went badly',
+    cancelShortcut: 'cancels editing a note',
+    clear: 'Clear',
+    clearVotesConfirm: 'Clear every vote on this board?',
+    collectAction: 'Add notes to the board. Your covered notes stay private until you reveal them.',
+    collectTitle: 'Share your perspective',
+    connectError: 'Could not connect to live updates',
+    currentPhase: 'Current phase',
+    currentPhaseControls: 'Current phase controls',
+    deleteNote: 'Delete note',
+    deletesSelectedNote: 'deletes the selected note',
+    discuss: 'Discuss',
+    discussAction: 'Start with the highlighted topics and agree on what matters most.',
+    discussTitle: 'Discuss the results',
+    doubleClickHint: 'Double-click the area to add a note',
+    doubleClickToAdd: 'Double-click (or double-tap) an empty spot to add a note',
+    dragToMove: 'Drag a note to move it between sections',
+    editNote: 'Edit note',
+    editRetroName: 'Edit retro name',
+    facilitatorControls: 'Facilitator controls',
+    finishConfirm: 'Finish this retro? It becomes read-only for everyone.',
+    finished: 'Finished',
+    finishRetro: 'Finish retro',
+    goodHint: 'Add things that went well',
+    groupAction: 'The facilitator combines related notes into topics.',
+    groupSelection: 'Group selection',
+    groupSimilar: 'Group similar notes',
+    guide: 'Guide',
+    hideFromTeam: 'Hide from the team',
+    hideMyNotes: 'Hide my notes',
+    keyboardShortcuts: 'Keyboard shortcuts',
+    leaveFullscreen: 'Leave full screen',
+    loadError: 'Could not load retro',
+    loading: 'Loading retro…',
+    makeOwner: 'Make owner',
+    markDone: 'Mark as done',
+    markNotDone: 'Mark as not done',
+    mergeIntoTopic: 'Merge into a topic',
+    mergeShortcut: '+ click picks notes to merge into a topic',
+    minutes: 'min',
+    nextPhase: 'Next phase',
+    notes: 'Notes',
+    onBoard: 'On the board',
+    onRetro: 'On this retro',
+    openFullscreen: 'Open full screen',
+    owner: 'Owner',
+    participants: 'Participants',
+    peopleOnRetro: 'People on this retro',
+    phaseCollect: 'Collect',
+    phaseGroup: 'Group',
+    phaseVote: 'Vote',
+    pinchToZoom: 'Pinch, or scroll with a modifier, to zoom - drag the background to pan',
+    place: 'place',
+    private: 'Private',
+    removeVote: 'Remove vote',
+    removeVoteFromTopic: 'Remove vote from topic',
+    resetVotes: 'Reset votes',
+    resetVotesTitle: 'Clear every vote so the team can vote again',
+    retro: 'Retro',
+    retroName: 'Retro name',
+    retroPhases: 'Retro phases',
+    retroPlan: 'Retro plan',
+    retrySaving: 'Retry saving',
+    saveShortcut: 'saves a note being edited',
+    showMyNotes: 'Show my notes',
+    showToTeam: 'Show to the team',
+    start: 'Start',
+    startHint: 'Add things the team should start doing',
+    stop: 'Stop',
+    stopHint: 'Add things the team should stop doing',
+    syncError: 'Could not sync live updates',
+    timer: 'Timer',
+    timerDuration: 'Timer duration in minutes',
+    topicOf: 'Topic of note|Topic of notes',
+    topicTitle: 'Topic title',
+    unassigned: 'Unassigned',
+    ungroupTopic: 'Ungroup topic',
+    visible: 'Visible',
+    voteAction: 'Choose the topics worth discussing. Voting opens while the timer is running.',
+    voteForThisTopic: 'Vote for this topic',
+    voteForTopic: 'Vote for topic',
+    votes: 'vote|votes',
+    votesLeft: '{count} votes left while the timer runs.',
+    votesPerPerson: 'Votes per person',
+    voteTitle: 'Vote on topics',
+    votingClosed: 'Voting is closed. The facilitator can move to the results.',
+    votingClosedTitle: 'Voting closed',
+  },
+  ru: {
+    actions: 'Действия',
+    actionsAction: 'Превратите обсуждение в конкретные обязательства и назначьте ответственного.',
+    actionsHint: 'Дальнейшие шаги, которые берёт на себя команда',
+    actionsTitle: 'Создайте пункты действий',
+    assignee: 'Ответственный',
+    back: 'Назад',
+    badHint: 'Добавьте то, что прошло плохо',
+    cancelShortcut: 'отменяет редактирование заметки',
+    clear: 'Очистить',
+    clearVotesConfirm: 'Очистить все голоса на этой доске?',
+    collectAction:
+      'Добавляйте заметки на доску. Скрытые заметки видны только вам, пока вы их не откроете.',
+    collectTitle: 'Поделитесь своим мнением',
+    connectError: 'Не удалось подключиться к обновлениям',
+    currentPhase: 'Текущий этап',
+    currentPhaseControls: 'Управление текущим этапом',
+    deleteNote: 'Удалить заметку',
+    deletesSelectedNote: 'удаляет выбранную заметку',
+    discuss: 'Обсуждение',
+    discussAction: 'Начните с выделенных тем и договоритесь, что важно в первую очередь.',
+    discussTitle: 'Обсудите результаты',
+    doubleClickHint: 'Дважды щёлкните по области, чтобы добавить заметку',
+    doubleClickToAdd: 'Дважды щёлкните или коснитесь пустого места, чтобы добавить заметку',
+    dragToMove: 'Перетащите заметку в другой блок',
+    editNote: 'Изменить заметку',
+    editRetroName: 'Изменить название ретроспективы',
+    facilitatorControls: 'Управление ведущего',
+    finishConfirm: 'Завершить ретроспективу? После этого она станет доступна только для чтения.',
+    finished: 'Завершена',
+    finishRetro: 'Завершить ретроспективу',
+    goodHint: 'Добавьте то, что прошло хорошо',
+    groupAction: 'Ведущий объединяет связанные заметки в темы.',
+    groupSelection: 'Выбор группы',
+    groupSimilar: 'Объедините похожие заметки',
+    guide: 'Справка',
+    hideFromTeam: 'Скрыть от команды',
+    hideMyNotes: 'Скрыть мои заметки',
+    keyboardShortcuts: 'Сочетания клавиш',
+    leaveFullscreen: 'Выйти из полноэкранного режима',
+    loadError: 'Не удалось загрузить ретроспективу',
+    loading: 'Загрузка ретроспективы…',
+    makeOwner: 'Назначить владельцем',
+    markDone: 'Отметить выполненной',
+    markNotDone: 'Снять отметку выполнения',
+    mergeIntoTopic: 'Объединить в тему',
+    mergeShortcut: '+ щелчок выбирает заметки для объединения в тему',
+    minutes: 'мин',
+    nextPhase: 'Следующий этап',
+    notes: 'Заметки',
+    onBoard: 'На доске',
+    onRetro: 'На этой ретроспективе',
+    openFullscreen: 'Открыть полный экран',
+    owner: 'Владелец',
+    participants: 'Участники',
+    peopleOnRetro: 'Участники ретроспективы',
+    phaseCollect: 'Сбор идей',
+    phaseGroup: 'Группировка',
+    phaseVote: 'Голосование',
+    pinchToZoom:
+      'Изменяйте масштаб жестом или прокруткой с модификатором, фон перетаскивайте для перемещения',
+    place: 'место',
+    private: 'Скрыты',
+    removeVote: 'Убрать голос',
+    removeVoteFromTopic: 'Убрать голос с темы',
+    resetVotes: 'Сбросить голоса',
+    resetVotesTitle: 'Очистить все голоса, чтобы команда могла проголосовать снова',
+    retro: 'Ретроспектива',
+    retroName: 'Название ретроспективы',
+    retroPhases: 'Этапы ретроспективы',
+    retroPlan: 'План ретроспективы',
+    retrySaving: 'Повторить сохранение',
+    saveShortcut: 'сохраняет редактируемую заметку',
+    showMyNotes: 'Показать мои заметки',
+    showToTeam: 'Показать команде',
+    start: 'Начать',
+    startHint: 'Добавьте то, что команде стоит начать делать',
+    stop: 'Остановить',
+    stopHint: 'Добавьте то, что команде стоит перестать делать',
+    syncError: 'Не удалось синхронизировать обновления',
+    timer: 'Таймер',
+    timerDuration: 'Длительность таймера в минутах',
+    topicOf: 'Тема из заметки|Тема из заметок|Тема из заметок',
+    topicTitle: 'Название темы',
+    unassigned: 'Не назначен',
+    ungroupTopic: 'Разгруппировать тему',
+    visible: 'Видимы',
+    voteAction: 'Выберите темы для обсуждения. Голосование открыто, пока работает таймер.',
+    voteForThisTopic: 'Проголосовать за эту тему',
+    voteForTopic: 'Проголосовать за тему',
+    votes: 'голос|голоса|голосов',
+    votesLeft: 'Осталось голосов: {count}, пока работает таймер.',
+    votesPerPerson: 'Голосов на человека',
+    voteTitle: 'Проголосуйте за темы',
+    votingClosed: 'Голосование закрыто. Ведущий может перейти к результатам.',
+    votingClosedTitle: 'Голосование закрыто',
+  },
+})
+
 const CURSOR_TTL_MS = 5000
 const LIVE_TTL_MS = 2000
 
@@ -766,28 +964,13 @@ const PHASE_ICONS = {
   Vote: ThumbsUp,
 }
 
-const PHASE_GUIDES: Record<RetroPhase, { action: string; title: string }> = {
-  Actions: {
-    action: 'Turn the discussion into clear commitments and assign an owner.',
-    title: 'Create action items',
-  },
-  Collect: {
-    action: 'Add notes to the board. Your covered notes stay private until you reveal them.',
-    title: 'Share your perspective',
-  },
-  Discuss: {
-    action: 'Start with the highlighted topics and agree on what matters most.',
-    title: 'Discuss the results',
-  },
-  Group: {
-    action: 'The facilitator combines related notes into topics.',
-    title: 'Group similar notes',
-  },
-  Vote: {
-    action: 'Choose the topics worth discussing. Voting opens while the timer is running.',
-    title: 'Vote on topics',
-  },
-}
+const PHASE_KEYS = {
+  Actions: { action: 'actionsAction', label: 'actions', title: 'actionsTitle' },
+  Collect: { action: 'collectAction', label: 'phaseCollect', title: 'collectTitle' },
+  Discuss: { action: 'discussAction', label: 'discuss', title: 'discussTitle' },
+  Group: { action: 'groupAction', label: 'phaseGroup', title: 'groupSimilar' },
+  Vote: { action: 'voteAction', label: 'phaseVote', title: 'voteTitle' },
+} as const satisfies Record<RetroPhase, Record<'action' | 'label' | 'title', string>>
 
 const UNSECTIONED_CARD_COLOR = '#c99724'
 
@@ -799,17 +982,17 @@ const canChangePhase = (current: RetroPhase, target: RetroPhase) =>
 const phaseGuide = (board: RetroBoardViewModel) => {
   if (board.phase === 'Vote' && votingOpen.value) {
     return {
-      action: `${Math.max(0, board.votesPerUser - board.myVotes)} votes left while the timer runs.`,
-      title: PHASE_GUIDES.Vote.title,
+      action: t('votesLeft', { count: Math.max(0, board.votesPerUser - board.myVotes) }),
+      title: t(PHASE_KEYS.Vote.title),
     }
   }
   if (board.phase === 'Vote' && board.phaseEndsAt) {
     return {
-      action: 'Voting is closed. The facilitator can move to the results.',
-      title: 'Voting closed',
+      action: t('votingClosed'),
+      title: t('votingClosedTitle'),
     }
   }
-  return PHASE_GUIDES[board.phase]
+  return { action: t(PHASE_KEYS[board.phase].action), title: t(PHASE_KEYS[board.phase].title) }
 }
 
 const ZONE_WIDTH = 880
@@ -830,7 +1013,7 @@ const GROUP_MAGNET_DISTANCE = 32
 const MAX_CARD_FONT_SIZE = 34
 const CARD_TEXT_WIDTH = 136
 const CARD_TEXT_LINE_HEIGHT = 1.15
-const CARD_TEXT_CHAR_WIDTH = 0.55
+const CARD_TEXT_CHAR_WIDTH = 0.6
 const CARD_TEXT_HEIGHT = 132
 const CARD_TEXT_BASE_LENGTH = 18
 
@@ -1100,7 +1283,7 @@ const syncBoard = (source: RetroChannel | undefined) => {
     })
     .catch(() => {
       if (source === channel) {
-        toast.show('Could not sync live updates')
+        toast.show(t('syncError'))
       }
     })
     .finally(() => {
@@ -1225,7 +1408,7 @@ const openChannel = () => {
   next.onMessage((incoming) => onChannelMessage(next, incoming))
   void next.open().catch(() => {
     if (channel === next) {
-      toast.show('Could not connect to live updates')
+      toast.show(t('connectError'))
     }
   })
 }
@@ -1280,7 +1463,7 @@ const everyone = (board: RetroBoardViewModel) => {
   )
 }
 
-useHead({ title: computed(() => data.value?.name ?? 'Retro') })
+useHead({ title: computed(() => data.value?.name ?? t('retro')) })
 
 // The first four sections form a 2x2 board; anything after it stacks in a column on the right.
 const zoneRect = (index: number) => {
@@ -1398,10 +1581,10 @@ const discussionRanks = computed(() => {
 
 const voteResultClasses = (rank: number | undefined) => (rank ? [`rank-${rank}`] : [])
 
-const votesLabel = (votes: number) => `${votes} ${votes === 1 ? 'vote' : 'votes'}`
+const votesLabel = (votes: number) => tp('votes', votes)
 
 const voteResultLabel = (votes: number, rank: number | undefined) =>
-  rank ? `${rank} place, ${votesLabel(votes)}` : votesLabel(votes)
+  rank ? `${rank} ${t('place')}, ${votesLabel(votes)}` : votesLabel(votes)
 
 const cardsOf = (board: RetroBoardViewModel, sectionId: string) =>
   boardCards(board).filter((card) => card.sectionId === sectionId)
@@ -1517,16 +1700,16 @@ const visibleCards = (board: RetroBoardViewModel) =>
     }
   })
 
-const SECTION_HINTS: Record<string, string> = {
-  actions: 'Follow-ups the team commits to',
-  bad: 'Add things that went badly',
-  good: 'Add things that went well',
-  start: 'Add things the team should start doing',
-  stop: 'Add things the team should stop doing',
-}
+const SECTION_HINTS = {
+  actions: 'actionsHint',
+  bad: 'badHint',
+  good: 'goodHint',
+  start: 'startHint',
+  stop: 'stopHint',
+} as const
 
 const sectionHint = (name: string) =>
-  SECTION_HINTS[name.toLowerCase()] ?? 'Double-click the area to add a note'
+  t(SECTION_HINTS[name.toLowerCase() as keyof typeof SECTION_HINTS] ?? 'doubleClickHint')
 
 // Topics are how the owner runs the room, not a step of it: a badly cut topic has to be fixable
 // while the team is already talking about it.
@@ -2825,7 +3008,7 @@ const canResetVotes = (board: RetroBoardViewModel) =>
 const resetVotes = async () => {
   const board = data.value
 
-  if (!board || !canResetVotes(board) || !confirm('Clear every vote on this board?')) {
+  if (!board || !canResetVotes(board) || !confirm(t('clearVotesConfirm'))) {
     return
   }
   await executeResetVotes({ retroId: props.retroId })
@@ -2905,7 +3088,7 @@ const finish = async () => {
   }
   // Finishing cannot be undone, so the click is worth one question - but the board itself is the
   // summary, and nobody reads a listing pasted into a browser dialog.
-  if (!confirm('Finish this retro? It becomes read-only for everyone.')) {
+  if (!confirm(t('finishConfirm'))) {
     return
   }
   await executeFinish({ retroId: props.retroId })
@@ -3714,6 +3897,7 @@ const finish = async () => {
   font-family: 'Caveat', 'Inter', cursive;
   font-size: 34px;
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.15px;
   line-height: 1.15;
   margin: 0;
   max-height: 100%;

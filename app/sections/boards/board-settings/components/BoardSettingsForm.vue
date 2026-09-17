@@ -1,16 +1,16 @@
 <template>
   <form @submit.prevent="submit">
-    <label for="board-settings-name">Name</label>
+    <label for="board-settings-name">{{ t('name') }}</label>
     <input
       id="board-settings-name"
       v-model="state.name"
       :disabled="!viewModel.canUpdate"
       required />
-    <label>Color</label>
+    <label>{{ t('color') }}</label>
     <AppColorPicker
       v-model="state.color"
       :disabled="!viewModel.canUpdate" />
-    <label for="board-settings-status">Board status</label>
+    <label for="board-settings-status">{{ t('boardStatus') }}</label>
     <select
       id="board-settings-status"
       v-model="state.status"
@@ -22,7 +22,7 @@
         {{ option.label }}
       </option>
     </select>
-    <label>Columns</label>
+    <label>{{ t('columns') }}</label>
     <DragDropProvider
       :plugins="defaultPreset.plugins"
       :sensors="sensors"
@@ -49,7 +49,7 @@
       type="button"
       @click="addColumn">
       <Plus />
-      Add column
+      {{ t('addColumn') }}
     </button>
     <p
       v-if="error"
@@ -62,7 +62,7 @@
         class="primary"
         :disabled="submitting"
         type="submit">
-        {{ submitting ? 'Saving…' : 'Save changes' }}
+        {{ submitting ? t('saving') : t('saveChanges') }}
       </button>
       <button
         v-if="viewModel.canDelete"
@@ -70,7 +70,7 @@
         :disabled="submitting"
         type="button"
         @click="props.onDelete">
-        Delete board
+        {{ t('deleteBoard') }}
       </button>
     </div>
   </form>
@@ -94,10 +94,42 @@ import type {
 } from './BoardSettingsForm.types'
 
 const props = defineProps<BoardSettingsFormProps>()
+
+const { t } = useI18n({
+  en: {
+    addColumn: 'Add column',
+    boardStatus: 'Board status',
+    color: 'Color',
+    columns: 'Columns',
+    deleteBoard: 'Delete board',
+    done: 'Done',
+    inProgress: 'In progress',
+    name: 'Name',
+    new: 'New',
+    newColumn: 'New column',
+    saveChanges: 'Save changes',
+    saving: 'Saving…',
+  },
+  ru: {
+    addColumn: 'Добавить колонку',
+    boardStatus: 'Статус доски',
+    color: 'Цвет',
+    columns: 'Колонки',
+    deleteBoard: 'Удалить доску',
+    done: 'Готово',
+    inProgress: 'В работе',
+    name: 'Название',
+    new: 'Новая',
+    newColumn: 'Новая колонка',
+    saveChanges: 'Сохранить изменения',
+    saving: 'Сохранение…',
+  },
+})
+
 const statusOptions = [
-  { label: 'New', value: 'New' },
-  { label: 'In progress', value: 'Active' },
-  { label: 'Done', value: 'Done' },
+  { label: t('new'), value: 'New' },
+  { label: t('inProgress'), value: 'Active' },
+  { label: t('done'), value: 'Done' },
 ] as const satisfies ReadonlyArray<{
   label: string
   value: BoardSettingsPageData['status']
@@ -138,7 +170,7 @@ const addColumn = () => {
     color: DEFAULT_COLOR,
     id: null,
     key: `new-column-${state.newColumnId}`,
-    name: 'New column',
+    name: t('newColumn'),
   })
 }
 

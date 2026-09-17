@@ -5,11 +5,11 @@
     <p
       v-if="viewModel.member.isOwner"
       class="muted">
-      Owner permissions are read-only.
+      {{ t('ownerReadonly') }}
     </p>
     <fieldset :disabled="viewModel.member.isOwner">
-      <legend>Administration</legend>
-      <p class="muted section-description">Controls organization-level management tools.</p>
+      <legend>{{ t('administration') }}</legend>
+      <p class="muted section-description">{{ t('administrationDescription') }}</p>
       <div class="permission-grid">
         <label
           v-for="permission in ADMIN_PERMISSION_OPTIONS"
@@ -18,27 +18,27 @@
           <input
             v-model="state.draft.admin[permission.key]"
             type="checkbox" />
-          <span>{{ permission.label }}</span>
+          <span>{{ t(permission.label) }}</span>
         </label>
       </div>
     </fieldset>
 
     <fieldset :disabled="viewModel.member.isOwner">
-      <legend>Organization access</legend>
-      <p class="muted section-description">These permissions apply to every space.</p>
+      <legend>{{ t('organizationAccess') }}</legend>
+      <p class="muted section-description">{{ t('organizationAccessDescription') }}</p>
       <div class="product-section">
-        <h3>Boards</h3>
+        <h3>{{ t('boards') }}</h3>
         <div class="read-permission">
-          <strong>Read</strong>
+          <strong>{{ t('read') }}</strong>
           <label class="permission-option">
             <input
-              aria-label="Read organization"
+              :aria-label="t('readOrganization')"
               :checked="state.draft.global.canRead || globalReadInherited"
               :disabled="globalReadInherited"
-              :title="globalReadInherited ? 'Inherited' : undefined"
+              :title="globalReadInherited ? t('inherited') : undefined"
               type="checkbox"
               @change="state.draft.global.canRead = !state.draft.global.canRead" />
-            <span>Read organization</span>
+            <span>{{ t('readOrganization') }}</span>
           </label>
         </div>
         <PermissionTable
@@ -46,23 +46,23 @@
           :rows="globalPermissionRows" />
       </div>
       <div class="product-section">
-        <h3>Retro</h3>
+        <h3>{{ t('retro') }}</h3>
         <div class="read-permission">
-          <strong>Access</strong>
+          <strong>{{ t('access') }}</strong>
           <label class="permission-option">
             <input
               v-model="state.draft.global.canManageRetros"
-              aria-label="Manage retros in organization"
+              :aria-label="t('manageRetrosOrganization')"
               type="checkbox" />
-            <span>Manage retros</span>
+            <span>{{ t('manageRetros') }}</span>
           </label>
         </div>
       </div>
     </fieldset>
 
     <fieldset :disabled="viewModel.member.isOwner">
-      <legend>Direct space access</legend>
-      <p class="muted section-description">Adds permissions for individual spaces.</p>
+      <legend>{{ t('directSpaceAccess') }}</legend>
+      <p class="muted section-description">{{ t('directSpaceAccessDescription') }}</p>
       <details
         v-for="space in viewModel.spaces"
         :key="space.id"
@@ -74,54 +74,56 @@
           <span
             v-if="space.isDefault"
             class="muted">
-            Default
+            {{ t('default') }}
           </span>
         </summary>
         <div class="direct-permissions">
           <div class="product-section">
-            <h3>Boards</h3>
+            <h3>{{ t('boards') }}</h3>
             <div class="read-permission">
-              <strong>Read</strong>
+              <strong>{{ t('read') }}</strong>
               <label class="permission-option">
                 <input
-                  :aria-label="`Read ${space.name}`"
+                  :aria-label="`${t('read')} ${space.name}`"
                   :checked="
                     state.draft.direct[space.id]!.canRead ||
                     directPermissionTables[space.id]!.readInherited
                   "
                   :disabled="directPermissionTables[space.id]!.readInherited"
-                  :title="directPermissionTables[space.id]!.readInherited ? 'Inherited' : undefined"
+                  :title="
+                    directPermissionTables[space.id]!.readInherited ? t('inherited') : undefined
+                  "
                   type="checkbox"
                   @change="
                     state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
                   " />
-                <span>Read space</span>
+                <span>{{ t('readSpace') }}</span>
               </label>
             </div>
             <PermissionTable
-              :label-suffix="` in ${space.name}`"
+              :label-suffix="` ${t('in')} ${space.name}`"
               :on-toggle="(key) => toggleDirect(space.id, key)"
               :rows="directPermissionTables[space.id]!.rows" />
           </div>
           <div class="product-section">
-            <h3>Retro</h3>
+            <h3>{{ t('retro') }}</h3>
             <div class="read-permission">
-              <strong>Access</strong>
+              <strong>{{ t('access') }}</strong>
               <label class="permission-option">
                 <input
-                  :aria-label="`Manage retros in ${space.name}`"
+                  :aria-label="`${t('manageRetros')} ${t('in')} ${space.name}`"
                   :checked="
                     state.draft.direct[space.id]!.canManageRetros ||
                     state.draft.global.canManageRetros
                   "
                   :disabled="state.draft.global.canManageRetros"
-                  :title="state.draft.global.canManageRetros ? 'Inherited' : undefined"
+                  :title="state.draft.global.canManageRetros ? t('inherited') : undefined"
                   type="checkbox"
                   @change="
                     state.draft.direct[space.id]!.canManageRetros =
                       !state.draft.direct[space.id]!.canManageRetros
                   " />
-                <span>Manage retros</span>
+                <span>{{ t('manageRetros') }}</span>
               </label>
             </div>
           </div>
@@ -132,7 +134,7 @@
     <p
       v-if="saved"
       class="form-success">
-      Permissions saved.
+      {{ t('permissionsSaved') }}
     </p>
     <p
       v-if="error"
@@ -145,7 +147,7 @@
       <button
         class="primary"
         :disabled="submitting">
-        {{ submitting ? 'Saving…' : 'Save permissions' }}
+        {{ submitting ? t('saving') : t('savePermissions') }}
       </button>
     </div>
   </form>
@@ -177,6 +179,65 @@ const props = defineProps<{
   submitting: boolean
   viewModel: MemberPermissionsPageData
 }>()
+
+const { t } = useI18n({
+  en: {
+    access: 'Access',
+    administration: 'Administration',
+    administrationDescription: 'Controls organization-level management tools.',
+    boards: 'Boards',
+    default: 'Default',
+    deleteOrganization: 'Delete organization',
+    directSpaceAccess: 'Direct space access',
+    directSpaceAccessDescription: 'Adds permissions for individual spaces.',
+    in: 'in',
+    inherited: 'Inherited',
+    manageAttributes: 'Manage attributes',
+    manageMembers: 'Manage members and permissions',
+    manageRetros: 'Manage retros',
+    manageRetrosOrganization: 'Manage retros in organization',
+    moveData: 'Move spaces and boards',
+    organizationAccess: 'Organization access',
+    organizationAccessDescription: 'These permissions apply to every space.',
+    ownerReadonly: 'Owner permissions are read-only.',
+    permissionsSaved: 'Permissions saved.',
+    read: 'Read',
+    readOrganization: 'Read organization',
+    readSpace: 'Read space',
+    retro: 'Retro',
+    savePermissions: 'Save permissions',
+    saving: 'Saving…',
+    updateOrganization: 'Edit organization',
+  },
+  ru: {
+    access: 'Доступ',
+    administration: 'Администрирование',
+    administrationDescription: 'Управление инструментами организации.',
+    boards: 'Доски',
+    default: 'По умолчанию',
+    deleteOrganization: 'Удаление организации',
+    directSpaceAccess: 'Прямой доступ к разделам',
+    directSpaceAccessDescription: 'Добавляет права для отдельных разделов.',
+    in: 'в',
+    inherited: 'Унаследовано',
+    manageAttributes: 'Управление атрибутами',
+    manageMembers: 'Управление участниками и правами',
+    manageRetros: 'Управление ретроспективами',
+    manageRetrosOrganization: 'Управление ретроспективами в организации',
+    moveData: 'Перемещение разделов и досок',
+    organizationAccess: 'Доступ к организации',
+    organizationAccessDescription: 'Эти права действуют для каждого раздела.',
+    ownerReadonly: 'Права владельца доступны только для чтения.',
+    permissionsSaved: 'Права сохранены.',
+    read: 'Чтение',
+    readOrganization: 'Чтение организации',
+    readSpace: 'Чтение раздела',
+    retro: 'Ретро',
+    savePermissions: 'Сохранить права',
+    saving: 'Сохранение…',
+    updateOrganization: 'Изменение организации',
+  },
+})
 
 const state = reactive({
   draft: structuredClone(toRaw(props.viewModel.permissions)),

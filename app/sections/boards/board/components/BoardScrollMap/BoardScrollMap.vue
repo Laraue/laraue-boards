@@ -12,7 +12,7 @@
     </div>
     <input
       :aria-controls="target?.id || undefined"
-      aria-label="Scroll board horizontally"
+      :aria-label="t('scrollHorizontally')"
       :max="scrollMax"
       min="0"
       :style="{ '--scroll-map-thumb-width': thumbWidth }"
@@ -27,6 +27,11 @@ const props = defineProps<{
   columnCount: number
   target: HTMLElement | null
 }>()
+
+const { t } = useI18n({
+  en: { scrollHorizontally: 'Scroll board horizontally' },
+  ru: { scrollHorizontally: 'Прокрутить доску по горизонтали' },
+})
 
 const scrollMax = ref(0)
 const scrollValue = ref(0)

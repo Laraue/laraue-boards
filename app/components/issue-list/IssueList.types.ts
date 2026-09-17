@@ -9,6 +9,6 @@ export type IssueListItem = {
   issueKey: string
   spaceColor?: string
   spaceName?: string
-  status: string
+  status: null | string
   statusColor: string
 }

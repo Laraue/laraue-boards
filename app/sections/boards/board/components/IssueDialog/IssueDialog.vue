@@ -4,15 +4,15 @@
     class="issue-dialog-overlay" />
   <dialog
     ref="dialogEl"
-    aria-label="Issue details"
+    :aria-label="t('issueDetails')"
     class="issue-dialog"
     open
     tabindex="-1"
     @cancel.self="handleCancel">
     <button
-      aria-label="Close dialog"
+      :aria-label="t('closeDialog')"
       class="icon-btn issue-close"
-      title="Close dialog"
+      :title="t('closeDialog')"
       type="button"
       @click="close()">
       <X />
@@ -52,6 +52,17 @@ const props = defineProps<{
   onDirtyChange: (dirty: boolean) => void
   onSaved: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
+
+const { t } = useI18n({
+  en: {
+    closeDialog: 'Close dialog',
+    issueDetails: 'Issue details',
+  },
+  ru: {
+    closeDialog: 'Закрыть диалог',
+    issueDetails: 'Детали задачи',
+  },
+})
 
 const dialogEl = useTemplateRef('dialogEl')
 const state = reactive({ dirty: false })

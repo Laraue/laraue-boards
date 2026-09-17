@@ -1,7 +1,9 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
+import { ref } from 'vue'
 
+import type { AppPreferences } from '~/composables/useAppPreferences'
 import type { TourStateDeps } from '~/composables/useTour'
 
 import type { AppLayoutDeps, RoutableProblem } from './AppLayout.deps'
@@ -29,8 +31,16 @@ const createTourDeps = () => ({
   saveStatus: vi.fn<TourStateDeps['saveStatus']>(async () => undefined),
 })
 
+const createPreferences = (): AppPreferences => ({
+  locale: ref<'en' | 'ru'>('en'),
+  setLocale: vi.fn<AppPreferences['setLocale']>(),
+  setTheme: vi.fn<AppPreferences['setTheme']>(),
+  theme: ref<'dark' | 'light'>('light'),
+})
+
 const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
   logout: vi.fn<AppLayoutDeps['logout']>(),
+  preferences: createPreferences(),
   tour: createTourDeps(),
   view: vi.fn<AppLayoutDeps['view']>(async () => ({ data, status: 'success' })),
   ...overrides,
@@ -79,6 +89,18 @@ it('opens the navigation from the mobile menu button', async () => {
   await page.getByRole('button', { name: 'Open menu' }).click()
 
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeVisible()
+})
+
+it('delegates theme and language changes to preferences', async () => {
+  await page.viewport(1280, 800)
+  const preferences = createPreferences()
+  await mount(createDeps({ preferences }))
+
+  await page.getByRole('button', { name: 'Dark' }).click()
+  await page.getByRole('button', { name: 'Switch language to Russian' }).click()
+
+  expect(preferences.setTheme).toHaveBeenCalledWith('dark')
+  expect(preferences.setLocale).toHaveBeenCalledWith('ru')
 })
 
 it('hides general settings without update access', async () => {

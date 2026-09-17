@@ -22,7 +22,7 @@ const issueOf = (issueKey: string, content: string): IssueListItem => ({
   canMove: true,
   content,
   issueKey,
-  status: 'Backlog',
+  status: null,
   statusColor: '#333',
 })
 

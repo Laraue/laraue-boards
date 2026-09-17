@@ -3,13 +3,13 @@
     <div
       v-if="count"
       class="bulk-bar">
-      <span>{{ count }} selected</span>
+      <span>{{ selectedLabel }}</span>
       <div class="bulk-actions">
         <button
           class="secondary"
           type="button"
           @click="onClear">
-          Clear
+          {{ t('clear') }}
         </button>
         <button
           class="primary"
@@ -26,12 +26,17 @@
 <script setup lang="ts">
 import { ArrowRightLeft } from '@lucide/vue'
 
-defineProps<{
+const props = defineProps<{
   actionLabel: string
   count: number
   onAction: () => void
   onClear: () => void
 }>()
+const { t } = useI18n({
+  en: { clear: 'Clear', selected: '{count} selected' },
+  ru: { clear: 'Очистить', selected: '{count} выбрано' },
+})
+const selectedLabel = computed(() => t('selected', { count: props.count }))
 </script>
 
 <style scoped>

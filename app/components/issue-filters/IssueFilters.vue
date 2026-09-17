@@ -14,18 +14,18 @@
           v-if="loading"
           class="issue-filters-loading" />
         <ListFilter v-else />
-        Filters
+        {{ t('filters') }}
         <span v-if="activeCount">({{ activeCount }})</span>
       </button>
     </template>
     <div class="issue-filters-popover">
-      <nav aria-label="Issue filters">
+      <nav :aria-label="t('issueFilters')">
         <button
           v-if="spaces.length"
           :class="{ active: activeFilterId === SPACE_FILTER }"
           type="button"
           @click="activeFilterId = SPACE_FILTER">
-          <span class="filter-label">Space</span>
+          <span class="filter-label">{{ t('space') }}</span>
           <small v-if="selectedSpaces.length">
             {{ selectedSpaces.length }}
           </small>
@@ -35,7 +35,7 @@
           :class="{ active: activeFilterId === EPIC_STATUS_FILTER }"
           type="button"
           @click="activeFilterId = EPIC_STATUS_FILTER">
-          <span class="filter-label">Board status</span>
+          <span class="filter-label">{{ t('boardStatus') }}</span>
           <small v-if="selectedEpicStatuses.length">
             {{ selectedEpicStatuses.length }}
           </small>
@@ -59,14 +59,14 @@
           :disabled="!activeCount"
           type="button"
           @click="clear()">
-          Clear all
+          {{ t('clearAll') }}
         </button>
       </nav>
       <section
         v-if="activeFilterId === EPIC_STATUS_FILTER"
         class="filter-editor">
         <fieldset>
-          <legend>Board status</legend>
+          <legend>{{ t('boardStatus') }}</legend>
           <label
             v-for="option in epicStatuses"
             :key="option.value">
@@ -82,14 +82,14 @@
           :disabled="!selectedEpicStatuses.length"
           type="button"
           @click="setEpicStatuses([])">
-          Clear
+          {{ t('clear') }}
         </button>
       </section>
       <section
         v-if="activeFilterId === SPACE_FILTER"
         class="filter-editor">
         <fieldset>
-          <legend>Spaces</legend>
+          <legend>{{ t('spaces') }}</legend>
           <label
             v-for="option in spaces"
             :key="option.value">
@@ -105,7 +105,7 @@
           :disabled="!selectedSpaces.length"
           type="button"
           @click="setSpaces([])">
-          Clear
+          {{ t('clear') }}
         </button>
       </section>
       <section
@@ -148,7 +148,7 @@
           :disabled="!valueCount(activeAttribute.id)"
           type="button"
           @click="clear(activeAttribute.id)">
-          Clear
+          {{ t('clear') }}
         </button>
       </section>
     </div>
@@ -183,6 +183,27 @@ const props = withDefaults(
 const emit = defineEmits<{
   'update:modelValue': [value: IssueFiltersValue]
 }>()
+
+const { t } = useI18n({
+  en: {
+    boardStatus: 'Board status',
+    clear: 'Clear',
+    clearAll: 'Clear all',
+    filters: 'Filters',
+    issueFilters: 'Issue filters',
+    space: 'Space',
+    spaces: 'Spaces',
+  },
+  ru: {
+    boardStatus: 'Статус доски',
+    clear: 'Очистить',
+    clearAll: 'Очистить всё',
+    filters: 'Фильтры',
+    issueFilters: 'Фильтры задач',
+    space: 'Раздел',
+    spaces: 'Разделы',
+  },
+})
 
 const idPrefix = useId()
 const SPACE_FILTER = '__space__'

@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="viewModel"
-    error-title="Could not load board"
-    loading-text="Loading board…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,7 +11,7 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to space"
+              :label="t('backToSpace')"
               :to="organizationRoutes.space(spaceKey)" />
             <BoardIcon
               class="page-heading-icon"
@@ -23,26 +23,26 @@
           <div class="title-actions">
             <NuxtLink
               v-if="page.canUpdate || page.canDelete"
-              aria-label="Board settings"
+              :aria-label="t('boardSettings')"
               class="secondary"
               :to="organizationRoutes.boardSettings(spaceKey, page.id)">
               <Settings />
-              <span class="btn-label">Settings</span>
+              <span class="btn-label">{{ t('settings') }}</span>
             </NuxtLink>
             <NuxtLink
               v-if="page.canCreateIssues"
               class="primary"
               :to="organizationRoutes.newBoardIssue(spaceKey, page.id)">
               <Plus />
-              <span class="btn-label">Add issue</span>
+              <span class="btn-label">{{ t('addIssue') }}</span>
             </NuxtLink>
           </div>
         </div>
 
         <div class="toolbar">
           <input
-            aria-label="Search issues"
-            placeholder="Search issues"
+            :aria-label="t('searchIssues')"
+            :placeholder="t('searchIssues')"
             type="search"
             :value="search"
             @input="updateSearch(($event.target as HTMLInputElement).value)" />
@@ -179,6 +179,31 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
+const { locale, t } = useI18n({
+  en: {
+    addIssue: 'Add issue',
+    backToSpace: 'Back to space',
+    board: 'Board',
+    boardSettings: 'Board settings',
+    loadError: 'Could not load board',
+    loading: 'Loading board…',
+    moveError: 'Could not move the issue.',
+    searchIssues: 'Search issues',
+    settings: 'Settings',
+  },
+  ru: {
+    addIssue: 'Добавить задачу',
+    backToSpace: 'Назад к разделу',
+    board: 'Доска',
+    boardSettings: 'Настройки доски',
+    loadError: 'Не удалось загрузить доску',
+    loading: 'Загрузка доски…',
+    moveError: 'Не удалось переместить задачу.',
+    searchIssues: 'Поиск задач',
+    settings: 'Настройки',
+  },
+})
+
 const IssueDialog = defineAsyncComponent(
   () => import('~/sections/boards/board/components/IssueDialog/IssueDialog.vue'),
 )
@@ -286,7 +311,7 @@ const openIssue = (issueKey: string) => {
 }
 
 useHead({
-  title: computed(() => viewModel.value?.title ?? 'Board'),
+  title: computed(() => viewModel.value?.title ?? t('board')),
 })
 const scheduleSearch = debounce(() => void searchIssues(), 300)
 
@@ -373,7 +398,7 @@ const searchIssues = async () => {
   })
   state.filtering = false
   if (result.status === 'error') {
-    state.queryError = getErrorMessage(result.code)
+    state.queryError = getErrorMessage(result.code, locale.value)
     return
   }
   const current = viewModel.value
@@ -427,7 +452,10 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
   const refreshedColumns = new Map<string, LoadMoreBoardIssuesResult>()
   for (const response of columns) {
     if (response.result.status === 'error') {
-      state.loadMoreErrors.set(response.columnId, getErrorMessage(response.result.code))
+      state.loadMoreErrors.set(
+        response.columnId,
+        getErrorMessage(response.result.code, locale.value),
+      )
     } else {
       state.loadMoreErrors.delete(response.columnId)
       refreshedColumns.set(response.columnId, response.result.data)
@@ -480,7 +508,7 @@ const moveIssue = async (input: {
   })
   if (result === undefined) {
     viewModel.value = input.revert
-    state.moveError = moveBoardIssueMessage.value ?? getErrorMessage(0)
+    state.moveError = moveBoardIssueMessage.value ?? t('moveError')
   }
   state.movingIssueKeys.delete(input.issueKey)
 }
@@ -501,7 +529,7 @@ const moveToBacklog = async (issueKey: string) => {
   if (result) {
     viewModel.value = removeIssueFromBoard(current, issueKey)
   } else {
-    state.moveError = moveIssueToBacklogMessage.value ?? getErrorMessage(0)
+    state.moveError = moveIssueToBacklogMessage.value ?? t('moveError')
   }
   state.movingIssueKeys.delete(issueKey)
 }
@@ -532,7 +560,7 @@ const loadMoreIssues = async (statusId: string) => {
     return
   }
   if (result.status === 'error') {
-    state.loadMoreErrors.set(statusId, getErrorMessage(result.code))
+    state.loadMoreErrors.set(statusId, getErrorMessage(result.code, locale.value))
     return
   }
   const latest = viewModel.value

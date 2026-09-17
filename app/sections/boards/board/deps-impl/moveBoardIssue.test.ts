@@ -9,8 +9,8 @@ test('rejects an empty destination and moves to a selected status', async () => 
   const moveIssue = createMoveBoardIssue(client)
 
   assert.deepEqual(await moveIssue({ issueKey: 'ISS-1', statusId: '', updateStatus: true }), {
-    message: 'This issue cannot be moved to that column.',
-    status: 'validation-error',
+    code: 400,
+    status: 'error',
   })
   assert.deepEqual(await moveIssue({ issueKey: 'ISS-1', statusId: '3', updateStatus: true }), {
     data: true,

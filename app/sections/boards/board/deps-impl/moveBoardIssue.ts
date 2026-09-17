@@ -7,7 +7,7 @@ export const createMoveBoardIssue =
   (client: ApiClient): BoardPageDeps['moveBoardIssue'] =>
   async ({ issueKey, statusId, target, updateStatus }) => {
     if (updateStatus && !statusId) {
-      return { message: 'This issue cannot be moved to that column.', status: 'validation-error' }
+      return { code: 400, status: 'error' }
     }
     if (!updateStatus && !target) {
       return { data: true, status: 'success' }

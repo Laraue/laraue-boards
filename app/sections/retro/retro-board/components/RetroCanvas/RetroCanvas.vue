@@ -20,7 +20,7 @@
       @dblclick.stop
       @pointerdown.stop>
       <button
-        aria-label="Zoom out"
+        :aria-label="t('zoomOut')"
         class="icon-btn"
         type="button"
         @click="zoomBy(-1)">
@@ -28,13 +28,13 @@
       </button>
       <button
         class="secondary zoom-value"
-        title="Reset zoom"
+        :title="t('resetZoom')"
         type="button"
         @click="reset">
         {{ Math.round(state.scale * 100) }}%
       </button>
       <button
-        aria-label="Zoom in"
+        :aria-label="t('zoomIn')"
         class="icon-btn"
         type="button"
         @click="zoomBy(1)">
@@ -55,6 +55,20 @@ const props = defineProps<{
   onNodeMove: (deltaX: number, deltaY: number) => void
   onNodeMoveEnd: () => void
 }>()
+
+const { t } = useI18n({
+  en: {
+    resetZoom: 'Reset zoom',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+  },
+  ru: {
+    resetZoom: 'Сбросить масштаб',
+    zoomIn: 'Увеличить масштаб',
+    zoomOut: 'Уменьшить масштаб',
+  },
+})
+
 // Pan/zoom mechanics follow the flow-editor SceneWrapper: delta-based drags, pointer-anchored zoom.
 const MIN_SCALE = 0.2
 const MAX_SCALE = 2

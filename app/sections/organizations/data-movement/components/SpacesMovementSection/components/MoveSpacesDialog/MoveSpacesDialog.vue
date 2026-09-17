@@ -1,8 +1,8 @@
 <template>
   <dialog ref="dialog">
     <form @submit.prevent="confirmMove">
-      <h2>Move {{ ids.length === 1 ? 'space' : 'spaces' }}</h2>
-      <label for="movement-space-organization">Organization</label>
+      <h2>{{ ids.length === 1 ? t('moveSpace') : t('moveSpaces') }}</h2>
+      <label for="movement-space-organization">{{ t('organization') }}</label>
       <OrganizationSelect
         id="movement-space-organization"
         v-model="state.organizationId"
@@ -19,12 +19,12 @@
           :disabled="moving"
           type="button"
           @click="dialog?.close()">
-          Cancel
+          {{ t('cancel') }}
         </button>
         <button
           class="primary"
           :disabled="moving || !state.organizationId">
-          {{ moving ? 'Moving…' : 'Move' }}
+          {{ moving ? t('moving') : t('move') }}
         </button>
       </div>
     </form>
@@ -41,6 +41,25 @@ const props = defineProps<{
   ids: string[]
   onMoved: () => Promise<void> | void
 }>()
+
+const { t } = useI18n({
+  en: {
+    cancel: 'Cancel',
+    move: 'Move',
+    moveSpace: 'Move space',
+    moveSpaces: 'Move spaces',
+    moving: 'Moving…',
+    organization: 'Organization',
+  },
+  ru: {
+    cancel: 'Отмена',
+    move: 'Переместить',
+    moveSpace: 'Переместить раздел',
+    moveSpaces: 'Переместить разделы',
+    moving: 'Перемещение…',
+    organization: 'Организация',
+  },
+})
 
 const state = reactive({
   organizationId: '',

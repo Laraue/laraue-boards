@@ -1,20 +1,20 @@
 <template>
   <span>{{ change.label }}:</span>
   <div class="history-value-change">
-    <span :title="change.oldValue">
+    <span :title="display(change.oldValue)">
       <i
         v-if="change.oldColor"
         :style="{ background: change.oldColor }" />
-      {{ change.oldValue }}
+      {{ display(change.oldValue) }}
     </span>
     <ArrowRight />
     <span
       class="history-new-value"
-      :title="change.newValue">
+      :title="display(change.newValue)">
       <i
         v-if="change.newColor"
         :style="{ background: change.newColor }" />
-      {{ change.newValue }}
+      {{ display(change.newValue) }}
     </span>
   </div>
 </template>
@@ -24,5 +24,26 @@ import { ArrowRight } from '@lucide/vue'
 
 import type { HistoryPropertyChangeViewModel } from '../HistoryTimeline.types'
 
-defineProps<{ change: HistoryPropertyChangeViewModel }>()
+const props = defineProps<{ change: HistoryPropertyChangeViewModel }>()
+
+const { t } = useI18n({
+  en: { none: 'None' },
+  ru: { none: 'Нет' },
+})
+
+const { formatDate, formatDateTime } = useFormatters()
+
+const display = (value: null | string) => {
+  if (value === null) {
+    return t('none')
+  }
+
+  const date = new Date(value)
+
+  if (!props.change.format || Number.isNaN(date.getTime())) {
+    return value
+  }
+
+  return props.change.format === 'dateTime' ? formatDateTime(date) : formatDate(date)
+}
 </script>

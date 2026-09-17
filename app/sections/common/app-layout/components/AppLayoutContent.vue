@@ -14,10 +14,10 @@
         class="organization"
         @click="state.sidebarOpen = false">
         <NuxtLink
-          :aria-label="`Switch organization. Current organization: ${viewModel.organization.name}`"
+          :aria-label="`${t('switchOrganization')}. ${t('currentOrganization')}: ${viewModel.organization.name}`"
           class="organization-select"
           data-tour="organization-switcher"
-          title="Switch organization"
+          :title="t('switchOrganization')"
           to="/organizations">
           <span
             class="entity-avatar"
@@ -31,7 +31,7 @@
         </NuxtLink>
       </div>
       <nav
-        aria-label="Main navigation"
+        :aria-label="t('mainNavigation')"
         @click="state.sidebarOpen = false">
         <NuxtLink
           :class="{
@@ -40,23 +40,23 @@
           data-tour="all-issues"
           :to="organizationRoutes.issues()">
           <ClipboardList />
-          All issues
+          {{ t('allIssues') }}
         </NuxtLink>
         <NuxtLink
           :class="{ active: active('organizations-organizationKey-history') }"
           :to="organizationRoutes.history()">
           <History />
-          History
+          {{ t('history') }}
         </NuxtLink>
         <div
           class="nav-title"
           data-tour="spaces">
-          Spaces
+          {{ t('spaces') }}
         </div>
         <p
           v-if="viewModel.spaces.length === 0"
           class="nav-hint">
-          A space groups the boards and issues of one project.
+          {{ t('spaceHint') }}
         </p>
         <div
           v-for="space in viewModel.spaces"
@@ -74,7 +74,7 @@
           exact-active-class="active"
           :to="organizationRoutes.newSpace()">
           <Plus />
-          Create space
+          {{ t('createSpace') }}
         </NuxtLink>
         <div
           v-if="
@@ -85,7 +85,7 @@
           "
           class="nav-title"
           data-tour="organization-settings">
-          Settings
+          {{ t('settings') }}
         </div>
         <NuxtLink
           v-if="viewModel.organization.canUpdate"
@@ -94,7 +94,7 @@
           }"
           :to="organizationRoutes.settings()">
           <Settings />
-          General
+          {{ t('general') }}
         </NuxtLink>
         <NuxtLink
           v-if="viewModel.organization.canManage"
@@ -103,7 +103,7 @@
           }"
           :to="organizationRoutes.permissions()">
           <ShieldCheck />
-          Permissions
+          {{ t('permissions') }}
         </NuxtLink>
         <NuxtLink
           v-if="viewModel.organization.canManageAttributes"
@@ -112,7 +112,7 @@
           }"
           :to="organizationRoutes.attributes()">
           <Tags />
-          Attributes
+          {{ t('attributes') }}
         </NuxtLink>
         <NuxtLink
           v-if="viewModel.organization.canMassMove"
@@ -121,24 +121,24 @@
           }"
           :to="organizationRoutes.dataMovement()">
           <ArrowRightLeft />
-          Data movement
+          {{ t('dataMovement') }}
         </NuxtLink>
         <NuxtLink
           class="sidebar-bottom"
           :class="{ active: within('organizations-organizationKey-retro') }"
           :to="organizationRoutes.retros()">
           <RetroIcon />
-          Retro
-          <span class="muted nav-badge">alpha</span>
+          {{ t('retro') }}
+          <span class="muted nav-badge">{{ t('alpha') }}</span>
         </NuxtLink>
         <a
-          aria-label="Documentation (opens in a new tab)"
+          :aria-label="t('documentationNewTab')"
           class="sidebar-documentation"
           href="https://laraue.com/blog/documentation/laraue-boards"
           rel="noopener noreferrer"
           target="_blank">
           <BookOpen />
-          Documentation
+          {{ t('documentation') }}
         </a>
       </nav>
       <div class="sidebar-footer">
@@ -148,44 +148,54 @@
             :style="{ background: viewModel.user.color }">
             {{ viewModel.user.initials }}
           </span>
-          <span>
+          <span class="sidebar-user-info">
             <strong>{{ viewModel.user.name }}</strong>
-            <small class="muted">Signed in</small>
+            <small class="muted">{{ t('signedIn') }}</small>
           </span>
         </div>
-        <button
-          class="secondary sidebar-action"
-          type="button"
-          @click="toggleTheme">
-          <span class="theme-action theme-action--light">
-            <Sun />
-            Light mode
-          </span>
-          <span class="theme-action theme-action--dark">
-            <Moon />
-            Dark mode
-          </span>
-        </button>
+        <div class="sidebar-preferences">
+          <button
+            :aria-label="t('switchLanguage')"
+            class="secondary sidebar-language"
+            :title="t('switchLanguage')"
+            type="button"
+            @click="toggleLocale">
+            <img
+              alt=""
+              class="language-flag"
+              :src="locale === 'en' ? '/flags/us.svg' : '/flags/ru.svg'" />
+            {{ t('languageName') }}
+          </button>
+          <button
+            :aria-label="theme === 'dark' ? t('lightMode') : t('darkMode')"
+            class="secondary sidebar-theme"
+            :title="theme === 'dark' ? t('lightMode') : t('darkMode')"
+            type="button"
+            @click="toggleTheme">
+            <Sun v-if="theme === 'dark'" />
+            <Moon v-else />
+          </button>
+        </div>
         <button
           class="secondary danger sidebar-action"
           type="button"
           @click="props.onLogout">
           <LogOut />
-          Log out
+          {{ t('logOut') }}
         </button>
       </div>
     </aside>
     <Transition name="fade">
       <button
         v-if="state.sidebarOpen"
-        aria-label="Close menu"
+        :aria-label="t('closeMenu')"
         class="scrim"
         @click="state.sidebarOpen = false" />
     </Transition>
     <main>
       <button
         v-if="!state.sidebarOpen"
-        aria-label="Open menu"
+        :aria-label="t('openMenu')"
         class="icon-btn mobile-menu-button"
         type="button"
         @click="state.sidebarOpen = true">
@@ -213,16 +223,76 @@ import {
   Tags,
 } from '@lucide/vue'
 
+import type { AppPreferences } from '~/composables/useAppPreferences'
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const props = defineProps<{
   onLogout: () => void
+  preferences: AppPreferences
   viewModel: AppLayoutData
 }>()
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const state = reactive({ sidebarOpen: false })
+const locale = props.preferences.locale
+const theme = props.preferences.theme
+const { t } = useI18n({
+  en: {
+    allIssues: 'All issues',
+    alpha: 'alpha',
+    attributes: 'Attributes',
+    closeMenu: 'Close menu',
+    createSpace: 'Create space',
+    currentOrganization: 'Current organization',
+    darkMode: 'Dark',
+    dataMovement: 'Data movement',
+    documentation: 'Documentation',
+    documentationNewTab: 'Documentation (opens in a new tab)',
+    general: 'General',
+    history: 'History',
+    languageName: 'English',
+    lightMode: 'Light',
+    logOut: 'Log out',
+    mainNavigation: 'Main navigation',
+    openMenu: 'Open menu',
+    permissions: 'Permissions',
+    retro: 'Retro',
+    settings: 'Settings',
+    signedIn: 'Signed in',
+    spaceHint: 'A space groups the boards and issues of one project.',
+    spaces: 'Spaces',
+    switchLanguage: 'Switch language to Russian',
+    switchOrganization: 'Switch organization',
+  },
+  ru: {
+    allIssues: 'Все задачи',
+    alpha: 'альфа',
+    attributes: 'Атрибуты',
+    closeMenu: 'Закрыть меню',
+    createSpace: 'Создать раздел',
+    currentOrganization: 'Текущая организация',
+    darkMode: 'Тёмная',
+    dataMovement: 'Перенос данных',
+    documentation: 'Документация',
+    documentationNewTab: 'Документация (откроется в новой вкладке)',
+    general: 'Общие',
+    history: 'История',
+    languageName: 'Русский',
+    lightMode: 'Светлая',
+    logOut: 'Выйти',
+    mainNavigation: 'Главная навигация',
+    openMenu: 'Открыть меню',
+    permissions: 'Права доступа',
+    retro: 'Ретро',
+    settings: 'Настройки',
+    signedIn: 'Вход выполнен',
+    spaceHint: 'В разделе собраны доски и задачи проекта.',
+    spaces: 'Разделы',
+    switchLanguage: 'Переключить язык на английский',
+    switchOrganization: 'Сменить организацию',
+  },
+})
 const active = (name: OrganizationRouteName) => route.name === name
 const within = (name: OrganizationRouteName) =>
   typeof route.name === 'string' && route.name.startsWith(name)
@@ -231,10 +301,10 @@ const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   'spaceKey' in route.params &&
   route.params.spaceKey === space.key
 const toggleTheme = () => {
-  const root = document.documentElement
-  const theme = root.dataset.theme === 'dark' ? 'light' : 'dark'
-  root.dataset.theme = theme
-  localStorage.setItem('theme', theme)
+  props.preferences.setTheme(theme.value === 'dark' ? 'light' : 'dark')
+}
+const toggleLocale = () => {
+  props.preferences.setLocale(locale.value === 'en' ? 'ru' : 'en')
 }
 </script>
 
@@ -286,6 +356,7 @@ nav button {
   color: var(--color-muted);
   display: flex;
   gap: var(--space-2);
+  height: var(--control-height);
   margin: 2px 0;
   padding: var(--space-2) var(--space-3);
   text-align: left;
@@ -298,7 +369,7 @@ nav button {
 .nav-badge {
   border: 1px solid currentcolor;
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-xs, 11px);
+  font-size: var(--font-size-caption);
   margin-left: auto;
   padding: 0 var(--space-2);
 }
@@ -381,6 +452,21 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
+.sidebar-preferences {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.sidebar-language {
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.sidebar-theme {
+  flex: 0 0 auto;
+}
+
 .sidebar-user {
   align-items: center;
   display: flex;
@@ -394,8 +480,9 @@ main :deep(.page-load-state) {
   margin-top: auto;
 }
 
-.sidebar-user > span:last-child {
+.sidebar-user-info {
   display: grid;
+  flex: 1;
   min-width: 0;
 }
 
@@ -411,22 +498,12 @@ main :deep(.page-load-state) {
   width: 100%;
 }
 
-.theme-action {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-}
-
-.theme-action--light {
-  display: none;
-}
-
-:global(:root[data-theme='dark'] .theme-action--dark) {
-  display: none;
-}
-
-:global(:root[data-theme='dark'] .theme-action--light) {
-  display: flex;
+.language-flag {
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  height: 16px;
+  object-fit: cover;
+  width: 21px;
 }
 
 .organization {

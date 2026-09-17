@@ -1,18 +1,15 @@
 <template>
   <dialog ref="dialog">
     <form @submit.prevent="move">
-      <h2>
-        Move {{ state.issueKeys.length }}
-        {{ state.issueKeys.length === 1 ? 'issue' : 'issues' }}
-      </h2>
-      <label :for="`${idPrefix}-space`">Space</label>
+      <h2>{{ t('move') }} {{ tp('issues', state.issueKeys.length) }}</h2>
+      <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
       <SpaceSelect
         :id="`${idPrefix}-space`"
         v-model="state.spaceKey"
         :deps="deps.spaceSelect"
         :disabled="moving"
         required />
-      <label :for="`${idPrefix}-board`">Board</label>
+      <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
       <BoardSelect
         :id="`${idPrefix}-board`"
         v-model="state.boardId"
@@ -21,14 +18,14 @@
         :excluded-value="excludedBoardId"
         required
         :space-key="state.spaceKey" />
-      <label :for="`${idPrefix}-status`">Column</label>
+      <label :for="`${idPrefix}-status`">{{ t('column') }}</label>
       <StatusSelect
         :id="`${idPrefix}-status`"
         v-model="state.statusId"
         :board-id="state.boardId"
         :deps="deps.statusSelect"
         :disabled="moving"
-        placeholder="Select column"
+        :placeholder="t('selectColumn')"
         required />
       <p
         v-if="message"
@@ -41,12 +38,12 @@
           :disabled="moving"
           type="button"
           @click="dialog?.close()">
-          Cancel
+          {{ t('cancel') }}
         </button>
         <button
           class="primary"
           :disabled="moving || !state.statusId">
-          {{ moving ? 'Moving…' : 'Move' }}
+          {{ moving ? t('moving') : t('move') }}
         </button>
       </div>
     </form>
@@ -65,6 +62,29 @@ const props = defineProps<{
   excludedBoardId?: string
   onMoved: () => Promise<void> | void
 }>()
+
+const { t, tp } = useI18n({
+  en: {
+    board: 'Board',
+    cancel: 'Cancel',
+    column: 'Column',
+    issues: 'issue|issues',
+    move: 'Move',
+    moving: 'Moving…',
+    selectColumn: 'Select column',
+    space: 'Space',
+  },
+  ru: {
+    board: 'Доска',
+    cancel: 'Отмена',
+    column: 'Колонка',
+    issues: 'задачу|задачи|задач',
+    move: 'Переместить',
+    moving: 'Перемещение…',
+    selectColumn: 'Выберите колонку',
+    space: 'Раздел',
+  },
+})
 
 const idPrefix = useId()
 

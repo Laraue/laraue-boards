@@ -3,7 +3,7 @@
     <HistoryTimeline
       v-if="state.items.length || !state.pending"
       :items="state.items"
-      :label="label" />
+      :label="label ?? t('label')" />
     <p
       v-if="state.message"
       class="form-error"
@@ -15,14 +15,14 @@
       class="history-loading"
       role="status">
       <LoaderCircle class="spin" />
-      <span>Loading history…</span>
+      <span>{{ t('loading') }}</span>
     </div>
     <button
       v-else-if="state.message || state.hasNextPage"
       class="secondary small history-more"
       type="button"
       @click="load()">
-      {{ state.message ? 'Try again' : 'Load more' }}
+      {{ state.message ? t('tryAgain') : t('loadMore') }}
     </button>
   </div>
 </template>
@@ -43,10 +43,27 @@ const props = withDefaults(
     label?: string
   }>(),
   {
-    errorMessage: 'Could not load issue history.',
-    label: 'Issue history',
+    errorMessage: undefined,
+    label: undefined,
   },
 )
+
+const { t } = useI18n({
+  en: {
+    defaultError: 'Could not load issue history.',
+    label: 'Issue history',
+    loading: 'Loading history…',
+    loadMore: 'Load more',
+    tryAgain: 'Try again',
+  },
+  ru: {
+    defaultError: 'Не удалось загрузить историю задачи.',
+    label: 'История задачи',
+    loading: 'Загрузка истории…',
+    loadMore: 'Загрузить ещё',
+    tryAgain: 'Повторить попытку',
+  },
+})
 
 const state = reactive({
   hasNextPage: false,
@@ -71,7 +88,7 @@ const load = async (replace = false) => {
 
   if (result.status !== 'success') {
     if (!replace) {
-      state.message = props.errorMessage
+      state.message = props.errorMessage ?? t('defaultError')
     }
     return
   }

@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load data movement"
-    loading-text="Loading data movement…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -12,7 +12,7 @@
           <div class="page-heading">
             <ArrowRightLeft class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>Data movement</h1>
+              <h1>{{ t('dataMovement') }}</h1>
             </div>
           </div>
         </div>
@@ -44,7 +44,21 @@ const props = defineProps<{
   deps: DataMovementPageDeps
   onSpacesMoved: () => Promise<void> | void
 }>()
-useHead({ title: 'Data movement' })
+
+const { t } = useI18n({
+  en: {
+    dataMovement: 'Data movement',
+    loadError: 'Could not load data movement',
+    loading: 'Loading data movement…',
+  },
+  ru: {
+    dataMovement: 'Перемещение данных',
+    loadError: 'Не удалось загрузить перемещение данных',
+    loading: 'Загрузка перемещения данных…',
+  },
+})
+
+useHead({ title: t('dataMovement') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-data-movement',

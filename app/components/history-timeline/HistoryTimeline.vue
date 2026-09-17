@@ -1,6 +1,6 @@
 <template>
   <section
-    :aria-label="label"
+    :aria-label="label ?? t('history')"
     class="issue-history">
     <div
       v-if="groups.length"
@@ -24,8 +24,8 @@
             </NuxtLink>
             <time
               :datetime="item.createdAt"
-              :title="formatDate(item.createdAt)">
-              {{ formatTime(item.createdAt) }}
+              :title="formatDateTime(item.createdAt)">
+              {{ formatHistoryTime(item.createdAt) }}
             </time>
           </div>
           <div class="history-changes">
@@ -66,7 +66,7 @@
     <p
       v-else
       class="history-empty">
-      No changes yet.
+      {{ t('empty') }}
     </p>
   </section>
 </template>
@@ -82,26 +82,29 @@ import HistorySpaceChange from './components/HistorySpaceChange.vue'
 import HistoryStatusChange from './components/HistoryStatusChange.vue'
 import type { HistoryItemViewModel } from './HistoryTimeline.types'
 
-const props = withDefaults(
-  defineProps<{
-    items: HistoryItemViewModel[]
-    label?: string
-  }>(),
-  { label: 'History' },
-)
+const props = defineProps<{
+  items: HistoryItemViewModel[]
+  label?: string
+}>()
 
-const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-  timeZone: 'UTC',
+const { t } = useI18n({
+  en: { empty: 'No changes yet.', history: 'History' },
+  ru: { empty: 'Изменений пока нет.', history: 'История' },
 })
 
-const timeFormatter = new Intl.DateTimeFormat('en-US', {
-  timeStyle: 'short',
-  timeZone: 'UTC',
-})
+const { formatDateTime, formatTime } = useFormatters()
 
 const utc = (date: string) => new Date(date).toISOString()
+const isToday = (date: string) => {
+  const value = new Date(date)
+  const now = new Date()
+
+  return (
+    value.getFullYear() === now.getFullYear() &&
+    value.getMonth() === now.getMonth() &&
+    value.getDate() === now.getDate()
+  )
+}
 
 // Entries written by one save land in the same minute — show them as a single event.
 // ponytail: minute buckets also merge two separate saves a few seconds apart; group by a
@@ -125,12 +128,8 @@ const groups = computed(() =>
   }, []),
 )
 
-const formatDate = (date: string) => dateTimeFormatter.format(new Date(date))
-
-const formatTime = (date: string) =>
-  utc(date).slice(0, 10) === new Date().toISOString().slice(0, 10)
-    ? timeFormatter.format(new Date(date))
-    : dateTimeFormatter.format(new Date(date))
+const formatHistoryTime = (date: string) =>
+  isToday(date) ? formatTime(date) : formatDateTime(date)
 </script>
 
 <style scoped>

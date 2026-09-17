@@ -1,20 +1,20 @@
 <template>
-  <span>{{ change.label }}:</span>
+  <span>{{ change.action === 'added' ? t('added') : t('removed') }}:</span>
   <div class="history-values">
     <span
       class="history-new-value"
-      :title="change.newValue">
+      :title="fileName">
       <a
         v-if="change.imageUrl"
-        :aria-label="`Open ${change.newValue}`"
+        :aria-label="`${t('open')} ${fileName}`"
         class="history-attachment"
         :href="change.imageUrl"
         target="_blank">
         <img
-          :alt="change.newValue"
+          :alt="fileName"
           :src="change.imageUrl" />
       </a>
-      {{ change.newValue }}
+      {{ fileName }}
     </span>
   </div>
 </template>
@@ -22,7 +22,24 @@
 <script setup lang="ts">
 import type { HistoryAttachmentChangeViewModel } from '../HistoryTimeline.types'
 
-defineProps<{ change: HistoryAttachmentChangeViewModel }>()
+const props = defineProps<{ change: HistoryAttachmentChangeViewModel }>()
+
+const { t } = useI18n({
+  en: {
+    added: 'Added attachment',
+    open: 'Open',
+    removed: 'Removed attachment',
+    untitledFile: 'Untitled file',
+  },
+  ru: {
+    added: 'Вложение добавлено',
+    open: 'Открыть',
+    removed: 'Вложение удалено',
+    untitledFile: 'Файл без названия',
+  },
+})
+
+const fileName = props.change.fileName ?? t('untitledFile')
 </script>
 
 <style scoped>
