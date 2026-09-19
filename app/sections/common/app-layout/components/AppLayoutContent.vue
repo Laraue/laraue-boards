@@ -142,7 +142,11 @@
         </a>
       </nav>
       <div class="sidebar-footer">
-        <div class="sidebar-user">
+        <NuxtLink
+          class="sidebar-user"
+          :class="{ active: active('organizations-organizationKey-billing') }"
+          :to="organizationRoutes.billing()"
+          @click="state.sidebarOpen = false">
           <span
             class="avatar"
             :style="{ background: viewModel.user.color }">
@@ -150,9 +154,11 @@
           </span>
           <span class="sidebar-user-info">
             <strong>{{ viewModel.user.name }}</strong>
-            <small class="muted">{{ t('signedIn') }}</small>
+            <small class="muted">
+              {{ viewModel.user.tariffName || t('tariffUnavailable') }}
+            </small>
           </span>
-        </div>
+        </NuxtLink>
         <div class="sidebar-preferences">
           <button
             :aria-label="t('switchLanguage')"
@@ -259,11 +265,11 @@ const { t } = useI18n({
     permissions: 'Permissions',
     retro: 'Retro',
     settings: 'Settings',
-    signedIn: 'Signed in',
     spaceHint: 'A space groups the boards and issues of one project.',
     spaces: 'Spaces',
     switchLanguage: 'Switch language to Russian',
     switchOrganization: 'Switch organization',
+    tariffUnavailable: 'Tariff unavailable',
   },
   ru: {
     allIssues: 'Все задачи',
@@ -286,11 +292,11 @@ const { t } = useI18n({
     permissions: 'Права доступа',
     retro: 'Ретро',
     settings: 'Настройки',
-    signedIn: 'Вход выполнен',
     spaceHint: 'В разделе собраны доски и задачи проекта.',
     spaces: 'Разделы',
     switchLanguage: 'Переключить язык на английский',
     switchOrganization: 'Сменить организацию',
+    tariffUnavailable: 'Тариф недоступен',
   },
 })
 const active = (name: OrganizationRouteName) => route.name === name
@@ -469,10 +475,22 @@ main :deep(.page-load-state) {
 
 .sidebar-user {
   align-items: center;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
   display: flex;
   gap: var(--space-2);
   min-width: 0;
   padding: var(--space-2);
+  text-decoration: none;
+  transition: var(--transition-press);
+}
+
+.sidebar-user:hover {
+  background: var(--color-soft);
+}
+
+.sidebar-user:active {
+  translate: 0 var(--press-offset);
 }
 
 /* Retro and the docs live together at the bottom, away from the settings block. */

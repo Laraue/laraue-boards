@@ -35,6 +35,11 @@ export const useOrganizationRoutes = () => {
         name: 'organizations-organizationKey-spaces-spaceKey-backlog',
         params: { ...organizationParams(), spaceKey },
       }) satisfies RouteLocationRaw,
+    billing: () =>
+      ({
+        name: 'organizations-organizationKey-billing',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
     board: (spaceKey: string, boardId: string) =>
       ({
         name: 'organizations-organizationKey-spaces-spaceKey-boardId',

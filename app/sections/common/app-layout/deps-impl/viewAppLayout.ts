@@ -28,6 +28,7 @@ const mapAppLayoutData = (
   organization: Schemas['OrganizationDto'],
   organizationMembership: Schemas['OrganizationListDto'],
   spaces: Schemas['SpaceListDto'][],
+  tariffName: string,
   user: Schemas['UserDto'],
 ): AppLayoutData => ({
   organization: {
@@ -36,6 +37,7 @@ const mapAppLayoutData = (
     canManageAttributes: organization.canManageAttributes,
     canMassMove: organization.canMassMove,
     canUpdate: organizationMembership.canUpdate,
+    canViewBilling: organization.canViewBilling,
     color: organization.color ?? DEFAULT_COLOR,
     id: String(organization.id),
     initial: organization.name[0] ?? '?',
@@ -54,6 +56,7 @@ const mapAppLayoutData = (
       user.username ||
       user.initials ||
       'User',
+    tariffName,
   },
 })
 
@@ -118,12 +121,16 @@ export const createViewAppLayout =
     }
 
     const details = await tryRequest(() =>
-      Promise.all([client.GET('/api/user', { signal }), client.GET('/api/spaces', { signal })]),
+      Promise.all([
+        client.GET('/api/user', { signal }),
+        client.GET('/api/spaces', { signal }),
+        tryRequest(() => client.GET('/api/billing/tariff', { signal })),
+      ]),
     )
     if (!details) {
       return { problem: failed(), status: 'problem' }
     }
-    const [user, spaces] = details
+    const [user, spaces, tariff] = details
     if ('error' in user) {
       return { problem: toProblem(user.response.status), status: 'problem' }
     }
@@ -131,7 +138,13 @@ export const createViewAppLayout =
       return { problem: toProblem(spaces.response.status), status: 'problem' }
     }
     return {
-      data: mapAppLayoutData(organization.data, organizationMembership, spaces.data, user.data),
+      data: mapAppLayoutData(
+        organization.data,
+        organizationMembership,
+        spaces.data,
+        tariff && !('error' in tariff) ? tariff.data.name : '',
+        user.data,
+      ),
       status: 'success',
     }
   }

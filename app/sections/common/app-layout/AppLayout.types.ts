@@ -5,6 +5,7 @@ export type AppLayoutData = {
     canManageAttributes: boolean
     canMassMove: boolean
     canUpdate: boolean
+    canViewBilling: boolean
     color: string
     id: string
     initial: string
@@ -15,5 +16,5 @@ export type AppLayoutData = {
     key: string
     name: string
   }>
-  user: { color: string; initials: string; name: string }
+  user: { color: string; initials: string; name: string; tariffName: string }
 }
