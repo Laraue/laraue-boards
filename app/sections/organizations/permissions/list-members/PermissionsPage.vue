@@ -184,7 +184,6 @@ const regenerate = (): void => {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  margin-top: var(--space-6);
   padding: var(--space-4);
 }
 

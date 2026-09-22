@@ -68,6 +68,5 @@ const onSpacesMoved = async () => {
 .movement-sections {
   display: grid;
   gap: var(--space-6);
-  margin-top: var(--space-6);
 }
 </style>

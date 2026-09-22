@@ -148,9 +148,3 @@ const remove = (id: string): void => {
   }
 }
 </script>
-
-<style scoped>
-.form-page > form {
-  margin-top: var(--space-6);
-}
-</style>

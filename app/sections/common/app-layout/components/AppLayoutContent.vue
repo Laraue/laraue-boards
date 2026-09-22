@@ -76,31 +76,32 @@
           <Plus />
           {{ t('createSpace') }}
         </NuxtLink>
-        <NuxtLink
-          class="sidebar-bottom"
-          :class="{ active: within('organizations-organizationKey-retro') }"
-          :to="organizationRoutes.retros()">
-          <RetroIcon />
-          {{ t('retro') }}
-          <span class="muted nav-badge">{{ t('alpha') }}</span>
-        </NuxtLink>
-        <NuxtLink
-          v-if="adminHome"
-          :class="{ active: within('organizations-organizationKey-admin') }"
-          data-tour="organization-settings"
-          :to="adminHome">
-          <Settings />
-          {{ t('admin') }}
-        </NuxtLink>
-        <a
-          :aria-label="t('documentationNewTab')"
-          class="sidebar-documentation"
-          href="https://laraue.com/blog/documentation/laraue-boards"
-          rel="noopener noreferrer"
-          target="_blank">
-          <BookOpen />
-          {{ t('documentation') }}
-        </a>
+        <div class="sidebar-bottom">
+          <NuxtLink
+            :class="{ active: within('organizations-organizationKey-retro') }"
+            :to="organizationRoutes.retros()">
+            <RetroIcon />
+            {{ t('retro') }}
+            <span class="muted nav-badge">{{ t('alpha') }}</span>
+          </NuxtLink>
+          <NuxtLink
+            v-if="adminHome"
+            :class="{ active: within('organizations-organizationKey-admin') }"
+            data-tour="organization-settings"
+            :to="adminHome">
+            <Settings />
+            {{ t('admin') }}
+          </NuxtLink>
+          <a
+            :aria-label="t('documentationNewTab')"
+            class="sidebar-documentation"
+            href="https://laraue.com/blog/documentation/laraue-boards"
+            rel="noopener noreferrer"
+            target="_blank">
+            <BookOpen />
+            {{ t('documentation') }}
+          </a>
+        </div>
       </nav>
       <div class="sidebar-footer">
         <NuxtLink
@@ -465,7 +466,10 @@ main :deep(.page-load-state) {
 
 /* Retro and the docs live together at the bottom, away from the settings block. */
 .sidebar-bottom {
+  display: grid;
+  gap: var(--space-1);
   margin-top: auto;
+  padding-top: var(--space-4);
 }
 
 .sidebar-user-info {
