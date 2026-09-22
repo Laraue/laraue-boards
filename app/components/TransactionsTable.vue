@@ -34,7 +34,11 @@
           <td>
             <span
               class="status-pill"
-              :class="`status-${transaction.statusClass}`">
+              :class="{
+                'status-canceled': transaction.statusClass === 'canceled',
+                'status-confirmed': transaction.statusClass === 'confirmed',
+                'status-started': transaction.statusClass === 'started',
+              }">
               {{ transaction.status }}
             </span>
           </td>
@@ -138,5 +142,10 @@ defineProps<{
 .status-canceled {
   background: color-mix(in srgb, var(--color-danger) 14%, transparent);
   color: var(--color-danger);
+}
+
+.status-started {
+  background: color-mix(in srgb, var(--color-chart-2) 14%, transparent);
+  color: var(--color-chart-2);
 }
 </style>

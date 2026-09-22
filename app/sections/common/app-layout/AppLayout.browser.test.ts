@@ -106,7 +106,7 @@ it('delegates theme and language changes to preferences', async () => {
   expect(preferences.setLocale).toHaveBeenCalledWith('ru')
 })
 
-it('hides general settings without update access', async () => {
+it('hides admin settings without any admin access', async () => {
   await page.viewport(1280, 800)
   await mount(
     createDeps({
@@ -116,6 +116,8 @@ it('hides general settings without update access', async () => {
           organization: {
             ...data.organization,
             canManage: false,
+            canManageAttributes: false,
+            canMassMove: false,
             canUpdate: false,
             canViewBilling: false,
           },
@@ -125,7 +127,30 @@ it('hides general settings without update access', async () => {
     }),
   )
 
-  await expect.element(page.getByRole('link', { name: 'General' })).not.toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: 'Admin' })).not.toBeInTheDocument()
+})
+
+it('routes admin link to the highest-priority accessible admin tab', async () => {
+  await page.viewport(1280, 800)
+  await mount(
+    createDeps({
+      view: vi.fn<AppLayoutDeps['view']>(async () => ({
+        data: {
+          ...data,
+          organization: {
+            ...data.organization,
+            canManage: true,
+            canUpdate: false,
+          },
+        },
+        status: 'success',
+      })),
+    }),
+  )
+
+  await expect
+    .element(page.getByRole('link', { name: 'Admin' }))
+    .toHaveAttribute('href', expect.stringContaining('permissions'))
 })
 
 it('introduces the workspace navigation once', async () => {
