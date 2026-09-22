@@ -469,7 +469,7 @@ main :deep(.page-load-state) {
   display: grid;
   gap: var(--space-1);
   margin-top: auto;
-  padding-top: var(--space-4);
+  padding-top: var(--space-6);
 }
 
 .sidebar-user-info {
