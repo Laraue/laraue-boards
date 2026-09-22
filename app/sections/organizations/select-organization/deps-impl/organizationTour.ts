@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import type { TourStateDeps } from '~/composables/useTour'
 
 const ONBOARDING_ID = 'OrganizationsV1'
@@ -11,7 +11,7 @@ export const createOrganizationTourDeps = (client: ApiClient): TourStateDeps => 
         params: { path: { onboardingId: ONBOARDING_ID } },
       }),
     )
-    const status = response && 'data' in response ? response.data?.status : undefined
+    const status = response && !isErrorResponse(response) ? response.data?.status : undefined
 
     return status === 'Completed' ? 'completed' : status === 'Dismissed' ? 'dismissed' : undefined
   },

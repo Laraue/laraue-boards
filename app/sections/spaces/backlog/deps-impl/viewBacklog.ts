@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
 import { createdAtDescending } from '~/sections/issues/shared/api/issueSorting'
 import { findSpaceByKey } from '~/sections/spaces/shared/findSpaceByKey'
@@ -20,10 +20,10 @@ export const createViewBacklog =
       return { code: 0, status: 'error' }
     }
     const [spaces, attributes] = responses
-    if ('error' in spaces) {
+    if (isErrorResponse(spaces)) {
       return { code: spaces.response.status, status: 'error' }
     }
-    if ('error' in attributes) {
+    if (isErrorResponse(attributes)) {
       return { code: attributes.response.status, status: 'error' }
     }
     const space = findSpaceByKey(spaces.data, spaceKey)
@@ -37,8 +37,11 @@ export const createViewBacklog =
         signal,
       }),
     )
-    if (!boards || 'error' in boards) {
-      return { code: boards?.response.status ?? 0, status: 'error' }
+    if (!boards) {
+      return { code: 0, status: 'error' }
+    }
+    if (isErrorResponse(boards)) {
+      return { code: boards.response.status, status: 'error' }
     }
     const backlog = boards.data.find((board) => board.isDefault)
     if (!backlog) {
@@ -57,8 +60,11 @@ export const createViewBacklog =
         signal,
       }),
     )
-    if (!issues || 'error' in issues) {
-      return { code: issues?.response.status ?? 0, status: 'error' }
+    if (!issues) {
+      return { code: 0, status: 'error' }
+    }
+    if (isErrorResponse(issues)) {
+      return { code: issues.response.status, status: 'error' }
     }
     return {
       data: {

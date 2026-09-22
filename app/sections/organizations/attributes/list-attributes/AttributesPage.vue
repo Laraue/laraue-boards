@@ -9,12 +9,6 @@
     <template #default="{ data: attributes }">
       <section class="attributes-page">
         <div class="title-row">
-          <div class="page-heading">
-            <Tags class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>{{ t('attributes') }}</h1>
-            </div>
-          </div>
           <NuxtLink
             :aria-label="t('newAttribute')"
             class="primary"
@@ -23,9 +17,6 @@
             <span class="btn-label">{{ t('newAttribute') }}</span>
           </NuxtLink>
         </div>
-        <p class="attributes-intro">
-          {{ t('intro') }}
-        </p>
         <div
           v-if="attributes.length"
           class="attribute-list">
@@ -53,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Plus, Tags } from '@lucide/vue'
+import { ChevronRight, Plus } from '@lucide/vue'
 
 import type { AttributesPageDeps } from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
 import type { AttributeListItem } from '~/sections/organizations/attributes/list-attributes/AttributesPage.types'
@@ -70,7 +61,6 @@ const { t } = useI18n({
       'Attributes are your own fields on every issue — priority, client, environment, whatever your team tracks. Add one and it shows up in the issue form and in the filters.',
     emptyTitle: 'No attributes yet',
     integer: 'Integer',
-    intro: 'Custom fields you can attach to issues, like Priority or Severity.',
     list: 'List',
     loadError: 'Could not load attributes',
     loading: 'Loading attributes…',
@@ -86,7 +76,6 @@ const { t } = useI18n({
       'Атрибуты — это дополнительные поля задачи: приоритет, клиент, окружение и всё, что важно вашей команде. Они появятся в форме задачи и фильтрах.',
     emptyTitle: 'Атрибутов пока нет',
     integer: 'Целое число',
-    intro: 'Дополнительные поля задач, например приоритет или важность.',
     list: 'Список',
     loadError: 'Не удалось загрузить атрибуты',
     loading: 'Загрузка атрибутов…',
@@ -115,9 +104,9 @@ const { data, message, pending, refresh } = await useQuery(
 </script>
 
 <style scoped>
-.attributes-intro {
-  color: var(--color-muted);
-  margin: var(--space-6) 0 var(--space-4);
+.attributes-page > .title-row {
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
 }
 
 .attribute-list {

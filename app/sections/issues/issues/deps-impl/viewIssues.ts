@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
 import { createdAtDescending } from '~/sections/issues/shared/api/issueSorting'
 
@@ -12,11 +12,20 @@ export const createViewIssues =
     const attributes = await tryRequest(() =>
       client.GET('/api/organizations/attributes', { signal }),
     )
-    if (!attributes || !('data' in attributes) || attributes.data === undefined) {
+    if (!attributes) {
       return {
-        code: attributes && 'error' in attributes ? attributes.response.status : 0,
+        code: 0,
         status: 'error',
       }
+    }
+    if (isErrorResponse(attributes)) {
+      return {
+        code: attributes.response.status,
+        status: 'error',
+      }
+    }
+    if (attributes.data === undefined) {
+      return { code: 0, status: 'error' }
     }
 
     const attributeData = mapRawIssueFilters(attributeQuery, attributes.data)
@@ -42,11 +51,14 @@ export const createViewIssues =
     }
 
     const [issues, spaces] = responses
-    if (!('data' in issues) || issues.data === undefined) {
-      return { code: 'error' in issues ? issues.response.status : 0, status: 'error' }
+    if (isErrorResponse(issues)) {
+      return { code: issues.response.status, status: 'error' }
     }
-    if (!('data' in spaces) || spaces.data === undefined) {
-      return { code: 'error' in spaces ? spaces.response.status : 0, status: 'error' }
+    if (isErrorResponse(spaces)) {
+      return { code: spaces.response.status, status: 'error' }
+    }
+    if (issues.data === undefined || spaces.data === undefined) {
+      return { code: 0, status: 'error' }
     }
 
     return {

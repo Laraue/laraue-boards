@@ -13,6 +13,7 @@ test('loads the requested organization layout', async () => {
           canManage: true,
           canManageAttributes: true,
           canMassMove: false,
+          canViewBilling: true,
           color: '#123',
           id: 1,
           name: 'Acme',
@@ -32,6 +33,8 @@ test('loads the requested organization layout', async () => {
         return { color: '#456', firstName: 'Ada', initials: 'AL', lastName: 'Lovelace' }
       case '/api/spaces':
         return [{ color: '#789', isDefault: false, key: 'DEV', name: 'Development' }]
+      case '/api/billing/tariff':
+        return { name: 'Free' }
       default:
         return new Response(null, { status: 404 })
     }
@@ -45,13 +48,14 @@ test('loads the requested organization layout', async () => {
         canManageAttributes: true,
         canMassMove: false,
         canUpdate: true,
+        canViewBilling: true,
         color: '#123',
         id: '1',
         initial: 'A',
         name: 'Acme',
       },
       spaces: [{ color: '#789', key: 'DEV', name: 'Development' }],
-      user: { color: '#456', initials: 'AL', name: 'Ada Lovelace' },
+      user: { color: '#456', initials: 'AL', name: 'Ada Lovelace', tariffName: 'Free' },
     },
     status: 'success',
   })
@@ -91,6 +95,7 @@ test('selects the organization from the url when only the organization cookie is
               canManage: true,
               canManageAttributes: true,
               canMassMove: false,
+              canViewBilling: true,
               color: '#123',
               id: 1,
               name: 'Acme',
@@ -114,6 +119,8 @@ test('selects the organization from the url when only the organization cookie is
         return { color: '#456', firstName: 'Ada', initials: 'AL', lastName: 'Lovelace' }
       case '/api/spaces':
         return []
+      case '/api/billing/tariff':
+        return { name: 'Free' }
       default:
         return new Response(null, { status: 404 })
     }

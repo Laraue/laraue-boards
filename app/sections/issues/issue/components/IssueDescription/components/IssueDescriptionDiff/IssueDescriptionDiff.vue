@@ -172,7 +172,7 @@ const splitRows = computed(() => {
 }
 
 .diff-split {
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   font-size: var(--font-size-small);
 }
 

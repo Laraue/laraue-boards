@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 
 import type { MoveBoards } from '../MoveBoardsDialog.deps'
 
@@ -26,7 +26,7 @@ export const createMoveBoards =
       return { code: 0, status: 'error' }
     }
     for (const response of responses) {
-      if ('error' in response) {
+      if (isErrorResponse(response)) {
         return { code: response.response.status, status: 'error' }
       }
     }

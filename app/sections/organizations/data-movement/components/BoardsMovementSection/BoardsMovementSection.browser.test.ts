@@ -64,7 +64,7 @@ const mount = async (
       onMoved,
       spaces: boardSpaces,
     },
-    route: '/organizations/acme-ab12/settings/data-movement',
+    route: '/organizations/acme-ab12/admin/data-movement',
   })
   return currentWrapper
 }

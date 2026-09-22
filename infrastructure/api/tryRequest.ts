@@ -1,3 +1,11 @@
+export type ApiResponse<Data, Error = unknown> =
+  | { data: Data; error?: never; response: Response }
+  | { data?: never; error: Error; response: Response }
+
+export const isErrorResponse = <Data, Error>(
+  response: ApiResponse<Data, Error> | undefined,
+): response is { data?: never; error: Error; response: Response } => response?.error !== undefined
+
 export const tryRequest = async <Response>(
   request: () => Promise<Response>,
 ): Promise<Response | undefined> => {

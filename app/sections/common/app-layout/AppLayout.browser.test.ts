@@ -17,13 +17,14 @@ const data: AppLayoutData = {
     canManageAttributes: false,
     canMassMove: false,
     canUpdate: true,
+    canViewBilling: true,
     color: '#4774d4',
     id: '1',
     initial: 'A',
     name: 'Acme',
   },
   spaces: [{ color: '#4774d4', key: 'product', name: 'Product' }],
-  user: { color: '#4774d4', initials: 'AL', name: 'Ada Lovelace' },
+  user: { color: '#4774d4', initials: 'AL', name: 'Ada Lovelace', tariffName: 'Free' },
 }
 
 const createTourDeps = () => ({
@@ -76,6 +77,8 @@ it('shows desktop navigation and logs out on request', async () => {
 
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: 'Create space' })).toBeInTheDocument()
+  await expect.element(page.getByText('Free')).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Ada Lovelace Free/ })).toBeInTheDocument()
   await page.getByRole('button', { name: 'Log out' }).click()
 
   await vi.waitFor(() => expect(logout).toHaveBeenCalledOnce())
@@ -114,6 +117,7 @@ it('hides general settings without update access', async () => {
             ...data.organization,
             canManage: false,
             canUpdate: false,
+            canViewBilling: false,
           },
         },
         status: 'success',

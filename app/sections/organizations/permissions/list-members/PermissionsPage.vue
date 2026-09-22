@@ -8,14 +8,6 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="permissions-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <ShieldCheck class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>{{ t('permissions') }}</h1>
-            </div>
-          </div>
-        </div>
         <div class="invitation-card">
           <div class="invitation-heading">
             <span class="invitation-icon"><TicketCheck /></span>
@@ -84,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { Check, ChevronRight, Copy, RefreshCw, ShieldCheck, TicketCheck } from '@lucide/vue'
+import { Check, ChevronRight, Copy, RefreshCw, TicketCheck } from '@lucide/vue'
 
 import type { PermissionsPageDeps } from '~/sections/organizations/permissions/list-members/PermissionsPage.deps'
 
@@ -228,7 +220,7 @@ const regenerate = (): void => {
 }
 
 .invitation-link input {
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-family-mono);
   text-overflow: ellipsis;
 }
 

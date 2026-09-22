@@ -1,10 +1,8 @@
 import type { ActionResult } from './apiResult'
 import { getInvalidInputError } from './getInvalidInputError'
-import { tryRequest } from './tryRequest'
+import { isErrorResponse, tryRequest, type ApiResponse } from './tryRequest'
 
-type ActionResponse<Data> =
-  | { data: Data; response: Response }
-  | { error: unknown; response: Response }
+type ActionResponse<Data> = ApiResponse<Data>
 
 export const executeAction = async <RawData, Data>({
   map,
@@ -15,15 +13,15 @@ export const executeAction = async <RawData, Data>({
 }): Promise<ActionResult<Data>> => {
   const response = await tryRequest(request)
 
-  if (response && 'data' in response) {
-    const data = map(response.data)
-    if (data !== undefined) {
-      return { data, status: 'success' }
-    }
+  if (!response) {
     return { code: 0, status: 'error' }
   }
-  if (response?.response.status === 400) {
+  if (isErrorResponse(response) && response.response.status === 400) {
     return { message: getInvalidInputError(response.error).message, status: 'validation-error' }
   }
-  return { code: response?.response.status ?? 0, status: 'error' }
+  if (isErrorResponse(response)) {
+    return { code: response.response.status, status: 'error' }
+  }
+  const data = map(response.data)
+  return data === undefined ? { code: 0, status: 'error' } : { data, status: 'success' }
 }

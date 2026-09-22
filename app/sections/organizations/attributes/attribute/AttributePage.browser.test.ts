@@ -45,7 +45,7 @@ const mount = async (deps: AttributePageDeps, onFinished: () => void) => {
   currentWrapper = await mountSuspended(AttributePage, {
     attachTo: document.body,
     props: { attributeId: '7', deps, onFinished },
-    route: '/organizations/acme-ab12/settings/attributes/7',
+    route: '/organizations/acme-ab12/admin/attributes/7',
   })
   return currentWrapper
 }

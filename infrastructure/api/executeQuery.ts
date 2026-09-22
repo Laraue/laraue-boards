@@ -1,9 +1,7 @@
 import type { QueryResult } from './apiResult'
-import { tryRequest } from './tryRequest'
+import { isErrorResponse, tryRequest, type ApiResponse } from './tryRequest'
 
-type QueryResponse<Data> =
-  | { data: Data; response: Response }
-  | { error: unknown; response: Response }
+type QueryResponse<Data> = ApiResponse<Data>
 
 export const executeQuery = async <RawData, Data>({
   map,
@@ -14,9 +12,12 @@ export const executeQuery = async <RawData, Data>({
 }): Promise<QueryResult<Data>> => {
   const response = await tryRequest(request)
 
-  if (response && 'data' in response) {
-    const data = map(response.data)
-    return data === undefined ? { code: 404, status: 'error' } : { data, status: 'success' }
+  if (!response) {
+    return { code: 0, status: 'error' }
   }
-  return { code: response?.response.status ?? 0, status: 'error' }
+  if (isErrorResponse(response)) {
+    return { code: response.response.status, status: 'error' }
+  }
+  const data = map(response.data)
+  return data === undefined ? { code: 404, status: 'error' } : { data, status: 'success' }
 }

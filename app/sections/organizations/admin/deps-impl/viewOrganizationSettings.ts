@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { DEFAULT_COLOR } from '~/constants/colors'
 
 import type { ViewOrganizationSettings } from '../OrganizationSettingsPage.deps'
@@ -17,10 +17,10 @@ export const createViewOrganizationSettings =
       return { code: 0, status: 'error' }
     }
     const [current, organizations] = responses
-    if ('error' in current) {
+    if (isErrorResponse(current)) {
       return { code: current.response.status, status: 'error' }
     }
-    if ('error' in organizations) {
+    if (isErrorResponse(organizations)) {
       return { code: organizations.response.status, status: 'error' }
     }
     const organization = organizations.data.find(

@@ -20,14 +20,39 @@ export const useOrganizationRoutes = () => {
   })
 
   return {
+    account: () =>
+      ({
+        name: 'organizations-organizationKey-account',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
+    accountTransactions: () =>
+      ({
+        name: 'organizations-organizationKey-account-transactions',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
+    admin: () =>
+      ({
+        name: 'organizations-organizationKey-admin',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
+    adminTransactions: () =>
+      ({
+        name: 'organizations-organizationKey-admin-transactions',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
+    apiKeys: () =>
+      ({
+        name: 'organizations-organizationKey-account-api-keys',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
     attribute: (id: string) =>
       ({
-        name: 'organizations-organizationKey-settings-attributes-id',
+        name: 'organizations-organizationKey-admin-attributes-id',
         params: { ...organizationParams(), id },
       }) satisfies RouteLocationRaw,
     attributes: () =>
       ({
-        name: 'organizations-organizationKey-settings-attributes',
+        name: 'organizations-organizationKey-admin-attributes',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
     backlog: (spaceKey: string) =>
@@ -47,7 +72,7 @@ export const useOrganizationRoutes = () => {
       }) satisfies RouteLocationRaw,
     dataMovement: () =>
       ({
-        name: 'organizations-organizationKey-settings-data-movement',
+        name: 'organizations-organizationKey-admin-data-movement',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
     history: () =>
@@ -67,12 +92,12 @@ export const useOrganizationRoutes = () => {
       }) satisfies RouteLocationRaw,
     memberPermissions: (id: string) =>
       ({
-        name: 'organizations-organizationKey-settings-permissions-id',
+        name: 'organizations-organizationKey-admin-permissions-id',
         params: { ...organizationParams(), id },
       }) satisfies RouteLocationRaw,
     newAttribute: () =>
       ({
-        name: 'organizations-organizationKey-settings-attributes-new',
+        name: 'organizations-organizationKey-admin-attributes-new',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
     newBacklogIssue: (spaceKey: string) =>
@@ -103,7 +128,7 @@ export const useOrganizationRoutes = () => {
     organizationKey,
     permissions: () =>
       ({
-        name: 'organizations-organizationKey-settings-permissions',
+        name: 'organizations-organizationKey-admin-permissions',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
     retro: (retroId: string) =>
@@ -114,11 +139,6 @@ export const useOrganizationRoutes = () => {
     retros: () =>
       ({
         name: 'organizations-organizationKey-retro',
-        params: organizationParams(),
-      }) satisfies RouteLocationRaw,
-    settings: () =>
-      ({
-        name: 'organizations-organizationKey-settings',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
     space: (spaceKey: string) =>

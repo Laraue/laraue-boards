@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { COLORS } from '~/constants/colors'
 import { findSpaceByKey } from '~/sections/spaces/shared/findSpaceByKey'
 
@@ -41,8 +41,11 @@ export const createViewSpace =
   (client: ApiClient): ViewSpace =>
   async ({ signal, spaceKey }) => {
     const spaces = await tryRequest(() => client.GET('/api/spaces', { signal }))
-    if (!spaces || 'error' in spaces) {
-      return { code: spaces?.response.status ?? 0, status: 'error' }
+    if (!spaces) {
+      return { code: 0, status: 'error' }
+    }
+    if (isErrorResponse(spaces)) {
+      return { code: spaces.response.status, status: 'error' }
     }
     const space = findSpaceByKey(spaces.data, spaceKey)
     if (!space) {
@@ -68,13 +71,13 @@ export const createViewSpace =
       return { code: 0, status: 'error' }
     }
     const [details, boards, boardStatuses] = responses
-    if ('error' in details) {
+    if (isErrorResponse(details)) {
       return { code: details.response.status, status: 'error' }
     }
-    if ('error' in boards) {
+    if (isErrorResponse(boards)) {
       return { code: boards.response.status, status: 'error' }
     }
-    if ('error' in boardStatuses) {
+    if (isErrorResponse(boardStatuses)) {
       return { code: boardStatuses.response.status, status: 'error' }
     }
     return {

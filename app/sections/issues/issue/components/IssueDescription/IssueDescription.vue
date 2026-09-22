@@ -581,7 +581,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 .issue-description-preview :deep(code) {
   background: var(--color-hover);
   border-radius: var(--radius-small);
-  font-family: monospace;
+  font-family: var(--font-family-mono);
 }
 
 .issue-description-preview :deep(code) {
