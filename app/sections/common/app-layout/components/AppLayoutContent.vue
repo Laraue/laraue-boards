@@ -78,19 +78,19 @@
         </NuxtLink>
         <div class="sidebar-bottom">
           <NuxtLink
-            :class="{ active: within('organizations-organizationKey-retro') }"
-            :to="organizationRoutes.retros()">
-            <RetroIcon />
-            {{ t('retro') }}
-            <span class="muted nav-badge">{{ t('alpha') }}</span>
-          </NuxtLink>
-          <NuxtLink
             v-if="adminHome"
             :class="{ active: within('organizations-organizationKey-admin') }"
             data-tour="organization-settings"
             :to="adminHome">
             <Settings />
             {{ t('admin') }}
+          </NuxtLink>
+          <NuxtLink
+            :class="{ active: within('organizations-organizationKey-retro') }"
+            :to="organizationRoutes.retros()">
+            <RetroIcon />
+            {{ t('retro') }}
+            <span class="muted nav-badge">{{ t('alpha') }}</span>
           </NuxtLink>
           <a
             :aria-label="t('documentationNewTab')"
