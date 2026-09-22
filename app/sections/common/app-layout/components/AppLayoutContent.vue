@@ -308,7 +308,6 @@ aside {
   overflow-y: auto;
   padding: var(--space-4) var(--space-3);
   position: sticky;
-  scrollbar-gutter: stable;
   top: 0;
   width: 100%;
 }
