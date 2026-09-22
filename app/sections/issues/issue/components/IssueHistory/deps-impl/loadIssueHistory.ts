@@ -95,7 +95,16 @@ const mapHistoryPage = (
   items: result.data.flatMap((item) => {
     const changes = item.changes
       .map((change) => mapChange(change, item.action, item.entityType, baseUrl))
-      .filter((change) => !('oldValue' in change) || change.oldValue !== change.newValue)
+      .filter((change) => {
+        if (
+          change.kind === 'attachment' ||
+          change.kind === 'description' ||
+          change.kind === 'event'
+        ) {
+          return true
+        }
+        return change.oldValue !== change.newValue
+      })
 
     if (item.changes.length && !changes.length) {
       return []

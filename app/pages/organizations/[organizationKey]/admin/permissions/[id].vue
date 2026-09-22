@@ -9,7 +9,7 @@
 import { createMemberPermissionsPageDeps } from '~/sections/organizations/permissions/member-permissions/deps-impl'
 import MemberPermissionsPage from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.vue'
 
-const route = useRoute('organizations-organizationKey-settings-permissions-id')
+const route = useRoute('organizations-organizationKey-admin-permissions-id')
 const memberId = computed(() => String(route.params.id))
 const client = useApiClient()
 const deps = createMemberPermissionsPageDeps(client)

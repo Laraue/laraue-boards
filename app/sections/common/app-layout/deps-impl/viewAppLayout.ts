@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 import { getOrganizationKey } from '~/utils/organizationKey'
@@ -28,6 +28,7 @@ const mapAppLayoutData = (
   organization: Schemas['OrganizationDto'],
   organizationMembership: Schemas['OrganizationListDto'],
   spaces: Schemas['SpaceListDto'][],
+  tariffName: string,
   user: Schemas['UserDto'],
 ): AppLayoutData => ({
   organization: {
@@ -36,6 +37,7 @@ const mapAppLayoutData = (
     canManageAttributes: organization.canManageAttributes,
     canMassMove: organization.canMassMove,
     canUpdate: organizationMembership.canUpdate,
+    canViewBilling: organization.canViewBilling,
     color: organization.color ?? DEFAULT_COLOR,
     id: String(organization.id),
     initial: organization.name[0] ?? '?',
@@ -54,6 +56,7 @@ const mapAppLayoutData = (
       user.username ||
       user.initials ||
       'User',
+    tariffName,
   },
 })
 
@@ -70,7 +73,7 @@ export const createViewAppLayout =
       return { problem: failed(), status: 'problem' }
     }
     let [organization, organizations] = initial
-    if ('error' in organizations) {
+    if (isErrorResponse(organizations)) {
       return { problem: toProblem(organizations.response.status), status: 'problem' }
     }
     const organizationMembership = organizations.data.find(
@@ -81,14 +84,14 @@ export const createViewAppLayout =
     }
 
     if (
-      'error' in organization ||
+      isErrorResponse(organization) ||
       String(organization.data.id) !== String(organizationMembership.id)
     ) {
       const noOrganizationSelected =
-        'error' in organization &&
+        isErrorResponse(organization) &&
         (organization.response.status === 401 || organization.response.status === 404)
 
-      if ('error' in organization && !noOrganizationSelected) {
+      if (isErrorResponse(organization) && !noOrganizationSelected) {
         return { problem: toProblem(organization.response.status), status: 'problem' }
       }
       if (import.meta.server) {
@@ -100,38 +103,51 @@ export const createViewAppLayout =
           parseAs: 'text',
         }),
       )
-      if (!selection || 'error' in selection) {
+      if (!selection || isErrorResponse(selection)) {
         return { problem: failed(selection), status: 'problem' }
       }
       const refreshed = await tryRequest(() => client.GET('/api/organizations/current', { signal }))
-      if (!refreshed || 'error' in refreshed) {
+      if (!refreshed || isErrorResponse(refreshed)) {
         return { problem: failed(refreshed), status: 'problem' }
       }
       organization = refreshed
     }
 
     if (
-      'error' in organization ||
+      isErrorResponse(organization) ||
       String(organization.data.id) !== String(organizationMembership.id)
     ) {
       return { problem: { kind: 'unknown-organization' }, status: 'problem' }
     }
 
     const details = await tryRequest(() =>
-      Promise.all([client.GET('/api/user', { signal }), client.GET('/api/spaces', { signal })]),
+      Promise.all([
+        client.GET('/api/user', { signal }),
+        client.GET('/api/spaces', { signal }),
+        client.GET('/api/billing/tariff', { signal }),
+      ]),
     )
     if (!details) {
       return { problem: failed(), status: 'problem' }
     }
-    const [user, spaces] = details
-    if ('error' in user) {
+    const [user, spaces, tariff] = details
+    if (isErrorResponse(user)) {
       return { problem: toProblem(user.response.status), status: 'problem' }
     }
-    if ('error' in spaces) {
+    if (isErrorResponse(spaces)) {
       return { problem: toProblem(spaces.response.status), status: 'problem' }
     }
+    if (isErrorResponse(tariff)) {
+      return { problem: toProblem(tariff.response.status), status: 'problem' }
+    }
     return {
-      data: mapAppLayoutData(organization.data, organizationMembership, spaces.data, user.data),
+      data: mapAppLayoutData(
+        organization.data,
+        organizationMembership,
+        spaces.data,
+        tariff.data.name,
+        user.data,
+      ),
       status: 'success',
     }
   }

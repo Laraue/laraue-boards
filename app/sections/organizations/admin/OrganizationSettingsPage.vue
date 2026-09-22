@@ -8,14 +8,6 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="form-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <Settings class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>{{ t('generalSettings') }}</h1>
-            </div>
-          </div>
-        </div>
         <form
           @submit.prevent="
             submitForm({
@@ -68,10 +60,8 @@
 </template>
 
 <script setup lang="ts">
-import { Settings } from '@lucide/vue'
-
-import type { OrganizationSettingsPageDeps } from '~/sections/organizations/settings/OrganizationSettingsPage.deps'
-import type { UpdateOrganizationInput } from '~/sections/organizations/settings/OrganizationSettingsPage.types'
+import type { OrganizationSettingsPageDeps } from '~/sections/organizations/admin/OrganizationSettingsPage.deps'
+import type { UpdateOrganizationInput } from '~/sections/organizations/admin/OrganizationSettingsPage.types'
 
 const props = defineProps<{
   deps: OrganizationSettingsPageDeps
@@ -158,9 +148,3 @@ const remove = (id: string): void => {
   }
 }
 </script>
-
-<style scoped>
-.form-page > form {
-  margin-top: var(--space-6);
-}
-</style>

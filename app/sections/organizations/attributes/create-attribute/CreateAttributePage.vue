@@ -5,9 +5,8 @@
         <AppBackLink
           :label="t('backToAttributes')"
           :to="organizationRoutes.attributes()" />
-        <Tags class="page-heading-icon" />
         <div class="page-heading-text">
-          <h1>{{ t('createAttribute') }}</h1>
+          <h2>{{ t('createAttribute') }}</h2>
         </div>
       </div>
     </div>
@@ -89,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Tags, Trash2 } from '@lucide/vue'
+import { Plus, Trash2 } from '@lucide/vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { CreateAttributePageDeps } from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.deps'

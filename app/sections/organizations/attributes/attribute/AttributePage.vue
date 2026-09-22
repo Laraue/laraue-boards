@@ -13,9 +13,8 @@
             <AppBackLink
               :label="t('backToAttributes')"
               :to="organizationRoutes.attributes()" />
-            <Tags class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>{{ t('editAttribute') }}</h1>
+              <h2>{{ t('editAttribute') }}</h2>
             </div>
           </div>
         </div>
@@ -93,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Tags, Trash2 } from '@lucide/vue'
+import { Plus, Trash2 } from '@lucide/vue'
 
 import type { AttributePageDeps } from '~/sections/organizations/attributes/attribute/AttributePage.deps'
 import type {

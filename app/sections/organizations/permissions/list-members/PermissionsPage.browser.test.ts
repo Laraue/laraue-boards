@@ -47,7 +47,7 @@ const mount = async (
         view,
       },
     },
-    route: '/organizations/acme-ab12/settings/permissions',
+    route: '/organizations/acme-ab12/admin/permissions',
   })
   return currentWrapper
 }
@@ -71,7 +71,7 @@ it('links every member to their permissions and labels their role', async () => 
     .toHaveValue(`${window.location.origin}/join/invite-123`)
   await expect
     .element(page.getByRole('link', { name: /Ada Lovelace/ }))
-    .toHaveAttribute('href', '/organizations/acme-ab12/settings/permissions/5')
+    .toHaveAttribute('href', '/organizations/acme-ab12/admin/permissions/5')
   await expect.element(page.getByRole('link', { name: /Ada Lovelace/ })).toHaveTextContent('Admin')
   await expect.element(page.getByRole('link', { name: /Grace Hopper/ })).toHaveTextContent('Owner')
   await expect.element(page.getByRole('link', { name: /Alan Turing/ })).toHaveTextContent('Member')

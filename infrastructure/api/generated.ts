@@ -414,6 +414,287 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/organizations/billing/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetAdminBillingTransactionsRequest"];
+                    "text/json": components["schemas"]["GetAdminBillingTransactionsRequest"];
+                    "application/*+json": components["schemas"]["GetAdminBillingTransactionsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfAdminBillingTransaction"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfAdminBillingTransaction"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfAdminBillingTransaction"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/api-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateApiKeyRequest"];
+                    "text/json": components["schemas"]["CreateApiKeyRequest"];
+                    "application/*+json": components["schemas"]["CreateApiKeyRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CreateApiKeyResponse"];
+                        "application/json": components["schemas"]["CreateApiKeyResponse"];
+                        "text/json": components["schemas"]["CreateApiKeyResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/api-keys/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetApiKeysRequest"];
+                    "text/json": components["schemas"]["GetApiKeysRequest"];
+                    "application/*+json": components["schemas"]["GetApiKeysRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfApiKeyDto"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfApiKeyDto"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfApiKeyDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/api-keys/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/billing/tariff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["TariffName"];
+                        "application/json": components["schemas"]["TariffName"];
+                        "text/json": components["schemas"]["TariffName"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/billing/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["BillingSummary"];
+                        "application/json": components["schemas"]["BillingSummary"];
+                        "text/json": components["schemas"]["BillingSummary"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/billing/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetBillingTransactionsRequest"];
+                    "text/json": components["schemas"]["GetBillingTransactionsRequest"];
+                    "application/*+json": components["schemas"]["GetBillingTransactionsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ShortPaginatedResultOfBillingTransaction"];
+                        "application/json": components["schemas"]["ShortPaginatedResultOfBillingTransaction"];
+                        "text/json": components["schemas"]["ShortPaginatedResultOfBillingTransaction"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/epics/{id}": {
         parameters: {
             query?: never;
@@ -2599,6 +2880,34 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         AdminAccessLevel: string;
+        AdminBillingTransaction: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            ownerUserId: string;
+            ownerDisplayName?: null | string;
+            status: components["schemas"]["TokenTransactionStatus"];
+            reason: components["schemas"]["TokenTransactionReason"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            finishedAt?: null | string;
+            /** Format: int64 */
+            delta: number | string;
+            error?: null | string;
+        };
+        ApiKeyDto: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            keyPrefix: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            lastUsedAt?: null | string;
+            /** Format: date-time */
+            revokedAt?: null | string;
+        };
         /** @enum {unknown} */
         AttachmentAction: "Created" | "Deleted";
         AttachmentData: {
@@ -2728,6 +3037,35 @@ export interface components {
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
+        BillingSummary: components["schemas"]["BillingSummaryPersonalBillingSummary"] | components["schemas"]["BillingSummaryTeamBillingSummary"];
+        BillingSummaryPersonalBillingSummary: {
+            /** @enum {string} */
+            $type?: "personal";
+            freeTeamOrganizations?: null | components["schemas"]["LimitUsage"];
+            subscriptionCode: string;
+            issuesPerMonth?: null | components["schemas"]["LimitUsage"];
+            tokens: components["schemas"]["LimitUsage"];
+        };
+        BillingSummaryTeamBillingSummary: {
+            /** @enum {string} */
+            $type?: "team";
+            subscriptionCode: string;
+            issuesPerMonth?: null | components["schemas"]["LimitUsage"];
+            tokens: components["schemas"]["LimitUsage"];
+        };
+        BillingTransaction: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["TokenTransactionStatus"];
+            reason: components["schemas"]["TokenTransactionReason"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            finishedAt?: null | string;
+            /** Format: int64 */
+            delta: number | string;
+            error?: null | string;
+        };
         ChangeEpicStatusRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
@@ -2764,6 +3102,15 @@ export interface components {
             updatedAt: string;
             canModify: boolean;
             owner: components["schemas"]["UserDetails"];
+        };
+        CreateApiKeyRequest: {
+            name: string;
+            authData?: components["schemas"]["OrganizationAuthData"];
+        };
+        CreateApiKeyResponse: {
+            /** Format: uuid */
+            id: string;
+            rawKey: string;
         };
         CreateAttributeRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -2892,6 +3239,20 @@ export interface components {
             /** Format: date-time */
             touchedAt: string;
             isDefault: boolean;
+        };
+        GetAdminBillingTransactionsRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            /** Format: uuid */
+            userId?: null | string;
+            pagination: components["schemas"]["PaginationData"];
+        };
+        GetApiKeysRequest: {
+            pagination: components["schemas"]["PaginationData"];
+            authData?: components["schemas"]["OrganizationAuthData"];
+        };
+        GetBillingTransactionsRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            pagination: components["schemas"]["PaginationData"];
         };
         GetBoardRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -3098,6 +3459,14 @@ export interface components {
             property: components["schemas"]["IssueProperty"];
             direction: components["schemas"]["SortingDirection"];
         };
+        LimitUsage: {
+            /** Format: int64 */
+            limit: number | string;
+            /** Format: int64 */
+            used: number | string;
+            /** Format: int64 */
+            remaining: number | string;
+        };
         /** @enum {unknown} */
         LogAction: "Create" | "Update" | "Delete";
         /** @enum {unknown} */
@@ -3167,6 +3536,7 @@ export interface components {
             canMassMove: boolean;
             canManage: boolean;
             canManageAttributes: boolean;
+            canViewBilling: boolean;
             slug: string;
             slugPostfix: string;
             preferences?: components["schemas"]["UserOrganizationPreferencesResponse"];
@@ -3267,6 +3637,33 @@ export interface components {
             organizationUserId?: number | string;
             userPermissions: components["schemas"]["UserPermissions"];
         };
+        ShortPaginatedResultOfAdminBillingTransaction: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["AdminBillingTransaction"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
+        };
+        ShortPaginatedResultOfApiKeyDto: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["ApiKeyDto"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
+        };
+        ShortPaginatedResultOfBillingTransaction: {
+            /** Format: int64 */
+            page: number | string;
+            /** Format: int32 */
+            perPage: number | string;
+            data: components["schemas"]["BillingTransaction"][];
+            hasNextPage: boolean;
+            hasPreviousPage?: boolean;
+        };
         ShortPaginatedResultOfCommentDto: {
             /** Format: int64 */
             page: number | string;
@@ -3336,6 +3733,9 @@ export interface components {
             authData?: components["schemas"]["OrganizationAuthData"];
             content: string;
         };
+        TariffName: {
+            name: string;
+        };
         TelegramWidgetAuthRequest: {
             /** Format: int64 */
             id?: number | string;
@@ -3347,6 +3747,10 @@ export interface components {
             auth_date?: number | string;
             hash?: string;
         };
+        /** @enum {unknown} */
+        TokenTransactionReason: "TariffGrant" | "DailyGrant" | "Purchase" | "Expiry" | "Spend";
+        /** @enum {unknown} */
+        TokenTransactionStatus: "Started" | "Canceled" | "Confirmed";
         UpdateAttributeListValueDto: {
             /** Format: int64 */
             id?: null | number | string;

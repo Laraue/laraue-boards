@@ -44,7 +44,7 @@ const mount = async (
   currentWrapper = await mountSuspended(SpacesMovementSection, {
     attachTo: document.body,
     props: { deps, onMoved, spaces: sectionSpaces },
-    route: '/organizations/acme-ab12/settings/data-movement',
+    route: '/organizations/acme-ab12/admin/data-movement',
   })
   return currentWrapper
 }

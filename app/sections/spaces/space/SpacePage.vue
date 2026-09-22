@@ -70,7 +70,10 @@
                 <strong>{{ board.name }}</strong>
                 <span
                   class="board-status"
-                  :class="`board-status--${board.status.toLowerCase()}`">
+                  :class="{
+                    'board-status--active': board.status === 'Active',
+                    'board-status--done': board.status === 'Done',
+                  }">
                   {{ statusLabel(board.status) }}
                 </span>
                 <span class="muted issue-count">{{ tp('issues', board.issueCount) }}</span>

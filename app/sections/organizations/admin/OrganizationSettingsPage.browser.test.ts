@@ -43,7 +43,7 @@ const mount = async (
   currentWrapper = await mountSuspended(OrganizationSettingsPage, {
     attachTo: document.body,
     props: { deps, onDeleted, onUpdated },
-    route: '/organizations/acme-ab12/settings',
+    route: '/organizations/acme-ab12/admin',
   })
   return currentWrapper
 }

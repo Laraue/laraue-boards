@@ -17,13 +17,14 @@ const data: AppLayoutData = {
     canManageAttributes: false,
     canMassMove: false,
     canUpdate: true,
+    canViewBilling: true,
     color: '#4774d4',
     id: '1',
     initial: 'A',
     name: 'Acme',
   },
   spaces: [{ color: '#4774d4', key: 'product', name: 'Product' }],
-  user: { color: '#4774d4', initials: 'AL', name: 'Ada Lovelace' },
+  user: { color: '#4774d4', initials: 'AL', name: 'Ada Lovelace', tariffName: 'Free' },
 }
 
 const createTourDeps = () => ({
@@ -76,6 +77,8 @@ it('shows desktop navigation and logs out on request', async () => {
 
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: 'Create space' })).toBeInTheDocument()
+  await expect.element(page.getByText('Free')).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Ada Lovelace Free/ })).toBeInTheDocument()
   await page.getByRole('button', { name: 'Log out' }).click()
 
   await vi.waitFor(() => expect(logout).toHaveBeenCalledOnce())
@@ -103,7 +106,7 @@ it('delegates theme and language changes to preferences', async () => {
   expect(preferences.setLocale).toHaveBeenCalledWith('ru')
 })
 
-it('hides general settings without update access', async () => {
+it('hides admin settings without any admin access', async () => {
   await page.viewport(1280, 800)
   await mount(
     createDeps({
@@ -113,6 +116,30 @@ it('hides general settings without update access', async () => {
           organization: {
             ...data.organization,
             canManage: false,
+            canManageAttributes: false,
+            canMassMove: false,
+            canUpdate: false,
+            canViewBilling: false,
+          },
+        },
+        status: 'success',
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('link', { name: 'Admin' })).not.toBeInTheDocument()
+})
+
+it('routes admin link to the highest-priority accessible admin tab', async () => {
+  await page.viewport(1280, 800)
+  await mount(
+    createDeps({
+      view: vi.fn<AppLayoutDeps['view']>(async () => ({
+        data: {
+          ...data,
+          organization: {
+            ...data.organization,
+            canManage: true,
             canUpdate: false,
           },
         },
@@ -121,7 +148,9 @@ it('hides general settings without update access', async () => {
     }),
   )
 
-  await expect.element(page.getByRole('link', { name: 'General' })).not.toBeInTheDocument()
+  await expect
+    .element(page.getByRole('link', { name: 'Admin' }))
+    .toHaveAttribute('href', expect.stringContaining('permissions'))
 })
 
 it('introduces the workspace navigation once', async () => {

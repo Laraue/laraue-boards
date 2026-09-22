@@ -6,8 +6,8 @@
 </template>
 
 <script setup lang="ts">
-import { createOrganizationSettingsPageDeps } from '~/sections/organizations/settings/deps-impl'
-import OrganizationSettingsPage from '~/sections/organizations/settings/OrganizationSettingsPage.vue'
+import { createOrganizationSettingsPageDeps } from '~/sections/organizations/admin/deps-impl'
+import OrganizationSettingsPage from '~/sections/organizations/admin/OrganizationSettingsPage.vue'
 
 const client = useApiClient()
 const deps = createOrganizationSettingsPageDeps(client)

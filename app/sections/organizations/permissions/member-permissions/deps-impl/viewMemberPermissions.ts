@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 
 import type { ViewMemberPermissions } from '../MemberPermissionsPage.deps'
 import type { MemberPermissions } from '../MemberPermissionsPage.types'
@@ -101,13 +101,14 @@ export const createViewMemberPermissions =
       return { code: 0, status: 'error' }
     }
     const [membersResponse, permissionsResponse, spacesResponse] = responses
-    for (const response of responses) {
-      if ('error' in response) {
-        return { code: response.response.status, status: 'error' }
-      }
+    if (isErrorResponse(membersResponse)) {
+      return { code: membersResponse.response.status, status: 'error' }
     }
-    if ('error' in membersResponse || 'error' in permissionsResponse || 'error' in spacesResponse) {
-      throw new Error('Unreachable member permissions response')
+    if (isErrorResponse(permissionsResponse)) {
+      return { code: permissionsResponse.response.status, status: 'error' }
+    }
+    if (isErrorResponse(spacesResponse)) {
+      return { code: spacesResponse.response.status, status: 'error' }
     }
     const member = mapOrganizationMembers(membersResponse.data).find((item) => item.id === memberId)
     if (!member) {

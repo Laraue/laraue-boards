@@ -1,5 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeAction } from '#infrastructure/api/executeAction'
+import { isErrorResponse } from '#infrastructure/api/tryRequest'
 
 import type { BoardPageDeps } from '../BoardPage.deps'
 
@@ -20,7 +21,7 @@ export const createMoveBoardIssue =
               body: { issueKeys: [issueKey], statusId: Number(statusId) },
             })
           : undefined
-        if (statusResponse && !('data' in statusResponse)) {
+        if (statusResponse && isErrorResponse(statusResponse)) {
           return statusResponse
         }
         if (!target) {

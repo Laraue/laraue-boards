@@ -19,7 +19,7 @@ const mount = async (view: AttributesPageDeps['view']) => {
   currentWrapper = await mountSuspended(AttributesPage, {
     attachTo: document.body,
     props: { deps: { view } },
-    route: '/organizations/acme-ab12/settings/attributes',
+    route: '/organizations/acme-ab12/admin/attributes',
   })
   return currentWrapper
 }
@@ -39,11 +39,11 @@ it('links every attribute to its page and labels its type', async () => {
 
   await expect
     .element(page.getByRole('link', { name: /Priority/ }))
-    .toHaveAttribute('href', '/organizations/acme-ab12/settings/attributes/7')
+    .toHaveAttribute('href', '/organizations/acme-ab12/admin/attributes/7')
   await expect.element(page.getByRole('link', { name: /Priority/ })).toHaveTextContent('Text')
   await expect
     .element(page.getByRole('link', { name: /Severity/ }))
-    .toHaveAttribute('href', '/organizations/acme-ab12/settings/attributes/8')
+    .toHaveAttribute('href', '/organizations/acme-ab12/admin/attributes/8')
   await expect.element(page.getByRole('link', { name: /Severity/ })).toHaveTextContent('List')
 })
 
@@ -57,7 +57,7 @@ it('links to the attribute creation page', async () => {
 
   await expect
     .element(page.getByRole('link', { name: 'New attribute' }))
-    .toHaveAttribute('href', '/organizations/acme-ab12/settings/attributes/new')
+    .toHaveAttribute('href', '/organizations/acme-ab12/admin/attributes/new')
 })
 
 it('shows no attribute links when the list is empty', async () => {

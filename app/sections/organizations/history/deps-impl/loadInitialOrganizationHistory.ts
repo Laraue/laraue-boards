@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 
 import type { OrganizationHistoryPageDeps } from '../OrganizationHistoryPage.deps'
 import { mapOrganizationHistoryPage } from './mapOrganizationHistoryPage'
@@ -21,10 +21,10 @@ export const createLoadInitialOrganizationHistory =
     }
 
     const [members, history] = responses
-    if ('error' in members) {
+    if (isErrorResponse(members)) {
       return { code: members.response.status, status: 'error' }
     }
-    if ('error' in history) {
+    if (isErrorResponse(history)) {
       return { code: history.response.status, status: 'error' }
     }
     if (!history.data) {
