@@ -14,10 +14,10 @@
         class="organization"
         @click="state.sidebarOpen = false">
         <NuxtLink
-          :aria-label="`Switch organization. Current organization: ${viewModel.organization.name}`"
+          :aria-label="`${t('switchOrganization')}. ${t('currentOrganization')}: ${viewModel.organization.name}`"
           class="organization-select"
           data-tour="organization-switcher"
-          title="Switch organization"
+          :title="t('switchOrganization')"
           to="/organizations">
           <span
             class="entity-avatar"
@@ -31,7 +31,7 @@
         </NuxtLink>
       </div>
       <nav
-        aria-label="Main navigation"
+        :aria-label="t('mainNavigation')"
         @click="state.sidebarOpen = false">
         <NuxtLink
           :class="{
@@ -40,23 +40,23 @@
           data-tour="all-issues"
           :to="organizationRoutes.issues()">
           <ClipboardList />
-          All issues
+          {{ t('allIssues') }}
         </NuxtLink>
         <NuxtLink
           :class="{ active: active('organizations-organizationKey-history') }"
           :to="organizationRoutes.history()">
           <History />
-          History
+          {{ t('history') }}
         </NuxtLink>
         <div
           class="nav-title"
           data-tour="spaces">
-          Spaces
+          {{ t('spaces') }}
         </div>
         <p
           v-if="viewModel.spaces.length === 0"
           class="nav-hint">
-          A space groups the boards and issues of one project.
+          {{ t('spaceHint') }}
         </p>
         <div
           v-for="space in viewModel.spaces"
@@ -74,118 +74,96 @@
           exact-active-class="active"
           :to="organizationRoutes.newSpace()">
           <Plus />
-          Create space
+          {{ t('createSpace') }}
         </NuxtLink>
-        <div
-          v-if="
-            viewModel.organization.canUpdate ||
-            viewModel.organization.canManage ||
-            viewModel.organization.canManageAttributes ||
-            viewModel.organization.canMassMove
-          "
-          class="nav-title"
-          data-tour="organization-settings">
-          Settings
+        <div class="sidebar-bottom">
+          <NuxtLink
+            v-if="adminHome"
+            :class="{ active: within('organizations-organizationKey-admin') }"
+            data-tour="organization-settings"
+            :to="adminHome">
+            <Settings />
+            {{ t('admin') }}
+          </NuxtLink>
+          <NuxtLink
+            :class="{ active: within('organizations-organizationKey-retro') }"
+            :to="organizationRoutes.retros()">
+            <RetroIcon />
+            {{ t('retro') }}
+            <span class="muted nav-badge">{{ t('alpha') }}</span>
+          </NuxtLink>
+          <a
+            :aria-label="t('documentationNewTab')"
+            class="sidebar-documentation"
+            href="https://laraue.com/blog/documentation/laraue-boards"
+            rel="noopener noreferrer"
+            target="_blank">
+            <BookOpen />
+            {{ t('documentation') }}
+          </a>
         </div>
-        <NuxtLink
-          v-if="viewModel.organization.canUpdate"
-          :class="{
-            active: active('organizations-organizationKey-settings'),
-          }"
-          :to="organizationRoutes.settings()">
-          <Settings />
-          General
-        </NuxtLink>
-        <NuxtLink
-          v-if="viewModel.organization.canManage"
-          :class="{
-            active: within('organizations-organizationKey-settings-permissions'),
-          }"
-          :to="organizationRoutes.permissions()">
-          <ShieldCheck />
-          Permissions
-        </NuxtLink>
-        <NuxtLink
-          v-if="viewModel.organization.canManageAttributes"
-          :class="{
-            active: within('organizations-organizationKey-settings-attributes'),
-          }"
-          :to="organizationRoutes.attributes()">
-          <Tags />
-          Attributes
-        </NuxtLink>
-        <NuxtLink
-          v-if="viewModel.organization.canMassMove"
-          :class="{
-            active: active('organizations-organizationKey-settings-data-movement'),
-          }"
-          :to="organizationRoutes.dataMovement()">
-          <ArrowRightLeft />
-          Data movement
-        </NuxtLink>
-        <NuxtLink
-          class="sidebar-bottom"
-          :class="{ active: within('organizations-organizationKey-retro') }"
-          :to="organizationRoutes.retros()">
-          <RetroIcon />
-          Retro
-          <span class="muted nav-badge">alpha</span>
-        </NuxtLink>
-        <a
-          aria-label="Documentation (opens in a new tab)"
-          class="sidebar-documentation"
-          href="https://laraue.com/blog/documentation/laraue-boards"
-          rel="noopener noreferrer"
-          target="_blank">
-          <BookOpen />
-          Documentation
-        </a>
       </nav>
       <div class="sidebar-footer">
-        <div class="sidebar-user">
+        <NuxtLink
+          class="sidebar-user"
+          :class="{ active: within('organizations-organizationKey-account') }"
+          :to="organizationRoutes.account()"
+          @click="state.sidebarOpen = false">
           <span
             class="avatar"
             :style="{ background: viewModel.user.color }">
             {{ viewModel.user.initials }}
           </span>
-          <span>
+          <span class="sidebar-user-info">
             <strong>{{ viewModel.user.name }}</strong>
-            <small class="muted">Signed in</small>
+            <small class="muted">
+              {{ viewModel.user.tariffName || t('tariffUnavailable') }}
+            </small>
           </span>
+        </NuxtLink>
+        <div class="sidebar-preferences">
+          <button
+            :aria-label="t('switchLanguage')"
+            class="secondary sidebar-language"
+            :title="t('switchLanguage')"
+            type="button"
+            @click="toggleLocale">
+            <img
+              alt=""
+              class="language-flag"
+              :src="locale === 'en' ? '/flags/us.svg' : '/flags/ru.svg'" />
+            {{ t('languageName') }}
+          </button>
+          <button
+            :aria-label="theme === 'dark' ? t('lightMode') : t('darkMode')"
+            class="secondary sidebar-theme"
+            :title="theme === 'dark' ? t('lightMode') : t('darkMode')"
+            type="button"
+            @click="toggleTheme">
+            <Sun v-if="theme === 'dark'" />
+            <Moon v-else />
+          </button>
         </div>
-        <button
-          class="secondary sidebar-action"
-          type="button"
-          @click="toggleTheme">
-          <span class="theme-action theme-action--light">
-            <Sun />
-            Light mode
-          </span>
-          <span class="theme-action theme-action--dark">
-            <Moon />
-            Dark mode
-          </span>
-        </button>
         <button
           class="secondary danger sidebar-action"
           type="button"
           @click="props.onLogout">
           <LogOut />
-          Log out
+          {{ t('logOut') }}
         </button>
       </div>
     </aside>
     <Transition name="fade">
       <button
         v-if="state.sidebarOpen"
-        aria-label="Close menu"
+        :aria-label="t('closeMenu')"
         class="scrim"
         @click="state.sidebarOpen = false" />
     </Transition>
     <main>
       <button
         v-if="!state.sidebarOpen"
-        aria-label="Open menu"
+        :aria-label="t('openMenu')"
         class="icon-btn mobile-menu-button"
         type="button"
         @click="state.sidebarOpen = true">
@@ -198,7 +176,6 @@
 
 <script setup lang="ts">
 import {
-  ArrowRightLeft,
   BookOpen,
   ChevronsUpDown,
   ClipboardList,
@@ -208,33 +185,102 @@ import {
   Moon,
   Plus,
   Settings,
-  ShieldCheck,
   Sun,
-  Tags,
 } from '@lucide/vue'
 
+import type { AppPreferences } from '~/composables/useAppPreferences'
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const props = defineProps<{
   onLogout: () => void
+  preferences: AppPreferences
   viewModel: AppLayoutData
 }>()
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const state = reactive({ sidebarOpen: false })
+const locale = props.preferences.locale
+const theme = props.preferences.theme
+const { t } = useI18n({
+  en: {
+    admin: 'Admin',
+    allIssues: 'All issues',
+    alpha: 'alpha',
+    closeMenu: 'Close menu',
+    createSpace: 'Create space',
+    currentOrganization: 'Current organization',
+    darkMode: 'Dark',
+    documentation: 'Documentation',
+    documentationNewTab: 'Documentation (opens in a new tab)',
+    history: 'History',
+    languageName: 'English',
+    lightMode: 'Light',
+    logOut: 'Log out',
+    mainNavigation: 'Main navigation',
+    openMenu: 'Open menu',
+    retro: 'Retro',
+    spaceHint: 'A space groups the boards and issues of one project.',
+    spaces: 'Spaces',
+    switchLanguage: 'Switch language to Russian',
+    switchOrganization: 'Switch organization',
+    tariffUnavailable: 'Tariff unavailable',
+  },
+  ru: {
+    admin: 'Админка',
+    allIssues: 'Все задачи',
+    alpha: 'альфа',
+    closeMenu: 'Закрыть меню',
+    createSpace: 'Создать раздел',
+    currentOrganization: 'Текущая организация',
+    darkMode: 'Тёмная',
+    documentation: 'Документация',
+    documentationNewTab: 'Документация (откроется в новой вкладке)',
+    history: 'История',
+    languageName: 'Русский',
+    lightMode: 'Светлая',
+    logOut: 'Выйти',
+    mainNavigation: 'Главная навигация',
+    openMenu: 'Открыть меню',
+    retro: 'Ретро',
+    spaceHint: 'В разделе собраны доски и задачи проекта.',
+    spaces: 'Разделы',
+    switchLanguage: 'Переключить язык на английский',
+    switchOrganization: 'Сменить организацию',
+    tariffUnavailable: 'Тариф недоступен',
+  },
+})
 const active = (name: OrganizationRouteName) => route.name === name
 const within = (name: OrganizationRouteName) =>
   typeof route.name === 'string' && route.name.startsWith(name)
+const adminHome = computed(() => {
+  const organization = props.viewModel.organization
+  if (organization.canUpdate) {
+    return organizationRoutes.admin()
+  }
+  if (organization.canManage) {
+    return organizationRoutes.permissions()
+  }
+  if (organization.canManageAttributes) {
+    return organizationRoutes.attributes()
+  }
+  if (organization.canMassMove) {
+    return organizationRoutes.dataMovement()
+  }
+  if (organization.canViewBilling) {
+    return organizationRoutes.adminTransactions()
+  }
+  return undefined
+})
 const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   within('organizations-organizationKey-spaces-spaceKey') &&
-  'spaceKey' in route.params &&
+  route.params.spaceKey !== undefined &&
   route.params.spaceKey === space.key
 const toggleTheme = () => {
-  const root = document.documentElement
-  const theme = root.dataset.theme === 'dark' ? 'light' : 'dark'
-  root.dataset.theme = theme
-  localStorage.setItem('theme', theme)
+  props.preferences.setTheme(theme.value === 'dark' ? 'light' : 'dark')
+}
+const toggleLocale = () => {
+  props.preferences.setLocale(locale.value === 'en' ? 'ru' : 'en')
 }
 </script>
 
@@ -270,15 +316,15 @@ aside .logo {
   padding: var(--space-1) var(--space-2) var(--space-5);
 }
 
-nav {
+aside > nav {
   display: flex;
   flex: 1;
   flex-direction: column;
   margin-bottom: var(--space-4);
 }
 
-nav a,
-nav button {
+aside > nav a,
+aside > nav button {
   align-items: center;
   background: transparent;
   border: 0;
@@ -286,6 +332,7 @@ nav button {
   color: var(--color-muted);
   display: flex;
   gap: var(--space-2);
+  height: var(--control-height);
   margin: 2px 0;
   padding: var(--space-2) var(--space-3);
   text-align: left;
@@ -298,24 +345,24 @@ nav button {
 .nav-badge {
   border: 1px solid currentcolor;
   border-radius: var(--radius-pill);
-  font-size: var(--font-size-xs, 11px);
+  font-size: var(--font-size-caption);
   margin-left: auto;
   padding: 0 var(--space-2);
 }
 
-nav a:hover,
-nav button:hover {
+aside > nav a:hover,
+aside > nav button:hover {
   background: var(--color-soft);
   color: var(--color-text);
 }
 
-nav a:active,
-nav button:active {
+aside > nav a:active,
+aside > nav button:active {
   translate: 0 var(--press-offset);
 }
 
-nav a.active,
-nav button.active {
+aside > nav a.active,
+aside > nav button.active {
   background: var(--color-accent-soft);
   color: var(--color-text);
   font-weight: var(--font-weight-semibold);
@@ -381,21 +428,52 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
+.sidebar-preferences {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.sidebar-language {
+  flex: 1;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.sidebar-theme {
+  flex: 0 0 auto;
+}
+
 .sidebar-user {
   align-items: center;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
   display: flex;
   gap: var(--space-2);
   min-width: 0;
   padding: var(--space-2);
+  text-decoration: none;
+  transition: var(--transition-press);
+}
+
+.sidebar-user:hover {
+  background: var(--color-soft);
+}
+
+.sidebar-user:active {
+  translate: 0 var(--press-offset);
 }
 
 /* Retro and the docs live together at the bottom, away from the settings block. */
 .sidebar-bottom {
+  display: grid;
+  gap: var(--space-1);
   margin-top: auto;
+  padding-top: var(--space-6);
 }
 
-.sidebar-user > span:last-child {
+.sidebar-user-info {
   display: grid;
+  flex: 1;
   min-width: 0;
 }
 
@@ -411,22 +489,12 @@ main :deep(.page-load-state) {
   width: 100%;
 }
 
-.theme-action {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-}
-
-.theme-action--light {
-  display: none;
-}
-
-:global(:root[data-theme='dark'] .theme-action--dark) {
-  display: none;
-}
-
-:global(:root[data-theme='dark'] .theme-action--light) {
-  display: flex;
+.language-flag {
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  height: 16px;
+  object-fit: cover;
+  width: 21px;
 }
 
 .organization {

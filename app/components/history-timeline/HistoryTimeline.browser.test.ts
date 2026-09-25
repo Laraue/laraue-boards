@@ -10,7 +10,6 @@ it('keeps different issues in separate history entries', async () => {
         changes: [
           {
             kind: 'status' as const,
-            label: 'Status',
             newColor: null,
             newValue: 'New',
             oldColor: null,

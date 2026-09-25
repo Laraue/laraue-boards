@@ -4,3 +4,5 @@
 - Don't run any commands to run checks until I ask you to. If I ask you to run a full check, run
   `pnpm pre-commit`.
 - Do not edit generated API types manually.
+- Do not use the `in` operator for runtime checks or type narrowing. Use a typed discriminator,
+  status field, or an explicit type-safe helper instead.

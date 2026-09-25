@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load backlog"
-    loading-text="Loading backlog…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,7 +11,7 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to space"
+              :label="t('backToSpace')"
               :to="organizationRoutes.space(page.spaceKey)" />
             <ListTodo
               class="page-heading-icon"
@@ -22,18 +22,18 @@
           </div>
           <div class="title-actions">
             <NuxtLink
-              aria-label="Add issue"
+              :aria-label="t('addIssue')"
               class="primary"
               :to="organizationRoutes.newBacklogIssue(page.spaceKey)">
               <Plus />
-              <span class="btn-label">Add issue</span>
+              <span class="btn-label">{{ t('addIssue') }}</span>
             </NuxtLink>
           </div>
         </div>
         <div class="toolbar">
           <input
-            aria-label="Search issues"
-            placeholder="Search issues"
+            :aria-label="t('searchIssues')"
+            :placeholder="t('searchIssues')"
             type="search"
             :value="request.search"
             @input="updateSearch(($event.target as HTMLInputElement).value)" />
@@ -50,8 +50,8 @@
         </p>
         <IssueList
           :deps="deps.issueList"
-          empty-hint="The backlog is where work waits. Park ideas and requests here, then move them onto a board when the team is ready to pick them up."
-          empty-text="The backlog is empty"
+          :empty-hint="t('emptyHint')"
+          :empty-text="t('emptyTitle')"
           :excluded-move-board-id="page.backlogBoardId"
           :filtering="filtering"
           :has-next-page="hasNextPage"
@@ -86,6 +86,31 @@ const props = defineProps<{
   routeQuery: LocationQuery
   spaceKey: string
 }>()
+
+const { t } = useI18n({
+  en: {
+    addIssue: 'Add issue',
+    backlog: 'Backlog',
+    backToSpace: 'Back to space',
+    emptyHint:
+      'The backlog is where work waits. Park ideas and requests here, then move them onto a board when the team is ready to pick them up.',
+    emptyTitle: 'The backlog is empty',
+    loadError: 'Could not load backlog',
+    loading: 'Loading backlog…',
+    searchIssues: 'Search issues',
+  },
+  ru: {
+    addIssue: 'Добавить задачу',
+    backlog: 'Бэклог',
+    backToSpace: 'Назад к разделу',
+    emptyHint:
+      'Бэклог — место, где ждут работы. Сохраняйте здесь идеи и запросы, а затем переносите их на доску, когда команда будет готова.',
+    emptyTitle: 'Бэклог пуст',
+    loadError: 'Не удалось загрузить бэклог',
+    loading: 'Загрузка бэклога…',
+    searchIssues: 'Поиск задач',
+  },
+})
 
 const organizationRoutes = useOrganizationRoutes()
 
@@ -203,6 +228,6 @@ onScopeDispose(() => {
   scheduleSearch.cancel()
 })
 useHead({
-  title: computed(() => data.value?.title ?? 'Backlog'),
+  title: computed(() => data.value?.title ?? t('backlog')),
 })
 </script>

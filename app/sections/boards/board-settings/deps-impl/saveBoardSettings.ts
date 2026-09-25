@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { getInvalidInputError } from '#infrastructure/api/getInvalidInputError'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 
 import type { SaveBoardSettings } from '../BoardSettingsPage.deps'
 import type { BoardSettingsColumn, BoardSettingsColumnDraft } from '../BoardSettingsPage.types'
@@ -9,13 +9,16 @@ type SaveFailure =
   | { code: number; status: 'error' }
   | { message: string; status: 'validation-error' }
 
-type Response = undefined | { data?: unknown; error?: unknown; response: globalThis.Response }
+type Response =
+  | undefined
+  | { data?: never; error: unknown; response: globalThis.Response }
+  | { data?: unknown; error?: never; response: globalThis.Response }
 
 const toSaveFailure = (response: Response): SaveFailure | undefined => {
   if (!response) {
     return { code: 0, status: 'error' }
   }
-  if ('data' in response) {
+  if (!isErrorResponse(response)) {
     return undefined
   }
   if (response.response.status === 400) {
@@ -80,7 +83,7 @@ export const createSaveBoardSettings =
           body: { color: column.color, epicId: input.boardId, name: column.name },
         }),
       )
-      if (response && 'data' in response && response.data !== undefined) {
+      if (response && !isErrorResponse(response) && response.data !== undefined) {
         createdIds.push(String(response.data))
         continue
       }

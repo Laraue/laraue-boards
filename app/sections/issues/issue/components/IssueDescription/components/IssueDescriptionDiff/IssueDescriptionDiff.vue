@@ -16,11 +16,11 @@
     </summary>
     <div class="description-diff-body">
       <div
-        aria-label="Description changes split view"
+        :aria-label="t('splitView')"
         class="diff-split">
         <div class="diff-split-head">
-          <span>Before</span>
-          <span>After</span>
+          <span>{{ t('before') }}</span>
+          <span>{{ t('after') }}</span>
         </div>
         <div
           v-for="(row, rowIndex) in splitRows"
@@ -29,7 +29,7 @@
           <div
             v-if="row.separator"
             class="diff-split-separator">
-            @@ unchanged lines
+            {{ t('unchangedLines') }}
           </div>
           <template v-else>
             <div
@@ -60,6 +60,21 @@ import IssueDiffText from './components/IssueDiffText.vue'
 import type { IssueDescriptionDiffLine } from './IssueDescriptionDiff.types'
 
 const props = defineProps<{ diff: IssueDescriptionDiffLine[]; label: string }>()
+
+const { t } = useI18n({
+  en: {
+    after: 'After',
+    before: 'Before',
+    splitView: 'Description changes split view',
+    unchangedLines: '@@ unchanged lines',
+  },
+  ru: {
+    after: 'После',
+    before: 'До',
+    splitView: 'Разница описания в двух панелях',
+    unchangedLines: '@@ неизменённые строки',
+  },
+})
 
 const stats = computed(() => ({
   added: props.diff.filter((line) => line.kind === 'added').length,
@@ -157,7 +172,7 @@ const splitRows = computed(() => {
 }
 
 .diff-split {
-  font-family: monospace;
+  font-family: var(--font-family-mono);
   font-size: var(--font-size-small);
 }
 

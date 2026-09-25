@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load space"
-    loading-text="Loading space…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -20,19 +20,19 @@
           <div class="title-actions">
             <NuxtLink
               v-if="page.canManage"
-              aria-label="Space settings"
+              :aria-label="t('spaceSettings')"
               class="secondary"
               :to="organizationRoutes.spaceSettings(page.key)">
               <Settings />
-              <span class="btn-label">Settings</span>
+              <span class="btn-label">{{ t('settings') }}</span>
             </NuxtLink>
             <NuxtLink
               v-if="page.canCreateBoards"
-              aria-label="Create board"
+              :aria-label="t('createBoard')"
               class="primary"
               :to="organizationRoutes.newBoard(page.key)">
               <Plus />
-              <span class="btn-label">Create board</span>
+              <span class="btn-label">{{ t('createBoard') }}</span>
             </NuxtLink>
           </div>
         </div>
@@ -40,21 +40,21 @@
         <div
           v-if="backlog"
           class="space-section">
-          <h2 class="space-section-title">Backlog</h2>
+          <h2 class="space-section-title">{{ t('backlog') }}</h2>
           <NuxtLink
             class="backlog-summary"
             :to="organizationRoutes.backlog(page.key)">
             <div class="summary-title">
               <ListTodo :style="{ color: backlog.color }" />
-              <strong>{{ backlog.name }}</strong>
-              <span class="muted issue-count">{{ backlog.issueCount }} issues</span>
+              <strong>{{ t('backlog') }}</strong>
+              <span class="muted issue-count">{{ tp('issues', backlog.issueCount) }}</span>
             </div>
           </NuxtLink>
         </div>
 
         <div class="space-section">
           <h2 class="space-section-title">
-            Boards
+            {{ t('boards') }}
             <span class="muted">{{ regularBoards.length }}</span>
           </h2>
           <div
@@ -70,10 +70,13 @@
                 <strong>{{ board.name }}</strong>
                 <span
                   class="board-status"
-                  :class="`board-status--${board.status.toLowerCase()}`">
+                  :class="{
+                    'board-status--active': board.status === 'Active',
+                    'board-status--done': board.status === 'Done',
+                  }">
                   {{ statusLabel(board.status) }}
                 </span>
-                <span class="muted issue-count">{{ board.issueCount }} issues</span>
+                <span class="muted issue-count">{{ tp('issues', board.issueCount) }}</span>
               </div>
               <div class="meter">
                 <span
@@ -98,8 +101,8 @@
           </div>
           <AppEmptyState
             v-else
-            hint="A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it."
-            title="No boards yet" />
+            :hint="t('emptyHint')"
+            :title="t('emptyTitle')" />
         </div>
       </section>
     </template>
@@ -113,6 +116,43 @@ import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
 const props = defineProps<{ deps: SpacePageDeps; spaceKey: string }>()
+
+const { t, tp } = useI18n({
+  en: {
+    backlog: 'Backlog',
+    boards: 'Boards',
+    createBoard: 'Create board',
+    done: 'Done',
+    emptyHint:
+      "A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it.",
+    emptyTitle: 'No boards yet',
+    inProgress: 'In progress',
+    issues: 'issue | issues',
+    loadError: 'Could not load space',
+    loading: 'Loading space…',
+    new: 'New',
+    settings: 'Settings',
+    space: 'Space',
+    spaceSettings: 'Space settings',
+  },
+  ru: {
+    backlog: 'Бэклог',
+    boards: 'Доски',
+    createBoard: 'Создать доску',
+    done: 'Готово',
+    emptyHint:
+      'Доска показывает задачи раздела в виде колонок. Перемещайте задачи перетаскиванием от «К выполнению» до «Готово».',
+    emptyTitle: 'Досок пока нет',
+    inProgress: 'В работе',
+    issues: 'задача | задачи | задач',
+    loadError: 'Не удалось загрузить раздел',
+    loading: 'Загрузка раздела…',
+    new: 'Новая',
+    settings: 'Настройки',
+    space: 'Раздел',
+    spaceSettings: 'Настройки раздела',
+  },
+})
 
 const organizationRoutes = useOrganizationRoutes()
 
@@ -129,10 +169,10 @@ const backlog = computed(() => boards.value.find((board) => board.kind === 'back
 const regularBoards = computed(() => boards.value.filter((board) => board.kind === 'board'))
 
 const statusLabel = (status: 'Active' | 'Done' | 'New') =>
-  ({ Active: 'In progress', Done: 'Done', New: 'New' })[status]
+  ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
 
 useHead({
-  title: computed(() => data.value?.name ?? 'Space'),
+  title: computed(() => data.value?.name ?? t('space')),
 })
 </script>
 

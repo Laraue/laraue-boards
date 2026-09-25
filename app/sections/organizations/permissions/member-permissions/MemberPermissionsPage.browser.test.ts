@@ -81,7 +81,7 @@ const mount = async (deps: MemberPermissionsPageDeps, onSaved: () => void) => {
   currentWrapper = await mountSuspended(MemberPermissionsPage, {
     attachTo: document.body,
     props: { deps, memberId: '5', onSaved },
-    route: '/organizations/acme-ab12/settings/permissions/5',
+    route: '/organizations/acme-ab12/admin/permissions/5',
   })
   return currentWrapper
 }

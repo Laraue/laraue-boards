@@ -1,21 +1,13 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load data movement"
-    loading-text="Loading data movement…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
     <template #default="{ data: page }">
       <section class="movement-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <ArrowRightLeft class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>Data movement</h1>
-            </div>
-          </div>
-        </div>
         <div class="movement-sections">
           <SpacesMovementSection
             :deps="deps.spacesMovementSection"
@@ -34,8 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightLeft } from '@lucide/vue'
-
 import BoardsMovementSection from '~/sections/organizations/data-movement/components/BoardsMovementSection/BoardsMovementSection.vue'
 import SpacesMovementSection from '~/sections/organizations/data-movement/components/SpacesMovementSection/SpacesMovementSection.vue'
 import type { DataMovementPageDeps } from '~/sections/organizations/data-movement/DataMovementPage.deps'
@@ -44,7 +34,21 @@ const props = defineProps<{
   deps: DataMovementPageDeps
   onSpacesMoved: () => Promise<void> | void
 }>()
-useHead({ title: 'Data movement' })
+
+const { t } = useI18n({
+  en: {
+    dataMovement: 'Data movement',
+    loadError: 'Could not load data movement',
+    loading: 'Loading data movement…',
+  },
+  ru: {
+    dataMovement: 'Перемещение данных',
+    loadError: 'Не удалось загрузить перемещение данных',
+    loading: 'Загрузка перемещения данных…',
+  },
+})
+
+useHead({ title: t('dataMovement') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-data-movement',
@@ -64,6 +68,5 @@ const onSpacesMoved = async () => {
 .movement-sections {
   display: grid;
   gap: var(--space-6);
-  margin-top: var(--space-6);
 }
 </style>

@@ -31,14 +31,14 @@
       <Loader
         v-if="moving"
         key="loader"
-        aria-label="Saving issue position"
+        :aria-label="t('savingPosition')"
         class="task-progress" />
       <button
         v-else-if="!disabled"
         key="backlog"
-        aria-label="Move to backlog"
+        :aria-label="t('moveToBacklog')"
         class="task-backlog-btn"
-        title="Move to backlog"
+        :title="t('moveToBacklog')"
         type="button"
         @click="onMoveToBacklog(viewModel.issueKey)">
         <Undo2 />
@@ -46,14 +46,6 @@
     </Transition>
   </article>
 </template>
-
-<script lang="ts">
-const timeFormatter = new Intl.DateTimeFormat('en-US', {
-  hour: '2-digit',
-  minute: '2-digit',
-  timeZone: 'UTC',
-})
-</script>
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
@@ -70,6 +62,20 @@ const props = defineProps<{
   onOpenIssue: (issueKey: string) => void
   viewModel: IssueCardViewModel
 }>()
+
+const { t } = useI18n({
+  en: {
+    moveToBacklog: 'Move to backlog',
+    savingPosition: 'Saving issue position',
+  },
+  ru: {
+    moveToBacklog: 'Переместить в бэклог',
+    savingPosition: 'Сохранение позиции задачи',
+  },
+})
+
+const { formatTime } = useFormatters()
+
 const organizationRoutes = useOrganizationRoutes()
 
 const element = useTemplateRef('element')
@@ -83,8 +89,6 @@ useSortable({
   index: computed(() => props.index),
   type: 'item',
 })
-
-const formatTime = (value: string) => timeFormatter.format(new Date(value))
 </script>
 
 <style scoped>

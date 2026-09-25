@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load issues"
-    loading-text="Loading issues…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -12,22 +12,22 @@
           <div class="page-heading">
             <ClipboardList class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>All issues</h1>
+              <h1>{{ t('allIssues') }}</h1>
             </div>
           </div>
           <NuxtLink
             v-if="view.spaces.length"
-            aria-label="Add issue"
+            :aria-label="t('addIssue')"
             class="primary"
             :to="organizationRoutes.newIssue()">
             <Plus />
-            <span class="btn-label">Add issue</span>
+            <span class="btn-label">{{ t('addIssue') }}</span>
           </NuxtLink>
         </div>
         <div class="toolbar">
           <input
-            aria-label="Search issues"
-            placeholder="Search issues"
+            :aria-label="t('searchIssues')"
+            :placeholder="t('searchIssues')"
             type="search"
             :value="request.search"
             @input="updateSearch(($event.target as HTMLInputElement).value)" />
@@ -52,8 +52,8 @@
         </p>
         <IssueList
           :deps="deps.issueList"
-          empty-hint="An issue is one piece of work — a task, a bug, an idea. It lives in a space, sits in a board column that shows its status, and can be assigned to someone."
-          empty-text="No issues yet"
+          :empty-hint="t('emptyHint')"
+          :empty-text="t('emptyTitle')"
           :filtering="filtering"
           :has-next-page="hasNextPage"
           :issues="issues"
@@ -93,11 +93,40 @@ const props = defineProps<{
   routeQuery: LocationQuery
 }>()
 
+const { t } = useI18n({
+  en: {
+    addIssue: 'Add issue',
+    allIssues: 'All issues',
+    done: 'Done',
+    emptyHint:
+      'An issue is one piece of work — a task, a bug, an idea. It lives in a space, sits in a board column that shows its status, and can be assigned to someone.',
+    emptyTitle: 'No issues yet',
+    inProgress: 'In progress',
+    loadError: 'Could not load issues',
+    loading: 'Loading issues…',
+    new: 'New',
+    searchIssues: 'Search issues',
+  },
+  ru: {
+    addIssue: 'Добавить задачу',
+    allIssues: 'Все задачи',
+    done: 'Готово',
+    emptyHint:
+      'Задача — это отдельная работа: задача, ошибка или идея. Она находится в разделе и колонке доски со своим статусом, а также может быть назначена исполнителю.',
+    emptyTitle: 'Задач пока нет',
+    inProgress: 'В работе',
+    loadError: 'Не удалось загрузить задачи',
+    loading: 'Загрузка задач…',
+    new: 'Новая',
+    searchIssues: 'Поиск задач',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 const epicStatusOptions: Array<{ label: string; value: IssueBoardStatus }> = [
-  { label: 'New', value: 'New' },
-  { label: 'In progress', value: 'Active' },
-  { label: 'Done', value: 'Done' },
+  { label: t('new'), value: 'New' },
+  { label: t('inProgress'), value: 'Active' },
+  { label: t('done'), value: 'Done' },
 ]
 
 const request = computed(() => ({
@@ -116,7 +145,7 @@ const { data, message, pending, refresh } = await useQuery(
   { watch: [() => props.organizationKey] },
 )
 
-useHead({ title: 'All issues' })
+useHead({ title: t('allIssues') })
 
 const attributes = computed(() => data.value?.attributes ?? [])
 const attributeFilters = computed(() =>

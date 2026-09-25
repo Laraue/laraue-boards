@@ -6,7 +6,7 @@
       <span class="icon-badge loading">
         <Loader />
       </span>
-      <p>{{ loadingText }}</p>
+      <p>{{ translatedLoadingText }}</p>
     </section>
   </slot>
   <section
@@ -15,7 +15,7 @@
     <span class="icon-badge error">
       <AlertTriangle />
     </span>
-    <h2>{{ errorTitle }}</h2>
+    <h2>{{ translatedErrorTitle }}</h2>
     <p class="muted">{{ message }}</p>
     <div class="page-state-actions">
       <button
@@ -23,12 +23,12 @@
         class="primary"
         type="button"
         @click="onRetry">
-        {{ retryText }}
+        {{ translatedRetryText }}
       </button>
       <NuxtLink
         class="secondary"
         to="/">
-        Go home
+        {{ t('goHome') }}
       </NuxtLink>
     </div>
   </section>
@@ -40,22 +40,32 @@
 <script setup lang="ts" generic="Value">
 import { AlertTriangle, Loader } from '@lucide/vue'
 
-withDefaults(
-  defineProps<{
-    data?: Value
-    errorTitle?: string
-    loadingText?: string
-    message?: string
-    onRetry?: () => Promise<void> | void
-    pending: boolean
-    retryText?: string
-  }>(),
-  {
+const props = defineProps<{
+  data?: Value
+  errorTitle?: string
+  loadingText?: string
+  message?: string
+  onRetry?: () => Promise<void> | void
+  pending: boolean
+  retryText?: string
+}>()
+const { t } = useI18n({
+  en: {
     errorTitle: 'Could not load page',
+    goHome: 'Go home',
     loadingText: 'Loading…',
-    retryText: 'Try again',
+    retry: 'Try again',
   },
-)
+  ru: {
+    errorTitle: 'Не удалось загрузить страницу',
+    goHome: 'На главную',
+    loadingText: 'Загрузка…',
+    retry: 'Повторить попытку',
+  },
+})
+const translatedErrorTitle = computed(() => props.errorTitle ?? t('errorTitle'))
+const translatedLoadingText = computed(() => props.loadingText ?? t('loadingText'))
+const translatedRetryText = computed(() => props.retryText ?? t('retry'))
 
 defineSlots<{
   default(props: { data: Value }): unknown

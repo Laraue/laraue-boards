@@ -1,6 +1,6 @@
 <template>
   <div
-    aria-label="Loading issue"
+    :aria-label="t('loadingIssue')"
     class="issue-skeleton"
     role="status">
     <div
@@ -22,43 +22,43 @@
             <span class="skeleton skeleton-description-line skeleton-description-line--medium" />
           </div>
           <div class="skeleton-attachments">
-            <strong class="section-label skeleton skeleton-copy">Attachments</strong>
+            <strong class="section-label skeleton skeleton-copy">{{ t('attachments') }}</strong>
             <div class="skeleton-attachment-actions">
               <span class="secondary small skeleton skeleton-control">
                 <ImagePlus />
-                Choose images
+                {{ t('chooseImages') }}
               </span>
               <span class="muted skeleton skeleton-copy skeleton-attachment-hint">
-                or paste PNG/JPG with Ctrl+V
+                {{ t('pasteHint') }}
               </span>
             </div>
           </div>
           <div class="skeleton-comments">
-            <strong class="section-label skeleton skeleton-copy">Comments</strong>
+            <strong class="section-label skeleton skeleton-copy">{{ t('comments') }}</strong>
             <span class="skeleton skeleton-comment-field" />
           </div>
         </div>
         <div class="skeleton-side">
           <template
-            v-for="label in ['Space', 'Board', 'Status', 'Assignee']"
+            v-for="label in [t('space'), t('board'), t('status'), t('assignee')]"
             :key="label">
             <span class="skeleton skeleton-copy skeleton-label">{{ label }}</span>
             <span class="skeleton skeleton-field" />
           </template>
-          <span class="skeleton skeleton-copy skeleton-label">Owner</span>
+          <span class="skeleton skeleton-copy skeleton-label">{{ t('owner') }}</span>
           <div class="skeleton-person">
             <span class="skeleton skeleton-avatar" />
             <span class="skeleton skeleton-copy skeleton-name">win7user10</span>
           </div>
-          <span class="skeleton skeleton-copy skeleton-label">Created</span>
+          <span class="skeleton skeleton-copy skeleton-label">{{ t('created') }}</span>
           <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
-          <span class="skeleton skeleton-copy skeleton-label">Updated</span>
+          <span class="skeleton skeleton-copy skeleton-label">{{ t('updated') }}</span>
           <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
         </div>
       </div>
       <div class="skeleton-actions">
-        <span class="primary skeleton skeleton-control">Save changes</span>
-        <span class="secondary danger skeleton skeleton-control">Delete issue</span>
+        <span class="primary skeleton skeleton-control">{{ t('saveChanges') }}</span>
+        <span class="secondary danger skeleton skeleton-control">{{ t('deleteIssue') }}</span>
       </div>
     </div>
   </div>
@@ -66,6 +66,41 @@
 
 <script setup lang="ts">
 import { ImagePlus } from '@lucide/vue'
+
+const { t } = useI18n({
+  en: {
+    assignee: 'Assignee',
+    attachments: 'Attachments',
+    board: 'Board',
+    chooseImages: 'Choose images',
+    comments: 'Comments',
+    created: 'Created',
+    deleteIssue: 'Delete issue',
+    loadingIssue: 'Loading issue',
+    owner: 'Owner',
+    pasteHint: 'or paste PNG/JPG with Ctrl+V',
+    saveChanges: 'Save changes',
+    space: 'Space',
+    status: 'Status',
+    updated: 'Updated',
+  },
+  ru: {
+    assignee: 'Исполнитель',
+    attachments: 'Вложения',
+    board: 'Доска',
+    chooseImages: 'Выбрать изображения',
+    comments: 'Комментарии',
+    created: 'Создана',
+    deleteIssue: 'Удалить задачу',
+    loadingIssue: 'Загрузка задачи',
+    owner: 'Владелец',
+    pasteHint: 'или вставьте PNG/JPG через Ctrl+V',
+    saveChanges: 'Сохранить изменения',
+    space: 'Раздел',
+    status: 'Статус',
+    updated: 'Изменена',
+  },
+})
 </script>
 
 <style scoped>

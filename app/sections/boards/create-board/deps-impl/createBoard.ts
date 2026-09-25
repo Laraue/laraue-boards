@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { getInvalidInputError } from '#infrastructure/api/getInvalidInputError'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 
 import type { CreateBoard } from '../CreateBoardPage.deps'
 
@@ -21,7 +21,7 @@ export const createCreateBoard =
     if (!response) {
       return { code: 0, status: 'error' }
     }
-    if ('data' in response) {
+    if (!isErrorResponse(response)) {
       return { data: { boardId: String(response.data) }, status: 'success' }
     }
     if (response.response.status === 400) {

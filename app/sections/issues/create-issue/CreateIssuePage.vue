@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load issue form"
-    loading-text="Loading issue form…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,11 +11,11 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to issues"
+              :label="t('backToIssues')"
               :to="organizationRoutes.issues()" />
             <ListPlus class="page-heading-icon" />
             <div class="page-heading-text">
-              <h1>Add issue</h1>
+              <h1>{{ t('addIssue') }}</h1>
             </div>
           </div>
         </div>
@@ -39,8 +39,23 @@ const props = defineProps<{
   onCreated: (issueKey: string) => Promise<void> | void
 }>()
 
+const { t } = useI18n({
+  en: {
+    addIssue: 'Add issue',
+    backToIssues: 'Back to issues',
+    loadError: 'Could not load issue form',
+    loading: 'Loading issue form…',
+  },
+  ru: {
+    addIssue: 'Добавить задачу',
+    backToIssues: 'Назад к задачам',
+    loadError: 'Не удалось загрузить форму задачи',
+    loading: 'Загрузка формы задачи…',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
-useHead({ title: 'Add issue' })
+useHead({ title: t('addIssue') })
 
 const { data, message, pending, refresh } = await useQuery('create-issue', (_nuxtApp, { signal }) =>
   props.deps.view({ signal }),

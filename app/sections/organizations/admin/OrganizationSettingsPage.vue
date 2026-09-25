@@ -1,21 +1,13 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load settings"
-    loading-text="Loading settings…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
     <template #default="{ data: page }">
       <section class="form-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <Settings class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>General settings</h1>
-            </div>
-          </div>
-        </div>
         <form
           @submit.prevent="
             submitForm({
@@ -25,20 +17,20 @@
               slug: page.slug,
             })
           ">
-          <label for="organization-settings-name">Name</label>
+          <label for="organization-settings-name">{{ t('name') }}</label>
           <input
             id="organization-settings-name"
             v-model="state.name"
             :disabled="!page.canUpdate"
             required />
-          <label>Color</label>
+          <label>{{ t('color') }}</label>
           <AppColorPicker
             v-model="state.color"
             :disabled="!page.canUpdate" />
           <p
             v-if="state.saved"
             class="form-success">
-            Changes saved.
+            {{ t('changesSaved') }}
           </p>
           <p
             v-if="submitMessage || removeMessage"
@@ -50,7 +42,7 @@
               v-if="page.canUpdate"
               class="primary"
               :disabled="busy">
-              {{ submitting ? 'Saving…' : 'Save changes' }}
+              {{ submitting ? t('saving') : t('saveChanges') }}
             </button>
             <button
               v-if="page.canDelete"
@@ -58,7 +50,7 @@
               :disabled="busy"
               type="button"
               @click="remove(page.id)">
-              {{ removing ? 'Deleting…' : 'Delete organization' }}
+              {{ removing ? t('deleting') : t('deleteOrganization') }}
             </button>
           </div>
         </form>
@@ -68,16 +60,45 @@
 </template>
 
 <script setup lang="ts">
-import { Settings } from '@lucide/vue'
-
-import type { OrganizationSettingsPageDeps } from '~/sections/organizations/settings/OrganizationSettingsPage.deps'
-import type { UpdateOrganizationInput } from '~/sections/organizations/settings/OrganizationSettingsPage.types'
+import type { OrganizationSettingsPageDeps } from '~/sections/organizations/admin/OrganizationSettingsPage.deps'
+import type { UpdateOrganizationInput } from '~/sections/organizations/admin/OrganizationSettingsPage.types'
 
 const props = defineProps<{
   deps: OrganizationSettingsPageDeps
   onDeleted: () => Promise<void> | void
   onUpdated: () => Promise<void> | void
 }>()
+
+const { t } = useI18n({
+  en: {
+    changesSaved: 'Changes saved.',
+    color: 'Color',
+    deleteConfirm: 'Delete this organization?',
+    deleteOrganization: 'Delete organization',
+    deleting: 'Deleting…',
+    generalSettings: 'General settings',
+    loadError: 'Could not load settings',
+    loading: 'Loading settings…',
+    name: 'Name',
+    saveChanges: 'Save changes',
+    saving: 'Saving…',
+    settings: 'settings',
+  },
+  ru: {
+    changesSaved: 'Изменения сохранены.',
+    color: 'Цвет',
+    deleteConfirm: 'Удалить эту организацию?',
+    deleteOrganization: 'Удалить организацию',
+    deleting: 'Удаление…',
+    generalSettings: 'Общие настройки',
+    loadError: 'Не удалось загрузить настройки',
+    loading: 'Загрузка настроек…',
+    name: 'Название',
+    saveChanges: 'Сохранить изменения',
+    saving: 'Сохранение…',
+    settings: 'настройки',
+  },
+})
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-settings',
@@ -96,7 +117,7 @@ watch(data, (settings) => {
 })
 
 useHead({
-  title: computed(() => (state.name ? `${state.name} settings` : 'Settings')),
+  title: computed(() => (state.name ? `${state.name} ${t('settings')}` : t('generalSettings'))),
 })
 
 const {
@@ -122,14 +143,8 @@ const {
 } = useAction(props.deps.remove, { onSuccess: props.onDeleted })
 const busy = computed(() => submitting.value || removing.value)
 const remove = (id: string): void => {
-  if (!busy.value && confirm('Delete this organization?')) {
+  if (!busy.value && confirm(t('deleteConfirm'))) {
     void removeOrganization({ id })
   }
 }
 </script>
-
-<style scoped>
-.form-page > form {
-  margin-top: var(--space-6);
-}
-</style>

@@ -19,7 +19,7 @@
         class="secondary"
         type="button"
         @click="props.onRetry?.()">
-        {{ retryText }}
+        {{ retryLabel }}
       </button>
     </div>
   </section>
@@ -28,16 +28,18 @@
 <script setup lang="ts">
 import { AlertTriangle, Loader } from '@lucide/vue'
 
-const props = withDefaults(
-  defineProps<{
-    errorText: string
-    loading: boolean
-    loadingText: string
-    onRetry?: () => void
-    retryText?: string
-  }>(),
-  { retryText: 'Try again' },
-)
+const props = defineProps<{
+  errorText: string
+  loading: boolean
+  loadingText: string
+  onRetry?: () => void
+  retryText?: string
+}>()
+const { t } = useI18n({
+  en: { retry: 'Try again' },
+  ru: { retry: 'Повторить попытку' },
+})
+const retryLabel = computed(() => props.retryText ?? t('retry'))
 </script>
 
 <style scoped>

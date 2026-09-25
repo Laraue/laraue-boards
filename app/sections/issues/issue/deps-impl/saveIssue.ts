@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { getInvalidInputError } from '#infrastructure/api/getInvalidInputError'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
 
@@ -23,7 +23,7 @@ export const createSaveIssue =
     if (!response) {
       return { code: 0, status: 'error' }
     }
-    if (!('data' in response)) {
+    if (isErrorResponse(response)) {
       return response.response.status === 400
         ? { message: getInvalidInputError(response.error).message, status: 'validation-error' }
         : { code: response.response.status, status: 'error' }
@@ -47,7 +47,7 @@ export const createSaveIssue =
         body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
       }),
     )
-    if (moveResponse && 'data' in moveResponse && moveResponse.data) {
+    if (moveResponse && !isErrorResponse(moveResponse) && moveResponse.data) {
       const issueKey = moveResponse.data[input.issueKey]
       if (!issueKey) {
         return { code: 0, status: 'error' }

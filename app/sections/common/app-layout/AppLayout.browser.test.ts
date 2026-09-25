@@ -1,7 +1,9 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
+import { ref } from 'vue'
 
+import type { AppPreferences } from '~/composables/useAppPreferences'
 import type { TourStateDeps } from '~/composables/useTour'
 
 import type { AppLayoutDeps, RoutableProblem } from './AppLayout.deps'
@@ -15,13 +17,14 @@ const data: AppLayoutData = {
     canManageAttributes: false,
     canMassMove: false,
     canUpdate: true,
+    canViewBilling: true,
     color: '#4774d4',
     id: '1',
     initial: 'A',
     name: 'Acme',
   },
   spaces: [{ color: '#4774d4', key: 'product', name: 'Product' }],
-  user: { color: '#4774d4', initials: 'AL', name: 'Ada Lovelace' },
+  user: { color: '#4774d4', initials: 'AL', name: 'Ada Lovelace', tariffName: 'Free' },
 }
 
 const createTourDeps = () => ({
@@ -29,8 +32,16 @@ const createTourDeps = () => ({
   saveStatus: vi.fn<TourStateDeps['saveStatus']>(async () => undefined),
 })
 
+const createPreferences = (): AppPreferences => ({
+  locale: ref<'en' | 'ru'>('en'),
+  setLocale: vi.fn<AppPreferences['setLocale']>(),
+  setTheme: vi.fn<AppPreferences['setTheme']>(),
+  theme: ref<'dark' | 'light'>('light'),
+})
+
 const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
   logout: vi.fn<AppLayoutDeps['logout']>(),
+  preferences: createPreferences(),
   tour: createTourDeps(),
   view: vi.fn<AppLayoutDeps['view']>(async () => ({ data, status: 'success' })),
   ...overrides,
@@ -66,6 +77,8 @@ it('shows desktop navigation and logs out on request', async () => {
 
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: 'Create space' })).toBeInTheDocument()
+  await expect.element(page.getByText('Free')).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Ada Lovelace Free/ })).toBeInTheDocument()
   await page.getByRole('button', { name: 'Log out' }).click()
 
   await vi.waitFor(() => expect(logout).toHaveBeenCalledOnce())
@@ -81,7 +94,19 @@ it('opens the navigation from the mobile menu button', async () => {
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeVisible()
 })
 
-it('hides general settings without update access', async () => {
+it('delegates theme and language changes to preferences', async () => {
+  await page.viewport(1280, 800)
+  const preferences = createPreferences()
+  await mount(createDeps({ preferences }))
+
+  await page.getByRole('button', { name: 'Dark' }).click()
+  await page.getByRole('button', { name: 'Switch language to Russian' }).click()
+
+  expect(preferences.setTheme).toHaveBeenCalledWith('dark')
+  expect(preferences.setLocale).toHaveBeenCalledWith('ru')
+})
+
+it('hides admin settings without any admin access', async () => {
   await page.viewport(1280, 800)
   await mount(
     createDeps({
@@ -91,6 +116,30 @@ it('hides general settings without update access', async () => {
           organization: {
             ...data.organization,
             canManage: false,
+            canManageAttributes: false,
+            canMassMove: false,
+            canUpdate: false,
+            canViewBilling: false,
+          },
+        },
+        status: 'success',
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('link', { name: 'Admin' })).not.toBeInTheDocument()
+})
+
+it('routes admin link to the highest-priority accessible admin tab', async () => {
+  await page.viewport(1280, 800)
+  await mount(
+    createDeps({
+      view: vi.fn<AppLayoutDeps['view']>(async () => ({
+        data: {
+          ...data,
+          organization: {
+            ...data.organization,
+            canManage: true,
             canUpdate: false,
           },
         },
@@ -99,7 +148,9 @@ it('hides general settings without update access', async () => {
     }),
   )
 
-  await expect.element(page.getByRole('link', { name: 'General' })).not.toBeInTheDocument()
+  await expect
+    .element(page.getByRole('link', { name: 'Admin' }))
+    .toHaveAttribute('href', expect.stringContaining('permissions'))
 })
 
 it('introduces the workspace navigation once', async () => {

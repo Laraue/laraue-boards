@@ -10,8 +10,8 @@
       </div>
       <span class="join-badge"><UserPlus /></span>
       <div class="join-intro">
-        <h1>Join an organization</h1>
-        <p class="muted">You have been invited to work with a team.</p>
+        <h1>{{ t('joinOrganization') }}</h1>
+        <p class="muted">{{ t('invitationDescription') }}</p>
       </div>
       <button
         v-if="!state.loginRequired"
@@ -22,14 +22,14 @@
         <Loader
           v-if="busy"
           class="spinning" />
-        {{ busy ? 'Please wait…' : message ? 'Try again' : 'Accept invitation' }}
+        {{ busy ? t('pleaseWait') : message ? t('tryAgain') : t('acceptInvitation') }}
       </button>
       <div
         v-else
         aria-live="polite"
         class="inline-login">
-        <strong>{{ googleClientId ? 'Sign in' : 'Sign in with Telegram' }}</strong>
-        <p class="muted">Sign in to accept this invitation.</p>
+        <strong>{{ googleClientId ? t('signIn') : t('signInTelegram') }}</strong>
+        <p class="muted">{{ t('signInToAccept') }}</p>
         <div
           ref="widgetContainer"
           class="telegram-widget" />
@@ -68,6 +68,30 @@ const props = defineProps<{
   googleClientId: string
   onJoined: () => Promise<void> | void
 }>()
+
+const { t } = useI18n({
+  en: {
+    acceptInvitation: 'Accept invitation',
+    invitationDescription: 'You have been invited to work with a team.',
+    joinOrganization: 'Join an organization',
+    pleaseWait: 'Please wait…',
+    signIn: 'Sign in',
+    signInTelegram: 'Sign in with Telegram',
+    signInToAccept: 'Sign in to accept this invitation.',
+    tryAgain: 'Try again',
+  },
+  ru: {
+    acceptInvitation: 'Принять приглашение',
+    invitationDescription: 'Вас пригласили работать вместе с командой.',
+    joinOrganization: 'Присоединиться к организации',
+    pleaseWait: 'Подождите…',
+    signIn: 'Вход',
+    signInTelegram: 'Войти через Telegram',
+    signInToAccept: 'Войдите, чтобы принять приглашение.',
+    tryAgain: 'Повторить попытку',
+  },
+})
+
 const state = reactive({ loginRequired: false, widgetMounted: false })
 const widgetContainer = useTemplateRef('widgetContainer')
 const googleButtonContainer = useTemplateRef('googleButtonContainer')
@@ -75,7 +99,7 @@ const telegramWindow = globalThis as typeof globalThis & {
   onTelegramJoinAuth?: (user: TelegramUser) => void
 }
 
-useHead({ title: 'Join organization' })
+useHead({ title: t('joinOrganization') })
 
 const { execute: join, message: joinMessage, pending } = useAction(props.deps.join)
 

@@ -1,69 +1,51 @@
 import type { RouteLocationRaw } from 'vue-router'
 
+import type { components } from '#infrastructure/api/generated'
 import type { IssueDescriptionDiffLine } from '~/sections/issues/issue/components/IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.types'
 
+export type HistoryAction = components['schemas']['LogAction']
+
 export type HistoryDescriptionChangeViewModel = {
+  // Comment content changes are titled by the comment action; issue content changes are the description.
+  commentAction: HistoryAction | null
   diff: IssueDescriptionDiffLine[]
   kind: 'description'
-  label: string
 }
 
 export type HistoryAttachmentChangeViewModel = {
+  action: 'added' | 'removed'
+  fileName: null | string
   imageUrl: null | string
   kind: 'attachment'
-  label: string
-  newValue: string
 }
 
 export type HistoryEventChangeViewModel = {
+  action: HistoryAction
+  entityType: components['schemas']['LogEntityType']
   kind: 'event'
+}
+
+// null value means "none" and is rendered by the component in the current locale.
+type HistoryValueChange<Kind extends string> = {
+  kind: Kind
+  newColor: null | string
+  newValue: null | string
+  oldColor: null | string
+  oldValue: null | string
+}
+
+export type HistoryAssigneeChangeViewModel = HistoryValueChange<'assignee'>
+
+export type HistoryBoardChangeViewModel = HistoryValueChange<'board'>
+
+export type HistoryPropertyChangeViewModel = HistoryValueChange<'property'> & {
+  format: 'date' | 'dateTime' | null
   label: string
 }
 
-export type HistoryAssigneeChangeViewModel = {
-  kind: 'assignee'
-  label: string
-  newColor: null | string
-  newValue: string
-  oldColor: null | string
-  oldValue: string
-}
+export type HistorySpaceChangeViewModel = HistoryValueChange<'space'>
 
-export type HistoryBoardChangeViewModel = {
-  kind: 'board'
-  label: string
-  newColor: null | string
-  newValue: string
-  oldColor: null | string
-  oldValue: string
-}
-
-export type HistoryPropertyChangeViewModel = {
-  kind: 'property'
-  label: string
-  newColor: null | string
-  newValue: string
-  oldColor: null | string
-  oldValue: string
-}
-
-export type HistorySpaceChangeViewModel = {
-  kind: 'space'
-  label: string
-  newColor: null | string
-  newValue: string
-  oldColor: null | string
-  oldValue: string
-}
-
-export type HistoryStatusChangeViewModel = {
-  kind: 'status'
-  label: string
-  newColor: null | string
-  newValue: string
-  oldColor: null | string
-  oldValue: string
-}
+export type HistoryStatusChangeViewModel = HistoryValueChange<'status'>
 
 export type HistoryChangeViewModel =
   | HistoryAssigneeChangeViewModel

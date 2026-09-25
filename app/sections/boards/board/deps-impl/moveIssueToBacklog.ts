@@ -23,7 +23,7 @@ export const createMoveIssueToBacklog =
       return { code: 404, status: 'error' }
     }
     if (current.id === backlog.id) {
-      return { message: 'This issue is already in the backlog.', status: 'validation-error' }
+      return { code: 409, status: 'error' }
     }
     const response = await executeQuery({
       map: (data) => data,

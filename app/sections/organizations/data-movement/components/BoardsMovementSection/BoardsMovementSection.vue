@@ -1,11 +1,11 @@
 <template>
   <section class="movement-section">
     <div>
-      <h2>Boards</h2>
-      <p class="muted">Move boards to a space in an accessible organization.</p>
+      <h2>{{ t('boards') }}</h2>
+      <p class="muted">{{ t('description') }}</p>
     </div>
     <AppBulkBar
-      action-label="Move boards"
+      :action-label="t('moveBoards')"
       :count="selectedIds.length"
       :on-action="() => openDialog(selectedIds)"
       :on-clear="() => state.selected.clear()" />
@@ -25,16 +25,16 @@
             :key="board.id"
             class="entity-row">
             <input
-              :aria-label="`Select ${board.name}`"
+              :aria-label="`${t('select')} ${board.name}`"
               :checked="state.selected.has(board.id)"
               type="checkbox"
               @change="toggle(board.id)" />
             <BoardIcon :style="{ color: board.color }" />
             <strong>{{ board.name }}</strong>
             <button
-              :aria-label="`Move ${board.name}`"
+              :aria-label="`${t('move')} ${board.name}`"
               class="icon-btn"
-              title="Move board"
+              :title="t('moveBoard')"
               type="button"
               @click="openDialog([board.id])">
               <ArrowRightLeft />
@@ -45,7 +45,7 @@
       <p
         v-if="!boardCount"
         class="empty">
-        No movable boards.
+        {{ t('empty') }}
       </p>
     </div>
 
@@ -75,6 +75,27 @@ const props = defineProps<{
   onMoved: () => Promise<void> | void
   spaces: DataMovementPageData['spaces']
 }>()
+
+const { t } = useI18n({
+  en: {
+    boards: 'Boards',
+    description: 'Move boards to a space in an accessible organization.',
+    empty: 'No movable boards.',
+    move: 'Move',
+    moveBoard: 'Move board',
+    moveBoards: 'Move boards',
+    select: 'Select',
+  },
+  ru: {
+    boards: 'Доски',
+    description: 'Перемещайте доски в раздел доступной организации.',
+    empty: 'Нет доступных для перемещения досок.',
+    move: 'Переместить',
+    moveBoard: 'Переместить доску',
+    moveBoards: 'Переместить доски',
+    select: 'Выбрать',
+  },
+})
 
 const dialog = useTemplateRef('dialog')
 

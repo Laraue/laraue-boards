@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { COLORS } from '~/constants/colors'
 
 import type { ViewDataMovement } from '../DataMovementPage.deps'
@@ -35,7 +35,7 @@ export const createViewDataMovement =
     if (!current) {
       return { code: 0, status: 'error' }
     }
-    if ('error' in current) {
+    if (isErrorResponse(current)) {
       // treat "current organization not found" the same as access denied
       return {
         code: current.response.status === 404 ? 403 : current.response.status,
@@ -50,7 +50,7 @@ export const createViewDataMovement =
     if (!spaces) {
       return { code: 0, status: 'error' }
     }
-    if ('error' in spaces) {
+    if (isErrorResponse(spaces)) {
       return { code: spaces.response.status, status: 'error' }
     }
 
@@ -68,12 +68,12 @@ export const createViewDataMovement =
       return { code: 0, status: 'error' }
     }
     for (const response of boardResponses) {
-      if ('error' in response) {
+      if (isErrorResponse(response)) {
         return { code: response.response.status, status: 'error' }
       }
     }
     const boardsBySpace = boardResponses.map((response) => {
-      if ('error' in response) {
+      if (isErrorResponse(response)) {
         throw new Error('Unreachable boards response')
       }
       return response.data

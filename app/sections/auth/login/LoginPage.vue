@@ -9,30 +9,30 @@
         <span>Laraue Boards</span>
       </div>
       <div class="auth-copy">
-        <h1>Turn messages into work.</h1>
-        <p>Send Telegram messages to organized boards and keep every important request moving.</p>
+        <h1>{{ t('heroTitle') }}</h1>
+        <p>{{ t('heroDescription') }}</p>
         <div class="auth-flow">
           <span class="auth-flow-step">
             <MessageCircle aria-hidden="true" />
-            Message
+            {{ t('message') }}
           </span>
           <ArrowRight
             aria-hidden="true"
             class="auth-flow-arrow" />
           <span class="auth-flow-step">
             <SquareKanban aria-hidden="true" />
-            Issue
+            {{ t('issue') }}
           </span>
           <ArrowRight
             aria-hidden="true"
             class="auth-flow-arrow" />
           <span class="auth-flow-step">
             <CircleCheck aria-hidden="true" />
-            Done
+            {{ t('done') }}
           </span>
         </div>
       </div>
-      <small>Your conversations stay in Telegram. Your work stays clear.</small>
+      <small>{{ t('heroFooter') }}</small>
     </div>
     <div
       :aria-busy="submitting"
@@ -44,13 +44,9 @@
           src="/favicon.svg" />
         <span>Laraue Boards</span>
       </div>
-      <h2>Welcome back</h2>
+      <h2>{{ t('welcomeBack') }}</h2>
       <p class="muted">
-        {{
-          googleClientId
-            ? 'Use your Telegram or Google account to continue.'
-            : 'Use your Telegram account to continue.'
-        }}
+        {{ googleClientId ? t('continueWithTelegramOrGoogle') : t('continueWithTelegram') }}
       </p>
       <p
         v-if="message"
@@ -60,7 +56,7 @@
       <p
         v-if="submitting"
         class="muted login-status">
-        Signing in…
+        {{ t('signingIn') }}
       </p>
       <div
         ref="widgetContainer"
@@ -91,6 +87,38 @@ const props = defineProps<{
   googleClientId: string
   onLoggedIn: () => Promise<void> | void
 }>()
+
+const { t } = useI18n({
+  en: {
+    continueWithTelegram: 'Use your Telegram account to continue.',
+    continueWithTelegramOrGoogle: 'Use your Telegram or Google account to continue.',
+    done: 'Done',
+    heroDescription:
+      'Send Telegram messages to organized boards and keep every important request moving.',
+    heroFooter: 'Your conversations stay in Telegram. Your work stays clear.',
+    heroTitle: 'Turn messages into work.',
+    issue: 'Issue',
+    message: 'Message',
+    signIn: 'Sign in',
+    signingIn: 'Signing in…',
+    welcomeBack: 'Welcome back',
+  },
+  ru: {
+    continueWithTelegram: 'Используйте аккаунт Telegram, чтобы продолжить.',
+    continueWithTelegramOrGoogle: 'Используйте аккаунт Telegram или Google, чтобы продолжить.',
+    done: 'Готово',
+    heroDescription:
+      'Отправляйте сообщения из Telegram на организованные доски и не теряйте важные задачи.',
+    heroFooter: 'Ваши разговоры остаются в Telegram, а работа — под контролем.',
+    heroTitle: 'Превращайте сообщения в работу.',
+    issue: 'Задача',
+    message: 'Сообщение',
+    signIn: 'Вход',
+    signingIn: 'Выполняется вход…',
+    welcomeBack: 'С возвращением',
+  },
+})
+
 const widgetContainer = useTemplateRef('widgetContainer')
 const googleButtonContainer = useTemplateRef('googleButtonContainer')
 const telegramWindow = globalThis as typeof globalThis & {
@@ -120,7 +148,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => delete telegramWindow.onTelegramAuth)
 onMounted(() => void loginViaTelegramMiniApp())
-useHead({ title: 'Sign in' })
+useHead({ title: t('signIn') })
 
 const {
   execute: loginViaTelegramMiniApp,

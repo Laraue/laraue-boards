@@ -8,9 +8,9 @@
       <span class="column-head-actions">
         <button
           v-if="canCreateIssues"
-          :aria-label="`Add issue to ${viewModel.title}`"
+          :aria-label="`${t('addIssueTo')} ${viewModel.title}`"
           class="icon-btn small"
-          title="Add issue"
+          :title="t('addIssue')"
           type="button"
           @click="onCreateIssue(viewModel.id)">
           <Plus />
@@ -25,7 +25,7 @@
       <p
         v-if="viewModel.issues.length === 0"
         class="empty">
-        {{ canMoveIssues ? 'Drop issues here' : 'No issues' }}
+        {{ canMoveIssues ? t('dropIssues') : t('noIssues') }}
       </p>
       <IssueCard
         v-for="(issue, index) in viewModel.issues"
@@ -78,6 +78,21 @@ const props = defineProps<{
   onOpenIssue: (issueKey: string) => void
   viewModel: BoardColumnViewModel
 }>()
+
+const { t } = useI18n({
+  en: {
+    addIssue: 'Add issue',
+    addIssueTo: 'Add issue to',
+    dropIssues: 'Drop issues here',
+    noIssues: 'No issues',
+  },
+  ru: {
+    addIssue: 'Добавить задачу',
+    addIssueTo: 'Добавить задачу в',
+    dropIssues: 'Перетащите задачи сюда',
+    noIssues: 'Задач нет',
+  },
+})
 
 const element = useTemplateRef('element')
 const sentinel = useTemplateRef('sentinel')

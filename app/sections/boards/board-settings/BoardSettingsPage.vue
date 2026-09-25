@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load board"
-    loading-text="Loading board…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,12 +11,14 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to board"
+              :label="t('backToBoard')"
               :to="organizationRoutes.board(spaceKey, boardId)" />
             <BoardIcon
               class="page-heading-icon"
               :style="{ color: page.color }" />
-            <div class="page-heading-text"><h1>Edit board</h1></div>
+            <div class="page-heading-text">
+              <h1>{{ t('editBoard') }}</h1>
+            </div>
           </div>
         </div>
         <BoardSettingsForm
@@ -45,6 +47,27 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
+const { t } = useI18n({
+  en: {
+    backToBoard: 'Back to board',
+    boardSettings: 'Board settings',
+    deleteConfirm: 'Delete this board?',
+    editBoard: 'Edit board',
+    loadError: 'Could not load board',
+    loading: 'Loading board…',
+    settings: 'settings',
+  },
+  ru: {
+    backToBoard: 'Назад к доске',
+    boardSettings: 'Настройки доски',
+    deleteConfirm: 'Удалить эту доску?',
+    editBoard: 'Изменить доску',
+    loadError: 'Не удалось загрузить доску',
+    loading: 'Загрузка доски…',
+    settings: 'настройки',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
 const { data, message, pending, refresh } = await useQuery(
@@ -54,7 +77,7 @@ const { data, message, pending, refresh } = await useQuery(
 )
 
 useHead({
-  title: computed(() => (data.value ? `${data.value.name} settings` : 'Board settings')),
+  title: computed(() => (data.value ? `${data.value.name} ${t('settings')}` : t('boardSettings'))),
 })
 
 const {
@@ -89,7 +112,7 @@ const {
 })
 
 const remove = async (): Promise<void> => {
-  if (saving.value || removing.value || !confirm('Delete this board?')) {
+  if (saving.value || removing.value || !confirm(t('deleteConfirm'))) {
     return
   }
   void removeBoard({ boardId: props.boardId })

@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { mapIssueAttributes } from '~/sections/issues/shared/api/issueAttributes'
 import { findSpaceByKey } from '~/sections/spaces/shared/findSpaceByKey'
 
@@ -18,11 +18,20 @@ export const createViewBacklogIssue =
       return { code: 0, status: 'error' }
     }
     const [spaces, attributes] = responses
-    if (!('data' in spaces) || spaces.data === undefined) {
-      return { code: 'error' in spaces ? spaces.response.status : 0, status: 'error' }
+    if (isErrorResponse(spaces)) {
+      return { code: spaces.response.status, status: 'error' }
     }
-    if (!('data' in attributes) || attributes.data === undefined) {
-      return { code: 'error' in attributes ? attributes.response.status : 0, status: 'error' }
+    if (spaces.data === undefined) {
+      return { code: 0, status: 'error' }
+    }
+    if (isErrorResponse(attributes)) {
+      return {
+        code: attributes.response.status,
+        status: 'error',
+      }
+    }
+    if (attributes.data === undefined) {
+      return { code: 0, status: 'error' }
     }
 
     const space = findSpaceByKey(spaces.data, spaceKey)
@@ -33,8 +42,17 @@ export const createViewBacklogIssue =
     const boards = await tryRequest(() =>
       client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
     )
-    if (!boards || !('data' in boards) || boards.data === undefined) {
-      return { code: boards && 'error' in boards ? boards.response.status : 0, status: 'error' }
+    if (!boards) {
+      return { code: 0, status: 'error' }
+    }
+    if (isErrorResponse(boards)) {
+      return {
+        code: boards.response.status,
+        status: 'error',
+      }
+    }
+    if (boards.data === undefined) {
+      return { code: 0, status: 'error' }
     }
     const backlog = boards.data.find((board) => board.isDefault)
     if (!backlog) {
@@ -44,8 +62,17 @@ export const createViewBacklogIssue =
     const board = await tryRequest(() =>
       client.GET('/api/epics/{id}', { params: { path: { id: Number(backlog.id) } }, signal }),
     )
-    if (!board || !('data' in board) || board.data === undefined) {
-      return { code: board && 'error' in board ? board.response.status : 0, status: 'error' }
+    if (!board) {
+      return { code: 0, status: 'error' }
+    }
+    if (isErrorResponse(board)) {
+      return {
+        code: board.response.status,
+        status: 'error',
+      }
+    }
+    if (board.data === undefined) {
+      return { code: 0, status: 'error' }
     }
     if (!board.data.canCreateIssues) {
       return { code: 403, status: 'error' }

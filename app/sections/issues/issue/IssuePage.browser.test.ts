@@ -201,13 +201,14 @@ it('loads history only when its tab is opened', async () => {
           changes: [
             {
               kind: 'status',
-              label: 'Status changed',
+
               newColor: null,
               newValue: 'Done',
               oldColor: null,
               oldValue: 'To do',
             },
             {
+              commentAction: null,
               diff: [
                 {
                   kind: 'removed',
@@ -229,7 +230,6 @@ it('loads history only when its tab is opened', async () => {
                 },
               ],
               kind: 'description',
-              label: 'Description changed',
             },
           ],
           createdAt: '2026-01-03T00:00:00Z',
@@ -247,9 +247,9 @@ it('loads history only when its tab is opened', async () => {
   await page.getByRole('tab', { name: 'History' }).click()
 
   expect(loadHistory).toHaveBeenCalledWith({ issueKey: 'ISS-1', page: 0 })
-  await expect.element(page.getByText('Status changed')).toBeInTheDocument()
+  await expect.element(page.getByText('Status:')).toBeInTheDocument()
   await expect.element(page.getByText('Done')).toBeInTheDocument()
-  await page.getByText('Description changed').click()
+  await page.getByText('Description', { exact: true }).click()
   await expect
     .element(page.getByLabelText('Description changes split view'))
     .toHaveTextContent('List Item 3')

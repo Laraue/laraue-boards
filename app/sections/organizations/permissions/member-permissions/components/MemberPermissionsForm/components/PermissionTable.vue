@@ -2,12 +2,12 @@
   <table class="permission-table">
     <thead>
       <tr>
-        <th scope="col">Resource</th>
+        <th scope="col">{{ t('resource') }}</th>
         <th
           v-for="column in PERMISSION_COLUMNS"
           :key="column"
           scope="col">
-          {{ column }}
+          {{ t(column) }}
         </th>
       </tr>
     </thead>
@@ -15,10 +15,10 @@
       <tr
         v-for="row in rows"
         :key="row.label">
-        <th scope="row">{{ row.label }}</th>
+        <th scope="row">{{ t(row.label) }}</th>
         <td
           v-for="(cell, index) in row.cells"
-          :key="PERMISSION_COLUMNS[index]">
+          :key="PERMISSION_COLUMNS[index]!">
           <span
             v-if="!cell"
             class="muted">
@@ -26,10 +26,10 @@
           </span>
           <input
             v-else
-            :aria-label="`${PERMISSION_COLUMNS[index]} ${row.label}${labelSuffix}`"
+            :aria-label="`${t(PERMISSION_COLUMNS[index]!)} ${t(row.label)}${labelSuffix}`"
             :checked="cell.checked"
             :disabled="cell.disabled"
-            :title="cell.title"
+            :title="cell.title && t(cell.title)"
             type="checkbox"
             @change="onToggle(cell.key)" />
         </td>
@@ -49,6 +49,33 @@ withDefaults(
   }>(),
   { labelSuffix: '' },
 )
+
+const { t } = useI18n({
+  en: {
+    boards: 'Boards',
+    create: 'Create',
+    delete: 'Delete',
+    inherited: 'Inherited',
+    issues: 'Issues',
+    notAllowed: 'Not allowed',
+    resource: 'Resource',
+    space: 'Space',
+    spaces: 'Spaces',
+    update: 'Update',
+  },
+  ru: {
+    boards: 'Доски',
+    create: 'Создание',
+    delete: 'Удаление',
+    inherited: 'Унаследовано',
+    issues: 'Задачи',
+    notAllowed: 'Недоступно',
+    resource: 'Ресурс',
+    space: 'Раздел',
+    spaces: 'Разделы',
+    update: 'Изменение',
+  },
+})
 </script>
 
 <style scoped>

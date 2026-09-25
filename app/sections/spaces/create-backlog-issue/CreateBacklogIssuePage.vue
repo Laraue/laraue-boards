@@ -1,8 +1,8 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load backlog issue form"
-    loading-text="Loading backlog issue form…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
@@ -11,10 +11,12 @@
         <div class="title-row">
           <div class="page-heading">
             <AppBackLink
-              label="Back to backlog"
+              :label="t('backToBacklog')"
               :to="organizationRoutes.backlog(spaceKey)" />
             <ListPlus class="page-heading-icon" />
-            <div class="page-heading-text"><h1>Add backlog issue</h1></div>
+            <div class="page-heading-text">
+              <h1>{{ t('addBacklogIssue') }}</h1>
+            </div>
           </div>
         </div>
         <CreateIssueForm
@@ -39,8 +41,23 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
+const { t } = useI18n({
+  en: {
+    addBacklogIssue: 'Add backlog issue',
+    backToBacklog: 'Back to backlog',
+    loadError: 'Could not load backlog issue form',
+    loading: 'Loading backlog issue form…',
+  },
+  ru: {
+    addBacklogIssue: 'Добавить задачу в бэклог',
+    backToBacklog: 'Назад к бэклогу',
+    loadError: 'Не удалось загрузить форму задачи бэклога',
+    loading: 'Загрузка формы задачи бэклога…',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
-useHead({ title: 'Add backlog issue' })
+useHead({ title: t('addBacklogIssue') })
 
 const { data, message, pending, refresh } = await useQuery(
   () => `create-backlog-issue:${props.spaceKey}`,

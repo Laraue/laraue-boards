@@ -23,7 +23,7 @@ const mount = async (
   currentWrapper = await mountSuspended(CreateAttributePage, {
     attachTo: document.body,
     props: { deps: { create }, onCreated },
-    route: '/organizations/acme-ab12/settings/attributes/new',
+    route: '/organizations/acme-ab12/admin/attributes/new',
   })
   return currentWrapper
 }

@@ -6,45 +6,45 @@
     <div class="issue-description-frame">
       <div
         v-if="isWriting"
-        aria-label="Markdown formatting"
+        :aria-label="t('markdownFormatting')"
         class="markdown-toolbar"
         role="toolbar">
         <div class="markdown-toolbar-group">
           <button
-            aria-label="Return to visual"
+            :aria-label="t('returnToVisual')"
             class="markdown-toolbar-return"
-            title="Visual"
+            :title="t('visual')"
             type="button"
             @click="state.editing = false">
             <Eye aria-hidden="true" />
-            Visual
+            {{ t('visual') }}
           </button>
         </div>
         <div class="markdown-toolbar-group">
           <button
-            aria-label="Bold"
-            title="Bold (Ctrl+B)"
+            :aria-label="t('bold')"
+            :title="t('boldShortcut')"
             type="button"
-            @click="wrap('**', '**', 'bold text')">
+            @click="wrap('**', '**', t('boldText'))">
             <Bold aria-hidden="true" />
           </button>
           <button
-            aria-label="Italic"
-            title="Italic (Ctrl+I)"
+            :aria-label="t('italic')"
+            :title="t('italicShortcut')"
             type="button"
-            @click="wrap('*', '*', 'italic text')">
+            @click="wrap('*', '*', t('italicText'))">
             <Italic aria-hidden="true" />
           </button>
           <button
-            aria-label="Strikethrough"
-            title="Strikethrough"
+            :aria-label="t('strikethrough')"
+            :title="t('strikethrough')"
             type="button"
-            @click="wrap('~~', '~~', 'strikethrough text')">
+            @click="wrap('~~', '~~', t('strikethroughText'))">
             <Strikethrough aria-hidden="true" />
           </button>
           <select
-            aria-label="Heading level"
-            title="Heading level"
+            :aria-label="t('headingLevel')"
+            :title="t('headingLevel')"
             value=""
             @change="insertHeading">
             <option
@@ -63,55 +63,55 @@
 
         <div class="markdown-toolbar-group">
           <button
-            aria-label="Quote"
-            title="Quote"
+            :aria-label="t('quote')"
+            :title="t('quote')"
             type="button"
-            @click="prefixLines('> ', 'Quote')">
+            @click="prefixLines('> ', t('quote'))">
             <Quote aria-hidden="true" />
           </button>
           <button
-            aria-label="Bulleted list"
-            title="Bulleted list"
+            :aria-label="t('bulletedList')"
+            :title="t('bulletedList')"
             type="button"
-            @click="prefixLines('- ', 'List item')">
+            @click="prefixLines('- ', t('listItem'))">
             <List aria-hidden="true" />
           </button>
           <button
-            aria-label="Numbered list"
-            title="Numbered list"
+            :aria-label="t('numberedList')"
+            :title="t('numberedList')"
             type="button"
-            @click="prefixLines('', 'List item', true)">
+            @click="prefixLines('', t('listItem'), true)">
             <ListOrdered aria-hidden="true" />
           </button>
         </div>
 
         <div class="markdown-toolbar-group">
           <button
-            aria-label="Inline code"
-            title="Inline code"
+            :aria-label="t('inlineCode')"
+            :title="t('inlineCode')"
             type="button"
-            @click="wrap('`', '`', 'code')">
+            @click="wrap('`', '`', t('code'))">
             <Code aria-hidden="true" />
           </button>
           <button
-            aria-label="Code block"
-            title="Code block"
+            :aria-label="t('codeBlock')"
+            :title="t('codeBlock')"
             type="button"
-            @click="wrap('```\n', '\n```', 'code')">
+            @click="wrap('```\n', '\n```', t('code'))">
             <SquareCode aria-hidden="true" />
           </button>
           <button
-            aria-label="Link"
-            title="Link (Ctrl+K)"
+            :aria-label="t('link')"
+            :title="t('linkShortcut')"
             type="button"
             @click="insertLink">
             <LinkIcon aria-hidden="true" />
           </button>
           <button
-            aria-label="Image"
-            title="Image"
+            :aria-label="t('image')"
+            :title="t('image')"
             type="button"
-            @click="wrap('![', '](https://example.com/image.jpg)', 'description')">
+            @click="wrap('![', '](https://example.com/image.jpg)', t('description'))">
             <ImageIcon aria-hidden="true" />
           </button>
         </div>
@@ -121,15 +121,15 @@
         v-if="isWriting"
         ref="textarea"
         v-model="model"
-        aria-label="Content"
-        placeholder="Describe the issue. Markdown is supported."
+        :aria-label="t('content')"
+        :placeholder="t('descriptionPlaceholder')"
         rows="8"
         @keydown="handleKeydown" />
 
       <!-- eslint-disable-next-line vue/no-v-html -- sanitized by renderMarkdown -->
       <article
         v-else
-        :aria-label="disabled ? 'Description preview' : 'Edit description'"
+        :aria-label="disabled ? t('descriptionPreview') : t('editDescription')"
         class="issue-description-preview"
         :class="{ 'issue-description-preview--editable': !disabled }"
         :role="disabled ? undefined : 'button'"
@@ -161,6 +161,73 @@ import { renderMarkdown } from '~/utils/renderMarkdown'
 
 const props = defineProps<{ disabled?: boolean }>()
 
+const { t } = useI18n({
+  en: {
+    bold: 'Bold',
+    boldShortcut: 'Bold (Ctrl+B)',
+    boldText: 'bold text',
+    bulletedList: 'Bulleted list',
+    code: 'code',
+    codeBlock: 'Code block',
+    content: 'Content',
+    description: 'description',
+    descriptionPlaceholder: 'Describe the issue. Markdown is supported.',
+    descriptionPreview: 'Description preview',
+    editDescription: 'Edit description',
+    heading: 'Heading',
+    headingLevel: 'Heading level',
+    image: 'Image',
+    inlineCode: 'Inline code',
+    italic: 'Italic',
+    italicShortcut: 'Italic (Ctrl+I)',
+    italicText: 'italic text',
+    link: 'Link',
+    linkShortcut: 'Link (Ctrl+K)',
+    linkText: 'link text',
+    listItem: 'List item',
+    markdownFormatting: 'Markdown formatting',
+    nothing: 'Nothing here yet.',
+    numberedList: 'Numbered list',
+    quote: 'Quote',
+    returnToVisual: 'Return to visual',
+    strikethrough: 'Strikethrough',
+    strikethroughText: 'strikethrough text',
+    visual: 'Visual',
+  },
+  ru: {
+    bold: 'Жирный',
+    boldShortcut: 'Жирный (Ctrl+B)',
+    boldText: 'жирный текст',
+    bulletedList: 'Маркированный список',
+    code: 'код',
+    codeBlock: 'Блок кода',
+    content: 'Содержимое',
+    description: 'описание',
+    descriptionPlaceholder: 'Опишите задачу. Поддерживается Markdown.',
+    descriptionPreview: 'Предпросмотр описания',
+    editDescription: 'Изменить описание',
+    heading: 'Заголовок',
+    headingLevel: 'Уровень заголовка',
+    image: 'Изображение',
+    inlineCode: 'Встроенный код',
+    italic: 'Курсив',
+    italicShortcut: 'Курсив (Ctrl+I)',
+    italicText: 'текст курсивом',
+    link: 'Ссылка',
+    linkShortcut: 'Ссылка (Ctrl+K)',
+    linkText: 'текст ссылки',
+    listItem: 'Элемент списка',
+    markdownFormatting: 'Форматирование Markdown',
+    nothing: 'Здесь пока ничего нет.',
+    numberedList: 'Нумерованный список',
+    quote: 'Цитата',
+    returnToVisual: 'Вернуться к визуальному режиму',
+    strikethrough: 'Зачёркивание',
+    strikethroughText: 'зачёркнутый текст',
+    visual: 'Визуальный режим',
+  },
+})
+
 const model = defineModel<string>({ required: true })
 const state = reactive({ editing: false })
 const root = useTemplateRef<HTMLElement>('root')
@@ -170,7 +237,7 @@ const isWriting = computed(() => state.editing && !props.disabled)
 const preview = computed(() =>
   model.value.trim()
     ? renderMarkdown(model.value)
-    : '<p class="issue-description-empty">Nothing here yet.</p>',
+    : `<p class="issue-description-empty">${t('nothing')}</p>`,
 )
 
 const startEditing = async (event: Event) => {
@@ -274,11 +341,11 @@ const prefixLines = async (prefix: string, placeholder = 'text', ordered = false
 
 const insertHeading = (event: Event) => {
   const select = event.target as HTMLSelectElement
-  void prefixLines(`${select.value} `, 'Heading')
+  void prefixLines(`${select.value} `, t('heading'))
   select.value = ''
 }
 
-const insertLink = () => wrap('[', '](https://example.com)', 'link text')
+const insertLink = () => wrap('[', '](https://example.com)', t('linkText'))
 
 const handleKeydown = (event: KeyboardEvent) => {
   if (!event.ctrlKey && !event.metaKey) {
@@ -286,8 +353,8 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 
   const actions: Record<string, () => void> = {
-    b: () => void wrap('**', '**', 'bold text'),
-    i: () => void wrap('*', '*', 'italic text'),
+    b: () => void wrap('**', '**', t('boldText')),
+    i: () => void wrap('*', '*', t('italicText')),
     k: () => void insertLink(),
   }
   const action = actions[event.key.toLowerCase()]
@@ -514,7 +581,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 .issue-description-preview :deep(code) {
   background: var(--color-hover);
   border-radius: var(--radius-small);
-  font-family: monospace;
+  font-family: var(--font-family-mono);
 }
 
 .issue-description-preview :deep(code) {

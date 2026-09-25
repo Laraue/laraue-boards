@@ -1,16 +1,16 @@
 <template>
-  <span>{{ change.label }}:</span>
+  <span>{{ t('space') }}:</span>
   <div class="history-value-change">
-    <span :title="change.oldValue">
+    <span :title="change.oldValue ?? t('none')">
       <SpaceIcon :style="{ color: change.oldColor ?? undefined }" />
-      {{ change.oldValue }}
+      {{ change.oldValue ?? t('none') }}
     </span>
     <ArrowRight />
     <span
       class="history-new-value"
-      :title="change.newValue">
+      :title="change.newValue ?? t('none')">
       <SpaceIcon :style="{ color: change.newColor ?? undefined }" />
-      {{ change.newValue }}
+      {{ change.newValue ?? t('none') }}
     </span>
   </div>
 </template>
@@ -23,4 +23,9 @@ import { SpaceIcon } from '~/constants/icons'
 import type { HistorySpaceChangeViewModel } from '../HistoryTimeline.types'
 
 defineProps<{ change: HistorySpaceChangeViewModel }>()
+
+const { t } = useI18n({
+  en: { none: 'None', space: 'Space' },
+  ru: { none: 'Нет', space: 'Раздел' },
+})
 </script>

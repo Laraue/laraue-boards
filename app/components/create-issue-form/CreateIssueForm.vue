@@ -12,17 +12,17 @@
     </div>
     <div class="issue-form-side">
       <template v-if="board">
-        <label>Board</label>
+        <label>{{ t('board') }}</label>
         <div class="selected-entity">{{ board.name }}</div>
       </template>
       <template v-else>
-        <label :for="`${idPrefix}-space`">Space</label>
+        <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
         <SpaceSelect
           :id="`${idPrefix}-space`"
           v-model="form.spaceKey"
           :deps="selectDeps.spaceSelect" />
 
-        <label :for="`${idPrefix}-board`">Board</label>
+        <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
         <BoardSelect
           :id="`${idPrefix}-board`"
           v-model="form.boardId"
@@ -30,7 +30,7 @@
           :space-key="form.spaceKey" />
       </template>
 
-      <label :for="`${idPrefix}-status`">Status</label>
+      <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
       <StatusSelect
         :id="`${idPrefix}-status`"
         v-model="form.statusId"
@@ -43,7 +43,7 @@
         v-model="form.attributeValues"
         :attributes="attributes" />
 
-      <label :for="`${idPrefix}-assignee`">Assignee</label>
+      <label :for="`${idPrefix}-assignee`">{{ t('assignee') }}</label>
       <AssigneeSelect
         :id="`${idPrefix}-assignee`"
         v-model="form.assigneeId"
@@ -63,7 +63,7 @@
         class="primary"
         :disabled="pending || !form.content.trim() || !form.statusId || !form.assigneeId"
         type="submit">
-        {{ pending ? 'Adding…' : 'Add issue' }}
+        {{ pending ? t('adding') : t('addIssue') }}
       </button>
     </div>
   </form>
@@ -83,6 +83,26 @@ import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
 import type { CreateIssueFormProps } from './CreateIssueForm.types'
 
 const props = defineProps<CreateIssueFormProps & { deps: CreateIssueFormDeps }>()
+
+const { t } = useI18n({
+  en: {
+    adding: 'Adding…',
+    addIssue: 'Add issue',
+    assignee: 'Assignee',
+    board: 'Board',
+    space: 'Space',
+    status: 'Status',
+  },
+  ru: {
+    adding: 'Добавление…',
+    addIssue: 'Добавить задачу',
+    assignee: 'Исполнитель',
+    board: 'Доска',
+    space: 'Раздел',
+    status: 'Статус',
+  },
+})
+
 const idPrefix = useId()
 const form = reactive({
   assigneeId: '',

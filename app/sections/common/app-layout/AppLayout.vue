@@ -2,6 +2,7 @@
   <AppLayoutContent
     v-if="data"
     :on-logout="logout"
+    :preferences="props.deps.preferences"
     :view-model="data">
     <slot />
   </AppLayoutContent>
@@ -9,12 +10,12 @@
     v-else-if="query.pending.value || switchingOrganization"
     error-text=""
     :loading="true"
-    loading-text="Loading workspace…" />
+    :loading-text="t('loadingWorkspace')" />
   <PageLoadState
     v-else
     error-text=""
     :loading="true"
-    loading-text="Loading organizations…" />
+    :loading-text="t('loadingOrganizations')" />
 </template>
 
 <script setup lang="ts">
@@ -29,6 +30,16 @@ const props = defineProps<{
   onViewProblem: (problem: RoutableProblem) => Promise<void> | void
   organizationKey: string
 }>()
+const { t } = useI18n({
+  en: {
+    loadingOrganizations: 'Loading organizations…',
+    loadingWorkspace: 'Loading workspace…',
+  },
+  ru: {
+    loadingOrganizations: 'Загрузка организаций…',
+    loadingWorkspace: 'Загрузка рабочего пространства…',
+  },
+})
 const query = await useAsyncData(
   appLayoutDataKey,
   (_nuxtApp, { signal }) => props.deps.view({ organizationKey: props.organizationKey, signal }),

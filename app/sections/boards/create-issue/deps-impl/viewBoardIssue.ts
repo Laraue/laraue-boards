@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { tryRequest } from '#infrastructure/api/tryRequest'
+import { isErrorResponse, tryRequest } from '#infrastructure/api/tryRequest'
 import { mapIssueAttributes } from '~/sections/issues/shared/api/issueAttributes'
 
 import type { ViewBoardIssue } from '../CreateBoardIssuePage.deps'
@@ -17,11 +17,20 @@ export const createViewBoardIssue =
       return { code: 0, status: 'error' }
     }
     const [board, attributes] = responses
-    if (!('data' in board) || board.data === undefined) {
-      return { code: 'error' in board ? board.response.status : 0, status: 'error' }
+    if (isErrorResponse(board)) {
+      return { code: board.response.status, status: 'error' }
     }
-    if (!('data' in attributes) || attributes.data === undefined) {
-      return { code: 'error' in attributes ? attributes.response.status : 0, status: 'error' }
+    if (board.data === undefined) {
+      return { code: 0, status: 'error' }
+    }
+    if (isErrorResponse(attributes)) {
+      return {
+        code: attributes.response.status,
+        status: 'error',
+      }
+    }
+    if (attributes.data === undefined) {
+      return { code: 0, status: 'error' }
     }
     if (!board.data.canCreateIssues) {
       return { code: 403, status: 'error' }

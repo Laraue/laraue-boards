@@ -1,31 +1,22 @@
 <template>
   <QueryState
     :data="data"
-    error-title="Could not load attributes"
-    loading-text="Loading attributes…"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
     :message="message"
     :on-retry="refresh"
     :pending="pending">
     <template #default="{ data: attributes }">
       <section class="attributes-page">
         <div class="title-row">
-          <div class="page-heading">
-            <Tags class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>Attributes</h1>
-            </div>
-          </div>
           <NuxtLink
-            aria-label="New attribute"
+            :aria-label="t('newAttribute')"
             class="primary"
             :to="organizationRoutes.newAttribute()">
             <Plus />
-            <span class="btn-label">New attribute</span>
+            <span class="btn-label">{{ t('newAttribute') }}</span>
           </NuxtLink>
         </div>
-        <p class="attributes-intro">
-          Custom fields you can attach to issues, like Priority or Severity.
-        </p>
         <div
           v-if="attributes.length"
           class="attribute-list">
@@ -45,33 +36,66 @@
         </div>
         <AppEmptyState
           v-else
-          hint="Attributes are your own fields on every issue — priority, client, environment, whatever your team tracks. Add one and it shows up in the issue form and in the filters."
-          title="No attributes yet" />
+          :hint="t('emptyHint')"
+          :title="t('emptyTitle')" />
       </section>
     </template>
   </QueryState>
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Plus, Tags } from '@lucide/vue'
+import { ChevronRight, Plus } from '@lucide/vue'
 
 import type { AttributesPageDeps } from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
 import type { AttributeListItem } from '~/sections/organizations/attributes/list-attributes/AttributesPage.types'
 
 const props = defineProps<{ deps: AttributesPageDeps }>()
 
+const { t } = useI18n({
+  en: {
+    attributes: 'Attributes',
+    date: 'Date',
+    dateTime: 'Date and time',
+    decimal: 'Decimal',
+    emptyHint:
+      'Attributes are your own fields on every issue — priority, client, environment, whatever your team tracks. Add one and it shows up in the issue form and in the filters.',
+    emptyTitle: 'No attributes yet',
+    integer: 'Integer',
+    list: 'List',
+    loadError: 'Could not load attributes',
+    loading: 'Loading attributes…',
+    newAttribute: 'New attribute',
+    text: 'Text',
+  },
+  ru: {
+    attributes: 'Атрибуты',
+    date: 'Дата',
+    dateTime: 'Дата и время',
+    decimal: 'Десятичное число',
+    emptyHint:
+      'Атрибуты — это дополнительные поля задачи: приоритет, клиент, окружение и всё, что важно вашей команде. Они появятся в форме задачи и фильтрах.',
+    emptyTitle: 'Атрибутов пока нет',
+    integer: 'Целое число',
+    list: 'Список',
+    loadError: 'Не удалось загрузить атрибуты',
+    loading: 'Загрузка атрибутов…',
+    newAttribute: 'Новый атрибут',
+    text: 'Текст',
+  },
+})
+
 const organizationRoutes = useOrganizationRoutes()
 
 const typeLabels = {
-  date: 'Date',
-  dateTime: 'Date and time',
-  decimal: 'Decimal',
-  integer: 'Integer',
-  list: 'List',
-  text: 'Text',
+  date: t('date'),
+  dateTime: t('dateTime'),
+  decimal: t('decimal'),
+  integer: t('integer'),
+  list: t('list'),
+  text: t('text'),
 } satisfies Record<AttributeListItem['type'], string>
 
-useHead({ title: 'Attributes' })
+useHead({ title: t('attributes') })
 
 const { data, message, pending, refresh } = await useQuery(
   'organization-attributes',
@@ -80,9 +104,9 @@ const { data, message, pending, refresh } = await useQuery(
 </script>
 
 <style scoped>
-.attributes-intro {
-  color: var(--color-muted);
-  margin: var(--space-6) 0 var(--space-4);
+.attributes-page > .title-row {
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
 }
 
 .attribute-list {

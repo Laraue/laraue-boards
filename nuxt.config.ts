@@ -12,7 +12,7 @@ export default defineNuxtConfig({
         { href: 'https://fonts.googleapis.com', rel: 'preconnect' },
         { crossorigin: '', href: 'https://fonts.gstatic.com', rel: 'preconnect' },
         {
-          href: 'https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap',
           rel: 'stylesheet',
         },
       ],
@@ -22,14 +22,10 @@ export default defineNuxtConfig({
           name: 'viewport',
         },
       ],
-      script: [
-        ...(process.env.NODE_ENV === 'test'
+      script:
+        process.env.NODE_ENV === 'test'
           ? []
-          : [{ src: 'https://telegram.org/js/telegram-web-app.js?61' }]),
-        {
-          innerHTML: `const theme=localStorage.getItem('theme');if(theme)document.documentElement.dataset.theme=theme`,
-        },
-      ],
+          : [{ src: 'https://telegram.org/js/telegram-web-app.js?61' }],
     },
   },
 

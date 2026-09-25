@@ -71,7 +71,7 @@ const mount = async (deps: DataMovementPageDeps, onSpacesMoved = vi.fn<() => voi
   currentWrapper = await mountSuspended(DataMovementPage, {
     attachTo: document.body,
     props: { deps, onSpacesMoved },
-    route: '/organizations/acme-ab12/settings/data-movement',
+    route: '/organizations/acme-ab12/admin/data-movement',
   })
   return currentWrapper
 }

@@ -13,6 +13,6 @@ export const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueL
   issueKey: issue.key,
   spaceColor: issue.space.color,
   spaceName: issue.space.name,
-  status: issue.status?.name ?? 'Backlog',
+  status: issue.status?.name ?? null,
   statusColor: issue.status?.color ?? COLORS.gray,
 })

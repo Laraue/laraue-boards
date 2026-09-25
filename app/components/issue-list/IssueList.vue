@@ -1,6 +1,6 @@
 <template>
   <AppBulkBar
-    action-label="Move to board"
+    :action-label="t('moveToBoard')"
     :count="selected.size"
     :on-action="() => openMoveDialog([...selected])"
     :on-clear="() => selected.clear()" />
@@ -62,6 +62,11 @@ const props = defineProps<{
   onUpdatePage: (value: number) => void
   page: number
 }>()
+
+const { t } = useI18n({
+  en: { moveToBoard: 'Move to board' },
+  ru: { moveToBoard: 'Переместить на доску' },
+})
 
 const organizationRoutes = useOrganizationRoutes()
 const moveDialog = useTemplateRef('moveDialog')

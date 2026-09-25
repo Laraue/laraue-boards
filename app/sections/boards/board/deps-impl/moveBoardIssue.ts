@@ -1,5 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeAction } from '#infrastructure/api/executeAction'
+import { isErrorResponse } from '#infrastructure/api/tryRequest'
 
 import type { BoardPageDeps } from '../BoardPage.deps'
 
@@ -7,7 +8,7 @@ export const createMoveBoardIssue =
   (client: ApiClient): BoardPageDeps['moveBoardIssue'] =>
   async ({ issueKey, statusId, target, updateStatus }) => {
     if (updateStatus && !statusId) {
-      return { message: 'This issue cannot be moved to that column.', status: 'validation-error' }
+      return { code: 400, status: 'error' }
     }
     if (!updateStatus && !target) {
       return { data: true, status: 'success' }
@@ -20,7 +21,7 @@ export const createMoveBoardIssue =
               body: { issueKeys: [issueKey], statusId: Number(statusId) },
             })
           : undefined
-        if (statusResponse && !('data' in statusResponse)) {
+        if (statusResponse && isErrorResponse(statusResponse)) {
           return statusResponse
         }
         if (!target) {
