@@ -83,7 +83,6 @@ import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLog
 const props = defineProps<{
   botName: string
   deps: LoginPageDeps
-  /** Google sign-in is hidden while this is empty. */
   googleClientId: string
   onLoggedIn: () => Promise<void> | void
 }>()

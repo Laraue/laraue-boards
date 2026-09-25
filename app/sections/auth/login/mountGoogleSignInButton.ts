@@ -39,10 +39,6 @@ const loadGoogleIdentityServices = (): Promise<GoogleAccountsId> => {
   })
 }
 
-/**
- * Renders Google's own "Sign in with Google" button into the container. The ID token Google
- * returns after the user picks an account is passed to `onCredential`.
- */
 export const mountGoogleSignInButton = async ({
   clientId,
   container,

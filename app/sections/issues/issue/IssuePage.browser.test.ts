@@ -139,7 +139,6 @@ it('formats selected description text', async () => {
   await page.getByRole('button', { name: 'Bold' }).click()
 
   await expect.element(page.getByLabelText('Content')).toHaveValue('**Fix** the bug')
-  // The textarea's native undo: Cmd+Z on macOS, Ctrl+Z elsewhere (CI runs on Linux).
   await userEvent.keyboard(
     /Mac/i.test(navigator.platform) ? '{Meta>}z{/Meta}' : '{Control>}z{/Control}',
   )

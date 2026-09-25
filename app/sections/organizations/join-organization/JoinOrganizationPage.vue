@@ -64,7 +64,6 @@ const props = defineProps<{
   botName: string
   code: string
   deps: JoinOrganizationPageDeps
-  /** Google sign-in is hidden while this is empty. */
   googleClientId: string
   onJoined: () => Promise<void> | void
 }>()

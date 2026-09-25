@@ -12,8 +12,6 @@ export const createLoginViaGoogle =
         client.POST('/api/user/auth-via-google', {
           body: {
             idToken,
-            // The backend knows two-letter interface languages ('en', 'ru'); a browser reports
-            // a full tag such as 'ru-RU'.
             languageCode: languageCode?.split('-')[0]?.toLowerCase() || null,
           },
           parseAs: 'text',
