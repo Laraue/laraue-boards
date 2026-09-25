@@ -49,11 +49,7 @@ const mapAppLayoutData = (
   user: {
     color: user.color,
     initials: user.initials ?? '?',
-    name:
-      [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-      user.username ||
-      user.initials ||
-      'User',
+    name: user.displayName || user.initials || 'User',
   },
 })
 

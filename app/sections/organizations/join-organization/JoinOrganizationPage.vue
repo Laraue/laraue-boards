@@ -28,11 +28,18 @@
         v-else
         aria-live="polite"
         class="inline-login">
-        <strong>Sign in with Telegram</strong>
+        <strong>{{ googleClientId ? 'Sign in' : 'Sign in with Telegram' }}</strong>
         <p class="muted">Sign in to accept this invitation.</p>
         <div
           ref="widgetContainer"
           class="telegram-widget" />
+        <div
+          v-if="googleClientId"
+          ref="googleButtonContainer"
+          class="google-sign-in" />
+        <TelegramIntegrationsNote
+          v-if="googleClientId"
+          class="join-integration-note" />
       </div>
       <p
         v-if="message"
@@ -48,6 +55,7 @@
 import { Loader, UserPlus } from '@lucide/vue'
 
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
+import { mountGoogleSignInButton } from '~/sections/auth/login/mountGoogleSignInButton'
 import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLoginWidget'
 
 import type { JoinOrganizationPageDeps } from './JoinOrganizationPage.deps'
@@ -56,10 +64,13 @@ const props = defineProps<{
   botName: string
   code: string
   deps: JoinOrganizationPageDeps
+  /** Google sign-in is hidden while this is empty. */
+  googleClientId: string
   onJoined: () => Promise<void> | void
 }>()
 const state = reactive({ loginRequired: false, widgetMounted: false })
 const widgetContainer = useTemplateRef('widgetContainer')
+const googleButtonContainer = useTemplateRef('googleButtonContainer')
 const telegramWindow = globalThis as typeof globalThis & {
   onTelegramJoinAuth?: (user: TelegramUser) => void
 }
@@ -80,10 +91,19 @@ const {
   pending: widgetPending,
 } = useAction(props.deps.loginViaTelegramWidget)
 
-const busy = computed(() => pending.value || miniAppPending.value || widgetPending.value)
+const {
+  execute: loginViaGoogle,
+  message: googleMessage,
+  pending: googlePending,
+} = useAction(props.deps.loginViaGoogle)
+
+const busy = computed(
+  () => pending.value || miniAppPending.value || widgetPending.value || googlePending.value,
+)
 const message = computed(
   () =>
     widgetMessage.value ||
+    googleMessage.value ||
     miniAppMessage.value ||
     (!state.loginRequired ? joinMessage.value : undefined),
 )
@@ -103,6 +123,13 @@ const showLogin = async (): Promise<void> => {
       callbackName: 'onTelegramJoinAuth',
       container: widgetContainer.value,
     })
+    if (props.googleClientId && googleButtonContainer.value) {
+      void mountGoogleSignInButton({
+        clientId: props.googleClientId,
+        container: googleButtonContainer.value,
+        onCredential: (idToken) => void loginGoogle(idToken),
+      })
+    }
     state.widgetMounted = true
   }
 }
@@ -116,13 +143,27 @@ const accept = async (): Promise<void> => {
   }
 }
 
+const continueAfterLogin = async (): Promise<void> => {
+  state.loginRequired = false
+  state.widgetMounted = false
+  await nextTick()
+  await accept()
+}
+
 const loginWidget = async (user: TelegramUser): Promise<void> => {
   const loggedIn = await loginViaTelegramWidget(user)
   if (loggedIn) {
-    state.loginRequired = false
-    state.widgetMounted = false
-    await nextTick()
-    await accept()
+    await continueAfterLogin()
+  }
+}
+
+const loginGoogle = async (idToken: string): Promise<void> => {
+  if (busy.value) {
+    return
+  }
+  const loggedIn = await loginViaGoogle({ idToken, languageCode: navigator.language })
+  if (loggedIn) {
+    await continueAfterLogin()
   }
 }
 
@@ -201,5 +242,16 @@ onBeforeUnmount(() => delete telegramWindow.onTelegramJoinAuth)
   justify-content: center;
   margin-top: var(--space-3);
   min-height: 48px;
+}
+
+.google-sign-in {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2);
+  min-height: 44px;
+}
+
+.join-integration-note {
+  margin-top: var(--space-3);
 }
 </style>

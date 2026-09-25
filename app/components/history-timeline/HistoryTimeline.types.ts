@@ -84,6 +84,8 @@ export type HistoryItemViewModel = {
     to: RouteLocationRaw
   }
   owner: {
+    /** Name of the API key the change was made with (e.g. by Claude over MCP); absent for changes made in the app. */
+    apiKeyName?: string
     color: string
     initials: string
     name: string

@@ -1,5 +1,6 @@
 import type { ActionResult } from '#infrastructure/api/apiResult'
 import type {
+  LoginViaGoogle,
   LoginViaTelegramMiniApp,
   LoginViaTelegramWidget,
 } from '~/sections/auth/login/LoginPage.deps'
@@ -12,6 +13,7 @@ export type JoinOrganization = (input: {
 
 export type JoinOrganizationPageDeps = {
   join: JoinOrganization
+  loginViaGoogle: LoginViaGoogle
   loginViaTelegramMiniApp: LoginViaTelegramMiniApp
   loginViaTelegramWidget: LoginViaTelegramWidget
 }

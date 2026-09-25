@@ -123,6 +123,7 @@ export const mapOrganizationHistoryPage = (
       createdAt: item.createdAt,
       ...(item.issueKey ? { issueKey: item.issueKey } : {}),
       owner: {
+        ...(item.apiKeyName ? { apiKeyName: item.apiKeyName } : {}),
         color: item.owner.color,
         initials: item.owner.initials,
         name: item.owner.displayName,

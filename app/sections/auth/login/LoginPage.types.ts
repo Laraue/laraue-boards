@@ -1,3 +1,8 @@
+export type GoogleSignIn = {
+  idToken: string
+  languageCode?: string
+}
+
 export type TelegramUser = {
   auth_date: number
   first_name: string

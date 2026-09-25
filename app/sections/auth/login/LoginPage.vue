@@ -45,7 +45,13 @@
         <span>Laraue Boards</span>
       </div>
       <h2>Welcome back</h2>
-      <p class="muted">Use your Telegram account to continue.</p>
+      <p class="muted">
+        {{
+          googleClientId
+            ? 'Use your Telegram or Google account to continue.'
+            : 'Use your Telegram account to continue.'
+        }}
+      </p>
       <p
         v-if="message"
         class="form-error">
@@ -59,6 +65,13 @@
       <div
         ref="widgetContainer"
         class="telegram-widget" />
+      <div
+        v-if="googleClientId"
+        ref="googleButtonContainer"
+        class="google-sign-in" />
+      <TelegramIntegrationsNote
+        v-if="googleClientId"
+        class="login-integration-note" />
     </div>
   </section>
 </template>
@@ -68,14 +81,18 @@ import { ArrowRight, CircleCheck, MessageCircle, SquareKanban } from '@lucide/vu
 
 import type { LoginPageDeps } from '~/sections/auth/login/LoginPage.deps'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
+import { mountGoogleSignInButton } from '~/sections/auth/login/mountGoogleSignInButton'
 import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLoginWidget'
 
 const props = defineProps<{
   botName: string
   deps: LoginPageDeps
+  /** Google sign-in is hidden while this is empty. */
+  googleClientId: string
   onLoggedIn: () => Promise<void> | void
 }>()
 const widgetContainer = useTemplateRef('widgetContainer')
+const googleButtonContainer = useTemplateRef('googleButtonContainer')
 const telegramWindow = globalThis as typeof globalThis & {
   onTelegramAuth?: (user: TelegramUser) => void
 }
@@ -87,6 +104,16 @@ onMounted(() => {
       botName: props.botName,
       callbackName: 'onTelegramAuth',
       container: widgetContainer.value,
+    })
+  }
+})
+
+onMounted(() => {
+  if (props.googleClientId && googleButtonContainer.value) {
+    void mountGoogleSignInButton({
+      clientId: props.googleClientId,
+      container: googleButtonContainer.value,
+      onCredential: (idToken) => void loginGoogle(idToken),
     })
   }
 })
@@ -115,14 +142,31 @@ const {
   onSuccess: props.onLoggedIn,
 })
 
-const submitting = computed(() => miniAppSubmitting.value || widgetSubmitting.value)
-const message = computed(() => miniAppMessage.value || widgetMessage.value)
+const {
+  execute: loginViaGoogle,
+  message: googleMessage,
+  pending: googleSubmitting,
+} = useAction(props.deps.loginViaGoogle, {
+  onSuccess: props.onLoggedIn,
+})
+
+const submitting = computed(
+  () => miniAppSubmitting.value || widgetSubmitting.value || googleSubmitting.value,
+)
+const message = computed(() => miniAppMessage.value || widgetMessage.value || googleMessage.value)
 
 const loginWidget = async (input: TelegramUser): Promise<void> => {
   if (submitting.value) {
     return
   }
   await loginViaTelegramWidget(input)
+}
+
+const loginGoogle = async (idToken: string): Promise<void> => {
+  if (submitting.value) {
+    return
+  }
+  await loginViaGoogle({ idToken, languageCode: navigator.language })
 }
 </script>
 
@@ -216,6 +260,16 @@ const loginWidget = async (input: TelegramUser): Promise<void> => {
   display: flex;
   margin-top: var(--space-6);
   min-height: 48px;
+}
+
+.google-sign-in {
+  display: flex;
+  margin-top: var(--space-3);
+  min-height: 44px;
+}
+
+.login-integration-note {
+  margin-top: var(--space-4);
 }
 
 @media (max-width: 767px) {
