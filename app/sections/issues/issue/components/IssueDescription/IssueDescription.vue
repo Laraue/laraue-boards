@@ -23,6 +23,22 @@
         </div>
         <div class="markdown-toolbar-group">
           <button
+            class="markdown-toolbar-ai"
+            :disabled="state.summarizing || !model.trim()"
+            :title="t('improveWithAi')"
+            type="button"
+            @click="improveWithAi">
+            <LoaderCircle
+              v-if="state.summarizing"
+              class="markdown-toolbar-spinner" />
+            <Sparkles
+              v-else
+              aria-hidden="true" />
+            {{ state.summarizing ? t('improvingWithAi') : t('improveWithAi') }}
+          </button>
+        </div>
+        <div class="markdown-toolbar-group">
+          <button
             :aria-label="t('bold')"
             :disabled="state.summarizing"
             :title="t('boldShortcut')"
@@ -125,22 +141,6 @@
             type="button"
             @click="wrap('![', '](https://example.com/image.jpg)', t('description'))">
             <ImageIcon aria-hidden="true" />
-          </button>
-        </div>
-        <div class="markdown-toolbar-group">
-          <button
-            class="markdown-toolbar-ai"
-            :disabled="state.summarizing || !model.trim()"
-            :title="t('improveWithAi')"
-            type="button"
-            @click="improveWithAi">
-            <LoaderCircle
-              v-if="state.summarizing"
-              class="markdown-toolbar-spinner" />
-            <Sparkles
-              v-else
-              aria-hidden="true" />
-            {{ state.summarizing ? t('improvingWithAi') : t('improveWithAi') }}
           </button>
         </div>
       </div>
