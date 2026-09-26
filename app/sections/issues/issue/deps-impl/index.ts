@@ -12,19 +12,15 @@ import { createDeleteIssue } from './deleteIssue'
 import { createSaveIssue } from './saveIssue'
 import { createViewIssue } from './viewIssue'
 
-export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => {
-  const description = createIssueDescriptionDeps(client)
-
-  return {
-    assigneeSelect: createAssigneeSelectDeps(client),
-    boardSelect: createBoardSelectDeps(client),
-    comments: createIssueCommentsDeps(client, description.summarizeContent),
-    deleteIssue: createDeleteIssue(client),
-    description,
-    history: createIssueHistoryDeps(client),
-    saveIssue: createSaveIssue(client),
-    spaceSelect: createSpaceSelectDeps(client),
-    statusSelect: createStatusSelectDeps(client),
-    view: createViewIssue(client),
-  }
-}
+export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
+  assigneeSelect: createAssigneeSelectDeps(client),
+  boardSelect: createBoardSelectDeps(client),
+  comments: createIssueCommentsDeps(client),
+  deleteIssue: createDeleteIssue(client),
+  description: createIssueDescriptionDeps(client),
+  history: createIssueHistoryDeps(client),
+  saveIssue: createSaveIssue(client),
+  spaceSelect: createSpaceSelectDeps(client),
+  statusSelect: createStatusSelectDeps(client),
+  view: createViewIssue(client),
+})

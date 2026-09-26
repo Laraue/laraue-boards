@@ -1,7 +1,8 @@
 import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
-import type { SummarizeContent } from '../IssueDescription/IssueDescription.deps'
 
 import type { IssueCommentViewModel } from './IssueComments.types'
+
+export type SummarizeContent = (input: { content: string }) => Promise<ActionResult<string>>
 
 export type CreateComment = (input: {
   issueKey: string
