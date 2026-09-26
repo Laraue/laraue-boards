@@ -21,6 +21,7 @@ Create `.env` in the repository root:
 NUXT_PUBLIC_BOARDS_API_BASE_URL=http://localhost:5200
 NUXT_PUBLIC_RETRO_API_BASE_URL=http://localhost:5201
 NUXT_PUBLIC_BOT_NAME=msgboard_bot
+NUXT_PUBLIC_GOOGLE_CLIENT_ID=
 NUXT_PUBLIC_TEST_USER_TOKEN=
 ```
 
@@ -137,3 +138,17 @@ Remove them after debugging.
    ```
 
 6. Restart the frontend and open the frontend tunnel URL in a browser.
+
+### Authorization through Google
+
+1. Take the **Client ID** of the "Web application" OAuth client from Google Cloud Console (Google
+   Auth Platform → Clients). Its **Authorized JavaScript origins** must include the frontend origin,
+   e.g. `http://localhost:3000` locally or `https://boards.laraue.com` in production.
+2. Set the same Client ID in the frontend `.env` and in the backend's `GoogleAuth:ClientId`:
+
+   ```env
+   NUXT_PUBLIC_GOOGLE_CLIENT_ID=<client-id>.apps.googleusercontent.com
+   ```
+
+3. Restart the frontend. The "Continue with Google" button appears on the sign-in page; it stays
+   hidden while `NUXT_PUBLIC_GOOGLE_CLIENT_ID` is empty.

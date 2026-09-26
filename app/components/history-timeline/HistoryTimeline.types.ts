@@ -66,6 +66,7 @@ export type HistoryItemViewModel = {
     to: RouteLocationRaw
   }
   owner: {
+    apiKeyName?: string
     color: string
     initials: string
     name: string

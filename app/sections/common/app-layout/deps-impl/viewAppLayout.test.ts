@@ -30,7 +30,7 @@ test('loads the requested organization layout', async () => {
           },
         ]
       case '/api/user':
-        return { color: '#456', firstName: 'Ada', initials: 'AL', lastName: 'Lovelace' }
+        return { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' }
       case '/api/spaces':
         return [{ color: '#789', isDefault: false, key: 'DEV', name: 'Development' }]
       case '/api/billing/tariff':
@@ -116,7 +116,7 @@ test('selects the organization from the url when only the organization cookie is
         organizationSelected = true
         return new Response('ok')
       case '/api/user':
-        return { color: '#456', firstName: 'Ada', initials: 'AL', lastName: 'Lovelace' }
+        return { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' }
       case '/api/spaces':
         return []
       case '/api/billing/tariff':

@@ -9,6 +9,7 @@ test('maps issue history and sends pagination', async () => {
     data: [
       {
         action: 'Update',
+        apiKeyName: 'Claude',
         changes: [
           { $type: 'content', newContent: 'new', oldContent: 'old' },
           {
@@ -176,7 +177,7 @@ test('maps issue history and sends pagination', async () => {
           },
         ],
         createdAt: '2026-01-03T00:00:00Z',
-        owner: { color: '#444', initials: 'A', name: 'Ada Lovelace' },
+        owner: { apiKeyName: 'Claude', color: '#444', initials: 'A', name: 'Ada Lovelace' },
       },
       {
         changes: [{ action: 'Create', entityType: 'Comment', kind: 'event' }],

@@ -139,7 +139,9 @@ it('formats selected description text', async () => {
   await page.getByRole('button', { name: 'Bold' }).click()
 
   await expect.element(page.getByLabelText('Content')).toHaveValue('**Fix** the bug')
-  await userEvent.keyboard('{Control>}z{/Control}')
+  await userEvent.keyboard(
+    /Mac/i.test(navigator.platform) ? '{Meta>}z{/Meta}' : '{Control>}z{/Control}',
+  )
   await expect.element(page.getByLabelText('Content')).toHaveValue('Fix the bug')
 
   textarea?.setSelectionRange(0, textarea.value.length)

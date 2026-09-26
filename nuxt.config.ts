@@ -47,6 +47,7 @@ export default defineNuxtConfig({
     public: {
       boardsApiBaseUrl: '',
       botName: '',
+      googleClientId: '',
       retroApiBaseUrl: '',
       retroHubUrl: '',
       testUserToken: '',

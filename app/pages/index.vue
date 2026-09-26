@@ -2,6 +2,7 @@
   <LoginPage
     :bot-name="config.public.botName"
     :deps="deps"
+    :google-client-id="config.public.googleClientId"
     :on-logged-in="onLoggedIn" />
 </template>
 

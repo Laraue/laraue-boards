@@ -3,6 +3,7 @@
     :bot-name="config.public.botName"
     :code="code"
     :deps="deps"
+    :google-client-id="config.public.googleClientId"
     :on-joined="onJoined" />
 </template>
 

@@ -17,6 +17,13 @@
         <div class="history-content">
           <div class="history-head">
             <strong>{{ item.owner.name }}</strong>
+            <span
+              v-if="item.owner.apiKeyName"
+              class="history-api-key"
+              :title="t('madeWithApiKey', { name: item.owner.apiKeyName })">
+              <KeyRound aria-hidden="true" />
+              {{ t('viaApiKey', { name: item.owner.apiKeyName }) }}
+            </span>
             <NuxtLink
               v-if="item.link"
               :to="item.link.to">
@@ -72,6 +79,8 @@
 </template>
 
 <script setup lang="ts">
+import { KeyRound } from '@lucide/vue'
+
 import HistoryAssigneeChange from './components/HistoryAssigneeChange.vue'
 import HistoryAttachmentChange from './components/HistoryAttachmentChange.vue'
 import HistoryBoardChange from './components/HistoryBoardChange.vue'
@@ -88,8 +97,18 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n({
-  en: { empty: 'No changes yet.', history: 'History' },
-  ru: { empty: 'Изменений пока нет.', history: 'История' },
+  en: {
+    empty: 'No changes yet.',
+    history: 'History',
+    madeWithApiKey: 'Made through the API key “{name}”',
+    viaApiKey: 'via API key {name}',
+  },
+  ru: {
+    empty: 'Изменений пока нет.',
+    history: 'История',
+    madeWithApiKey: 'Изменено через API-ключ «{name}»',
+    viaApiKey: 'через API-ключ {name}',
+  },
 })
 
 const { formatDateTime, formatTime } = useFormatters()
@@ -116,6 +135,7 @@ const groups = computed(() =>
     if (
       last &&
       last.owner.name === item.owner.name &&
+      last.owner.apiKeyName === item.owner.apiKeyName &&
       last.issueKey === item.issueKey &&
       utc(last.createdAt).slice(0, 16) === utc(item.createdAt).slice(0, 16)
     ) {
@@ -191,6 +211,23 @@ const formatHistoryTime = (date: string) =>
 .history-head time {
   color: var(--color-muted);
   font-size: var(--font-size-small);
+}
+
+.history-api-key {
+  align-items: center;
+  align-self: center;
+  background: var(--color-soft);
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: inline-flex;
+  font-size: var(--font-size-small);
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+}
+
+.history-api-key .lucide {
+  height: 12px;
+  width: 12px;
 }
 
 .history-change {

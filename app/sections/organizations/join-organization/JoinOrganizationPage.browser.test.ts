@@ -9,13 +9,26 @@ import JoinOrganizationPage from './JoinOrganizationPage.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
+type GoogleWindow = typeof globalThis & {
+  google?: {
+    accounts: {
+      id: {
+        initialize: (config: { callback: (response: { credential: string }) => void }) => void
+        renderButton: () => void
+      }
+    }
+  }
+}
+
 afterEach(async () => {
   await currentWrapper?.unmount()
   currentWrapper = undefined
+  delete (globalThis as GoogleWindow).google
 })
 
 const depsOf = (overrides: Partial<JoinOrganizationPageDeps> = {}): JoinOrganizationPageDeps => ({
   join: vi.fn<JoinOrganizationPageDeps['join']>(),
+  loginViaGoogle: vi.fn<JoinOrganizationPageDeps['loginViaGoogle']>(),
   loginViaTelegramMiniApp: vi.fn<JoinOrganizationPageDeps['loginViaTelegramMiniApp']>(async () => ({
     data: { authenticated: false },
     status: 'success',
@@ -24,10 +37,14 @@ const depsOf = (overrides: Partial<JoinOrganizationPageDeps> = {}): JoinOrganiza
   ...overrides,
 })
 
-const mount = async (deps: JoinOrganizationPageDeps, onJoined = vi.fn<() => void>()) => {
+const mount = async (
+  deps: JoinOrganizationPageDeps,
+  onJoined = vi.fn<() => void>(),
+  googleClientId = '',
+) => {
   currentWrapper = await mountSuspended(JoinOrganizationPage, {
     attachTo: document.body,
-    props: { botName: 'laraue_boards_bot', code: 'invite-123', deps, onJoined },
+    props: { botName: 'laraue_boards_bot', code: 'invite-123', deps, googleClientId, onJoined },
     route: '/join/invite-123',
   })
 }
@@ -85,6 +102,50 @@ it('shows the Telegram widget in a regular browser and retries after login', asy
   ).onTelegramJoinAuth?.(user)
 
   await vi.waitFor(() => expect(loginViaTelegramWidget).toHaveBeenCalledWith(user))
+  await vi.waitFor(() => expect(join).toHaveBeenCalledTimes(2))
+  expect(onJoined).toHaveBeenCalledOnce()
+})
+
+it('signs in with Google in a regular browser and retries the invitation', async () => {
+  let googleCallback: ((response: { credential: string }) => void) | undefined
+  ;(globalThis as GoogleWindow).google = {
+    accounts: {
+      id: {
+        initialize: (config) => {
+          googleCallback = config.callback
+        },
+        renderButton: () => {},
+      },
+    },
+  }
+  const join = vi
+    .fn<JoinOrganizationPageDeps['join']>()
+    .mockResolvedValueOnce({ data: 'sign-in-required', status: 'success' })
+    .mockResolvedValueOnce({ data: 'joined', status: 'success' })
+  const loginViaGoogle = vi.fn<JoinOrganizationPageDeps['loginViaGoogle']>(async () => ({
+    data: true,
+    status: 'success',
+  }))
+  const onJoined = vi.fn<() => void>()
+
+  await mount(
+    depsOf({ join, loginViaGoogle }),
+    onJoined,
+    'test-client-id.apps.googleusercontent.com',
+  )
+  await page.getByRole('button', { name: 'Accept invitation' }).click()
+  await vi.waitFor(() => expect(googleCallback).toBeDefined())
+  await expect
+    .element(page.getByText('work only when you sign in with Telegram', { exact: false }))
+    .toBeInTheDocument()
+  googleCallback?.({ credential: 'google-id-token' })
+
+  await vi.waitFor(() =>
+    expect(loginViaGoogle).toHaveBeenCalledWith({
+      idToken: 'google-id-token',
+      languageCode: navigator.language,
+    }),
+  )
   await vi.waitFor(() => expect(join).toHaveBeenCalledTimes(2))
   expect(onJoined).toHaveBeenCalledOnce()
 })
