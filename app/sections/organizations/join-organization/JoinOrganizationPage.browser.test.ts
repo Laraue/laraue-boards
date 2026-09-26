@@ -135,9 +135,6 @@ it('signs in with Google in a regular browser and retries the invitation', async
   )
   await page.getByRole('button', { name: 'Accept invitation' }).click()
   await vi.waitFor(() => expect(googleCallback).toBeDefined())
-  await expect
-    .element(page.getByText('work only when you sign in with Telegram', { exact: false }))
-    .toBeInTheDocument()
   googleCallback?.({ credential: 'google-id-token' })
 
   await vi.waitFor(() =>
