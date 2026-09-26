@@ -13,6 +13,7 @@
           <button
             :aria-label="t('returnToVisual')"
             class="markdown-toolbar-return"
+            :disabled="state.summarizing"
             :title="t('visual')"
             type="button"
             @click="state.editing = false">
@@ -23,6 +24,7 @@
         <div class="markdown-toolbar-group">
           <button
             :aria-label="t('bold')"
+            :disabled="state.summarizing"
             :title="t('boldShortcut')"
             type="button"
             @click="wrap('**', '**', t('boldText'))">
@@ -30,6 +32,7 @@
           </button>
           <button
             :aria-label="t('italic')"
+            :disabled="state.summarizing"
             :title="t('italicShortcut')"
             type="button"
             @click="wrap('*', '*', t('italicText'))">
@@ -37,6 +40,7 @@
           </button>
           <button
             :aria-label="t('strikethrough')"
+            :disabled="state.summarizing"
             :title="t('strikethrough')"
             type="button"
             @click="wrap('~~', '~~', t('strikethroughText'))">
@@ -44,6 +48,7 @@
           </button>
           <select
             :aria-label="t('headingLevel')"
+            :disabled="state.summarizing"
             :title="t('headingLevel')"
             value=""
             @change="insertHeading">
@@ -64,6 +69,7 @@
         <div class="markdown-toolbar-group">
           <button
             :aria-label="t('quote')"
+            :disabled="state.summarizing"
             :title="t('quote')"
             type="button"
             @click="prefixLines('> ', t('quote'))">
@@ -71,6 +77,7 @@
           </button>
           <button
             :aria-label="t('bulletedList')"
+            :disabled="state.summarizing"
             :title="t('bulletedList')"
             type="button"
             @click="prefixLines('- ', t('listItem'))">
@@ -78,6 +85,7 @@
           </button>
           <button
             :aria-label="t('numberedList')"
+            :disabled="state.summarizing"
             :title="t('numberedList')"
             type="button"
             @click="prefixLines('', t('listItem'), true)">
@@ -88,6 +96,7 @@
         <div class="markdown-toolbar-group">
           <button
             :aria-label="t('inlineCode')"
+            :disabled="state.summarizing"
             :title="t('inlineCode')"
             type="button"
             @click="wrap('`', '`', t('code'))">
@@ -95,6 +104,7 @@
           </button>
           <button
             :aria-label="t('codeBlock')"
+            :disabled="state.summarizing"
             :title="t('codeBlock')"
             type="button"
             @click="wrap('```\n', '\n```', t('code'))">
@@ -102,6 +112,7 @@
           </button>
           <button
             :aria-label="t('link')"
+            :disabled="state.summarizing"
             :title="t('linkShortcut')"
             type="button"
             @click="insertLink">
@@ -109,10 +120,27 @@
           </button>
           <button
             :aria-label="t('image')"
+            :disabled="state.summarizing"
             :title="t('image')"
             type="button"
             @click="wrap('![', '](https://example.com/image.jpg)', t('description'))">
             <ImageIcon aria-hidden="true" />
+          </button>
+        </div>
+        <div class="markdown-toolbar-group">
+          <button
+            class="markdown-toolbar-ai"
+            :disabled="state.summarizing || !model.trim()"
+            :title="t('improveWithAi')"
+            type="button"
+            @click="improveWithAi">
+            <LoaderCircle
+              v-if="state.summarizing"
+              class="markdown-toolbar-spinner" />
+            <Sparkles
+              v-else
+              aria-hidden="true" />
+            {{ state.summarizing ? t('improvingWithAi') : t('improveWithAi') }}
           </button>
         </div>
       </div>
@@ -122,8 +150,10 @@
         ref="textarea"
         v-model="model"
         :aria-label="t('content')"
+        :disabled="state.summarizing"
         :placeholder="t('descriptionPlaceholder')"
         rows="8"
+        @input="state.message = ''"
         @keydown="handleKeydown" />
 
       <!-- eslint-disable-next-line vue/no-v-html -- sanitized by renderMarkdown -->
@@ -138,6 +168,12 @@
         @keydown.enter.prevent="startEditing"
         @keydown.space.prevent="startEditing"
         v-html="preview" />
+      <p
+        v-if="isWriting && state.message"
+        class="form-error issue-description-error"
+        role="alert">
+        {{ state.message }}
+      </p>
     </div>
   </div>
 </template>
@@ -150,18 +186,22 @@ import {
   Image as ImageIcon,
   Italic,
   Link as LinkIcon,
+  LoaderCircle,
   List,
   ListOrdered,
   Quote,
   SquareCode,
+  Sparkles,
   Strikethrough,
 } from '@lucide/vue'
 
+import { getErrorMessage } from '~/utils/getErrorMessage'
 import { renderMarkdown } from '~/utils/renderMarkdown'
+import type { IssueDescriptionDeps } from './IssueDescription.deps'
 
-const props = defineProps<{ disabled?: boolean }>()
+const props = defineProps<{ deps: IssueDescriptionDeps; disabled?: boolean }>()
 
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     bold: 'Bold',
     boldShortcut: 'Bold (Ctrl+B)',
@@ -177,6 +217,8 @@ const { t } = useI18n({
     heading: 'Heading',
     headingLevel: 'Heading level',
     image: 'Image',
+    improveWithAi: 'Improve with AI',
+    improvingWithAi: 'Improving…',
     inlineCode: 'Inline code',
     italic: 'Italic',
     italicShortcut: 'Italic (Ctrl+I)',
@@ -209,6 +251,8 @@ const { t } = useI18n({
     heading: 'Заголовок',
     headingLevel: 'Уровень заголовка',
     image: 'Изображение',
+    improveWithAi: 'Улучшить с помощью ИИ',
+    improvingWithAi: 'Улучшение…',
     inlineCode: 'Встроенный код',
     italic: 'Курсив',
     italicShortcut: 'Курсив (Ctrl+I)',
@@ -229,7 +273,7 @@ const { t } = useI18n({
 })
 
 const model = defineModel<string>({ required: true })
-const state = reactive({ editing: false })
+const state = reactive({ editing: false, message: '', summarizing: false })
 const root = useTemplateRef<HTMLElement>('root')
 const textarea = useTemplateRef<HTMLTextAreaElement>('textarea')
 
@@ -247,6 +291,29 @@ const startEditing = async (event: Event) => {
   state.editing = true
   await nextTick()
   textarea.value?.focus()
+}
+
+const improveWithAi = async () => {
+  if (!model.value.trim() || state.summarizing) {
+    return
+  }
+
+  state.message = ''
+  state.summarizing = true
+  try {
+    const result = await props.deps.summarizeContent({ content: model.value })
+    if (result.status === 'success') {
+      model.value = result.data
+    } else if (result.status === 'validation-error') {
+      state.message = result.message || getErrorMessage(400, locale.value)
+    } else {
+      state.message = getErrorMessage(result.code, locale.value)
+    }
+  } catch {
+    state.message = getErrorMessage(0, locale.value)
+  } finally {
+    state.summarizing = false
+  }
 }
 
 const stopEditingOnOutsideClick = (event: MouseEvent) => {
@@ -406,11 +473,6 @@ const handleKeydown = (event: KeyboardEvent) => {
   gap: var(--space-1);
 }
 
-.markdown-toolbar-group + .markdown-toolbar-group {
-  border-left: 1px solid var(--color-divider);
-  padding-left: var(--space-3);
-}
-
 .markdown-toolbar button,
 .markdown-toolbar select {
   align-items: center;
@@ -460,6 +522,20 @@ const handleKeydown = (event: KeyboardEvent) => {
   outline: none;
 }
 
+.markdown-toolbar-ai {
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+}
+
+.markdown-toolbar-ai:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.markdown-toolbar-spinner {
+  animation: var(--animation-spin);
+}
+
 .issue-description-frame textarea,
 .issue-description-preview {
   flex-grow: 1;
@@ -479,6 +555,11 @@ const handleKeydown = (event: KeyboardEvent) => {
 .issue-description-frame textarea:focus {
   border: 0;
   box-shadow: none;
+}
+
+.issue-description-error {
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-3);
 }
 
 .issue-description-preview {

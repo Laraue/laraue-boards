@@ -21,6 +21,10 @@ const createDeps = (overrides: Partial<IssueCommentsDeps> = {}): IssueCommentsDe
   create: vi.fn<IssueCommentsDeps['create']>(async () => ({ data: true, status: 'success' })),
   delete: vi.fn<IssueCommentsDeps['delete']>(async () => ({ data: true, status: 'success' })),
   load: vi.fn<IssueCommentsDeps['load']>(async () => ({ data: comments, status: 'success' })),
+  summarizeContent: vi.fn<IssueCommentsDeps['summarizeContent']>(async () => ({
+    data: 'Improved content',
+    status: 'success',
+  })),
   update: vi.fn<IssueCommentsDeps['update']>(async () => ({ data: true, status: 'success' })),
   ...overrides,
 })

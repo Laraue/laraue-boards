@@ -57,7 +57,8 @@
             <div class="issue-form-main">
               <IssueDescription
                 v-model="state.content"
-                :disabled="!issue.canEdit" />
+                :disabled="!issue.canEdit"
+                :deps="deps.description" />
               <IssueAttachments
                 :key="issue.issueKey"
                 :attachments="issue.attachments"

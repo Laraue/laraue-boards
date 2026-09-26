@@ -3,6 +3,7 @@ import type { AssigneeSelectDeps } from '~/components/assignee-select/AssigneeSe
 import type { BoardSelectDeps } from '~/components/board-select/BoardSelect.deps'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
+import type { IssueDescriptionDeps } from '~/sections/issues/issue/components/IssueDescription/IssueDescription.deps'
 
 import type { CreateIssueFormInput } from './CreateIssueForm.types'
 
@@ -14,6 +15,7 @@ export type CreateIssueFormDeps = {
   assigneeSelect: AssigneeSelectDeps
   boardSelect: BoardSelectDeps
   create: CreateIssue
+  description: IssueDescriptionDeps
   spaceSelect: SpaceSelectDeps
   statusSelect: StatusSelectDeps
 }

@@ -1,4 +1,5 @@
 import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+import type { SummarizeContent } from '../IssueDescription/IssueDescription.deps'
 
 import type { IssueCommentViewModel } from './IssueComments.types'
 
@@ -20,5 +21,6 @@ export type IssueCommentsDeps = {
   create: CreateComment
   delete: DeleteComment
   load: LoadComments
+  summarizeContent: SummarizeContent
   update: UpdateComment
 }
