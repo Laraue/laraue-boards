@@ -33,6 +33,9 @@ const createDeps = (overrides: Partial<CreateIssuePageDeps> = {}): CreateIssuePa
       })),
     },
     create: vi.fn<CreateIssuePageDeps['form']['create']>(),
+    description: {
+      summarizeContent: vi.fn<CreateIssuePageDeps['form']['description']['summarizeContent']>(),
+    },
     spaceSelect: {
       loadSpaces: vi.fn<CreateIssuePageDeps['form']['spaceSelect']['loadSpaces']>(async () => ({
         data: [{ label: 'Product', value: '7' }],

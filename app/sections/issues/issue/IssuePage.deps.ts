@@ -4,8 +4,8 @@ import type { BoardSelectDeps } from '~/components/board-select/BoardSelect.deps
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
-import type { IssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps'
 import type { IssueCommentsDeps } from './components/IssueComments/IssueComments.deps'
+import type { IssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps'
 import type { IssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps'
 import type { IssuePageInput, IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
 

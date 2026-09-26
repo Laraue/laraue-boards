@@ -23,6 +23,10 @@ const createDeps = (
       loadBoards: vi.fn<CreateBoardIssuePageDeps['form']['boardSelect']['loadBoards']>(),
     },
     create: vi.fn<CreateBoardIssuePageDeps['form']['create']>(),
+    description: {
+      summarizeContent:
+        vi.fn<CreateBoardIssuePageDeps['form']['description']['summarizeContent']>(),
+    },
     spaceSelect: {
       loadSpaces: vi.fn<CreateBoardIssuePageDeps['form']['spaceSelect']['loadSpaces']>(),
     },
