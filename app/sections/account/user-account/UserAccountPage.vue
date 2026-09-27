@@ -11,15 +11,9 @@
       <NuxtLink
         v-if="account"
         class="secondary"
-        :to="backLink">
+        :to="backPath || '/organizations'">
         <ArrowLeft />
-        {{
-          backPath
-            ? t('back')
-            : account.lastOrganization
-              ? t('backTo', { organization: account.lastOrganization.name })
-              : t('backToOrganizations')
-        }}
+        {{ backPath ? t('back') : t('backToOrganizations') }}
       </NuxtLink>
     </header>
 
@@ -52,7 +46,7 @@
             :google-client-id="googleClientId"
             :telegram-bot-id="telegramBotId" />
 
-          <InterfaceSection :preferences="deps.preferences" />
+          <InterfaceSection :deps="deps.interface" />
         </main>
       </template>
     </QueryState>
@@ -67,7 +61,7 @@ import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue
 import type { UserAccountPageDeps } from './UserAccountPage.deps'
 
 const props = defineProps<{
-  /** Where the user came from in the app; without it, "Back" leads to their last organization. */
+  /** Where the user came from in the app; direct visits go to the organization list. */
   backPath?: string
   deps: UserAccountPageDeps
   googleClientId: string
@@ -78,7 +72,6 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     back: 'Back',
-    backTo: 'Back to {organization}',
     backToOrganizations: 'Back to organizations',
     loadError: 'Could not load your account',
     loading: 'Loading your account…',
@@ -87,7 +80,6 @@ const { t } = useI18n({
   },
   ru: {
     back: 'Назад',
-    backTo: 'Вернуться в {organization}',
     backToOrganizations: 'К организациям',
     loadError: 'Не удалось загрузить аккаунт',
     loading: 'Загрузка аккаунта…',
@@ -103,17 +95,6 @@ const { data, message, pending, refresh } = await useQuery('user-account', (_nux
 )
 
 const account = computed(() => (data.value?.kind === 'signed-in' ? data.value : undefined))
-
-const backLink = computed(() =>
-  props.backPath
-    ? props.backPath
-    : account.value?.lastOrganization
-      ? {
-          name: 'organizations-organizationKey-issues' as const,
-          params: { organizationKey: account.value.lastOrganization.key },
-        }
-      : '/organizations',
-)
 
 watch(
   () => data.value?.kind,

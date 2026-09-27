@@ -3,8 +3,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import { ref } from 'vue'
 
-import type { AppPreferences } from '~/composables/useAppPreferences'
-
+import type { InterfaceSectionDeps } from './components/InterfaceSection/InterfaceSection.deps'
 import type { UserAccountPageDeps } from './UserAccountPage.deps'
 import UserAccountPage from './UserAccountPage.vue'
 
@@ -16,10 +15,10 @@ afterEach(async () => {
   clearNuxtData()
 })
 
-const createPreferences = (): AppPreferences => ({
+const createPreferences = (): InterfaceSectionDeps => ({
   locale: ref<'en' | 'ru'>('en'),
-  setLocale: vi.fn<AppPreferences['setLocale']>(),
-  setTheme: vi.fn<AppPreferences['setTheme']>(),
+  setLocale: vi.fn<InterfaceSectionDeps['setLocale']>(),
+  setTheme: vi.fn<InterfaceSectionDeps['setTheme']>(),
   theme: ref<'dark' | 'light'>('light'),
 })
 
@@ -31,11 +30,10 @@ const depsOf = (overrides: Partial<UserAccountPageDeps> = {}): UserAccountPageDe
     telegramSignInButton: { loadTelegramSignIn: async () => undefined },
     view: async () => ({ data: { google: true, telegram: true }, status: 'success' }),
   },
-  preferences: createPreferences(),
+  interface: createPreferences(),
   view: async () => ({
     data: {
       kind: 'signed-in',
-      lastOrganization: { key: 'acme-ab12', name: 'Acme' },
       user: { color: '#3568d4', initials: 'AL', name: 'Ada Lovelace' },
     },
     status: 'success',
@@ -64,18 +62,18 @@ it('leads back to the page the user came from', async () => {
     .toHaveAttribute('href', '/organizations')
 })
 
-it('leads back to the last organization when opened directly', async () => {
+it('leads to the organization list when opened directly', async () => {
   await mount(depsOf())
 
   await expect.element(page.getByRole('heading', { name: 'Your account' })).toBeVisible()
   await expect
-    .element(page.getByRole('link', { name: 'Back to Acme' }))
-    .toHaveAttribute('href', '/organizations/acme-ab12/issues')
+    .element(page.getByRole('link', { name: 'Back to organizations' }))
+    .toHaveAttribute('href', '/organizations')
 })
 
 it('changes the theme and the language for the whole account', async () => {
   const preferences = createPreferences()
-  await mount(depsOf({ preferences }))
+  await mount(depsOf({ interface: preferences }))
 
   await page.getByRole('button', { name: 'Dark' }).click()
   await page.getByLabelText('Language').selectOptions('ru')

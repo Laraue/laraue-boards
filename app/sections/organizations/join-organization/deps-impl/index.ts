@@ -1,12 +1,11 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { createGoogleSignInButtonDeps } from '~/components/google-sign-in-button/deps-impl'
 import { createTelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/deps-impl'
-import { createLoginViaGoogle } from '~/sections/auth/login/deps-impl/loginViaGoogle'
-import { createLoginViaTelegramMiniApp } from '~/sections/auth/login/deps-impl/loginViaTelegramMiniApp'
-import { createLoginViaTelegramWidget } from '~/sections/auth/login/deps-impl/loginViaTelegramWidget'
-
 import type { JoinOrganizationPageDeps } from '../JoinOrganizationPage.deps'
 import { createJoinOrganization } from './joinOrganization'
+import { createLoginViaGoogle } from './loginViaGoogle'
+import { createLoginViaTelegramMiniApp } from './loginViaTelegramMiniApp'
+import { createLoginViaTelegramWidget } from './loginViaTelegramWidget'
 
 export const createJoinOrganizationPageDeps = (
   client: ApiClient,

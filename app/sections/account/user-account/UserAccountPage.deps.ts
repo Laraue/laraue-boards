@@ -1,7 +1,6 @@
 import type { QueryResult } from '#infrastructure/api/apiResult'
-import type { AppPreferences } from '~/composables/useAppPreferences'
-
 import type { ConnectedAccountsSectionDeps } from './components/ConnectedAccountsSection/ConnectedAccountsSection.deps'
+import type { InterfaceSectionDeps } from './components/InterfaceSection/InterfaceSection.deps'
 import type { UserAccountView } from './UserAccountPage.types'
 
 export type ViewUserAccount = (input: {
@@ -10,6 +9,6 @@ export type ViewUserAccount = (input: {
 
 export type UserAccountPageDeps = {
   connectedAccounts: ConnectedAccountsSectionDeps
-  preferences: AppPreferences
+  interface: InterfaceSectionDeps
   view: ViewUserAccount
 }

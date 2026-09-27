@@ -4,7 +4,7 @@ import { page } from 'vitest/browser'
 
 import type { GoogleSignInButtonDeps } from '~/components/google-sign-in-button/GoogleSignInButton.deps'
 import type { TelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/TelegramSignInButton.deps'
-import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
+import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 
 import type { JoinOrganizationPageDeps } from './JoinOrganizationPage.deps'
 import JoinOrganizationPage from './JoinOrganizationPage.vue'

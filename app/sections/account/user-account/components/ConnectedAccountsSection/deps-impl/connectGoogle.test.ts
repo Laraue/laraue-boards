@@ -4,7 +4,7 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createConnectGoogle } from './connectGoogle'
 
-test('sends the ID token and maps the outcome', async () => {
+test('sends the Google code and maps the outcome', async () => {
   const { client, requests } = createTestApiClient(() => ({ outcome: 'OwnerHasData' }))
 
   assert.deepEqual(await createConnectGoogle(client)({ code: 'google-code' }), {

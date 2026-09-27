@@ -3,10 +3,10 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
 import type { GoogleSignInButtonDeps } from '~/components/google-sign-in-button/GoogleSignInButton.deps'
+import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 import type { TelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/TelegramSignInButton.deps'
 
 import type { LoginPageDeps } from './LoginPage.deps'
-import type { TelegramUser } from './LoginPage.types'
 import LoginPage from './LoginPage.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined

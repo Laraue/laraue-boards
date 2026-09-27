@@ -1,7 +1,7 @@
 import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
 import type { GoogleSignInButtonDeps } from '~/components/google-sign-in-button/GoogleSignInButton.deps'
 import type { TelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/TelegramSignInButton.deps'
-import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
+import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 
 import type { ConnectedAccounts, ConnectOutcome } from './ConnectedAccountsSection.types'
 

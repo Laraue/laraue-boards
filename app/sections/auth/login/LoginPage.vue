@@ -81,8 +81,8 @@ import { ArrowRight, CircleCheck, MessageCircle, SquareKanban } from '@lucide/vu
 
 import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
 import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
+import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 import type { LoginPageDeps } from '~/sections/auth/login/LoginPage.deps'
-import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
 
 const props = defineProps<{
   deps: LoginPageDeps

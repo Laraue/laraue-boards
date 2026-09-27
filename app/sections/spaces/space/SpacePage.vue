@@ -166,11 +166,7 @@ const boards = computed(() => data.value?.boards ?? [])
 
 const backlog = computed(() => boards.value.find((board) => board.kind === 'backlog'))
 
-const regularBoards = computed(() =>
-  boards.value
-    .filter((board) => board.kind === 'board')
-    .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)),
-)
+const regularBoards = computed(() => boards.value.filter((board) => board.kind === 'board'))
 
 const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]

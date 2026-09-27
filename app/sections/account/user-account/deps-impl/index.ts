@@ -10,6 +10,6 @@ export const createUserAccountPageDeps = (
   preferences: AppPreferences,
 ): UserAccountPageDeps => ({
   connectedAccounts: createConnectedAccountsSectionDeps(client),
-  preferences,
+  interface: preferences,
   view: createViewUserAccount(client),
 })

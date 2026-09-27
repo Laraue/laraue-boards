@@ -13,7 +13,7 @@
         <select
           id="interface-language"
           class="setting-control"
-          :value="preferences.locale.value"
+          :value="deps.locale.value"
           @change="changeLocale(($event.target as HTMLSelectElement).value)">
           <option value="en">English</option>
           <option value="ru">Русский</option>
@@ -32,9 +32,9 @@
           <button
             v-for="option in themes"
             :key="option"
-            :aria-pressed="preferences.theme.value === option"
+            :aria-pressed="deps.theme.value === option"
             type="button"
-            @click="preferences.setTheme(option)">
+            @click="deps.setTheme(option)">
             {{ option === 'light' ? t('light') : t('dark') }}
           </button>
         </div>
@@ -44,10 +44,12 @@
 </template>
 
 <script setup lang="ts">
-import type { AppPreferences, Theme } from '~/composables/useAppPreferences'
+import type { Theme } from '~/composables/useAppPreferences'
 import { isLocale } from '~/composables/useI18n'
 
-const props = defineProps<{ preferences: AppPreferences }>()
+import type { InterfaceSectionDeps } from './InterfaceSection.deps'
+
+const props = defineProps<{ deps: InterfaceSectionDeps }>()
 
 const { t } = useI18n({
   en: {
@@ -74,7 +76,7 @@ const themes: Theme[] = ['light', 'dark']
 
 const changeLocale = (value: string): void => {
   if (isLocale(value)) {
-    props.preferences.setLocale(value)
+    props.deps.setLocale(value)
   }
 }
 </script>

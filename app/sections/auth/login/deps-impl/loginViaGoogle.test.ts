@@ -4,7 +4,7 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createLoginViaGoogle } from './loginViaGoogle'
 
-test('sends the Google ID token with the two-letter browser language', async () => {
+test('sends the Google code with the two-letter browser language', async () => {
   const { client, requests } = createTestApiClient(() => new Response('token'))
 
   assert.deepEqual(

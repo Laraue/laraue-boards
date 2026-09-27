@@ -78,7 +78,7 @@ import { Check } from '@lucide/vue'
 
 import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
 import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
-import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
+import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 
 import type { ConnectedAccountsSectionDeps } from './ConnectedAccountsSection.deps'
 import type { ConnectOutcome } from './ConnectedAccountsSection.types'

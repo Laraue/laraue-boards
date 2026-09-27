@@ -1,7 +1,8 @@
 <template>
   <button
+    aria-live="polite"
     class="sign-in-button"
-    :disabled="disabled || !state.popup"
+    :disabled="disabled || (!state.popup && !state.retry)"
     type="button"
     @click="signIn">
     <svg
@@ -20,7 +21,7 @@
         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15A10.56 10.56 0 0 0 12 1 11 11 0 0 0 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"
         fill="#EA4335" />
     </svg>
-    {{ label || t('continueWithGoogle') }}
+    {{ state.retry ? t('retryGoogle') : label || t('continueWithGoogle') }}
   </button>
 </template>
 
@@ -37,18 +38,31 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n({
-  en: { continueWithGoogle: 'Continue with Google' },
-  ru: { continueWithGoogle: 'Продолжить с Google' },
+  en: { continueWithGoogle: 'Continue with Google', retryGoogle: 'Google unavailable — retry' },
+  ru: { continueWithGoogle: 'Продолжить с Google', retryGoogle: 'Google недоступен — повторить' },
 })
 
-const state = reactive({ popup: undefined as GoogleSignInPopup | undefined })
+const state = reactive({ popup: undefined as GoogleSignInPopup | undefined, retry: false })
 
-onMounted(async () => {
-  state.popup = await props.deps.loadGoogleSignIn({ clientId: props.clientId })
-})
+const prepare = async (): Promise<void> => {
+  state.retry = false
+  try {
+    state.popup = await props.deps.loadGoogleSignIn({ clientId: props.clientId })
+  } catch {
+    state.popup = undefined
+  }
+  state.retry = !state.popup
+}
+
+onMounted(() => void prepare())
 
 const signIn = async (): Promise<void> => {
-  const code = await state.popup?.open()
+  if (!state.popup) {
+    await prepare()
+    // A second click keeps popup creation inside a fresh user gesture.
+    return
+  }
+  const code = await state.popup.open()
   if (code) {
     props.onSignIn(code)
   }
