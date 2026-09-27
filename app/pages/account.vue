@@ -3,6 +3,7 @@
     :back-path="backPath"
     :deps="deps"
     :google-client-id="config.public.googleClientId"
+    :on-logged-out="onLoggedOut"
     :on-signed-out="onSignedOut"
     :telegram-bot-id="String(config.public.telegramBotId)" />
 </template>
@@ -24,6 +25,11 @@ onMounted(() => {
   const back = router.options.history.state.back
   backPath.value = typeof back === 'string' && back !== '/account' ? back : undefined
 })
+
+const onLoggedOut = async (): Promise<void> => {
+  clearNuxtData()
+  await navigateTo('/')
+}
 
 const onSignedOut = async (): Promise<void> => {
   await navigateTo({ path: '/', query: { redirect: '/account' } })

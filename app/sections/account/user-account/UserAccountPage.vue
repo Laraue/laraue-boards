@@ -39,6 +39,14 @@
                 {{ t('scope') }}
               </p>
             </div>
+            <button
+              class="secondary danger log-out"
+              :disabled="loggingOut"
+              type="button"
+              @click="logout">
+              <LogOut />
+              {{ t('logOut') }}
+            </button>
           </div>
 
           <ConnectedAccountsSection
@@ -54,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, Globe } from '@lucide/vue'
+import { ArrowLeft, Globe, LogOut } from '@lucide/vue'
 
 import ConnectedAccountsSection from './components/ConnectedAccountsSection/ConnectedAccountsSection.vue'
 import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue'
@@ -65,6 +73,7 @@ const props = defineProps<{
   backPath?: string
   deps: UserAccountPageDeps
   googleClientId: string
+  onLoggedOut: () => Promise<void> | void
   onSignedOut: () => Promise<void> | void
   telegramBotId: string
 }>()
@@ -75,6 +84,7 @@ const { t } = useI18n({
     backToOrganizations: 'Back to organizations',
     loadError: 'Could not load your account',
     loading: 'Loading your account…',
+    logOut: 'Log out',
     scope: 'Settings on this page apply in all your organizations',
     yourAccount: 'Your account',
   },
@@ -83,6 +93,7 @@ const { t } = useI18n({
     backToOrganizations: 'К организациям',
     loadError: 'Не удалось загрузить аккаунт',
     loading: 'Загрузка аккаунта…',
+    logOut: 'Выйти',
     scope: 'Настройки на этой странице действуют во всех ваших организациях',
     yourAccount: 'Ваш аккаунт',
   },
@@ -93,6 +104,16 @@ useHead({ title: t('yourAccount') })
 const { data, message, pending, refresh } = await useQuery('user-account', (_nuxtApp, { signal }) =>
   props.deps.view({ signal }),
 )
+
+const { execute: executeLogout, pending: loggingOut } = useAction(props.deps.logout, {
+  onSuccess: props.onLoggedOut,
+})
+
+const logout = (): void => {
+  if (!loggingOut.value) {
+    void executeLogout()
+  }
+}
 
 const account = computed(() => (data.value?.kind === 'signed-in' ? data.value : undefined))
 
@@ -129,6 +150,11 @@ watch(
   padding: 0 var(--space-8);
 }
 
+.log-out {
+  flex: none;
+  margin-left: auto;
+}
+
 .user-account-main {
   display: grid;
   gap: var(--space-8);
@@ -140,6 +166,7 @@ watch(
 .user-account-title {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-4);
 }
 

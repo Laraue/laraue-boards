@@ -313,6 +313,9 @@ aside {
   position: sticky;
   top: 0;
   width: 100%;
+  /* Sticky makes the sidebar its own stacking context, so the user menu inside it can only be
+     above the page's own layers if the sidebar is. */
+  z-index: 30;
 }
 
 aside .logo {

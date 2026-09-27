@@ -1,5 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { AppPreferences } from '~/composables/useAppPreferences'
+import { createLogout } from '~/sections/common/app-layout/deps-impl/logout'
 
 import { createConnectedAccountsSectionDeps } from '../components/ConnectedAccountsSection/deps-impl'
 import type { UserAccountPageDeps } from '../UserAccountPage.deps'
@@ -11,5 +12,6 @@ export const createUserAccountPageDeps = (
 ): UserAccountPageDeps => ({
   connectedAccounts: createConnectedAccountsSectionDeps(client),
   interface: preferences,
+  logout: createLogout(client),
   view: createViewUserAccount(client),
 })
