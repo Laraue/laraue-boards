@@ -13,7 +13,7 @@
           <button
             :aria-label="t('returnToVisual')"
             class="markdown-toolbar-return"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('visual')"
             type="button"
             @click="state.editing = false">
@@ -24,23 +24,23 @@
         <div class="markdown-toolbar-group">
           <button
             class="markdown-toolbar-ai"
-            :disabled="state.summarizing || !model.trim()"
+            :disabled="summarizing || !model.trim()"
             :title="t('improveWithAi')"
             type="button"
-            @click="improveWithAi">
+            @click="summarizeContent({ content: model })">
             <LoaderCircle
-              v-if="state.summarizing"
+              v-if="summarizing"
               class="markdown-toolbar-spinner" />
             <Sparkles
               v-else
               aria-hidden="true" />
-            {{ state.summarizing ? t('improvingWithAi') : t('improveWithAi') }}
+            {{ summarizing ? t('improvingWithAi') : t('improveWithAi') }}
           </button>
         </div>
         <div class="markdown-toolbar-group">
           <button
             :aria-label="t('bold')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('boldShortcut')"
             type="button"
             @click="wrap('**', '**', t('boldText'))">
@@ -48,7 +48,7 @@
           </button>
           <button
             :aria-label="t('italic')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('italicShortcut')"
             type="button"
             @click="wrap('*', '*', t('italicText'))">
@@ -56,7 +56,7 @@
           </button>
           <button
             :aria-label="t('strikethrough')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('strikethrough')"
             type="button"
             @click="wrap('~~', '~~', t('strikethroughText'))">
@@ -64,7 +64,7 @@
           </button>
           <select
             :aria-label="t('headingLevel')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('headingLevel')"
             value=""
             @change="insertHeading">
@@ -85,7 +85,7 @@
         <div class="markdown-toolbar-group">
           <button
             :aria-label="t('quote')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('quote')"
             type="button"
             @click="prefixLines('> ', t('quote'))">
@@ -93,7 +93,7 @@
           </button>
           <button
             :aria-label="t('bulletedList')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('bulletedList')"
             type="button"
             @click="prefixLines('- ', t('listItem'))">
@@ -101,7 +101,7 @@
           </button>
           <button
             :aria-label="t('numberedList')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('numberedList')"
             type="button"
             @click="prefixLines('', t('listItem'), true)">
@@ -112,7 +112,7 @@
         <div class="markdown-toolbar-group">
           <button
             :aria-label="t('inlineCode')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('inlineCode')"
             type="button"
             @click="wrap('`', '`', t('code'))">
@@ -120,7 +120,7 @@
           </button>
           <button
             :aria-label="t('codeBlock')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('codeBlock')"
             type="button"
             @click="wrap('```\n', '\n```', t('code'))">
@@ -128,7 +128,7 @@
           </button>
           <button
             :aria-label="t('link')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('linkShortcut')"
             type="button"
             @click="insertLink">
@@ -136,7 +136,7 @@
           </button>
           <button
             :aria-label="t('image')"
-            :disabled="state.summarizing"
+            :disabled="summarizing"
             :title="t('image')"
             type="button"
             @click="wrap('![', '](https://example.com/image.jpg)', t('description'))">
@@ -150,10 +150,10 @@
         ref="textarea"
         v-model="model"
         :aria-label="t('content')"
-        :disabled="state.summarizing"
+        :disabled="summarizing"
         :placeholder="t('descriptionPlaceholder')"
         rows="8"
-        @input="state.message = ''"
+        @input="clearMessage"
         @keydown="handleKeydown" />
 
       <!-- eslint-disable-next-line vue/no-v-html -- sanitized by renderMarkdown -->
@@ -169,10 +169,10 @@
         @keydown.space.prevent="startEditing"
         v-html="preview" />
       <p
-        v-if="isWriting && state.message"
+        v-if="isWriting && message"
         class="form-error issue-description-error"
         role="alert">
-        {{ state.message }}
+        {{ message }}
       </p>
     </div>
   </div>
@@ -195,14 +195,13 @@ import {
   Strikethrough,
 } from '@lucide/vue'
 
-import { getErrorMessage } from '~/utils/getErrorMessage'
 import { renderMarkdown } from '~/utils/renderMarkdown'
 
 import type { IssueDescriptionDeps } from './IssueDescription.deps'
 
 const props = defineProps<{ deps: IssueDescriptionDeps; disabled?: boolean }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: {
     bold: 'Bold',
     boldShortcut: 'Bold (Ctrl+B)',
@@ -274,7 +273,19 @@ const { locale, t } = useI18n({
 })
 
 const model = defineModel<string>({ required: true })
-const state = reactive({ editing: false, message: '', summarizing: false })
+const state = reactive({ editing: false })
+const {
+  execute: summarizeContent,
+  message,
+  pending: summarizing,
+} = useAction(props.deps.summarizeContent, {
+  onSuccess: (content) => {
+    model.value = content
+  },
+})
+const clearMessage = () => {
+  message.value = undefined
+}
 const root = useTemplateRef<HTMLElement>('root')
 const textarea = useTemplateRef<HTMLTextAreaElement>('textarea')
 
@@ -292,29 +303,6 @@ const startEditing = async (event: Event) => {
   state.editing = true
   await nextTick()
   textarea.value?.focus()
-}
-
-const improveWithAi = async () => {
-  if (!model.value.trim() || state.summarizing) {
-    return
-  }
-
-  state.message = ''
-  state.summarizing = true
-  try {
-    const result = await props.deps.summarizeContent({ content: model.value })
-    if (result.status === 'success') {
-      model.value = result.data
-    } else if (result.status === 'validation-error') {
-      state.message = result.message || getErrorMessage(400, locale.value)
-    } else {
-      state.message = getErrorMessage(result.code, locale.value)
-    }
-  } catch {
-    state.message = getErrorMessage(0, locale.value)
-  } finally {
-    state.summarizing = false
-  }
 }
 
 const stopEditingOnOutsideClick = (event: MouseEvent) => {

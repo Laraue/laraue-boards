@@ -1,7 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeAction } from '#infrastructure/api/executeAction'
 
-import type { SummarizeContent } from '../IssueDescription.deps'
+import type { SummarizeContent } from '../summarizeContent.deps'
 
 export const createSummarizeContent =
   (client: ApiClient): SummarizeContent =>

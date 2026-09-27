@@ -1,6 +1,4 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
-
-export type SummarizeContent = (input: { content: string }) => Promise<ActionResult<string>>
+import type { SummarizeContent } from '~/sections/issues/summarizeContent.deps'
 
 export type IssueDescriptionDeps = {
   summarizeContent: SummarizeContent
