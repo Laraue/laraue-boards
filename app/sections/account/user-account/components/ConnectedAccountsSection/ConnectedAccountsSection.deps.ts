@@ -3,9 +3,9 @@ import type { GoogleSignInButtonDeps } from '~/components/google-sign-in-button/
 import type { TelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/TelegramSignInButton.deps'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
 
-import type { ConnectedAccounts, ConnectOutcome } from './ConnectedAccountsPage.types'
+import type { ConnectedAccounts, ConnectOutcome } from './ConnectedAccountsSection.types'
 
-export type ConnectedAccountsPageDeps = {
+export type ConnectedAccountsSectionDeps = {
   connectGoogle: (input: { code: string }) => Promise<ActionResult<ConnectOutcome>>
   connectTelegram: (input: TelegramUser) => Promise<ActionResult<ConnectOutcome>>
   googleSignInButton: GoogleSignInButtonDeps

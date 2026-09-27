@@ -1,6 +1,6 @@
 import type { components } from '#infrastructure/api/generated'
 
-import type { ConnectOutcome } from '../ConnectedAccountsPage.types'
+import type { ConnectOutcome } from '../ConnectedAccountsSection.types'
 
 const OUTCOMES: Record<components['schemas']['AccountLinkOutcome'], ConnectOutcome> = {
   Linked: 'linked',

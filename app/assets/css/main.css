@@ -150,7 +150,8 @@ label {
   font-weight: var(--font-weight-semibold);
   margin: var(--space-5) 0 var(--space-2);
 }
-form > label:first-of-type {
+form > label:first-of-type,
+label:first-child {
   margin-top: 0;
 }
 :where(input:not([type='checkbox']):not([type='radio'])),

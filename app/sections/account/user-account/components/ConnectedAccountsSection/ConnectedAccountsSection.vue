@@ -1,6 +1,9 @@
 <template>
   <section class="connected-accounts-section">
-    <p class="muted">{{ t('description') }}</p>
+    <div class="section-heading">
+      <h2>{{ t('signInMethods') }}</h2>
+      <p class="muted">{{ t('description') }}</p>
+    </div>
 
     <p
       v-if="outcomeMessage"
@@ -77,13 +80,13 @@ import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInB
 import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
 
-import type { ConnectedAccountsPageDeps } from './ConnectedAccountsPage.deps'
-import type { ConnectOutcome } from './ConnectedAccountsPage.types'
+import type { ConnectedAccountsSectionDeps } from './ConnectedAccountsSection.deps'
+import type { ConnectOutcome } from './ConnectedAccountsSection.types'
 
 type Provider = 'google' | 'telegram'
 
 const props = defineProps<{
-  deps: ConnectedAccountsPageDeps
+  deps: ConnectedAccountsSectionDeps
   googleClientId: string
   telegramBotId: string
 }>()
@@ -106,6 +109,7 @@ const { t } = useI18n({
       'This {provider} account is already used by another Laraue Boards account that has its own data, so it can’t be connected here.',
     ownerUsedByAnotherService:
       'This {provider} account is already used in another Laraue app, so it can’t be connected here yet.',
+    signInMethods: 'Sign-in methods',
     telegramHint: 'Use the Telegram bot: save chat messages as issues, /save, inline search.',
     userHasOtherAccount: 'A different {provider} account is already connected to your account.',
   },
@@ -126,6 +130,7 @@ const { t } = useI18n({
       'Этот аккаунт {provider} уже используется другим аккаунтом Laraue Boards со своими данными, поэтому его нельзя подключить здесь.',
     ownerUsedByAnotherService:
       'Этот аккаунт {provider} уже используется в другом приложении Laraue, поэтому пока его нельзя подключить здесь.',
+    signInMethods: 'Способы входа',
     telegramHint:
       'Работа с Telegram-ботом: сохранение сообщений как задач, /save, встроенный поиск.',
     userHasOtherAccount: 'К вашему аккаунту уже подключён другой аккаунт {provider}.',
@@ -214,10 +219,20 @@ const connectGoogleAccount = (code: string): void => {
 .connected-accounts-section {
   align-content: start;
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-3);
 }
 
 .connected-accounts-section > p {
+  margin: 0;
+}
+
+.section-heading {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.section-heading h2 {
+  font-size: 16px;
   margin: 0;
 }
 

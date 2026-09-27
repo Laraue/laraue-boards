@@ -6,8 +6,8 @@ import type { GoogleSignInButtonDeps } from '~/components/google-sign-in-button/
 import type { TelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/TelegramSignInButton.deps'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
 
-import type { ConnectedAccountsPageDeps } from './ConnectedAccountsPage.deps'
-import ConnectedAccountsPage from './ConnectedAccountsPage.vue'
+import type { ConnectedAccountsSectionDeps } from './ConnectedAccountsSection.deps'
+import ConnectedAccountsSection from './ConnectedAccountsSection.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
@@ -24,36 +24,38 @@ const telegramSignInButtonDeps = (user?: TelegramUser): TelegramSignInButtonDeps
   loadTelegramSignIn: async () => ({ open: async () => user }),
 })
 
-const depsOf = (overrides: Partial<ConnectedAccountsPageDeps> = {}): ConnectedAccountsPageDeps => ({
-  connectGoogle: vi.fn<ConnectedAccountsPageDeps['connectGoogle']>(),
-  connectTelegram: vi.fn<ConnectedAccountsPageDeps['connectTelegram']>(),
+const depsOf = (
+  overrides: Partial<ConnectedAccountsSectionDeps> = {},
+): ConnectedAccountsSectionDeps => ({
+  connectGoogle: vi.fn<ConnectedAccountsSectionDeps['connectGoogle']>(),
+  connectTelegram: vi.fn<ConnectedAccountsSectionDeps['connectTelegram']>(),
   googleSignInButton: googleSignInButtonDeps(),
   telegramSignInButton: telegramSignInButtonDeps(),
-  view: vi.fn<ConnectedAccountsPageDeps['view']>(async () => ({
+  view: vi.fn<ConnectedAccountsSectionDeps['view']>(async () => ({
     data: { google: false, telegram: true },
     status: 'success',
   })),
   ...overrides,
 })
 
-const mount = async (deps: ConnectedAccountsPageDeps) => {
-  currentWrapper = await mountSuspended(ConnectedAccountsPage, {
+const mount = async (deps: ConnectedAccountsSectionDeps) => {
+  currentWrapper = await mountSuspended(ConnectedAccountsSection, {
     attachTo: document.body,
     props: {
       deps,
       googleClientId: 'test-client-id.apps.googleusercontent.com',
       telegramBotId: '123456',
     },
-    route: '/organizations/acme-ab12/account/connected-accounts',
+    route: '/account',
   })
 }
 
 it('connects Google and shows it as connected', async () => {
   const view = vi
-    .fn<ConnectedAccountsPageDeps['view']>()
+    .fn<ConnectedAccountsSectionDeps['view']>()
     .mockResolvedValueOnce({ data: { google: false, telegram: true }, status: 'success' })
     .mockResolvedValueOnce({ data: { google: true, telegram: true }, status: 'success' })
-  const connectGoogle = vi.fn<ConnectedAccountsPageDeps['connectGoogle']>(async () => ({
+  const connectGoogle = vi.fn<ConnectedAccountsSectionDeps['connectGoogle']>(async () => ({
     data: 'linked',
     status: 'success',
   }))
@@ -69,7 +71,7 @@ it('connects Google and shows it as connected', async () => {
 })
 
 it('explains why an account used by another Laraue Boards account was not connected', async () => {
-  const connectGoogle = vi.fn<ConnectedAccountsPageDeps['connectGoogle']>(async () => ({
+  const connectGoogle = vi.fn<ConnectedAccountsSectionDeps['connectGoogle']>(async () => ({
     data: 'owner-has-data',
     status: 'success',
   }))
@@ -87,7 +89,7 @@ it('explains why an account used by another Laraue Boards account was not connec
 })
 
 it('sends the user returned by the Telegram popup', async () => {
-  const connectTelegram = vi.fn<ConnectedAccountsPageDeps['connectTelegram']>(async () => ({
+  const connectTelegram = vi.fn<ConnectedAccountsSectionDeps['connectTelegram']>(async () => ({
     data: 'linked',
     status: 'success',
   }))
@@ -98,7 +100,7 @@ it('sends the user returned by the Telegram popup', async () => {
       connectTelegram,
       googleSignInButton: googleSignInButtonDeps(),
       telegramSignInButton: telegramSignInButtonDeps(user),
-      view: vi.fn<ConnectedAccountsPageDeps['view']>(async () => ({
+      view: vi.fn<ConnectedAccountsSectionDeps['view']>(async () => ({
         data: { google: true, telegram: false },
         status: 'success',
       })),

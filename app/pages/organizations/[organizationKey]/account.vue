@@ -1,15 +1,18 @@
 <template>
   <section class="account-page">
     <div class="page-heading">
-      <CircleUser class="page-heading-icon" />
+      <Building2 class="page-heading-icon" />
       <div class="page-heading-text">
-        <h1>{{ t('account') }}</h1>
-        <p class="muted">{{ t('description') }}</p>
+        <h1>{{ t('youIn', { organization: organizationName }) }}</h1>
+        <p class="muted">
+          {{ t('scope', { organization: organizationName }) }}
+          <NuxtLink to="/account">{{ t('yourAccount') }}</NuxtLink>
+        </p>
       </div>
     </div>
 
     <nav
-      :aria-label="t('account')"
+      :aria-label="t('youIn', { organization: organizationName })"
       class="page-tabs">
       <NuxtLink
         class="page-tab"
@@ -32,13 +35,6 @@
         <KeyRound />
         {{ t('apiKeys') }}
       </NuxtLink>
-      <NuxtLink
-        class="page-tab"
-        exact-active-class="active"
-        :to="organizationRoutes.connectedAccounts()">
-        <Link2 />
-        {{ t('connectedAccounts') }}
-      </NuxtLink>
     </nav>
 
     <NuxtPage />
@@ -46,25 +42,29 @@
 </template>
 
 <script setup lang="ts">
-import { CircleUser, CreditCard, History, KeyRound, Link2 } from '@lucide/vue'
+import { Building2, CreditCard, History, KeyRound } from '@lucide/vue'
+
+import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const organizationRoutes = useOrganizationRoutes()
+const { data } = useNuxtData<{ data?: AppLayoutData }>(appLayoutDataKey)
+const organizationName = computed(() => data.value?.data?.organization.name ?? '')
 const { t } = useI18n({
   en: {
-    account: 'Account',
     apiKeys: 'API keys',
-    connectedAccounts: 'Connected accounts',
-    description: 'Your plan, token activity, API access and sign-in methods.',
     plan: 'Plan and usage',
+    scope: 'Applies only in {organization}. Sign-in methods, language and theme are in',
     transactions: 'Transactions',
+    youIn: 'You in {organization}',
+    yourAccount: 'your account',
   },
   ru: {
-    account: 'Аккаунт',
     apiKeys: 'API-ключи',
-    connectedAccounts: 'Подключённые аккаунты',
-    description: 'Ваш тариф, операции с токенами, доступ к API и способы входа.',
     plan: 'Тариф и лимиты',
+    scope: 'Действует только в {organization}. Способы входа, язык и тема — в',
     transactions: 'Транзакции',
+    youIn: 'Вы в организации {organization}',
+    yourAccount: 'вашем аккаунте',
   },
 })
 </script>

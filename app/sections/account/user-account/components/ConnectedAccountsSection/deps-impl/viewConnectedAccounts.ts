@@ -1,10 +1,10 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { executeQuery } from '#infrastructure/api/executeQuery'
 
-import type { ConnectedAccountsPageDeps } from '../ConnectedAccountsPage.deps'
+import type { ConnectedAccountsSectionDeps } from '../ConnectedAccountsSection.deps'
 
 export const createViewConnectedAccounts =
-  (client: ApiClient): ConnectedAccountsPageDeps['view'] =>
+  (client: ApiClient): ConnectedAccountsSectionDeps['view'] =>
   ({ signal }) =>
     executeQuery({
       map: (user) =>

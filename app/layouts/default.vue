@@ -17,7 +17,7 @@ import { createAppLayoutDeps } from '~/sections/common/app-layout/deps-impl'
 const { organizationKey } = useOrganizationRoutes()
 const route = useRoute()
 const client = useApiClient()
-const deps = createAppLayoutDeps(client, useAppPreferences())
+const deps = createAppLayoutDeps(client)
 const onOrganizationSwitched = () => globalThis.location.reload()
 const onViewProblem = async (problem: RoutableProblem): Promise<void> => {
   clearNuxtData(appLayoutDataKey)
