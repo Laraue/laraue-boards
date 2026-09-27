@@ -31,6 +31,7 @@ const depsOf = (overrides: Partial<UserAccountPageDeps> = {}): UserAccountPageDe
     view: async () => ({ data: { google: true, telegram: true }, status: 'success' }),
   },
   interface: createPreferences(),
+  logout: vi.fn<UserAccountPageDeps['logout']>(async () => ({ data: true, status: 'success' })),
   view: async () => ({
     data: {
       kind: 'signed-in',
@@ -45,10 +46,11 @@ const mount = async (
   deps: UserAccountPageDeps,
   onSignedOut = vi.fn<() => void>(),
   backPath?: string,
+  onLoggedOut = vi.fn<() => void>(),
 ) => {
   currentWrapper = await mountSuspended(UserAccountPage, {
     attachTo: document.body,
-    props: { backPath, deps, googleClientId: '', onSignedOut, telegramBotId: '' },
+    props: { backPath, deps, googleClientId: '', onLoggedOut, onSignedOut, telegramBotId: '' },
     route: '/account',
   })
   return onSignedOut
@@ -88,4 +90,15 @@ it('sends a signed-out visitor to sign in', async () => {
   )
 
   await vi.waitFor(() => expect(onSignedOut).toHaveBeenCalledOnce())
+})
+
+it('logs out from the account page', async () => {
+  const deps = depsOf()
+  const onLoggedOut = vi.fn<() => void>()
+  await mount(deps, undefined, undefined, onLoggedOut)
+
+  await page.getByRole('button', { name: 'Log out' }).click()
+
+  await vi.waitFor(() => expect(onLoggedOut).toHaveBeenCalledOnce())
+  expect(deps.logout).toHaveBeenCalledOnce()
 })
