@@ -65,9 +65,6 @@
         v-if="googleClientId"
         ref="googleButtonContainer"
         class="google-sign-in" />
-      <TelegramIntegrationsNote
-        v-if="googleClientId"
-        class="login-integration-note" />
     </div>
   </section>
 </template>
@@ -293,10 +290,6 @@ const loginGoogle = async (idToken: string): Promise<void> => {
   display: flex;
   margin-top: var(--space-3);
   min-height: 44px;
-}
-
-.login-integration-note {
-  margin-top: var(--space-4);
 }
 
 @media (max-width: 767px) {

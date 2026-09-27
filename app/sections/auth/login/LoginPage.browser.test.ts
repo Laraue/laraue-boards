@@ -1,6 +1,5 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
-import { page } from 'vitest/browser'
 
 import type { LoginPageDeps } from './LoginPage.deps'
 import type { TelegramUser } from './LoginPage.types'
@@ -109,9 +108,6 @@ it('signs in with the ID token returned by Google', async () => {
     'test-client-id.apps.googleusercontent.com',
   )
   await vi.waitFor(() => expect(googleCallback).toBeDefined())
-  await expect
-    .element(page.getByText('work only when you sign in with Telegram', { exact: false }))
-    .toBeInTheDocument()
   googleCallback?.({ credential: 'google-id-token' })
 
   await vi.waitFor(() =>

@@ -37,9 +37,6 @@
           v-if="googleClientId"
           ref="googleButtonContainer"
           class="google-sign-in" />
-        <TelegramIntegrationsNote
-          v-if="googleClientId"
-          class="join-integration-note" />
       </div>
       <p
         v-if="message"
@@ -272,9 +269,5 @@ onBeforeUnmount(() => delete telegramWindow.onTelegramJoinAuth)
   justify-content: center;
   margin-top: var(--space-2);
   min-height: 44px;
-}
-
-.join-integration-note {
-  margin-top: var(--space-3);
 }
 </style>

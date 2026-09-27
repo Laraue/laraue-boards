@@ -695,6 +695,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user/connected-accounts/telegram": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TelegramWidgetAuthRequest"];
+                    "text/json": components["schemas"]["TelegramWidgetAuthRequest"];
+                    "application/*+json": components["schemas"]["TelegramWidgetAuthRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ConnectAccountResponse"];
+                        "application/json": components["schemas"]["ConnectAccountResponse"];
+                        "text/json": components["schemas"]["ConnectAccountResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/connected-accounts/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ConnectGoogleAccountRequest"];
+                    "text/json": components["schemas"]["ConnectGoogleAccountRequest"];
+                    "application/*+json": components["schemas"]["ConnectGoogleAccountRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ConnectAccountResponse"];
+                        "application/json": components["schemas"]["ConnectAccountResponse"];
+                        "text/json": components["schemas"]["ConnectAccountResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/epics/{id}": {
         parameters: {
             query?: never;
@@ -2933,6 +3019,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {unknown} */
+        AccountLinkOutcome: "Linked" | "UserHasOtherAccount" | "OwnerHasData" | "OwnerUsedByAnotherService";
         AdminAccessLevel: string;
         AdminBillingTransaction: {
             /** Format: uuid */
@@ -3156,6 +3244,12 @@ export interface components {
             updatedAt: string;
             canModify: boolean;
             owner: components["schemas"]["UserDetails"];
+        };
+        ConnectAccountResponse: {
+            outcome: components["schemas"]["AccountLinkOutcome"];
+        };
+        ConnectGoogleAccountRequest: {
+            idToken: string;
         };
         CreateApiKeyRequest: {
             name: string;
@@ -3854,6 +3948,7 @@ export interface components {
         UserDto: {
             /** Format: int64 */
             telegramId?: null | number | string;
+            hasGoogleAccount?: boolean;
             displayName: string;
             languageCode?: string;
             color: string;
