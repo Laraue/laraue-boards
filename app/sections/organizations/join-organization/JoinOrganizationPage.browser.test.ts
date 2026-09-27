@@ -2,6 +2,8 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import type { GoogleSignInButtonDeps } from '~/components/google-sign-in-button/GoogleSignInButton.deps'
+import type { TelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/TelegramSignInButton.deps'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
 
 import type { JoinOrganizationPageDeps } from './JoinOrganizationPage.deps'
@@ -9,24 +11,21 @@ import JoinOrganizationPage from './JoinOrganizationPage.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-type GoogleWindow = typeof globalThis & {
-  google?: {
-    accounts: {
-      id: {
-        initialize: (config: { callback: (response: { credential: string }) => void }) => void
-        renderButton: () => void
-      }
-    }
-  }
-}
-
 afterEach(async () => {
   await currentWrapper?.unmount()
   currentWrapper = undefined
-  delete (globalThis as GoogleWindow).google
+})
+
+const googleSignInButtonDeps = (code = 'google-code'): GoogleSignInButtonDeps => ({
+  loadGoogleSignIn: async () => ({ open: async () => code }),
+})
+
+const telegramSignInButtonDeps = (user?: TelegramUser): TelegramSignInButtonDeps => ({
+  loadTelegramSignIn: async () => ({ open: async () => user }),
 })
 
 const depsOf = (overrides: Partial<JoinOrganizationPageDeps> = {}): JoinOrganizationPageDeps => ({
+  googleSignInButton: googleSignInButtonDeps(),
   join: vi.fn<JoinOrganizationPageDeps['join']>(),
   loginViaGoogle: vi.fn<JoinOrganizationPageDeps['loginViaGoogle']>(),
   loginViaTelegramMiniApp: vi.fn<JoinOrganizationPageDeps['loginViaTelegramMiniApp']>(async () => ({
@@ -34,6 +33,7 @@ const depsOf = (overrides: Partial<JoinOrganizationPageDeps> = {}): JoinOrganiza
     status: 'success',
   })),
   loginViaTelegramWidget: vi.fn<JoinOrganizationPageDeps['loginViaTelegramWidget']>(),
+  telegramSignInButton: telegramSignInButtonDeps(),
   ...overrides,
 })
 
@@ -44,7 +44,7 @@ const mount = async (
 ) => {
   currentWrapper = await mountSuspended(JoinOrganizationPage, {
     attachTo: document.body,
-    props: { botName: 'laraue_boards_bot', code: 'invite-123', deps, googleClientId, onJoined },
+    props: { code: 'invite-123', deps, googleClientId, onJoined, telegramBotId: '123456' },
     route: '/join/invite-123',
   })
 }
@@ -94,12 +94,13 @@ it('shows the Telegram widget in a regular browser and retries after login', asy
   const onJoined = vi.fn<() => void>()
   const user: TelegramUser = { auth_date: 123, first_name: 'Ada', hash: 'signed', id: 42 }
 
-  await mount(depsOf({ join, loginViaTelegramWidget }), onJoined)
+  await mount(
+    depsOf({ join, loginViaTelegramWidget, telegramSignInButton: telegramSignInButtonDeps(user) }),
+    onJoined,
+  )
   await page.getByRole('button', { name: 'Accept invitation' }).click()
   await expect.element(page.getByText('Sign in with Telegram')).toBeInTheDocument()
-  ;(
-    globalThis as typeof globalThis & { onTelegramJoinAuth?: (value: TelegramUser) => void }
-  ).onTelegramJoinAuth?.(user)
+  await page.getByRole('button', { name: 'Continue with Telegram' }).click()
 
   await vi.waitFor(() => expect(loginViaTelegramWidget).toHaveBeenCalledWith(user))
   await vi.waitFor(() => expect(join).toHaveBeenCalledTimes(2))
@@ -107,17 +108,6 @@ it('shows the Telegram widget in a regular browser and retries after login', asy
 })
 
 it('signs in with Google in a regular browser and retries the invitation', async () => {
-  let googleCallback: ((response: { credential: string }) => void) | undefined
-  ;(globalThis as GoogleWindow).google = {
-    accounts: {
-      id: {
-        initialize: (config) => {
-          googleCallback = config.callback
-        },
-        renderButton: () => {},
-      },
-    },
-  }
   const join = vi
     .fn<JoinOrganizationPageDeps['join']>()
     .mockResolvedValueOnce({ data: 'sign-in-required', status: 'success' })
@@ -134,12 +124,11 @@ it('signs in with Google in a regular browser and retries the invitation', async
     'test-client-id.apps.googleusercontent.com',
   )
   await page.getByRole('button', { name: 'Accept invitation' }).click()
-  await vi.waitFor(() => expect(googleCallback).toBeDefined())
-  googleCallback?.({ credential: 'google-id-token' })
+  await page.getByRole('button', { name: 'Continue with Google' }).click()
 
   await vi.waitFor(() =>
     expect(loginViaGoogle).toHaveBeenCalledWith({
-      idToken: 'google-id-token',
+      code: 'google-code',
       languageCode: navigator.language,
     }),
   )

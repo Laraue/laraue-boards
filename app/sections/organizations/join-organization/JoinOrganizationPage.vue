@@ -30,13 +30,20 @@
         class="inline-login">
         <strong>{{ googleClientId ? t('signIn') : t('signInTelegram') }}</strong>
         <p class="muted">{{ t('signInToAccept') }}</p>
-        <div
-          ref="widgetContainer"
-          class="telegram-widget" />
-        <div
-          v-if="googleClientId"
-          ref="googleButtonContainer"
-          class="google-sign-in" />
+        <div class="sign-in-buttons">
+          <TelegramSignInButton
+            v-if="telegramBotId"
+            :bot-id="telegramBotId"
+            :deps="deps.telegramSignInButton"
+            :disabled="busy"
+            :on-sign-in="loginWidget" />
+          <GoogleSignInButton
+            v-if="googleClientId"
+            :client-id="googleClientId"
+            :deps="deps.googleSignInButton"
+            :disabled="busy"
+            :on-sign-in="loginGoogle" />
+        </div>
       </div>
       <p
         v-if="message"
@@ -51,18 +58,18 @@
 <script setup lang="ts">
 import { Loader, UserPlus } from '@lucide/vue'
 
+import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
+import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
-import { mountGoogleSignInButton } from '~/sections/auth/login/mountGoogleSignInButton'
-import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLoginWidget'
 
 import type { JoinOrganizationPageDeps } from './JoinOrganizationPage.deps'
 
 const props = defineProps<{
-  botName: string
   code: string
   deps: JoinOrganizationPageDeps
   googleClientId: string
   onJoined: () => Promise<void> | void
+  telegramBotId: string
 }>()
 
 const { t } = useI18n({
@@ -88,12 +95,7 @@ const { t } = useI18n({
   },
 })
 
-const state = reactive({ loginRequired: false, widgetMounted: false })
-const widgetContainer = useTemplateRef('widgetContainer')
-const googleButtonContainer = useTemplateRef('googleButtonContainer')
-const telegramWindow = globalThis as typeof globalThis & {
-  onTelegramJoinAuth?: (user: TelegramUser) => void
-}
+const state = reactive({ loginRequired: false })
 
 useHead({ title: t('joinOrganization') })
 
@@ -136,22 +138,6 @@ const showLogin = async (): Promise<void> => {
   }
 
   state.loginRequired = true
-  await nextTick()
-  if (widgetContainer.value && !state.widgetMounted) {
-    mountTelegramLoginWidget({
-      botName: props.botName,
-      callbackName: 'onTelegramJoinAuth',
-      container: widgetContainer.value,
-    })
-    if (props.googleClientId && googleButtonContainer.value) {
-      void mountGoogleSignInButton({
-        clientId: props.googleClientId,
-        container: googleButtonContainer.value,
-        onCredential: (idToken) => void loginGoogle(idToken),
-      })
-    }
-    state.widgetMounted = true
-  }
 }
 
 const accept = async (): Promise<void> => {
@@ -165,8 +151,6 @@ const accept = async (): Promise<void> => {
 
 const continueAfterLogin = async (): Promise<void> => {
   state.loginRequired = false
-  state.widgetMounted = false
-  await nextTick()
   await accept()
 }
 
@@ -177,20 +161,15 @@ const loginWidget = async (user: TelegramUser): Promise<void> => {
   }
 }
 
-const loginGoogle = async (idToken: string): Promise<void> => {
+const loginGoogle = async (code: string): Promise<void> => {
   if (busy.value) {
     return
   }
-  const loggedIn = await loginViaGoogle({ idToken, languageCode: navigator.language })
+  const loggedIn = await loginViaGoogle({ code, languageCode: navigator.language })
   if (loggedIn) {
     await continueAfterLogin()
   }
 }
-
-onMounted(() => {
-  telegramWindow.onTelegramJoinAuth = (user) => void loginWidget(user)
-})
-onBeforeUnmount(() => delete telegramWindow.onTelegramJoinAuth)
 </script>
 
 <style scoped>
@@ -257,17 +236,10 @@ onBeforeUnmount(() => delete telegramWindow.onTelegramJoinAuth)
   width: 100%;
 }
 
-.telegram-widget {
-  display: flex;
-  justify-content: center;
+.sign-in-buttons {
+  display: grid;
+  gap: var(--space-2);
   margin-top: var(--space-3);
-  min-height: 48px;
-}
-
-.google-sign-in {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-2);
-  min-height: 44px;
+  width: 100%;
 }
 </style>

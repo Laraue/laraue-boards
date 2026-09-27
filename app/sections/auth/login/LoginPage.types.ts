@@ -1,14 +1,7 @@
-export type GoogleSignIn = {
-  idToken: string
-  languageCode?: string
-}
+export type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 
-export type TelegramUser = {
-  auth_date: number
-  first_name: string
-  hash: string
-  id: number
-  last_name?: string
-  photo_url?: string
-  username?: string
+export type GoogleSignIn = {
+  /** Authorization code from Google's OAuth popup; the backend exchanges it for an ID token. */
+  code: string
+  languageCode?: string
 }

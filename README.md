@@ -20,7 +20,7 @@ Create `.env` in the repository root:
 ```env
 NUXT_PUBLIC_BOARDS_API_BASE_URL=http://localhost:5200
 NUXT_PUBLIC_RETRO_API_BASE_URL=http://localhost:5201
-NUXT_PUBLIC_BOT_NAME=msgboard_bot
+NUXT_PUBLIC_TELEGRAM_BOT_ID=
 NUXT_PUBLIC_GOOGLE_CLIENT_ID=
 NUXT_PUBLIC_TEST_USER_TOKEN=
 ```
@@ -123,7 +123,7 @@ For temporary debugging, add these entries to the existing `app.head.script` arr
 
 Remove them after debugging.
 
-### Authorization through the Telegram Login Widget
+### Authorization through Telegram
 
 1. Start the frontend and backend ngrok tunnels as described above.
 2. Allow the frontend tunnel URL in backend CORS.
@@ -131,10 +131,11 @@ Remove them after debugging.
    `NUXT_PUBLIC_TEST_USER_TOKEN`.
 4. Send `/setdomain` to @BotFather, select the bot, and send the frontend tunnel hostname without
    the protocol, for example `<frontend-tunnel>.ngrok-free.app`.
-5. Set the bot name without `@` in `.env`:
+5. Set the bot's numeric id - the part of its token before `:` - in `.env`. The sign-in page draws
+   its own "Continue with Telegram" button and opens Telegram's sign-in popup for this bot:
 
    ```env
-   NUXT_PUBLIC_BOT_NAME=msgboard_bot
+   NUXT_PUBLIC_TELEGRAM_BOT_ID=<bot-id>
    ```
 
 6. Restart the frontend and open the frontend tunnel URL in a browser.
@@ -144,7 +145,10 @@ Remove them after debugging.
 1. Take the **Client ID** of the "Web application" OAuth client from Google Cloud Console (Google
    Auth Platform → Clients). Its **Authorized JavaScript origins** must include the frontend origin,
    e.g. `http://localhost:3000` locally or `https://boards.laraue.com` in production.
-2. Set the same Client ID in the frontend `.env` and in the backend's `GoogleAuth:ClientId`:
+2. Set the same Client ID in the frontend `.env` and in the backend's `GoogleAuth:ClientId`, and the
+   client's **Client secret** in the backend's `GoogleAuth:ClientSecret`. The frontend draws its own
+   "Continue with Google" button and gets an authorization code from Google's OAuth popup; the
+   backend exchanges it for an ID token with the secret:
 
    ```env
    NUXT_PUBLIC_GOOGLE_CLIENT_ID=<client-id>.apps.googleusercontent.com

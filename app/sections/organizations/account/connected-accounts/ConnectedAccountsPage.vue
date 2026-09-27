@@ -29,10 +29,14 @@
               <Check aria-hidden="true" />
               {{ t('connected') }}
             </span>
-            <div
-              v-else
-              ref="telegramContainer"
-              class="account-connect" />
+            <TelegramSignInButton
+              v-else-if="telegramBotId"
+              :bot-id="telegramBotId"
+              class="account-connect"
+              :deps="deps.telegramSignInButton"
+              :disabled="busy"
+              :label="t('connectTelegram')"
+              :on-sign-in="connectTelegramAccount" />
           </article>
 
           <article class="account-card">
@@ -51,10 +55,14 @@
               class="muted account-unavailable">
               {{ t('googleInMiniApp') }}
             </small>
-            <div
+            <GoogleSignInButton
               v-else-if="googleClientId"
-              ref="googleContainer"
-              class="account-connect" />
+              class="account-connect"
+              :client-id="googleClientId"
+              :deps="deps.googleSignInButton"
+              :disabled="busy"
+              :label="t('connectGoogle')"
+              :on-sign-in="connectGoogleAccount" />
           </article>
         </div>
       </template>
@@ -65,9 +73,9 @@
 <script setup lang="ts">
 import { Check } from '@lucide/vue'
 
+import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
+import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
 import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
-import { mountGoogleSignInButton } from '~/sections/auth/login/mountGoogleSignInButton'
-import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLoginWidget'
 
 import type { ConnectedAccountsPageDeps } from './ConnectedAccountsPage.deps'
 import type { ConnectOutcome } from './ConnectedAccountsPage.types'
@@ -75,14 +83,16 @@ import type { ConnectOutcome } from './ConnectedAccountsPage.types'
 type Provider = 'google' | 'telegram'
 
 const props = defineProps<{
-  botName: string
   deps: ConnectedAccountsPageDeps
   googleClientId: string
+  telegramBotId: string
 }>()
 
 const { t } = useI18n({
   en: {
     connected: 'Connected',
+    connectGoogle: 'Connect Google',
+    connectTelegram: 'Connect Telegram',
     description:
       'Sign in with any connected account. Connect Telegram to save chat messages as issues, use /save and inline search.',
     googleHint: 'Sign in with your Google account.',
@@ -101,6 +111,8 @@ const { t } = useI18n({
   },
   ru: {
     connected: 'Подключён',
+    connectGoogle: 'Подключить Google',
+    connectTelegram: 'Подключить Telegram',
     description:
       'Входите через любой подключённый аккаунт. Подключите Telegram, чтобы сохранять сообщения из чатов как задачи, использовать /save и встроенный поиск.',
     googleHint: 'Вход через аккаунт Google.',
@@ -121,15 +133,10 @@ const { t } = useI18n({
 })
 
 const state = reactive({
-  googleMounted: false,
   outcome: null as ConnectOutcome | null,
   provider: null as null | Provider,
-  telegramMounted: false,
 })
-const telegramContainer = useTemplateRef('telegramContainer')
-const googleContainer = useTemplateRef('googleContainer')
 const telegramWindow = globalThis as typeof globalThis & {
-  onTelegramConnect?: (user: TelegramUser) => void
   Telegram?: { WebApp?: { initData?: string } }
 }
 const isTelegramMiniApp = Boolean(telegramWindow.Telegram?.WebApp?.initData)
@@ -147,8 +154,6 @@ const onConnected = async (provider: Provider, outcome: ConnectOutcome): Promise
   state.provider = provider
   state.outcome = outcome
   if (outcome === 'linked') {
-    state.telegramMounted = false
-    state.googleMounted = false
     await refresh()
   }
 }
@@ -192,40 +197,17 @@ const sectionMessage = computed(
   () => telegramMessage.value || googleMessage.value || queryMessage.value,
 )
 
-const mountConnectButtons = (): void => {
-  if (telegramContainer.value && !state.telegramMounted) {
-    mountTelegramLoginWidget({
-      botName: props.botName,
-      callbackName: 'onTelegramConnect',
-      container: telegramContainer.value,
-    })
-    state.telegramMounted = true
-  }
-
-  if (googleContainer.value && !state.googleMounted) {
-    void mountGoogleSignInButton({
-      clientId: props.googleClientId,
-      container: googleContainer.value,
-      onCredential: (idToken) => {
-        if (!busy.value) {
-          void connectGoogle({ idToken })
-        }
-      },
-    })
-    state.googleMounted = true
+const connectTelegramAccount = (user: TelegramUser): void => {
+  if (!busy.value) {
+    void connectTelegram(user)
   }
 }
 
-onMounted(() => {
-  telegramWindow.onTelegramConnect = (user) => {
-    if (!busy.value) {
-      void connectTelegram(user)
-    }
+const connectGoogleAccount = (code: string): void => {
+  if (!busy.value) {
+    void connectGoogle({ code })
   }
-  mountConnectButtons()
-})
-watch(data, () => void nextTick(mountConnectButtons))
-onBeforeUnmount(() => delete telegramWindow.onTelegramConnect)
+}
 </script>
 
 <style scoped>
@@ -279,9 +261,8 @@ onBeforeUnmount(() => delete telegramWindow.onTelegramConnect)
 }
 
 .account-connect {
-  display: flex;
   flex-shrink: 0;
-  min-height: 44px;
+  width: auto;
 }
 
 .account-unavailable {

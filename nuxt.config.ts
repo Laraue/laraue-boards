@@ -46,10 +46,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       boardsApiBaseUrl: '',
-      botName: '',
       googleClientId: '',
       retroApiBaseUrl: '',
       retroHubUrl: '',
+      // Nuxt parses a numeric env value into a number, so read it with String(...).
+      telegramBotId: '',
       testUserToken: '',
     },
   },

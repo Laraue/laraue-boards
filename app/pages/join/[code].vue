@@ -1,10 +1,10 @@
 <template>
   <JoinOrganizationPage
-    :bot-name="config.public.botName"
     :code="code"
     :deps="deps"
     :google-client-id="config.public.googleClientId"
-    :on-joined="onJoined" />
+    :on-joined="onJoined"
+    :telegram-bot-id="String(config.public.telegramBotId)" />
 </template>
 
 <script setup lang="ts">

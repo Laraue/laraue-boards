@@ -1,8 +1,8 @@
 <template>
   <ConnectedAccountsPage
-    :bot-name="config.public.botName"
     :deps="deps"
-    :google-client-id="config.public.googleClientId" />
+    :google-client-id="config.public.googleClientId"
+    :telegram-bot-id="String(config.public.telegramBotId)" />
 </template>
 
 <script setup lang="ts">

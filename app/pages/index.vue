@@ -1,9 +1,9 @@
 <template>
   <LoginPage
-    :bot-name="config.public.botName"
     :deps="deps"
     :google-client-id="config.public.googleClientId"
-    :on-logged-in="onLoggedIn" />
+    :on-logged-in="onLoggedIn"
+    :telegram-bot-id="String(config.public.telegramBotId)" />
 </template>
 
 <script setup lang="ts">

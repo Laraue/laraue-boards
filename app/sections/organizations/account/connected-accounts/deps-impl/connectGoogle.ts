@@ -6,8 +6,8 @@ import { toConnectOutcome } from './toConnectOutcome'
 
 export const createConnectGoogle =
   (client: ApiClient): ConnectedAccountsPageDeps['connectGoogle'] =>
-  ({ idToken }) =>
+  ({ code }) =>
     executeAction({
       map: toConnectOutcome,
-      request: () => client.POST('/api/user/connected-accounts/google', { body: { idToken } }),
+      request: () => client.POST('/api/user/connected-accounts/google', { body: { code } }),
     })
