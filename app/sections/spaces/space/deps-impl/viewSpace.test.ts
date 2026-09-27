@@ -47,8 +47,10 @@ test('maps the space and its board summaries', async () => {
   assert.equal(result.status === 'success' && result.data.boards[0]?.kind, 'backlog')
   assert.equal(result.status === 'success' && result.data.boards[0]?.issueCount, 2)
   assert.equal(result.status === 'success' && result.data.boards[0]?.name, 'Backlog')
-  assert.deepEqual(
-    result.status === 'success' && result.data.boards.map((board) => board.name),
-    ['Backlog', 'New', 'Middle', 'Old'],
-  )
+  assert.deepEqual(result.status === 'success' && result.data.boards.map((board) => board.name), [
+    'Backlog',
+    'New',
+    'Middle',
+    'Old',
+  ])
 })

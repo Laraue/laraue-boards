@@ -4,6 +4,4 @@ export type UserAccountUser = {
   name: string
 }
 
-export type UserAccountView =
-  | { kind: 'signed-in'; user: UserAccountUser }
-  | { kind: 'signed-out' }
+export type UserAccountView = { kind: 'signed-in'; user: UserAccountUser } | { kind: 'signed-out' }

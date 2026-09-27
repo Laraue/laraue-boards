@@ -1,6 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { createGoogleSignInButtonDeps } from '~/components/google-sign-in-button/deps-impl'
 import { createTelegramSignInButtonDeps } from '~/components/telegram-sign-in-button/deps-impl'
+
 import type { JoinOrganizationPageDeps } from '../JoinOrganizationPage.deps'
 import { createJoinOrganization } from './joinOrganization'
 import { createLoginViaGoogle } from './loginViaGoogle'

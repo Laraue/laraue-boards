@@ -16,19 +16,21 @@ const mapPage = (
   boards: Schemas['EpicSummary'][],
   boardStatuses: Schemas['EpicListDto'][],
 ): SpacePageData => ({
-  boards: boards.toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)).map((board) => ({
-    color: board.color ?? (board.isDefault ? space.color : COLORS.gray),
-    id: String(board.id),
-    issueCount: board.columns.reduce((sum, column) => sum + Number(column.count), 0),
-    kind: board.isDefault ? 'backlog' : 'board',
-    name: board.isDefault ? 'Backlog' : board.name,
-    status: boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
-    statuses: board.columns.map((column) => ({
-      color: column.color ?? COLORS.gray,
-      count: Number(column.count),
-      name: column.name,
+  boards: boards
+    .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((board) => ({
+      color: board.color ?? (board.isDefault ? space.color : COLORS.gray),
+      id: String(board.id),
+      issueCount: board.columns.reduce((sum, column) => sum + Number(column.count), 0),
+      kind: board.isDefault ? 'backlog' : 'board',
+      name: board.isDefault ? 'Backlog' : board.name,
+      status: boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
+      statuses: board.columns.map((column) => ({
+        color: column.color ?? COLORS.gray,
+        count: Number(column.count),
+        name: column.name,
+      })),
     })),
-  })),
   canCreateBoards: details.canCreateEpics,
   canManage: details.canUpdate || details.canDelete,
   color: space.color,
