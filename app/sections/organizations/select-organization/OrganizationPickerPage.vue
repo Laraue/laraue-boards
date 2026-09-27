@@ -9,12 +9,20 @@
     <template #default="{ data: organizations }">
       <section class="org-picker">
         <div class="picker-card">
-          <div class="logo">
-            <img
-              alt=""
-              class="logo-mark"
-              src="/favicon.svg" />
-            <span>Laraue Boards</span>
+          <div class="picker-header">
+            <div class="logo">
+              <img
+                alt=""
+                class="logo-mark"
+                src="/favicon.svg" />
+              <span>Laraue Boards</span>
+            </div>
+            <NuxtLink
+              class="secondary"
+              to="/account">
+              <CircleUser />
+              {{ t('yourAccount') }}
+            </NuxtLink>
           </div>
           <h1>{{ t('chooseOrganization') }}</h1>
           <p class="muted">{{ t('selectWhere') }}</p>
@@ -74,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { LogOut, Plus } from '@lucide/vue'
+import { CircleUser, LogOut, Plus } from '@lucide/vue'
 
 import type { OrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
 import { useOrganizationTour } from '~/sections/organizations/select-organization/useOrganizationTour'
@@ -97,6 +105,7 @@ const { t } = useI18n({
     loading: 'Loading organizations…',
     organizations: 'Organizations',
     selectWhere: 'Select where you want to work today.',
+    yourAccount: 'Your account',
   },
   ru: {
     chooseOrganization: 'Выберите организацию',
@@ -110,6 +119,7 @@ const { t } = useI18n({
     loading: 'Загрузка организаций…',
     organizations: 'Организации',
     selectWhere: 'Выберите, где вы хотите работать сегодня.',
+    yourAccount: 'Ваш аккаунт',
   },
 })
 
@@ -160,7 +170,11 @@ const leave = (id: string, name: string): void => {
   width: min(var(--form-page-max-width), 100%);
 }
 
-.picker-card > .logo {
+.picker-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
   margin-bottom: 48px;
 }
 

@@ -25,15 +25,20 @@ test('maps the space and its board summaries', async () => {
         },
       ]
     }
+    const backlog = {
+      color: null,
+      columns: [{ color: COLORS.gray, count: 2, id: 1, name: 'Inbox' }],
+      createdAt: '2026-04-01T00:00:00Z',
+      id: 10,
+      isDefault: true,
+      name: 'Default',
+      touchedAt: '2026-04-01T00:00:00Z',
+    }
     return [
-      {
-        color: null,
-        columns: [{ color: COLORS.gray, count: 2, id: 1, name: 'Inbox' }],
-        id: 10,
-        isDefault: true,
-        name: 'Default',
-        touchedAt: '2026-01-01T00:00:00Z',
-      },
+      backlog,
+      { ...backlog, createdAt: '2026-01-01T00:00:00Z', id: 11, isDefault: false, name: 'Old' },
+      { ...backlog, createdAt: '2026-03-01T00:00:00Z', id: 13, isDefault: false, name: 'New' },
+      { ...backlog, createdAt: '2026-02-01T00:00:00Z', id: 12, isDefault: false, name: 'Middle' },
     ]
   })
 
@@ -42,4 +47,10 @@ test('maps the space and its board summaries', async () => {
   assert.equal(result.status === 'success' && result.data.boards[0]?.kind, 'backlog')
   assert.equal(result.status === 'success' && result.data.boards[0]?.issueCount, 2)
   assert.equal(result.status === 'success' && result.data.boards[0]?.name, 'Backlog')
+  assert.deepEqual(result.status === 'success' && result.data.boards.map((board) => board.name), [
+    'Backlog',
+    'New',
+    'Middle',
+    'Old',
+  ])
 })

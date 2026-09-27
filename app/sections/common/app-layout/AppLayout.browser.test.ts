@@ -1,9 +1,7 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
-import { ref } from 'vue'
 
-import type { AppPreferences } from '~/composables/useAppPreferences'
 import type { TourStateDeps } from '~/composables/useTour'
 
 import type { AppLayoutDeps, RoutableProblem } from './AppLayout.deps'
@@ -32,16 +30,8 @@ const createTourDeps = () => ({
   saveStatus: vi.fn<TourStateDeps['saveStatus']>(async () => undefined),
 })
 
-const createPreferences = (): AppPreferences => ({
-  locale: ref<'en' | 'ru'>('en'),
-  setLocale: vi.fn<AppPreferences['setLocale']>(),
-  setTheme: vi.fn<AppPreferences['setTheme']>(),
-  theme: ref<'dark' | 'light'>('light'),
-})
-
 const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
   logout: vi.fn<AppLayoutDeps['logout']>(),
-  preferences: createPreferences(),
   tour: createTourDeps(),
   view: vi.fn<AppLayoutDeps['view']>(async () => ({ data, status: 'success' })),
   ...overrides,
@@ -78,7 +68,7 @@ it('shows desktop navigation and logs out on request', async () => {
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: 'Create space' })).toBeInTheDocument()
   await expect.element(page.getByText('Free')).toBeInTheDocument()
-  await expect.element(page.getByRole('link', { name: /Ada Lovelace Free/ })).toBeInTheDocument()
+  await page.getByRole('button', { name: /Ada Lovelace Free/ }).click()
   await page.getByRole('button', { name: 'Log out' }).click()
 
   await vi.waitFor(() => expect(logout).toHaveBeenCalledOnce())
@@ -94,16 +84,18 @@ it('opens the navigation from the mobile menu button', async () => {
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeVisible()
 })
 
-it('delegates theme and language changes to preferences', async () => {
+it('separates the own account from the account in the organization', async () => {
   await page.viewport(1280, 800)
-  const preferences = createPreferences()
-  await mount(createDeps({ preferences }))
+  await mount(createDeps())
 
-  await page.getByRole('button', { name: 'Dark' }).click()
-  await page.getByRole('button', { name: 'Switch language to Russian' }).click()
+  await page.getByRole('button', { name: /Ada Lovelace Free/ }).click()
 
-  expect(preferences.setTheme).toHaveBeenCalledWith('dark')
-  expect(preferences.setLocale).toHaveBeenCalledWith('ru')
+  await expect
+    .element(page.getByRole('link', { name: /Your account/ }))
+    .toHaveAttribute('href', '/account')
+  await expect
+    .element(page.getByRole('link', { name: /You in Acme/ }))
+    .toHaveAttribute('href', '/organizations/acme-ab12/account')
 })
 
 it('hides admin settings without any admin access', async () => {

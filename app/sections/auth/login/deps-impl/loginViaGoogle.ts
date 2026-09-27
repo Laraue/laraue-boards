@@ -5,13 +5,13 @@ import type { LoginViaGoogle } from '../LoginPage.deps'
 
 export const createLoginViaGoogle =
   (client: ApiClient): LoginViaGoogle =>
-  ({ idToken, languageCode }) =>
+  ({ code, languageCode }) =>
     executeAction({
       map: () => true,
       request: () =>
         client.POST('/api/user/auth-via-google', {
           body: {
-            idToken,
+            code,
             languageCode: languageCode?.split('-')[0]?.toLowerCase() || null,
           },
           parseAs: 'text',

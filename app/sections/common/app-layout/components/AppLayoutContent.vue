@@ -104,53 +104,62 @@
         </div>
       </nav>
       <div class="sidebar-footer">
-        <NuxtLink
-          class="sidebar-user"
-          :class="{ active: within('organizations-organizationKey-account') }"
-          :to="organizationRoutes.account()"
-          @click="state.sidebarOpen = false">
-          <span
-            class="avatar"
-            :style="{ background: viewModel.user.color }">
-            {{ viewModel.user.initials }}
-          </span>
-          <span class="sidebar-user-info">
-            <strong>{{ viewModel.user.name }}</strong>
-            <small class="muted">
-              {{ viewModel.user.tariffName || t('tariffUnavailable') }}
-            </small>
-          </span>
-        </NuxtLink>
-        <div class="sidebar-preferences">
-          <button
-            :aria-label="t('switchLanguage')"
-            class="secondary sidebar-language"
-            :title="t('switchLanguage')"
-            type="button"
-            @click="toggleLocale">
-            <img
-              alt=""
-              class="language-flag"
-              :src="locale === 'en' ? '/flags/us.svg' : '/flags/ru.svg'" />
-            {{ t('languageName') }}
-          </button>
-          <button
-            :aria-label="theme === 'dark' ? t('lightMode') : t('darkMode')"
-            class="secondary sidebar-theme"
-            :title="theme === 'dark' ? t('lightMode') : t('darkMode')"
-            type="button"
-            @click="toggleTheme">
-            <Sun v-if="theme === 'dark'" />
-            <Moon v-else />
-          </button>
-        </div>
-        <button
-          class="secondary danger sidebar-action"
-          type="button"
-          @click="props.onLogout">
-          <LogOut />
-          {{ t('logOut') }}
-        </button>
+        <AppPopover class="sidebar-user-menu">
+          <template #trigger="{ open, toggle }">
+            <button
+              :aria-expanded="open"
+              aria-haspopup="true"
+              class="sidebar-user"
+              :class="{ active: open || within('organizations-organizationKey-account') }"
+              type="button"
+              @click="toggle">
+              <span
+                class="avatar"
+                :style="{ background: viewModel.user.color }">
+                {{ viewModel.user.initials }}
+              </span>
+              <span class="sidebar-user-info">
+                <strong>{{ viewModel.user.name }}</strong>
+                <small class="muted">
+                  {{ viewModel.user.tariffName || t('tariffUnavailable') }}
+                </small>
+              </span>
+            </button>
+          </template>
+          <template #default="{ close }">
+            <div
+              class="user-menu"
+              @click="closeUserMenu(close)">
+              <NuxtLink
+                class="user-menu-item"
+                to="/account">
+                <Globe />
+                <span>
+                  <strong>{{ t('yourAccount') }}</strong>
+                  <small class="muted">{{ t('yourAccountHint') }}</small>
+                </span>
+              </NuxtLink>
+              <NuxtLink
+                class="user-menu-item"
+                :to="organizationRoutes.account()">
+                <Building2 />
+                <span>
+                  <strong>{{ t('youIn', { organization: viewModel.organization.name }) }}</strong>
+                  <small class="muted">
+                    {{ t('youInHint', { organization: viewModel.organization.name }) }}
+                  </small>
+                </span>
+              </NuxtLink>
+              <button
+                class="user-menu-item danger"
+                type="button"
+                @click="props.onLogout">
+                <LogOut />
+                <strong>{{ t('logOut') }}</strong>
+              </button>
+            </div>
+          </template>
+        </AppPopover>
       </div>
     </aside>
     <Transition name="fade">
@@ -177,31 +186,27 @@
 <script setup lang="ts">
 import {
   BookOpen,
+  Building2,
   ChevronsUpDown,
   ClipboardList,
+  Globe,
   History,
   LogOut,
   Menu,
-  Moon,
   Plus,
   Settings,
-  Sun,
 } from '@lucide/vue'
 
-import type { AppPreferences } from '~/composables/useAppPreferences'
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
 
 const props = defineProps<{
   onLogout: () => void
-  preferences: AppPreferences
   viewModel: AppLayoutData
 }>()
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const state = reactive({ sidebarOpen: false })
-const locale = props.preferences.locale
-const theme = props.preferences.theme
 const { t } = useI18n({
   en: {
     admin: 'Admin',
@@ -210,21 +215,21 @@ const { t } = useI18n({
     closeMenu: 'Close menu',
     createSpace: 'Create space',
     currentOrganization: 'Current organization',
-    darkMode: 'Dark',
     documentation: 'Documentation',
     documentationNewTab: 'Documentation (opens in a new tab)',
     history: 'History',
-    languageName: 'English',
-    lightMode: 'Light',
     logOut: 'Log out',
     mainNavigation: 'Main navigation',
     openMenu: 'Open menu',
     retro: 'Retro',
     spaceHint: 'A space groups the boards and issues of one project.',
     spaces: 'Spaces',
-    switchLanguage: 'Switch language to Russian',
     switchOrganization: 'Switch organization',
     tariffUnavailable: 'Tariff unavailable',
+    youIn: 'You in {organization}',
+    youInHint: 'Plan, transactions, API keys. Only in {organization}',
+    yourAccount: 'Your account',
+    yourAccountHint: 'Sign-in methods, language and theme. In all organizations',
   },
   ru: {
     admin: 'Админка',
@@ -233,21 +238,21 @@ const { t } = useI18n({
     closeMenu: 'Закрыть меню',
     createSpace: 'Создать раздел',
     currentOrganization: 'Текущая организация',
-    darkMode: 'Тёмная',
     documentation: 'Документация',
     documentationNewTab: 'Документация (откроется в новой вкладке)',
     history: 'История',
-    languageName: 'Русский',
-    lightMode: 'Светлая',
     logOut: 'Выйти',
     mainNavigation: 'Главная навигация',
     openMenu: 'Открыть меню',
     retro: 'Ретро',
     spaceHint: 'В разделе собраны доски и задачи проекта.',
     spaces: 'Разделы',
-    switchLanguage: 'Переключить язык на английский',
     switchOrganization: 'Сменить организацию',
     tariffUnavailable: 'Тариф недоступен',
+    youIn: 'Вы в организации {organization}',
+    youInHint: 'Тариф, транзакции, API-ключи. Только в {organization}',
+    yourAccount: 'Ваш аккаунт',
+    yourAccountHint: 'Способы входа, язык и тема. Во всех организациях',
   },
 })
 const active = (name: OrganizationRouteName) => route.name === name
@@ -276,11 +281,9 @@ const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   within('organizations-organizationKey-spaces-spaceKey') &&
   route.params.spaceKey !== undefined &&
   route.params.spaceKey === space.key
-const toggleTheme = () => {
-  props.preferences.setTheme(theme.value === 'dark' ? 'light' : 'dark')
-}
-const toggleLocale = () => {
-  props.preferences.setLocale(locale.value === 'en' ? 'ru' : 'en')
+const closeUserMenu = (close: () => void) => {
+  close()
+  state.sidebarOpen = false
 }
 </script>
 
@@ -428,31 +431,74 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
-.sidebar-preferences {
-  display: flex;
-  gap: var(--space-2);
-}
+.sidebar-footer .sidebar-user-menu {
+  --app-popover-width: 300px;
 
-.sidebar-language {
-  flex: 1;
-  justify-content: flex-start;
-  min-width: 0;
-}
-
-.sidebar-theme {
-  flex: 0 0 auto;
+  width: 100%;
 }
 
 .sidebar-user {
   align-items: center;
+  background: transparent;
+  border: 0;
   border-radius: var(--radius-control);
   color: var(--color-text);
   display: flex;
   gap: var(--space-2);
   min-width: 0;
   padding: var(--space-2);
-  text-decoration: none;
+  text-align: left;
   transition: var(--transition-press);
+  width: 100%;
+}
+
+.sidebar-user.active {
+  background: var(--color-soft);
+}
+
+.user-menu {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.user-menu-item {
+  align-items: flex-start;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  text-align: left;
+  text-decoration: none;
+}
+
+.user-menu-item:hover {
+  background: var(--color-hover);
+}
+
+.user-menu-item > svg {
+  flex: none;
+  height: 18px;
+  margin-top: 1px;
+  width: 18px;
+}
+
+.user-menu-item > span {
+  display: grid;
+  gap: 2px;
+}
+
+.user-menu-item small {
+  font-size: var(--font-size-small);
+}
+
+.user-menu-item.danger {
+  border-radius: 0 0 var(--radius-control) var(--radius-control);
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-danger);
 }
 
 .sidebar-user:hover {
@@ -482,19 +528,6 @@ main :deep(.page-load-state) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.sidebar-action {
-  justify-content: flex-start;
-  width: 100%;
-}
-
-.language-flag {
-  border: 1px solid var(--color-border);
-  border-radius: 2px;
-  height: 16px;
-  object-fit: cover;
-  width: 21px;
 }
 
 .organization {

@@ -70,11 +70,6 @@ export const useOrganizationRoutes = () => {
         name: 'organizations-organizationKey-spaces-spaceKey-boardId-settings',
         params: { ...organizationParams(), boardId, spaceKey },
       }) satisfies RouteLocationRaw,
-    connectedAccounts: () =>
-      ({
-        name: 'organizations-organizationKey-account-connected-accounts',
-        params: organizationParams(),
-      }) satisfies RouteLocationRaw,
     dataMovement: () =>
       ({
         name: 'organizations-organizationKey-admin-data-movement',

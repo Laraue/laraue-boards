@@ -3249,7 +3249,8 @@ export interface components {
             outcome: components["schemas"]["AccountLinkOutcome"];
         };
         ConnectGoogleAccountRequest: {
-            idToken: string;
+            idToken?: null | string;
+            code?: null | string;
         };
         CreateApiKeyRequest: {
             name: string;
@@ -3386,6 +3387,8 @@ export interface components {
             columns: components["schemas"]["ColumnSummary"][];
             /** Format: date-time */
             touchedAt: string;
+            /** Format: date-time */
+            createdAt: string;
             isDefault: boolean;
         };
         GetAdminBillingTransactionsRequest: {
@@ -3465,7 +3468,8 @@ export interface components {
             canDeleteIssues?: boolean;
         };
         GoogleAuthRequest: {
-            idToken: string;
+            idToken?: null | string;
+            code?: null | string;
             languageCode?: null | string;
         };
         HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"];

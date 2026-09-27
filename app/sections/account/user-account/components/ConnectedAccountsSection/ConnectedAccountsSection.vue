@@ -1,6 +1,9 @@
 <template>
   <section class="connected-accounts-section">
-    <p class="muted">{{ t('description') }}</p>
+    <div class="section-heading">
+      <h2>{{ t('signInMethods') }}</h2>
+      <p class="muted">{{ t('description') }}</p>
+    </div>
 
     <p
       v-if="outcomeMessage"
@@ -29,10 +32,14 @@
               <Check aria-hidden="true" />
               {{ t('connected') }}
             </span>
-            <div
-              v-else
-              ref="telegramContainer"
-              class="account-connect" />
+            <TelegramSignInButton
+              v-else-if="telegramBotId"
+              :bot-id="telegramBotId"
+              class="account-connect"
+              :deps="deps.telegramSignInButton"
+              :disabled="busy"
+              :label="t('connectTelegram')"
+              :on-sign-in="connectTelegramAccount" />
           </article>
 
           <article class="account-card">
@@ -51,10 +58,14 @@
               class="muted account-unavailable">
               {{ t('googleInMiniApp') }}
             </small>
-            <div
+            <GoogleSignInButton
               v-else-if="googleClientId"
-              ref="googleContainer"
-              class="account-connect" />
+              class="account-connect"
+              :client-id="googleClientId"
+              :deps="deps.googleSignInButton"
+              :disabled="busy"
+              :label="t('connectGoogle')"
+              :on-sign-in="connectGoogleAccount" />
           </article>
         </div>
       </template>
@@ -65,24 +76,26 @@
 <script setup lang="ts">
 import { Check } from '@lucide/vue'
 
-import type { TelegramUser } from '~/sections/auth/login/LoginPage.types'
-import { mountGoogleSignInButton } from '~/sections/auth/login/mountGoogleSignInButton'
-import { mountTelegramLoginWidget } from '~/sections/auth/login/mountTelegramLoginWidget'
+import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
+import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
+import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
 
-import type { ConnectedAccountsPageDeps } from './ConnectedAccountsPage.deps'
-import type { ConnectOutcome } from './ConnectedAccountsPage.types'
+import type { ConnectedAccountsSectionDeps } from './ConnectedAccountsSection.deps'
+import type { ConnectOutcome } from './ConnectedAccountsSection.types'
 
 type Provider = 'google' | 'telegram'
 
 const props = defineProps<{
-  botName: string
-  deps: ConnectedAccountsPageDeps
+  deps: ConnectedAccountsSectionDeps
   googleClientId: string
+  telegramBotId: string
 }>()
 
 const { t } = useI18n({
   en: {
     connected: 'Connected',
+    connectGoogle: 'Connect Google',
+    connectTelegram: 'Connect Telegram',
     description:
       'Sign in with any connected account. Connect Telegram to save chat messages as issues, use /save and inline search.',
     googleHint: 'Sign in with your Google account.',
@@ -96,11 +109,14 @@ const { t } = useI18n({
       'This {provider} account is already used by another Laraue Boards account that has its own data, so it can’t be connected here.',
     ownerUsedByAnotherService:
       'This {provider} account is already used in another Laraue app, so it can’t be connected here yet.',
+    signInMethods: 'Sign-in methods',
     telegramHint: 'Use the Telegram bot: save chat messages as issues, /save, inline search.',
     userHasOtherAccount: 'A different {provider} account is already connected to your account.',
   },
   ru: {
     connected: 'Подключён',
+    connectGoogle: 'Подключить Google',
+    connectTelegram: 'Подключить Telegram',
     description:
       'Входите через любой подключённый аккаунт. Подключите Telegram, чтобы сохранять сообщения из чатов как задачи, использовать /save и встроенный поиск.',
     googleHint: 'Вход через аккаунт Google.',
@@ -114,6 +130,7 @@ const { t } = useI18n({
       'Этот аккаунт {provider} уже используется другим аккаунтом Laraue Boards со своими данными, поэтому его нельзя подключить здесь.',
     ownerUsedByAnotherService:
       'Этот аккаунт {provider} уже используется в другом приложении Laraue, поэтому пока его нельзя подключить здесь.',
+    signInMethods: 'Способы входа',
     telegramHint:
       'Работа с Telegram-ботом: сохранение сообщений как задач, /save, встроенный поиск.',
     userHasOtherAccount: 'К вашему аккаунту уже подключён другой аккаунт {provider}.',
@@ -121,15 +138,10 @@ const { t } = useI18n({
 })
 
 const state = reactive({
-  googleMounted: false,
   outcome: null as ConnectOutcome | null,
   provider: null as null | Provider,
-  telegramMounted: false,
 })
-const telegramContainer = useTemplateRef('telegramContainer')
-const googleContainer = useTemplateRef('googleContainer')
 const telegramWindow = globalThis as typeof globalThis & {
-  onTelegramConnect?: (user: TelegramUser) => void
   Telegram?: { WebApp?: { initData?: string } }
 }
 const isTelegramMiniApp = Boolean(telegramWindow.Telegram?.WebApp?.initData)
@@ -147,8 +159,6 @@ const onConnected = async (provider: Provider, outcome: ConnectOutcome): Promise
   state.provider = provider
   state.outcome = outcome
   if (outcome === 'linked') {
-    state.telegramMounted = false
-    state.googleMounted = false
     await refresh()
   }
 }
@@ -192,50 +202,37 @@ const sectionMessage = computed(
   () => telegramMessage.value || googleMessage.value || queryMessage.value,
 )
 
-const mountConnectButtons = (): void => {
-  if (telegramContainer.value && !state.telegramMounted) {
-    mountTelegramLoginWidget({
-      botName: props.botName,
-      callbackName: 'onTelegramConnect',
-      container: telegramContainer.value,
-    })
-    state.telegramMounted = true
-  }
-
-  if (googleContainer.value && !state.googleMounted) {
-    void mountGoogleSignInButton({
-      clientId: props.googleClientId,
-      container: googleContainer.value,
-      onCredential: (idToken) => {
-        if (!busy.value) {
-          void connectGoogle({ idToken })
-        }
-      },
-    })
-    state.googleMounted = true
+const connectTelegramAccount = (user: TelegramUser): void => {
+  if (!busy.value) {
+    void connectTelegram(user)
   }
 }
 
-onMounted(() => {
-  telegramWindow.onTelegramConnect = (user) => {
-    if (!busy.value) {
-      void connectTelegram(user)
-    }
+const connectGoogleAccount = (code: string): void => {
+  if (!busy.value) {
+    void connectGoogle({ code })
   }
-  mountConnectButtons()
-})
-watch(data, () => void nextTick(mountConnectButtons))
-onBeforeUnmount(() => delete telegramWindow.onTelegramConnect)
+}
 </script>
 
 <style scoped>
 .connected-accounts-section {
   align-content: start;
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-3);
 }
 
 .connected-accounts-section > p {
+  margin: 0;
+}
+
+.section-heading {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.section-heading h2 {
+  font-size: 16px;
   margin: 0;
 }
 
@@ -279,9 +276,8 @@ onBeforeUnmount(() => delete telegramWindow.onTelegramConnect)
 }
 
 .account-connect {
-  display: flex;
   flex-shrink: 0;
-  min-height: 44px;
+  width: auto;
 }
 
 .account-unavailable {
