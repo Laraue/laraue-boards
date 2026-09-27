@@ -8,6 +8,8 @@ export type SpaceBoardSummary = {
   name: string
   status: SpaceBoardStatus
   statuses: Array<{ color: string; count: number; name: string }>
+  /** ISO date-time; boards are shown newest first. */
+  createdAt: string
 }
 
 export type SpacePageData = {

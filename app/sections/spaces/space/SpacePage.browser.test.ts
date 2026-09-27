@@ -3,13 +3,14 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
 import type { SpacePageDeps } from './SpacePage.deps'
-import type { SpacePageData } from './SpacePage.types'
+import type { SpaceBoardSummary, SpacePageData } from './SpacePage.types'
 import SpacePage from './SpacePage.vue'
 
 const pageData: SpacePageData = {
   boards: [
     {
       color: '#111',
+      createdAt: '2026-01-01T00:00:00Z',
       id: '8',
       issueCount: 2,
       kind: 'backlog',
@@ -19,6 +20,7 @@ const pageData: SpacePageData = {
     },
     {
       color: '#222',
+      createdAt: '2026-01-01T00:00:00Z',
       id: '9',
       issueCount: 3,
       kind: 'board',
@@ -90,4 +92,37 @@ it('reloads the space when the failed request is retried', async () => {
   await page.getByRole('button', { name: 'Try again' }).click()
 
   await expect.element(page.getByRole('heading', { name: 'Product' })).toBeInTheDocument()
+})
+
+const board = (id: string, name: string, createdAt: string): SpaceBoardSummary => ({
+  color: '#222',
+  createdAt,
+  id,
+  issueCount: 0,
+  kind: 'board',
+  name,
+  status: 'New',
+  statuses: [],
+})
+
+it('shows the newest boards first', async () => {
+  const view = vi.fn<SpacePageDeps['view']>(async () => ({
+    data: {
+      ...pageData,
+      boards: [
+        board('1', 'Sprint 1', '2026-01-01T00:00:00Z'),
+        board('3', 'Sprint 3', '2026-03-01T00:00:00Z'),
+        board('2', 'Sprint 2', '2026-02-01T00:00:00Z'),
+      ],
+    },
+    status: 'success',
+  }))
+
+  await mount(view)
+
+  await expect.element(page.getByText('Sprint 3')).toBeVisible()
+  const names = [...document.querySelectorAll('.board-summary strong')].map(
+    (item) => item.textContent,
+  )
+  expect(names).toEqual(['Sprint 3', 'Sprint 2', 'Sprint 1'])
 })

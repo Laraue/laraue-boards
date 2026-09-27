@@ -3386,6 +3386,8 @@ export interface components {
             columns: components["schemas"]["ColumnSummary"][];
             /** Format: date-time */
             touchedAt: string;
+            /** Format: date-time */
+            createdAt: string;
             isDefault: boolean;
         };
         GetAdminBillingTransactionsRequest: {

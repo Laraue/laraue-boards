@@ -29,6 +29,7 @@ test('maps the space and its board summaries', async () => {
       {
         color: null,
         columns: [{ color: COLORS.gray, count: 2, id: 1, name: 'Inbox' }],
+        createdAt: '2026-01-01T00:00:00Z',
         id: 10,
         isDefault: true,
         name: 'Default',
