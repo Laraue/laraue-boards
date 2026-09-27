@@ -523,14 +523,22 @@ const handleKeydown = (event: KeyboardEvent) => {
   outline: none;
 }
 
-.markdown-toolbar-ai {
+.markdown-toolbar button.markdown-toolbar-ai {
+  --ai-button-fill: var(--color-surface);
+
+  background:
+    linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
+    linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
+  border: 1px solid transparent;
   gap: var(--space-1);
-  padding: 0 var(--space-2);
 }
 
-.markdown-toolbar-ai:disabled {
-  cursor: wait;
-  opacity: 0.6;
+.markdown-toolbar button.markdown-toolbar-ai:hover {
+  --ai-button-fill: var(--color-hover);
+}
+
+.markdown-toolbar button.markdown-toolbar-ai:active {
+  --ai-button-fill: var(--color-accent-soft);
 }
 
 .markdown-toolbar-spinner {

@@ -61,7 +61,7 @@
             <div class="form-actions issue-comment-form-actions">
               <button
                 v-if="state.editText.trim()"
-                class="secondary small"
+                class="secondary small issue-comment-ai"
                 :disabled="!!state.pendingId || !!state.summarizingId"
                 type="button"
                 @click="improveWithAi(comment.id)">
@@ -106,7 +106,7 @@
       v-if="state.newText.trim()"
       class="form-actions issue-comment-form-actions">
       <button
-        class="secondary small"
+        class="secondary small issue-comment-ai"
         :disabled="!!state.pendingId || !!state.summarizingId"
         type="button"
         @click="improveWithAi('new')">
@@ -379,5 +379,18 @@ const remove = async (id: string) => {
 .issue-comment-form-actions {
   gap: var(--space-1);
   margin-top: 0;
+}
+
+.issue-comment-ai {
+  --ai-button-fill: var(--color-surface);
+
+  background:
+    linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
+    linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
+  border: 1px solid transparent;
+}
+
+.issue-comment-ai:hover {
+  --ai-button-fill: var(--color-hover);
 }
 </style>
