@@ -4,10 +4,10 @@
     class="issue-comments">
     <strong class="section-label">{{ t('comments') }}</strong>
     <p
-      v-if="state.message"
+      v-if="state.message || summarizeMessage"
       class="form-error"
       role="alert">
-      {{ state.message }}
+      {{ state.message || summarizeMessage }}
     </p>
     <div
       v-if="state.comments.length"
@@ -31,7 +31,7 @@
               <button
                 :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
                 class="icon-btn small"
-                :disabled="state.pendingId === comment.id"
+                :disabled="!!state.pendingId || summarizing"
                 :title="t('edit')"
                 type="button"
                 @click="startEdit(comment)">
@@ -40,7 +40,7 @@
               <button
                 :aria-label="`${t('deleteCommentBy')} ${comment.owner.name}`"
                 class="icon-btn danger small"
-                :disabled="state.pendingId === comment.id"
+                :disabled="!!state.pendingId || summarizing"
                 :title="t('delete')"
                 type="button"
                 @click="remove(comment.id)">
@@ -55,19 +55,32 @@
             <textarea
               v-model="state.editText"
               :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
-              :disabled="state.pendingId === comment.id"
-              rows="1" />
+              :disabled="!!state.pendingId || summarizing"
+              rows="1"
+              @input="clearMessage" />
             <div class="form-actions issue-comment-form-actions">
               <button
+                v-if="state.editText.trim()"
+                class="secondary small issue-comment-ai"
+                :disabled="!!state.pendingId || summarizing"
+                type="button"
+                @click="improveWithAi(comment.id)">
+                <LoaderCircle
+                  v-if="state.summarizingId === comment.id"
+                  class="spin" />
+                <Sparkles v-else />
+                {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
+              </button>
+              <button
                 class="primary small"
-                :disabled="!state.editText.trim() || state.pendingId === comment.id"
+                :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
                 type="button"
                 @click="update(comment.id)">
                 {{ state.pendingId === comment.id ? t('saving') : t('save') }}
               </button>
               <button
                 class="secondary small"
-                :disabled="state.pendingId === comment.id"
+                :disabled="!!state.pendingId || summarizing"
                 type="button"
                 @click="cancelEdit">
                 {{ t('cancel') }}
@@ -85,15 +98,27 @@
     <textarea
       v-model="state.newText"
       :aria-label="t('writeComment')"
-      :disabled="!!state.pendingId"
+      :disabled="!!state.pendingId || summarizing"
       :placeholder="t('writeCommentPlaceholder')"
-      rows="1" />
+      rows="1"
+      @input="clearMessage" />
     <div
       v-if="state.newText.trim()"
       class="form-actions issue-comment-form-actions">
       <button
+        class="secondary small issue-comment-ai"
+        :disabled="!!state.pendingId || summarizing"
+        type="button"
+        @click="improveWithAi('new')">
+        <LoaderCircle
+          v-if="state.summarizingId === 'new'"
+          class="spin" />
+        <Sparkles v-else />
+        {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
+      </button>
+      <button
         class="secondary small"
-        :disabled="!!state.pendingId"
+        :disabled="!!state.pendingId || summarizing"
         type="button"
         @click="create">
         {{ state.pendingId === 'new' ? t('adding') : t('addComment') }}
@@ -103,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { LoaderCircle, Pencil, Trash2 } from '@lucide/vue'
+import { LoaderCircle, Pencil, Sparkles, Trash2 } from '@lucide/vue'
 
 import { getErrorMessage } from '~/utils/getErrorMessage'
 
@@ -127,6 +152,8 @@ const { locale, t } = useI18n({
     deleteConfirm: 'Delete this comment?',
     edit: 'Edit',
     editCommentBy: 'Edit comment by',
+    improveWithAi: 'Improve with AI',
+    improvingWithAi: 'Improving…',
     loadError: 'Could not load comments.',
     save: 'Save',
     saveError: 'Could not save comment.',
@@ -144,6 +171,8 @@ const { locale, t } = useI18n({
     deleteConfirm: 'Удалить этот комментарий?',
     edit: 'Изменить',
     editCommentBy: 'Изменить комментарий пользователя',
+    improveWithAi: 'Улучшить с помощью ИИ',
+    improvingWithAi: 'Улучшение…',
     loadError: 'Не удалось загрузить комментарии.',
     save: 'Сохранить',
     saveError: 'Не удалось сохранить комментарий.',
@@ -162,7 +191,27 @@ const state = reactive({
   message: '',
   newText: '',
   pendingId: '',
+  summarizingId: '',
 })
+
+const {
+  execute: summarizeContent,
+  message: summarizeMessage,
+  pending: summarizing,
+} = useAction(props.deps.summarizeContent, {
+  onSuccess: (content) => {
+    if (state.summarizingId === 'new') {
+      state.newText = content
+    } else if (state.editingId === state.summarizingId) {
+      state.editText = content
+    }
+  },
+})
+
+const clearMessage = () => {
+  state.message = ''
+  summarizeMessage.value = undefined
+}
 
 const refreshComments = async () => {
   const result = await props.deps.load({ issueKey: props.issueKey })
@@ -175,7 +224,7 @@ const refreshComments = async () => {
 }
 
 const run = async (pendingId: string, action: () => ReturnType<IssueCommentsDeps['create']>) => {
-  state.message = ''
+  clearMessage()
   state.pendingId = pendingId
   const result = await action()
 
@@ -214,6 +263,25 @@ const update = async (id: string) => {
   const text = state.editText.trim()
   if (text && (await run(id, () => props.deps.update({ id, text })))) {
     cancelEdit()
+  }
+}
+
+const improveWithAi = async (id: string) => {
+  if (state.pendingId || summarizing.value) {
+    return
+  }
+
+  const content = (id === 'new' ? state.newText : state.editText).trim()
+  if (!content) {
+    return
+  }
+
+  state.message = ''
+  state.summarizingId = id
+  try {
+    await summarizeContent({ content })
+  } finally {
+    state.summarizingId = ''
   }
 }
 
@@ -317,5 +385,18 @@ const remove = async (id: string) => {
 .issue-comment-form-actions {
   gap: var(--space-1);
   margin-top: 0;
+}
+
+.issue-comment-ai {
+  --ai-button-fill: var(--color-surface);
+
+  background:
+    linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
+    linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
+  border: 1px solid transparent;
+}
+
+.issue-comment-ai:hover {
+  --ai-button-fill: var(--color-hover);
 }
 </style>

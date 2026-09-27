@@ -30,6 +30,12 @@ const createDeps = (): CreateIssueFormDeps => ({
     data: { issueKey: 'ISS-1' },
     status: 'success',
   })),
+  description: {
+    summarizeContent: vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(async () => ({
+      data: 'Improved content',
+      status: 'success',
+    })),
+  },
   spaceSelect: {
     loadSpaces: vi.fn<CreateIssueFormDeps['spaceSelect']['loadSpaces']>(async () => ({
       data: [{ label: 'Product', value: '7' }],

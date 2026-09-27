@@ -46,9 +46,13 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
     create: vi.fn<IssuePageDeps['comments']['create']>(),
     delete: vi.fn<IssuePageDeps['comments']['delete']>(),
     load: vi.fn<IssuePageDeps['comments']['load']>(),
+    summarizeContent: vi.fn<IssuePageDeps['comments']['summarizeContent']>(),
     update: vi.fn<IssuePageDeps['comments']['update']>(),
   },
   deleteIssue: vi.fn<IssuePageDeps['deleteIssue']>(),
+  description: {
+    summarizeContent: vi.fn<IssuePageDeps['description']['summarizeContent']>(),
+  },
   history: {
     load: vi.fn<IssuePageDeps['history']['load']>(),
   },

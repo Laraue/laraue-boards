@@ -2,6 +2,8 @@ import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
 
 import type { IssueCommentViewModel } from './IssueComments.types'
 
+export type SummarizeContent = (input: { content: string }) => Promise<ActionResult<string>>
+
 export type CreateComment = (input: {
   issueKey: string
   text: string
@@ -20,5 +22,6 @@ export type IssueCommentsDeps = {
   create: CreateComment
   delete: DeleteComment
   load: LoadComments
+  summarizeContent: SummarizeContent
   update: UpdateComment
 }

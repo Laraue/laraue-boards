@@ -5,6 +5,7 @@ import { createSpaceSelectDeps } from '~/components/space-select/deps-impl'
 import { createStatusSelectDeps } from '~/components/status-select/deps-impl'
 
 import { createIssueCommentsDeps } from '../components/IssueComments/deps-impl'
+import { createIssueDescriptionDeps } from '../components/IssueDescription/deps-impl'
 import { createIssueHistoryDeps } from '../components/IssueHistory/deps-impl'
 import type { IssuePageDeps } from '../IssuePage.deps'
 import { createDeleteIssue } from './deleteIssue'
@@ -16,6 +17,7 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
   boardSelect: createBoardSelectDeps(client),
   comments: createIssueCommentsDeps(client),
   deleteIssue: createDeleteIssue(client),
+  description: createIssueDescriptionDeps(client),
   history: createIssueHistoryDeps(client),
   saveIssue: createSaveIssue(client),
   spaceSelect: createSpaceSelectDeps(client),

@@ -3,7 +3,9 @@
     class="issue-form issue-form-page"
     @submit.prevent="submit">
     <div class="issue-form-main">
-      <IssueDescription v-model="form.content" />
+      <IssueDescription
+        v-model="form.content"
+        :deps="deps.description" />
       <IssueAttachments
         :attachments="[]"
         :disabled="pending"

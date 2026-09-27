@@ -24,6 +24,10 @@ const createDeps = (
       loadBoards: vi.fn<CreateBacklogIssuePageDeps['form']['boardSelect']['loadBoards']>(),
     },
     create: vi.fn<CreateBacklogIssuePageDeps['form']['create']>(),
+    description: {
+      summarizeContent:
+        vi.fn<CreateBacklogIssuePageDeps['form']['description']['summarizeContent']>(),
+    },
     spaceSelect: {
       loadSpaces: vi.fn<CreateBacklogIssuePageDeps['form']['spaceSelect']['loadSpaces']>(),
     },
