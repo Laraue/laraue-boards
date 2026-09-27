@@ -32,6 +32,13 @@
         <KeyRound />
         {{ t('apiKeys') }}
       </NuxtLink>
+      <NuxtLink
+        class="page-tab"
+        exact-active-class="active"
+        :to="organizationRoutes.connectedAccounts()">
+        <Link2 />
+        {{ t('connectedAccounts') }}
+      </NuxtLink>
     </nav>
 
     <NuxtPage />
@@ -39,21 +46,23 @@
 </template>
 
 <script setup lang="ts">
-import { CircleUser, CreditCard, History, KeyRound } from '@lucide/vue'
+import { CircleUser, CreditCard, History, KeyRound, Link2 } from '@lucide/vue'
 
 const organizationRoutes = useOrganizationRoutes()
 const { t } = useI18n({
   en: {
     account: 'Account',
     apiKeys: 'API keys',
-    description: 'Your plan, token activity and API access.',
+    connectedAccounts: 'Connected accounts',
+    description: 'Your plan, token activity, API access and sign-in methods.',
     plan: 'Plan and usage',
     transactions: 'Transactions',
   },
   ru: {
     account: 'Аккаунт',
     apiKeys: 'API-ключи',
-    description: 'Ваш тариф, операции с токенами и доступ к API.',
+    connectedAccounts: 'Подключённые аккаунты',
+    description: 'Ваш тариф, операции с токенами, доступ к API и способы входа.',
     plan: 'Тариф и лимиты',
     transactions: 'Транзакции',
   },
