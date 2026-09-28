@@ -4007,6 +4007,7 @@ export interface components {
             /** Format: int64 */
             telegramId?: null | number | string;
             hasGoogleAccount?: boolean;
+            initials?: null | string;
             languageCode?: string;
             palette: string[];
             preferences?: components["schemas"]["UserPreferencesResponse"];

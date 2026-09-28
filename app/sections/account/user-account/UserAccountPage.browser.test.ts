@@ -33,7 +33,7 @@ const depsOf = (overrides: Partial<UserAccountPageDeps> = {}): UserAccountPageDe
   interface: createPreferences(),
   logout: vi.fn<UserAccountPageDeps['logout']>(async () => ({ data: true, status: 'success' })),
   view: async () => ({
-    data: { kind: 'signed-in' },
+    data: { initials: 'AL', kind: 'signed-in' },
     status: 'success',
   }),
   ...overrides,

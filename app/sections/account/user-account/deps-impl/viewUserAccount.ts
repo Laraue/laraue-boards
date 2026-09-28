@@ -16,5 +16,5 @@ export const createViewUserAccount =
         : { code: user.response.status, status: 'error' }
     }
 
-    return { data: { kind: 'signed-in' }, status: 'success' }
+    return { data: { initials: user.data.initials ?? null, kind: 'signed-in' }, status: 'success' }
   }
