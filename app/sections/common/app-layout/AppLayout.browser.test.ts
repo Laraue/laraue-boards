@@ -91,7 +91,7 @@ it('separates the own account from the account in the organization', async () =>
   await page.getByRole('button', { name: /Ada Lovelace Free/ }).click()
 
   await expect
-    .element(page.getByRole('link', { name: /Your account/ }))
+    .element(page.getByRole('link', { name: /Your Laraue account/ }))
     .toHaveAttribute('href', '/account')
   await expect
     .element(page.getByRole('link', { name: /You in Acme/ }))

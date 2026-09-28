@@ -32,6 +32,13 @@ const depsOf = (overrides: Partial<UserAccountPageDeps> = {}): UserAccountPageDe
   },
   interface: createPreferences(),
   logout: vi.fn<UserAccountPageDeps['logout']>(async () => ({ data: true, status: 'success' })),
+  profile: {
+    update: vi.fn<UserAccountPageDeps['profile']['update']>(),
+    view: async () => ({
+      data: { displayName: 'Ada Lovelace', familyName: 'Lovelace', givenName: 'Ada' },
+      status: 'success',
+    }),
+  },
   view: async () => ({
     data: { initials: 'AL', kind: 'signed-in' },
     status: 'success',
@@ -64,7 +71,7 @@ it('leads back to the page the user came from', async () => {
 it('leads to the organization list when opened directly', async () => {
   await mount(depsOf())
 
-  await expect.element(page.getByRole('heading', { name: 'Your account' })).toBeVisible()
+  await expect.element(page.getByRole('heading', { name: 'Your Laraue account' })).toBeVisible()
   await expect
     .element(page.getByRole('link', { name: 'Back to organizations' }))
     .toHaveAttribute('href', '/organizations')

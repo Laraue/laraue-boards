@@ -228,7 +228,7 @@ const { t } = useI18n({
     tariffUnavailable: 'Tariff unavailable',
     youIn: 'You in {organization}',
     youInHint: 'Profile, plan, transactions, API keys. Only in {organization}',
-    yourAccount: 'Your account',
+    yourAccount: 'Your Laraue account',
     yourAccountHint: 'Sign-in methods, language and theme. In all organizations',
   },
   ru: {
@@ -251,7 +251,7 @@ const { t } = useI18n({
     tariffUnavailable: 'Тариф недоступен',
     youIn: 'Вы в организации {organization}',
     youInHint: 'Профиль, тариф, транзакции, API-ключи. Только в {organization}',
-    yourAccount: 'Ваш аккаунт',
+    yourAccount: 'Ваш аккаунт Laraue',
     yourAccountHint: 'Способы входа, язык и тема. Во всех организациях',
   },
 })
