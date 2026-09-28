@@ -3019,41 +3019,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/user/settings/epic-sort-order/{epicSortOrder}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    epicSortOrder: components["schemas"]["EpicSortOrder"];
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/user/onboarding/{onboardingId}": {
         parameters: {
             query?: never;
@@ -3471,8 +3436,6 @@ export interface components {
             isDefault: boolean;
             status: components["schemas"]["EpicStatus"];
         };
-        /** @enum {unknown} */
-        EpicSortOrder: "LastTouched" | "Alphabetical";
         /** @enum {unknown} */
         EpicStatus: "New" | "Active" | "Done";
         EpicStatusesDto: {
@@ -4077,9 +4040,7 @@ export interface components {
             telegramId?: null | number | string;
             hasGoogleAccount?: boolean;
             initials?: null | string;
-            languageCode?: string;
             palette: string[];
-            preferences?: components["schemas"]["UserPreferencesResponse"];
         };
         UserOrganizationPreferencesResponse: {
             /** Format: int64 */
@@ -4091,10 +4052,6 @@ export interface components {
                 [key: string]: components["schemas"]["DirectSpaceAccessLevel"];
             };
             admin?: components["schemas"]["AdminAccessLevel"];
-        };
-        UserPreferencesResponse: {
-            epicSortOrder?: components["schemas"]["EpicSortOrder"];
-            interfaceLanguage: string;
         };
         UserProfileDto: {
             userName?: null | string;
