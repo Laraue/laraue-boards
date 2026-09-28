@@ -105,7 +105,7 @@ const { t } = useI18n({
     loading: 'Loading organizations…',
     organizations: 'Organizations',
     selectWhere: 'Select where you want to work today.',
-    yourAccount: 'Your account',
+    yourAccount: 'Your Laraue account',
   },
   ru: {
     chooseOrganization: 'Выберите организацию',
@@ -119,7 +119,7 @@ const { t } = useI18n({
     loading: 'Загрузка организаций…',
     organizations: 'Организации',
     selectWhere: 'Выберите, где вы хотите работать сегодня.',
-    yourAccount: 'Ваш аккаунт',
+    yourAccount: 'Ваш аккаунт Laraue',
   },
 })
 

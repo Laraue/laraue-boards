@@ -2955,6 +2955,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserProfileDto"];
+                        "application/json": components["schemas"]["UserProfileDto"];
+                        "text/json": components["schemas"]["UserProfileDto"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProfileRequest"];
+                    "text/json": components["schemas"]["UpdateProfileRequest"];
+                    "application/*+json": components["schemas"]["UpdateProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UserProfileDto"];
+                        "application/json": components["schemas"]["UserProfileDto"];
+                        "text/json": components["schemas"]["UserProfileDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/user/settings/epic-sort-order/{epicSortOrder}": {
         parameters: {
             query?: never;
@@ -3989,6 +4053,11 @@ export interface components {
             displayName?: null | string;
             color: string;
         };
+        UpdateProfileRequest: {
+            givenName?: null | string;
+            familyName?: null | string;
+            displayName: string;
+        };
         UpdateSpaceRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             oldKey?: string;
@@ -4026,6 +4095,13 @@ export interface components {
         UserPreferencesResponse: {
             epicSortOrder?: components["schemas"]["EpicSortOrder"];
             interfaceLanguage: string;
+        };
+        UserProfileDto: {
+            userName?: null | string;
+            givenName?: null | string;
+            familyName?: null | string;
+            displayName: string;
+            initials: string;
         };
         VisibleUser: {
             /** Format: uuid */

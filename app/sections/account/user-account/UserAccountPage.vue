@@ -53,6 +53,10 @@
             </button>
           </div>
 
+          <ProfileSection
+            :deps="deps.profile"
+            :on-updated="refresh" />
+
           <ConnectedAccountsSection
             :deps="deps.connectedAccounts"
             :google-client-id="googleClientId"
@@ -72,6 +76,7 @@ import { DEFAULT_COLOR } from '~/constants/colors'
 
 import ConnectedAccountsSection from './components/ConnectedAccountsSection/ConnectedAccountsSection.vue'
 import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue'
+import ProfileSection from './components/ProfileSection/ProfileSection.vue'
 import type { UserAccountPageDeps } from './UserAccountPage.deps'
 
 const props = defineProps<{
@@ -91,8 +96,8 @@ const { t } = useI18n({
     loadError: 'Could not load your account',
     loading: 'Loading your account…',
     logOut: 'Log out',
-    scope: 'Settings on this page apply in all your organizations',
-    yourAccount: 'Your account',
+    scope: 'One account for all Laraue apps',
+    yourAccount: 'Your Laraue account',
   },
   ru: {
     back: 'Назад',
@@ -100,8 +105,8 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить аккаунт',
     loading: 'Загрузка аккаунта…',
     logOut: 'Выйти',
-    scope: 'Настройки на этой странице действуют во всех ваших организациях',
-    yourAccount: 'Ваш аккаунт',
+    scope: 'Один аккаунт для всех приложений Laraue',
+    yourAccount: 'Ваш аккаунт Laraue',
   },
 })
 
