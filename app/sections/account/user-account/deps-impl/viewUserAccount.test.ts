@@ -4,16 +4,13 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createViewUserAccount } from './viewUserAccount'
 
-const user = { color: '#3568d4', displayName: 'Ann Lee', initials: 'AL', palette: [] }
+const user = { palette: [] }
 
-test('maps the user without loading an organization', async () => {
+test('reports a signed-in user without loading an organization', async () => {
   const { client, requests } = createTestApiClient(() => user)
 
   assert.deepEqual(await createViewUserAccount(client)({}), {
-    data: {
-      kind: 'signed-in',
-      user: { color: '#3568d4', initials: 'AL', name: 'Ann Lee' },
-    },
+    data: { kind: 'signed-in' },
     status: 'success',
   })
   assert.equal(requests.length, 1)

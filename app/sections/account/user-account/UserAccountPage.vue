@@ -24,14 +24,10 @@
       :message="message"
       :on-retry="refresh"
       :pending="pending || data?.kind === 'signed-out'">
-      <template #default="{ data: page }">
+      <template #default>
         <main class="user-account-main">
           <div class="user-account-title">
-            <span
-              class="avatar user-account-avatar"
-              :style="{ background: page.user.color }">
-              {{ page.user.initials }}
-            </span>
+            <CircleUser class="user-account-icon" />
             <div>
               <h1>{{ t('yourAccount') }}</h1>
               <p class="muted scope">
@@ -62,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, Globe, LogOut } from '@lucide/vue'
+import { ArrowLeft, CircleUser, Globe, LogOut } from '@lucide/vue'
 
 import ConnectedAccountsSection from './components/ConnectedAccountsSection/ConnectedAccountsSection.vue'
 import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue'
@@ -175,9 +171,9 @@ watch(
   margin: 0 0 var(--space-1);
 }
 
-.user-account-avatar {
+.user-account-icon {
+  color: var(--color-muted);
   flex: none;
-  font-size: 22px;
   height: 56px;
   width: 56px;
 }

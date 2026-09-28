@@ -17,6 +17,13 @@
       <NuxtLink
         class="page-tab"
         exact-active-class="active"
+        :to="profileTo">
+        <UserRound />
+        {{ t('profile') }}
+      </NuxtLink>
+      <NuxtLink
+        class="page-tab"
+        exact-active-class="active"
         :to="planTo">
         <CreditCard />
         {{ t('plan') }}
@@ -42,13 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { Building2, CreditCard, History, KeyRound } from '@lucide/vue'
+import { Building2, CreditCard, History, KeyRound, UserRound } from '@lucide/vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 defineProps<{
   apiKeysTo: RouteLocationRaw
   organizationName: string
   planTo: RouteLocationRaw
+  profileTo: RouteLocationRaw
   transactionsTo: RouteLocationRaw
   userAccountTo: RouteLocationRaw
 }>()
@@ -57,6 +65,7 @@ const { t } = useI18n({
   en: {
     apiKeys: 'API keys',
     plan: 'Plan and usage',
+    profile: 'Profile',
     scope: 'Applies only in {organization}. Sign-in methods, language and theme are in',
     transactions: 'Transactions',
     youIn: 'You in {organization}',
@@ -65,6 +74,7 @@ const { t } = useI18n({
   ru: {
     apiKeys: 'API-ключи',
     plan: 'Тариф и лимиты',
+    profile: 'Профиль',
     scope: 'Действует только в {organization}. Способы входа, язык и тема — в',
     transactions: 'Транзакции',
     youIn: 'Вы в организации {organization}',

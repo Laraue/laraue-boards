@@ -33,10 +33,7 @@ const depsOf = (overrides: Partial<UserAccountPageDeps> = {}): UserAccountPageDe
   interface: createPreferences(),
   logout: vi.fn<UserAccountPageDeps['logout']>(async () => ({ data: true, status: 'success' })),
   view: async () => ({
-    data: {
-      kind: 'signed-in',
-      user: { color: '#3568d4', initials: 'AL', name: 'Ada Lovelace' },
-    },
+    data: { kind: 'signed-in' },
     status: 'success',
   }),
   ...overrides,
