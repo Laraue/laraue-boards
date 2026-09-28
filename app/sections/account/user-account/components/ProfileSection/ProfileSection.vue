@@ -110,9 +110,7 @@ const {
   message: queryMessage,
   pending,
   refresh,
-} = await useQuery('account-global-profile', (_nuxtApp, { signal }) =>
-  props.deps.view({ signal }),
-)
+} = await useQuery('account-global-profile', (_nuxtApp, { signal }) => props.deps.view({ signal }))
 
 const state = reactive({
   displayName: data.value?.displayName ?? '',
