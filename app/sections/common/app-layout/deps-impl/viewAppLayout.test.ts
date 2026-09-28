@@ -16,6 +16,7 @@ test('loads the requested organization layout', async () => {
           canViewBilling: true,
           color: '#123',
           id: 1,
+          memberProfile: { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' },
           name: 'Acme',
         }
       case '/api/organizations':
@@ -29,8 +30,6 @@ test('loads the requested organization layout', async () => {
             slugPostfix: 'AB12',
           },
         ]
-      case '/api/user':
-        return { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' }
       case '/api/spaces':
         return [{ color: '#789', isDefault: false, key: 'DEV', name: 'Development' }]
       case '/api/billing/tariff':
@@ -98,6 +97,7 @@ test('selects the organization from the url when only the organization cookie is
               canViewBilling: true,
               color: '#123',
               id: 1,
+              memberProfile: { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' },
               name: 'Acme',
             }
           : new Response(null, { status: 401 })
@@ -115,8 +115,6 @@ test('selects the organization from the url when only the organization cookie is
       case '/api/organizations/login':
         organizationSelected = true
         return new Response('ok')
-      case '/api/user':
-        return { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' }
       case '/api/spaces':
         return []
       case '/api/billing/tariff':

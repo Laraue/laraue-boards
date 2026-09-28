@@ -1,17 +1,24 @@
 <template>
-  <BillingPage :deps="deps" />
+  <MemberProfilePage
+    :deps="deps"
+    :on-updated="onUpdated" />
 </template>
 
 <script setup lang="ts">
-import BillingPage from '~/sections/billing/BillingPage.vue'
-import { createBillingPageDeps } from '~/sections/billing/deps-impl'
+import { createMemberProfilePageDeps } from '~/sections/organizations/account/profile/deps-impl'
+import MemberProfilePage from '~/sections/organizations/account/profile/MemberProfilePage.vue'
 
 const { t } = useI18n({
-  en: { plan: 'Plan and usage' },
-  ru: { plan: 'Тариф и лимиты' },
+  en: { profile: 'Profile' },
+  ru: { profile: 'Профиль' },
 })
 
-const deps = createBillingPageDeps(useApiClient())
+const deps = createMemberProfilePageDeps(useApiClient())
 
-useHead({ title: t('plan') })
+// The header shows the user's name and color in the organization.
+const onUpdated = async (): Promise<void> => {
+  await refreshAppLayoutData()
+}
+
+useHead({ title: t('profile') })
 </script>

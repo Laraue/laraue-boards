@@ -29,7 +29,6 @@ const mapAppLayoutData = (
   organizationMembership: Schemas['OrganizationListDto'],
   spaces: Schemas['SpaceListDto'][],
   tariffName: string,
-  user: Schemas['UserDto'],
 ): AppLayoutData => ({
   organization: {
     canCreateSpaces: organization.canCreateSpaces,
@@ -48,10 +47,11 @@ const mapAppLayoutData = (
     key: space.key,
     name: space.name,
   })),
+  // How the user is shown in this organization.
   user: {
-    color: user.color,
-    initials: user.initials ?? '?',
-    name: user.displayName || user.initials || 'User',
+    color: organization.memberProfile.color,
+    initials: organization.memberProfile.initials,
+    name: organization.memberProfile.displayName,
     tariffName,
   },
 })
@@ -118,7 +118,6 @@ export const createViewAppLayout =
 
     const details = await tryRequest(() =>
       Promise.all([
-        client.GET('/api/user', { signal }),
         client.GET('/api/spaces', { signal }),
         client.GET('/api/billing/tariff', { signal }),
       ]),
@@ -126,10 +125,7 @@ export const createViewAppLayout =
     if (!details) {
       return { problem: failed(), status: 'problem' }
     }
-    const [user, spaces, tariff] = details
-    if (isErrorResponse(user)) {
-      return { problem: toProblem(user.response.status), status: 'problem' }
-    }
+    const [spaces, tariff] = details
     if (isErrorResponse(spaces)) {
       return { problem: toProblem(spaces.response.status), status: 'problem' }
     }
@@ -142,7 +138,6 @@ export const createViewAppLayout =
         organizationMembership,
         spaces.data,
         tariff.data.name,
-        user.data,
       ),
       status: 'success',
     }

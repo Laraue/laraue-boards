@@ -25,6 +25,11 @@ export const useOrganizationRoutes = () => {
         name: 'organizations-organizationKey-account',
         params: organizationParams(),
       }) satisfies RouteLocationRaw,
+    accountPlan: () =>
+      ({
+        name: 'organizations-organizationKey-account-plan',
+        params: organizationParams(),
+      }) satisfies RouteLocationRaw,
     accountTransactions: () =>
       ({
         name: 'organizations-organizationKey-account-transactions',

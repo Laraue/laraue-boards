@@ -29,7 +29,7 @@ it('shows the current plan and available usage limits', async () => {
   currentWrapper = await mountSuspended(BillingPage, {
     attachTo: document.body,
     props: { deps },
-    route: '/organizations/acme-ab12/account',
+    route: '/organizations/acme-ab12/account/plan',
   })
 
   await expect.element(page.getByText('Pro')).toBeVisible()

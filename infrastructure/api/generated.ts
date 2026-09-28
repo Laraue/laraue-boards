@@ -2203,6 +2203,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organizations/current/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateMemberProfileRequest"];
+                    "text/json": components["schemas"]["UpdateMemberProfileRequest"];
+                    "application/*+json": components["schemas"]["UpdateMemberProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organizations/history": {
         parameters: {
             query?: never;
@@ -3541,6 +3580,8 @@ export interface components {
         };
         IssueAssigneeDetails: {
             isCurrentUser: boolean;
+            /** Format: uuid */
+            userId: string;
             color: string;
             displayName: string;
             initials: string;
@@ -3633,6 +3674,11 @@ export interface components {
             /** Format: int64 */
             organizationId?: number | string;
         };
+        MemberProfileDto: {
+            displayName: string;
+            initials: string;
+            color: string;
+        };
         MessageStatusDto: {
             /** Format: int64 */
             id: number | string;
@@ -3698,6 +3744,7 @@ export interface components {
             slug: string;
             slugPostfix: string;
             preferences?: components["schemas"]["UserOrganizationPreferencesResponse"];
+            memberProfile: components["schemas"]["MemberProfileDto"];
         };
         OrganizationHistoryItem: {
             /** Format: date-time */
@@ -3937,6 +3984,11 @@ export interface components {
             statusId: number | string;
             comment?: null | string;
         };
+        UpdateMemberProfileRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            displayName?: null | string;
+            color: string;
+        };
         UpdateSpaceRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             oldKey?: string;
@@ -3945,6 +3997,8 @@ export interface components {
             newKey: string;
         };
         UserDetails: {
+            /** Format: uuid */
+            userId: string;
             color: string;
             displayName: string;
             initials: string;
@@ -3953,10 +4007,8 @@ export interface components {
             /** Format: int64 */
             telegramId?: null | number | string;
             hasGoogleAccount?: boolean;
-            displayName: string;
-            languageCode?: string;
-            color: string;
             initials?: null | string;
+            languageCode?: string;
             palette: string[];
             preferences?: components["schemas"]["UserPreferencesResponse"];
         };

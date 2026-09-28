@@ -2,7 +2,8 @@
   <OrganizationAccountPage
     :api-keys-to="organizationRoutes.apiKeys()"
     :organization-name="organizationName"
-    :plan-to="organizationRoutes.account()"
+    :plan-to="organizationRoutes.accountPlan()"
+    :profile-to="organizationRoutes.account()"
     :transactions-to="organizationRoutes.accountTransactions()"
     user-account-to="/account">
     <NuxtPage />

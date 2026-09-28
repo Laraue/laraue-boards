@@ -28,10 +28,14 @@
         <main class="user-account-main">
           <div class="user-account-title">
             <span
+              v-if="page.initials"
               class="avatar user-account-avatar"
-              :style="{ background: page.user.color }">
-              {{ page.user.initials }}
+              :style="{ background: DEFAULT_COLOR }">
+              {{ page.initials }}
             </span>
+            <CircleUser
+              v-else
+              class="user-account-icon" />
             <div>
               <h1>{{ t('yourAccount') }}</h1>
               <p class="muted scope">
@@ -62,7 +66,9 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, Globe, LogOut } from '@lucide/vue'
+import { ArrowLeft, CircleUser, Globe, LogOut } from '@lucide/vue'
+
+import { DEFAULT_COLOR } from '~/constants/colors'
 
 import ConnectedAccountsSection from './components/ConnectedAccountsSection/ConnectedAccountsSection.vue'
 import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue'
@@ -178,6 +184,13 @@ watch(
 .user-account-avatar {
   flex: none;
   font-size: 22px;
+  height: 56px;
+  width: 56px;
+}
+
+.user-account-icon {
+  color: var(--color-muted);
+  flex: none;
   height: 56px;
   width: 56px;
 }
