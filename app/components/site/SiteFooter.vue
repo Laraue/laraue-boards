@@ -77,7 +77,7 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
 }
 
 .footer-inner {
-  align-items: flex-start;
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
@@ -108,8 +108,8 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
 
 .footer-links {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 10px 28px;
 }
 
 .footer-links a {
