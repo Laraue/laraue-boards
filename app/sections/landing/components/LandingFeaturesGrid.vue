@@ -44,8 +44,11 @@ defineProps<{
 
 <style scoped>
 .features {
-  border-bottom: 1px solid var(--color-divider);
-  padding: 88px 60px;
+  background: #17151f;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  overflow: hidden;
+  padding: 80px 60px;
+  position: relative;
 }
 
 .features-inner {
@@ -55,70 +58,66 @@ defineProps<{
 
 .section-label {
   align-items: center;
-  color: var(--color-accent);
+  color: rgb(247 244 238 / 40%);
   display: flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
+  font-size: 11px;
+  font-weight: 700;
   gap: 8px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   margin-bottom: 16px;
   text-transform: uppercase;
 }
 
 .section-label::after {
-  background: var(--color-accent);
+  background: rgb(247 244 238 / 20%);
   content: '';
   flex: 1;
   height: 1px;
   max-width: 40px;
-  opacity: 0.5;
 }
 
 .section-title {
-  font-size: clamp(26px, 3vw, 40px);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  color: #fff;
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 42px);
+  letter-spacing: -0.3px;
+  line-height: 1.12;
   margin-bottom: 16px;
 }
 
 .section-sub {
-  color: var(--color-muted);
+  color: rgb(247 244 238 / 50%);
   font-size: 17px;
+  font-weight: 300;
   line-height: 1.7;
   max-width: 560px;
 }
 
 .features-grid {
   display: grid;
-  gap: 16px;
+  gap: 2px;
   grid-template-columns: repeat(3, 1fr);
-  margin-top: 48px;
+  margin-top: 52px;
 }
 
 .feat-cell {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+  background: rgb(255 255 255 / 4%);
+  border: 1px solid rgb(255 255 255 / 8%);
   color: inherit;
-  padding: 28px 24px;
+  padding: 30px 26px;
   text-decoration: none;
-  transition:
-    border-color var(--duration-base),
-    transform var(--duration-base);
+  transition: background 0.2s;
 }
 
 .feat-cell:hover {
-  border-color: var(--color-accent);
-  transform: translateY(-2px);
+  background: rgb(255 255 255 / 7%);
 }
 
 .feat-icon {
   align-items: center;
-  background: var(--color-accent-soft);
-  border-radius: var(--radius-card);
-  color: var(--color-accent);
+  background: var(--accent-light);
+  border-radius: 11px;
+  color: var(--accent);
   display: flex;
   height: 44px;
   justify-content: center;
@@ -132,13 +131,15 @@ defineProps<{
 }
 
 .feat-title {
-  font-size: 15px;
-  font-weight: var(--font-weight-bold);
-  margin-bottom: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+  margin-bottom: 9px;
 }
 
 .feat-desc {
-  color: var(--color-muted);
+  color: rgb(247 244 238 / 45%);
   font-size: 13px;
   line-height: 1.6;
 }

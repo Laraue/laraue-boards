@@ -22,18 +22,18 @@ defineProps<{
   postTitle?: string
   preTitle?: string
   title?: string
-  type: 'alt' | 'plain'
+  type: 'cream' | 'light'
 }>()
 </script>
 
 <style scoped>
 .section {
-  border-bottom: 1px solid var(--color-divider);
-  padding: 88px 60px;
+  border-bottom: 1px solid var(--border);
+  padding: 80px 60px;
 }
 
-.section.alt {
-  background: var(--color-workspace);
+.section.cream {
+  background: var(--cream);
 }
 
 .section-inner {
@@ -43,18 +43,18 @@ defineProps<{
 
 .section-label {
   align-items: center;
-  color: var(--color-accent);
+  color: var(--accent);
   display: flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
+  font-size: 11px;
+  font-weight: 700;
   gap: 8px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   margin-bottom: 16px;
   text-transform: uppercase;
 }
 
 .section-label::after {
-  background: var(--color-accent);
+  background: var(--accent);
   content: '';
   flex: 1;
   height: 1px;
@@ -63,16 +63,17 @@ defineProps<{
 }
 
 .section-title {
-  font-size: clamp(26px, 3vw, 40px);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: var(--serif);
+  font-size: clamp(26px, 3vw, 42px);
+  letter-spacing: -0.3px;
+  line-height: 1.12;
   margin-bottom: 16px;
 }
 
 .section-sub {
-  color: var(--color-muted);
+  color: var(--muted);
   font-size: 17px;
+  font-weight: 300;
   line-height: 1.7;
   max-width: 560px;
 }

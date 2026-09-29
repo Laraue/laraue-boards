@@ -2,6 +2,7 @@
   <section
     aria-labelledby="hero-heading"
     class="hero">
+    <slot name="background" />
     <div class="hero-inner">
       <div>
         <div class="platform-badges">
@@ -36,12 +37,7 @@ defineProps<{
 <style scoped>
 .hero {
   align-items: center;
-  background: radial-gradient(
-    circle at 88% -8%,
-    color-mix(in srgb, var(--color-accent) 10%, transparent),
-    transparent 55%
-  );
-  border-bottom: 1px solid var(--color-divider);
+  background: var(--ink);
   display: flex;
   min-height: 100vh;
   overflow: hidden;
@@ -73,10 +69,10 @@ defineProps<{
 
 .hero-eyebrow {
   animation: fade-up var(--anim-duration-lg) var(--anim-stagger) var(--anim-ease) both;
-  color: var(--color-muted);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.1em;
+  color: rgb(247 244 238 / 40%);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   margin-bottom: 16px;
   opacity: 0;
   text-transform: uppercase;
@@ -84,11 +80,12 @@ defineProps<{
 
 .hero-title {
   animation: fade-up var(--anim-duration-lg) var(--anim-stagger) var(--anim-ease) both;
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-  margin-bottom: 16px;
+  color: #fff;
+  font-family: var(--serif);
+  font-size: clamp(32px, 4vw, 56px);
+  letter-spacing: -0.5px;
+  line-height: 1.05;
+  margin-bottom: 12px;
   overflow: visible;
   text-overflow: clip;
   white-space: normal;
@@ -96,8 +93,9 @@ defineProps<{
 
 .hero-sub {
   animation: fade-up var(--anim-duration-lg) calc(var(--anim-stagger) * 2) var(--anim-ease) both;
-  color: var(--color-muted);
+  color: rgb(247 244 238 / 60%);
   font-size: 18px;
+  font-weight: 300;
   line-height: 1.65;
   margin-bottom: 36px;
   max-width: 460px;
@@ -126,6 +124,12 @@ defineProps<{
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (width <= 860px) {
+  .hero-visual {
+    order: -1;
   }
 }
 

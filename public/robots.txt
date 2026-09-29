@@ -1,7 +1,2 @@
-User-agent: *
-Disallow: /account
-Disallow: /join/
-Disallow: /login
-Disallow: /organizations
-
-Sitemap: https://boards.laraue.com/sitemap.xml
+User-Agent: *
+Disallow:

@@ -2,14 +2,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <div class="footer-logo">
-          <img
-            alt=""
-            height="28"
-            :src="laraueLogoUrl"
-            width="28" />
-          Laraue Boards
-        </div>
+        <div class="footer-logo">Laraue Boards</div>
         <p class="footer-tagline">{{ t('footer_tagline') }}</p>
       </div>
       <ul class="footer-links">
@@ -57,9 +50,8 @@ const t = useLandingText(props.locale)
 
 <style scoped>
 .footer {
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-divider);
-  color: var(--color-muted);
+  background: var(--ink);
+  color: rgb(247 244 238 / 65%);
   padding: 60px 48px 40px;
 }
 
@@ -74,20 +66,15 @@ const t = useLandingText(props.locale)
 }
 
 .footer-logo {
-  align-items: center;
-  color: var(--color-text);
-  display: flex;
+  color: var(--paper);
+  font-family: var(--serif);
   font-size: 16px;
-  font-weight: var(--font-weight-bold);
-  gap: 10px;
+  font-weight: 700;
   margin-bottom: 12px;
 }
 
-.footer-logo img {
-  border-radius: 8px;
-}
-
 .footer-tagline {
+  color: rgb(247 244 238 / 45%);
   font-size: 13px;
   line-height: 1.6;
   max-width: 260px;
@@ -100,19 +87,20 @@ const t = useLandingText(props.locale)
 }
 
 .footer-links a {
-  color: var(--color-muted);
-  font-size: var(--font-size-body);
+  color: rgb(247 244 238 / 60%);
+  font-size: 14px;
   text-decoration: none;
-  transition: color var(--duration-base);
+  transition: color 0.2s;
 }
 
 .footer-links a:hover {
-  color: var(--color-text);
+  color: var(--paper);
 }
 
 .footer-bottom {
-  border-top: 1px solid var(--color-divider);
-  font-size: var(--font-size-small);
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  color: rgb(247 244 238 / 30%);
+  font-size: 12px;
   margin: 0 auto;
   max-width: 1160px;
   padding-top: 24px;

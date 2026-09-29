@@ -94,5 +94,5 @@ const message = computed(() => {
 })
 
 const retry = () => globalThis.location.reload()
-const goHome = () => clearError({ redirect: '/organizations' })
+const goHome = () => clearError({ redirect: '/' })
 </script>
