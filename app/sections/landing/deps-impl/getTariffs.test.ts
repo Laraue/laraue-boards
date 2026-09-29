@@ -1,52 +1,54 @@
 import { assert, test } from 'vitest'
 
+import { createTestBillingApiClient } from '#infrastructure/api/testApiClient'
+
 import { createGetTariffs } from './getTariffs'
 
-const tariff = {
-  billingDuration: null,
+const personal = {
   billingPeriod: 'Forever',
   currencyCode: 'USD',
   formattedPrice: '0$',
   id: 'free',
-  includedTokensCount: 0,
+  includedTokensCount: '0',
   limitFreeTeamOrganizationsCount: 1,
   limitIssuesPerMonth: 500,
   price: 0,
   title: 'Free',
+  type: 'LaraueBoardsPersonal',
 }
 
 test('requests the Boards tariffs in the chosen currency', async () => {
-  const urls: string[] = []
-  const getTariffs = createGetTariffs('https://billing.test/api', async (input) => {
-    urls.push(String(input))
-    return Response.json({ personalSubscriptions: [], teamSubscriptions: [] })
-  })
+  const { client, requests } = createTestBillingApiClient(() => ({
+    personalSubscriptions: [],
+    teamSubscriptions: [],
+  }))
 
-  await getTariffs('RUB')
+  await createGetTariffs(client)('RUB')
 
-  assert.deepEqual(urls, [
-    'https://billing.test/api/tariffs?currencyCode=RUB&serviceId=LaraueBoards',
-  ])
+  const url = new URL(requests[0]!.url)
+  assert.equal(url.pathname, '/api/tariffs')
+  assert.equal(url.searchParams.get('CurrencyCode'), 'RUB')
+  assert.equal(url.searchParams.get('ServiceId'), 'LaraueBoards')
 })
 
 test('maps billing tariffs to the landing view model', async () => {
-  const getTariffs = createGetTariffs('https://billing.test/api', async () =>
-    Response.json({
-      personalSubscriptions: [tariff],
-      teamSubscriptions: [
-        {
-          ...tariff,
-          billingDuration: 3,
-          billingPeriod: 'Month',
-          limitFreeTeamOrganizationsCount: null,
-          limitIssuesPerMonth: null,
-          title: 'Team',
-        },
-      ],
-    }),
-  )
+  const { client } = createTestBillingApiClient(() => ({
+    personalSubscriptions: [personal],
+    teamSubscriptions: [
+      {
+        ...personal,
+        billingDuration: 3,
+        billingPeriod: 'Month',
+        includedTokensCount: '750000',
+        limitIssuesPerMonth: null,
+        price: '6',
+        title: 'Team',
+        type: 'LaraueBoardsTeam',
+      },
+    ],
+  }))
 
-  assert.deepEqual(await getTariffs('USD'), {
+  assert.deepEqual(await createGetTariffs(client)('USD'), {
     data: {
       personal: [
         {
@@ -69,9 +71,9 @@ test('maps billing tariffs to the landing view model', async () => {
           freeOrganizations: undefined,
           id: 'free',
           issuesPerMonth: undefined,
-          price: 0,
+          price: 6,
           title: 'Team',
-          tokens: 0,
+          tokens: 750000,
         },
       ],
     },
@@ -79,19 +81,20 @@ test('maps billing tariffs to the landing view model', async () => {
   })
 })
 
-test('reports the status code of a failed response', async () => {
-  const getTariffs = createGetTariffs(
-    'https://billing.test/api',
-    async () => new Response(null, { status: 503 }),
-  )
+test('skips tariffs of other services', async () => {
+  const { client } = createTestBillingApiClient(() => ({
+    personalSubscriptions: [{ ...personal, type: 'MarkdownTranslatorPersonal' }],
+    teamSubscriptions: [],
+  }))
 
-  assert.deepEqual(await getTariffs('USD'), { code: 503, status: 'error' })
+  assert.deepEqual(await createGetTariffs(client)('USD'), {
+    data: { personal: [], team: [] },
+    status: 'success',
+  })
 })
 
-test('reports a network failure', async () => {
-  const getTariffs = createGetTariffs('https://billing.test/api', async () => {
-    throw new Error('offline')
-  })
+test('reports the status code of a failed response', async () => {
+  const { client } = createTestBillingApiClient(() => new Response(null, { status: 503 }))
 
-  assert.deepEqual(await getTariffs('USD'), { code: 0, status: 'error' })
+  assert.deepEqual(await createGetTariffs(client)('USD'), { code: 503, status: 'error' })
 })

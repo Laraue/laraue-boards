@@ -40,8 +40,6 @@
       </div>
     </div>
   </LandingSection>
-
-  
 </template>
 
 <script setup lang="ts">
@@ -61,11 +59,14 @@ const { t } = useI18n(
       struct_label: "How it's organized",
       struct_org: 'Organization',
       struct_org_ex: 'Acme Studio',
-      struct_p1d: 'Every issue gets a short key like WRK-42 you can reference in a chat message or a commit.',
+      struct_p1d:
+        'Every issue gets a short key like WRK-42 you can reference in a chat message or a commit.',
       struct_p1t: 'Quotable issue keys',
-      struct_p2d: 'Group boards by client, product or department. Each space keeps its own backlog and numbering.',
+      struct_p2d:
+        'Group boards by client, product or department. Each space keeps its own backlog and numbering.',
       struct_p2t: 'Spaces per client or project',
-      struct_p3d: 'Start in your personal organization, then move a whole space to a team org later — nothing to recreate.',
+      struct_p3d:
+        'Start in your personal organization, then move a whole space to a team org later — nothing to recreate.',
       struct_p3t: 'Move without rebuilding',
       struct_space: 'Space',
       struct_space_ex: 'Client: Redsight',
@@ -80,11 +81,14 @@ const { t } = useI18n(
       struct_label: 'Как всё устроено',
       struct_org: 'Организация',
       struct_org_ex: 'Acme Studio',
-      struct_p1d: 'У каждого issue есть номер вида WRK-42 — на него можно сослаться в чате или в коммите.',
+      struct_p1d:
+        'У каждого issue есть номер вида WRK-42 — на него можно сослаться в чате или в коммите.',
       struct_p1t: 'Issue с коротким номером',
-      struct_p2d: 'Группируйте доски по клиентам, продуктам или отделам. У каждого спейса свой бэклог и своя нумерация.',
+      struct_p2d:
+        'Группируйте доски по клиентам, продуктам или отделам. У каждого спейса свой бэклог и своя нумерация.',
       struct_p2t: 'Спейс под каждого клиента',
-      struct_p3d: 'Начните в личной организации, а потом перенесите весь спейс в командную — ничего не придётся создавать заново.',
+      struct_p3d:
+        'Начните в личной организации, а потом перенесите весь спейс в командную — ничего не придётся создавать заново.',
       struct_p3t: 'Переносите, не пересобирая',
       struct_space: 'Спейс',
       struct_space_ex: 'Клиент: Redsight',

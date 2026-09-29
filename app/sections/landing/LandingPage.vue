@@ -48,11 +48,13 @@ const props = defineProps<{ deps: LandingPageDeps; locale: Locale }>()
 const { t } = useI18n(
   {
     en: {
-      seoDescription: 'A free, open-source Jira alternative built on Telegram. Forward a message to @msgboard_bot and it becomes a task on your Kanban board — Mini App or web app.',
+      seoDescription:
+        'A free, open-source Jira alternative built on Telegram. Forward a message to @msgboard_bot and it becomes a task on your Kanban board — Mini App or web app.',
       seoTitle: 'Laraue Boards — Telegram Kanban Task Manager',
     },
     ru: {
-      seoDescription: 'Перестаньте терять важные сообщения в Telegram. Laraue Boards превращает сообщения, отправленные боту @msgboard_bot, в карточки на канбан-доске. Бесплатно, открытый код, работает как Telegram Mini App и веб-приложение.',
+      seoDescription:
+        'Перестаньте терять важные сообщения в Telegram. Laraue Boards превращает сообщения, отправленные боту @msgboard_bot, в карточки на канбан-доске. Бесплатно, открытый код, работает как Telegram Mini App и веб-приложение.',
       seoTitle: 'Laraue Boards — превращайте сообщения Telegram в Kanban-доски',
     },
   },

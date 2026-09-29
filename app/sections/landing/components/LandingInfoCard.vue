@@ -42,7 +42,9 @@ defineProps<{
   border-radius: var(--radius-dialog);
   box-shadow: var(--shadow-card);
   padding: 36px 36px 32px;
-  transition: box-shadow var(--duration-base), transform var(--duration-base);
+  transition:
+    box-shadow var(--duration-base),
+    transform var(--duration-base);
 }
 
 .info-card:hover {

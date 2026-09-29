@@ -71,9 +71,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       boardsApiBaseUrl: '',
-      // Billing API (tariffs on the landing page); the browser calls it too, so it needs CORS for
-      // this site's origin.
-      billingApiBaseUrl: 'https://laraue.com/api/billing',
+      // Billing API root, where `/api/tariffs` is reachable (tariffs on the landing page). The
+      // browser calls it too, so it needs CORS for this site's origin.
+      billingApiBaseUrl: '',
       googleClientId: '',
       retroApiBaseUrl: '',
       retroHubUrl: '',

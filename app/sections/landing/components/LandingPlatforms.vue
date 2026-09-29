@@ -197,8 +197,6 @@
       </div>
     </div>
   </LandingSection>
-
-  
 </template>
 
 <script setup lang="ts">
@@ -214,7 +212,8 @@ const { t } = useI18n(
   {
     en: {
       mcp_cta: 'Get an API key',
-      mcp_desc: 'Connect Claude or any MCP-compatible agent straight to your boards over the Model Context Protocol. Create a personal API key and the agent can act on your behalf.',
+      mcp_desc:
+        'Connect Claude or any MCP-compatible agent straight to your boards over the Model Context Protocol. Create a personal API key and the agent can act on your behalf.',
       mcp_f1: 'Read, create, edit and move issues',
       mcp_f2: 'Attach and download files',
       mcp_f3: 'Scoped to your own permissions',
@@ -225,13 +224,15 @@ const { t } = useI18n(
       pl_label: 'Two ways to use it',
       pl_sub: 'Start in Telegram, continue in the browser. Your boards are always in sync.',
       pl_title: 'Web app & Telegram Mini App',
-      tg_desc: 'Access your boards inside Telegram without leaving the app. Forward any message to the bot and it lands on your board in seconds.',
+      tg_desc:
+        'Access your boards inside Telegram without leaving the app. Forward any message to the bot and it lands on your board in seconds.',
       tg_f1: 'Forward messages from any chat',
       tg_f2: 'Native iOS & Android feel',
       tg_f3: 'Instant — nothing to install',
       tg_f4: 'The same boards as the web app',
       tg_name: 'Telegram Mini App',
-      web_desc: 'Full-featured Kanban in the browser. Sign in with your Telegram account — no separate registration. Works on desktop and mobile.',
+      web_desc:
+        'Full-featured Kanban in the browser. Sign in with your Telegram account — no separate registration. Works on desktop and mobile.',
       web_f1: 'Telegram login — no password',
       web_f2: 'Full drag-and-drop Kanban',
       web_f3: 'Organization & permission management',
@@ -240,7 +241,8 @@ const { t } = useI18n(
     },
     ru: {
       mcp_cta: 'Получить API-ключ',
-      mcp_desc: 'Подключите Claude или любого MCP-совместимого агента прямо к вашим доскам по протоколу Model Context Protocol. Создайте персональный API-ключ — и агент сможет действовать от вашего имени.',
+      mcp_desc:
+        'Подключите Claude или любого MCP-совместимого агента прямо к вашим доскам по протоколу Model Context Protocol. Создайте персональный API-ключ — и агент сможет действовать от вашего имени.',
       mcp_f1: 'Чтение, создание, редактирование и перемещение issues',
       mcp_f2: 'Прикладывайте и скачивайте файлы',
       mcp_f3: 'Права ограничены вашими правами доступа',
@@ -251,13 +253,15 @@ const { t } = useI18n(
       pl_label: 'Два способа использования',
       pl_sub: 'Начните в Telegram, продолжайте в браузере. Доски всегда синхронизированы.',
       pl_title: 'Веб-приложение и Telegram Mini App',
-      tg_desc: 'Доступ к доскам прямо внутри Telegram. Перешлите любое сообщение боту — оно сразу появится на доске.',
+      tg_desc:
+        'Доступ к доскам прямо внутри Telegram. Перешлите любое сообщение боту — оно сразу появится на доске.',
       tg_f1: 'Пересылка сообщений из любого чата',
       tg_f2: 'Нативный iOS и Android',
       tg_f3: 'Мгновенно — ничего не нужно устанавливать',
       tg_f4: 'Те же доски, что в веб-приложении',
       tg_name: 'Telegram Mini App',
-      web_desc: 'Полноценный Kanban в браузере. Вход через аккаунт Telegram без дополнительной регистрации. Работает на десктопе и мобильных.',
+      web_desc:
+        'Полноценный Kanban в браузере. Вход через аккаунт Telegram без дополнительной регистрации. Работает на десктопе и мобильных.',
       web_f1: 'Вход через Telegram — без пароля',
       web_f2: 'Drag-and-drop Kanban',
       web_f3: 'Управление организацией и правами',
@@ -278,7 +282,9 @@ const { t } = useI18n(
   display: flex;
   flex-direction: column;
   padding: 32px;
-  transition: box-shadow var(--duration-base), transform var(--duration-base);
+  transition:
+    box-shadow var(--duration-base),
+    transform var(--duration-base);
 }
 
 .platform-card:hover {

@@ -1,59 +1,49 @@
+import type { components } from '#infrastructure/api/billing.generated'
+import type { BillingApiClient } from '#infrastructure/api/client'
+import { executeQuery } from '#infrastructure/api/executeQuery'
+
 import type { GetTariffs } from '../LandingPage.deps'
 import type { LandingTariff } from '../LandingPage.types'
 
-// The Billing API's tariff, as returned for the LaraueBoards service.
-type BillingTariff = {
-  billingDuration: null | number
-  billingPeriod: 'Forever' | 'Month'
-  currencyCode: string
-  formattedPrice: string
-  id: string
-  includedTokensCount: number
-  limitFreeTeamOrganizationsCount?: null | number
-  limitIssuesPerMonth?: null | number
-  price: number
-  title: string
-}
+type Schemas = components['schemas']
+type PersonalTariff = Schemas['PersonalSubscriptionLaraueBoardsPersonalSubscription']
+type TeamTariff = Schemas['TeamSubscriptionLaraueBoardsTeamSubscription']
 
-type BillingTariffs = {
-  personalSubscriptions: BillingTariff[]
-  teamSubscriptions: BillingTariff[]
-}
+// The API sends 64-bit and floating point numbers as `number | string`.
+const toNumber = (value: null | number | string | undefined): number => Number(value ?? 0)
 
-const mapTariff = (tariff: BillingTariff): LandingTariff => ({
+const mapTariff = (
+  tariff: PersonalTariff | TeamTariff,
+  freeOrganizations?: null | number | string,
+): LandingTariff => ({
   billing: {
-    duration: tariff.billingDuration ?? 1,
+    duration: toNumber(tariff.billingDuration ?? 1),
     period: tariff.billingPeriod === 'Forever' ? 'forever' : 'month',
   },
   currencyCode: tariff.currencyCode,
   formattedPrice: tariff.formattedPrice,
-  freeOrganizations: tariff.limitFreeTeamOrganizationsCount || undefined,
+  freeOrganizations: toNumber(freeOrganizations) || undefined,
   id: tariff.id,
-  issuesPerMonth: tariff.limitIssuesPerMonth || undefined,
-  price: tariff.price,
+  issuesPerMonth: toNumber(tariff.limitIssuesPerMonth) || undefined,
+  price: toNumber(tariff.price),
   title: tariff.title,
-  tokens: tariff.includedTokensCount,
+  tokens: toNumber(tariff.includedTokensCount),
 })
 
 export const createGetTariffs =
-  (baseUrl: string, fetchImpl: typeof globalThis.fetch = globalThis.fetch): GetTariffs =>
-  async (currency) => {
-    try {
-      const query = new URLSearchParams({ currencyCode: currency, serviceId: 'LaraueBoards' })
-      const response = await fetchImpl(`${baseUrl}/tariffs?${query}`)
-      if (!response.ok) {
-        return { code: response.status, status: 'error' }
-      }
-
-      const tariffs = (await response.json()) as BillingTariffs
-      return {
-        data: {
-          personal: tariffs.personalSubscriptions.map(mapTariff),
-          team: tariffs.teamSubscriptions.map(mapTariff),
-        },
-        status: 'success',
-      }
-    } catch {
-      return { code: 0, status: 'error' }
-    }
-  }
+  (client: BillingApiClient): GetTariffs =>
+  (currency) =>
+    executeQuery({
+      map: (data) => ({
+        personal: data.personalSubscriptions.flatMap((tariff) =>
+          tariff.type === 'MarkdownTranslatorPersonal'
+            ? []
+            : [mapTariff(tariff, tariff.limitFreeTeamOrganizationsCount)],
+        ),
+        team: data.teamSubscriptions.map((tariff) => mapTariff(tariff)),
+      }),
+      request: () =>
+        client.GET('/api/tariffs', {
+          params: { query: { CurrencyCode: currency, ServiceId: 'LaraueBoards' } },
+        }),
+    })

@@ -21,9 +21,7 @@
         title="@msgboard_bot"
         type="telegram" />
       <div class="hero-quick-links">
-        <a :href="docsUrl">
-          {{ t('documentation') }} &#8594;
-        </a>
+        <a :href="docsUrl">{{ t('documentation') }} &#8594;</a>
         <a :href="projectUrl">{{ t('project_description') }} &#8594;</a>
       </div>
     </template>
@@ -185,7 +183,8 @@ const { t } = useI18n(
     en: {
       documentation: 'Documentation',
       hero_eyebrow: 'Telegram task manager by Laraue Software',
-      hero_sub: 'A Jira alternative in Telegram. Link your chats to boards with @msgboard_bot. Free, open source, ready in seconds.',
+      hero_sub:
+        'A Jira alternative in Telegram. Link your chats to boards with @msgboard_bot. Free, open source, ready in seconds.',
       hero_title: 'Turn Telegram messages\ninto Kanban boards',
       hv_arrow: 'New issue in Backlog, title & description written by AI',
       hv_badge: 'Backlog',
@@ -209,7 +208,8 @@ const { t } = useI18n(
     ru: {
       documentation: 'Документация',
       hero_eyebrow: 'Telegram-таск-менеджер от Laraue Software',
-      hero_sub: 'Альтернатива Jira в Telegram. Привяжите свои чаты к доскам с помощью @msgboard_bot. Бесплатно, с открытым кодом, готово за секунды.',
+      hero_sub:
+        'Альтернатива Jira в Telegram. Привяжите свои чаты к доскам с помощью @msgboard_bot. Бесплатно, с открытым кодом, готово за секунды.',
       hero_title: 'Превращайте сообщения Telegram\nв Kanban-доски',
       hv_arrow: 'Новый issue в Бэклоге, заголовок и описание пишет ИИ',
       hv_badge: 'Бэклог',
@@ -273,7 +273,9 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 .phone-mockup {
   background: #1a1a1d;
   border-radius: 44px;
-  box-shadow: var(--shadow-popover), inset 0 0 0 2px #3a3a3f;
+  box-shadow:
+    var(--shadow-popover),
+    inset 0 0 0 2px #3a3a3f;
   flex-shrink: 0;
   padding: 8px;
   width: 270px;
@@ -478,7 +480,10 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .transform-arrow {
   align-items: flex-start;
-  animation: msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 3) var(--anim-ease) forwards, pulse-arrow var(--anim-pulse-duration) calc(var(--anim-demo-step) * 3 + var(--anim-demo-duration)) ease-in-out infinite;
+  animation:
+    msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 3) var(--anim-ease) forwards,
+    pulse-arrow var(--anim-pulse-duration)
+      calc(var(--anim-demo-step) * 3 + var(--anim-demo-duration)) ease-in-out infinite;
   color: var(--color-muted);
   display: flex;
   gap: 8px;
@@ -501,7 +506,8 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 }
 
 .issue-card-mockup {
-  animation: msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 4) var(--anim-ease) forwards;
+  animation: msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 4) var(--anim-ease)
+    forwards;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
@@ -613,7 +619,8 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 }
 
 @keyframes pulse-arrow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.55;
     transform: translateY(0);
   }

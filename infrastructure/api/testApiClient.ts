@@ -1,5 +1,6 @@
 import {
   createApiClient,
+  createBillingApiClient,
   createRetroApiClient,
   type CreateApiClientOptions,
 } from '#infrastructure/api/client'
@@ -37,3 +38,7 @@ export const createTestApiClient = (
 export const createTestRetroApiClient = (
   respond: (request: Request, path: string) => unknown = emptyResponse,
 ) => createTestClient(createRetroApiClient, respond)
+
+export const createTestBillingApiClient = (
+  respond: (request: Request, path: string) => unknown = emptyResponse,
+) => createTestClient(createBillingApiClient, respond)

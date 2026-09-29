@@ -1,6 +1,8 @@
+import type { BillingApiClient } from '#infrastructure/api/client'
+
 import type { LandingPageDeps } from '../LandingPage.deps'
 import { createGetTariffs } from './getTariffs'
 
-export const createLandingPageDeps = (billingApiBaseUrl: string): LandingPageDeps => ({
-  getTariffs: createGetTariffs(billingApiBaseUrl),
+export const createLandingPageDeps = (client: BillingApiClient): LandingPageDeps => ({
+  getTariffs: createGetTariffs(client),
 })

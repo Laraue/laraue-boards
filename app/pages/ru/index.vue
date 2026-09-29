@@ -10,5 +10,5 @@ import LandingPage from '~/sections/landing/LandingPage.vue'
 
 definePageMeta({ layout: 'landing' })
 
-const deps = createLandingPageDeps(useRuntimeConfig().public.billingApiBaseUrl)
+const deps = createLandingPageDeps(useBillingApiClient())
 </script>
