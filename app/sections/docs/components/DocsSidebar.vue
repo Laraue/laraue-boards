@@ -84,7 +84,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
 }
 
 .sections {
-  gap: 18px;
+  gap: 24px;
 }
 
 .section-title {
@@ -100,7 +100,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
 
 .pages {
   border-left: 1px solid var(--color-divider);
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .page-link {
@@ -110,7 +110,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
   font-size: 13px;
   line-height: 1.4;
   margin-left: -1px;
-  padding: 5px 12px;
+  padding: 6px 12px;
   text-decoration: none;
   transition: color var(--duration-base);
 }
