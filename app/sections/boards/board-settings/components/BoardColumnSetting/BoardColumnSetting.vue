@@ -82,10 +82,9 @@ const { isDragging } = useSortable({
   align-items: center;
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: auto minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(
-      min-content,
-      0.3fr
-    ) auto;
+  grid-template-columns:
+    auto minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(min-content, 0.3fr)
+    auto;
 }
 
 .setting-row--dragging {
