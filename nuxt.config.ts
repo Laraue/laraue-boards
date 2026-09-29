@@ -69,11 +69,11 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Billing API root, where `/api/tariffs` is reachable (NUXT_BILLING_API_BASE_URL). Server-only:
+    // the landing page's prices are requested from this app's own `/landing/tariffs` route.
+    billingApiBaseUrl: '',
     public: {
       boardsApiBaseUrl: '',
-      // Billing API root, where `/api/tariffs` is reachable (tariffs on the landing page). The
-      // browser calls it too, so it needs CORS for this site's origin.
-      billingApiBaseUrl: '',
       googleClientId: '',
       retroApiBaseUrl: '',
       retroHubUrl: '',

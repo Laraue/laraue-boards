@@ -11,6 +11,7 @@ export default [
       'dist/',
       'infrastructure/api/generated.ts',
       'infrastructure/api/retro.generated.ts',
+      'infrastructure/api/billing.generated.ts',
     ],
   },
 
