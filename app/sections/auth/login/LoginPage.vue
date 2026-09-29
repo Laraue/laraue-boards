@@ -5,7 +5,7 @@
         <img
           alt=""
           class="logo-mark"
-          src="/favicon.svg" />
+          :src="laraueLogoUrl" />
         <span>Laraue Boards</span>
       </div>
       <div class="auth-copy">
@@ -41,7 +41,7 @@
         <img
           alt=""
           class="logo-mark"
-          src="/favicon.svg" />
+          :src="laraueLogoUrl" />
         <span>Laraue Boards</span>
       </div>
       <h2>{{ t('welcomeBack') }}</h2>

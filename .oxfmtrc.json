@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": ["infrastructure/api/generated.ts", "infrastructure/api/retro.generated.ts"],
+  "ignorePatterns": [
+    "infrastructure/api/generated.ts",
+    "infrastructure/api/retro.generated.ts",
+    "infrastructure/api/billing.generated.ts"
+  ],
   "arrowParens": "always",
   "bracketSameLine": true,
   "bracketSpacing": true,

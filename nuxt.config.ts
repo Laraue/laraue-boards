@@ -22,10 +22,6 @@ export default defineNuxtConfig({
           name: 'viewport',
         },
       ],
-      script:
-        process.env.NODE_ENV === 'test'
-          ? []
-          : [{ src: 'https://telegram.org/js/telegram-web-app.js?61' }],
     },
   },
 
@@ -41,9 +37,41 @@ export default defineNuxtConfig({
     id: 'G-RGM3JHLBGL',
   },
 
-  modules: ['nuxt-gtag'],
+  modules: ['nuxt-gtag', '@nuxtjs/sitemap'],
+
+  // Public origin of the site (override with NUXT_PUBLIC_SITE_URL): canonical/hreflang URLs and the
+  // sitemap are built from it.
+  site: {
+    url: 'https://boards.laraue.com',
+  },
+
+  // Only the landing page is listed. The app's own pages are private, so the sitemap doesn't
+  // discover routes from the app and lists them explicitly.
+  sitemap: {
+    excludeAppSources: true,
+    urls: ['/', '/ru'].map((loc) => ({
+      alternatives: [
+        { href: '/', hreflang: 'en' },
+        { href: '/ru', hreflang: 'ru' },
+        { href: '/', hreflang: 'x-default' },
+      ],
+      loc,
+    })),
+  },
+
+  // The app itself is private: keep it out of search results. Only the landing page is indexed.
+  routeRules: {
+    '/account': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/join/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/login': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/organizations': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/organizations/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+  },
 
   runtimeConfig: {
+    // Billing API root, where `/api/tariffs` is reachable (NUXT_BILLING_API_BASE_URL). Server-only:
+    // the landing page's prices are requested from this app's own `/landing/tariffs` route.
+    billingApiBaseUrl: '',
     public: {
       boardsApiBaseUrl: '',
       googleClientId: '',

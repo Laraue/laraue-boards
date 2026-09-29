@@ -1,23 +1,17 @@
 <template>
-  <LoginPage
+  <LandingPage
     :deps="deps"
-    :google-client-id="config.public.googleClientId"
-    :on-logged-in="onLoggedIn"
-    :telegram-bot-id="String(config.public.telegramBotId)" />
+    locale="en" />
 </template>
 
 <script setup lang="ts">
-import { createLoginPageDeps } from '~/sections/auth/login/deps-impl'
-import LoginPage from '~/sections/auth/login/LoginPage.vue'
+import { createLandingPageDeps } from '~/sections/landing/deps-impl'
+import type { TariffsFetcher } from '~/sections/landing/deps-impl/fetchTariffs'
+import LandingPage from '~/sections/landing/LandingPage.vue'
 
-definePageMeta({ layout: false })
-const config = useRuntimeConfig()
-const route = useRoute()
-const client = useApiClient()
-const deps = createLoginPageDeps(client, import.meta.dev ? config.public.testUserToken : undefined)
-const onLoggedIn = async (): Promise<void> => {
-  const { redirect } = route.query
+definePageMeta({ layout: 'landing' })
 
-  await navigateTo(typeof redirect === 'string' ? redirect : '/organizations')
-}
+// `useRequestFetch()` is typed with every route of the app, which TypeScript cannot compare with a
+// plain function type (excessive stack depth), so it is narrowed to what the landing page uses.
+const deps = createLandingPageDeps(useRequestFetch() as unknown as TariffsFetcher)
 </script>

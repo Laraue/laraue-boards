@@ -28,10 +28,14 @@ export const useLocale = () => {
   return useState<Locale>('app-locale', () => (isLocale(cookie.value) ? cookie.value : 'en'))
 }
 
+// Translates with the app's locale (the cookie) unless `localeOverride` is given, e.g. by a public
+// page whose language is part of its URL.
 export const useI18n = <const Schema extends TranslationSchema>(
   messages: TranslationMessages<Schema>,
+  localeOverride?: Locale,
 ) => {
-  const locale = useLocale()
+  const appLocale = useLocale()
+  const locale = computed<Locale>(() => localeOverride ?? appLocale.value)
   type Key = Extract<keyof Schema, string>
 
   const t = (key: Key, params?: Readonly<Record<string, number | string>>): string => {
