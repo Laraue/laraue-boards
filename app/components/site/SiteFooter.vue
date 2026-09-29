@@ -1,5 +1,7 @@
 <template>
-  <footer class="footer">
+  <footer
+    class="footer"
+    :class="{ wide }">
     <div class="footer-inner">
       <div class="footer-logo">
         <img
@@ -46,7 +48,11 @@ import type { Locale } from '~/composables/useI18n'
 import { docsPath } from '~/sections/docs/docsPaths'
 import { botUrl, githubUrl, laraueUrl } from '~/sections/landing/landingLinks'
 
-const props = defineProps<{ locale: Locale }>()
+const props = defineProps<{
+  locale: Locale
+  // As wide as the docs' content, so the footer lines up with the page above it.
+  wide?: boolean
+}>()
 
 const { t } = useI18n(
   {
@@ -126,6 +132,16 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
   margin: 0 auto;
   max-width: 1160px;
   padding-top: 24px;
+}
+
+/* The docs' content is 1360px wide with 24px of padding on each side. */
+.footer.wide {
+  padding-inline: 24px;
+}
+
+.footer.wide .footer-inner,
+.footer.wide .footer-bottom {
+  max-width: 1312px;
 }
 
 @media (width <= 720px) {

@@ -1,6 +1,8 @@
 <template>
   <header class="header">
-    <div class="header-inner">
+    <div
+      class="header-inner"
+      :class="{ wide }">
       <NuxtLink
         class="logo"
         :to="homePath">
@@ -54,6 +56,8 @@ const props = defineProps<{
   locale: Locale
   // Where the other language's version of the current page is; the landing page by default.
   otherLanguagePath?: string
+  // As wide as the docs' content, so the header lines up with the page below it.
+  wide?: boolean
 }>()
 
 const { t } = useI18n(
@@ -112,6 +116,10 @@ const otherLocalePath = computed(
   margin: 0 auto;
   max-width: 1160px;
   padding: 0 24px;
+}
+
+.header-inner.wide {
+  max-width: 1360px;
 }
 
 .logo {
