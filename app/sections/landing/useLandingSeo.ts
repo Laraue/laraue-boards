@@ -30,6 +30,9 @@ export const useLandingSeo = (
       { href: pageUrls.ru, hreflang: 'ru', rel: 'alternate' },
       { href: pageUrls.en, hreflang: 'x-default', rel: 'alternate' },
     ],
+    // The app's own viewport forbids zooming (it stops iOS from zooming into focused inputs); a public
+    // page has no need for that and has to stay zoomable.
+    meta: [{ content: 'width=device-width, initial-scale=1', name: 'viewport' }],
     script: [
       {
         // `<` is escaped so no text in the data can close the script element.

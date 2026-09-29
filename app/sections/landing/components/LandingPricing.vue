@@ -226,18 +226,22 @@ const offerDescription = (tariff: LandingTariff, perSeat: boolean): string | und
     .join(', ') || undefined
 
 const offers = useLandingOffers()
+const pricingUrl = `${useSiteConfig().url.replace(/\/$/, '')}${props.locale === 'ru' ? '/ru' : '/'}#pricing`
 watch(
   () => props.tariffs,
   (tariffs) => {
     if (!tariffs) {
       return
     }
+    // Individual and team plans share names ("Free"), so the audience is part of the offer name.
     const toOffer = (tariff: LandingTariff, perSeat: boolean) => ({
       '@type': 'Offer',
+      availability: 'https://schema.org/InStock',
       description: offerDescription(tariff, perSeat),
-      name: tariff.title,
+      name: `${tariff.title} — ${t(perSeat ? 'team_label' : 'personal_label')}`,
       price: tariff.price,
       priceCurrency: tariff.currencyCode,
+      url: pricingUrl,
     })
     offers.value = [
       ...tariffs.personal.map((tariff) => toOffer(tariff, false)),
