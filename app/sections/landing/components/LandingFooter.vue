@@ -43,7 +43,6 @@
 
 <script setup lang="ts">
 import type { LandingLocale } from '../LandingPage.messages'
-
 import { useLandingText } from '../useLandingText'
 
 const props = defineProps<{

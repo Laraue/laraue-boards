@@ -82,7 +82,6 @@
 <script setup lang="ts">
 import type { LandingLocale } from '../LandingPage.messages'
 import type { LandingCurrency, LandingTariff, LandingTariffs } from '../LandingPage.types'
-
 import { useLandingText } from '../useLandingText'
 import LandingIcon from './LandingIcon.vue'
 import LandingSection from './LandingSection.vue'

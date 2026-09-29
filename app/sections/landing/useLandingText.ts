@@ -1,5 +1,4 @@
 import type { LandingLocale, LandingMessageKey } from './LandingPage.messages'
-
 import { landingMessages } from './LandingPage.messages'
 
 export type LandingText = (
