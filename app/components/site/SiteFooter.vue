@@ -1,16 +1,13 @@
 <template>
   <footer class="footer">
     <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="footer-logo">
-          <img
-            alt=""
-            height="28"
-            :src="laraueLogoUrl"
-            width="28" />
-          Laraue Boards
-        </div>
-        <p class="footer-tagline">{{ t('footer_tagline') }}</p>
+      <div class="footer-logo">
+        <img
+          alt=""
+          height="28"
+          :src="laraueLogoUrl"
+          width="28" />
+        Laraue Boards
       </div>
       <ul class="footer-links">
         <li>
@@ -37,7 +34,10 @@
         </li>
       </ul>
     </div>
-    <div class="footer-bottom">© 2026 Laraue Software</div>
+    <div class="footer-bottom">
+      <p>{{ t('footer_tagline') }}</p>
+      <p>© 2026 Laraue Software</p>
+    </div>
   </footer>
 </template>
 
@@ -82,7 +82,7 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
   flex-wrap: wrap;
   gap: 40px;
   justify-content: space-between;
-  margin: 0 auto 40px;
+  margin: 0 auto 32px;
   max-width: 1160px;
 }
 
@@ -93,17 +93,10 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
   font-size: 16px;
   font-weight: var(--font-weight-bold);
   gap: 10px;
-  margin-bottom: 12px;
 }
 
 .footer-logo img {
   border-radius: 8px;
-}
-
-.footer-tagline {
-  font-size: 13px;
-  line-height: 1.6;
-  max-width: 260px;
 }
 
 .footer-links {
@@ -125,7 +118,11 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
 
 .footer-bottom {
   border-top: 1px solid var(--color-divider);
+  display: flex;
+  flex-wrap: wrap;
   font-size: var(--font-size-small);
+  gap: 8px 24px;
+  justify-content: space-between;
   margin: 0 auto;
   max-width: 1160px;
   padding-top: 24px;
