@@ -6,11 +6,11 @@
       <div>
         <div
           v-if="preTitle"
-          class="section-label reveal">
+          class="section-label">
           {{ preTitle }}
         </div>
-        <h2 class="section-title reveal">{{ title }}</h2>
-        <p class="section-sub reveal">{{ postTitle }}</p>
+        <h2 class="section-title">{{ title }}</h2>
+        <p class="section-sub">{{ postTitle }}</p>
       </div>
       <slot />
     </div>

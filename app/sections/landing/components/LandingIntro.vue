@@ -64,27 +64,22 @@ defineProps<{
 
 .platform-badges {
   align-items: center;
-  animation: fade-up var(--anim-duration-lg) 0s var(--anim-ease) both;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 28px;
-  opacity: 0;
 }
 
 .hero-eyebrow {
-  animation: fade-up var(--anim-duration-lg) var(--anim-stagger) var(--anim-ease) both;
   color: var(--color-muted);
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.1em;
   margin-bottom: 16px;
-  opacity: 0;
   text-transform: uppercase;
 }
 
 .hero-title {
-  animation: fade-up var(--anim-duration-lg) var(--anim-stagger) var(--anim-ease) both;
   font-size: clamp(32px, 4vw, 52px);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.03em;
@@ -96,7 +91,6 @@ defineProps<{
 }
 
 .hero-sub {
-  animation: fade-up var(--anim-duration-lg) calc(var(--anim-stagger) * 2) var(--anim-ease) both;
   color: var(--color-muted);
   font-size: 18px;
   line-height: 1.65;
@@ -105,30 +99,16 @@ defineProps<{
 }
 
 .hero-actions {
-  animation: fade-up var(--anim-duration-lg) calc(var(--anim-stagger) * 3) var(--anim-ease) both;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .hero-visual {
-  animation: fade-up var(--anim-duration-lg) var(--anim-stagger) var(--anim-ease) both;
   display: flex;
   /* The right edge of the content, where the header ends too. */
   justify-content: flex-end;
   position: relative;
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (width <= 720px) {
@@ -143,19 +123,6 @@ defineProps<{
 
   .hero-visual {
     justify-content: center;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .platform-badges,
-  .hero-eyebrow,
-  .hero-title,
-  .hero-sub,
-  .hero-actions,
-  .hero-visual {
-    animation: none;
-    opacity: 1;
-    transform: none;
   }
 }
 </style>

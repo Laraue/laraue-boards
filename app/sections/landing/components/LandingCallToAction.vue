@@ -1,10 +1,10 @@
 <template>
   <section class="cta-section">
     <div class="cta-inner">
-      <div class="cta-label reveal">{{ texts.label }}</div>
-      <h2 class="cta-title reveal">{{ texts.title }}</h2>
-      <p class="cta-sub reveal">{{ texts.sub }}</p>
-      <div class="cta-actions reveal">
+      <div class="cta-label">{{ texts.label }}</div>
+      <h2 class="cta-title">{{ texts.title }}</h2>
+      <p class="cta-sub">{{ texts.sub }}</p>
+      <div class="cta-actions">
         <LandingActionButton
           :link="appUrl"
           :title="t('open_app')"

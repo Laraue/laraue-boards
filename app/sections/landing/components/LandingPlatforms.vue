@@ -5,7 +5,7 @@
     :title="t('pl_title')"
     type="alt">
     <div class="platforms-grid">
-      <div class="platform-card reveal">
+      <div class="platform-card">
         <div class="platform-card-header">
           <div class="platform-card-icon web"><LandingIcon name="globe" /></div>
           <div>
@@ -68,7 +68,7 @@
         </a>
       </div>
 
-      <div class="platform-card reveal">
+      <div class="platform-card">
         <div class="platform-card-header">
           <div class="platform-card-icon tg"><LandingIcon name="chat" /></div>
           <div>
@@ -133,7 +133,7 @@
         </a>
       </div>
 
-      <div class="platform-card reveal">
+      <div class="platform-card">
         <div class="platform-card-header">
           <div class="platform-card-icon mcp"><LandingIcon name="sparkle" /></div>
           <div>
@@ -324,14 +324,6 @@ const { t } = useI18n(
   gap: 24px;
   grid-template-columns: repeat(3, 1fr);
   margin-top: 48px;
-}
-
-.platforms-grid .platform-card:nth-child(2) {
-  animation-delay: var(--anim-stagger);
-}
-
-.platforms-grid .platform-card:nth-child(3) {
-  animation-delay: calc(var(--anim-stagger) * 2);
 }
 
 .platform-card-header {

@@ -3,13 +3,13 @@
     id="faq"
     class="faq">
     <div class="faq-inner">
-      <div class="section-label reveal">{{ t('faq_label') }}</div>
-      <h2 class="section-title reveal">{{ t('faq_title') }}</h2>
+      <div class="section-label">{{ t('faq_label') }}</div>
+      <h2 class="section-title">{{ t('faq_title') }}</h2>
       <div class="faq-list">
         <div
           v-for="(item, index) in items"
           :key="index"
-          class="faq-item reveal"
+          class="faq-item"
           :data-open="openItem === index ? 'true' : null">
           <button
             :aria-controls="`faq-answer-${index}`"
@@ -230,7 +230,6 @@ useHead({
   flex-shrink: 0;
   font-size: 20px;
   font-weight: 400;
-  transition: transform var(--anim-duration) var(--anim-ease);
 }
 
 .faq-item[data-open='true'] .faq-summary::after {
@@ -240,7 +239,6 @@ useHead({
 .faq-answer-wrap {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows var(--anim-duration) var(--anim-ease);
 }
 
 .faq-item[data-open='true'] .faq-answer-wrap {

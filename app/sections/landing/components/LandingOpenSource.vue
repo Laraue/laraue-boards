@@ -25,7 +25,7 @@
         <template #icon><LandingIcon name="book" /></template>
       </LandingInfoCard>
     </div>
-    <p class="pricing-note reveal">{{ t('pr_note') }}</p>
+    <p class="pricing-note">{{ t('pr_note') }}</p>
   </LandingSection>
 </template>
 
@@ -94,10 +94,6 @@ const devlogUrl = laraueUrl(
   gap: 24px;
   grid-template-columns: 1fr 1fr;
   margin-top: 48px;
-}
-
-.cards-grid .info-card:nth-child(2) {
-  animation-delay: var(--anim-stagger);
 }
 
 @media (width <= 900px) {

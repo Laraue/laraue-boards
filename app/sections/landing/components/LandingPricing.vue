@@ -13,7 +13,7 @@
     <template v-else>
       <div
         :aria-label="t('currency_switch_label')"
-        class="currency-switch reveal"
+        class="currency-switch"
         role="group">
         <button
           v-for="code in currencies"
@@ -25,11 +25,11 @@
           {{ code }}
         </button>
       </div>
-      <p class="mvp-note reveal">{{ t('mvp_note') }}</p>
+      <p class="mvp-note">{{ t('mvp_note') }}</p>
       <div
         v-for="group in groups.filter((item) => item.tariffs.length > 0)"
         :key="group.key"
-        class="pricing-group reveal">
+        class="pricing-group">
         <div class="pricing-group-label">
           <LandingIcon :name="group.icon" />
           {{ t(group.label) }}

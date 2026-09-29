@@ -97,10 +97,6 @@ const { t } = useI18n(
   margin-top: 48px;
 }
 
-.cards-grid .info-card:nth-child(2) {
-  animation-delay: var(--anim-stagger);
-}
-
 @media (width <= 900px) {
   .cards-grid {
     grid-template-columns: 1fr;
