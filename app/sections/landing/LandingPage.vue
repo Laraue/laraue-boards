@@ -54,8 +54,8 @@ const { t } = useI18n(
     },
     ru: {
       seoDescription:
-        'Перестаньте терять важные сообщения в Telegram. Laraue Boards превращает сообщения, отправленные боту @msgboard_bot, в карточки на канбан-доске. Бесплатно, открытый код, работает как Telegram Mini App и веб-приложение.',
-      seoTitle: 'Laraue Boards — превращайте сообщения Telegram в Kanban-доски',
+        'Пересылайте сообщения боту @msgboard_bot — они станут карточками на канбан-доске. Бесплатная альтернатива Jira с открытым кодом: Mini App и веб-версия.',
+      seoTitle: 'Laraue Boards — Kanban-доски из сообщений Telegram',
     },
   },
   props.locale,
