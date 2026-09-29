@@ -39,3 +39,18 @@ test('loads images lazily and escapes their attributes', () => {
     '<img src="https://example.com/board.jpg" alt="A &quot;board&quot;" loading="lazy">',
   )
 })
+
+test('lists the text of a heading as written, not as escaped in the HTML', () => {
+  const { headings, html } = renderDocMarkdown(`## Who it's for\n\n## Q&A "quotes"`)
+
+  assert.deepEqual(
+    headings.map((heading) => heading.text),
+    ["Who it's for", 'Q&A "quotes"'],
+  )
+  assert.deepEqual(
+    headings.map((heading) => heading.id),
+    ['who-it-s-for', 'q-a-quotes'],
+  )
+  // The HTML itself stays escaped.
+  assert.include(html, '<h2 id="who-it-s-for">Who it&#39;s for</h2>')
+})

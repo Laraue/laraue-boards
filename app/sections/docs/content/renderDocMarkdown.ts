@@ -9,6 +9,20 @@ const escapeHtml = (value: string): string =>
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
 
+// The text of a heading is taken from its rendered HTML, where marked has escaped it (it's -> it&#39;s).
+const decodeEntities = (value: string): string =>
+  value
+    .replaceAll(/&#x([\da-f]+);/gi, (_, code: string) =>
+      String.fromCodePoint(Number.parseInt(code, 16)),
+    )
+    .replaceAll(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
+    .replaceAll('&nbsp;', ' ')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    // Last, so that "&amp;lt;" becomes "&lt;" and not "<".
+    .replaceAll('&amp;', '&')
+
 const slugify = (value: string): string =>
   value
     .toLowerCase()
@@ -30,7 +44,7 @@ export const renderDocMarkdown = (body: string): { headings: DocHeading[]; html:
           return `<h${depth}>${content}</h${depth}>\n`
         }
 
-        const text = content.replaceAll(/<[^>]*>/g, '')
+        const text = decodeEntities(content.replaceAll(/<[^>]*>/g, ''))
         const base = slugify(text) || 'section'
         const count = usedIds.get(base) ?? 0
         usedIds.set(base, count + 1)
