@@ -268,7 +268,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 360px;
+  width: 270px;
 }
 
 .phone-mockup {
@@ -579,12 +579,6 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 .issue-card-footer span {
   color: var(--color-muted);
   font-size: 11px;
-}
-
-@media (width <= 720px) {
-  .transform-mockup {
-    max-width: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

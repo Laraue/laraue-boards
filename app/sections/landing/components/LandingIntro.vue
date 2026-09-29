@@ -114,7 +114,8 @@ defineProps<{
 .hero-visual {
   animation: fade-up var(--anim-duration-lg) var(--anim-stagger) var(--anim-ease) both;
   display: flex;
-  justify-content: center;
+  /* The right edge of the content, where the header ends too. */
+  justify-content: flex-end;
   position: relative;
 }
 
@@ -138,6 +139,10 @@ defineProps<{
   .hero-inner {
     gap: 48px;
     grid-template-columns: 1fr;
+  }
+
+  .hero-visual {
+    justify-content: center;
   }
 }
 
