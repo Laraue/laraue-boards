@@ -35,38 +35,27 @@ export const landingMessages = {
     f10t: 'AI-cleaned cards',
     f11d: 'Type @msgboard_bot and a query in any Telegram chat to find an issue — no need to open the app.',
     f11t: 'Search from any chat',
-    faq1a:
-      "The Free plan is free forever. Paid tiers (Plus, Team, Business) exist for higher limits, but during our current MVP phase they're free too — see the pricing section above. /aisave is free while it's in testing and will become a paid feature later.",
+    faq1a: "The Free plan is free forever. Paid tiers (Plus, Team, Business) exist for higher limits, but during our current MVP phase they're free too — see the pricing section above. /aisave is free while it's in testing and will become a paid feature later.",
     faq1q: 'Is it free?',
-    faq2a:
-      'Yes. Both the backend and the frontend are public on GitHub, so you can read exactly what happens to a message after you send it.',
+    faq2a: 'Yes. Both the backend and the frontend are public on GitHub, so you can read exactly what happens to a message after you send it.',
     faq2q: 'Is it really open source?',
-    faq3a:
-      'Saved Messages is a great place to save something quickly, but a bad place to find it later. Laraue Boards is the alternative: it keeps the saving just as easy and gives what you saved a board, columns and statuses.',
+    faq3a: 'Saved Messages is a great place to save something quickly, but a bad place to find it later. Laraue Boards is the alternative: it keeps the saving just as easy and gives what you saved a board, columns and statuses.',
     faq3q: "What's a good alternative to Telegram Saved Messages?",
-    faq4a:
-      'No. You log in with Telegram. In the Mini App you are already logged in, and the web version has a Telegram login button.',
+    faq4a: 'No. You log in with Telegram. In the Mini App you are already logged in, and the web version has a Telegram login button.',
     faq4q: 'Do I need an account or a password?',
-    faq5a:
-      "Yes — Laraue Boards is a Jira alternative built entirely around Telegram, and lighter for teams that find Jira's setup overwhelming. You still get spaces, boards, custom attributes and permissions, but capturing work takes a forwarded message instead of a form.",
+    faq5a: "Yes — Laraue Boards is a Jira alternative built entirely around Telegram, and lighter for teams that find Jira's setup overwhelming. You still get spaces, boards, custom attributes and permissions, but capturing work takes a forwarded message instead of a form.",
     faq5q: 'Is there a Jira alternative that works inside Telegram?',
-    faq6a:
-      'Yes. Every account gets a private personal organization automatically — no team, no invites, nothing to configure. Forward a message and it lands on your own board.',
+    faq6a: 'Yes. Every account gets a private personal organization automatically — no team, no invites, nothing to configure. Forward a message and it lands on your own board.',
     faq6q: 'Can I use it alone, without a team?',
-    faq7a:
-      "Yes, two ways: the Telegram Mini App opens inside Telegram on any phone, and the web app is fully responsive if you'd rather use a browser.",
+    faq7a: "Yes, two ways: the Telegram Mini App opens inside Telegram on any phone, and the web app is fully responsive if you'd rather use a browser.",
     faq7q: 'Does Laraue Boards work on mobile?',
-    faq8a:
-      'Yes. The web app has an all-issues search across every space and board, and you can also search from inside any Telegram chat by typing @msgboard_bot followed by your query.',
+    faq8a: 'Yes. The web app has an all-issues search across every space and board, and you can also search from inside any Telegram chat by typing @msgboard_bot followed by your query.',
     faq8q: 'Can I search across all my boards at once?',
-    faq9a:
-      'Yes. Create an organization, invite your team via Telegram, and forwarded messages route straight to shared boards with permissions per operation. It works as a lightweight project management bot without leaving the app your team already uses to chat.',
+    faq9a: 'Yes. Create an organization, invite your team via Telegram, and forwarded messages route straight to shared boards with permissions per operation. It works as a lightweight project management bot without leaving the app your team already uses to chat.',
     faq9q: 'Can I use Laraue Boards as a Telegram task manager for my team?',
-    faq10a:
-      'Forward or send any message to @msgboard_bot and it becomes a card on your board within seconds, confirmed with a 👍 reaction. Edit the original message in Telegram and the card updates with it — no copy-pasting into another app.',
+    faq10a: 'Forward or send any message to @msgboard_bot and it becomes a card on your board within seconds, confirmed with a 👍 reaction. Edit the original message in Telegram and the card updates with it — no copy-pasting into another app.',
     faq10q: 'How does a Telegram message turn into a task?',
-    faq11a:
-      "Yes — Laraue Boards has a remote MCP (Model Context Protocol) server. Create a personal API key from your organization's settings, add it as a custom connector in Claude (or any MCP client), and the agent can list, view, create, edit and move issues, and attach or download files, scoped to your own permissions.",
+    faq11a: "Yes — Laraue Boards has a remote MCP (Model Context Protocol) server. Create a personal API key from your organization's settings, add it as a custom connector in Claude (or any MCP client), and the agent can list, view, create, edit and move issues, and attach or download files, scoped to your own permissions.",
     faq11q: 'Can I connect Claude or another AI agent to my boards?',
     faq_label: 'Questions',
     faq_title: 'Common questions',
@@ -80,8 +69,7 @@ export const landingMessages = {
     footer_privacy: 'Privacy policy',
     footer_tagline: 'A Jira alternative built on Telegram. Free and open source.',
     hero_eyebrow: 'Telegram task manager by Laraue Software',
-    hero_sub:
-      'A Jira alternative in Telegram. Link your chats to boards with @msgboard_bot. Free, open source, ready in seconds.',
+    hero_sub: 'A Jira alternative in Telegram. Link your chats to boards with @msgboard_bot. Free, open source, ready in seconds.',
     hero_title: 'Turn Telegram messages\ninto Kanban boards',
     hv_arrow: 'New issue in Backlog, title & description written by AI',
     hv_badge: 'Backlog',
@@ -102,16 +90,14 @@ export const landingMessages = {
     load_error: "Couldn't load pricing right now — please try again later.",
     login: 'Log in',
     mcp_cta: 'Get an API key',
-    mcp_desc:
-      'Connect Claude or any MCP-compatible agent straight to your boards over the Model Context Protocol. Create a personal API key and the agent can act on your behalf.',
+    mcp_desc: 'Connect Claude or any MCP-compatible agent straight to your boards over the Model Context Protocol. Create a personal API key and the agent can act on your behalf.',
     mcp_f1: 'Read, create, edit and move issues',
     mcp_f2: 'Attach and download files',
     mcp_f3: 'Scoped to your own permissions',
     mcp_f4: 'Works with Claude and any MCP client',
     mcp_name: 'MCP / AI Agents',
     mcp_tag: 'boards.laraue.com/boards-mcp/mcp',
-    mvp_note:
-      "We're still in the MVP phase: the Free plan is completely free right now with no token limits. These prices will take effect once the MVP phase is over.",
+    mvp_note: "We're still in the MVP phase: the Free plan is completely free right now with no token limits. These prices will take effect once the MVP phase is over.",
     nav_faq: 'FAQ',
     nav_features: 'Features',
     nav_label: 'Main',
@@ -123,12 +109,10 @@ export const landingMessages = {
     offer_tokens_per_seat: '{count} tokens per seat',
     open_webapp: 'Web App',
     os_code_cta: 'View on GitHub',
-    os_code_desc:
-      'Backend and frontend are both on GitHub. People told us they were not ready to trust private notes to a product they did not know — open code is the honest answer to that.',
+    os_code_desc: 'Backend and frontend are both on GitHub. People told us they were not ready to trust private notes to a product they did not know — open code is the honest answer to that.',
     os_code_title: 'The code is public',
     os_devlog_cta: 'Read the full story',
-    os_devlog_desc:
-      'We write down how the product is being built, including what went wrong — the bot that asked too many questions and had to be rolled back, the database decision we got wrong.',
+    os_devlog_desc: 'We write down how the product is being built, including what went wrong — the bot that asked too many questions and had to be rolled back, the database decision we got wrong.',
     os_devlog_title: 'The devlog',
     os_label: 'Built in the open',
     os_sub: 'You can read the code — and you can read how it was written.',
@@ -138,8 +122,7 @@ export const landingMessages = {
     pl_label: 'Two ways to use it',
     pl_sub: 'Start in Telegram, continue in the browser. Your boards are always in sync.',
     pl_title: 'Web app & Telegram Mini App',
-    pr_note:
-      "The Free plan stays free forever. Paid tiers exist (Plus, Team, Business) but aren't charged during the MVP phase — see pricing above. /aisave is free while it's in testing and will become a paid feature later.",
+    pr_note: "The Free plan stays free forever. Paid tiers exist (Plus, Team, Business) but aren't charged during the MVP phase — see pricing above. /aisave is free while it's in testing and will become a paid feature later.",
     price_unavailable: 'Free during MVP',
     pricing_label: 'Pricing',
     pricing_sub: 'Free to start, both for individuals and teams. Upgrade only when you need more.',
@@ -152,8 +135,7 @@ export const landingMessages = {
     sec_platforms: 'Platforms',
     sec_top: 'Overview',
     sec_use_cases: 'Use cases',
-    seoDescription:
-      'A free, open-source Jira alternative built on Telegram. Forward a message to @msgboard_bot and it becomes a task on your Kanban board — Mini App or web app.',
+    seoDescription: 'A free, open-source Jira alternative built on Telegram. Forward a message to @msgboard_bot and it becomes a task on your Kanban board — Mini App or web app.',
     seoTitle: 'Laraue Boards — Telegram Kanban Task Manager',
     struct_board: 'Board',
     struct_board_ex: 'Website Redesign',
@@ -162,14 +144,11 @@ export const landingMessages = {
     struct_label: "How it's organized",
     struct_org: 'Organization',
     struct_org_ex: 'Acme Studio',
-    struct_p1d:
-      'Every issue gets a short key like WRK-42 you can reference in a chat message or a commit.',
+    struct_p1d: 'Every issue gets a short key like WRK-42 you can reference in a chat message or a commit.',
     struct_p1t: 'Quotable issue keys',
-    struct_p2d:
-      'Group boards by client, product or department. Each space keeps its own backlog and numbering.',
+    struct_p2d: 'Group boards by client, product or department. Each space keeps its own backlog and numbering.',
     struct_p2t: 'Spaces per client or project',
-    struct_p3d:
-      'Start in your personal organization, then move a whole space to a team org later — nothing to recreate.',
+    struct_p3d: 'Start in your personal organization, then move a whole space to a team org later — nothing to recreate.',
     struct_p3t: 'Move without rebuilding',
     struct_space: 'Space',
     struct_space_ex: 'Client: Redsight',
@@ -177,8 +156,7 @@ export const landingMessages = {
     struct_title: 'Structured like a real tracker,\nnot a chat log',
     team_label: 'For teams',
     team_pricing_note: 'Price and included tokens are per seat, combined across your whole team.',
-    tg_desc:
-      'Access your boards inside Telegram without leaving the app. Forward any message to the bot and it lands on your board in seconds.',
+    tg_desc: 'Access your boards inside Telegram without leaving the app. Forward any message to the bot and it lands on your board in seconds.',
     tg_f1: 'Forward messages from any chat',
     tg_f2: 'Native iOS & Android feel',
     tg_f3: 'Instant — nothing to install',
@@ -191,22 +169,18 @@ export const landingMessages = {
     uc_p3: 'Search everything by keyword',
     uc_p4: 'Organise into epics and columns when you have time',
     uc_p_cta: 'Start with the Telegram bot',
-    uc_personal_desc:
-      'Capture thoughts, tasks and links without leaving Telegram. Forward a message to the bot and it lands on your board.',
+    uc_personal_desc: 'Capture thoughts, tasks and links without leaving Telegram. Forward a message to the bot and it lands on your board.',
     uc_personal_title: 'Personal use',
-    uc_sub:
-      'Laraue Boards adapts to how you work — a solo task manager, or a project tracker for the whole team.',
+    uc_sub: 'Laraue Boards adapts to how you work — a solo task manager, or a project tracker for the whole team.',
     uc_t1: 'Organization mode with shared boards',
     uc_t2: 'Invite teammates via Telegram',
     uc_t3: 'Permissions per operation on spaces, epics and issues',
     uc_t4: 'Custom attributes defined by an admin',
     uc_t5: 'One space per client, scoped access for contractors',
-    uc_teams_desc:
-      'A lightweight Jira alternative built on Telegram, for teams that find Jira overwhelming — and for agencies juggling several clients at once. Create an organization, invite teammates, track work together.',
+    uc_teams_desc: 'A lightweight Jira alternative built on Telegram, for teams that find Jira overwhelming — and for agencies juggling several clients at once. Create an organization, invite teammates, track work together.',
     uc_teams_title: 'Small teams & agencies',
     uc_title: 'Personal productivity\nor team coordination',
-    web_desc:
-      'Full-featured Kanban in the browser. Sign in with your Telegram account — no separate registration. Works on desktop and mobile.',
+    web_desc: 'Full-featured Kanban in the browser. Sign in with your Telegram account — no separate registration. Works on desktop and mobile.',
     web_f1: 'Telegram login — no password',
     web_f2: 'Full drag-and-drop Kanban',
     web_f3: 'Organization & permission management',
@@ -249,38 +223,27 @@ export const landingMessages = {
     f10t: 'Карточки, очищенные ИИ',
     f11d: 'Введите @msgboard_bot и запрос в любом чате Telegram, чтобы найти issue, не открывая приложение.',
     f11t: 'Поиск из любого чата',
-    faq1a:
-      'Бесплатный тариф бесплатен навсегда. Есть и платные тарифы (Plus, Team, Business) для более высоких лимитов, но пока продукт на стадии MVP, они тоже бесплатны — смотрите тарифы выше. Функция /aisave бесплатна, пока тестируется, и позже станет платной.',
+    faq1a: 'Бесплатный тариф бесплатен навсегда. Есть и платные тарифы (Plus, Team, Business) для более высоких лимитов, но пока продукт на стадии MVP, они тоже бесплатны — смотрите тарифы выше. Функция /aisave бесплатна, пока тестируется, и позже станет платной.',
     faq1q: 'Это бесплатно?',
-    faq2a:
-      'Да. Бэкенд и фронтенд открыты на GitHub — можно прочитать, что именно происходит с сообщением после отправки.',
+    faq2a: 'Да. Бэкенд и фронтенд открыты на GitHub — можно прочитать, что именно происходит с сообщением после отправки.',
     faq2q: 'Проект действительно опенсорсный?',
-    faq3a:
-      '«Сохранённые сообщения» — отличное место, чтобы что-то быстро сохранить, но плохое, чтобы это потом найти. Laraue Boards — как раз такая альтернатива: сохранять так же просто, но у сохранённого появляется доска, колонки и статусы.',
+    faq3a: '«Сохранённые сообщения» — отличное место, чтобы что-то быстро сохранить, но плохое, чтобы это потом найти. Laraue Boards — как раз такая альтернатива: сохранять так же просто, но у сохранённого появляется доска, колонки и статусы.',
     faq3q: 'Какая есть альтернатива «Сохранённым сообщениям» в Telegram?',
-    faq4a:
-      'Нет. Вход через Telegram: в Mini App вы уже авторизованы, а в веб-версии есть кнопка входа через Telegram.',
+    faq4a: 'Нет. Вход через Telegram: в Mini App вы уже авторизованы, а в веб-версии есть кнопка входа через Telegram.',
     faq4q: 'Нужен ли аккаунт или пароль?',
-    faq5a:
-      'Да — Laraue Boards — это альтернатива Jira, построенная вокруг Telegram, и более лёгкая для команд, которым настройка Jira кажется избыточной. Здесь есть спейсы, доски, кастомные атрибуты и права, но задача создаётся пересланным сообщением, а не через форму.',
+    faq5a: 'Да — Laraue Boards — это альтернатива Jira, построенная вокруг Telegram, и более лёгкая для команд, которым настройка Jira кажется избыточной. Здесь есть спейсы, доски, кастомные атрибуты и права, но задача создаётся пересланным сообщением, а не через форму.',
     faq5q: 'Есть ли альтернатива Jira, которая работает прямо в Telegram?',
-    faq6a:
-      'Да. У каждого аккаунта автоматически есть личная организация — без команды, без приглашений, без настройки. Перешлите сообщение — и оно окажется на вашей доске.',
+    faq6a: 'Да. У каждого аккаунта автоматически есть личная организация — без команды, без приглашений, без настройки. Перешлите сообщение — и оно окажется на вашей доске.',
     faq6q: 'Можно ли пользоваться в одиночку, без команды?',
-    faq7a:
-      'Да, двумя способами: Telegram Mini App открывается прямо в Telegram на любом телефоне, а веб-приложение полностью адаптивно, если вам удобнее браузер.',
+    faq7a: 'Да, двумя способами: Telegram Mini App открывается прямо в Telegram на любом телефоне, а веб-приложение полностью адаптивно, если вам удобнее браузер.',
     faq7q: 'Работает ли Laraue Boards на телефоне?',
-    faq8a:
-      'Да. В веб-приложении есть поиск по всем issues во всех спейсах и досках, а ещё можно искать прямо из любого чата Telegram, набрав @msgboard_bot и запрос.',
+    faq8a: 'Да. В веб-приложении есть поиск по всем issues во всех спейсах и досках, а ещё можно искать прямо из любого чата Telegram, набрав @msgboard_bot и запрос.',
     faq8q: 'Можно ли искать по всем доскам сразу?',
-    faq9a:
-      'Да. Создайте организацию, пригласите команду через Telegram — пересланные сообщения будут попадать прямо на общие доски, а права настраиваются по операциям. Это лёгкий бот для управления проектами, не заставляющий уходить из чата, где команда и так общается.',
+    faq9a: 'Да. Создайте организацию, пригласите команду через Telegram — пересланные сообщения будут попадать прямо на общие доски, а права настраиваются по операциям. Это лёгкий бот для управления проектами, не заставляющий уходить из чата, где команда и так общается.',
     faq9q: 'Можно ли использовать Laraue Boards как Telegram таск-менеджер для команды?',
-    faq10a:
-      'Перешлите или отправьте любое сообщение боту @msgboard_bot — и через пару секунд оно станет карточкой на доске, а бот подтвердит это реакцией 👍. Отредактируйте исходное сообщение в Telegram — карточка обновится вместе с ним, без копирования в другое приложение.',
+    faq10a: 'Перешлите или отправьте любое сообщение боту @msgboard_bot — и через пару секунд оно станет карточкой на доске, а бот подтвердит это реакцией 👍. Отредактируйте исходное сообщение в Telegram — карточка обновится вместе с ним, без копирования в другое приложение.',
     faq10q: 'Как сообщение из Telegram превращается в задачу?',
-    faq11a:
-      'Да — у Laraue Boards есть удалённый MCP-сервер (Model Context Protocol). Создайте персональный API-ключ в настройках организации, добавьте его как кастомный коннектор в Claude (или любой другой MCP-клиент) — и агент сможет просматривать, создавать, редактировать и перемещать issues, а также прикладывать и скачивать файлы, в рамках ваших прав доступа.',
+    faq11a: 'Да — у Laraue Boards есть удалённый MCP-сервер (Model Context Protocol). Создайте персональный API-ключ в настройках организации, добавьте его как кастомный коннектор в Claude (или любой другой MCP-клиент) — и агент сможет просматривать, создавать, редактировать и перемещать issues, а также прикладывать и скачивать файлы, в рамках ваших прав доступа.',
     faq11q: 'Можно ли подключить Claude или другого ИИ-агента к моим доскам?',
     faq_label: 'Вопросы',
     faq_title: 'Частые вопросы',
@@ -294,8 +257,7 @@ export const landingMessages = {
     footer_privacy: 'Политика конфиденциальности',
     footer_tagline: 'Альтернатива Jira в Telegram. Бесплатно и с открытым исходным кодом.',
     hero_eyebrow: 'Telegram-таск-менеджер от Laraue Software',
-    hero_sub:
-      'Альтернатива Jira в Telegram. Привяжите свои чаты к доскам с помощью @msgboard_bot. Бесплатно, с открытым кодом, готово за секунды.',
+    hero_sub: 'Альтернатива Jira в Telegram. Привяжите свои чаты к доскам с помощью @msgboard_bot. Бесплатно, с открытым кодом, готово за секунды.',
     hero_title: 'Превращайте сообщения Telegram\nв Kanban-доски',
     hv_arrow: 'Новый issue в Бэклоге, заголовок и описание пишет ИИ',
     hv_badge: 'Бэклог',
@@ -316,16 +278,14 @@ export const landingMessages = {
     load_error: 'Не удалось загрузить тарифы — попробуйте позже.',
     login: 'Войти',
     mcp_cta: 'Получить API-ключ',
-    mcp_desc:
-      'Подключите Claude или любого MCP-совместимого агента прямо к вашим доскам по протоколу Model Context Protocol. Создайте персональный API-ключ — и агент сможет действовать от вашего имени.',
+    mcp_desc: 'Подключите Claude или любого MCP-совместимого агента прямо к вашим доскам по протоколу Model Context Protocol. Создайте персональный API-ключ — и агент сможет действовать от вашего имени.',
     mcp_f1: 'Чтение, создание, редактирование и перемещение issues',
     mcp_f2: 'Прикладывайте и скачивайте файлы',
     mcp_f3: 'Права ограничены вашими правами доступа',
     mcp_f4: 'Работает с Claude и любым MCP-клиентом',
     mcp_name: 'MCP / ИИ-агенты',
     mcp_tag: 'boards.laraue.com/boards-mcp/mcp',
-    mvp_note:
-      'Сейчас продукт на стадии MVP: бесплатный тариф полностью бесплатен и без ограничений по токенам. Указанные цены вступят в силу после завершения стадии MVP.',
+    mvp_note: 'Сейчас продукт на стадии MVP: бесплатный тариф полностью бесплатен и без ограничений по токенам. Указанные цены вступят в силу после завершения стадии MVP.',
     nav_faq: 'Вопросы',
     nav_features: 'Возможности',
     nav_label: 'Основное меню',
@@ -337,12 +297,10 @@ export const landingMessages = {
     offer_tokens_per_seat: '{count} токенов на место',
     open_webapp: 'Веб-приложение',
     os_code_cta: 'Посмотреть на GitHub',
-    os_code_desc:
-      'Бэкенд и фронтенд лежат на GitHub. Пользователи писали, что не готовы доверить личные заметки незнакомому продукту, — открытый код честный ответ на это.',
+    os_code_desc: 'Бэкенд и фронтенд лежат на GitHub. Пользователи писали, что не готовы доверить личные заметки незнакомому продукту, — открытый код честный ответ на это.',
     os_code_title: 'Код открыт',
     os_devlog_cta: 'Читать полную историю',
-    os_devlog_desc:
-      'Мы рассказываем, как продукт разрабатывается, включая то, что пошло не так: бот, который задавал слишком много вопросов и был откачен, решение в базе данных, которое оказалось неверным.',
+    os_devlog_desc: 'Мы рассказываем, как продукт разрабатывается, включая то, что пошло не так: бот, который задавал слишком много вопросов и был откачен, решение в базе данных, которое оказалось неверным.',
     os_devlog_title: 'Цикл статей',
     os_label: 'Разработка на виду',
     os_sub: 'Можно прочитать код — и то, как он писался.',
@@ -352,12 +310,10 @@ export const landingMessages = {
     pl_label: 'Два способа использования',
     pl_sub: 'Начните в Telegram, продолжайте в браузере. Доски всегда синхронизированы.',
     pl_title: 'Веб-приложение и Telegram Mini App',
-    pr_note:
-      'Бесплатный тариф остаётся бесплатным навсегда. Платные тарифы (Plus, Team, Business) уже есть, но пока продукт на стадии MVP, плата за них не взимается — смотрите тарифы выше. Функция /aisave бесплатна, пока тестируется, и позже станет платной.',
+    pr_note: 'Бесплатный тариф остаётся бесплатным навсегда. Платные тарифы (Plus, Team, Business) уже есть, но пока продукт на стадии MVP, плата за них не взимается — смотрите тарифы выше. Функция /aisave бесплатна, пока тестируется, и позже станет платной.',
     price_unavailable: 'Бесплатно на MVP',
     pricing_label: 'Цены',
-    pricing_sub:
-      'Бесплатно для старта — как для себя, так и для команды. Платите только когда нужно больше.',
+    pricing_sub: 'Бесплатно для старта — как для себя, так и для команды. Платите только когда нужно больше.',
     pricing_title: 'Просто и честно',
     project_description: 'Подробнее о проекте',
     project_page: 'Как это сделано',
@@ -367,8 +323,7 @@ export const landingMessages = {
     sec_platforms: 'Платформы',
     sec_top: 'Обзор',
     sec_use_cases: 'Кейсы',
-    seoDescription:
-      'Перестаньте терять важные сообщения в Telegram. Laraue Boards превращает сообщения, отправленные боту @msgboard_bot, в карточки на канбан-доске. Бесплатно, открытый код, работает как Telegram Mini App и веб-приложение.',
+    seoDescription: 'Перестаньте терять важные сообщения в Telegram. Laraue Boards превращает сообщения, отправленные боту @msgboard_bot, в карточки на канбан-доске. Бесплатно, открытый код, работает как Telegram Mini App и веб-приложение.',
     seoTitle: 'Laraue Boards — превращайте сообщения Telegram в Kanban-доски',
     struct_board: 'Доска',
     struct_board_ex: 'Редизайн сайта',
@@ -377,24 +332,19 @@ export const landingMessages = {
     struct_label: 'Как всё устроено',
     struct_org: 'Организация',
     struct_org_ex: 'Acme Studio',
-    struct_p1d:
-      'У каждого issue есть номер вида WRK-42 — на него можно сослаться в чате или в коммите.',
+    struct_p1d: 'У каждого issue есть номер вида WRK-42 — на него можно сослаться в чате или в коммите.',
     struct_p1t: 'Issue с коротким номером',
-    struct_p2d:
-      'Группируйте доски по клиентам, продуктам или отделам. У каждого спейса свой бэклог и своя нумерация.',
+    struct_p2d: 'Группируйте доски по клиентам, продуктам или отделам. У каждого спейса свой бэклог и своя нумерация.',
     struct_p2t: 'Спейс под каждого клиента',
-    struct_p3d:
-      'Начните в личной организации, а потом перенесите весь спейс в командную — ничего не придётся создавать заново.',
+    struct_p3d: 'Начните в личной организации, а потом перенесите весь спейс в командную — ничего не придётся создавать заново.',
     struct_p3t: 'Переносите, не пересобирая',
     struct_space: 'Спейс',
     struct_space_ex: 'Клиент: Redsight',
     struct_sub: 'Одна иерархия — подходит и для одной доски, и для двадцати клиентских спейсов.',
     struct_title: 'Структура как в настоящем трекере,\nа не в переписке',
     team_label: 'Для команд',
-    team_pricing_note:
-      'Цена и включённые токены указаны за одно место и суммируются по всей команде.',
-    tg_desc:
-      'Доступ к доскам прямо внутри Telegram. Перешлите любое сообщение боту — оно сразу появится на доске.',
+    team_pricing_note: 'Цена и включённые токены указаны за одно место и суммируются по всей команде.',
+    tg_desc: 'Доступ к доскам прямо внутри Telegram. Перешлите любое сообщение боту — оно сразу появится на доске.',
     tg_f1: 'Пересылка сообщений из любого чата',
     tg_f2: 'Нативный iOS и Android',
     tg_f3: 'Мгновенно — ничего не нужно устанавливать',
@@ -407,22 +357,18 @@ export const landingMessages = {
     uc_p3: 'Поиск по ключевому слову',
     uc_p4: 'Организуйте по эпикам и статусам, когда найдется время',
     uc_p_cta: 'Начать через Telegram-бота',
-    uc_personal_desc:
-      'Сохраняйте мысли, задачи и ссылки, не выходя из Telegram. Перешлите сообщение боту — оно окажется на доске.',
+    uc_personal_desc: 'Сохраняйте мысли, задачи и ссылки, не выходя из Telegram. Перешлите сообщение боту — оно окажется на доске.',
     uc_personal_title: 'Личное использование',
-    uc_sub:
-      'Laraue Boards адаптируется под ваш стиль работы — как таск-менеджер для себя или как трекер задач для всей команды.',
+    uc_sub: 'Laraue Boards адаптируется под ваш стиль работы — как таск-менеджер для себя или как трекер задач для всей команды.',
     uc_t1: 'Режим организации с общими досками',
     uc_t2: 'Приглашайте коллег через Telegram',
     uc_t3: 'Права по операциям над спейсами, эпиками и issues',
     uc_t4: 'Кастомные атрибуты, настраиваемые админом',
     uc_t5: 'Отдельный спейс на каждого клиента, права — точечно для подрядчиков',
-    uc_teams_desc:
-      'Лёгкая альтернатива Jira на базе Telegram — для команд, которым Jira кажется избыточной, и для агентств, ведущих сразу несколько клиентов. Создайте организацию, пригласите коллег, работайте над задачами вместе.',
+    uc_teams_desc: 'Лёгкая альтернатива Jira на базе Telegram — для команд, которым Jira кажется избыточной, и для агентств, ведущих сразу несколько клиентов. Создайте организацию, пригласите коллег, работайте над задачами вместе.',
     uc_teams_title: 'Команды и агентства',
     uc_title: 'Личная продуктивность\nили командная работа',
-    web_desc:
-      'Полноценный Kanban в браузере. Вход через аккаунт Telegram без дополнительной регистрации. Работает на десктопе и мобильных.',
+    web_desc: 'Полноценный Kanban в браузере. Вход через аккаунт Telegram без дополнительной регистрации. Работает на десктопе и мобильных.',
     web_f1: 'Вход через Telegram — без пароля',
     web_f2: 'Drag-and-drop Kanban',
     web_f3: 'Управление организацией и правами',

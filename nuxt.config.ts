@@ -51,9 +51,9 @@ export default defineNuxtConfig({
     excludeAppSources: true,
     urls: ['/', '/ru'].map((loc) => ({
       alternatives: [
-        { href: '/', hreflang: 'en' },
-        { href: '/ru', hreflang: 'ru' },
-        { href: '/', hreflang: 'x-default' },
+        { hreflang: 'en', href: '/' },
+        { hreflang: 'ru', href: '/ru' },
+        { hreflang: 'x-default', href: '/' },
       ],
       loc,
     })),

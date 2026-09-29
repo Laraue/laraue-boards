@@ -9,9 +9,7 @@
           v-for="(feature, index) in features"
           :key="feature.title"
           class="feat-cell reveal"
-          :style="{
-            animationDelay: `min(calc(var(--anim-stagger-sm) * ${index}), calc(var(--anim-stagger-sm) * 8))`,
-          }"
+          :style="{ animationDelay: `min(calc(var(--anim-stagger-sm) * ${index}), calc(var(--anim-stagger-sm) * 8))` }"
           :to="feature.link">
           <div class="feat-icon">
             <LandingIcon :name="feature.icon" />
@@ -26,6 +24,7 @@
 
 <script setup lang="ts">
 import type { LandingIconName } from './LandingIcon.vue'
+
 import LandingIcon from './LandingIcon.vue'
 
 export type LandingFeature = {

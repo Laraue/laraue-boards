@@ -3,113 +3,44 @@
     :docs-url="docsUrl"
     :locale="locale" />
   <main>
-    <LandingIntro
-      :post-title="t('hero_sub')"
-      :pre-title="t('hero_eyebrow')"
-      :title="t('hero_title')">
-      <template #badges>
-        <LandingPlatformBadge
-          title="Web App"
-          type="web" />
-        <LandingPlatformBadge
-          title="Telegram Mini App"
-          type="tg" />
-      </template>
-      <template #actions>
-        <LandingActionButton
-          :link="appUrl"
-          :title="t('login')"
-          type="site" />
-        <LandingActionButton
-          link="https://t.me/msgboard_bot"
-          title="@msgboard_bot"
-          type="telegram" />
-        <div class="hero-quick-links">
-          <a :href="laraueUrl('/blog/documentation/laraue-boards')">
-            {{ t('documentation') }} &#8594;
-          </a>
-          <a :href="laraueUrl('/blog/projects/boards')">{{ t('project_description') }} &#8594;</a>
-        </div>
-      </template>
-      <template #visual>
-        <div class="hero-visual">
-          <!-- Message → AI-cleaned card transformation -->
-          <div class="transform-mockup">
-            <div class="phone-mockup">
-              <div class="phone-screen">
-                <div class="phone-statusbar">
-                  <span class="phone-time">{{ t('hv_time1') }}</span>
-                  <span class="phone-island"></span>
-                  <span class="phone-indicators">
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 18 12">
-                      <rect
-                        height="4"
-                        rx="1"
-                        width="3"
-                        x="0"
-                        y="8" />
-                      <rect
-                        height="7"
-                        rx="1"
-                        width="3"
-                        x="5"
-                        y="5" />
-                      <rect
-                        height="10"
-                        rx="1"
-                        width="3"
-                        x="10"
-                        y="2" />
-                      <rect
-                        height="12"
-                        rx="1"
-                        width="3"
-                        x="15"
-                        y="0" />
-                    </svg>
-                    <svg
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 26 12">
-                      <rect
-                        height="11"
-                        rx="3.5"
-                        width="22"
-                        x="0.5"
-                        y="0.5" />
-                      <rect
-                        fill="currentColor"
-                        height="7"
-                        rx="1.5"
-                        stroke="none"
-                        width="16"
-                        x="2.5"
-                        y="2.5" />
-                      <path
-                        d="M24.5 4v4"
-                        stroke-linecap="round" />
-                    </svg>
-                  </span>
-                </div>
-                <div class="phone-status">
-                  <svg
-                    class="phone-back"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2.4"
-                    viewBox="0 0 24 24">
-                    <path d="M15 5l-7 7 7 7" />
-                  </svg>
-                  <div class="phone-status-avatar"><LandingIcon name="chat" /></div>
-                  <div>
-                    <div class="phone-status-name">{{ t('hv_chat_title') }}</div>
-                    <div class="phone-status-sub">{{ t('hv_chat') }}</div>
+      <LandingIntro
+          :pre-title="t('hero_eyebrow')"
+          :title="t('hero_title')"
+          :post-title="t('hero_sub')">
+        <template #badges>
+          <LandingPlatformBadge type="web" title="Web App" />
+          <LandingPlatformBadge type="tg" title="Telegram Mini App" />
+        </template>
+        <template #actions>
+          <LandingActionButton :title="t('login')" :link="appUrl" type="site" />
+          <LandingActionButton title="@msgboard_bot" link="https://t.me/msgboard_bot" type="telegram" />
+          <div class="hero-quick-links">
+            <a :href="laraueUrl('/blog/documentation/laraue-boards')">{{ t('documentation') }} &#8594;</a>
+            <a :href="laraueUrl('/blog/projects/boards')">{{ t('project_description') }} &#8594;</a>
+          </div>
+        </template>
+        <template #visual>
+          <div class="hero-visual">
+            <!-- Message → AI-cleaned card transformation -->
+            <div class="transform-mockup">
+              <div class="phone-mockup">
+                <div class="phone-screen">
+                  <div class="phone-statusbar">
+                    <span class="phone-time">{{ t('hv_time1') }}</span>
+                    <span class="phone-island"></span>
+                    <span class="phone-indicators">
+                      <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+                      <svg viewBox="0 0 26 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="22" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M24.5 4v4" stroke-linecap="round"/></svg>
+                    </span>
                   </div>
-                </div>
+                  <div class="phone-status">
+                    <svg class="phone-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+                    <div class="phone-status-avatar"><LandingIcon name="chat" /></div>
+                    <div>
+                      <div class="phone-status-name">{{ t('hv_chat_title') }}</div>
+                      <div class="phone-status-sub">{{ t('hv_chat') }}</div>
+                    </div>
+                  </div>
                 <div class="phone-body">
                   <div class="tg-bubble">
                     <div class="tg-bubble-header">
@@ -128,521 +59,311 @@
                     <span class="tg-bubble-time">{{ t('hv_time2') }}</span>
                   </div>
                 </div>
-                <div class="phone-input">
-                  <span class="phone-input-field">{{ t('hv_input') }}</span>
-                  <span class="phone-input-send">
-                    <svg
-                      fill="currentColor"
-                      viewBox="0 0 24 24">
-                      <path
-                        d="M3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a.993.993 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z" />
-                    </svg>
-                  </span>
+                  <div class="phone-input">
+                    <span class="phone-input-field">{{ t('hv_input') }}</span>
+                    <span class="phone-input-send">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a.993.993 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="transform-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M12 18l-5-5M12 18l5-5"/></svg>
+                <span>{{ t('hv_arrow') }}</span>
+              </div>
+              <div class="issue-card-mockup">
+                <div class="issue-card-row">
+                  <span class="issue-card-key">{{ t('hv_key') }}</span>
+                  <span class="issue-card-status">&#9679; {{ t('hv_badge') }}</span>
+                </div>
+                <p class="issue-card-content"><strong>{{ t('hv_title') }}</strong> --- {{ t('hv_desc') }}</p>
+                <div class="issue-card-footer">
+                  <div class="issue-card-avatar">{{ t('hv_sender_initials') }}</div>
+                  <span>{{ t('hv_sender') }}</span>
                 </div>
               </div>
             </div>
-            <div class="transform-arrow">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                viewBox="0 0 24 24">
-                <path d="M12 4v14M12 18l-5-5M12 18l5-5" />
-              </svg>
-              <span>{{ t('hv_arrow') }}</span>
-            </div>
-            <div class="issue-card-mockup">
-              <div class="issue-card-row">
-                <span class="issue-card-key">{{ t('hv_key') }}</span>
-                <span class="issue-card-status">&#9679; {{ t('hv_badge') }}</span>
-              </div>
-              <p class="issue-card-content">
-                <strong>{{ t('hv_title') }}</strong>
-                --- {{ t('hv_desc') }}
-              </p>
-              <div class="issue-card-footer">
-                <div class="issue-card-avatar">{{ t('hv_sender_initials') }}</div>
-                <span>{{ t('hv_sender') }}</span>
-              </div>
-            </div>
+          </div>
+        </template>
+      </LandingIntro>
+
+      <!-- ══ USE CASES ══ -->
+      <LandingSection :pre-title="t('uc_label')" :title="t('uc_title')" :post-title="t('uc_sub')" type="alt">
+        <div class="use-cases-grid">
+          <div class="use-case-card personal reveal">
+            <div class="use-case-icon"><LandingIcon name="brain" /></div>
+            <div class="use-case-title">{{ t('uc_personal_title') }}</div>
+            <p class="use-case-desc">{{ t('uc_personal_desc') }}</p>
+            <ul class="use-case-list">
+              <li>{{ t('uc_p1') }}</li>
+              <li>{{ t('uc_p2') }}</li>
+              <li>{{ t('uc_p3') }}</li>
+              <li>{{ t('uc_p4') }}</li>
+            </ul>
+            <a href="https://t.me/msgboard_bot" class="use-case-link" target="_blank" rel="noopener">{{ t('uc_p_cta') }} &#8594;</a>
+          </div>
+          <div class="use-case-card teams reveal">
+            <div class="use-case-icon"><LandingIcon name="partners" /></div>
+            <div class="use-case-title">{{ t('uc_teams_title') }}</div>
+            <p class="use-case-desc">{{ t('uc_teams_desc') }}</p>
+            <ul class="use-case-list">
+              <li>{{ t('uc_t1') }}</li>
+              <li>{{ t('uc_t2') }}</li>
+              <li>{{ t('uc_t3') }}</li>
+              <li>{{ t('uc_t4') }}</li>
+              <li>{{ t('uc_t5') }}</li>
+            </ul>
+            <a :href="appUrl" class="use-case-link">{{ t('login') }} &#8594;</a>
           </div>
         </div>
-      </template>
-    </LandingIntro>
+      </LandingSection>
 
-    <!-- ══ USE CASES ══ -->
-    <LandingSection
-      :post-title="t('uc_sub')"
-      :pre-title="t('uc_label')"
-      :title="t('uc_title')"
-      type="alt">
-      <div class="use-cases-grid">
-        <div class="use-case-card personal reveal">
-          <div class="use-case-icon"><LandingIcon name="brain" /></div>
-          <div class="use-case-title">{{ t('uc_personal_title') }}</div>
-          <p class="use-case-desc">{{ t('uc_personal_desc') }}</p>
-          <ul class="use-case-list">
-            <li>{{ t('uc_p1') }}</li>
-            <li>{{ t('uc_p2') }}</li>
-            <li>{{ t('uc_p3') }}</li>
-            <li>{{ t('uc_p4') }}</li>
-          </ul>
-          <a
-            class="use-case-link"
-            href="https://t.me/msgboard_bot"
-            rel="noopener"
-            target="_blank">
-            {{ t('uc_p_cta') }} &#8594;
-          </a>
+      <!-- ══ STRUCTURE ══ -->
+      <LandingSection :pre-title="t('struct_label')" :title="t('struct_title')" :post-title="t('struct_sub')" type="plain">
+        <div class="hierarchy reveal">
+          <div class="hierarchy-box">
+            <div class="hierarchy-box-label">{{ t('struct_org') }}</div>
+            <div class="hierarchy-box-ex">{{ t('struct_org_ex') }}</div>
+          </div>
+          <div class="hierarchy-arrow">&#8594;</div>
+          <div class="hierarchy-box">
+            <div class="hierarchy-box-label">{{ t('struct_space') }}</div>
+            <div class="hierarchy-box-ex">{{ t('struct_space_ex') }}</div>
+          </div>
+          <div class="hierarchy-arrow">&#8594;</div>
+          <div class="hierarchy-box">
+            <div class="hierarchy-box-label">{{ t('struct_board') }}</div>
+            <div class="hierarchy-box-ex">{{ t('struct_board_ex') }}</div>
+          </div>
+          <div class="hierarchy-arrow">&#8594;</div>
+          <div class="hierarchy-box highlight">
+            <div class="hierarchy-box-label">{{ t('struct_issue') }}</div>
+            <div class="hierarchy-box-ex">{{ t('struct_issue_ex') }}</div>
+          </div>
         </div>
-        <div class="use-case-card teams reveal">
-          <div class="use-case-icon"><LandingIcon name="partners" /></div>
-          <div class="use-case-title">{{ t('uc_teams_title') }}</div>
-          <p class="use-case-desc">{{ t('uc_teams_desc') }}</p>
-          <ul class="use-case-list">
-            <li>{{ t('uc_t1') }}</li>
-            <li>{{ t('uc_t2') }}</li>
-            <li>{{ t('uc_t3') }}</li>
-            <li>{{ t('uc_t4') }}</li>
-            <li>{{ t('uc_t5') }}</li>
-          </ul>
-          <a
-            class="use-case-link"
-            :href="appUrl">
-            {{ t('login') }} &#8594;
-          </a>
+        <div class="structure-points">
+          <div class="structure-point reveal">
+            <div class="structure-point-title">{{ t('struct_p1t') }}</div>
+            <p class="structure-point-desc">{{ t('struct_p1d') }}</p>
+          </div>
+          <div class="structure-point reveal">
+            <div class="structure-point-title">{{ t('struct_p2t') }}</div>
+            <p class="structure-point-desc">{{ t('struct_p2d') }}</p>
+          </div>
+          <div class="structure-point reveal">
+            <div class="structure-point-title">{{ t('struct_p3t') }}</div>
+            <p class="structure-point-desc">{{ t('struct_p3d') }}</p>
+          </div>
         </div>
-      </div>
-    </LandingSection>
+      </LandingSection>
 
-    <!-- ══ STRUCTURE ══ -->
-    <LandingSection
-      :post-title="t('struct_sub')"
-      :pre-title="t('struct_label')"
-      :title="t('struct_title')"
-      type="plain">
-      <div class="hierarchy reveal">
-        <div class="hierarchy-box">
-          <div class="hierarchy-box-label">{{ t('struct_org') }}</div>
-          <div class="hierarchy-box-ex">{{ t('struct_org_ex') }}</div>
-        </div>
-        <div class="hierarchy-arrow">&#8594;</div>
-        <div class="hierarchy-box">
-          <div class="hierarchy-box-label">{{ t('struct_space') }}</div>
-          <div class="hierarchy-box-ex">{{ t('struct_space_ex') }}</div>
-        </div>
-        <div class="hierarchy-arrow">&#8594;</div>
-        <div class="hierarchy-box">
-          <div class="hierarchy-box-label">{{ t('struct_board') }}</div>
-          <div class="hierarchy-box-ex">{{ t('struct_board_ex') }}</div>
-        </div>
-        <div class="hierarchy-arrow">&#8594;</div>
-        <div class="hierarchy-box highlight">
-          <div class="hierarchy-box-label">{{ t('struct_issue') }}</div>
-          <div class="hierarchy-box-ex">{{ t('struct_issue_ex') }}</div>
-        </div>
-      </div>
-      <div class="structure-points">
-        <div class="structure-point reveal">
-          <div class="structure-point-title">{{ t('struct_p1t') }}</div>
-          <p class="structure-point-desc">{{ t('struct_p1d') }}</p>
-        </div>
-        <div class="structure-point reveal">
-          <div class="structure-point-title">{{ t('struct_p2t') }}</div>
-          <p class="structure-point-desc">{{ t('struct_p2d') }}</p>
-        </div>
-        <div class="structure-point reveal">
-          <div class="structure-point-title">{{ t('struct_p3t') }}</div>
-          <p class="structure-point-desc">{{ t('struct_p3d') }}</p>
-        </div>
-      </div>
-    </LandingSection>
+      <!-- ══ MID-PAGE CTA ══ -->
+      <LandingCallToAction :title="t('cta2_title')" :pre-title="t('cta2_label')" :post-title="t('cta2_sub')">
+        <LandingActionButton :title="t('login')" :link="appUrl" type="site" />
+        <LandingActionButton title="@msgboard_bot" link="https://t.me/msgboard_bot" type="telegram" />
+      </LandingCallToAction>
 
-    <!-- ══ MID-PAGE CTA ══ -->
-    <LandingCallToAction
-      :post-title="t('cta2_sub')"
-      :pre-title="t('cta2_label')"
-      :title="t('cta2_title')">
-      <LandingActionButton
-        :link="appUrl"
-        :title="t('login')"
-        type="site" />
-      <LandingActionButton
-        link="https://t.me/msgboard_bot"
-        title="@msgboard_bot"
-        type="telegram" />
-    </LandingCallToAction>
-
-    <!-- ══ FEATURES ══ -->
-    <LandingFeaturesGrid
-      id="features"
-      :features="[
+      <!-- ══ FEATURES ══ -->
+      <LandingFeaturesGrid
+          id="features"
+          :pre-title="t('feat_label')"
+          :title="t('feat_title')"
+          :post-title="t('feat_sub')"
+          :features="[
         {
           title: t('f1t'),
           icon: 'board',
           description: t('f1d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/getting-started/quick-start'),
+          link: laraueUrl('/blog/documentation/laraue-boards/getting-started/quick-start')
         },
         {
           title: t('f2t'),
           icon: 'mail',
           description: t('f2d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/working-alone/telegram-messages'),
+          link: laraueUrl('/blog/documentation/laraue-boards/working-alone/telegram-messages')
         },
         {
           title: t('f3t'),
           icon: 'camera',
           description: t('f3d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/features/media'),
+          link: laraueUrl('/blog/documentation/laraue-boards/features/media')
         },
         {
           title: t('f4t'),
           icon: 'edit',
           description: t('f4d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/integrations/telegram-save-modes'),
+          link: laraueUrl('/blog/documentation/laraue-boards/integrations/telegram-save-modes')
         },
         {
           title: t('f5t'),
           icon: 'tag',
           description: t('f5d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/features/card-keys'),
+          link: laraueUrl('/blog/documentation/laraue-boards/features/card-keys')
         },
         {
           title: t('f6t'),
           icon: 'gear',
           description: t('f6d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/features/attributes'),
+          link: laraueUrl('/blog/documentation/laraue-boards/features/attributes')
         },
         {
           title: t('f7t'),
           icon: 'partners',
           description: t('f7d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/concepts/organizations'),
+          link: laraueUrl('/blog/documentation/laraue-boards/concepts/organizations')
         },
         {
           title: t('f8t'),
           icon: 'lock',
           description: t('f8d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/getting-started/authorization'),
+          link: laraueUrl('/blog/documentation/laraue-boards/getting-started/authorization')
         },
         {
           title: t('f9t'),
           icon: 'code',
           description: t('f9d'),
-          link: 'https://github.com/win7user10/Laraue.Apps.Boards',
+          link: 'https://github.com/win7user10/Laraue.Apps.Boards'
         },
         {
           title: t('f10t'),
           icon: 'sparkle',
           description: t('f10d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/integrations/telegram-save-modes'),
+          link: laraueUrl('/blog/documentation/laraue-boards/integrations/telegram-save-modes')
         },
         {
           title: t('f11t'),
           icon: 'search',
           description: t('f11d'),
-          link: laraueUrl('/blog/documentation/laraue-boards/features/search'),
-        },
-      ]"
-      :post-title="t('feat_sub')"
-      :pre-title="t('feat_label')"
-      :title="t('feat_title')" />
+          link: laraueUrl('/blog/documentation/laraue-boards/features/search')
+        }
+      ]" />
 
-    <!-- ══ PLATFORMS ══ -->
-    <LandingSection
-      :post-title="t('pl_sub')"
-      :pre-title="t('pl_label')"
-      :title="t('pl_title')"
-      type="alt">
-      <div class="platforms-grid">
-        <div class="platform-card reveal">
-          <div class="platform-card-header">
-            <div class="platform-card-icon web"><LandingIcon name="globe" /></div>
-            <div>
-              <div class="platform-card-name">{{ t('web_name') }}</div>
-              <div class="platform-card-tag">boards.laraue.com</div>
+      <!-- ══ PLATFORMS ══ -->
+      <LandingSection :pre-title="t('pl_label')" :title="t('pl_title')" :post-title="t('pl_sub')" type="alt">
+        <div class="platforms-grid">
+          <div class="platform-card reveal">
+            <div class="platform-card-header">
+              <div class="platform-card-icon web"><LandingIcon name="globe" /></div>
+              <div>
+                <div class="platform-card-name">{{ t('web_name') }}</div>
+                <div class="platform-card-tag">boards.laraue.com</div>
+              </div>
             </div>
+            <p class="platform-card-desc">{{ t('web_desc') }}</p>
+            <ul class="platform-card-features">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('web_f1') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('web_f2') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('web_f3') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('web_f4') }}</span></li>
+            </ul>
+            <a :href="appUrl" class="platform-card-link web" style="align-self:flex-start">{{ t('open_webapp') }} &#8594;</a>
           </div>
-          <p class="platform-card-desc">{{ t('web_desc') }}</p>
-          <ul class="platform-card-features">
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('web_f1') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('web_f2') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('web_f3') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('web_f4') }}</span>
-            </li>
-          </ul>
-          <a
-            class="platform-card-link web"
-            :href="appUrl"
-            style="align-self: flex-start">
-            {{ t('open_webapp') }} &#8594;
-          </a>
-        </div>
 
-        <div class="platform-card reveal">
-          <div class="platform-card-header">
-            <div class="platform-card-icon tg"><LandingIcon name="chat" /></div>
-            <div>
-              <div class="platform-card-name">{{ t('tg_name') }}</div>
-              <div class="platform-card-tag">@msgboard_bot</div>
+          <div class="platform-card reveal">
+            <div class="platform-card-header">
+              <div class="platform-card-icon tg"><LandingIcon name="chat" /></div>
+              <div>
+                <div class="platform-card-name">{{ t('tg_name') }}</div>
+                <div class="platform-card-tag">@msgboard_bot</div>
+              </div>
             </div>
+            <p class="platform-card-desc">{{ t('tg_desc') }}</p>
+            <ul class="platform-card-features">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('tg_f1') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('tg_f2') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('tg_f3') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('tg_f4') }}</span></li>
+            </ul>
+            <a href="https://t.me/msgboard_bot" class="platform-card-link tg" style="align-self:flex-start" target="_blank" rel="noopener">@msgboard_bot &#8594;</a>
           </div>
-          <p class="platform-card-desc">{{ t('tg_desc') }}</p>
-          <ul class="platform-card-features">
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('tg_f1') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('tg_f2') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('tg_f3') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('tg_f4') }}</span>
-            </li>
-          </ul>
-          <a
-            class="platform-card-link tg"
-            href="https://t.me/msgboard_bot"
-            rel="noopener"
-            style="align-self: flex-start"
-            target="_blank">
-            @msgboard_bot &#8594;
-          </a>
-        </div>
 
-        <div class="platform-card reveal">
-          <div class="platform-card-header">
-            <div class="platform-card-icon mcp"><LandingIcon name="sparkle" /></div>
-            <div>
-              <div class="platform-card-name">{{ t('mcp_name') }}</div>
-              <div class="platform-card-tag">{{ t('mcp_tag') }}</div>
+          <div class="platform-card reveal">
+            <div class="platform-card-header">
+              <div class="platform-card-icon mcp"><LandingIcon name="sparkle" /></div>
+              <div>
+                <div class="platform-card-name">{{ t('mcp_name') }}</div>
+                <div class="platform-card-tag">{{ t('mcp_tag') }}</div>
+              </div>
             </div>
+            <p class="platform-card-desc">{{ t('mcp_desc') }}</p>
+            <ul class="platform-card-features">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('mcp_f1') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('mcp_f2') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('mcp_f3') }}</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>{{ t('mcp_f4') }}</span></li>
+            </ul>
+            <a :href="appUrl" class="platform-card-link mcp" style="align-self:flex-start">{{ t('mcp_cta') }} &#8594;</a>
           </div>
-          <p class="platform-card-desc">{{ t('mcp_desc') }}</p>
-          <ul class="platform-card-features">
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('mcp_f1') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('mcp_f2') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('mcp_f3') }}</span>
-            </li>
-            <li>
-              <svg
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span>{{ t('mcp_f4') }}</span>
-            </li>
-          </ul>
-          <a
-            class="platform-card-link mcp"
-            :href="appUrl"
-            style="align-self: flex-start">
-            {{ t('mcp_cta') }} &#8594;
-          </a>
-        </div>
-      </div>
-    </LandingSection>
 
-    <!-- ══ PRICING ══ -->
-    <LandingPricing
-      id="pricing"
-      v-model:currency="currency"
-      :cta-href="appUrl"
-      :locale="locale"
-      :post-title="t('pricing_sub')"
-      :pre-title="t('pricing_label')"
-      :tariffs="tariffs"
-      :title="t('pricing_title')" />
-
-    <!-- ══ OPEN SOURCE / BUILT IN THE OPEN ══ -->
-    <LandingSection
-      :post-title="t('os_sub')"
-      :pre-title="t('os_label')"
-      :title="t('os_title')"
-      type="alt">
-      <div class="use-cases-grid">
-        <div class="use-case-card teams reveal">
-          <div class="use-case-icon"><LandingIcon name="code" /></div>
-          <div class="use-case-title">{{ t('os_code_title') }}</div>
-          <p class="use-case-desc">{{ t('os_code_desc') }}</p>
-          <ul class="use-case-list">
-            <li>Laraue.Apps.Boards — .NET 10 / C#, PostgreSQL 18</li>
-            <li>laraue-boards — Nuxt 4, Vue 3, TypeScript</li>
-          </ul>
-          <a
-            class="use-case-link"
-            href="https://github.com/win7user10/Laraue.Apps.Boards"
-            rel="noopener"
-            target="_blank">
-            {{ t('os_code_cta') }} &#8594;
-          </a>
         </div>
-        <div class="use-case-card personal reveal">
-          <div class="use-case-icon"><LandingIcon name="book" /></div>
-          <div class="use-case-title">{{ t('os_devlog_title') }}</div>
-          <p class="use-case-desc">{{ t('os_devlog_desc') }}</p>
-          <a
-            class="use-case-link"
-            :href="laraueUrl('/blog/articles/building-jira-alternative-solo-why-and-repositories')">
-            {{ t('os_devlog_cta') }} &#8594;
-          </a>
-        </div>
-      </div>
-      <p class="pricing-note reveal">{{ t('pr_note') }}</p>
-    </LandingSection>
+      </LandingSection>
 
-    <!-- ══ FAQ ══ -->
-    <section
-      id="faq"
-      class="faq">
-      <div class="faq-inner">
-        <div class="section-label reveal">{{ t('faq_label') }}</div>
-        <h2 class="section-title reveal">{{ t('faq_title') }}</h2>
-        <div class="faq-list">
-          <div
-            v-for="(item, index) in faqItems"
-            :key="index"
-            class="faq-item reveal"
-            :data-open="openFaq === index ? 'true' : null">
-            <button
-              :aria-controls="`faq-answer-${index}`"
-              :aria-expanded="openFaq === index"
-              class="faq-summary"
-              type="button"
-              @click="toggleFaq(index)">
-              {{ item.q }}
-            </button>
-            <div class="faq-answer-wrap">
-              <div class="faq-answer-inner">
-                <p :id="`faq-answer-${index}`">{{ item.a }}</p>
+
+      <!-- ══ PRICING ══ -->
+      <LandingPricing
+          id="pricing"
+          v-model:currency="currency"
+          :cta-href="appUrl"
+          :locale="locale"
+          :post-title="t('pricing_sub')"
+          :pre-title="t('pricing_label')"
+          :tariffs="tariffs"
+          :title="t('pricing_title')" />
+
+      <!-- ══ OPEN SOURCE / BUILT IN THE OPEN ══ -->
+      <LandingSection :pre-title="t('os_label')" :title="t('os_title')" :post-title="t('os_sub')" type="alt">
+        <div class="use-cases-grid">
+          <div class="use-case-card teams reveal">
+            <div class="use-case-icon"><LandingIcon name="code" /></div>
+            <div class="use-case-title">{{ t('os_code_title') }}</div>
+            <p class="use-case-desc">{{ t('os_code_desc') }}</p>
+            <ul class="use-case-list">
+              <li>Laraue.Apps.Boards — .NET 10 / C#, PostgreSQL 18</li>
+              <li>laraue-boards — Nuxt 4, Vue 3, TypeScript</li>
+            </ul>
+            <a href="https://github.com/win7user10/Laraue.Apps.Boards" class="use-case-link" target="_blank" rel="noopener">{{ t('os_code_cta') }} &#8594;</a>
+          </div>
+          <div class="use-case-card personal reveal">
+            <div class="use-case-icon"><LandingIcon name="book" /></div>
+            <div class="use-case-title">{{ t('os_devlog_title') }}</div>
+            <p class="use-case-desc">{{ t('os_devlog_desc') }}</p>
+            <a :href="laraueUrl('/blog/articles/building-jira-alternative-solo-why-and-repositories')" class="use-case-link">{{ t('os_devlog_cta') }} &#8594;</a>
+          </div>
+        </div>
+        <p class="pricing-note reveal">{{ t('pr_note') }}</p>
+      </LandingSection>
+
+      <!-- ══ FAQ ══ -->
+      <section class="faq" id="faq">
+        <div class="faq-inner">
+          <div class="section-label reveal">{{ t('faq_label') }}</div>
+          <h2 class="section-title reveal">{{ t('faq_title') }}</h2>
+          <div class="faq-list">
+            <div class="faq-item reveal" :data-open="openFaq === index ? 'true' : null" v-for="(item, index) in faqItems" :key="index">
+              <button
+                  class="faq-summary"
+                  type="button"
+                  :aria-expanded="openFaq === index"
+                  :aria-controls="`faq-answer-${index}`"
+                  @click="toggleFaq(index)"
+              >
+                {{ item.q }}
+              </button>
+              <div class="faq-answer-wrap">
+                <div class="faq-answer-inner">
+                  <p :id="`faq-answer-${index}`">{{ item.a }}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ══ CTA ══ -->
-    <LandingCallToAction
-      :post-title="t('cta_sub')"
-      :pre-title="t('cta_label')"
-      :title="t('cta_title')">
-      <LandingActionButton
-        :link="appUrl"
-        :title="t('login')"
-        type="site" />
-      <LandingActionButton
-        link="https://t.me/msgboard_bot"
-        title="@msgboard_bot"
-        type="telegram" />
-    </LandingCallToAction>
+      <!-- ══ CTA ══ -->
+      <LandingCallToAction :title="t('cta_title')" :pre-title="t('cta_label')" :post-title="t('cta_sub')">
+        <LandingActionButton :title="t('login')" :link="appUrl" type="site" />
+        <LandingActionButton title="@msgboard_bot" link="https://t.me/msgboard_bot" type="telegram" />
+      </LandingCallToAction>
   </main>
   <LandingFooter
     :docs-url="docsUrl"
@@ -651,6 +372,10 @@
 </template>
 
 <script setup lang="ts">
+import type { LandingPageDeps } from './LandingPage.deps'
+import type { LandingLocale, LandingMessageKey } from './LandingPage.messages'
+import type { LandingCurrency } from './LandingPage.types'
+
 import LandingActionButton from './components/LandingActionButton.vue'
 import LandingCallToAction from './components/LandingCallToAction.vue'
 import LandingFeaturesGrid from './components/LandingFeaturesGrid.vue'
@@ -661,9 +386,6 @@ import LandingIntro from './components/LandingIntro.vue'
 import LandingPlatformBadge from './components/LandingPlatformBadge.vue'
 import LandingPricing from './components/LandingPricing.vue'
 import LandingSection from './components/LandingSection.vue'
-import type { LandingPageDeps } from './LandingPage.deps'
-import type { LandingLocale, LandingMessageKey } from './LandingPage.messages'
-import type { LandingCurrency } from './LandingPage.types'
 import { useLandingSeo } from './useLandingSeo'
 import { useLandingText } from './useLandingText'
 
@@ -1016,10 +738,10 @@ useLandingSeo(
   -webkit-box-orient: vertical;
   display: -webkit-box;
   font-size: 13px;
-  -webkit-line-clamp: 2;
   line-height: 1.5;
   margin: 0 0 12px;
   overflow: hidden;
+  -webkit-line-clamp: 2;
 }
 
 .issue-card-footer {
