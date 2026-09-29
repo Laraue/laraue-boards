@@ -14,10 +14,10 @@
       <nav
         :aria-label="t('nav_label')"
         class="nav">
-        <a href="#features">{{ t('nav_features') }}</a>
-        <a href="#pricing">{{ t('nav_pricing') }}</a>
-        <a href="#faq">{{ t('nav_faq') }}</a>
-        <a :href="docsUrl">{{ t('documentation') }}</a>
+        <NuxtLink :to="`${homePath}#features`">{{ t('nav_features') }}</NuxtLink>
+        <NuxtLink :to="`${homePath}#pricing`">{{ t('nav_pricing') }}</NuxtLink>
+        <NuxtLink :to="`${homePath}#faq`">{{ t('nav_faq') }}</NuxtLink>
+        <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
       </nav>
       <div class="actions">
         <button
@@ -48,10 +48,13 @@
 import { Moon, Sun } from '@lucide/vue'
 
 import type { Locale } from '~/composables/useI18n'
+import { docsPath } from '~/sections/docs/docsPaths'
 
-import { laraueUrl } from '../landingLinks'
-
-const props = defineProps<{ locale: Locale }>()
+const props = defineProps<{
+  locale: Locale
+  // Where the other language's version of the current page is; the landing page by default.
+  otherLanguagePath?: string
+}>()
 
 const { t } = useI18n(
   {
@@ -77,14 +80,16 @@ const { t } = useI18n(
   props.locale,
 )
 
-const docsUrl = laraueUrl(props.locale, '/blog/documentation/laraue-boards')
+const docsHref = computed(() => docsPath(props.locale))
 
 const { setTheme, theme } = useAppPreferences()
 const toggleTheme = (): void => setTheme(theme.value === 'dark' ? 'light' : 'dark')
 
 const homePath = computed(() => (props.locale === 'ru' ? '/ru' : '/'))
 const otherLocale = computed<Locale>(() => (props.locale === 'ru' ? 'en' : 'ru'))
-const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'))
+const otherLocalePath = computed(
+  () => props.otherLanguagePath ?? (otherLocale.value === 'ru' ? '/ru' : '/'),
+)
 </script>
 
 <style scoped>

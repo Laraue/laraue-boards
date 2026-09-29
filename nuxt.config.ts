@@ -69,6 +69,8 @@ export default defineNuxtConfig({
   // The app itself is private: keep it out of search results. Only the landing page is indexed.
   routeRules: {
     '/account': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    // The docs are per language; the address without one goes to the English docs.
+    '/documentation': { redirect: { statusCode: 301, to: '/en/documentation' } },
     '/join/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/login': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/organizations': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },

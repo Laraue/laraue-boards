@@ -14,7 +14,7 @@
       </div>
       <ul class="footer-links">
         <li>
-          <a :href="docsUrl">{{ t('documentation') }}</a>
+          <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
         </li>
         <li>
           <a
@@ -43,8 +43,8 @@
 
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
-
-import { botUrl, githubUrl, laraueUrl } from '../landingLinks'
+import { docsPath } from '~/sections/docs/docsPaths'
+import { botUrl, githubUrl, laraueUrl } from '~/sections/landing/landingLinks'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -64,7 +64,7 @@ const { t } = useI18n(
   props.locale,
 )
 
-const docsUrl = laraueUrl(props.locale, '/blog/documentation/laraue-boards')
+const docsHref = docsPath(props.locale)
 const privacyUrl = laraueUrl(props.locale, '/privacy')
 </script>
 
