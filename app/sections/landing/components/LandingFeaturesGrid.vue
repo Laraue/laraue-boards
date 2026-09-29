@@ -27,7 +27,8 @@
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
 
-import { githubUrl, laraueUrl } from '../landingLinks'
+import { docsPath } from '../../docs/docsPaths'
+import { githubUrl } from '../landingLinks'
 import type { LandingIconName } from './LandingIcon.vue'
 import LandingIcon from './LandingIcon.vue'
 
@@ -93,8 +94,7 @@ const { t } = useI18n(
   props.locale,
 )
 
-const docs = (path: string): string =>
-  laraueUrl(props.locale, `/blog/documentation/laraue-boards/${path}`)
+const docs = (path: string): string => docsPath(props.locale, path.split('/'))
 
 const features: { description: string; icon: LandingIconName; link: string; title: string }[] = [
   {

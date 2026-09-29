@@ -49,6 +49,8 @@ export default defineNuxtConfig({
   // discover routes from the app and lists them explicitly.
   sitemap: {
     excludeAppSources: true,
+    // The docs pages come from the markdown files (see `server/routes/docs-sitemap-urls.get.ts`).
+    sources: ['/docs-sitemap-urls'],
     urls: ['/', '/ru'].map((loc) => ({
       alternatives: [
         { href: '/', hreflang: 'en' },
@@ -71,7 +73,11 @@ export default defineNuxtConfig({
     '/account': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     // The docs are per language; the address without one goes to the English docs.
     '/documentation': { redirect: { statusCode: 301, to: '/en/documentation' } },
+    // Data for the pages and the sitemap, not pages themselves.
+    '/docs-content/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/docs-sitemap-urls': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/join/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/landing/tariffs': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/login': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/organizations': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/organizations/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },

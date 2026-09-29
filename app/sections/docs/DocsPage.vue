@@ -38,6 +38,7 @@ import DocsSidebar from './components/DocsSidebar.vue'
 import DocsToc from './components/DocsToc.vue'
 import type { DocsPageDeps } from './DocsPage.deps'
 import { docsPath } from './docsPaths'
+import { useDocsSeo } from './useDocsSeo'
 
 const props = defineProps<{
   deps: DocsPageDeps
@@ -76,8 +77,7 @@ const otherLanguagePath = docsPath(
   page.alternates.includes(otherLocale) ? props.path : [],
 )
 
-useHead({ htmlAttrs: { lang: props.locale } })
-useSeoMeta({ description: page.meta.description, title: page.meta.title })
+useDocsSeo(props.locale, props.path, page)
 </script>
 
 <style scoped>

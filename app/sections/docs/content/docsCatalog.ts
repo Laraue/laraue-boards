@@ -57,6 +57,9 @@ export const createDocsCatalog = (files: Record<string, string>) => {
         previous: index > 0 && previous ? toDocLink(previous) : undefined,
       }
     },
+    // Every page of the language, for the sitemap.
+    pages: (locale: DocsLocale): { path: string[]; updatedAt: string }[] =>
+      readingOrder[locale].map((node) => ({ path: node.path, updatedAt: node.meta.updatedAt })),
     tree: (locale: DocsLocale): DocNode => trees[locale],
   }
 }
