@@ -48,7 +48,6 @@
 import { Moon, Sun } from '@lucide/vue'
 
 import type { LandingLocale } from '../LandingPage.messages'
-
 import { useLandingText } from '../useLandingText'
 
 const props = defineProps<{
