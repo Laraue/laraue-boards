@@ -75,7 +75,7 @@ const texts = computed(() =>
   border-top: 1px solid var(--landing-cta-border);
   color: #fff;
   overflow: hidden;
-  padding: 96px 60px;
+  padding: 96px 24px;
   position: relative;
   text-align: center;
 }

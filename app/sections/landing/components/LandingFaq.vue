@@ -161,12 +161,13 @@ useHead({
 .faq {
   background: var(--color-workspace);
   border-bottom: 1px solid var(--color-divider);
-  padding: 88px 60px;
+  padding: 88px 24px;
 }
 
 .faq-inner {
   margin: 0 auto;
-  max-width: 820px;
+  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
+  max-width: 1312px;
 }
 
 .section-label {
@@ -203,6 +204,7 @@ useHead({
   flex-direction: column;
   gap: 12px;
   margin-top: 40px;
+  max-width: 820px;
 }
 
 .faq-summary {

@@ -45,7 +45,7 @@ defineProps<{
   display: flex;
   min-height: 100vh;
   overflow: hidden;
-  padding: 100px 60px 80px;
+  padding: 100px 24px 80px;
   position: relative;
 }
 
@@ -55,7 +55,8 @@ defineProps<{
   gap: 80px;
   grid-template-columns: 1fr 1fr;
   margin: 0 auto;
-  max-width: 1060px;
+  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
+  max-width: 1312px;
   position: relative;
   width: 100%;
   z-index: 1;

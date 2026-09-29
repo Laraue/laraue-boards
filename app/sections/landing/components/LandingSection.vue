@@ -29,7 +29,7 @@ defineProps<{
 <style scoped>
 .section {
   border-bottom: 1px solid var(--color-divider);
-  padding: 88px 60px;
+  padding: 88px 24px;
 }
 
 .section.alt {
@@ -38,7 +38,8 @@ defineProps<{
 
 .section-inner {
   margin: 0 auto;
-  max-width: 1060px;
+  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
+  max-width: 1312px;
 }
 
 .section-label {
