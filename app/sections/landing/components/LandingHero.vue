@@ -14,7 +14,7 @@
     <template #actions>
       <LandingActionButton
         :link="appUrl"
-        :title="t('login')"
+        :title="t('open_app')"
         type="site" />
       <LandingActionButton
         link="https://t.me/msgboard_bot"
@@ -203,7 +203,7 @@ const { t } = useI18n(
       hv_time1: '9:41',
       hv_time2: '9:42',
       hv_title: 'Fix checkout button on mobile Safari',
-      login: 'Log in',
+      open_app: 'Open App',
       project_description: 'More details',
     },
     ru: {
@@ -228,7 +228,7 @@ const { t } = useI18n(
       hv_time1: '9:41',
       hv_time2: '9:42',
       hv_title: 'Починить кнопку оплаты в мобильном Safari',
-      login: 'Войти',
+      open_app: 'Открыть приложение',
       project_description: 'Подробнее о проекте',
     },
   },

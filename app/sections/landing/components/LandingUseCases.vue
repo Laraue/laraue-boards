@@ -18,7 +18,7 @@
         :description="t('uc_teams_desc')"
         :items="[t('uc_t1'), t('uc_t2'), t('uc_t3'), t('uc_t4'), t('uc_t5')]"
         :link-href="appUrl"
-        :link-text="t('login')"
+        :link-text="t('open_app')"
         :title="t('uc_teams_title')">
         <template #icon><LandingIcon name="partners" /></template>
       </LandingInfoCard>
@@ -39,7 +39,7 @@ const props = defineProps<{ locale: Locale }>()
 const { t } = useI18n(
   {
     en: {
-      login: 'Log in',
+      open_app: 'Open App',
       uc_label: 'Built for two worlds',
       uc_p1: 'Forward any message — text, photo, video or album',
       uc_p2: 'Edit the message in Telegram, the card updates',
@@ -62,7 +62,7 @@ const { t } = useI18n(
       uc_title: 'Personal productivity\nor team coordination',
     },
     ru: {
-      login: 'Войти',
+      open_app: 'Открыть приложение',
       uc_label: 'Для двух сценариев',
       uc_p1: 'Пересылайте что угодно — текст, фото, видео или альбом',
       uc_p2: 'Отредактировали сообщение в Telegram — карточка обновилась',

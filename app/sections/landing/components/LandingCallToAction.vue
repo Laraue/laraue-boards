@@ -7,7 +7,7 @@
       <div class="cta-actions reveal">
         <LandingActionButton
           :link="appUrl"
-          :title="t('login')"
+          :title="t('open_app')"
           type="site" />
         <LandingActionButton
           :link="botUrl"
@@ -38,7 +38,7 @@ const { t } = useI18n(
       cta_label: 'Get started today',
       cta_sub: 'Free and open source. Works in 30 seconds.',
       cta_title: 'Your work deserves\nbetter than chat history',
-      login: 'Log in',
+      open_app: 'Open App',
     },
     ru: {
       cta2_label: 'Готовы начать?',
@@ -47,7 +47,7 @@ const { t } = useI18n(
       cta_label: 'Начните сегодня',
       cta_sub: 'Бесплатно и с открытым кодом. Начните за 30 секунд.',
       cta_title: 'Ваши заметки заслуживают большего,\nчем затеряться в чате',
-      login: 'Войти',
+      open_app: 'Открыть приложение',
     },
   },
   props.locale,

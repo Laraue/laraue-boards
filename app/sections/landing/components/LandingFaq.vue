@@ -204,7 +204,6 @@ useHead({
   flex-direction: column;
   gap: 12px;
   margin-top: 40px;
-  max-width: 820px;
 }
 
 .faq-summary {
@@ -257,6 +256,8 @@ useHead({
   font-size: 15px;
   line-height: 1.7;
   margin-top: 14px;
+  /* The questions use the full width; the answers keep a readable line length. */
+  max-width: 900px;
 }
 
 @media (width <= 720px) {

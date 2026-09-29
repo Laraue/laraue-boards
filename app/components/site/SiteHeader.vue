@@ -37,7 +37,7 @@
         <NuxtLink
           class="open-app"
           to="/organizations">
-          {{ t('login') }}
+          {{ t('open_app') }}
         </NuxtLink>
       </div>
     </div>
@@ -60,20 +60,20 @@ const { t } = useI18n(
   {
     en: {
       documentation: 'Documentation',
-      login: 'Log in',
       nav_faq: 'FAQ',
       nav_features: 'Features',
       nav_label: 'Main',
       nav_pricing: 'Pricing',
+      open_app: 'Open App',
       theme_toggle: 'Switch theme',
     },
     ru: {
       documentation: 'Документация',
-      login: 'Войти',
       nav_faq: 'Вопросы',
       nav_features: 'Возможности',
       nav_label: 'Основное меню',
       nav_pricing: 'Тарифы',
+      open_app: 'Открыть приложение',
       theme_toggle: 'Сменить тему',
     },
   },
