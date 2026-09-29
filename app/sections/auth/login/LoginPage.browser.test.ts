@@ -23,7 +23,7 @@ const mount = async (deps: LoginPageDeps, onLoggedIn: () => void, googleClientId
   currentWrapper = await mountSuspended(LoginPage, {
     attachTo: document.body,
     props: { deps, googleClientId, onLoggedIn, telegramBotId: '123456' },
-    route: '/',
+    route: '/login',
   })
 }
 
