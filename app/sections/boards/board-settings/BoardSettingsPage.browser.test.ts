@@ -11,8 +11,8 @@ const board: BoardSettingsPageData = {
   canUpdate: true,
   color: '#4774d4',
   columns: [
-    { color: '#4774d4', id: '1', name: 'To do' },
-    { color: '#d65f63', id: '2', name: 'Done' },
+    { category: 'Created', color: '#4774d4', id: '1', name: 'To do' },
+    { category: 'Completed', color: '#d65f63', id: '2', name: 'Done' },
   ],
   name: 'Roadmap',
   status: 'New',
@@ -66,6 +66,30 @@ it('saves the board name edited by the user', async () => {
   expect(onSaved).toHaveBeenCalledOnce()
 })
 
+it('saves a column category picked by the user', async () => {
+  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => ({ data: true, status: 'success' }))
+
+  await mount(
+    {
+      remove: vi.fn<BoardSettingsPageDeps['remove']>(),
+      save,
+      view: vi.fn<BoardSettingsPageDeps['view']>(async () => ({ data: board, status: 'success' })),
+    },
+    vi.fn<() => void>(),
+  )
+  await page.getByLabelText('Status category').first().selectOptions('InProgress')
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      columns: [
+        { category: 'InProgress', color: '#4774d4', id: '1', name: 'To do' },
+        { category: 'Completed', color: '#d65f63', id: '2', name: 'Done' },
+      ],
+    }),
+  )
+})
+
 it('reorders columns through keyboard drag and drop before saving', async () => {
   const save = vi.fn<BoardSettingsPageDeps['save']>(async () => ({ data: true, status: 'success' }))
 
@@ -86,8 +110,8 @@ it('reorders columns through keyboard drag and drop before saving', async () => 
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({
       columns: [
-        { color: '#d65f63', id: '2', name: 'Done' },
-        { color: '#4774d4', id: '1', name: 'To do' },
+        { category: 'Completed', color: '#d65f63', id: '2', name: 'Done' },
+        { category: 'Created', color: '#4774d4', id: '1', name: 'To do' },
       ],
     }),
   )

@@ -16,6 +16,7 @@ export const createViewBoardSettings =
           columns: (board.statuses ?? [])
             .toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
             .map((status) => ({
+              category: status.category,
               color: status.color ?? DEFAULT_COLOR,
               id: String(status.id),
               name: status.name,

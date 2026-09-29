@@ -33,11 +33,13 @@
           :id="column.key"
           :key="column.key"
           :can-update="viewModel.canUpdate"
+          :category="column.category"
           :color="column.color"
           :disabled="submitting"
           :index="index"
           :name="column.name"
           :on-delete="() => removeColumn(column.key)"
+          :on-update-category="(value) => (column.category = value)"
           :on-update-color="(value) => (column.color = value)"
           :on-update-name="(value) => (column.name = value)" />
       </div>
@@ -167,6 +169,7 @@ const sensors = [
 const addColumn = () => {
   state.newColumnId += 1
   state.columns.push({
+    category: 'InProgress',
     color: DEFAULT_COLOR,
     id: null,
     key: `new-column-${state.newColumnId}`,
@@ -188,7 +191,7 @@ const handleDragEnd = (event: DragEndEvent) => {
 const submit = () => {
   props.onUpdate({
     color: state.color,
-    columns: state.columns.map(({ color, id, name }) => ({ color, id, name })),
+    columns: state.columns.map(({ category, color, id, name }) => ({ category, color, id, name })),
     name: state.name,
     status: state.status,
   })

@@ -1,6 +1,9 @@
+import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
+
 export type BoardSettingsStatus = 'Active' | 'Done' | 'New'
 
 export type BoardSettingsColumn = {
+  category: StatusCategory
   color: string
   id: string
   name: string
@@ -16,6 +19,7 @@ export type BoardSettingsPageData = {
 }
 
 export type BoardSettingsColumnDraft = {
+  category: StatusCategory
   color: string
   id: null | string
   name: string

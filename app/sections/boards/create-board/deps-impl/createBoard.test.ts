@@ -12,7 +12,7 @@ test('maps create board request and response', async () => {
       color: '#fff',
       name: 'Roadmap',
       spaceKey: 'product',
-      statuses: [{ color: '#111', name: 'To do' }],
+      statuses: [{ category: 'Created', color: '#111', name: 'To do' }],
     }),
     { data: { boardId: '7' }, status: 'success' },
   )
@@ -20,6 +20,6 @@ test('maps create board request and response', async () => {
     color: '#fff',
     name: 'Roadmap',
     spaceKey: 'product',
-    statuses: [{ color: '#111', name: 'To do' }],
+    statuses: [{ category: 'Created', color: '#111', name: 'To do' }],
   })
 })

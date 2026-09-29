@@ -24,6 +24,10 @@
       required
       :value="name"
       @input="props.onUpdateName(($event.target as HTMLInputElement).value)" />
+    <StatusCategorySelect
+      :disabled="!canUpdate"
+      :model-value="category"
+      @update:model-value="props.onUpdateCategory" />
     <button
       v-if="canUpdate"
       :aria-label="t('delete')"
@@ -40,14 +44,19 @@
 import { useSortable } from '@dnd-kit/vue/sortable'
 import { GripVertical, Trash2 } from '@lucide/vue'
 
+import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
+import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
+
 const props = defineProps<{
   canUpdate: boolean
+  category: StatusCategory
   color: string
   disabled: boolean
   id: string
   index: number
   name: string
   onDelete: () => void
+  onUpdateCategory: (category: StatusCategory) => void
   onUpdateColor: (color: string) => void
   onUpdateName: (name: string) => void
 }>()
@@ -73,7 +82,9 @@ const { isDragging } = useSortable({
   align-items: center;
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: auto minmax(min-content, 0.2fr) minmax(0, 1fr) auto;
+  grid-template-columns:
+    auto minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(min-content, 0.3fr)
+    auto;
 }
 
 .setting-row--dragging {

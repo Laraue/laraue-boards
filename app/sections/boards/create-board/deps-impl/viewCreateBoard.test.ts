@@ -12,7 +12,7 @@ test('loads boards with statuses from the current space', async () => {
           epicColor: '#123',
           epicId: 7,
           epicName: 'Roadmap',
-          statuses: [{ color: '#456', id: 8, name: 'To do', sortOrder: 1 }],
+          statuses: [{ category: 'Created', color: '#456', id: 8, name: 'To do', sortOrder: 1 }],
         },
       ],
       hasNextPage: false,
@@ -26,7 +26,7 @@ test('loads boards with statuses from the current space', async () => {
       boards: [
         {
           label: 'Roadmap',
-          statuses: [{ color: '#456', name: 'To do' }],
+          statuses: [{ category: 'Created', color: '#456', name: 'To do' }],
           value: '7',
         },
       ],

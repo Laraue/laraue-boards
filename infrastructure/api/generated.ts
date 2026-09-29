@@ -3346,6 +3346,7 @@ export interface components {
         CreateEpicStatusDto: {
             name: string;
             color: string;
+            category: components["schemas"]["StatusCategory"];
         };
         CreateOrganizationRequest: {
             /** Format: uuid */
@@ -3372,6 +3373,7 @@ export interface components {
             color: string;
             /** Format: int64 */
             epicId: number | string;
+            category: components["schemas"]["StatusCategory"];
         };
         DestinationSpace: {
             key: string;
@@ -3414,6 +3416,7 @@ export interface components {
             id?: number | string;
             color: string;
             name: string;
+            category: components["schemas"]["StatusCategory"];
         };
         EpicDto: {
             name: string;
@@ -3711,6 +3714,7 @@ export interface components {
             id: number | string;
             name: string;
             color: null | string;
+            category: components["schemas"]["StatusCategory"];
             /** Format: int32 */
             count: number | string;
         };
@@ -3850,6 +3854,7 @@ export interface components {
             authData?: components["schemas"]["OrganizationAuthData"];
             epicIds?: (number | string)[];
             epicStatuses?: components["schemas"]["EpicStatus"][];
+            statusCategories?: components["schemas"]["StatusCategory"][];
             spaceKeys?: string[];
             searchString?: null | string;
             /** Format: int32 */
@@ -3954,6 +3959,8 @@ export interface components {
             color: string;
             isCurrentUser: boolean;
         };
+        /** @enum {unknown} */
+        StatusCategory: "Created" | "InProgress" | "Completed";
         StatusDto: {
             /** Format: int64 */
             id: number | string;
@@ -3961,6 +3968,7 @@ export interface components {
             color: null | string;
             /** Format: int32 */
             sortOrder: number | string;
+            category: components["schemas"]["StatusCategory"];
         };
         SummarizeIssueContentRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];

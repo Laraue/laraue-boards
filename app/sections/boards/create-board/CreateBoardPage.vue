@@ -39,6 +39,7 @@
           v-model="status.name"
           :aria-label="t('statusName')"
           required />
+        <StatusCategorySelect v-model="status.category" />
         <button
           :aria-label="t('deleteStatus')"
           class="icon-btn danger"
@@ -73,6 +74,8 @@
 <script setup lang="ts">
 import { Plus, Trash2 } from '@lucide/vue'
 
+import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
+import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { CreateBoardPageDeps } from '~/sections/boards/create-board/CreateBoardPage.deps'
 
@@ -117,7 +120,7 @@ const form = reactive({
   color: DEFAULT_COLOR,
   name: '',
   sourceBoardId: '',
-  statuses: [] as Array<{ color: string; id: number; name: string }>,
+  statuses: [] as Array<{ category: StatusCategory; color: string; id: number; name: string }>,
 })
 
 const { data } = await useQuery(
@@ -129,7 +132,12 @@ const { data } = await useQuery(
 let nextStatusId = 0
 const addStatus = () => {
   nextStatusId += 1
-  form.statuses.push({ color: DEFAULT_COLOR, id: nextStatusId, name: '' })
+  form.statuses.push({
+    category: form.statuses.length === 0 ? 'Created' : 'InProgress',
+    color: DEFAULT_COLOR,
+    id: nextStatusId,
+    name: '',
+  })
 }
 
 const copyStatuses = () => {
@@ -142,7 +150,7 @@ const create = () => {
     color: form.color,
     name: form.name,
     spaceKey: props.spaceKey,
-    statuses: form.statuses.map(({ color, name }) => ({ color, name })),
+    statuses: form.statuses.map(({ category, color, name }) => ({ category, color, name })),
   })
 }
 
@@ -162,7 +170,7 @@ const {
   align-items: center;
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: minmax(min-content, 0.2fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(min-content, 0.3fr) auto;
   margin-top: var(--space-2);
 }
 
