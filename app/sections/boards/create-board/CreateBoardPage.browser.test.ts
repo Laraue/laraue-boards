@@ -42,7 +42,7 @@ it('copies statuses into the editor before creating', async () => {
       boards: [
         {
           label: 'Development',
-          statuses: [{ color: '#111111', name: 'To do' }],
+          statuses: [{ category: 'Created', color: '#111111', name: 'To do' }],
           value: '7',
         },
       ],
@@ -52,14 +52,39 @@ it('copies statuses into the editor before creating', async () => {
   await page.getByLabelText('Name').fill('Roadmap')
   await page.getByLabelText('Copy statuses from').selectOptions('7')
   await page.getByLabelText('Status name').fill('Ready')
+  await page.getByLabelText('Status category').selectOptions('InProgress')
   await page.getByRole('button', { name: 'Create board' }).click()
 
   expect(create).toHaveBeenCalledWith({
     color: '#4774d4',
     name: 'Roadmap',
     spaceKey: 'product-AB12',
-    statuses: [{ color: '#111111', name: 'Ready' }],
+    statuses: [{ category: 'InProgress', color: '#111111', name: 'Ready' }],
   })
+})
+
+it('starts added statuses as not started, then in progress', async () => {
+  const create = vi.fn<CreateBoardPageDeps['create']>(async () => ({
+    data: { boardId: '12' },
+    status: 'success',
+  }))
+
+  await mount(create, vi.fn())
+  await page.getByLabelText('Name').fill('Roadmap')
+  await page.getByRole('button', { name: 'Add status' }).click()
+  await page.getByRole('button', { name: 'Add status' }).click()
+  await page.getByLabelText('Status name').first().fill('To do')
+  await page.getByLabelText('Status name').last().fill('Doing')
+  await page.getByRole('button', { name: 'Create board' }).click()
+
+  expect(create).toHaveBeenCalledWith(
+    expect.objectContaining({
+      statuses: [
+        { category: 'Created', color: '#4774d4', name: 'To do' },
+        { category: 'InProgress', color: '#4774d4', name: 'Doing' },
+      ],
+    }),
+  )
 })
 
 it('creates a board from the entered name', async () => {

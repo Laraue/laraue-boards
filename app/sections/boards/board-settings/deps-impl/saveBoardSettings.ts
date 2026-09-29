@@ -40,7 +40,11 @@ const getColumnChanges = (
         return false
       }
       const original = originalColumns.find((item) => item.id === column.id)
-      return original?.name !== column.name || original.color !== column.color
+      return (
+        original?.name !== column.name ||
+        original.color !== column.color ||
+        original.category !== column.category
+      )
     }),
   }
 }
@@ -80,7 +84,12 @@ export const createSaveBoardSettings =
     for (const column of changes.created) {
       const response = await tryRequest(() =>
         client.POST('/api/statuses', {
-          body: { color: column.color, epicId: input.boardId, name: column.name },
+          body: {
+            category: column.category,
+            color: column.color,
+            epicId: input.boardId,
+            name: column.name,
+          },
         }),
       )
       if (response && !isErrorResponse(response) && response.data !== undefined) {
@@ -93,7 +102,12 @@ export const createSaveBoardSettings =
     for (const column of changes.updated) {
       const response = await tryRequest(() =>
         client.PUT('/api/statuses/{id}', {
-          body: { color: column.color, id: column.id, name: column.name },
+          body: {
+            category: column.category,
+            color: column.color,
+            id: column.id,
+            name: column.name,
+          },
           params: { path: { id: Number(column.id) } },
         }),
       )

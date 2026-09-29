@@ -13,13 +13,13 @@ test('saves board and column changes', async () => {
     boardId: '7',
     color: '#111',
     columns: [
-      { color: '#222', id: '2', name: 'Doing' },
-      { color: '#444', id: null, name: 'Done' },
+      { category: 'InProgress', color: '#222', id: '2', name: 'Doing' },
+      { category: 'Completed', color: '#444', id: null, name: 'Done' },
     ],
     name: 'Roadmap',
     originalColumns: [
-      { color: '#000', id: '2', name: 'Todo' },
-      { color: '#333', id: '3', name: 'Later' },
+      { category: 'Created', color: '#000', id: '2', name: 'Todo' },
+      { category: 'InProgress', color: '#333', id: '3', name: 'Later' },
     ],
     originalStatus: 'New',
     status: 'Done',
@@ -37,5 +37,47 @@ test('saves board and column changes', async () => {
       ['POST', '/api/epics/7/reorder-statuses'],
     ],
   )
+  assert.deepEqual(await requests[2]!.json(), {
+    category: 'Completed',
+    color: '#444',
+    epicId: '7',
+    name: 'Done',
+  })
+  assert.deepEqual(await requests[3]!.json(), {
+    category: 'InProgress',
+    color: '#222',
+    id: '2',
+    name: 'Doing',
+  })
   assert.deepEqual(await requests[5]!.json(), { 2: 1, 9: 2 })
+})
+
+test('updates a column when only its category changed', async () => {
+  const { client, requests } = createTestApiClient(() => new Response(null, { status: 200 }))
+  const column = { color: '#222', id: '2', name: 'Doing' }
+
+  await createSaveBoardSettings(client)({
+    boardId: '7',
+    color: '#111',
+    columns: [{ ...column, category: 'Completed' }],
+    name: 'Roadmap',
+    originalColumns: [{ ...column, category: 'InProgress' }],
+    originalStatus: 'New',
+    status: 'New',
+  })
+
+  assert.deepEqual(
+    requests.map((request) => [request.method, new URL(request.url).pathname]),
+    [
+      ['PUT', '/api/epics/7'],
+      ['PUT', '/api/statuses/2'],
+      ['POST', '/api/epics/7/reorder-statuses'],
+    ],
+  )
+  assert.deepEqual(await requests[1]!.json(), {
+    category: 'Completed',
+    color: '#222',
+    id: '2',
+    name: 'Doing',
+  })
 })

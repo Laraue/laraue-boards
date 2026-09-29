@@ -12,6 +12,7 @@ export const createViewCreateBoard =
           boards?.data.map((board) => ({
             label: board.epicName,
             statuses: board.statuses.map((status) => ({
+              category: status.category,
               color: status.color ?? '#808080',
               name: status.name,
             })),
