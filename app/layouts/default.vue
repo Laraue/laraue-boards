@@ -31,7 +31,7 @@ const onViewProblem = async (problem: RoutableProblem): Promise<void> => {
       return
     }
     case 'signed-out': {
-      await navigateTo({ path: '/login', query: { redirect: route.fullPath } })
+      await navigateTo({ path: '/', query: { redirect: route.fullPath } })
       return
     }
     case 'unknown-organization': {
@@ -41,6 +41,6 @@ const onViewProblem = async (problem: RoutableProblem): Promise<void> => {
 }
 const onLoggedOut = async (): Promise<void> => {
   clearNuxtData()
-  await navigateTo('/login')
+  await navigateTo('/')
 }
 </script>
