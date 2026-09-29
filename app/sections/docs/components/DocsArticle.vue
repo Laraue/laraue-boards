@@ -1,22 +1,21 @@
 <template>
   <article class="article">
     <nav
-      v-if="page.breadcrumbs.length > 1"
+      v-if="ancestors.length > 0"
       :aria-label="t('breadcrumbs')"
       class="breadcrumbs">
-      <template
-        v-for="(crumb, index) in page.breadcrumbs"
-        :key="crumb.path.join('/')">
+      <span
+        v-for="(crumb, index) in ancestors"
+        :key="crumb.path.join('/')"
+        class="crumb">
+        <NuxtLink :to="docsPath(locale, crumb.path)">{{ crumb.title }}</NuxtLink>
         <span
-          v-if="index === page.breadcrumbs.length - 1"
-          aria-current="page">
-          {{ crumb.title }}
+          v-if="index < ancestors.length - 1"
+          aria-hidden="true"
+          class="separator">
+          /
         </span>
-        <template v-else>
-          <NuxtLink :to="docsPath(locale, crumb.path)">{{ crumb.title }}</NuxtLink>
-          <span aria-hidden="true">/</span>
-        </template>
-      </template>
+      </span>
     </nav>
     <h1 class="title">{{ page.meta.title }}</h1>
     <p class="updated">{{ t('updated') }} {{ updated }}</p>
@@ -62,6 +61,7 @@ const { t } = useI18n(
   {
     en: {
       breadcrumbs: 'Breadcrumbs',
+      documentation: 'Documentation',
       next: 'Next',
       pages: 'Previous and next page',
       previous: 'Previous',
@@ -69,6 +69,7 @@ const { t } = useI18n(
     },
     ru: {
       breadcrumbs: 'Навигационная цепочка',
+      documentation: 'Документация',
       next: 'Следующая',
       pages: 'Предыдущая и следующая страницы',
       previous: 'Предыдущая',
@@ -76,6 +77,14 @@ const { t } = useI18n(
     },
   },
   props.locale,
+)
+
+// Where the page is, without the page itself (its title is right below). The home page of the docs
+// is called "Documentation" here, not by its long title.
+const ancestors = computed(() =>
+  props.page.breadcrumbs
+    .slice(0, -1)
+    .map((crumb, index) => ({ ...crumb, title: index === 0 ? t('documentation') : crumb.title })),
 )
 
 // The dates are calendar days (2026-08-20), so they are shown as they are written, in any timezone.
@@ -111,13 +120,19 @@ const openInternalLink = async (event: MouseEvent): Promise<void> => {
 }
 
 .breadcrumbs {
-  align-items: center;
   color: var(--color-muted);
   display: flex;
   flex-wrap: wrap;
   font-size: 13px;
-  gap: 6px;
+  gap: 4px 8px;
+  line-height: 1.4;
   margin-bottom: 16px;
+}
+
+/* A separator stays on the line of the crumb it follows, so a wrapped line never starts with "/". */
+.crumb {
+  display: inline-flex;
+  gap: 8px;
 }
 
 .breadcrumbs a {

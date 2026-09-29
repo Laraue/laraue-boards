@@ -83,10 +83,10 @@ useDocsSeo(props.locale, props.path, page)
 <style scoped>
 .docs {
   display: grid;
-  gap: 48px;
-  grid-template-columns: 240px minmax(0, 1fr) 220px;
+  gap: 56px;
+  grid-template-columns: 240px minmax(0, 1fr) 200px;
   margin: 0 auto;
-  max-width: 1240px;
+  max-width: 1360px;
   padding: 96px 24px 72px;
 }
 
@@ -105,6 +105,7 @@ useDocsSeo(props.locale, props.path, page)
 
 @media (width <= 1100px) {
   .docs {
+    gap: 40px;
     grid-template-columns: 240px minmax(0, 1fr);
   }
 

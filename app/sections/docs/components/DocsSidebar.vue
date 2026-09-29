@@ -2,12 +2,6 @@
   <nav
     :aria-label="t('title')"
     class="sidebar">
-    <NuxtLink
-      class="sidebar-home"
-      :class="{ active: current.length === 0 }"
-      :to="docsPath(locale)">
-      {{ t('title') }}
-    </NuxtLink>
     <ul class="sections">
       <li
         v-for="section in tree.children"
@@ -68,14 +62,6 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
   gap: 16px;
 }
 
-.sidebar-home {
-  color: var(--color-text);
-  display: block;
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-extrabold);
-  text-decoration: none;
-}
-
 .sections,
 .pages {
   display: flex;
@@ -116,8 +102,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
 }
 
 .page-link:hover,
-.section-title:hover,
-.sidebar-home:hover {
+.section-title:hover {
   color: var(--color-accent);
 }
 
@@ -127,8 +112,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
   font-weight: var(--font-weight-semibold);
 }
 
-.section-title.active,
-.sidebar-home.active {
+.section-title.active {
   color: var(--color-accent);
 }
 </style>
