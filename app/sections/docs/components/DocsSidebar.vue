@@ -70,6 +70,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
 
 .sidebar-home {
   color: var(--color-text);
+  display: block;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-extrabold);
   text-decoration: none;
@@ -88,10 +89,13 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
 
 .section-title {
   color: var(--color-text);
+  display: block;
   font-size: 13px;
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.02em;
+  line-height: 1.35;
   text-decoration: none;
+  text-wrap: balance;
 }
 
 .pages {
