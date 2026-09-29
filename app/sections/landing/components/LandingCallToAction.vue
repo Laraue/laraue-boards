@@ -21,31 +21,32 @@ defineProps<{
 
 <style scoped>
 .cta-section {
-  background: linear-gradient(180deg, var(--ink) 0%, #050403 100%);
+  --btn-site-bg: #fff;
+  --btn-site-color: var(--color-accent);
+  --btn-site-hover: color-mix(in srgb, #fff 88%, transparent);
+  --btn-alt-bg: transparent;
+  --btn-alt-border: rgb(255 255 255 / 50%);
+  --btn-alt-color: #fff;
+  --btn-alt-hover: rgb(255 255 255 / 14%);
+
+  background: var(--landing-cta-bg);
+  border-bottom: 1px solid var(--landing-cta-border);
+  border-top: 1px solid var(--landing-cta-border);
+  color: #fff;
   overflow: hidden;
-  padding: 100px 60px;
+  padding: 96px 60px;
   position: relative;
   text-align: center;
 }
 
-.cta-section::before {
-  background-image:
-    linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
-  background-size: 48px 48px;
-  content: '';
-  inset: 0;
-  position: absolute;
-}
-
 .cta-section::after {
-  background: radial-gradient(circle, rgb(200 75 47 / 18%) 0%, transparent 70%);
+  background: radial-gradient(circle, rgb(255 255 255 / 16%) 0%, transparent 70%);
   content: '';
   height: 600px;
   left: 50%;
   pointer-events: none;
   position: absolute;
-  top: 50%;
+  top: 0;
   transform: translate(-50%, -50%);
   width: 600px;
 }
@@ -58,30 +59,27 @@ defineProps<{
 }
 
 .cta-label {
-  color: rgb(247 244 238 / 35%);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  color: rgb(255 255 255 / 70%);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.1em;
   margin-bottom: 20px;
   text-transform: uppercase;
 }
 
 .cta-title {
-  color: #fff;
-  font-family: var(--serif);
-  font-size: clamp(28px, 4vw, 48px);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  line-height: 1.08;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.02em;
+  line-height: 1.12;
   margin-bottom: 16px;
 }
 
 .cta-sub {
-  color: rgb(247 244 238 / 50%);
+  color: rgb(255 255 255 / 80%);
   font-size: 17px;
-  font-weight: 300;
   line-height: 1.6;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 
 .cta-actions {

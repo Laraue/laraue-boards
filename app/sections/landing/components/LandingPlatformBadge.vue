@@ -43,25 +43,22 @@ defineProps<{
 <style scoped>
 .platform-badge {
   align-items: center;
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   display: inline-flex;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
   gap: 6px;
-  letter-spacing: 0.04em;
   padding: 5px 12px;
 }
 
 .platform-badge.web {
-  background: rgb(45 125 210 / 20%);
-  border: 1px solid rgb(45 125 210 / 30%);
-  color: #6ab0f0;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
 }
 
 .platform-badge.tg {
-  background: rgb(34 158 217 / 20%);
-  border: 1px solid rgb(34 158 217 / 30%);
-  color: #7dd3f5;
+  background: var(--color-soft);
+  color: var(--color-muted);
 }
 
 .platform-badge svg {

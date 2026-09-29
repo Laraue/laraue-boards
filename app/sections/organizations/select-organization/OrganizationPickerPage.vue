@@ -14,7 +14,7 @@
               <img
                 alt=""
                 class="logo-mark"
-                src="/favicon.svg" />
+                :src="laraueLogoUrl" />
               <span>Laraue Boards</span>
             </div>
             <NuxtLink

@@ -19,23 +19,28 @@
             <a :href="laraueUrl('/blog/projects/boards')">{{ t('project_description') }} &#8594;</a>
           </div>
         </template>
-        <template #background>
-          <div class="hero-bg-glow"></div>
-        </template>
         <template #visual>
           <div class="hero-visual">
             <!-- Message → AI-cleaned card transformation -->
             <div class="transform-mockup">
               <div class="phone-mockup">
-                <div class="phone-notch"><div class="phone-notch-bar"></div></div>
-                <div class="phone-status">
-                  <div class="phone-status-avatar"><LandingIcon name="chat" /></div>
-                  <div>
-                    <div class="phone-status-name">{{ t('hv_chat_title') }}</div>
-                    <div class="phone-status-sub">{{ t('hv_chat') }}</div>
+                <div class="phone-screen">
+                  <div class="phone-statusbar">
+                    <span class="phone-time">{{ t('hv_time1') }}</span>
+                    <span class="phone-island"></span>
+                    <span class="phone-indicators">
+                      <svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+                      <svg viewBox="0 0 26 12" fill="none" stroke="currentColor"><rect x="0.5" y="0.5" width="22" height="11" rx="3.5"/><rect x="2.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor" stroke="none"/><path d="M24.5 4v4" stroke-linecap="round"/></svg>
+                    </span>
                   </div>
-                  <div class="phone-status-dot"></div>
-                </div>
+                  <div class="phone-status">
+                    <svg class="phone-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+                    <div class="phone-status-avatar"><LandingIcon name="chat" /></div>
+                    <div>
+                      <div class="phone-status-name">{{ t('hv_chat_title') }}</div>
+                      <div class="phone-status-sub">{{ t('hv_chat') }}</div>
+                    </div>
+                  </div>
                 <div class="phone-body">
                   <div class="tg-bubble">
                     <div class="tg-bubble-header">
@@ -52,6 +57,13 @@
                     </div>
                     <p class="tg-bubble-text command">{{ t('hv_command') }}</p>
                     <span class="tg-bubble-time">{{ t('hv_time2') }}</span>
+                  </div>
+                </div>
+                  <div class="phone-input">
+                    <span class="phone-input-field">{{ t('hv_input') }}</span>
+                    <span class="phone-input-send">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a.993.993 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/></svg>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -76,7 +88,7 @@
       </LandingIntro>
 
       <!-- ══ USE CASES ══ -->
-      <LandingSection :pre-title="t('uc_label')" :title="t('uc_title')" :post-title="t('uc_sub')" type="cream">
+      <LandingSection :pre-title="t('uc_label')" :title="t('uc_title')" :post-title="t('uc_sub')" type="alt">
         <div class="use-cases-grid">
           <div class="use-case-card personal reveal">
             <div class="use-case-icon"><LandingIcon name="brain" /></div>
@@ -107,7 +119,7 @@
       </LandingSection>
 
       <!-- ══ STRUCTURE ══ -->
-      <LandingSection :pre-title="t('struct_label')" :title="t('struct_title')" :post-title="t('struct_sub')" type="light">
+      <LandingSection :pre-title="t('struct_label')" :title="t('struct_title')" :post-title="t('struct_sub')" type="plain">
         <div class="hierarchy reveal">
           <div class="hierarchy-box">
             <div class="hierarchy-box-label">{{ t('struct_org') }}</div>
@@ -227,7 +239,7 @@
       ]" />
 
       <!-- ══ PLATFORMS ══ -->
-      <LandingSection :pre-title="t('pl_label')" :title="t('pl_title')" :post-title="t('pl_sub')" type="light">
+      <LandingSection :pre-title="t('pl_label')" :title="t('pl_title')" :post-title="t('pl_sub')" type="alt">
         <div class="platforms-grid">
           <div class="platform-card reveal">
             <div class="platform-card-header">
@@ -287,8 +299,19 @@
       </LandingSection>
 
 
+      <!-- ══ PRICING ══ -->
+      <LandingPricing
+          id="pricing"
+          v-model:currency="currency"
+          :cta-href="appUrl"
+          :locale="locale"
+          :post-title="t('pricing_sub')"
+          :pre-title="t('pricing_label')"
+          :tariffs="tariffs"
+          :title="t('pricing_title')" />
+
       <!-- ══ OPEN SOURCE / BUILT IN THE OPEN ══ -->
-      <LandingSection :pre-title="t('os_label')" :title="t('os_title')" :post-title="t('os_sub')" type="cream">
+      <LandingSection :pre-title="t('os_label')" :title="t('os_title')" :post-title="t('os_sub')" type="alt">
         <div class="use-cases-grid">
           <div class="use-case-card teams reveal">
             <div class="use-case-icon"><LandingIcon name="code" /></div>
@@ -349,7 +372,9 @@
 </template>
 
 <script setup lang="ts">
+import type { LandingPageDeps } from './LandingPage.deps'
 import type { LandingLocale, LandingMessageKey } from './LandingPage.messages'
+import type { LandingCurrency } from './LandingPage.types'
 
 import LandingActionButton from './components/LandingActionButton.vue'
 import LandingCallToAction from './components/LandingCallToAction.vue'
@@ -359,10 +384,12 @@ import LandingHeader from './components/LandingHeader.vue'
 import LandingIcon from './components/LandingIcon.vue'
 import LandingIntro from './components/LandingIntro.vue'
 import LandingPlatformBadge from './components/LandingPlatformBadge.vue'
+import LandingPricing from './components/LandingPricing.vue'
 import LandingSection from './components/LandingSection.vue'
+import { useLandingSeo } from './useLandingSeo'
 import { useLandingText } from './useLandingText'
 
-const props = defineProps<{ locale: LandingLocale }>()
+const props = defineProps<{ deps: LandingPageDeps; locale: LandingLocale }>()
 
 const t = useLandingText(props.locale)
 
@@ -374,16 +401,6 @@ const laraueUrl = (path: string): string =>
   `${laraueOrigin}${props.locale === 'ru' ? '/ru' : ''}${path}`
 const docsUrl = laraueUrl('/blog/documentation/laraue-boards')
 
-useHead({
-  htmlAttrs: { lang: props.locale },
-  titleTemplate: (title) => title ?? '',
-})
-
-useSeoMeta({
-  description: t('seoDescription'),
-  title: t('seoTitle'),
-})
-
 const openFaq = ref<number>()
 const toggleFaq = (index: number): void => {
   openFaq.value = openFaq.value === index ? undefined : index
@@ -392,16 +409,25 @@ const faqItems = Array.from({ length: 11 }, (_, index) => ({
   a: t(`faq${index + 1}a` as LandingMessageKey),
   q: t(`faq${index + 1}q` as LandingMessageKey),
 }))
+
+// Prices are loaded on the server for the first render (so they are in the HTML search engines see)
+// and again in the browser when the visitor switches the currency.
+const currency = ref<LandingCurrency>('USD')
+const { data: tariffs } = await useQuery(
+  () => `landing-tariffs-${currency.value}`,
+  () => props.deps.getTariffs(currency.value),
+  { watch: [currency] },
+)
+
+useLandingSeo(
+  props.locale,
+  t,
+  faqItems.map((item) => ({ answer: item.a, question: item.q })),
+  tariffs.value,
+)
 </script>
 
 <style scoped>
-section {
-  --msg-blue: #2d7dd2;
-  --msg-blue-light: #e8f2fc;
-  --msg-green: #2d8a55;
-  --msg-green-light: #e6f7ee;
-}
-
 .hero-quick-links {
   animation: fade-up var(--anim-duration-lg) calc(var(--anim-stagger) * 4) var(--anim-ease) both;
   display: flex;
@@ -413,68 +439,19 @@ section {
 }
 
 .hero-quick-links a {
-  color: rgba(247,244,238,.65);
+  color: var(--color-muted);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-decoration: underline;
-  text-decoration-color: rgba(247,244,238,.3);
   text-underline-offset: 3px;
-  transition: color .2s,text-decoration-color .2s;
+  transition: color var(--duration-base);
 }
 
 .hero-quick-links a:hover {
-  color: #fff;
-  text-decoration-color: rgba(255,255,255,.6);
+  color: var(--color-text);
 }
 
-.section-label {
-  align-items: center;
-  color: var(--accent);
-  display: flex;
-  font-size: 11px;
-  font-weight: 700;
-  gap: 8px;
-  letter-spacing: .14em;
-  margin-bottom: 16px;
-  text-transform: uppercase;
-}
-
-.section-label::after {
-  background: var(--accent);
-  content: '';
-  flex: 1;
-  height: 1px;
-  max-width: 40px;
-  opacity: .5;
-}
-
-.section-title {
-  font-family: var(--serif);
-  font-size: clamp(26px,3vw,42px);
-  letter-spacing: -.3px;
-  line-height: 1.12;
-  margin-bottom: 16px;
-}
-
-.section-sub {
-  color: var(--muted);
-  font-size: 17px;
-  font-weight: 300;
-  line-height: 1.7;
-}
-
-.hero-bg-glow {
-  background: radial-gradient(circle at 88% -8%, rgba(45,125,210,.24) 0%, transparent 55%), radial-gradient(circle at 4% 106%, rgba(200,75,47,.16) 0%, transparent 55%);
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-}
-
-.hero-visual {
-  animation: fade-up .9s .25s ease both;
-  position: relative;
-}
-
+/* Hero: Telegram message -> issue card */
 .transform-mockup {
   align-items: center;
   display: flex;
@@ -484,48 +461,81 @@ section {
 }
 
 .phone-mockup {
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 28px;
-  box-shadow: 0 24px 64px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.2);
+  background: #1a1a1d;
+  border-radius: 44px;
+  box-shadow:
+    var(--shadow-popover),
+    inset 0 0 0 2px #3a3a3f;
   flex-shrink: 0;
+  padding: 8px;
+  width: 270px;
+}
+
+.phone-screen {
+  background: var(--color-workspace);
+  border-radius: 36px;
   overflow: hidden;
-  width: 260px;
 }
 
-.phone-notch {
+.phone-statusbar {
   align-items: center;
-  background: rgba(0,0,0,.4);
+  background: var(--color-surface);
   display: flex;
-  height: 28px;
-  justify-content: center;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  justify-content: space-between;
+  padding: 10px 20px 4px;
 }
 
-.phone-notch-bar {
-  background: rgba(255,255,255,.2);
-  border-radius: 2px;
-  height: 4px;
-  width: 60px;
+.phone-island {
+  background: #1a1a1d;
+  border-radius: var(--radius-pill);
+  height: 18px;
+  width: 64px;
+}
+
+.phone-indicators {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+}
+
+.phone-indicators svg:first-child {
+  height: 9px;
+  width: 13px;
+}
+
+.phone-indicators svg:last-child {
+  height: 10px;
+  width: 20px;
 }
 
 .phone-status {
   align-items: center;
-  background: rgba(34,158,217,.9);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-divider);
   display: flex;
-  gap: 10px;
-  padding: 12px 16px;
+  gap: 8px;
+  padding: 8px 14px 10px 10px;
+}
+
+.phone-back {
+  color: var(--color-accent);
+  flex-shrink: 0;
+  height: 20px;
+  width: 20px;
 }
 
 .phone-status-avatar {
   align-items: center;
-  background: rgba(255,255,255,.2);
+  background: var(--color-accent-soft);
   border-radius: 50%;
-  color: #fff;
+  color: var(--color-accent);
   display: flex;
   flex-shrink: 0;
-  height: 32px;
+  height: 34px;
   justify-content: center;
-  width: 32px;
+  width: 34px;
 }
 
 .phone-status-avatar :deep(.landing-icon) {
@@ -534,38 +544,66 @@ section {
 }
 
 .phone-status-name {
-  color: #fff;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .phone-status-sub {
-  color: rgba(255,255,255,.65);
+  color: var(--color-muted);
   font-size: 10px;
 }
 
-.phone-status-dot {
-  background: #6edd9a;
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(110,221,154,.25);
-  height: 7px;
-  margin-left: auto;
-  width: 7px;
-}
-
 .phone-body {
-  background: rgba(0,0,0,.25);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 14px;
+  min-height: 190px;
+  padding: 14px 12px;
+}
+
+.phone-input {
+  align-items: center;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-divider);
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px 14px;
+}
+
+.phone-input-field {
+  align-items: center;
+  background: var(--color-soft);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  display: flex;
+  flex: 1;
+  font-size: 12px;
+  height: 28px;
+  padding: 0 12px;
+}
+
+.phone-input-send {
+  align-items: center;
+  background: var(--color-accent);
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+.phone-input-send svg {
+  height: 14px;
+  width: 14px;
 }
 
 .tg-bubble {
   align-self: flex-start;
-  animation: msgReveal var(--anim-demo-duration) var(--anim-demo-step) var(--anim-ease) forwards;
-  background: rgba(255,255,255,.1);
-  border-radius: 4px 12px 12px 12px;
+  animation: msg-reveal var(--anim-demo-duration) var(--anim-demo-step) var(--anim-ease) forwards;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px 12px 12px;
   max-width: 88%;
   opacity: 0;
   padding: 9px 12px;
@@ -581,37 +619,39 @@ section {
 
 .tg-bubble-avatar {
   align-items: center;
-  background: #229ed9;
+  background: var(--color-accent);
   border-radius: 50%;
   color: #fff;
   display: flex;
   flex-shrink: 0;
   font-size: 8px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   height: 18px;
   justify-content: center;
   width: 18px;
 }
 
 .tg-bubble-name {
-  color: rgba(255,255,255,.85);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .tg-bubble-text {
-  color: rgba(255,255,255,.85);
   font-size: 12px;
-  font-style: italic;
   line-height: 1.5;
   margin: 0;
 }
 
+.tg-bubble-text.command {
+  color: var(--color-accent);
+  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-semibold);
+}
+
 .tg-bubble-time {
-  color: rgba(255,255,255,.4);
+  color: var(--color-muted);
   display: block;
   font-size: 9px;
-  font-style: normal;
   margin-top: 3px;
   text-align: right;
 }
@@ -619,7 +659,8 @@ section {
 .tg-bubble.reply {
   align-self: flex-end;
   animation-delay: calc(var(--anim-demo-step) * 2);
-  background: rgba(200,75,47,.28);
+  background: var(--color-accent-soft);
+  border-color: transparent;
   border-radius: 12px 4px 12px 12px;
 }
 
@@ -627,21 +668,13 @@ section {
   flex-direction: row-reverse;
 }
 
-.tg-bubble-avatar.you {
-  background: var(--accent);
-}
-
-.tg-bubble-text.command {
-  color: #fff;
-  font-family: var(--mono, monospace);
-  font-style: normal;
-  font-weight: 600;
-}
-
 .transform-arrow {
   align-items: flex-start;
-  animation: msgReveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 3) var(--anim-ease) forwards,pulseArrow var(--anim-pulse-duration) calc(var(--anim-demo-step) * 3 + var(--anim-demo-duration)) ease-in-out infinite;
-  color: rgba(255,255,255,.4);
+  animation:
+    msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 3) var(--anim-ease) forwards,
+    pulse-arrow var(--anim-pulse-duration)
+      calc(var(--anim-demo-step) * 3 + var(--anim-demo-duration)) ease-in-out infinite;
+  color: var(--color-muted);
   display: flex;
   gap: 8px;
   opacity: 0;
@@ -649,7 +682,7 @@ section {
 }
 
 .transform-arrow svg {
-  color: var(--accent);
+  color: var(--color-accent);
   flex-shrink: 0;
   height: 18px;
   margin-top: 1px;
@@ -658,17 +691,17 @@ section {
 
 .transform-arrow span {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .04em;
+  font-weight: var(--font-weight-semibold);
   line-height: 1.5;
 }
 
 .issue-card-mockup {
-  animation: msgReveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 4) var(--anim-ease) forwards;
-  background: #1a1a1d;
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 12px;
-  box-shadow: 0 20px 44px rgba(0,0,0,.4);
+  animation: msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 4) var(--anim-ease)
+    forwards;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-popover);
   opacity: 0;
   padding: 14px 16px;
   width: 260px;
@@ -682,20 +715,20 @@ section {
 }
 
 .issue-card-key {
-  color: rgba(255,255,255,.85);
-  font-family: var(--mono, monospace);
+  color: var(--color-accent);
+  font-family: var(--font-family-mono);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: var(--font-weight-semibold);
 }
 
 .issue-card-status {
   align-items: center;
-  background: rgba(255,255,255,.08);
-  border-radius: 20px;
-  color: rgba(255,255,255,.6);
+  background: var(--color-soft);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
   display: flex;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   gap: 5px;
   margin-left: auto;
   padding: 3px 9px;
@@ -703,18 +736,12 @@ section {
 
 .issue-card-content {
   -webkit-box-orient: vertical;
-  color: #fff;
   display: -webkit-box;
   font-size: 13px;
-  font-weight: 700;
-  -webkit-line-clamp: 2;
   line-height: 1.5;
   margin: 0 0 12px;
   overflow: hidden;
-}
-
-.issue-card-content strong {
-  font-weight: 700;
+  -webkit-line-clamp: 2;
 }
 
 .issue-card-footer {
@@ -726,46 +753,21 @@ section {
 
 .issue-card-avatar {
   align-items: center;
-  background: #229ed9;
+  background: var(--color-accent);
   border-radius: 50%;
   color: #fff;
   display: flex;
   flex-shrink: 0;
   font-size: 8px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   height: 18px;
   justify-content: center;
   width: 18px;
 }
 
 .issue-card-footer span {
-  color: rgba(255,255,255,.55);
+  color: var(--color-muted);
   font-size: 11px;
-}
-
-@keyframes pulseArrow {
-  0%,
-  100% {
-    opacity: .55;
-    transform: translateY(0);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translateY(2px);
-  }
-}
-
-@keyframes msgReveal {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (width <= 720px) {
@@ -774,6 +776,31 @@ section {
   }
 }
 
+/* Cards shared by use cases, platforms, hierarchy and FAQ */
+.use-case-card,
+.platform-card,
+.hierarchy-box,
+.faq-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-dialog);
+  box-shadow: var(--shadow-card);
+}
+
+.use-case-card,
+.platform-card {
+  transition:
+    box-shadow var(--duration-base),
+    transform var(--duration-base);
+}
+
+.use-case-card:hover,
+.platform-card:hover {
+  box-shadow: var(--shadow-popover);
+  transform: translateY(-3px);
+}
+
+/* Use cases */
 .use-cases-grid {
   display: grid;
   gap: 24px;
@@ -781,64 +808,28 @@ section {
   margin-top: 48px;
 }
 
-.use-cases-grid .use-case-card:nth-child(1) {
-  animation-delay: 0s;
-}
-
 .use-cases-grid .use-case-card:nth-child(2) {
   animation-delay: var(--anim-stagger);
 }
 
 .use-case-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
   padding: 36px 36px 32px;
-  position: relative;
-  transition: box-shadow .2s,transform .2s;
 }
 
-.use-case-card:hover {
-  box-shadow: 0 8px 32px rgba(15,14,12,.1);
-  transform: translateY(-3px);
-}
-
-.use-case-card::before {
-  content: '';
-  height: 4px;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.use-case-card.personal::before {
-  background: linear-gradient(90deg,var(--msg-blue),#6ab0f0);
-}
-
-.use-case-card.teams::before {
-  background: linear-gradient(90deg,var(--accent),#e0572e);
+.use-case-icon,
+.platform-card-icon {
+  align-items: center;
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-card);
+  color: var(--color-accent);
+  display: flex;
+  justify-content: center;
 }
 
 .use-case-icon {
-  align-items: center;
-  border-radius: 12px;
-  display: flex;
   height: 44px;
-  justify-content: center;
   margin-bottom: 16px;
   width: 44px;
-}
-
-.use-case-card.personal .use-case-icon {
-  background: var(--msg-blue-light);
-  color: var(--msg-blue);
-}
-
-.use-case-card.teams .use-case-icon {
-  background: var(--accent-light);
-  color: var(--accent);
 }
 
 .use-case-icon :deep(.landing-icon) {
@@ -847,17 +838,14 @@ section {
 }
 
 .use-case-title {
-  font-family: var(--serif);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -.2px;
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
   margin-bottom: 10px;
 }
 
 .use-case-desc {
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: 15px;
-  font-weight: 300;
   line-height: 1.65;
   margin-bottom: 24px;
 }
@@ -866,53 +854,44 @@ section {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  list-style: none;
   margin-bottom: 28px;
 }
 
 .use-case-list li {
   align-items: flex-start;
-  color: var(--muted);
+  color: var(--color-muted);
   display: flex;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   gap: 10px;
   line-height: 1.4;
 }
 
 .use-case-list li::before {
-  color: var(--msg-green);
+  color: var(--color-accent);
   content: '✓';
   flex-shrink: 0;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   margin-top: 1px;
 }
 
-.use-case-card.teams .use-case-list li::before {
-  color: var(--accent);
-}
-
-.use-case-link {
+.use-case-link,
+.platform-card-link {
   align-items: center;
+  color: var(--color-accent);
   display: inline-flex;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   gap: 6px;
   text-decoration: none;
-  transition: gap .15s;
+  transition: gap 0.15s;
 }
 
-.use-case-card.personal .use-case-link {
-  color: var(--msg-blue);
-}
-
-.use-case-card.teams .use-case-link {
-  color: var(--accent);
-}
-
-.use-case-card:hover .use-case-link {
+.use-case-card:hover .use-case-link,
+.platform-card-link:hover {
   gap: 10px;
 }
 
+/* Structure */
 .hierarchy {
   align-items: center;
   display: flex;
@@ -922,42 +901,33 @@ section {
 }
 
 .hierarchy-box {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   flex: 1;
   min-width: 140px;
   padding: 16px 20px;
-  transition: box-shadow .2s,transform .2s;
-}
-
-.hierarchy-box:hover {
-  box-shadow: 0 8px 24px rgba(15,14,12,.08);
-  transform: translateY(-2px);
 }
 
 .hierarchy-box.highlight {
-  background: var(--accent-light);
-  border-color: var(--accent);
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
 }
 
 .hierarchy-box-label {
-  color: var(--accent);
+  color: var(--color-accent);
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
   margin-bottom: 6px;
   text-transform: uppercase;
 }
 
 .hierarchy-box-ex {
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
 }
 
 .hierarchy-arrow {
-  color: var(--muted);
+  color: var(--color-muted);
   flex-shrink: 0;
   font-size: 18px;
 }
@@ -965,22 +935,19 @@ section {
 .structure-points {
   display: grid;
   gap: 28px;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   margin-top: 44px;
 }
 
 .structure-point-title {
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -.1px;
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
   margin-bottom: 8px;
 }
 
 .structure-point-desc {
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 300;
+  color: var(--color-muted);
+  font-size: var(--font-size-body);
   line-height: 1.65;
 }
 
@@ -1002,15 +969,12 @@ section {
   }
 }
 
+/* Platforms */
 .platforms-grid {
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   margin-top: 48px;
-}
-
-.platforms-grid .platform-card:nth-child(1) {
-  animation-delay: 0s;
 }
 
 .platforms-grid .platform-card:nth-child(2) {
@@ -1022,18 +986,9 @@ section {
 }
 
 .platform-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  padding: 36px;
-  transition: box-shadow .2s,transform .2s;
-}
-
-.platform-card:hover {
-  box-shadow: 0 8px 32px rgba(15,14,12,.09);
-  transform: translateY(-3px);
+  padding: 32px;
 }
 
 .platform-card-header {
@@ -1044,28 +999,9 @@ section {
 }
 
 .platform-card-icon {
-  align-items: center;
-  border-radius: 12px;
-  display: flex;
   flex-shrink: 0;
   height: 48px;
-  justify-content: center;
   width: 48px;
-}
-
-.platform-card-icon.web {
-  background: var(--msg-blue-light);
-  color: var(--msg-blue);
-}
-
-.platform-card-icon.tg {
-  background: #e0f4fd;
-  color: #229ed9;
-}
-
-.platform-card-icon.mcp {
-  background: var(--accent-light);
-  color: var(--accent);
 }
 
 .platform-card-icon :deep(.landing-icon) {
@@ -1074,26 +1010,23 @@ section {
 }
 
 .platform-card-name {
-  font-family: var(--serif);
   font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -.2px;
+  font-weight: var(--font-weight-bold);
 }
 
 .platform-card-tag {
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .08em;
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
   margin-top: 2px;
   text-transform: uppercase;
 }
 
 .platform-card-desc {
-  color: var(--muted);
+  color: var(--color-muted);
   flex: 1;
   font-size: 15px;
-  font-weight: 300;
   line-height: 1.65;
   margin-bottom: 24px;
 }
@@ -1102,13 +1035,12 @@ section {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  list-style: none;
   margin-bottom: 28px;
 }
 
 .platform-card-features li {
   align-items: center;
-  color: var(--muted);
+  color: var(--color-muted);
   display: flex;
   font-size: 13px;
   gap: 8px;
@@ -1117,51 +1049,57 @@ section {
 .platform-card-features li svg {
   flex-shrink: 0;
   height: 14px;
-  stroke: var(--msg-green);
+  stroke: var(--color-accent);
   width: 14px;
 }
 
-.platform-card-link {
-  align-items: center;
-  display: inline-flex;
-  font-size: 13px;
-  font-weight: 700;
-  gap: 6px;
-  text-decoration: none;
-  transition: gap .15s;
-}
-
-.platform-card-link:hover {
-  gap: 10px;
-}
-
-.platform-card-link.web {
-  color: var(--msg-blue);
-}
-
-.platform-card-link.tg {
-  color: #229ed9;
-}
-
-.platform-card-link.mcp {
-  color: var(--accent);
-}
-
+/* Open source */
 .pricing-note {
-  color: var(--muted);
-  font-size: 14px;
+  color: var(--color-muted);
+  font-size: var(--font-size-body);
   margin-top: 36px;
   text-align: center;
 }
 
+/* FAQ */
 .faq {
-  border-bottom: 1px solid var(--border);
-  padding: 80px 60px;
+  background: var(--color-workspace);
+  border-bottom: 1px solid var(--color-divider);
+  padding: 88px 60px;
 }
 
 .faq-inner {
   margin: 0 auto;
   max-width: 820px;
+}
+
+.section-label {
+  align-items: center;
+  color: var(--color-accent);
+  display: flex;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  gap: 8px;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.section-label::after {
+  background: var(--color-accent);
+  content: '';
+  flex: 1;
+  height: 1px;
+  max-width: 40px;
+  opacity: 0.5;
+}
+
+.section-title {
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 16px;
 }
 
 .faq-list {
@@ -1172,27 +1110,20 @@ section {
 }
 
 .faq-item {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   padding: 20px 24px;
-  transition: box-shadow .2s;
-}
-
-.faq-item:hover {
-  box-shadow: 0 4px 18px rgba(15,14,12,.07);
 }
 
 .faq-summary {
   align-items: center;
   background: none;
   border: none;
-  color: var(--ink);
+  color: var(--color-text);
   cursor: pointer;
   display: flex;
   font: inherit;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   gap: 12px;
   justify-content: space-between;
   margin: 0;
@@ -1202,7 +1133,7 @@ section {
 }
 
 .faq-summary::after {
-  color: var(--muted);
+  color: var(--color-muted);
   content: '+';
   flex-shrink: 0;
   font-size: 20px;
@@ -1210,7 +1141,7 @@ section {
   transition: transform var(--anim-duration) var(--anim-ease);
 }
 
-.faq-item[data-open="true"] .faq-summary::after {
+.faq-item[data-open='true'] .faq-summary::after {
   transform: rotate(45deg);
 }
 
@@ -1220,7 +1151,7 @@ section {
   transition: grid-template-rows var(--anim-duration) var(--anim-ease);
 }
 
-.faq-item[data-open="true"] .faq-answer-wrap {
+.faq-item[data-open='true'] .faq-answer-wrap {
   grid-template-rows: 1fr;
 }
 
@@ -1229,9 +1160,8 @@ section {
 }
 
 .faq-item p {
-  color: var(--muted);
+  color: var(--color-muted);
   font-size: 15px;
-  font-weight: 300;
   line-height: 1.7;
   margin-top: 14px;
 }
@@ -1244,18 +1174,13 @@ section {
 }
 
 @media (width <= 720px) {
-  .hero-visual {
-    order: -1;
-  }
-
   .faq {
     padding: 60px 22px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-quick-links,
-  .hero-visual {
+  .hero-quick-links {
     animation: none;
     opacity: 1;
     transform: none;
@@ -1271,6 +1196,31 @@ section {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes msg-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-arrow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(2px);
   }
 }
 </style>

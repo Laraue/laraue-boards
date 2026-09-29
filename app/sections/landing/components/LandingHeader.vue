@@ -6,19 +6,28 @@
         :to="homePath">
         <img
           alt=""
-          height="28"
-          src="/favicon.svg"
-          width="28" />
+          height="32"
+          :src="laraueLogoUrl"
+          width="32" />
         <span>Laraue Boards</span>
       </NuxtLink>
       <nav
         :aria-label="t('nav_label')"
         class="nav">
         <a href="#features">{{ t('nav_features') }}</a>
+        <a href="#pricing">{{ t('nav_pricing') }}</a>
         <a href="#faq">{{ t('nav_faq') }}</a>
         <a :href="docsUrl">{{ t('documentation') }}</a>
       </nav>
       <div class="actions">
+        <button
+          :aria-label="t('theme_toggle')"
+          class="theme-toggle"
+          type="button"
+          @click="toggleTheme">
+          <Sun v-if="theme === 'dark'" />
+          <Moon v-else />
+        </button>
         <NuxtLink
           class="lang"
           :hreflang="otherLocale"
@@ -36,6 +45,8 @@
 </template>
 
 <script setup lang="ts">
+import { Moon, Sun } from '@lucide/vue'
+
 import type { LandingLocale } from '../LandingPage.messages'
 
 import { useLandingText } from '../useLandingText'
@@ -47,6 +58,9 @@ const props = defineProps<{
 
 const t = useLandingText(props.locale)
 
+const { setTheme, theme } = useAppPreferences()
+const toggleTheme = (): void => setTheme(theme.value === 'dark' ? 'light' : 'dark')
+
 const homePath = computed(() => (props.locale === 'ru' ? '/ru' : '/'))
 const otherLocale = computed<LandingLocale>(() => (props.locale === 'ru' ? 'en' : 'ru'))
 const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'))
@@ -55,8 +69,8 @@ const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'
 <style scoped>
 .header {
   backdrop-filter: blur(12px);
-  background: rgb(15 14 12 / 85%);
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  border-bottom: 1px solid var(--color-divider);
   left: 0;
   position: fixed;
   right: 0;
@@ -76,17 +90,16 @@ const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'
 
 .logo {
   align-items: center;
-  color: var(--paper);
+  color: var(--color-text);
   display: flex;
-  font-family: var(--serif);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   gap: 10px;
   text-decoration: none;
 }
 
 .logo img {
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .nav {
@@ -97,16 +110,16 @@ const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'
 
 .nav a,
 .lang {
-  color: rgb(247 244 238 / 65%);
-  font-size: 14px;
-  font-weight: 600;
+  color: var(--color-muted);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
   text-decoration: none;
-  transition: color 0.2s;
+  transition: color var(--duration-base);
 }
 
 .nav a:hover,
 .lang:hover {
-  color: #fff;
+  color: var(--color-text);
 }
 
 .actions {
@@ -115,19 +128,39 @@ const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'
   gap: 16px;
 }
 
+.theme-toggle {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: flex;
+  height: 32px;
+  justify-content: center;
+  transition:
+    color var(--duration-base),
+    background var(--duration-base);
+  width: 32px;
+}
+
+.theme-toggle:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
 .open-app {
-  background: var(--accent);
-  border-radius: 8px;
+  background: var(--color-accent);
+  border-radius: var(--radius-control);
   color: #fff;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--font-weight-semibold);
   padding: 8px 16px;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background var(--duration-base);
 }
 
 .open-app:hover {
-  background: #b03d24;
+  background: color-mix(in srgb, var(--color-accent) 85%, #000);
 }
 
 @media (width <= 860px) {

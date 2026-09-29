@@ -1,9 +1,14 @@
 <template>
-  <LandingPage locale="ru" />
+  <LandingPage
+    :deps="deps"
+    locale="ru" />
 </template>
 
 <script setup lang="ts">
+import { createLandingPageDeps } from '~/sections/landing/deps-impl'
 import LandingPage from '~/sections/landing/LandingPage.vue'
 
 definePageMeta({ layout: 'landing' })
+
+const deps = createLandingPageDeps(useRuntimeConfig().public.billingApiBaseUrl)
 </script>

@@ -10,33 +10,13 @@
 const root = useTemplateRef<HTMLElement>('root')
 
 useScrollReveal(root)
-
-useHead({
-  link: [
-    {
-      href: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Source+Sans+3:wght@300;400;600;700&display=swap',
-      rel: 'stylesheet',
-    },
-  ],
-})
 </script>
 
-<!-- Global on purpose: these tokens, the reset and the reveal animation are shared by every
-     landing component, and everything is fenced under `.landing-root` so the app is not affected. -->
+<!-- Global on purpose: the landing shares the app's tokens (colors, Inter, theme) and only adds a
+     reset, the reveal animation and a few aliases, all fenced under `.landing-root` so the app is
+     not affected. -->
 <style>
 .landing-root {
-  --ink: #0f0e0c;
-  --paper: #f7f4ee;
-  --cream: #ede9e0;
-  --accent: #c84b2f;
-  --accent-light: #f0ebe3;
-  --muted: #7a7469;
-  --border: #d9d4c9;
-  --blue: #3b5bdb;
-  --blue-light: #eef2ff;
-  --serif: 'Montserrat', system-ui, sans-serif;
-  --sans: 'Source Sans 3', system-ui, sans-serif;
-  --mono: 'JetBrains Mono', monospace;
   --anim-ease: ease;
   --anim-duration: 0.7s;
   --anim-duration-lg: 1.3s;
@@ -46,16 +26,22 @@ useHead({
   --anim-demo-step: 0.65s;
   --anim-pulse-duration: 2.2s;
 
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--sans);
+  --landing-cta-bg: var(--color-accent);
+  --landing-cta-border: transparent;
+
+  background: var(--color-background);
+  color: var(--color-text);
   font-size: 16px;
   line-height: 1.6;
   overflow-x: clip;
 }
 
+:root[data-theme='dark'] .landing-root {
+  --landing-cta-bg: color-mix(in srgb, var(--color-accent) 38%, var(--color-background));
+  --landing-cta-border: var(--color-divider);
+}
+
 .landing-root :where(*, *::before, *::after) {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
