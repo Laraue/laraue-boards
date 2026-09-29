@@ -27,7 +27,7 @@
       </button>
       <NuxtLink
         class="secondary"
-        to="/">
+        to="/organizations">
         {{ t('goHome') }}
       </NuxtLink>
     </div>

@@ -5,7 +5,7 @@
         <img
           alt=""
           class="logo-mark"
-          src="/favicon.svg" />
+          :src="laraueLogoUrl" />
         <span>Laraue Boards</span>
       </div>
       <span class="join-badge"><UserPlus /></span>
