@@ -1,103 +1,28 @@
-import type { LandingLocale } from './LandingPage.messages'
-import type { LandingTariff, LandingTariffs } from './LandingPage.types'
-import type { LandingText } from './useLandingText'
+import type { Locale } from '~/composables/useI18n'
 
-type FaqItem = { answer: string; question: string }
+import { githubUrl } from './landingLinks'
+
+type Offer = Record<string, unknown>
 
 const ogImagesBaseUrl = 'https://laraue.com/static/images/'
-const githubUrl = 'https://github.com/win7user10/Laraue.Apps.Boards'
+
+// The prices shown in the pricing section, set by it as schema.org offers.
+export const useLandingOffers = () => useState<Offer[]>('landing-offers', () => [])
 
 // Everything a search engine or a link preview needs from the landing page: meta tags, canonical and
-// hreflang links, and structured data. The language comes from the route, see `useLandingText`.
+// hreflang links, and structured data (the FAQ adds its own, see `LandingFaq`). The language comes
+// from the route (see `useI18n`'s locale override).
 export const useLandingSeo = (
-  locale: LandingLocale,
-  t: LandingText,
-  faqItems: readonly FaqItem[],
-  tariffs: LandingTariffs | undefined,
+  locale: Locale,
+  { description, title }: { description: string; title: string },
 ): void => {
   const siteUrl = useSiteConfig().url.replace(/\/$/, '')
-  const pageUrls: Record<LandingLocale, string> = { en: `${siteUrl}/`, ru: `${siteUrl}/ru` }
+  const pageUrls: Record<Locale, string> = { en: `${siteUrl}/`, ru: `${siteUrl}/ru` }
   const pageUrl = pageUrls[locale]
   const ogImage = `${ogImagesBaseUrl}boards-og${locale === 'ru' ? '-ru' : ''}.png`
-  const title = t('seoTitle')
-  const description = t('seoDescription')
+  const offers = useLandingOffers()
 
-  const toOffer = (tariff: LandingTariff, perSeat: boolean) => ({
-    '@type': 'Offer',
-    description:
-      [
-        tariff.tokens > 0
-          ? t(perSeat ? 'offer_tokens_per_seat' : 'offer_tokens', {
-              count: tariff.tokens.toLocaleString(locale),
-            })
-          : '',
-        tariff.issuesPerMonth
-          ? t(perSeat ? 'offer_issues_org' : 'offer_issues', {
-              count: tariff.issuesPerMonth.toLocaleString(locale),
-            })
-          : '',
-        !perSeat && tariff.freeOrganizations
-          ? t('offer_free_orgs', { count: tariff.freeOrganizations })
-          : '',
-      ]
-        .filter(Boolean)
-        .join(', ') || undefined,
-    name: tariff.title,
-    price: tariff.price,
-    priceCurrency: tariff.currencyCode,
-  })
-
-  const offers = tariffs
-    ? [
-        ...tariffs.personal.map((tariff) => toOffer(tariff, false)),
-        ...tariffs.team.map((tariff) => toOffer(tariff, true)),
-      ]
-    : [{ '@type': 'Offer', price: 0, priceCurrency: 'USD' }]
-
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@id': `${siteUrl}/#organization`,
-        '@type': 'Organization',
-        logo: laraueLogoUrl,
-        name: 'Laraue Software',
-        sameAs: [githubUrl],
-        url: 'https://laraue.com',
-      },
-      {
-        '@id': `${siteUrl}/#website`,
-        '@type': 'WebSite',
-        inLanguage: locale,
-        name: 'Laraue Boards',
-        publisher: { '@id': `${siteUrl}/#organization` },
-        url: pageUrl,
-      },
-      {
-        '@type': 'SoftwareApplication',
-        applicationCategory: 'BusinessApplication',
-        description,
-        image: ogImage,
-        inLanguage: locale,
-        name: 'Laraue Boards',
-        offers,
-        operatingSystem: 'Web, Telegram',
-        publisher: { '@id': `${siteUrl}/#organization` },
-        url: pageUrl,
-      },
-      {
-        '@type': 'FAQPage',
-        inLanguage: locale,
-        mainEntity: faqItems.map((item) => ({
-          '@type': 'Question',
-          acceptedAnswer: { '@type': 'Answer', text: item.answer },
-          name: item.question,
-        })),
-      },
-    ],
-  }
-
-  useHead({
+  useHead(() => ({
     htmlAttrs: { lang: locale },
     link: [
       { href: pageUrl, rel: 'canonical' },
@@ -108,12 +33,48 @@ export const useLandingSeo = (
     script: [
       {
         // `<` is escaped so no text in the data can close the script element.
-        innerHTML: JSON.stringify(structuredData).replaceAll('<', String.raw`<`),
+        innerHTML: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@id': `${siteUrl}/#organization`,
+              '@type': 'Organization',
+              logo: laraueLogoUrl,
+              name: 'Laraue Software',
+              sameAs: [githubUrl],
+              url: 'https://laraue.com',
+            },
+            {
+              '@id': `${siteUrl}/#website`,
+              '@type': 'WebSite',
+              inLanguage: locale,
+              name: 'Laraue Boards',
+              publisher: { '@id': `${siteUrl}/#organization` },
+              url: pageUrl,
+            },
+            {
+              '@type': 'SoftwareApplication',
+              applicationCategory: 'BusinessApplication',
+              description,
+              image: ogImage,
+              inLanguage: locale,
+              name: 'Laraue Boards',
+              offers:
+                offers.value.length > 0
+                  ? offers.value
+                  : [{ '@type': 'Offer', price: 0, priceCurrency: 'USD' }],
+              operatingSystem: 'Web, Telegram',
+              publisher: { '@id': `${siteUrl}/#organization` },
+              url: pageUrl,
+            },
+          ],
+        }).replaceAll('<', String.raw`\u003c`),
+        key: 'landing-jsonld',
         type: 'application/ld+json',
       },
     ],
     titleTemplate: (pageTitle) => pageTitle ?? '',
-  })
+  }))
 
   useSeoMeta({
     description,

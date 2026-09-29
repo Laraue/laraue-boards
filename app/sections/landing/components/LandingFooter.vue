@@ -18,7 +18,7 @@
         </li>
         <li>
           <a
-            href="https://github.com/win7user10/Laraue.Apps.Boards"
+            :href="githubUrl"
             rel="noopener"
             target="_blank">
             GitHub
@@ -26,7 +26,7 @@
         </li>
         <li>
           <a
-            href="https://t.me/msgboard_bot"
+            :href="botUrl"
             rel="noopener"
             target="_blank">
             @msgboard_bot
@@ -42,16 +42,30 @@
 </template>
 
 <script setup lang="ts">
-import type { LandingLocale } from '../LandingPage.messages'
-import { useLandingText } from '../useLandingText'
+import type { Locale } from '~/composables/useI18n'
 
-const props = defineProps<{
-  docsUrl: string
-  locale: LandingLocale
-  privacyUrl: string
-}>()
+import { botUrl, githubUrl, laraueUrl } from '../landingLinks'
 
-const t = useLandingText(props.locale)
+const props = defineProps<{ locale: Locale }>()
+
+const { t } = useI18n(
+  {
+    en: {
+      documentation: 'Documentation',
+      footer_privacy: 'Privacy policy',
+      footer_tagline: 'A Jira alternative built on Telegram. Free and open source.',
+    },
+    ru: {
+      documentation: 'Документация',
+      footer_privacy: 'Политика конфиденциальности',
+      footer_tagline: 'Альтернатива Jira в Telegram. Бесплатно и с открытым исходным кодом.',
+    },
+  },
+  props.locale,
+)
+
+const docsUrl = laraueUrl(props.locale, '/blog/documentation/laraue-boards')
+const privacyUrl = laraueUrl(props.locale, '/privacy')
 </script>
 
 <style scoped>

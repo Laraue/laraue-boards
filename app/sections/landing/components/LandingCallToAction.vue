@@ -1,22 +1,63 @@
 <template>
   <section class="cta-section">
     <div class="cta-inner">
-      <div class="cta-label reveal">{{ preTitle }}</div>
-      <h2 class="cta-title reveal">{{ title }}</h2>
-      <p class="cta-sub reveal">{{ postTitle }}</p>
+      <div class="cta-label reveal">{{ texts.label }}</div>
+      <h2 class="cta-title reveal">{{ texts.title }}</h2>
+      <p class="cta-sub reveal">{{ texts.sub }}</p>
       <div class="cta-actions reveal">
-        <slot />
+        <LandingActionButton
+          :link="appUrl"
+          :title="t('login')"
+          type="site" />
+        <LandingActionButton
+          :link="botUrl"
+          title="@msgboard_bot"
+          type="telegram" />
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  postTitle: string
-  preTitle: string
-  title: string
+import type { Locale } from '~/composables/useI18n'
+
+import { appUrl, botUrl } from '../landingLinks'
+import LandingActionButton from './LandingActionButton.vue'
+
+const props = defineProps<{
+  locale: Locale
+  variant: 'final' | 'start'
 }>()
+
+const { t } = useI18n(
+  {
+    en: {
+      cta2_label: 'Ready when you are',
+      cta2_sub: "It's already in your Telegram. Open the bot and try it — no signup, no setup.",
+      cta2_title: 'Send your first message\nright now',
+      cta_label: 'Get started today',
+      cta_sub: 'Free and open source. Works in 30 seconds.',
+      cta_title: 'Your work deserves\nbetter than chat history',
+      login: 'Log in',
+    },
+    ru: {
+      cta2_label: 'Готовы начать?',
+      cta2_sub: 'Бот уже есть в Telegram. Откройте его и попробуйте — без регистрации и настройки.',
+      cta2_title: 'Отправьте первое сообщение\nпрямо сейчас',
+      cta_label: 'Начните сегодня',
+      cta_sub: 'Бесплатно и с открытым кодом. Начните за 30 секунд.',
+      cta_title: 'Ваши заметки заслуживают большего,\nчем затеряться в чате',
+      login: 'Войти',
+    },
+  },
+  props.locale,
+)
+
+const texts = computed(() =>
+  props.variant === 'start'
+    ? { label: t('cta2_label'), sub: t('cta2_sub'), title: t('cta2_title') }
+    : { label: t('cta_label'), sub: t('cta_sub'), title: t('cta_title') },
+)
 </script>
 
 <style scoped>

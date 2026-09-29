@@ -47,21 +47,43 @@
 <script setup lang="ts">
 import { Moon, Sun } from '@lucide/vue'
 
-import type { LandingLocale } from '../LandingPage.messages'
-import { useLandingText } from '../useLandingText'
+import type { Locale } from '~/composables/useI18n'
 
-const props = defineProps<{
-  docsUrl: string
-  locale: LandingLocale
-}>()
+import { laraueUrl } from '../landingLinks'
 
-const t = useLandingText(props.locale)
+const props = defineProps<{ locale: Locale }>()
+
+const { t } = useI18n(
+  {
+    en: {
+      documentation: 'Documentation',
+      login: 'Log in',
+      nav_faq: 'FAQ',
+      nav_features: 'Features',
+      nav_label: 'Main',
+      nav_pricing: 'Pricing',
+      theme_toggle: 'Switch theme',
+    },
+    ru: {
+      documentation: 'Документация',
+      login: 'Войти',
+      nav_faq: 'Вопросы',
+      nav_features: 'Возможности',
+      nav_label: 'Основное меню',
+      nav_pricing: 'Тарифы',
+      theme_toggle: 'Сменить тему',
+    },
+  },
+  props.locale,
+)
+
+const docsUrl = laraueUrl(props.locale, '/blog/documentation/laraue-boards')
 
 const { setTheme, theme } = useAppPreferences()
 const toggleTheme = (): void => setTheme(theme.value === 'dark' ? 'light' : 'dark')
 
 const homePath = computed(() => (props.locale === 'ru' ? '/ru' : '/'))
-const otherLocale = computed<LandingLocale>(() => (props.locale === 'ru' ? 'en' : 'ru'))
+const otherLocale = computed<Locale>(() => (props.locale === 'ru' ? 'en' : 'ru'))
 const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'))
 </script>
 
