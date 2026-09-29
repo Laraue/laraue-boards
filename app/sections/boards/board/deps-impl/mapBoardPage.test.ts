@@ -17,8 +17,8 @@ test('maps board columns, their issues, and attributes', () => {
     name: 'Roadmap',
     status: 'Active',
     statuses: [
-      { color: '#222', id: 2, name: 'Done', sortOrder: 2 },
-      { color: '#333', id: 1, name: 'To do', sortOrder: 1 },
+      { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
+      { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
     ],
   }
   const issues: Schemas['ColumnIssues'][] = [

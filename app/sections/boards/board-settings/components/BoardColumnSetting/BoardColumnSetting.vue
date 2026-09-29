@@ -44,8 +44,8 @@
 import { useSortable } from '@dnd-kit/vue/sortable'
 import { GripVertical, Trash2 } from '@lucide/vue'
 
-import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
+import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 
 const props = defineProps<{
   canUpdate: boolean
@@ -82,7 +82,10 @@ const { isDragging } = useSortable({
   align-items: center;
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: auto minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(min-content, 0.3fr) auto;
+  grid-template-columns: auto minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(
+      min-content,
+      0.3fr
+    ) auto;
 }
 
 .setting-row--dragging {

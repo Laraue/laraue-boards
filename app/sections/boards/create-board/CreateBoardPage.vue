@@ -74,8 +74,8 @@
 <script setup lang="ts">
 import { Plus, Trash2 } from '@lucide/vue'
 
-import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
+import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { CreateBoardPageDeps } from '~/sections/boards/create-board/CreateBoardPage.deps'
 
