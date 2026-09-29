@@ -59,6 +59,13 @@ export default defineNuxtConfig({
     })),
   },
 
+  // The documentation (`content/docs`) is bundled with the server and read by `server/utils/docsCatalog`.
+  nitro: {
+    serverAssets: [
+      { baseName: 'docs', dir: fileURLToPath(new URL('./content/docs', import.meta.url)) },
+    ],
+  },
+
   // The app itself is private: keep it out of search results. Only the landing page is indexed.
   routeRules: {
     '/account': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },

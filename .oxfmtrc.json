@@ -3,7 +3,8 @@
   "ignorePatterns": [
     "infrastructure/api/generated.ts",
     "infrastructure/api/retro.generated.ts",
-    "infrastructure/api/billing.generated.ts"
+    "infrastructure/api/billing.generated.ts",
+    "content/docs"
   ],
   "arrowParens": "always",
   "bracketSameLine": true,
