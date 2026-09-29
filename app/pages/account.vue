@@ -28,10 +28,10 @@ onMounted(() => {
 
 const onLoggedOut = async (): Promise<void> => {
   clearNuxtData()
-  await navigateTo('/')
+  await navigateTo('/login')
 }
 
 const onSignedOut = async (): Promise<void> => {
-  await navigateTo({ path: '/', query: { redirect: '/account' } })
+  await navigateTo({ path: '/login', query: { redirect: '/account' } })
 }
 </script>

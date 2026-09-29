@@ -1,5 +1,5 @@
 <template>
-  <LandingPage locale="en" />
+  <LandingPage locale="ru" />
 </template>
 
 <script setup lang="ts">
