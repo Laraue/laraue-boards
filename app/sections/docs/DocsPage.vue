@@ -1,8 +1,7 @@
 <template>
   <SiteHeader
     :locale="locale"
-    :other-language-path="otherLanguagePath"
-    wide />
+    :other-language-path="otherLanguagePath" />
   <div class="docs">
     <details class="mobile-menu">
       <summary>{{ t('menu') }}</summary>
@@ -26,9 +25,7 @@
         :locale="locale" />
     </aside>
   </div>
-  <SiteFooter
-    :locale="locale"
-    wide />
+  <SiteFooter :locale="locale" />
 </template>
 
 <script setup lang="ts">
