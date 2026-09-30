@@ -65,6 +65,8 @@ useHead({
     { href: `${siteUrl}/terms`, hreflang: 'en', rel: 'alternate' },
     { href: `${siteUrl}/ru/terms`, hreflang: 'ru', rel: 'alternate' },
   ],
+  // The title already names the site; the app's template would add it a second time.
+  titleTemplate: (pageTitle) => pageTitle ?? '',
 })
 
 useSeoMeta({
