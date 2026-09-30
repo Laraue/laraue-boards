@@ -30,9 +30,20 @@
           </a>
         </li>
         <li>
+          <NuxtLink :to="termsHref">{{ t('footer_terms') }}</NuxtLink>
+        </li>
+        <li>
           <a :href="privacyUrl">{{ t('footer_privacy') }}</a>
         </li>
       </ul>
+    </div>
+    <div class="footer-contacts">
+      <p>{{ sellerDetails.name[locale] }}, {{ sellerDetails.status[locale] }}, {{ t('inn') }} {{ sellerDetails.inn }}</p>
+      <p>
+        <a :href="`mailto:${sellerDetails.email}`">{{ sellerDetails.email }}</a>
+        ·
+        <a :href="`tel:${sellerDetails.phoneHref}`">{{ sellerDetails.phone }}</a>
+      </p>
     </div>
     <div class="footer-bottom">
       <p>{{ t('footer_tagline') }}</p>
@@ -45,6 +56,7 @@
 import type { Locale } from '~/composables/useI18n'
 import { docsPath } from '~/sections/docs/docsPaths'
 import { botUrl, githubUrl, laraueUrl } from '~/sections/landing/landingLinks'
+import { sellerDetails } from '~/sections/legal/sellerDetails'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -54,11 +66,15 @@ const { t } = useI18n(
       documentation: 'Documentation',
       footer_privacy: 'Privacy policy',
       footer_tagline: 'A Jira alternative built on Telegram. Free and open source.',
+      footer_terms: 'Public offer',
+      inn: 'INN',
     },
     ru: {
       documentation: 'Документация',
       footer_privacy: 'Политика конфиденциальности',
       footer_tagline: 'Альтернатива Jira в Telegram. Бесплатно и с открытым исходным кодом.',
+      footer_terms: 'Публичная оферта',
+      inn: 'ИНН',
     },
   },
   props.locale,
@@ -66,6 +82,7 @@ const { t } = useI18n(
 
 const docsHref = docsPath(props.locale)
 const privacyUrl = laraueUrl(props.locale, '/privacy')
+const termsHref = props.locale === 'ru' ? '/ru/terms' : '/terms'
 </script>
 
 <style scoped>
@@ -114,6 +131,26 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
 }
 
 .footer-links a:hover {
+  color: var(--color-text);
+}
+
+.footer-contacts {
+  color: var(--color-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--font-size-small);
+  gap: 4px 24px;
+  justify-content: space-between;
+  margin: 0 auto 24px;
+  max-width: 1312px;
+}
+
+.footer-contacts a {
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.footer-contacts a:hover {
   color: var(--color-text);
 }
 
