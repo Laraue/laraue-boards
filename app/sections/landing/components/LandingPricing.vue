@@ -26,6 +26,10 @@
         </button>
       </div>
       <p class="mvp-note">{{ t('mvp_note') }}</p>
+      <p class="mvp-note">
+        {{ t('terms_note') }}
+        <NuxtLink :to="locale === 'ru' ? '/ru/terms' : '/terms'">{{ t('terms_link') }}</NuxtLink>.
+      </p>
       <div
         v-for="group in groups.filter((item) => item.tariffs.length > 0)"
         :key="group.key"
@@ -123,6 +127,8 @@ const { t } = useI18n(
       pricing_title: 'Simple, honest pricing',
       team_label: 'For teams',
       team_pricing_note: 'Price and included tokens are per seat, combined across your whole team.',
+      terms_link: 'public offer',
+      terms_note: 'Paying for a plan means you accept the',
     },
     ru: {
       billing_label_forever: 'навсегда',
@@ -151,6 +157,8 @@ const { t } = useI18n(
       team_label: 'Для команд',
       team_pricing_note:
         'Цена и включённые токены указаны за одно место и суммируются по всей команде.',
+      terms_link: 'публичной офертой',
+      terms_note: 'Оплата тарифа означает, что вы согласны с',
     },
   },
   props.locale,
