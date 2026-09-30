@@ -6,11 +6,11 @@
       <div>
         <div
           v-if="preTitle"
-          class="section-label reveal">
+          class="section-label">
           {{ preTitle }}
         </div>
-        <h2 class="section-title reveal">{{ title }}</h2>
-        <p class="section-sub reveal">{{ postTitle }}</p>
+        <h2 class="section-title">{{ title }}</h2>
+        <p class="section-sub">{{ postTitle }}</p>
       </div>
       <slot />
     </div>
@@ -29,7 +29,7 @@ defineProps<{
 <style scoped>
 .section {
   border-bottom: 1px solid var(--color-divider);
-  padding: 88px 60px;
+  padding: 88px 24px;
 }
 
 .section.alt {
@@ -38,7 +38,8 @@ defineProps<{
 
 .section-inner {
   margin: 0 auto;
-  max-width: 1060px;
+  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
+  max-width: 1312px;
 }
 
 .section-label {

@@ -1,13 +1,13 @@
 <template>
   <section class="cta-section">
     <div class="cta-inner">
-      <div class="cta-label reveal">{{ texts.label }}</div>
-      <h2 class="cta-title reveal">{{ texts.title }}</h2>
-      <p class="cta-sub reveal">{{ texts.sub }}</p>
-      <div class="cta-actions reveal">
+      <div class="cta-label">{{ texts.label }}</div>
+      <h2 class="cta-title">{{ texts.title }}</h2>
+      <p class="cta-sub">{{ texts.sub }}</p>
+      <div class="cta-actions">
         <LandingActionButton
           :link="appUrl"
-          :title="t('login')"
+          :title="t('open_app')"
           type="site" />
         <LandingActionButton
           :link="botUrl"
@@ -38,7 +38,7 @@ const { t } = useI18n(
       cta_label: 'Get started today',
       cta_sub: 'Free and open source. Works in 30 seconds.',
       cta_title: 'Your work deserves\nbetter than chat history',
-      login: 'Log in',
+      open_app: 'Open App',
     },
     ru: {
       cta2_label: 'Готовы начать?',
@@ -47,7 +47,7 @@ const { t } = useI18n(
       cta_label: 'Начните сегодня',
       cta_sub: 'Бесплатно и с открытым кодом. Начните за 30 секунд.',
       cta_title: 'Ваши заметки заслуживают большего,\nчем затеряться в чате',
-      login: 'Войти',
+      open_app: 'Открыть приложение',
     },
   },
   props.locale,
@@ -75,7 +75,7 @@ const texts = computed(() =>
   border-top: 1px solid var(--landing-cta-border);
   color: #fff;
   overflow: hidden;
-  padding: 96px 60px;
+  padding: 96px 24px;
   position: relative;
   text-align: center;
 }

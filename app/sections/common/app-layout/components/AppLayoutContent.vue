@@ -95,7 +95,7 @@
           <a
             :aria-label="t('documentationNewTab')"
             class="sidebar-documentation"
-            href="https://laraue.com/blog/documentation/laraue-boards"
+            :href="docsPath(locale)"
             rel="noopener noreferrer"
             target="_blank">
             <BookOpen />
@@ -199,6 +199,7 @@ import {
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
+import { docsPath } from '~/sections/docs/docsPaths'
 
 const props = defineProps<{
   onLogout: () => void
@@ -207,7 +208,7 @@ const props = defineProps<{
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const state = reactive({ sidebarOpen: false })
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     admin: 'Admin',
     allIssues: 'All issues',

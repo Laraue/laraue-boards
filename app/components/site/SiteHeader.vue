@@ -14,10 +14,10 @@
       <nav
         :aria-label="t('nav_label')"
         class="nav">
-        <a href="#features">{{ t('nav_features') }}</a>
-        <a href="#pricing">{{ t('nav_pricing') }}</a>
-        <a href="#faq">{{ t('nav_faq') }}</a>
-        <a :href="docsUrl">{{ t('documentation') }}</a>
+        <NuxtLink :to="`${homePath}#features`">{{ t('nav_features') }}</NuxtLink>
+        <NuxtLink :to="`${homePath}#pricing`">{{ t('nav_pricing') }}</NuxtLink>
+        <NuxtLink :to="`${homePath}#faq`">{{ t('nav_faq') }}</NuxtLink>
+        <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
       </nav>
       <div class="actions">
         <button
@@ -37,7 +37,7 @@
         <NuxtLink
           class="open-app"
           to="/organizations">
-          {{ t('login') }}
+          {{ t('open_app') }}
         </NuxtLink>
       </div>
     </div>
@@ -48,43 +48,48 @@
 import { Moon, Sun } from '@lucide/vue'
 
 import type { Locale } from '~/composables/useI18n'
+import { docsPath } from '~/sections/docs/docsPaths'
 
-import { laraueUrl } from '../landingLinks'
-
-const props = defineProps<{ locale: Locale }>()
+const props = defineProps<{
+  locale: Locale
+  // Where the other language's version of the current page is; the landing page by default.
+  otherLanguagePath?: string
+}>()
 
 const { t } = useI18n(
   {
     en: {
       documentation: 'Documentation',
-      login: 'Log in',
       nav_faq: 'FAQ',
       nav_features: 'Features',
       nav_label: 'Main',
       nav_pricing: 'Pricing',
+      open_app: 'Open App',
       theme_toggle: 'Switch theme',
     },
     ru: {
       documentation: 'Документация',
-      login: 'Войти',
       nav_faq: 'Вопросы',
       nav_features: 'Возможности',
       nav_label: 'Основное меню',
       nav_pricing: 'Тарифы',
+      open_app: 'Открыть приложение',
       theme_toggle: 'Сменить тему',
     },
   },
   props.locale,
 )
 
-const docsUrl = laraueUrl(props.locale, '/blog/documentation/laraue-boards')
+const docsHref = computed(() => docsPath(props.locale))
 
 const { setTheme, theme } = useAppPreferences()
 const toggleTheme = (): void => setTheme(theme.value === 'dark' ? 'light' : 'dark')
 
 const homePath = computed(() => (props.locale === 'ru' ? '/ru' : '/'))
 const otherLocale = computed<Locale>(() => (props.locale === 'ru' ? 'en' : 'ru'))
-const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'))
+const otherLocalePath = computed(
+  () => props.otherLanguagePath ?? (otherLocale.value === 'ru' ? '/ru' : '/'),
+)
 </script>
 
 <style scoped>
@@ -105,7 +110,9 @@ const otherLocalePath = computed(() => (otherLocale.value === 'ru' ? '/ru' : '/'
   gap: 24px;
   height: 60px;
   margin: 0 auto;
-  max-width: 1160px;
+  /* The width of the docs' content. The header has the same width on every page, so it does not
+     change size when moving between the landing page and the docs. */
+  max-width: 1360px;
   padding: 0 24px;
 }
 

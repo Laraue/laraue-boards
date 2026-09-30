@@ -1,5 +1,5 @@
 <template>
-  <LandingHeader :locale="locale" />
+  <SiteHeader :locale="locale" />
   <main>
     <LandingHero :locale="locale" />
     <LandingUseCases :locale="locale" />
@@ -22,17 +22,17 @@
       :locale="locale"
       variant="final" />
   </main>
-  <LandingFooter :locale="locale" />
+  <SiteFooter :locale="locale" />
 </template>
 
 <script setup lang="ts">
+import SiteFooter from '~/components/site/SiteFooter.vue'
+import SiteHeader from '~/components/site/SiteHeader.vue'
 import type { Locale } from '~/composables/useI18n'
 
 import LandingCallToAction from './components/LandingCallToAction.vue'
 import LandingFaq from './components/LandingFaq.vue'
 import LandingFeaturesGrid from './components/LandingFeaturesGrid.vue'
-import LandingFooter from './components/LandingFooter.vue'
-import LandingHeader from './components/LandingHeader.vue'
 import LandingHero from './components/LandingHero.vue'
 import LandingOpenSource from './components/LandingOpenSource.vue'
 import LandingPlatforms from './components/LandingPlatforms.vue'

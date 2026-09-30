@@ -1,5 +1,5 @@
 <template>
-  <div class="info-card reveal">
+  <div class="info-card">
     <div class="info-card-icon">
       <slot name="icon" />
     </div>

@@ -14,7 +14,7 @@
     <template #actions>
       <LandingActionButton
         :link="appUrl"
-        :title="t('login')"
+        :title="t('open_app')"
         type="site" />
       <LandingActionButton
         link="https://t.me/msgboard_bot"
@@ -170,6 +170,7 @@
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
 
+import { docsPath } from '../../docs/docsPaths'
 import { appUrl, laraueUrl } from '../landingLinks'
 import LandingActionButton from './LandingActionButton.vue'
 import LandingIcon from './LandingIcon.vue'
@@ -202,7 +203,7 @@ const { t } = useI18n(
       hv_time1: '9:41',
       hv_time2: '9:42',
       hv_title: 'Fix checkout button on mobile Safari',
-      login: 'Log in',
+      open_app: 'Open App',
       project_description: 'More details',
     },
     ru: {
@@ -227,26 +228,24 @@ const { t } = useI18n(
       hv_time1: '9:41',
       hv_time2: '9:42',
       hv_title: 'Починить кнопку оплаты в мобильном Safari',
-      login: 'Войти',
+      open_app: 'Открыть приложение',
       project_description: 'Подробнее о проекте',
     },
   },
   props.locale,
 )
 
-const docsUrl = laraueUrl(props.locale, '/blog/documentation/laraue-boards')
+const docsUrl = docsPath(props.locale)
 const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 </script>
 
 <style scoped>
 .hero-quick-links {
-  animation: fade-up var(--anim-duration-lg) calc(var(--anim-stagger) * 4) var(--anim-ease) both;
   display: flex;
   flex-basis: 100%;
   flex-wrap: wrap;
   gap: 20px;
   margin-top: 6px;
-  opacity: 0;
 }
 
 .hero-quick-links a {
@@ -267,7 +266,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 360px;
+  width: 270px;
 }
 
 .phone-mockup {
@@ -410,12 +409,10 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .tg-bubble {
   align-self: flex-start;
-  animation: msg-reveal var(--anim-demo-duration) var(--anim-demo-step) var(--anim-ease) forwards;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 4px 12px 12px;
   max-width: 88%;
-  opacity: 0;
   padding: 9px 12px;
   width: fit-content;
 }
@@ -468,7 +465,6 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .tg-bubble.reply {
   align-self: flex-end;
-  animation-delay: calc(var(--anim-demo-step) * 2);
   background: var(--color-accent-soft);
   border-color: transparent;
   border-radius: 12px 4px 12px 12px;
@@ -480,14 +476,9 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .transform-arrow {
   align-items: flex-start;
-  animation:
-    msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 3) var(--anim-ease) forwards,
-    pulse-arrow var(--anim-pulse-duration)
-      calc(var(--anim-demo-step) * 3 + var(--anim-demo-duration)) ease-in-out infinite;
   color: var(--color-muted);
   display: flex;
   gap: 8px;
-  opacity: 0;
   width: 260px;
 }
 
@@ -506,13 +497,10 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 }
 
 .issue-card-mockup {
-  animation: msg-reveal var(--anim-demo-duration) calc(var(--anim-demo-step) * 4) var(--anim-ease)
-    forwards;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
-  opacity: 0;
   padding: 14px 16px;
   width: 260px;
 }
@@ -578,56 +566,5 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 .issue-card-footer span {
   color: var(--color-muted);
   font-size: 11px;
-}
-
-@media (width <= 720px) {
-  .transform-mockup {
-    max-width: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-quick-links {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes msg-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse-arrow {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: translateY(0);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translateY(2px);
-  }
 }
 </style>

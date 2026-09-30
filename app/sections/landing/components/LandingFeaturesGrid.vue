@@ -1,17 +1,14 @@
 <template>
   <section class="features">
     <div class="features-inner">
-      <div class="section-label reveal">{{ t('feat_label') }}</div>
-      <h2 class="section-title reveal">{{ t('feat_title') }}</h2>
-      <p class="section-sub reveal">{{ t('feat_sub') }}</p>
+      <div class="section-label">{{ t('feat_label') }}</div>
+      <h2 class="section-title">{{ t('feat_title') }}</h2>
+      <p class="section-sub">{{ t('feat_sub') }}</p>
       <div class="features-grid">
         <NuxtLink
-          v-for="(feature, index) in features"
+          v-for="feature in features"
           :key="feature.title"
-          class="feat-cell reveal"
-          :style="{
-            animationDelay: `min(calc(var(--anim-stagger-sm) * ${index}), calc(var(--anim-stagger-sm) * 8))`,
-          }"
+          class="feat-cell"
           :to="feature.link">
           <div class="feat-icon">
             <LandingIcon :name="feature.icon" />
@@ -27,7 +24,8 @@
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
 
-import { githubUrl, laraueUrl } from '../landingLinks'
+import { docsPath } from '../../docs/docsPaths'
+import { githubUrl } from '../landingLinks'
 import type { LandingIconName } from './LandingIcon.vue'
 import LandingIcon from './LandingIcon.vue'
 
@@ -93,8 +91,7 @@ const { t } = useI18n(
   props.locale,
 )
 
-const docs = (path: string): string =>
-  laraueUrl(props.locale, `/blog/documentation/laraue-boards/${path}`)
+const docs = (path: string): string => docsPath(props.locale, path.split('/'))
 
 const features: { description: string; icon: LandingIconName; link: string; title: string }[] = [
   {
@@ -169,12 +166,13 @@ const features: { description: string; icon: LandingIconName; link: string; titl
 <style scoped>
 .features {
   border-bottom: 1px solid var(--color-divider);
-  padding: 88px 60px;
+  padding: 88px 24px;
 }
 
 .features-inner {
   margin: 0 auto;
-  max-width: 1060px;
+  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
+  max-width: 1312px;
 }
 
 .section-label {

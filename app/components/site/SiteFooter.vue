@@ -1,20 +1,17 @@
 <template>
   <footer class="footer">
     <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="footer-logo">
-          <img
-            alt=""
-            height="28"
-            :src="laraueLogoUrl"
-            width="28" />
-          Laraue Boards
-        </div>
-        <p class="footer-tagline">{{ t('footer_tagline') }}</p>
+      <div class="footer-logo">
+        <img
+          alt=""
+          height="28"
+          :src="laraueLogoUrl"
+          width="28" />
+        Laraue Boards
       </div>
       <ul class="footer-links">
         <li>
-          <a :href="docsUrl">{{ t('documentation') }}</a>
+          <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
         </li>
         <li>
           <a
@@ -37,14 +34,17 @@
         </li>
       </ul>
     </div>
-    <div class="footer-bottom">© 2026 Laraue Software</div>
+    <div class="footer-bottom">
+      <p>{{ t('footer_tagline') }}</p>
+      <p>© 2026 Laraue Software</p>
+    </div>
   </footer>
 </template>
 
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
-
-import { botUrl, githubUrl, laraueUrl } from '../landingLinks'
+import { docsPath } from '~/sections/docs/docsPaths'
+import { botUrl, githubUrl, laraueUrl } from '~/sections/landing/landingLinks'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -64,7 +64,7 @@ const { t } = useI18n(
   props.locale,
 )
 
-const docsUrl = laraueUrl(props.locale, '/blog/documentation/laraue-boards')
+const docsHref = docsPath(props.locale)
 const privacyUrl = laraueUrl(props.locale, '/privacy')
 </script>
 
@@ -73,17 +73,18 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
   background: var(--color-surface);
   border-top: 1px solid var(--color-divider);
   color: var(--color-muted);
-  padding: 60px 48px 40px;
+  padding: 60px 24px 40px;
 }
 
 .footer-inner {
-  align-items: flex-start;
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
   justify-content: space-between;
-  margin: 0 auto 40px;
-  max-width: 1160px;
+  margin: 0 auto 32px;
+  /* The same width as the header and the docs' content (1360px with 24px of padding). */
+  max-width: 1312px;
 }
 
 .footer-logo {
@@ -93,23 +94,16 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
   font-size: 16px;
   font-weight: var(--font-weight-bold);
   gap: 10px;
-  margin-bottom: 12px;
 }
 
 .footer-logo img {
   border-radius: 8px;
 }
 
-.footer-tagline {
-  font-size: 13px;
-  line-height: 1.6;
-  max-width: 260px;
-}
-
 .footer-links {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 10px 28px;
 }
 
 .footer-links a {
@@ -125,9 +119,13 @@ const privacyUrl = laraueUrl(props.locale, '/privacy')
 
 .footer-bottom {
   border-top: 1px solid var(--color-divider);
+  display: flex;
+  flex-wrap: wrap;
   font-size: var(--font-size-small);
+  gap: 8px 24px;
+  justify-content: space-between;
   margin: 0 auto;
-  max-width: 1160px;
+  max-width: 1312px;
   padding-top: 24px;
 }
 

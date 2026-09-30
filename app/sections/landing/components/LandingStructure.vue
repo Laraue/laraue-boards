@@ -4,7 +4,7 @@
     :pre-title="t('struct_label')"
     :title="t('struct_title')"
     type="plain">
-    <div class="hierarchy reveal">
+    <div class="hierarchy">
       <div class="hierarchy-box">
         <div class="hierarchy-box-label">{{ t('struct_org') }}</div>
         <div class="hierarchy-box-ex">{{ t('struct_org_ex') }}</div>
@@ -26,15 +26,15 @@
       </div>
     </div>
     <div class="structure-points">
-      <div class="structure-point reveal">
+      <div class="structure-point">
         <div class="structure-point-title">{{ t('struct_p1t') }}</div>
         <p class="structure-point-desc">{{ t('struct_p1d') }}</p>
       </div>
-      <div class="structure-point reveal">
+      <div class="structure-point">
         <div class="structure-point-title">{{ t('struct_p2t') }}</div>
         <p class="structure-point-desc">{{ t('struct_p2d') }}</p>
       </div>
-      <div class="structure-point reveal">
+      <div class="structure-point">
         <div class="structure-point-title">{{ t('struct_p3t') }}</div>
         <p class="structure-point-desc">{{ t('struct_p3d') }}</p>
       </div>
