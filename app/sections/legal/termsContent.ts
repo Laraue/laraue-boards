@@ -54,6 +54,7 @@ export const termsContent = (locale: Locale): TermsContent =>
             paragraphs: [
               'Оплаченные средства не возвращаются: услуга оказывается сразу после оплаты, а токены и доступ к тарифу становятся доступны немедленно.',
               'Исключение составляют случаи, когда возврат обязателен по закону, а также когда услуга не была оказана по вине исполнителя. В этих случаях деньги возвращаются тем же способом, которым была произведена оплата, в срок, установленный законом.',
+              `Чтобы запросить возврат в случаях, когда он положен, напишите на ${sellerDetails.email} с указанием даты и суммы платежа и причины обращения. Мы ответим в течение 10 дней, а одобренный возврат выполним в срок, установленный законом.`,
               'Пользоваться бесплатным тарифом и оценить сервис можно до оплаты.',
             ],
             title: '5. Возврат средств',
@@ -122,6 +123,7 @@ export const termsContent = (locale: Locale): TermsContent =>
             paragraphs: [
               'Payments are not refunded: the service is provided right after payment, and the tokens and the plan become available immediately.',
               'The exceptions are cases where a refund is required by law, and cases where the service was not provided through the seller\'s fault. In those cases the money is returned the same way it was paid, within the term set by law.',
+              `To request a refund in the cases where one is due, write to ${sellerDetails.email} with the date and amount of the payment and the reason. We will reply within 10 days and make an approved refund within the term set by law.`,
               'You can use the free plan and try the service before paying.',
             ],
             title: '5. Refunds',
