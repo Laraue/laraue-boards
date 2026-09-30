@@ -83,7 +83,7 @@ useSeoMeta({
 .terms {
   margin: 0 auto;
   max-width: 820px;
-  padding: 56px 24px 88px;
+  padding: 96px 24px 88px;
 }
 
 .title {
