@@ -32,7 +32,7 @@ const createDeps = (): CreateIssueFormDeps => ({
   })),
   description: {
     summarizeContent: vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(async () => ({
-      data: 'Improved content',
+      data: { content: 'Improved content', title: null },
       status: 'success',
     })),
   },
@@ -73,6 +73,7 @@ it('lets the user choose a destination and create an issue from the issue list',
   })
 
   await page.getByRole('button', { name: 'Edit description' }).click()
+  await page.getByLabelText('Title').fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Space', 'Product', '7')
   await chooseOption('Board', 'Sprint board', '12')
@@ -86,6 +87,7 @@ it('lets the user choose a destination and create an issue from the issue list',
     content: 'Fix the bug',
     files: [],
     statusId: '1',
+    title: 'Bug title',
   })
   expect(onCreated).toHaveBeenCalledWith('ISS-1')
 })
@@ -114,6 +116,7 @@ it('creates an issue in a fixed board without showing destination selects', asyn
   })
 
   await page.getByRole('button', { name: 'Edit description' }).click()
+  await page.getByLabelText('Title').fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
   await expect.element(page.getByLabelText('Status')).toHaveValue('2')
   await expect.element(page.getByLabelText('Assignee')).toHaveValue('9')
@@ -143,6 +146,7 @@ it('keeps the form open and shows the message when creation fails', async () => 
   })
 
   await page.getByRole('button', { name: 'Edit description' }).click()
+  await page.getByLabelText('Title').fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Status', 'To do', '1')
   await chooseOption('Assignee', 'Ann Lee', '9')
@@ -150,4 +154,30 @@ it('keeps the form open and shows the message when creation fails', async () => 
 
   await expect.element(page.getByText('This board no longer accepts issues.')).toBeInTheDocument()
   expect(onCreated).not.toHaveBeenCalled()
+})
+
+it('fills the title and the content with the AI summary', async () => {
+  const deps = createDeps()
+  deps.description.summarizeContent = vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(
+    async () => ({
+      data: { content: '- Login fails on retry', title: 'Fix login retry' },
+      status: 'success',
+    }),
+  )
+  currentWrapper = await mountSuspended(CreateIssueForm, {
+    attachTo: document.body,
+    props: {
+      attributes: [],
+      board: { id: '12', name: 'Sprint board', spaceKey: 'product' },
+      deps,
+      onCreated: vi.fn<(issueKey: string) => void>(),
+    },
+  })
+
+  await page.getByRole('button', { name: 'Edit description' }).click()
+  await page.getByLabelText('Content').fill('login fails on retry pls')
+  await page.getByRole('button', { name: 'Improve with AI' }).click()
+
+  await expect.element(page.getByLabelText('Title')).toHaveValue('Fix login retry')
+  await expect.element(page.getByLabelText('Content')).toHaveValue('- Login fails on retry')
 })

@@ -3,8 +3,17 @@
     class="issue-form issue-form-page"
     @submit.prevent="submit">
     <div class="issue-form-main">
+      <input
+        :id="`${idPrefix}-title`"
+        v-model="form.title"
+        :aria-label="t('title')"
+        class="issue-title-input"
+        :maxlength="256"
+        :placeholder="t('titlePlaceholder')"
+        required />
       <IssueDescription
         v-model="form.content"
+        v-model:title="form.title"
         :deps="deps.description" />
       <IssueAttachments
         :attachments="[]"
@@ -63,7 +72,13 @@
     <div class="page-actions">
       <button
         class="primary"
-        :disabled="pending || !form.content.trim() || !form.statusId || !form.assigneeId"
+        :disabled="
+          pending ||
+          !form.title.trim() ||
+          !form.content.trim() ||
+          !form.statusId ||
+          !form.assigneeId
+        "
         type="submit">
         {{ pending ? t('adding') : t('addIssue') }}
       </button>
@@ -94,6 +109,8 @@ const { t } = useI18n({
     board: 'Board',
     space: 'Space',
     status: 'Status',
+    title: 'Title',
+    titlePlaceholder: 'Issue title',
   },
   ru: {
     adding: 'Добавление…',
@@ -102,6 +119,8 @@ const { t } = useI18n({
     board: 'Доска',
     space: 'Раздел',
     status: 'Статус',
+    title: 'Заголовок',
+    titlePlaceholder: 'Заголовок задачи',
   },
 })
 
@@ -114,6 +133,7 @@ const form = reactive({
   files: [] as File[],
   spaceKey: '',
   statusId: props.initialStatusId ?? '',
+  title: '',
 })
 const selectDeps = {
   boardSelect: props.deps.boardSelect,
@@ -134,7 +154,7 @@ const changeFiles = (files: File[]) => {
 }
 
 const submit = () => {
-  if (!form.content.trim() || !form.statusId || !form.assigneeId) {
+  if (!form.title.trim() || !form.content.trim() || !form.statusId || !form.assigneeId) {
     return
   }
   void create({
@@ -143,6 +163,7 @@ const submit = () => {
     content: form.content,
     files: form.files,
     statusId: form.statusId,
+    title: form.title,
   })
 }
 </script>
@@ -155,6 +176,11 @@ const submit = () => {
   grid-template-areas: 'main side';
   grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
   width: 100%;
+}
+
+.issue-title-input {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
 }
 
 .issue-form-main {

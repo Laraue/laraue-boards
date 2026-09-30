@@ -273,14 +273,19 @@ const { t } = useI18n({
 })
 
 const model = defineModel<string>({ required: true })
+// The AI summary comes with a title; the page owning the title field shares it here.
+const titleModel = defineModel<string>('title', { default: '' })
 const state = reactive({ editing: false })
 const {
   execute: summarizeContent,
   message,
   pending: summarizing,
 } = useAction(props.deps.summarizeContent, {
-  onSuccess: (content) => {
-    model.value = content
+  onSuccess: (summary) => {
+    model.value = summary.content
+    if (summary.title) {
+      titleModel.value = summary.title
+    }
   },
 })
 const clearMessage = () => {

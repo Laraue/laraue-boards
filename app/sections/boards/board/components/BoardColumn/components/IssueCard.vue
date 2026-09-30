@@ -22,7 +22,7 @@
           <time :datetime="viewModel.time">· {{ formatTime(viewModel.time) }}</time>
         </div>
         <small>{{ viewModel.issueKey }}</small>
-        <p>{{ viewModel.content }}</p>
+        <p>{{ viewModel.title }}</p>
       </a>
     </NuxtLink>
     <Transition

@@ -9,6 +9,7 @@ export type CreateIssueFormInput = {
   content: string
   files: File[]
   statusId: string
+  title: string
 }
 
 export type CreateIssueFormBoard = {

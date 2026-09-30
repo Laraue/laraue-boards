@@ -32,6 +32,7 @@ const issue: IssuePageViewModel = {
   spaceLabel: 'Product',
   statusId: '3',
   statusLabel: 'To do',
+  title: 'Fix the bug',
   updatedAt: '2026-01-02T00:00:00Z',
 }
 
@@ -164,6 +165,7 @@ it('notifies the board and stays open after the issue is saved', async () => {
         previousStatusId: '3',
         spaceKey: 'product-AB12',
         statusId: '3',
+        title: 'Fix the bug',
       },
       status: 'success',
     })),

@@ -49,7 +49,7 @@
       </button>
     </div>
     <div class="issue-list-row-content">
-      <p class="issue-content">{{ content }}</p>
+      <p class="issue-content">{{ title }}</p>
       <span
         class="issue-person"
         :title="assignee">
@@ -77,7 +77,6 @@ const props = defineProps<{
   boardColor: string
   boardName: string
   canMove: boolean
-  content: string
   issueKey: string
   onMove: () => void
   onToggleSelection: () => void
@@ -86,6 +85,7 @@ const props = defineProps<{
   spaceName?: string
   status: null | string
   statusColor: string
+  title: string
   to: RouteLocationRaw
 }>()
 

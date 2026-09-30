@@ -9,10 +9,10 @@ export const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueL
   boardColor: issue.epic.color,
   boardName: issue.epic.name,
   canMove: issue.canEdit,
-  content: issue.content ?? '',
   issueKey: issue.key,
   spaceColor: issue.space.color,
   spaceName: issue.space.name,
   status: issue.status?.name ?? null,
   statusColor: issue.status?.color ?? COLORS.gray,
+  title: issue.title,
 })

@@ -12,6 +12,7 @@ test('maps issue history and sends pagination', async () => {
         apiKeyName: 'Claude',
         changes: [
           { $type: 'content', newContent: 'new', oldContent: 'old' },
+          { $type: 'title', newTitle: 'New title', oldTitle: 'Old title' },
           {
             $type: 'assignee',
             newAssigneeColor: '#111',
@@ -116,6 +117,13 @@ test('maps issue history and sends pagination', async () => {
               },
             ],
             kind: 'description',
+          },
+          {
+            kind: 'title',
+            newColor: null,
+            newValue: 'New title',
+            oldColor: null,
+            oldValue: 'Old title',
           },
           {
             kind: 'assignee',

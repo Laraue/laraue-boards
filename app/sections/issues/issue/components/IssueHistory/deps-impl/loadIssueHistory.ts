@@ -31,6 +31,14 @@ const mapChange = (
         diff: diffLines(change.oldContent ?? '', change.newContent ?? ''),
         kind: 'description',
       }
+    case 'title':
+      return {
+        kind: 'title',
+        newColor: null,
+        newValue: change.newTitle,
+        oldColor: null,
+        oldValue: change.oldTitle,
+      }
     case 'assignee':
       return {
         kind: 'assignee',
@@ -116,6 +124,7 @@ const mapHistoryPage = (
         : [{ action: item.action, entityType: item.entityType, kind: 'event' as const }],
       createdAt: item.createdAt,
       ...(item.issueKey ? { issueKey: item.issueKey } : {}),
+      ...(item.issueTitle ? { issueTitle: item.issueTitle } : {}),
       owner: {
         ...(item.apiKeyName ? { apiKeyName: item.apiKeyName } : {}),
         color: item.owner.color,

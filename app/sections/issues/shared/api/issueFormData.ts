@@ -8,11 +8,13 @@ const appendIssueFields = (
     assigneeId: string
     attributeValues: AttributeValue[]
     content: string
+    title: string
   },
 ) => {
   formData.append('AssigneeId', input.assigneeId)
   formData.append('AttributeValues', JSON.stringify(input.attributeValues))
   formData.append('Content', input.content)
+  formData.append('Title', input.title)
 }
 
 export const createIssueFormData = (input: {
@@ -21,6 +23,7 @@ export const createIssueFormData = (input: {
   content: string
   files: File[]
   statusId: string
+  title: string
 }) => {
   const formData = new FormData()
   appendIssueFields(formData, input)
@@ -35,6 +38,7 @@ export const updateIssueFormData = (input: {
   content: string
   files: File[]
   removeAttachmentIds: string[]
+  title: string
 }) => {
   const formData = new FormData()
   appendIssueFields(formData, input)

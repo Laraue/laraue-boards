@@ -8,9 +8,9 @@ export const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
   assigneeColor: issue.assigneeColor,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,
-  content: issue.content ?? '',
   issueKey: issue.key,
   time: issue.time,
+  title: issue.title,
 })
 
 export const mapBoardIssues = (

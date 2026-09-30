@@ -13,17 +13,17 @@ import type { BacklogPageDeps } from './BacklogPage.deps'
 import type { BacklogPageData } from './BacklogPage.types'
 import BacklogPage from './BacklogPage.vue'
 
-const issueOf = (issueKey: string, content: string): IssueListItem => ({
+const issueOf = (issueKey: string, title: string): IssueListItem => ({
   assignee: 'Ada',
   assigneeColor: '#111',
   assigneeInitial: 'A',
   boardColor: '#222',
   boardName: 'Backlog',
   canMove: true,
-  content,
   issueKey,
   status: null,
   statusColor: '#333',
+  title,
 })
 
 const pageData: BacklogPageData = {

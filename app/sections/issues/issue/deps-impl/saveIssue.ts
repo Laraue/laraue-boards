@@ -38,6 +38,7 @@ export const createSaveIssue =
       previousStatusId: input.previousStatusId,
       spaceKey: input.previousSpaceKey,
       statusId: input.statusId,
+      title: input.title,
     }
     if (input.statusId === input.previousStatusId) {
       return { data: saved, status: 'success' }

@@ -29,6 +29,12 @@
               :to="item.link.to">
               {{ item.link.label }}
             </NuxtLink>
+            <span
+              v-if="item.link && item.issueTitle"
+              class="history-issue-title"
+              :title="item.issueTitle">
+              {{ item.issueTitle }}
+            </span>
             <time
               :datetime="item.createdAt"
               :title="formatDateTime(item.createdAt)">
@@ -65,6 +71,9 @@
               <HistoryStatusChange
                 v-else-if="change.kind === 'status'"
                 :change="change" />
+              <HistoryTitleChange
+                v-else-if="change.kind === 'title'"
+                :change="change" />
             </div>
           </div>
         </div>
@@ -89,6 +98,7 @@ import HistoryEventChange from './components/HistoryEventChange.vue'
 import HistoryPropertyChange from './components/HistoryPropertyChange.vue'
 import HistorySpaceChange from './components/HistorySpaceChange.vue'
 import HistoryStatusChange from './components/HistoryStatusChange.vue'
+import HistoryTitleChange from './components/HistoryTitleChange.vue'
 import type { HistoryItemViewModel } from './HistoryTimeline.types'
 
 const props = defineProps<{
@@ -211,6 +221,15 @@ const formatHistoryTime = (date: string) =>
 .history-head time {
   color: var(--color-muted);
   font-size: var(--font-size-small);
+}
+
+.history-issue-title {
+  color: var(--color-muted);
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .history-api-key {
