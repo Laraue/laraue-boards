@@ -122,7 +122,7 @@ export const termsContent = (locale: Locale): TermsContent =>
           {
             paragraphs: [
               'Payments are not refunded: the service is provided right after payment, and the tokens and the plan become available immediately.',
-              'The exceptions are cases where a refund is required by law, and cases where the service was not provided through the seller\'s fault. In those cases the money is returned the same way it was paid, within the term set by law.',
+              "The exceptions are cases where a refund is required by law, and cases where the service was not provided through the seller's fault. In those cases the money is returned the same way it was paid, within the term set by law.",
               `To request a refund in the cases where one is due, write to ${sellerDetails.email} with the date and amount of the payment and the reason. We will reply within 10 days and make an approved refund within the term set by law.`,
               'You can use the free plan and try the service before paying.',
             ],
@@ -131,7 +131,7 @@ export const termsContent = (locale: Locale): TermsContent =>
           {
             paragraphs: [
               'You can stop using the service at any time. The paid period of a plan is not recalculated when you do.',
-              'The seller may restrict access to the service if you break the law or these terms, in particular when you try to disrupt the service or reach other people\'s data.',
+              "The seller may restrict access to the service if you break the law or these terms, in particular when you try to disrupt the service or reach other people's data.",
             ],
             title: '6. Ending use of the service',
           },

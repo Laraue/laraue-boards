@@ -38,7 +38,10 @@
       </ul>
     </div>
     <div class="footer-bottom">
-      <p>{{ sellerDetails.name[locale] }}, {{ sellerDetails.status[locale] }}, {{ t('inn') }} {{ sellerDetails.inn }}</p>
+      <p>
+        {{ sellerDetails.name[locale] }}, {{ sellerDetails.status[locale] }}, {{ t('inn') }}
+        {{ sellerDetails.inn }}
+      </p>
       <p>
         <a :href="`mailto:${sellerDetails.email}`">{{ sellerDetails.email }}</a>
         ·

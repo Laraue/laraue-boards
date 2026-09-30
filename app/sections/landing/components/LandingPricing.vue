@@ -27,7 +27,8 @@
       </div>
       <p class="pricing-note">
         {{ t('terms_note') }}
-        <NuxtLink :to="locale === 'ru' ? '/ru/terms' : '/terms'">{{ t('terms_link') }}</NuxtLink>.
+        <NuxtLink :to="locale === 'ru' ? '/ru/terms' : '/terms'">{{ t('terms_link') }}</NuxtLink>
+        .
       </p>
       <div
         v-for="group in groups.filter((item) => item.tariffs.length > 0)"
