@@ -25,7 +25,11 @@
           {{ code }}
         </button>
       </div>
-      <p class="mvp-note">{{ t('mvp_note') }}</p>
+      <p class="pricing-note">
+        {{ t('terms_note') }}
+        <NuxtLink :to="locale === 'ru' ? '/ru/terms' : '/terms'">{{ t('terms_link') }}</NuxtLink>
+        .
+      </p>
       <div
         v-for="group in groups.filter((item) => item.tariffs.length > 0)"
         :key="group.key"
@@ -70,7 +74,7 @@
             <a
               class="pricing-card-cta"
               :href="appUrl">
-              {{ t('price_unavailable') }}
+              {{ t('price_cta') }}
             </a>
           </div>
         </div>
@@ -107,8 +111,6 @@ const { t } = useI18n(
       feature_tokens: '{count} tokens included',
       feature_tokens_per_seat: '{count} tokens per seat',
       load_error: "Couldn't load pricing right now — please try again later.",
-      mvp_note:
-        "We're still in the MVP phase: the Free plan is completely free right now with no token limits. These prices will take effect once the MVP phase is over.",
       offer_free_orgs: '{count} free team organization(s)',
       offer_issues: 'up to {count} issues per month',
       offer_issues_org: 'up to {count} issues per month for the whole organization',
@@ -116,13 +118,15 @@ const { t } = useI18n(
       offer_tokens_per_seat: '{count} tokens per seat',
       per_seat: 'per seat',
       personal_label: 'For individuals',
-      price_unavailable: 'Free during MVP',
+      price_cta: 'Get started',
       pricing_label: 'Pricing',
       pricing_sub:
         'Free to start, both for individuals and teams. Upgrade only when you need more.',
       pricing_title: 'Simple, honest pricing',
       team_label: 'For teams',
       team_pricing_note: 'Price and included tokens are per seat, combined across your whole team.',
+      terms_link: 'public offer',
+      terms_note: 'Paying for a plan means you accept the',
     },
     ru: {
       billing_label_forever: 'навсегда',
@@ -134,8 +138,6 @@ const { t } = useI18n(
       feature_tokens: '{count} токенов включено',
       feature_tokens_per_seat: '{count} токенов на место',
       load_error: 'Не удалось загрузить тарифы — попробуйте позже.',
-      mvp_note:
-        'Сейчас продукт на стадии MVP: бесплатный тариф полностью бесплатен и без ограничений по токенам. Указанные цены вступят в силу после завершения стадии MVP.',
       offer_free_orgs: '{count} бесплатных организаций',
       offer_issues: 'до {count} issues в месяц',
       offer_issues_org: 'до {count} issues в месяц на всю организацию',
@@ -143,7 +145,7 @@ const { t } = useI18n(
       offer_tokens_per_seat: '{count} токенов на место',
       per_seat: 'за место',
       personal_label: 'Для себя',
-      price_unavailable: 'Бесплатно на MVP',
+      price_cta: 'Начать',
       pricing_label: 'Цены',
       pricing_sub:
         'Бесплатно для старта — как для себя, так и для команды. Платите только когда нужно больше.',
@@ -151,6 +153,8 @@ const { t } = useI18n(
       team_label: 'Для команд',
       team_pricing_note:
         'Цена и включённые токены указаны за одно место и суммируются по всей команде.',
+      terms_link: 'публичной офертой',
+      terms_note: 'Оплата тарифа означает, что вы согласны с',
     },
   },
   props.locale,
@@ -298,7 +302,7 @@ watch(
   color: var(--color-text);
 }
 
-.mvp-note {
+.pricing-note {
   background: var(--color-accent-soft);
   border-radius: var(--radius-card);
   color: var(--color-text);

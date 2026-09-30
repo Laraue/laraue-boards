@@ -56,14 +56,19 @@ export default defineNuxtConfig({
     excludeAppSources: true,
     // The docs pages come from the markdown files (see `server/routes/docs-sitemap-urls.get.ts`).
     sources: ['/docs-sitemap-urls'],
-    urls: ['/', '/ru'].map((loc) => ({
-      alternatives: [
-        { href: '/', hreflang: 'en' },
-        { href: '/ru', hreflang: 'ru' },
-        { href: '/', hreflang: 'x-default' },
-      ],
-      loc,
-    })),
+    urls: [
+      { en: '/', ru: '/ru' },
+      { en: '/terms', ru: '/ru/terms' },
+    ].flatMap(({ en, ru }) =>
+      [en, ru].map((loc) => ({
+        alternatives: [
+          { href: en, hreflang: 'en' },
+          { href: ru, hreflang: 'ru' },
+          { href: en, hreflang: 'x-default' },
+        ],
+        loc,
+      })),
+    ),
   },
 
   // The documentation (`content/docs`) is bundled with the server and read by `server/utils/docsCatalog`.
