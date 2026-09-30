@@ -25,8 +25,7 @@
           {{ code }}
         </button>
       </div>
-      <p class="mvp-note">{{ t('mvp_note') }}</p>
-      <p class="mvp-note">
+      <p class="pricing-note">
         {{ t('terms_note') }}
         <NuxtLink :to="locale === 'ru' ? '/ru/terms' : '/terms'">{{ t('terms_link') }}</NuxtLink>.
       </p>
@@ -111,8 +110,6 @@ const { t } = useI18n(
       feature_tokens: '{count} tokens included',
       feature_tokens_per_seat: '{count} tokens per seat',
       load_error: "Couldn't load pricing right now — please try again later.",
-      mvp_note:
-        "We're still in the MVP phase: the Free plan is completely free right now with no token limits. These prices will take effect once the MVP phase is over.",
       offer_free_orgs: '{count} free team organization(s)',
       offer_issues: 'up to {count} issues per month',
       offer_issues_org: 'up to {count} issues per month for the whole organization',
@@ -140,8 +137,6 @@ const { t } = useI18n(
       feature_tokens: '{count} токенов включено',
       feature_tokens_per_seat: '{count} токенов на место',
       load_error: 'Не удалось загрузить тарифы — попробуйте позже.',
-      mvp_note:
-        'Сейчас продукт на стадии MVP: бесплатный тариф полностью бесплатен и без ограничений по токенам. Указанные цены вступят в силу после завершения стадии MVP.',
       offer_free_orgs: '{count} бесплатных организаций',
       offer_issues: 'до {count} issues в месяц',
       offer_issues_org: 'до {count} issues в месяц на всю организацию',
@@ -306,7 +301,7 @@ watch(
   color: var(--color-text);
 }
 
-.mvp-note {
+.pricing-note {
   background: var(--color-accent-soft);
   border-radius: var(--radius-card);
   color: var(--color-text);
