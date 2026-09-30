@@ -4,6 +4,7 @@ import {
   decideConsent,
   detectCountryCode,
   isAnalyticsBlockedCountry,
+  isConsentPage,
   isConsentRequiredCountry,
   parseTraceCountry,
 } from './consent'
@@ -73,4 +74,24 @@ test('asks visitors who need to consent and have not decided', () => {
 test('remembers the choice of a visitor who needs to consent', () => {
   assert.deepEqual(decideConsent('DE', 'granted'), { consent: 'granted', required: true })
   assert.deepEqual(decideConsent('DE', 'denied'), { consent: 'denied', required: true })
+})
+
+test('has analytics and the consent banner on the landing page and the documentation', () => {
+  for (const path of ['/', '/ru', '/en/documentation', '/ru/documentation/concepts/issues']) {
+    assert.isTrue(isConsentPage(path), path)
+  }
+})
+
+test('has neither in the app', () => {
+  for (const path of [
+    '/login',
+    '/account',
+    '/organizations',
+    '/organizations/acme/issues',
+    '/join/abc',
+    '/documentation',
+    '/ru/organizations',
+  ]) {
+    assert.isFalse(isConsentPage(path), path)
+  }
 })

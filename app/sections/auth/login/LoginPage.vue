@@ -72,6 +72,16 @@
           :disabled="submitting"
           :on-sign-in="loginGoogle" />
       </div>
+      <p class="privacy-note">
+        {{ t('privacyBefore') }}
+        <a
+          :href="privacyUrl"
+          rel="noopener"
+          target="_blank">
+          {{ t('privacyPolicy') }}
+        </a>
+        {{ t('privacyAfter') }}
+      </p>
     </div>
   </section>
 </template>
@@ -83,6 +93,7 @@ import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInB
 import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
 import type { LoginPageDeps } from '~/sections/auth/login/LoginPage.deps'
+import { laraueUrl } from '~/sections/landing/landingLinks'
 
 const props = defineProps<{
   deps: LoginPageDeps
@@ -91,7 +102,7 @@ const props = defineProps<{
   telegramBotId: string
 }>()
 
-const { t } = useI18n({
+const { locale, t } = useI18n({
   en: {
     continueWithTelegram: 'Use your Telegram account to continue.',
     continueWithTelegramOrGoogle: 'Use your Telegram or Google account to continue.',
@@ -102,6 +113,9 @@ const { t } = useI18n({
     heroTitle: 'Turn messages into work.',
     issue: 'Issue',
     message: 'Message',
+    privacyAfter: 'and accept its terms.',
+    privacyBefore: 'By logging in, you confirm that you have read the',
+    privacyPolicy: 'Privacy policy',
     signIn: 'Sign in',
     signingIn: 'Signing in…',
     welcomeBack: 'Welcome back',
@@ -116,11 +130,17 @@ const { t } = useI18n({
     heroTitle: 'Превращайте сообщения в работу.',
     issue: 'Задача',
     message: 'Сообщение',
+    privacyAfter: 'и принимаете её условия.',
+    privacyBefore: 'Входя в приложение, вы подтверждаете, что ознакомились с',
+    privacyPolicy: 'Политикой конфиденциальности',
     signIn: 'Вход',
     signingIn: 'Выполняется вход…',
     welcomeBack: 'С возвращением',
   },
 })
+
+// The privacy policy is on laraue.com, in the visitor's language.
+const privacyUrl = computed(() => laraueUrl(locale.value, '/privacy'))
 
 onMounted(() => void loginViaTelegramMiniApp())
 useHead({ title: t('signIn') })
@@ -263,6 +283,19 @@ const loginGoogle = async (code: string): Promise<void> => {
   display: grid;
   gap: var(--space-3);
   margin-top: var(--space-6);
+}
+
+.privacy-note {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  line-height: 1.5;
+  margin-top: var(--space-5);
+}
+
+.privacy-note a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 @media (max-width: 767px) {

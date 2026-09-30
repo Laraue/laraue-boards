@@ -23,16 +23,20 @@
 </template>
 
 <script setup lang="ts">
-import { consentStorageKey } from '~/utils/consent'
+import { consentStorageKey, isConsentPage } from '~/utils/consent'
 
 const state = useConsent()
-const { gtag, initialize } = useGtag()
 const route = useRoute()
 const { locale } = useAppPreferences()
 
-// Only visitors whose country requires it, and who have not decided yet, are asked.
+// Only visitors whose country requires it, and who have not decided yet, are asked, and only on the
+// public content pages (the plugin turns analytics on and off according to the choice).
 const visible = computed(
-  () => state.value.resolved && state.value.required && state.value.consent === null,
+  () =>
+    state.value.resolved &&
+    state.value.required &&
+    state.value.consent === null &&
+    isConsentPage(route.path),
 )
 
 // The public pages have their language in the address, so the banner speaks it (the app's own
@@ -65,14 +69,11 @@ const { t } = useI18n(
 
 const accept = (): void => {
   localStorage.setItem(consentStorageKey, 'granted')
-  gtag('consent', 'update', { analytics_storage: 'granted' })
-  initialize()
   state.value = { ...state.value, consent: 'granted' }
 }
 
 const decline = (): void => {
   localStorage.setItem(consentStorageKey, 'denied')
-  gtag('consent', 'update', { analytics_storage: 'denied' })
   state.value = { ...state.value, consent: 'denied' }
 }
 </script>

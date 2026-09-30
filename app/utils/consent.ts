@@ -60,6 +60,15 @@ export const isConsentRequiredCountry = (countryCode?: null | string): boolean =
 export const isAnalyticsBlockedCountry = (countryCode?: null | string): boolean =>
   !!countryCode && analyticsBlockedCountries.has(countryCode.toUpperCase())
 
+// Analytics and its consent banner belong to the public content pages only: the landing page and the
+// documentation, in either language. The app (login, account, boards) has neither.
+export const isConsentPage = (path: string): boolean =>
+  path === '/' ||
+  path === '/ru' ||
+  ['/en/documentation', '/ru/documentation'].some(
+    (documentation) => path === documentation || path.startsWith(`${documentation}/`),
+  )
+
 export const parseTraceCountry = (trace: string): null | string =>
   /^loc=([A-Z]{2})$/m.exec(trace)?.[1] ?? null
 
