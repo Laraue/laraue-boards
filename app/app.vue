@@ -7,6 +7,7 @@
     <NuxtPage />
   </NuxtLayout>
   <AppToasts />
+  <CookieConsent />
 </template>
 
 <script setup lang="ts">

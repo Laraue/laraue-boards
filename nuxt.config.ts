@@ -35,6 +35,11 @@ export default defineNuxtConfig({
   gtag: {
     enabled: process.env.NODE_ENV === 'production',
     id: 'G-RGM3JHLBGL',
+    // The Google tag script is only added once analytics is allowed for the visitor (see
+    // plugins/consent-init.client.ts and CookieConsent) - never for visitors from countries where
+    // Google Analytics can't be used (see utils/consent.ts).
+    initCommands: [['consent', 'default', { analytics_storage: 'denied' }]],
+    initMode: 'manual',
   },
 
   modules: ['nuxt-gtag', '@nuxtjs/sitemap'],

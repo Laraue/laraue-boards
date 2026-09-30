@@ -110,3 +110,26 @@ it('signs in with the authorization code returned by Google', async () => {
   )
   expect(onLoggedIn).toHaveBeenCalledOnce()
 })
+
+it('links the privacy policy under the sign-in buttons', async () => {
+  await mount(
+    {
+      googleSignInButton: googleSignInButtonDeps(),
+      loginViaGoogle: vi.fn<LoginPageDeps['loginViaGoogle']>(),
+      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => ({
+        data: { authenticated: false },
+        status: 'success',
+      })),
+      loginViaTelegramWidget: vi.fn<LoginPageDeps['loginViaTelegramWidget']>(),
+      telegramSignInButton: telegramSignInButtonDeps(),
+    },
+    vi.fn<() => void>(),
+  )
+
+  await expect
+    .element(page.getByText('By logging in, you confirm that you have read the'))
+    .toBeInTheDocument()
+  await expect
+    .element(page.getByRole('link', { name: 'Privacy policy' }))
+    .toHaveAttribute('href', 'https://laraue.com/privacy')
+})
