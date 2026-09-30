@@ -37,17 +37,13 @@
         </li>
       </ul>
     </div>
-    <div class="footer-contacts">
+    <div class="footer-bottom">
       <p>{{ sellerDetails.name[locale] }}, {{ sellerDetails.status[locale] }}, {{ t('inn') }} {{ sellerDetails.inn }}</p>
       <p>
         <a :href="`mailto:${sellerDetails.email}`">{{ sellerDetails.email }}</a>
         ·
         <a :href="`tel:${sellerDetails.phoneHref}`">{{ sellerDetails.phone }}</a>
       </p>
-    </div>
-    <div class="footer-bottom">
-      <p>{{ t('footer_tagline') }}</p>
-      <p>© 2026 Laraue Software</p>
     </div>
   </footer>
 </template>
@@ -65,14 +61,12 @@ const { t } = useI18n(
     en: {
       documentation: 'Documentation',
       footer_privacy: 'Privacy policy',
-      footer_tagline: 'A Jira alternative built on Telegram. Free and open source.',
       footer_terms: 'Public offer',
       inn: 'INN',
     },
     ru: {
       documentation: 'Документация',
       footer_privacy: 'Политика конфиденциальности',
-      footer_tagline: 'Альтернатива Jira в Telegram. Бесплатно и с открытым исходным кодом.',
       footer_terms: 'Публичная оферта',
       inn: 'ИНН',
     },
@@ -134,23 +128,12 @@ const termsHref = props.locale === 'ru' ? '/ru/terms' : '/terms'
   color: var(--color-text);
 }
 
-.footer-contacts {
-  color: var(--color-muted);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: var(--font-size-small);
-  gap: 4px 24px;
-  justify-content: space-between;
-  margin: 0 auto 24px;
-  max-width: 1312px;
-}
-
-.footer-contacts a {
+.footer-bottom a {
   color: var(--color-muted);
   text-decoration: none;
 }
 
-.footer-contacts a:hover {
+.footer-bottom a:hover {
   color: var(--color-text);
 }
 
