@@ -73,7 +73,7 @@
             <a
               class="pricing-card-cta"
               :href="appUrl">
-              {{ t('price_unavailable') }}
+              {{ t('price_cta') }}
             </a>
           </div>
         </div>
@@ -117,7 +117,7 @@ const { t } = useI18n(
       offer_tokens_per_seat: '{count} tokens per seat',
       per_seat: 'per seat',
       personal_label: 'For individuals',
-      price_unavailable: 'Free during MVP',
+      price_cta: 'Get started',
       pricing_label: 'Pricing',
       pricing_sub:
         'Free to start, both for individuals and teams. Upgrade only when you need more.',
@@ -144,7 +144,7 @@ const { t } = useI18n(
       offer_tokens_per_seat: '{count} токенов на место',
       per_seat: 'за место',
       personal_label: 'Для себя',
-      price_unavailable: 'Бесплатно на MVP',
+      price_cta: 'Начать',
       pricing_label: 'Цены',
       pricing_sub:
         'Бесплатно для старта — как для себя, так и для команды. Платите только когда нужно больше.',
