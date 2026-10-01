@@ -49,13 +49,13 @@ const { t } = useI18n(
   {
     en: {
       seoDescription:
-        'A free, open-source Jira alternative built on Telegram. Forward a message to @msgboard_bot and it becomes a task on your Kanban board — Mini App or web app.',
-      seoTitle: 'Laraue Boards — Telegram Kanban Task Manager',
+        'A lightweight task board for small teams. Save Telegram messages as cards, and connect Claude or any MCP agent to the same board. Free, open source.',
+      seoTitle: 'Laraue Boards — a task board for Telegram chats and AI agents',
     },
     ru: {
       seoDescription:
-        'Пересылайте сообщения боту @msgboard_bot — они станут карточками на канбан-доске. Бесплатная альтернатива Jira с открытым кодом: Mini App и веб-версия.',
-      seoTitle: 'Laraue Boards — Kanban-доски из сообщений Telegram',
+        'Лёгкая доска задач для небольших команд. Сообщения из Telegram — в карточки, а Claude или любой MCP-агент работает с той же доской. Бесплатно, открытый код.',
+      seoTitle: 'Laraue Boards — доска задач для Telegram-чатов и ИИ-агентов',
     },
   },
   props.locale,

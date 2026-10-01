@@ -4,7 +4,9 @@ export type LandingTariff = {
   billing: { duration: number; period: 'forever' | 'month' }
   currencyCode: string
   formattedPrice: string
-  freeOrganizations?: number
+  // Team organizations a personal plan allows: a number, `null` when it has no limit, `undefined`
+  // when the plan has none to show (team plans).
+  freeOrganizations?: null | number
   id: string
   issuesPerMonth?: number
   price: number

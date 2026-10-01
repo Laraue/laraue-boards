@@ -16,7 +16,7 @@
       </LandingInfoCard>
       <LandingInfoCard
         :description="t('uc_teams_desc')"
-        :items="[t('uc_t1'), t('uc_t2'), t('uc_t3'), t('uc_t4'), t('uc_t5')]"
+        :items="[t('uc_t1'), t('uc_t2'), t('uc_t3'), t('uc_t4'), t('uc_t5'), t('uc_t6')]"
         :link-href="appUrl"
         :link-text="t('open_app')"
         :title="t('uc_teams_title')">
@@ -56,6 +56,7 @@ const { t } = useI18n(
       uc_t3: 'Permissions per operation on spaces, epics and issues',
       uc_t4: 'Custom attributes defined by an admin',
       uc_t5: 'One space per client, scoped access for contractors',
+      uc_t6: 'AI agents read and update the same board over MCP',
       uc_teams_desc:
         'A lightweight Jira alternative built on Telegram, for teams that find Jira overwhelming — and for agencies juggling several clients at once. Create an organization, invite teammates, track work together.',
       uc_teams_title: 'Small teams & agencies',
@@ -79,6 +80,7 @@ const { t } = useI18n(
       uc_t3: 'Права по операциям над спейсами, эпиками и issues',
       uc_t4: 'Кастомные атрибуты, настраиваемые админом',
       uc_t5: 'Отдельный спейс на каждого клиента, права — точечно для подрядчиков',
+      uc_t6: 'ИИ-агенты читают и обновляют ту же доску через MCP',
       uc_teams_desc:
         'Лёгкая альтернатива Jira на базе Telegram — для команд, которым Jira кажется избыточной, и для агентств, ведущих сразу несколько клиентов. Создайте организацию, пригласите коллег, работайте над задачами вместе.',
       uc_teams_title: 'Команды и агентства',

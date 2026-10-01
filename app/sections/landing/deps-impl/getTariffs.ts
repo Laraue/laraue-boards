@@ -17,6 +17,17 @@ const isBoardsTariff = (
 // The API sends 64-bit and floating point numbers as `number | string`.
 const toNumber = (value: null | number | string | undefined): number => Number(value ?? 0)
 
+// `undefined` is for a plan that has no such limit at all (team plans); `null` is a personal plan
+// with no limit, i.e. unlimited team organizations.
+const mapFreeOrganizations = (
+  value: null | number | string | undefined,
+): LandingTariff['freeOrganizations'] => {
+  if (value === undefined || value === null) {
+    return value
+  }
+  return toNumber(value) || undefined
+}
+
 const mapTariff = (
   tariff: PersonalTariff | TeamTariff,
   freeOrganizations?: null | number | string,
@@ -27,7 +38,7 @@ const mapTariff = (
   },
   currencyCode: tariff.currencyCode,
   formattedPrice: tariff.formattedPrice,
-  freeOrganizations: toNumber(freeOrganizations) || undefined,
+  freeOrganizations: mapFreeOrganizations(freeOrganizations),
   id: tariff.id,
   issuesPerMonth: toNumber(tariff.limitIssuesPerMonth) || undefined,
   price: toNumber(tariff.price),
@@ -44,7 +55,7 @@ export const createGetTariffs =
       map: (data) => ({
         personal: data.personalSubscriptions
           .filter(isBoardsTariff)
-          .map((tariff) => mapTariff(tariff, tariff.limitFreeTeamOrganizationsCount)),
+          .map((tariff) => mapTariff(tariff, tariff.limitFreeTeamOrganizationsCount ?? null)),
         team: data.teamSubscriptions.map((tariff) => mapTariff(tariff)),
       }),
       request: () =>
