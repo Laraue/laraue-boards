@@ -53,7 +53,9 @@
               <span class="pricing-card-price">{{ tariff.formattedPrice }}</span>
               <span class="pricing-card-billing">
                 / {{ billingLabel(tariff) }}
-                <template v-if="group.perSeat">&middot; {{ t('per_seat') }}</template>
+                <template v-if="group.perSeat && !isFreeTariff(tariff)">
+                  &middot; {{ t('per_seat') }}
+                </template>
               </span>
             </div>
             <ul class="pricing-card-features">
@@ -109,13 +111,19 @@ const { t } = useI18n(
       feature_free_orgs: '{count} free team organization(s)',
       feature_issues: 'Up to {count} issues / month',
       feature_tokens: '{count} tokens included',
+      feature_tokens_monthly: '{count} tokens / month',
+      feature_tokens_monthly_org: '{count} tokens / month for the whole organization',
       feature_tokens_per_seat: '{count} tokens per seat',
+      feature_unlimited_orgs: 'Unlimited team organizations',
       load_error: "Couldn't load pricing right now — please try again later.",
       offer_free_orgs: '{count} free team organization(s)',
       offer_issues: 'up to {count} issues per month',
       offer_issues_org: 'up to {count} issues per month for the whole organization',
       offer_tokens: '{count} tokens included',
+      offer_tokens_monthly: '{count} tokens per month',
+      offer_tokens_monthly_org: '{count} tokens per month for the whole organization',
       offer_tokens_per_seat: '{count} tokens per seat',
+      offer_unlimited_orgs: 'unlimited team organizations',
       per_seat: 'per seat',
       personal_label: 'For individuals',
       price_cta: 'Get started',
@@ -124,7 +132,8 @@ const { t } = useI18n(
         'Free to start, both for individuals and teams. Upgrade only when you need more.',
       pricing_title: 'Simple, honest pricing',
       team_label: 'For teams',
-      team_pricing_note: 'Price and included tokens are per seat, combined across your whole team.',
+      team_pricing_note:
+        'Paid plans are priced per seat, and their included tokens are per seat, combined across your whole team. The Free plan is per organization.',
       terms_link: 'public offer',
       terms_note: 'Paying for a plan means you accept the',
     },
@@ -136,13 +145,19 @@ const { t } = useI18n(
       feature_free_orgs: '{count} бесплатных организаций',
       feature_issues: 'До {count} issues в месяц',
       feature_tokens: '{count} токенов включено',
+      feature_tokens_monthly: '{count} токенов в месяц',
+      feature_tokens_monthly_org: '{count} токенов в месяц на всю организацию',
       feature_tokens_per_seat: '{count} токенов на место',
+      feature_unlimited_orgs: 'Неограниченное число организаций',
       load_error: 'Не удалось загрузить тарифы — попробуйте позже.',
       offer_free_orgs: '{count} бесплатных организаций',
       offer_issues: 'до {count} issues в месяц',
       offer_issues_org: 'до {count} issues в месяц на всю организацию',
       offer_tokens: '{count} токенов включено',
+      offer_tokens_monthly: '{count} токенов в месяц',
+      offer_tokens_monthly_org: '{count} токенов в месяц на всю организацию',
       offer_tokens_per_seat: '{count} токенов на место',
+      offer_unlimited_orgs: 'неограниченное число организаций',
       per_seat: 'за место',
       personal_label: 'Для себя',
       price_cta: 'Начать',
@@ -152,7 +167,7 @@ const { t } = useI18n(
       pricing_title: 'Просто и честно',
       team_label: 'Для команд',
       team_pricing_note:
-        'Цена и включённые токены указаны за одно место и суммируются по всей команде.',
+        'Платные тарифы оплачиваются за место, а включённые токены указаны за одно место и суммируются по всей команде. Бесплатный тариф — на организацию.',
       terms_link: 'публичной офертой',
       terms_note: 'Оплата тарифа означает, что вы согласны с',
     },
@@ -193,17 +208,32 @@ const billingLabel = (tariff: LandingTariff): string => {
     : t('billing_label_n_months', { count: tariff.billing.duration })
 }
 
+// A Free plan never renews, so its tokens are a monthly allowance - and for teams it belongs to the
+// whole organization, not to each seat.
+const isFreeTariff = (tariff: LandingTariff): boolean => tariff.billing.period === 'forever'
+
+const tokensFeature = (tariff: LandingTariff, perSeat: boolean): string => {
+  const count = tariff.tokens.toLocaleString(props.locale)
+  if (isFreeTariff(tariff)) {
+    return t(perSeat ? 'feature_tokens_monthly_org' : 'feature_tokens_monthly', { count })
+  }
+  return t(perSeat ? 'feature_tokens_per_seat' : 'feature_tokens', { count })
+}
+
+const tokensOffer = (tariff: LandingTariff, perSeat: boolean): string => {
+  const count = tariff.tokens.toLocaleString(props.locale)
+  if (isFreeTariff(tariff)) {
+    return t(perSeat ? 'offer_tokens_monthly_org' : 'offer_tokens_monthly', { count })
+  }
+  return t(perSeat ? 'offer_tokens_per_seat' : 'offer_tokens', { count })
+}
+
 const features = (tariff: LandingTariff, perSeat: boolean): string[] => [
-  ...(tariff.tokens > 0
-    ? [
-        t(perSeat ? 'feature_tokens_per_seat' : 'feature_tokens', {
-          count: tariff.tokens.toLocaleString(props.locale),
-        }),
-      ]
-    : []),
+  ...(tariff.tokens > 0 ? [tokensFeature(tariff, perSeat)] : []),
   ...(tariff.issuesPerMonth
     ? [t('feature_issues', { count: tariff.issuesPerMonth.toLocaleString(props.locale) })]
     : []),
+  ...(tariff.freeOrganizations === null ? [t('feature_unlimited_orgs')] : []),
   ...(tariff.freeOrganizations
     ? [t('feature_free_orgs', { count: tariff.freeOrganizations })]
     : []),
@@ -212,16 +242,13 @@ const features = (tariff: LandingTariff, perSeat: boolean): string[] => [
 // The prices also go into the page's structured data (see `useLandingSeo`).
 const offerDescription = (tariff: LandingTariff, perSeat: boolean): string | undefined =>
   [
-    tariff.tokens > 0
-      ? t(perSeat ? 'offer_tokens_per_seat' : 'offer_tokens', {
-          count: tariff.tokens.toLocaleString(props.locale),
-        })
-      : '',
+    tariff.tokens > 0 ? tokensOffer(tariff, perSeat) : '',
     tariff.issuesPerMonth
       ? t(perSeat ? 'offer_issues_org' : 'offer_issues', {
           count: tariff.issuesPerMonth.toLocaleString(props.locale),
         })
       : '',
+    !perSeat && tariff.freeOrganizations === null ? t('offer_unlimited_orgs') : '',
     !perSeat && tariff.freeOrganizations
       ? t('offer_free_orgs', { count: tariff.freeOrganizations })
       : '',

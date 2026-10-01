@@ -39,7 +39,7 @@ const { t } = useI18n(
   {
     en: {
       faq1a:
-        "The Free plan is free forever. Paid tiers (Plus, Team, Business) exist for higher limits, but during our current MVP phase they're free too — see the pricing section above. /aisave is free while it's in testing and will become a paid feature later.",
+        "The Free plan is free forever. Paid tiers (Plus, Team, Business) with higher limits will be available soon — see the pricing section above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is listed in the pricing section.",
       faq1q: 'Is it free?',
       faq2a:
         'Yes. Both the backend and the frontend are public on GitHub, so you can read exactly what happens to a message after you send it.',
@@ -48,7 +48,7 @@ const { t } = useI18n(
         'Saved Messages is a great place to save something quickly, but a bad place to find it later. Laraue Boards is the alternative: it keeps the saving just as easy and gives what you saved a board, columns and statuses.',
       faq3q: "What's a good alternative to Telegram Saved Messages?",
       faq4a:
-        'No. You log in with Telegram. In the Mini App you are already logged in, and the web version has a Telegram login button.',
+        'No. You sign in with Telegram or Google. In the Mini App you are already signed in, and the web version has Telegram and Google sign-in buttons.',
       faq4q: 'Do I need an account or a password?',
       faq5a:
         "Yes — Laraue Boards is a Jira alternative built entirely around Telegram, and lighter for teams that find Jira's setup overwhelming. You still get spaces, boards, custom attributes and permissions, but capturing work takes a forwarded message instead of a form.",
@@ -66,7 +66,7 @@ const { t } = useI18n(
         'Yes. Create an organization, invite your team via Telegram, and forwarded messages route straight to shared boards with permissions per operation. It works as a lightweight project management bot without leaving the app your team already uses to chat.',
       faq9q: 'Can I use Laraue Boards as a Telegram task manager for my team?',
       faq10a:
-        'Forward or send any message to @msgboard_bot and it becomes a card on your board within seconds, confirmed with a 👍 reaction. Edit the original message in Telegram and the card updates with it — no copy-pasting into another app.',
+        'Forward a message to @msgboard_bot and it becomes a card on your board within seconds, confirmed with a 👍 reaction. Or link a whole chat and pick a save mode: auto mode saves every message (good for a personal chat), manual mode saves only the messages you reply to with /save or /aisave (good for a busy group chat). In auto mode, editing the original message updates the card; in manual mode, run /save again to re-sync.',
       faq10q: 'How does a Telegram message turn into a task?',
       faq11a:
         "Yes — Laraue Boards has a remote MCP (Model Context Protocol) server. Create a personal API key from your organization's settings, add it as a custom connector in Claude (or any MCP client), and the agent can list, view, create, edit and move issues, and attach or download files, scoped to your own permissions.",
@@ -76,7 +76,7 @@ const { t } = useI18n(
     },
     ru: {
       faq1a:
-        'Бесплатный тариф бесплатен навсегда. Есть и платные тарифы (Plus, Team, Business) для более высоких лимитов, но пока продукт на стадии MVP, они тоже бесплатны — смотрите тарифы выше. Функция /aisave бесплатна, пока тестируется, и позже станет платной.',
+        'Бесплатный тариф бесплатен навсегда. Платные тарифы (Plus, Team, Business) с более высокими лимитами скоро станут доступны — смотрите тарифы выше. Функция /aisave работает на токенах: каждому пользователю каждый месяц доступен бесплатный запас, а что входит в каждый тариф — смотрите в разделе тарифов.',
       faq1q: 'Это бесплатно?',
       faq2a:
         'Да. Бэкенд и фронтенд открыты на GitHub — можно прочитать, что именно происходит с сообщением после отправки.',
@@ -85,7 +85,7 @@ const { t } = useI18n(
         '«Сохранённые сообщения» — отличное место, чтобы что-то быстро сохранить, но плохое, чтобы это потом найти. Laraue Boards — как раз такая альтернатива: сохранять так же просто, но у сохранённого появляется доска, колонки и статусы.',
       faq3q: 'Какая есть альтернатива «Сохранённым сообщениям» в Telegram?',
       faq4a:
-        'Нет. Вход через Telegram: в Mini App вы уже авторизованы, а в веб-версии есть кнопка входа через Telegram.',
+        'Нет. Вход через Telegram или Google: в Mini App вы уже авторизованы, а в веб-версии есть кнопки входа через Telegram и Google.',
       faq4q: 'Нужен ли аккаунт или пароль?',
       faq5a:
         'Да — Laraue Boards — это альтернатива Jira, построенная вокруг Telegram, и более лёгкая для команд, которым настройка Jira кажется избыточной. Здесь есть спейсы, доски, кастомные атрибуты и права, но задача создаётся пересланным сообщением, а не через форму.',
@@ -103,7 +103,7 @@ const { t } = useI18n(
         'Да. Создайте организацию, пригласите команду через Telegram — пересланные сообщения будут попадать прямо на общие доски, а права настраиваются по операциям. Это лёгкий бот для управления проектами, не заставляющий уходить из чата, где команда и так общается.',
       faq9q: 'Можно ли использовать Laraue Boards как Telegram таск-менеджер для команды?',
       faq10a:
-        'Перешлите или отправьте любое сообщение боту @msgboard_bot — и через пару секунд оно станет карточкой на доске, а бот подтвердит это реакцией 👍. Отредактируйте исходное сообщение в Telegram — карточка обновится вместе с ним, без копирования в другое приложение.',
+        'Перешлите сообщение боту @msgboard_bot — и через пару секунд оно станет карточкой на доске, а бот подтвердит это реакцией 👍. Или привяжите чат целиком и выберите режим сохранения: автоматический сохраняет каждое сообщение (удобно для личного чата), ручной — только те, на которые вы ответили командой /save или /aisave (удобно для оживлённого группового чата). В автоматическом режиме правка исходного сообщения обновляет карточку; в ручном — повторите /save, чтобы обновить её.',
       faq10q: 'Как сообщение из Telegram превращается в задачу?',
       faq11a:
         'Да — у Laraue Boards есть удалённый MCP-сервер (Model Context Protocol). Создайте персональный API-ключ в настройках организации, добавьте его как кастомный коннектор в Claude (или любой другой MCP-клиент) — и агент сможет просматривать, создавать, редактировать и перемещать issues, а также прикладывать и скачивать файлы, в рамках ваших прав доступа.',
@@ -254,8 +254,6 @@ useHead({
   font-size: 15px;
   line-height: 1.7;
   margin-top: 14px;
-  /* The questions use the full width; the answers keep a readable line length. */
-  max-width: 900px;
 }
 
 @media (width <= 720px) {

@@ -54,7 +54,7 @@ const { t } = useI18n(
       os_sub: 'You can read the code — and you can read how it was written.',
       os_title: 'Open source, mistakes included',
       pr_note:
-        "The Free plan stays free forever. Paid tiers exist (Plus, Team, Business) but aren't charged during the MVP phase — see pricing above. /aisave is free while it's in testing and will become a paid feature later.",
+        "The Free plan stays free forever. Paid tiers (Plus, Team, Business) will be available soon — see pricing above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is shown above.",
     },
     ru: {
       os_code_cta: 'Посмотреть на GitHub',
@@ -69,7 +69,7 @@ const { t } = useI18n(
       os_sub: 'Можно прочитать код — и то, как он писался.',
       os_title: 'Открытый код, включая ошибки',
       pr_note:
-        'Бесплатный тариф остаётся бесплатным навсегда. Платные тарифы (Plus, Team, Business) уже есть, но пока продукт на стадии MVP, плата за них не взимается — смотрите тарифы выше. Функция /aisave бесплатна, пока тестируется, и позже станет платной.',
+        'Бесплатный тариф остаётся бесплатным навсегда. Платные тарифы (Plus, Team, Business) скоро станут доступны — смотрите тарифы выше. Функция /aisave работает на токенах: каждому пользователю каждый месяц доступен бесплатный запас, а что входит в каждый тариф — показано выше.',
     },
   },
   props.locale,

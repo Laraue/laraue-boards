@@ -25,20 +25,6 @@
         <div class="hierarchy-box-ex">{{ t('struct_issue_ex') }}</div>
       </div>
     </div>
-    <div class="structure-points">
-      <div class="structure-point">
-        <div class="structure-point-title">{{ t('struct_p1t') }}</div>
-        <p class="structure-point-desc">{{ t('struct_p1d') }}</p>
-      </div>
-      <div class="structure-point">
-        <div class="structure-point-title">{{ t('struct_p2t') }}</div>
-        <p class="structure-point-desc">{{ t('struct_p2d') }}</p>
-      </div>
-      <div class="structure-point">
-        <div class="structure-point-title">{{ t('struct_p3t') }}</div>
-        <p class="structure-point-desc">{{ t('struct_p3d') }}</p>
-      </div>
-    </div>
   </LandingSection>
 </template>
 
@@ -59,18 +45,10 @@ const { t } = useI18n(
       struct_label: "How it's organized",
       struct_org: 'Organization',
       struct_org_ex: 'Acme Studio',
-      struct_p1d:
-        'Every issue gets a short key like WRK-42 you can reference in a chat message or a commit.',
-      struct_p1t: 'Quotable issue keys',
-      struct_p2d:
-        'Group boards by client, product or department. Each space keeps its own backlog and numbering.',
-      struct_p2t: 'Spaces per client or project',
-      struct_p3d:
-        'Start in your personal organization, then move a whole space to a team org later — nothing to recreate.',
-      struct_p3t: 'Move without rebuilding',
       struct_space: 'Space',
       struct_space_ex: 'Client: Redsight',
-      struct_sub: 'One hierarchy that works for a single board or twenty client spaces.',
+      struct_sub:
+        'One hierarchy that works for a single board or twenty client spaces. Start in your personal organization and move a whole space to a team one later.',
       struct_title: 'Structured like a real tracker,\nnot a chat log',
     },
     ru: {
@@ -81,18 +59,10 @@ const { t } = useI18n(
       struct_label: 'Как всё устроено',
       struct_org: 'Организация',
       struct_org_ex: 'Acme Studio',
-      struct_p1d:
-        'У каждого issue есть номер вида WRK-42 — на него можно сослаться в чате или в коммите.',
-      struct_p1t: 'Issue с коротким номером',
-      struct_p2d:
-        'Группируйте доски по клиентам, продуктам или отделам. У каждого спейса свой бэклог и своя нумерация.',
-      struct_p2t: 'Спейс под каждого клиента',
-      struct_p3d:
-        'Начните в личной организации, а потом перенесите весь спейс в командную — ничего не придётся создавать заново.',
-      struct_p3t: 'Переносите, не пересобирая',
       struct_space: 'Спейс',
       struct_space_ex: 'Клиент: Redsight',
-      struct_sub: 'Одна иерархия — подходит и для одной доски, и для двадцати клиентских спейсов.',
+      struct_sub:
+        'Одна иерархия — подходит и для одной доски, и для двадцати клиентских спейсов. Начните в личной организации и позже перенесите весь спейс в командную.',
       struct_title: 'Структура как в настоящем трекере,\nа не в переписке',
     },
   },
@@ -143,31 +113,6 @@ const { t } = useI18n(
   color: var(--color-muted);
   flex-shrink: 0;
   font-size: 18px;
-}
-
-.structure-points {
-  display: grid;
-  gap: 28px;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 44px;
-}
-
-.structure-point-title {
-  font-size: 16px;
-  font-weight: var(--font-weight-bold);
-  margin-bottom: 8px;
-}
-
-.structure-point-desc {
-  color: var(--color-muted);
-  font-size: var(--font-size-body);
-  line-height: 1.65;
-}
-
-@media (width <= 900px) {
-  .structure-points {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (width <= 720px) {

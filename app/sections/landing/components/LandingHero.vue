@@ -152,10 +152,7 @@
               <span class="issue-card-key">{{ t('hv_key') }}</span>
               <span class="issue-card-status">&#9679; {{ t('hv_badge') }}</span>
             </div>
-            <p class="issue-card-content">
-              <strong>{{ t('hv_title') }}</strong>
-              --- {{ t('hv_desc') }}
-            </p>
+            <p class="issue-card-content">{{ t('hv_title') }}</p>
             <div class="issue-card-footer">
               <div class="issue-card-avatar">{{ t('hv_sender_initials') }}</div>
               <span>{{ t('hv_sender') }}</span>
@@ -183,16 +180,15 @@ const { t } = useI18n(
   {
     en: {
       documentation: 'Documentation',
-      hero_eyebrow: 'Telegram task manager by Laraue Software',
+      hero_eyebrow: 'Task board for small teams',
       hero_sub:
-        'A Jira alternative in Telegram. Link your chats to boards with @msgboard_bot. Free, open source, ready in seconds.',
-      hero_title: 'Turn Telegram messages\ninto Kanban boards',
+        'Save messages from Telegram chats as cards, and let Claude or any MCP agent read and update the same board. Lightweight by design: free to start, open source.',
+      hero_title: 'Tasks from your chats,\nmanaged by you and your AI agent',
       hv_arrow: 'New issue in Backlog, title & description written by AI',
       hv_badge: 'Backlog',
       hv_chat: '#product-team',
       hv_chat_title: 'Product Team',
       hv_command: '/aisave',
-      hv_desc: "Pay button doesn't respond to tap. Only happens in Safari on mobile",
       hv_input: 'Message',
       hv_key: 'WRK-42',
       hv_msg: "checkout button's broken on mobile safari, cant pay 😩",
@@ -208,16 +204,15 @@ const { t } = useI18n(
     },
     ru: {
       documentation: 'Документация',
-      hero_eyebrow: 'Telegram-таск-менеджер от Laraue Software',
+      hero_eyebrow: 'Доска задач для небольших команд',
       hero_sub:
-        'Альтернатива Jira в Telegram. Привяжите свои чаты к доскам с помощью @msgboard_bot. Бесплатно, с открытым кодом, готово за секунды.',
-      hero_title: 'Превращайте сообщения Telegram\nв Kanban-доски',
+        'Сообщения из Telegram превращаются в карточки, а Claude или любой MCP-агент помогает их разбирать и обновлять. Бесплатно, с открытым кодом.',
+      hero_title: 'Задачи из ваших чатов.\nРаботайте с ними самостоятельно или через своего ИИ-агента',
       hv_arrow: 'Новый issue в Бэклоге, заголовок и описание пишет ИИ',
       hv_badge: 'Бэклог',
       hv_chat: '#продукт-команда',
       hv_chat_title: 'Продукт-команда',
       hv_command: '/aisave',
-      hv_desc: 'Кнопка не реагирует на нажатие. Только в Safari на телефоне',
       hv_input: 'Сообщение',
       hv_key: 'WRK-42',
       hv_msg: 'кнопка оплаты не работает в сафари на телефоне, не могу оплатить 😩',

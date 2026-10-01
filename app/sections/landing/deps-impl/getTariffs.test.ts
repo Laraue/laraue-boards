@@ -81,6 +81,24 @@ test('maps billing tariffs to the landing view model', async () => {
   })
 })
 
+test('treats a personal tariff without an organization limit as unlimited', async () => {
+  const { client } = createTestBillingApiClient(() => ({
+    personalSubscriptions: [
+      { ...personal, limitFreeTeamOrganizationsCount: null },
+      { ...personal, id: 'no-field', limitFreeTeamOrganizationsCount: undefined },
+    ],
+    teamSubscriptions: [],
+  }))
+
+  const result = await createGetTariffs(client)('USD')
+
+  assert.equal(result.status, 'success')
+  assert.deepEqual(
+    result.status === 'success' ? result.data.personal.map((tariff) => tariff.freeOrganizations) : [],
+    [null, null],
+  )
+})
+
 test('skips tariffs of other services', async () => {
   const { client } = createTestBillingApiClient(() => ({
     personalSubscriptions: [{ ...personal, type: 'MarkdownTranslatorPersonal' }],

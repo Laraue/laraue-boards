@@ -221,9 +221,10 @@ const { t } = useI18n(
       mcp_name: 'MCP / AI Agents',
       mcp_tag: 'boards.laraue.com/boards-mcp/mcp',
       open_webapp: 'Web App',
-      pl_label: 'Two ways to use it',
-      pl_sub: 'Start in Telegram, continue in the browser. Your boards are always in sync.',
-      pl_title: 'Web app & Telegram Mini App',
+      pl_label: 'Three ways to use it',
+      pl_sub:
+        'Start in Telegram, continue in the browser, hand the routine to an AI agent. Your boards are always in sync.',
+      pl_title: 'Telegram, web app and AI agents',
       tg_desc:
         'Access your boards inside Telegram without leaving the app. Forward any message to the bot and it lands on your board in seconds.',
       tg_f1: 'Forward messages from any chat',
@@ -232,8 +233,8 @@ const { t } = useI18n(
       tg_f4: 'The same boards as the web app',
       tg_name: 'Telegram Mini App',
       web_desc:
-        'Full-featured Kanban in the browser. Sign in with your Telegram account — no separate registration. Works on desktop and mobile.',
-      web_f1: 'Telegram login — no password',
+        'Full-featured Kanban in the browser. Sign in with Telegram or Google — no separate registration. Works on desktop and mobile.',
+      web_f1: 'Telegram or Google sign-in — no password',
       web_f2: 'Full drag-and-drop Kanban',
       web_f3: 'Organization & permission management',
       web_f4: 'Large screen — see more, do more',
@@ -250,9 +251,10 @@ const { t } = useI18n(
       mcp_name: 'MCP / ИИ-агенты',
       mcp_tag: 'boards.laraue.com/boards-mcp/mcp',
       open_webapp: 'Веб-приложение',
-      pl_label: 'Два способа использования',
-      pl_sub: 'Начните в Telegram, продолжайте в браузере. Доски всегда синхронизированы.',
-      pl_title: 'Веб-приложение и Telegram Mini App',
+      pl_label: 'Три способа использования',
+      pl_sub:
+        'Начните в Telegram, продолжайте в браузере, рутину отдайте ИИ-агенту. Доски всегда синхронизированы.',
+      pl_title: 'Telegram, веб-приложение и ИИ-агенты',
       tg_desc:
         'Доступ к доскам прямо внутри Telegram. Перешлите любое сообщение боту — оно сразу появится на доске.',
       tg_f1: 'Пересылка сообщений из любого чата',
@@ -261,8 +263,8 @@ const { t } = useI18n(
       tg_f4: 'Те же доски, что в веб-приложении',
       tg_name: 'Telegram Mini App',
       web_desc:
-        'Полноценный Kanban в браузере. Вход через аккаунт Telegram без дополнительной регистрации. Работает на десктопе и мобильных.',
-      web_f1: 'Вход через Telegram — без пароля',
+        'Полноценный Kanban в браузере. Вход через Telegram или Google без дополнительной регистрации. Работает на десктопе и мобильных.',
+      web_f1: 'Вход через Telegram или Google — без пароля',
       web_f2: 'Drag-and-drop Kanban',
       web_f3: 'Управление организацией и правами',
       web_f4: 'Адаптация под большой экран',
