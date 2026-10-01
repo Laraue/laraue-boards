@@ -62,8 +62,7 @@
                 class="issue-title-input"
                 :disabled="!issue.canEdit"
                 :maxlength="256"
-                :placeholder="t('titlePlaceholder')"
-                required />
+                :placeholder="t('titlePlaceholder')" />
               <IssueDescription
                 v-model="state.content"
                 v-model:title="state.title"
@@ -290,7 +289,7 @@ const { t } = useI18n({
     space: 'Space',
     status: 'Status',
     title: 'Title',
-    titlePlaceholder: 'Issue title',
+    titlePlaceholder: 'Leave empty to generate it with AI',
     updated: 'Updated',
   },
   ru: {
@@ -317,7 +316,7 @@ const { t } = useI18n({
     space: 'Раздел',
     status: 'Статус',
     title: 'Заголовок',
-    titlePlaceholder: 'Заголовок задачи',
+    titlePlaceholder: 'Оставьте пустым, чтобы создать его с помощью ИИ',
     updated: 'Изменена',
   },
 })
@@ -376,7 +375,6 @@ const canSave = computed(
     !!currentIssue.value &&
     !saving.value &&
     !!state.assigneeId &&
-    !!state.title.trim() &&
     (state.boardId === currentIssue.value.boardId || !!state.statusId),
 )
 const dirty = computed(
@@ -564,7 +562,7 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-title-input {
   font-size: var(--font-size-title);
-  font-weight: var(--font-weight-semibold);
+  font-weight: normal;
 }
 
 .issue-form-content {

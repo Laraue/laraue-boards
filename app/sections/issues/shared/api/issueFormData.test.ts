@@ -24,6 +24,8 @@ test('serializes issue files and fields as multipart form data', () => {
     { $type: 'string', attributeId: '1', value: 'value' },
   ])
 
+  assert.isNull(createIssueFormData({ ...input, statusId: '2', title: '  ' }).get('Title'))
+
   const updateForm = updateIssueFormData(input)
   assert.equal(updateForm.get('Title'), 'Issue title')
   assert.equal((updateForm.get('AddFiles') as File).name, 'image.png')

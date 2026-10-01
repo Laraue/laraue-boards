@@ -14,7 +14,10 @@ const appendIssueFields = (
   formData.append('AssigneeId', input.assigneeId)
   formData.append('AttributeValues', JSON.stringify(input.attributeValues))
   formData.append('Content', input.content)
-  formData.append('Title', input.title)
+  // No title asks the server to generate one.
+  if (input.title.trim()) {
+    formData.append('Title', input.title)
+  }
 }
 
 export const createIssueFormData = (input: {

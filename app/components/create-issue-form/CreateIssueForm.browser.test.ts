@@ -181,3 +181,47 @@ it('fills the title and the content with the AI summary', async () => {
   await expect.element(page.getByLabelText('Title')).toHaveValue('Fix login retry')
   await expect.element(page.getByLabelText('Content')).toHaveValue('- Login fails on retry')
 })
+
+it('adds an issue without a title so the server generates it', async () => {
+  const onCreated = vi.fn<(issueKey: string) => void>()
+  const deps = createDeps()
+  currentWrapper = await mountSuspended(CreateIssueForm, {
+    attachTo: document.body,
+    props: {
+      attributes: [],
+      board: { id: '12', name: 'Sprint board', spaceKey: 'product' },
+      deps,
+      onCreated,
+    },
+  })
+
+  await page.getByRole('button', { name: 'Edit description' }).click()
+  await page.getByLabelText('Content').fill('Fix the bug')
+  await chooseOption('Status', 'To do', '1')
+  await chooseOption('Assignee', 'Ann Lee', '9')
+  await page.getByRole('button', { name: 'Add issue' }).click()
+
+  expect(deps.create).toHaveBeenCalledWith(
+    expect.objectContaining({ content: 'Fix the bug', title: '' }),
+  )
+  expect(onCreated).toHaveBeenCalledWith('ISS-1')
+})
+
+it('does not let an issue be added without a description', async () => {
+  const deps = createDeps()
+  currentWrapper = await mountSuspended(CreateIssueForm, {
+    attachTo: document.body,
+    props: {
+      attributes: [],
+      board: { id: '12', name: 'Sprint board', spaceKey: 'product' },
+      deps,
+      onCreated: vi.fn<(issueKey: string) => void>(),
+    },
+  })
+
+  await page.getByLabelText('Title').fill('Bug title')
+  await chooseOption('Status', 'To do', '1')
+  await chooseOption('Assignee', 'Ann Lee', '9')
+
+  await expect.element(page.getByRole('button', { name: 'Add issue' })).toBeDisabled()
+})

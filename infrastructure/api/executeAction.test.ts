@@ -53,3 +53,27 @@ test('reports code 0 when the request throws', async () => {
 
   assert.deepEqual(result, { code: 0, status: 'error' })
 })
+
+test('shows the reason of a 402 response', async () => {
+  const result = await executeAction({
+    map: (data: unknown) => data,
+    request: async () => ({
+      error: { message: 'There are not enough AI credits to generate the title.' },
+      response: response(402),
+    }),
+  })
+
+  assert.deepEqual(result, {
+    message: 'There are not enough AI credits to generate the title.',
+    status: 'validation-error',
+  })
+})
+
+test('reports code 402 when the response explains nothing', async () => {
+  const result = await executeAction({
+    map: (data: unknown) => data,
+    request: async () => ({ error: undefined, response: response(402) }) as never,
+  })
+
+  assert.deepEqual(result, { code: 402, status: 'error' })
+})

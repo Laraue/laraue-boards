@@ -41,3 +41,12 @@ test('reports code 0 when the request throws', async () => {
 
   assert.deepEqual(result, { code: 0, status: 'error' })
 })
+
+test('reports the response status of a failed request with an empty body', async () => {
+  const result = await executeQuery({
+    map: (data: unknown) => data,
+    request: async () => ({ error: undefined, response: response(401) }) as never,
+  })
+
+  assert.deepEqual(result, { code: 401, status: 'error' })
+})

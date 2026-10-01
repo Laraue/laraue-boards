@@ -22,15 +22,15 @@ Because saving happens silently (a reaction confirms it, not a reply), reply to 
 
 Nothing is saved automatically. Messages are tracked so they *can* be saved, but no issue exists until someone acts on one.
 
-To save a message, **reply to it** with `/save`, optionally adding a note:
+To save a message, **reply to it** with `/save`, optionally followed by the issue's title:
 
 ```
-/save follow up next sprint
+/save Follow up next sprint
 ```
 
-The note becomes the top of the issue's content, with the original message's text below a `---` divider if both are present.
+The text after the command becomes the issue's **title**, and the message's text is saved as the description, as written. Send a bare `/save` and Boards asks the AI to write the title from the message's text — the description stays exactly as written. If the title can't be generated (the AI is unavailable, your organization is out of AI credits, or the message has no text, only attachments), nothing is saved and the bot asks you to set the title yourself with `/save Your title`.
 
-![Replying to a message with /save and a note in a group chat](https://laraue.com/static/images/blog/docs/laraue-boards/telegram-save-command.jpg)
+![Replying to a message with /save and a title in a group chat](https://laraue.com/static/images/blog/docs/laraue-boards/telegram-save-command.jpg)
 
 This is the right choice for a **busy group chat** where only some messages should become cards.
 
@@ -40,14 +40,16 @@ Running `/save` again on a message that's already saved triggers a re-sync and r
 
 ## /aisave — save with an AI-cleaned title and description
 
-`/aisave` saves a message the same way `/save` does — reply to it, with an optional note — but runs the content through AI first, instead of storing it as-is. The result is a structured card with two parts:
+`/aisave` saves a message the same way `/save` does — reply to it — but runs the content through AI first, instead of storing it as-is. The result is a structured card with two parts:
 
 - **Title** — a short, focused summary of what the message is about, used as the issue's heading
 - **Description** — the rest rewritten: grammar fixed, repeated points collapsed, and rambling text organized into clear bullet points
 
 ```
-/aisave Fix using incorrect endpoint while choosing user in filter in organization history
+/aisave
 ```
+
+Add a title after the command (`/aisave Fix the login retry`) to keep your own title: the AI then rewrites only the description.
 
 ![An issue created with /aisave, showing an AI-generated title and a bullet-point description below it](https://laraue.com/static/images/blog/docs/laraue-boards/aisave-command.jpg)
 
