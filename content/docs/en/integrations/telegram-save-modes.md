@@ -28,7 +28,7 @@ To save a message, **reply to it** with `/save`, optionally followed by the issu
 /save Follow up next sprint
 ```
 
-The text after the command becomes the issue's **title**, and the message's text is saved as the description, as written. Send a bare `/save` and Boards asks the AI to write the title from the message's text — the description stays exactly as written. If the title can't be generated (the AI is unavailable, your organization is out of AI credits, or the message has no text, only attachments), nothing is saved and the bot asks you to set the title yourself with `/save Your title`.
+The text after the command becomes the issue's **title**, and the message's text is saved as the description, as written. Send a bare `/save` and the title is the **first line** of the message (its first sentence, without markdown marks) — the description stays exactly as written. `/save` never uses AI, so it always gives the same result. If the message has no text to take a title from (only attachments), nothing is saved and the bot asks you to set the title yourself with `/save Your title`.
 
 ![Replying to a message with /save and a title in a group chat](https://laraue.com/static/images/blog/docs/laraue-boards/telegram-save-command.jpg)
 
@@ -40,7 +40,7 @@ Running `/save` again on a message that's already saved triggers a re-sync and r
 
 ## /aisave — save with an AI-cleaned title and description
 
-`/aisave` saves a message the same way `/save` does — reply to it — but runs the content through AI first, instead of storing it as-is. The result is a structured card with two parts:
+`/aisave` saves a message the same way `/save` does — reply to it — but the description is **always** run through AI first, instead of being stored as-is. The result is a structured card with two parts:
 
 - **Title** — a short, focused summary of what the message is about, used as the issue's heading
 - **Description** — the rest rewritten: grammar fixed, repeated points collapsed, and rambling text organized into clear bullet points
@@ -49,7 +49,7 @@ Running `/save` again on a message that's already saved triggers a re-sync and r
 /aisave
 ```
 
-Add a title after the command (`/aisave Fix the login retry`) to keep your own title: the AI then rewrites only the description.
+Add a title after the command (`/aisave Fix the login retry`) and it is kept exactly as you typed it; the AI then rewrites only the description. Without a title, the AI writes the title too.
 
 ![An issue created with /aisave, showing an AI-generated title and a bullet-point description below it](https://laraue.com/static/images/blog/docs/laraue-boards/aisave-command.jpg)
 
