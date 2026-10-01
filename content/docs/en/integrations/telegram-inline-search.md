@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 5
 createdAt: 2026-08-19
-updatedAt: 2026-08-20
+updatedAt: 2026-10-01
 ---
 Typing `@msgboard_bot` in **any** Telegram chat runs a search for issues right there, using Telegram's inline query feature.
 
@@ -24,7 +24,7 @@ The query can mix structured filters with free text:
 
 - **Filter tokens**, written as `key:value` — filter by assignee, organization, space, or how recently an issue was updated (for example, updated in the last few days versus older than that)
 - **An exact issue key** — typing something like `UNC-24` shows that issue
-- **Free text** — full-text search over the issue, with the matching part highlighted in the result so you can see why that issue matched
+- **Free text** — searches the issue's title and its description
 
 ### Filtering by organization
 
@@ -61,7 +61,7 @@ Filter tokens can be chained in a single query — `org:laraue assignee:me upd:<
 Every search result renders as the same issue preview card used elsewhere in the bot (in `/save` and `/info` replies too):
 
 - The header shows the **issue key and organization**, for example `UNC-24 · Laraue Corp`
-- The body is a snippet of the issue's content centered on the match, or the start of the content for lookups that aren't text searches
+- The body is the issue's **title** — the description is searched, but never shown in the result
 - A footer with the **source chat, sender, and timestamp** appears only for issues that came from a Telegram message — and shows who actually sent the original message, captured at the time it arrived, independent of who later ran `/save` on it. Issues created in the web app, or missing that information, simply have no footer
 
 Tapping a result sends this card into the chat as a message from the bot, tagged **via @msgboard_bot** so everyone can see it came from a search:

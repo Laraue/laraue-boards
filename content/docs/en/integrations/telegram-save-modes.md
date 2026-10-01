@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 4
 createdAt: 2026-08-19
-updatedAt: 2026-09-01
+updatedAt: 2026-10-01
 ---
 **Save mode** is the last step of [linking a chat](/en/documentation/integrations/telegram-linking), and it decides *when* a message in that chat turns into an issue: automatically, or only when someone asks for it.
 
@@ -72,7 +72,7 @@ If the message you reply to contains one or more links to Boards issues, `/info`
 
 A lookalike link on a different domain is never treated as one of these. For each recognized link, `/info` checks that the issue exists and that you have read access to it:
 
-- If it exists and you can read it, the bot replies with the same card preview shown by `/save` and inline search — key, project, content snippet, and an **Open issue** button.
+- If it exists and you can read it, the bot replies with the same card preview shown by `/save` and inline search — key, project, title, and an **Open issue** button.
 - If it doesn't exist, or you lack read access, the bot sends the same generic "not available" notice either way. This is deliberate: a pasted link can't be used to probe whether a given issue key exists in an organization you otherwise can't see.
 
 If the message has no recognized issue link, `/info` falls back to looking up whether the message itself is a tracked card. If it isn't, the reply now also shows a sample of the expected link format.

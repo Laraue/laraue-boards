@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-08-20
+updatedAt: 2026-10-01
 ---
 An issue is the core unit of work in Laraue Boards. Every task, request, bug report, or action item is an issue. What makes Laraue Boards different is where issues come from: most of them start as Telegram messages.
 
@@ -14,7 +14,8 @@ An issue is the core unit of work in Laraue Boards. Every task, request, bug rep
 
 Every issue has:
 
-- **Content** — the text of the message, or manually entered text
+- **Title** — a short one-line name. Lists, board cards, search results and history show it, so it's what you recognize an issue by
+- **Description** — the text of the message, or manually entered text
 - **Sender** — who sent the original Telegram message
 - **Status** — which column on the board it currently sits in
 - **Issue key** — a unique identifier like `WRK-42`
@@ -44,11 +45,13 @@ Share the link when you want to take someone straight to the issue, rather than 
 
 ## Creating issues
 
-**From a Telegram message** — forward any message to the Laraue Boards bot, or send it directly in a chat you've linked to Boards. Unless the chat is linked to a specific destination, the issue lands on the default board in your **personal organization**'s Backlog, and the bot reacts with 👍 to confirm.
+**From a Telegram message** — forward any message to the Laraue Boards bot, or send it directly in a chat you've linked to Boards. Unless the chat is linked to a specific destination, the issue lands on the default board in your **personal organization**'s Backlog, and the bot reacts with 👍 to confirm. Its title is the first line of the message (just the first sentence, without markdown marks); a photo or video without a caption gets a name like `image-20260930-101500-Chat name`.
 
 Linking a chat — a group, a supergroup, or even your own private chat with the bot — points it at a specific organization, space, epic, and status instead, with a choice of saving every message automatically or only the ones you save yourself with `/save`. See [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking).
 
 **Manually** — tap **+ Add issue**. It's available from anywhere in the app, not just from inside a board. Open it from a board and the space and board are already filled in for you; open it from the organization level and every field starts empty, so you choose the space, board, and status yourself.
+
+The **Title** is optional. Leave it empty and an AI writes a short title from the description when you save; if that isn't possible (the AI is unavailable, or your organization is out of AI credits) you're asked to type one. The **Clean up and title with AI** button in the description toolbar goes further: it fixes the grammar and structure of the description and writes the title, and you review both before pressing Save.
 
 ![The Add issue form](https://laraue.com/static/images/blog/docs/laraue-boards/create-issue.jpg)
 
@@ -68,7 +71,7 @@ If the original Telegram message contained photos, videos, or an album, they are
 
 ## Editing an issue
 
-If you edit the original message in Telegram, the issue updates with it. The bot's reaction changes to ❤ to confirm the edit was picked up.
+If you edit the original message in Telegram, the issue updates with it, and its title follows the new first line — unless you set the title by hand in the app, which Telegram edits then leave alone. The bot's reaction changes to ❤ to confirm the edit was picked up.
 
 ## Comments
 
@@ -78,7 +81,7 @@ Comments support image attachments — paste an image directly with **Ctrl+V**, 
 
 ## Change history
 
-The History tab on an issue shows what changed, when, and who changed it — as a plain, readable log, not raw data. A status change reads as **Status: New → In progress**, a move to a different board as **Board: Sprint 2 (Active) → Sprint 3**, and a new attachment as **Added attachment: image.png**. It covers changes to the issue's content, status, board, comments, and attachments.
+The History tab on an issue shows what changed, when, and who changed it — as a plain, readable log, not raw data. A status change reads as **Status: New → In progress**, a move to a different board as **Board: Sprint 2 (Active) → Sprint 3**, and a new attachment as **Added attachment: image.png**. It covers changes to the issue's title, description, status, board, comments, and attachments.
 
 ![The History tab on an issue, showing a status change, a board move, and an added attachment](https://laraue.com/static/images/blog/docs/laraue-boards/issue-history.jpg)
 

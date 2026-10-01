@@ -6,13 +6,13 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-04-22
-updatedAt: 2026-08-07
+updatedAt: 2026-10-01
 ---
 Laraue Boards has a search box on every board and in the Backlog.
 
 ## Board search
 
-Tap the search icon in the board header. The input expands, and as you type, all columns update in real time to show only matching cards.
+Tap the search icon in the board header. The input expands, and as you type, all columns update in real time to show only cards whose title or description match.
 
 Press Escape or tap the icon again to close. The search clears automatically when you navigate to a different board.
 

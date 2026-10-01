@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 8
 createdAt: 2026-08-26
-updatedAt: 2026-08-26
+updatedAt: 2026-10-01
 ---
 **History** in the sidebar, right below **All issues**, shows a single combined activity feed for the entire organization — every change on every issue, across every space and board, in one chronological list.
 
@@ -14,7 +14,9 @@ updatedAt: 2026-08-26
 
 ## What shows up here
 
-Each row is one change: who made it, the issue's key linking straight to it, when it happened, and what changed — a status move, a board move, a reassignment, an attribute update, or a comment being created or updated. It's the same event types as an [issue's own History tab](/en/documentation/features/issue-history), just merged from every issue into one feed instead of one at a time.
+Each row is one change: the issue's key, linking straight to it, followed by the issue's title; who made it (the author's avatar — hover for the name, with a small key on it when the change came through an [API key](/en/documentation/integrations/api-keys)); when it happened (the time sits under the avatar); and what changed — a status move, a board move, a reassignment, an attribute update, or a comment being created or updated. It's the same event types as an [issue's own History tab](/en/documentation/features/issue-history), just merged from every issue into one feed instead of one at a time.
+
+Rows are grouped by day under a **Today**, **Yesterday**, or date label. An issue that was deleted has a red trash icon, its key and title struck through, and an **Issue deleted** line, so removals stand out.
 
 Comment changes collapse into a single line, like **Comment updated +3**, with a chevron to expand and see the individual edits.
 
