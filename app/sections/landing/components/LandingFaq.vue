@@ -39,7 +39,7 @@ const { t } = useI18n(
   {
     en: {
       faq1a:
-        "The Free plan is free forever. Paid tiers (Plus, Team, Business) with higher limits will be available soon — see the pricing section above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is listed in the pricing section.",
+        'The Free plan is free forever. Paid tiers (Plus, Team, Business) with higher limits will be available soon — see the pricing section above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is listed in the pricing section.',
       faq1q: 'Is it free?',
       faq2a:
         'Yes. Both the backend and the frontend are public on GitHub, so you can read exactly what happens to a message after you send it.',

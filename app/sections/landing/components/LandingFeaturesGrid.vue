@@ -52,7 +52,7 @@ const { t } = useI18n(
       f8t: 'Privacy first',
       f9d: 'The backend and the frontend are public. Read exactly what happens to your message.',
       f9t: 'Open source',
-      f10d: "Send /aisave and a messy, rambling message becomes a clean title with a bullet-point description. Every user gets a free monthly token allowance.",
+      f10d: 'Send /aisave and a messy, rambling message becomes a clean title with a bullet-point description. Every user gets a free monthly token allowance.',
       f10t: 'AI-cleaned cards',
       f11d: 'Type @msgboard_bot and a query in any Telegram chat to find an issue — no need to open the app.',
       f11t: 'Search from any chat',

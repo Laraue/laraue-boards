@@ -54,7 +54,7 @@ const { t } = useI18n(
       os_sub: 'You can read the code — and you can read how it was written.',
       os_title: 'Open source, mistakes included',
       pr_note:
-        "The Free plan stays free forever. Paid tiers (Plus, Team, Business) will be available soon — see pricing above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is shown above.",
+        'The Free plan stays free forever. Paid tiers (Plus, Team, Business) will be available soon — see pricing above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is shown above.',
     },
     ru: {
       os_code_cta: 'Посмотреть на GitHub',

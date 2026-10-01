@@ -94,7 +94,9 @@ test('treats a personal tariff without an organization limit as unlimited', asyn
 
   assert.equal(result.status, 'success')
   assert.deepEqual(
-    result.status === 'success' ? result.data.personal.map((tariff) => tariff.freeOrganizations) : [],
+    result.status === 'success'
+      ? result.data.personal.map((tariff) => tariff.freeOrganizations)
+      : [],
     [null, null],
   )
 })
