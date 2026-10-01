@@ -22,3 +22,5 @@ Laraue Boards is built around Telegram, and also connects to AI agents like Clau
 - [API keys](/en/documentation/integrations/api-keys) — Create a long-lived key so scripts, CI, or AI agents can authenticate as you.
 
 - [Connecting Claude and other AI agents via MCP](/en/documentation/integrations/mcp) — List, view, create, edit, delete, and comment on issues directly from Claude.
+
+- [A backlog for AI-assisted development](/en/documentation/integrations/ai-agent-backlog) — Connect Claude Code or Cursor over MCP and let the agent capture bugs, triage the backlog and move issues as it works.

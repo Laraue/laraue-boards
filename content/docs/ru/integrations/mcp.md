@@ -1,12 +1,12 @@
 ---
 title: Подключение Claude и других AI-агентов через MCP
-description: Подключите Claude Desktop, Claude Code или claude.ai к Laraue Boards через официальный удалённый MCP-коннектор. Просматривайте, создавайте, редактируйте, удаляйте issues и комментируйте их прямо из AI-агента, в рамках ваших собственных прав.
-keywords: [mcp сервер boards, claude mcp коннектор, model context protocol boards, подключить claude к boards, ai-агент управление проектами, удалённый mcp коннектор]
+description: Подключите Claude Desktop, Claude Code, Cursor или claude.ai к Laraue Boards через удалённый MCP-сервер. Пошаговая настройка для каждого клиента и что умеет агент: просматривать, создавать, редактировать, удалять issues и комментировать их — в рамках ваших собственных прав.
+keywords: [mcp сервер boards, claude mcp коннектор, model context protocol boards, подключить claude к boards, как подключить mcp сервер, mcp сервер для claude code, подключить cursor к mcp, ai-агент управление проектами, удалённый mcp коннектор]
 type: documentation
 project: boards
 order: 7
 createdAt: 2026-09-23
-updatedAt: 2026-09-23
+updatedAt: 2026-10-01
 ---
 Laraue Boards предоставляет удалённый **MCP** (Model Context Protocol) сервер, поэтому AI-агент вроде Claude может работать с вашими issues напрямую — просматривать их, открывать конкретный issue, переносить его между статусами или оставлять комментарий — без переноса данных вручную.
 
@@ -25,6 +25,38 @@ Laraue Boards предоставляет удалённый **MCP** (Model Conte
 
 Laraue Boards также размещён в [официальном реестре MCP](https://registry.modelcontextprotocol.io) под именем `com.laraue/boards`, поэтому любой другой MCP-совместимый клиент, умеющий искать в реестре, найдёт его так же.
 
+## Подключение Claude Code
+
+Выполните один раз в терминале:
+
+```bash
+claude mcp add --transport http boards https://boards.laraue.com/boards-mcp/mcp \
+  --header "X-Api-Key: ВАШ_API_КЛЮЧ"
+```
+
+По умолчанию сервер добавляется только для текущего проекта. Добавьте `--scope user`, чтобы он был доступен во всех проектах. При `--scope project` сервер попадёт в `.mcp.json` проекта вместе с ключом — не добавляйте этот файл в систему контроля версий. Проверить подключение можно командой `/mcp` внутри Claude Code.
+
+## Подключение Cursor
+
+Добавьте сервер в `.cursor/mcp.json` проекта или в `~/.cursor/mcp.json` для всех проектов:
+
+```json
+{
+  "mcpServers": {
+    "boards": {
+      "url": "https://boards.laraue.com/boards-mcp/mcp",
+      "headers": {
+        "X-Api-Key": "${env:BOARDS_API_KEY}"
+      }
+    }
+  }
+}
+```
+
+Задайте `BOARDS_API_KEY` в переменных окружения вашей оболочки, чтобы ключ не лежал в файле.
+
+После подключения читайте [Бэклог для разработки с ИИ](/ru/documentation/integrations/ai-agent-backlog) — что можно попросить агента.
+
 ## Что умеет Claude
 
 Каждое действие выполняется с вашими собственными правами, в реальном времени — Claude не может сделать в организации то, что не могли бы сделать вы сами, и не может действовать вовсе, если API-ключ за ним отозван.
@@ -42,5 +74,6 @@ Claude предлагает только те действия, которые �
 
 ## Связанные страницы
 
+- [Бэклог для разработки с ИИ](/ru/documentation/integrations/ai-agent-backlog) — подключение Claude Code и Cursor и что можно попросить агента
 - [API-ключи — подключение своих инструментов к Boards](/ru/documentation/integrations/api-keys)
 - [Управление правами доступа](/ru/documentation/working-in-a-team/permissions)
