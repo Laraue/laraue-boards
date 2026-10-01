@@ -20,6 +20,7 @@ export type IssuePageSavedIssue = {
   previousStatusId: string
   spaceKey: string
   statusId: string
+  title: string
 }
 
 export type IssuePageInput = {
@@ -31,6 +32,7 @@ export type IssuePageInput = {
   removeAttachmentIds: string[]
   spaceKey: string
   statusId: string
+  title: string
 }
 
 export type IssuePageViewModel = {
@@ -55,5 +57,6 @@ export type IssuePageViewModel = {
   spaceLabel: string
   statusId: string
   statusLabel: string
+  title: string
   updatedAt: string
 }

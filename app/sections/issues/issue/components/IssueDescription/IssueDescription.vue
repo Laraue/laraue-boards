@@ -25,7 +25,7 @@
           <button
             class="markdown-toolbar-ai"
             :disabled="summarizing || !model.trim()"
-            :title="t('improveWithAi')"
+            :title="t('improveWithAiHint')"
             type="button"
             @click="summarizeContent({ content: model })">
             <LoaderCircle
@@ -217,8 +217,10 @@ const { t } = useI18n({
     heading: 'Heading',
     headingLevel: 'Heading level',
     image: 'Image',
-    improveWithAi: 'Improve with AI',
-    improvingWithAi: 'Improving…',
+    improveWithAi: 'Clean up and title with AI',
+    improveWithAiHint:
+      'Fixes grammar and structure with AI and writes a title. Review it before saving.',
+    improvingWithAi: 'Cleaning up…',
     inlineCode: 'Inline code',
     italic: 'Italic',
     italicShortcut: 'Italic (Ctrl+I)',
@@ -251,8 +253,10 @@ const { t } = useI18n({
     heading: 'Заголовок',
     headingLevel: 'Уровень заголовка',
     image: 'Изображение',
-    improveWithAi: 'Улучшить с помощью ИИ',
-    improvingWithAi: 'Улучшение…',
+    improveWithAi: 'Привести в порядок и озаглавить с ИИ',
+    improveWithAiHint:
+      'ИИ исправит грамматику и структуру и придумает заголовок. Проверьте результат перед сохранением.',
+    improvingWithAi: 'Приводим в порядок…',
     inlineCode: 'Встроенный код',
     italic: 'Курсив',
     italicShortcut: 'Курсив (Ctrl+I)',
@@ -273,14 +277,19 @@ const { t } = useI18n({
 })
 
 const model = defineModel<string>({ required: true })
+// The AI summary comes with a title; the page owning the title field shares it here.
+const titleModel = defineModel<string>('title', { default: '' })
 const state = reactive({ editing: false })
 const {
   execute: summarizeContent,
   message,
   pending: summarizing,
 } = useAction(props.deps.summarizeContent, {
-  onSuccess: (content) => {
-    model.value = content
+  onSuccess: (summary) => {
+    model.value = summary.content
+    if (summary.title) {
+      titleModel.value = summary.title
+    }
   },
 })
 const clearMessage = () => {

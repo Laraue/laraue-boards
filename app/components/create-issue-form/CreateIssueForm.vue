@@ -3,9 +3,22 @@
     class="issue-form issue-form-page"
     @submit.prevent="submit">
     <div class="issue-form-main">
-      <IssueDescription
-        v-model="form.content"
-        :deps="deps.description" />
+      <div class="issue-field">
+        <label :for="`${idPrefix}-title`">{{ t('title') }}</label>
+        <input
+          :id="`${idPrefix}-title`"
+          v-model="form.title"
+          class="issue-title-input"
+          :maxlength="256"
+          :placeholder="t('titlePlaceholder')" />
+      </div>
+      <div class="issue-field issue-field-description">
+        <span class="issue-field-label">{{ t('description') }}</span>
+        <IssueDescription
+          v-model="form.content"
+          v-model:title="form.title"
+          :deps="deps.description" />
+      </div>
       <IssueAttachments
         :attachments="[]"
         :disabled="pending"
@@ -92,16 +105,22 @@ const { t } = useI18n({
     addIssue: 'Add issue',
     assignee: 'Assignee',
     board: 'Board',
+    description: 'Description',
     space: 'Space',
     status: 'Status',
+    title: 'Title',
+    titlePlaceholder: 'Leave empty to generate it with AI',
   },
   ru: {
     adding: 'Добавление…',
     addIssue: 'Добавить задачу',
     assignee: 'Исполнитель',
     board: 'Доска',
+    description: 'Описание',
     space: 'Раздел',
     status: 'Статус',
+    title: 'Заголовок',
+    titlePlaceholder: 'Оставьте пустым, чтобы создать его с помощью ИИ',
   },
 })
 
@@ -114,6 +133,7 @@ const form = reactive({
   files: [] as File[],
   spaceKey: '',
   statusId: props.initialStatusId ?? '',
+  title: '',
 })
 const selectDeps = {
   boardSelect: props.deps.boardSelect,
@@ -143,6 +163,7 @@ const submit = () => {
     content: form.content,
     files: form.files,
     statusId: form.statusId,
+    title: form.title,
   })
 }
 </script>
@@ -157,13 +178,38 @@ const submit = () => {
   width: 100%;
 }
 
+.issue-title-input {
+  font-size: var(--font-size-title);
+  font-weight: normal;
+}
+
+.issue-field {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.issue-field-description {
+  grid-template-rows: max-content minmax(0, 1fr);
+  min-height: 0;
+}
+
+/* Same look as the global label: the description has no single control a label could point at. */
+.issue-field-label {
+  font-weight: var(--font-weight-semibold);
+}
+
+.issue-field > label {
+  margin: 0;
+}
+
 .issue-form-main {
   align-self: stretch;
   display: grid;
   gap: var(--space-4);
   grid-area: main;
   grid-auto-rows: max-content;
-  grid-template-rows: minmax(200px, 1fr);
+  grid-template-rows: max-content minmax(200px, 1fr);
   min-height: 0;
   min-width: 0;
 }

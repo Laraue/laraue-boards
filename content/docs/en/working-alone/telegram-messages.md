@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-08-06
+updatedAt: 2026-10-01
 ---
 The core idea behind Laraue Boards is that work is already happening in Telegram. A client request, a bug report, a photo of something that needs fixing — these are all issues, they just haven't been structured yet. Laraue Boards captures them directly.
 
@@ -44,7 +44,7 @@ From here you can also add more images yourself — **Choose other images**, or 
 
 ## Text-only issues
 
-A message does not need text to become an issue. A photo with no caption becomes a media-only issue — the card shows the thumbnail strip without any text below the header.
+A message does not need text to become an issue. A photo with no caption becomes a media-only issue — the card shows the thumbnail strip without any text below the header, and its title is generated from the kind of media, the time and the chat, like `image-20260930-101500-Chat name`.
 
 ## Manually created issues
 

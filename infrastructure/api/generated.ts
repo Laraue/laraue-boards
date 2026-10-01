@@ -1267,6 +1267,7 @@ export interface paths {
                         "IssueKey.Number"?: number | string;
                         "IssueKey.SpaceKey"?: string;
                         Content?: string;
+                        Title?: string;
                         /** Format: uuid */
                         AssigneeId?: string;
                         RemoveAttachmentIds?: string[];
@@ -1385,6 +1386,7 @@ export interface paths {
                         /** Format: uuid */
                         AssigneeId?: string;
                         Content?: string;
+                        Title?: string;
                         Files?: components["schemas"]["IFormFile"][];
                     };
                 };
@@ -1778,9 +1780,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": string;
-                        "application/json": string;
-                        "text/json": string;
+                        "text/plain": components["schemas"]["SummarizedContentDto"];
+                        "application/json": components["schemas"]["SummarizedContentDto"];
+                        "text/json": components["schemas"]["SummarizedContentDto"];
                     };
                 };
             };
@@ -3541,7 +3543,7 @@ export interface components {
             code?: null | string;
             languageCode?: null | string;
         };
-        HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"];
+        HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryTitleChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"];
         HistoryItemChangeIssueHistoryAssigneeChange: {
             /** @enum {string} */
             $type?: "assignee";
@@ -3598,6 +3600,12 @@ export interface components {
             newStatusName: null | string;
             newStatusColor: null | string;
         };
+        HistoryItemChangeIssueHistoryTitleChange: {
+            /** @enum {string} */
+            $type?: "title";
+            oldTitle: null | string;
+            newTitle: null | string;
+        };
         /** Format: binary */
         IFormFile: string;
         InitialBatchResultOfIssueListDto: {
@@ -3632,6 +3640,8 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             owner: components["schemas"]["UserDetails"];
+            title: string;
+            isTitleSetExplicitly: boolean;
             content: null | string;
             /** Format: int64 */
             epicId: number | string;
@@ -3662,6 +3672,7 @@ export interface components {
             key: string;
             assigneeInitial?: null | string;
             assigneeColor: string;
+            title: string;
             content: null | string;
             /** Format: int64 */
             epicId: number | string;
@@ -3671,7 +3682,7 @@ export interface components {
             attributes?: components["schemas"]["IssueListAttributeDto"][];
         };
         /** @enum {unknown} */
-        IssueProperty: "Content" | "CreatedAt" | "UpdatedAt";
+        IssueProperty: "Content" | "CreatedAt" | "UpdatedAt" | "Title";
         IssueSorting: components["schemas"]["IssueSortingByAttributeIssueSorting"] | components["schemas"]["IssueSortingByPropertyIssueSorting"];
         IssueSortingByAttributeIssueSorting: {
             /** @enum {string} */
@@ -3786,6 +3797,7 @@ export interface components {
             entityType: components["schemas"]["LogEntityType"];
             action: components["schemas"]["LogAction"];
             issueKey: null | string;
+            issueTitle: null | string;
         };
         OrganizationListDto: {
             /** Format: int64 */
@@ -3842,6 +3854,7 @@ export interface components {
             key: string;
             assigneeInitial?: null | string;
             assigneeColor: string;
+            title: string;
             content: null | string;
             /** Format: int64 */
             epicId: number | string;
@@ -3970,9 +3983,14 @@ export interface components {
             sortOrder: number | string;
             category: components["schemas"]["StatusCategory"];
         };
+        SummarizedContentDto: {
+            title: null | string;
+            content: string;
+        };
         SummarizeIssueContentRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             content: string;
+            generateTitle?: boolean;
         };
         TariffName: {
             name: string;

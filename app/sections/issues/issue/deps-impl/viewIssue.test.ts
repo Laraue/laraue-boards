@@ -86,6 +86,7 @@ test('maps issue detail and comments', async () => {
           statusId: 5,
           statusName: null,
           time: '2026-01-01T00:00:00Z',
+          title: 'Fix it',
           updatedAt: '2026-01-02T00:00:00Z',
         },
   )
@@ -94,6 +95,7 @@ test('maps issue detail and comments', async () => {
 
   assert(result.status === 'success')
   assert.equal(result.data.content, '')
+  assert.equal(result.data.title, 'Fix it')
   assert.equal(result.data.assigneeIsCurrentUser, true)
   assert.equal(result.data.owner, 'Grace')
   assert.deepEqual(result.data.attributes, [

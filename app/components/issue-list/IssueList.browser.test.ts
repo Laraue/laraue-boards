@@ -11,19 +11,19 @@ import type { IssueListDeps } from './IssueList.deps'
 import type { IssueListItem } from './IssueList.types'
 import IssueList from './IssueList.vue'
 
-const issueOf = (issueKey: string, content: string): IssueListItem => ({
+const issueOf = (issueKey: string, title: string): IssueListItem => ({
   assignee: 'Ada',
   assigneeColor: '#111',
   assigneeInitial: 'A',
   boardColor: '#222',
   boardName: 'Roadmap',
   canMove: true,
-  content,
   issueKey,
   spaceColor: '#333',
   spaceName: 'Product',
   status: 'To do',
   statusColor: '#444',
+  title,
 })
 
 const issues = [issueOf('ISS-1', 'First issue'), issueOf('ISS-2', 'Second issue')]

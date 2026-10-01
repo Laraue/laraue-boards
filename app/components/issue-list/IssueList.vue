@@ -17,7 +17,6 @@
       :board-color="issue.boardColor"
       :board-name="issue.boardName"
       :can-move="issue.canMove"
-      :content="issue.content"
       :issue-key="issue.issueKey"
       :on-move="() => openMoveDialog([issue.issueKey])"
       :on-toggle-selection="() => toggleSelection(issue.issueKey)"
@@ -26,6 +25,7 @@
       :space-name="issue.spaceName"
       :status="issue.status"
       :status-color="issue.statusColor"
+      :title="issue.title"
       :to="organizationRoutes.issue(issue.issueKey)" />
     <AppEmptyState
       v-if="issues.length === 0"

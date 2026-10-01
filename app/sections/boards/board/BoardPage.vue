@@ -673,7 +673,7 @@ const updateIssueInBoard = (
       ...column,
       issues: column.issues.map((issue) =>
         issue.issueKey === update.previousIssueKey
-          ? { ...issue, content: update.content, issueKey: update.issueKey }
+          ? { ...issue, issueKey: update.issueKey, title: update.title }
           : issue,
       ),
     })),

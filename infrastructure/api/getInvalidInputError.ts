@@ -19,3 +19,7 @@ export const getInvalidInputError = (value: unknown): InvalidInputError => {
 
   return { message: messages.join('\n'), type: 'InvalidInput' }
 }
+
+// The `message` of an error body ({ message, errors? }); empty when the backend sent none.
+export const getResponseMessage = (value: unknown): string =>
+  isRecord(value) && typeof value.message === 'string' ? value.message : ''

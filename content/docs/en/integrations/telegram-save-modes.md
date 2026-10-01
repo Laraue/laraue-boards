@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 4
 createdAt: 2026-08-19
-updatedAt: 2026-09-01
+updatedAt: 2026-10-01
 ---
 **Save mode** is the last step of [linking a chat](/en/documentation/integrations/telegram-linking), and it decides *when* a message in that chat turns into an issue: automatically, or only when someone asks for it.
 
@@ -22,15 +22,15 @@ Because saving happens silently (a reaction confirms it, not a reply), reply to 
 
 Nothing is saved automatically. Messages are tracked so they *can* be saved, but no issue exists until someone acts on one.
 
-To save a message, **reply to it** with `/save`, optionally adding a note:
+To save a message, **reply to it** with `/save`, optionally followed by the issue's title:
 
 ```
-/save follow up next sprint
+/save Follow up next sprint
 ```
 
-The note becomes the top of the issue's content, with the original message's text below a `---` divider if both are present.
+The text after the command becomes the issue's **title**, and the message's text is saved as the description, as written. Send a bare `/save` and the title is the **first line** of the message (its first sentence, without markdown marks) — the description stays exactly as written. `/save` never uses AI, so it always gives the same result. If the message has no text to take a title from (only attachments), nothing is saved and the bot asks you to set the title yourself with `/save Your title`.
 
-![Replying to a message with /save and a note in a group chat](https://laraue.com/static/images/blog/docs/laraue-boards/telegram-save-command.jpg)
+![Replying to a message with /save and a title in a group chat](https://laraue.com/static/images/blog/docs/laraue-boards/telegram-save-command.jpg)
 
 This is the right choice for a **busy group chat** where only some messages should become cards.
 
@@ -40,14 +40,16 @@ Running `/save` again on a message that's already saved triggers a re-sync and r
 
 ## /aisave — save with an AI-cleaned title and description
 
-`/aisave` saves a message the same way `/save` does — reply to it, with an optional note — but runs the content through AI first, instead of storing it as-is. The result is a structured card with two parts:
+`/aisave` saves a message the same way `/save` does — reply to it — but the description is **always** run through AI first, instead of being stored as-is. The result is a structured card with two parts:
 
 - **Title** — a short, focused summary of what the message is about, used as the issue's heading
 - **Description** — the rest rewritten: grammar fixed, repeated points collapsed, and rambling text organized into clear bullet points
 
 ```
-/aisave Fix using incorrect endpoint while choosing user in filter in organization history
+/aisave
 ```
+
+Add a title after the command (`/aisave Fix the login retry`) and it is kept exactly as you typed it; the AI then rewrites only the description. Without a title, the AI writes the title too.
 
 ![An issue created with /aisave, showing an AI-generated title and a bullet-point description below it](https://laraue.com/static/images/blog/docs/laraue-boards/aisave-command.jpg)
 
@@ -70,7 +72,7 @@ If the message you reply to contains one or more links to Boards issues, `/info`
 
 A lookalike link on a different domain is never treated as one of these. For each recognized link, `/info` checks that the issue exists and that you have read access to it:
 
-- If it exists and you can read it, the bot replies with the same card preview shown by `/save` and inline search — key, project, content snippet, and an **Open issue** button.
+- If it exists and you can read it, the bot replies with the same card preview shown by `/save` and inline search — key, project, title, and an **Open issue** button.
 - If it doesn't exist, or you lack read access, the bot sends the same generic "not available" notice either way. This is deliberate: a pasted link can't be used to probe whether a given issue key exists in an organization you otherwise can't see.
 
 If the message has no recognized issue link, `/info` falls back to looking up whether the message itself is a tracked card. If it isn't, the reply now also shows a sample of the expected link format.

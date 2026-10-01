@@ -1,5 +1,5 @@
 import type { ActionResult } from './apiResult'
-import { getInvalidInputError } from './getInvalidInputError'
+import { getInvalidInputError, getResponseMessage } from './getInvalidInputError'
 import { isErrorResponse, tryRequest, type ApiResponse } from './tryRequest'
 
 type ActionResponse<Data> = ApiResponse<Data>
@@ -18,6 +18,11 @@ export const executeAction = async <RawData, Data>({
   }
   if (isErrorResponse(response) && response.response.status === 400) {
     return { message: getInvalidInputError(response.error).message, status: 'validation-error' }
+  }
+  // Payment required carries the reason (no AI credits, plan limit) - show it instead of a generic failure.
+  if (isErrorResponse(response) && response.response.status === 402) {
+    const message = getResponseMessage(response.error)
+    return message ? { message, status: 'validation-error' } : { code: 402, status: 'error' }
   }
   if (isErrorResponse(response)) {
     return { code: response.response.status, status: 'error' }

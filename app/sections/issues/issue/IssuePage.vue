@@ -55,8 +55,17 @@
           @submit.prevent="save">
           <div class="issue-form-content">
             <div class="issue-form-main">
+              <input
+                id="issue-title"
+                v-model="state.title"
+                :aria-label="t('title')"
+                class="issue-title-input"
+                :disabled="!issue.canEdit"
+                :maxlength="256"
+                :placeholder="t('titlePlaceholder')" />
               <IssueDescription
                 v-model="state.content"
+                v-model:title="state.title"
                 :deps="deps.description"
                 :disabled="!issue.canEdit" />
               <IssueAttachments
@@ -279,6 +288,8 @@ const { t } = useI18n({
     saving: 'Saving…',
     space: 'Space',
     status: 'Status',
+    title: 'Title',
+    titlePlaceholder: 'Leave empty to generate it with AI',
     updated: 'Updated',
   },
   ru: {
@@ -304,6 +315,8 @@ const { t } = useI18n({
     saving: 'Сохранение…',
     space: 'Раздел',
     status: 'Статус',
+    title: 'Заголовок',
+    titlePlaceholder: 'Оставьте пустым, чтобы создать его с помощью ИИ',
     updated: 'Изменена',
   },
 })
@@ -325,6 +338,7 @@ const state = reactive({
   pickedSpaceId: '',
   removedAttachmentIds: [] as string[],
   statusId: '',
+  title: '',
 })
 
 const history = useTemplateRef<InstanceType<typeof IssueHistory>>('history')
@@ -371,6 +385,7 @@ const dirty = computed(
       state.content !== currentIssue.value.content ||
       state.pickedSpaceId !== currentIssue.value.spaceId ||
       state.statusId !== currentIssue.value.statusId ||
+      state.title !== currentIssue.value.title ||
       state.files.length > 0 ||
       state.removedAttachmentIds.length > 0 ||
       currentIssue.value.attributes.some(
@@ -395,6 +410,7 @@ const syncState = (issue: IssuePageViewModel) => {
     pickedSpaceId: issue.spaceId,
     removedAttachmentIds: [],
     statusId: issue.statusId,
+    title: issue.title,
   })
 }
 
@@ -455,6 +471,7 @@ const save = async () => {
     removeAttachmentIds: state.removedAttachmentIds,
     spaceKey: state.pickedSpaceId,
     statusId: state.statusId,
+    title: state.title,
   })
 }
 
@@ -541,6 +558,11 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-form-main > * {
   flex-shrink: 0;
+}
+
+.issue-title-input {
+  font-size: var(--font-size-title);
+  font-weight: normal;
 }
 
 .issue-form-content {

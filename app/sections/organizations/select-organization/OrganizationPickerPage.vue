@@ -4,7 +4,7 @@
     :error-title="t('loadError')"
     :loading-text="t('loading')"
     :message="message"
-    :on-retry="refresh"
+    :on-retry="retry"
     :pending="pending">
     <template #default="{ data: organizations }">
       <section class="org-picker">
@@ -90,6 +90,7 @@ import { useOrganizationTour } from '~/sections/organizations/select-organizatio
 const props = defineProps<{
   deps: OrganizationPickerPageDeps
   onSelected: (organizationKey: string) => Promise<void> | void
+  onSignedOut: () => Promise<void> | void
 }>()
 
 const { t } = useI18n({
@@ -125,10 +126,23 @@ const { t } = useI18n({
 
 useHead({ title: t('organizations') })
 
-const { data, message, pending, refresh } = await useQuery(
+const { code, data, message, pending, refresh } = await useQuery(
   'organization-picker',
   (_nuxtApp, { signal }) => props.deps.view({ signal }),
 )
+
+// This page has no layout, so nothing else sends a signed-out visitor to the login page.
+const leaveWhenSignedOut = async (): Promise<void> => {
+  if (code.value === 401) {
+    await props.onSignedOut()
+  }
+}
+await leaveWhenSignedOut()
+
+const retry = async (): Promise<void> => {
+  await refresh()
+  await leaveWhenSignedOut()
+}
 
 useOrganizationTour(data, props.deps.tour)
 

@@ -83,6 +83,7 @@ const mapIssue = (
   spaceLabel: issue.spaceName,
   statusId: String(issue.statusId),
   statusLabel: issue.statusName ?? '',
+  title: issue.title,
   updatedAt: issue.updatedAt,
 })
 export const createViewIssue =

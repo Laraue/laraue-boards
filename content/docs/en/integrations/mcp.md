@@ -29,7 +29,7 @@ Laraue Boards is also listed on the [official MCP Registry](https://registry.mod
 
 Every action runs with your own permissions, live — Claude can't do anything in an organization that you couldn't do yourself there, and it can't act at all once the API key behind it is revoked.
 
-- **Issues** — list and filter issues, view one in full detail, create a new one, edit its content or assignee, move it to a different status, or delete it
+- **Issues** — list and filter issues, view one in full detail, create a new one (with a title), edit its title, content or assignee, move it to a different status, or delete it
 - **Comments** — add a comment to an issue, or edit one you wrote
 - **Organization structure** — look up spaces, statuses, custom attributes, and members, so Claude can resolve names to the right ids on its own
 - **Attachments** — download an image attached to an issue

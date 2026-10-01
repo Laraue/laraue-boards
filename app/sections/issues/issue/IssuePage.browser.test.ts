@@ -28,6 +28,7 @@ const issue: IssuePageViewModel = {
   spaceLabel: 'Product',
   statusId: '3',
   statusLabel: 'To do',
+  title: 'Fix the bug',
   updatedAt: '2026-01-02T00:00:00Z',
 }
 
@@ -68,7 +69,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   })),
   description: {
     summarizeContent: vi.fn<IssuePageDeps['description']['summarizeContent']>(async () => ({
-      data: 'Improved content',
+      data: { content: 'Improved content', title: null },
       status: 'success',
     })),
   },
@@ -303,6 +304,7 @@ it('stays on the page after the issue is saved', async () => {
           previousStatusId: '3',
           spaceKey: '7',
           statusId: '3',
+          title: 'Fix the bug',
         },
         status: 'success',
       })),

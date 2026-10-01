@@ -47,6 +47,8 @@ export type HistorySpaceChangeViewModel = HistoryValueChange<'space'>
 
 export type HistoryStatusChangeViewModel = HistoryValueChange<'status'>
 
+export type HistoryTitleChangeViewModel = HistoryValueChange<'title'>
+
 export type HistoryChangeViewModel =
   | HistoryAssigneeChangeViewModel
   | HistoryAttachmentChangeViewModel
@@ -56,11 +58,14 @@ export type HistoryChangeViewModel =
   | HistoryPropertyChangeViewModel
   | HistorySpaceChangeViewModel
   | HistoryStatusChangeViewModel
+  | HistoryTitleChangeViewModel
 
 export type HistoryItemViewModel = {
   changes: HistoryChangeViewModel[]
   createdAt: string
   issueKey?: null | string
+  // Shown next to the issue link of an organization-wide history row.
+  issueTitle?: null | string
   link?: {
     label: string
     to: RouteLocationRaw

@@ -7,10 +7,6 @@ export const createSummarizeContent =
   (client: ApiClient): SummarizeContent =>
   ({ content }) =>
     executeAction({
-      map: (result) => result,
-      request: () =>
-        client.POST('/api/issues/summarize', {
-          body: { content },
-          parseAs: 'text',
-        }),
+      map: (result) => result?.content,
+      request: () => client.POST('/api/issues/summarize', { body: { content } }),
     })

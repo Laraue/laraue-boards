@@ -13,19 +13,19 @@ import type { IssuesPageDeps } from './IssuesPage.deps'
 import type { IssuesPageData } from './IssuesPage.types'
 import IssuesPage from './IssuesPage.vue'
 
-const issueOf = (issueKey: string, content: string): IssueListItem => ({
+const issueOf = (issueKey: string, title: string): IssueListItem => ({
   assignee: 'Ada',
   assigneeColor: '#111',
   assigneeInitial: 'A',
   boardColor: '#222',
   boardName: 'Roadmap',
   canMove: true,
-  content,
   issueKey,
   spaceColor: '#333',
   spaceName: 'Product',
   status: 'To do',
   statusColor: '#444',
+  title,
 })
 
 const pageData: IssuesPageData = {

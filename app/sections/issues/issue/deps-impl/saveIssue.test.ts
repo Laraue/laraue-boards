@@ -22,6 +22,7 @@ test('returns the new issue key after moving it to another space', async () => {
     removeAttachmentIds: [],
     spaceKey: 'BRD',
     statusId: '3',
+    title: 'Updated title',
   })
 
   assert.deepEqual(
@@ -52,6 +53,7 @@ test('reports a partial save when moving the issue fails', async () => {
     removeAttachmentIds: [],
     spaceKey: 'BRD',
     statusId: '3',
+    title: 'Updated title',
   })
 
   assert.deepEqual(result, {
@@ -65,6 +67,7 @@ test('reports a partial save when moving the issue fails', async () => {
       previousStatusId: '2',
       spaceKey: 'ISS',
       statusId: '2',
+      title: 'Updated title',
     },
     status: 'success',
   })

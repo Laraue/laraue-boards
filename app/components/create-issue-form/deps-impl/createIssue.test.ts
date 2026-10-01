@@ -17,6 +17,7 @@ test('maps the create issue request and response', async () => {
       content: 'Issue',
       files: [new File(['a'], 'a.txt'), new File(['b'], 'b.txt')],
       statusId: '5',
+      title: 'Issue title',
     }),
     { data: { issueKey: 'ISS-42' }, status: 'success' },
   )
@@ -25,6 +26,7 @@ test('maps the create issue request and response', async () => {
   assert.equal(form.get('AssigneeId'), '9')
   assert.equal(form.get('StatusId'), '5')
   assert.equal(form.get('Content'), 'Issue')
+  assert.equal(form.get('Title'), 'Issue title')
   assert.deepEqual(JSON.parse(String(form.get('AttributeValues'))), [
     { $type: 'string', attributeId: '3', value: 'Details' },
     { $type: 'enum', attributeId: '4', valueId: '11' },
