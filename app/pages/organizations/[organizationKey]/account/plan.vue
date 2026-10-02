@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import { createBillingPageDeps } from '~/sections/billing/BillingPage.deps.impl'
 import BillingPage from '~/sections/billing/BillingPage.vue'
-import { createBillingPageDeps } from '~/sections/billing/deps-impl'
 
 const { t } = useI18n({
   en: { plan: 'Plan and usage' },

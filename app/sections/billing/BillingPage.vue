@@ -87,8 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BillingPageDeps } from '~/sections/billing/BillingPage.deps'
-import type { BillingUsageViewModel } from '~/sections/billing/BillingPage.types'
+import type { BillingPageDeps, BillingUsageViewModel } from '~/sections/billing/BillingPage.deps'
 
 const props = defineProps<{ deps: BillingPageDeps }>()
 
@@ -120,9 +119,8 @@ const { t } = useI18n({
 })
 
 const { formatNumber } = useFormatters()
-const { data, message, pending, refresh } = await useQuery(
-  'billing-summary',
-  (_nuxtApp, { signal }) => props.deps.view({ signal }),
+const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
+  props.deps.view({ signal }),
 )
 
 const usagePercent = (usage: BillingUsageViewModel) =>
