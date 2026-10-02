@@ -162,39 +162,35 @@ const {
   message: queryMessage,
   pending,
   refresh,
-} = await useQuery(
-  'account-api-keys',
-  (_nuxtApp, { signal }) => props.deps.view({ page: page.value, signal }),
-  { watch: [page] },
+} = await useApiQuery(
+  () => `account-api-keys:${page.value}`,
+  (signal) => props.deps.view({ page: page.value, signal }),
 )
 
 const {
   execute: create,
   message: createMessage,
   pending: creating,
-} = useAction(props.deps.create, {
-  onSuccess: async ({ rawKey: key }) => {
-    name.value = ''
-    rawKey.value = key
-    copied.value = false
-    await refresh()
-  },
-})
+} = useApiAction(props.deps.create)
 const {
   execute: revoke,
   message: revokeMessage,
   pending: revoking,
-} = useAction(props.deps.revoke, {
-  onSuccess: async () => {
-    await refresh()
-  },
-})
+} = useApiAction(props.deps.revoke)
 const busy = computed(() => pending.value || creating.value || revoking.value)
 
-const createKey = () => void create({ name: name.value.trim() })
-const revokeKey = (id: string) => {
-  if (confirm(t('revokeConfirm'))) {
-    void revoke({ id })
+const createKey = async () => {
+  const created = await create({ name: name.value.trim() })
+  if (created) {
+    name.value = ''
+    rawKey.value = created.value.rawKey
+    copied.value = false
+    await refresh()
+  }
+}
+const revokeKey = async (id: string) => {
+  if (confirm(t('revokeConfirm')) && (await revoke({ id }))) {
+    await refresh()
   }
 }
 const copyKey = async () => {

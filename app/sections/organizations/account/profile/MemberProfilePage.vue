@@ -45,7 +45,6 @@
 
 <script setup lang="ts">
 import type { MemberProfilePageDeps } from './MemberProfilePage.deps'
-import type { UpdateMemberProfileInput } from './MemberProfilePage.types'
 
 const props = defineProps<{
   deps: MemberProfilePageDeps
@@ -79,37 +78,30 @@ const { t } = useI18n({
   },
 })
 
-const { data, message, pending, refresh } = await useQuery(
-  'member-profile',
-  (_nuxtApp, { signal }) => props.deps.view({ signal }),
+const { data, message, pending, refresh } = await useApiQuery('member-profile', (signal) =>
+  props.deps.view({ signal }),
 )
 
-const state = reactive({
-  color: data.value?.color ?? '',
-  displayName: data.value?.displayName ?? '',
-  saved: false,
-})
+const state = reactive({ color: '', displayName: '', saved: false })
 
-watch(data, (profile) => {
-  state.color = profile?.color ?? ''
-  state.displayName = profile?.displayName ?? ''
-})
+watch(
+  data,
+  (profile) => {
+    state.color = profile?.color ?? ''
+    state.displayName = profile?.displayName ?? ''
+  },
+  { immediate: true },
+)
 
-const {
-  execute: update,
-  message: saveMessage,
-  pending: saving,
-} = useAction<[UpdateMemberProfileInput], true>(props.deps.update, {
-  onSuccess: async () => {
+const { execute: update, message: saveMessage, pending: saving } = useApiAction(props.deps.update)
+
+const save = async (): Promise<void> => {
+  state.saved = false
+  if (await update({ color: state.color, displayName: state.displayName })) {
     // The saved name may come from the profile, so show what the server has now.
     await refresh()
     await props.onUpdated()
     state.saved = true
-  },
-})
-
-const save = (): void => {
-  state.saved = false
-  void update({ color: state.color, displayName: state.displayName })
+  }
 }
 </script>

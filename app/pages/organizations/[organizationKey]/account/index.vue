@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { createMemberProfilePageDeps } from '~/sections/organizations/account/profile/deps-impl'
+import { createMemberProfilePageDeps } from '~/sections/organizations/account/profile/MemberProfilePage.deps.impl'
 import MemberProfilePage from '~/sections/organizations/account/profile/MemberProfilePage.vue'
 
 const { t } = useI18n({
