@@ -59,3 +59,4 @@ Being able to link a chat is its own admin permission, separate from being able 
 - [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes) — what happens to messages once a chat is linked
 - [Searching issues from any Telegram chat](/en/documentation/integrations/telegram-inline-search)
 - [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Turn a Telegram group chat into a team task board](/en/documentation/use-cases/telegram-group-chat-task-board) — a start-to-finish guide

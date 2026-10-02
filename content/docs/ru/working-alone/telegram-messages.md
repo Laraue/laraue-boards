@@ -54,3 +54,4 @@ Issues, созданные через **+ Add issue**, не связаны ни 
 
 - [Issues — что это такое](/ru/documentation/concepts/issues)
 - [Бэклог](/ru/documentation/working-alone/backlog)
+- [Сохраняйте ссылки и идеи из Telegram — и находите их потом](/ru/documentation/use-cases/save-links-and-ideas-from-telegram)

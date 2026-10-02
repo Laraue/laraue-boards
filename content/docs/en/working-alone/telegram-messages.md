@@ -54,3 +54,4 @@ Issues created by tapping **+ Add issue** are not linked to any Telegram message
 
 - [Issues — what they are](/en/documentation/concepts/issues)
 - [The Backlog](/en/documentation/working-alone/backlog)
+- [Save links and ideas from Telegram — and find them later](/en/documentation/use-cases/save-links-and-ideas-from-telegram)

@@ -55,7 +55,7 @@ Add the server to `.cursor/mcp.json` in your project, or to `~/.cursor/mcp.json`
 
 Set `BOARDS_API_KEY` in your shell environment, so the key never sits in the file.
 
-Once connected, see [A backlog for AI-assisted development](/en/documentation/integrations/ai-agent-backlog) for what to ask the agent.
+Once connected, see [A backlog for AI-assisted development](/en/documentation/use-cases/ai-agent-backlog) for what to ask the agent.
 
 ## What Claude can do
 
@@ -74,6 +74,6 @@ Access is tied entirely to the API key. Revoke it from **Account → API keys** 
 
 ## Related pages
 
-- [A backlog for AI-assisted development](/en/documentation/integrations/ai-agent-backlog) — connecting Claude Code or Cursor, and what to ask the agent
+- [A backlog for AI-assisted development](/en/documentation/use-cases/ai-agent-backlog) — connecting Claude Code or Cursor, and what to ask the agent
 - [API keys — connecting your own tools to Boards](/en/documentation/integrations/api-keys)
 - [Permissions management](/en/documentation/working-in-a-team/permissions)

@@ -22,5 +22,3 @@ Laraue Boards построен вокруг Telegram, а также подклю
 - [API-ключи](/ru/documentation/integrations/api-keys) — создайте долгоживущий ключ, чтобы скрипты, CI или AI-агенты могли авторизоваться от вашего имени.
 
 - [Подключение Claude и других AI-агентов через MCP](/ru/documentation/integrations/mcp) — просматривайте, создавайте, редактируйте, удаляйте issues и комментируйте их прямо из Claude.
-
-- [Бэклог для разработки с ИИ](/ru/documentation/integrations/ai-agent-backlog) — подключите Claude Code или Cursor через MCP: агент заведёт карточки по багам, разберёт бэклог и будет переносить issues по ходу работы.

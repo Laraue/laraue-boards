@@ -4,7 +4,7 @@ description: How to work with an AI coding agent and your task board over MCP â€
 keywords: [mcp task management claude code, claude code backlog, ai agent backlog, what is an mcp server, ai coding agent task management, cursor task board, mcp server for project management]
 type: documentation
 project: boards
-order: 8
+order: 3
 createdAt: 2026-10-01
 updatedAt: 2026-10-01
 ---

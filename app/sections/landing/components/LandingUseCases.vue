@@ -11,6 +11,8 @@
         :items="[t('uc_p1'), t('uc_p2'), t('uc_p3'), t('uc_p4')]"
         :link-href="botUrl"
         :link-text="t('uc_p_cta')"
+        :more-href="saveGuideUrl"
+        :more-text="t('uc_more_personal')"
         :title="t('uc_personal_title')">
         <template #icon><LandingIcon name="brain" /></template>
       </LandingInfoCard>
@@ -19,6 +21,8 @@
         :items="[t('uc_t1'), t('uc_t2'), t('uc_t3'), t('uc_t4'), t('uc_t5'), t('uc_t6')]"
         :link-href="appUrl"
         :link-text="t('open_app')"
+        :more-href="groupGuideUrl"
+        :more-text="t('uc_more_teams')"
         :title="t('uc_teams_title')">
         <template #icon><LandingIcon name="partners" /></template>
       </LandingInfoCard>
@@ -29,6 +33,7 @@
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
 
+import { docsPath } from '../../docs/docsPaths'
 import { appUrl, botUrl } from '../landingLinks'
 import LandingIcon from './LandingIcon.vue'
 import LandingInfoCard from './LandingInfoCard.vue'
@@ -41,6 +46,8 @@ const { t } = useI18n(
     en: {
       open_app: 'Open App',
       uc_label: 'Built for two worlds',
+      uc_more_personal: 'How to save links and ideas',
+      uc_more_teams: 'Turn a group chat into a board',
       uc_p1: 'Forward any message — text, photo, video or album',
       uc_p2: 'Edit the message in Telegram, the card updates',
       uc_p3: 'Search everything by keyword',
@@ -65,6 +72,8 @@ const { t } = useI18n(
     ru: {
       open_app: 'Открыть приложение',
       uc_label: 'Для двух сценариев',
+      uc_more_personal: 'Как сохранять ссылки и идеи',
+      uc_more_teams: 'Групповой чат — в доску задач',
       uc_p1: 'Пересылайте что угодно — текст, фото, видео или альбом',
       uc_p2: 'Отредактировали сообщение в Telegram — карточка обновилась',
       uc_p3: 'Поиск по ключевому слову',
@@ -89,6 +98,9 @@ const { t } = useI18n(
   },
   props.locale,
 )
+
+const groupGuideUrl = docsPath(props.locale, ['use-cases', 'telegram-group-chat-task-board'])
+const saveGuideUrl = docsPath(props.locale, ['use-cases', 'save-links-and-ideas-from-telegram'])
 </script>
 
 <style scoped>
