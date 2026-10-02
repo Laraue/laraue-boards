@@ -59,16 +59,20 @@ export default defineNuxtConfig({
     urls: [
       { en: '/', ru: '/ru' },
       { en: '/terms', ru: '/ru/terms' },
-    ].flatMap(({ en, ru }) =>
-      [en, ru].map((loc) => ({
-        alternatives: [
-          { href: en, hreflang: 'en' },
-          { href: ru, hreflang: 'ru' },
-          { href: en, hreflang: 'x-default' },
-        ],
-        loc,
-      })),
-    ),
+      { en: '/compare/trello', ru: '/ru/compare/trello' },
+    ]
+      .flatMap(({ en, ru }) =>
+        [en, ru].map((loc) => ({
+          alternatives: [
+            { href: en, hreflang: 'en' },
+            { href: ru, hreflang: 'ru' },
+            { href: en, hreflang: 'x-default' },
+          ],
+          loc,
+        })),
+      )
+      // Comparisons that exist in English only have no alternates.
+      .concat([{ alternatives: [], loc: '/compare/linear' }]),
   },
 
   // The documentation (`content/docs`) is bundled with the server and read by `server/utils/docsCatalog`.

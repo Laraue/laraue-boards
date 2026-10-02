@@ -29,6 +29,11 @@
             @msgboard_bot
           </a>
         </li>
+        <li
+          v-for="link in compareLinks"
+          :key="link.path">
+          <NuxtLink :to="link.path">{{ link.label }}</NuxtLink>
+        </li>
         <li>
           <NuxtLink :to="termsHref">{{ t('footer_terms') }}</NuxtLink>
         </li>
@@ -53,6 +58,7 @@
 
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
+import { compareLabels, comparePaths, type CompareSlug } from '~/sections/compare/compareContent'
 import { docsPath } from '~/sections/docs/docsPaths'
 import { botUrl, githubUrl, laraueUrl } from '~/sections/landing/landingLinks'
 import { sellerDetails } from '~/sections/legal/sellerDetails'
@@ -79,6 +85,12 @@ const { t } = useI18n(
 
 const docsHref = docsPath(props.locale)
 const privacyUrl = laraueUrl(props.locale, '/privacy')
+// The comparison pages that exist in this language.
+const compareLinks = (Object.keys(comparePaths) as CompareSlug[]).flatMap((slug) => {
+  const path = comparePaths[slug][props.locale]
+
+  return path ? [{ label: compareLabels[props.locale][slug], path }] : []
+})
 const termsHref = props.locale === 'ru' ? '/ru/terms' : '/terms'
 </script>
 
