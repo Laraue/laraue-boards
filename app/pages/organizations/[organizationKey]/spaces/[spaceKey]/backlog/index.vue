@@ -9,8 +9,8 @@
 <script setup lang="ts">
 import type { LocationQueryRaw } from 'vue-router'
 
+import { createBacklogPageDeps } from '~/sections/spaces/backlog/BacklogPage.deps.impl'
 import BacklogPage from '~/sections/spaces/backlog/BacklogPage.vue'
-import { createBacklogPageDeps } from '~/sections/spaces/backlog/deps-impl'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-backlog')
 const spaceKey = computed(() => String(route.params.spaceKey))

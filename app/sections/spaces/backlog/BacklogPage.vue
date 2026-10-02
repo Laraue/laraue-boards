@@ -12,7 +12,7 @@
           <div class="page-heading">
             <AppBackLink
               :label="t('backToSpace')"
-              :to="organizationRoutes.space(page.spaceKey)" />
+              :to="organizationRoutes.space(spaceKey)" />
             <ListTodo
               class="page-heading-icon"
               :style="{ color: page.color }" />
@@ -24,7 +24,7 @@
             <NuxtLink
               :aria-label="t('addIssue')"
               class="primary"
-              :to="organizationRoutes.newBacklogIssue(page.spaceKey)">
+              :to="organizationRoutes.newBacklogIssue(spaceKey)">
               <Plus />
               <span class="btn-label">{{ t('addIssue') }}</span>
             </NuxtLink>
@@ -120,15 +120,9 @@ const request = computed(() => ({
   search: typeof props.routeQuery.search === 'string' ? props.routeQuery.search : '',
 }))
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `backlog:${props.spaceKey}`,
-  (_nuxtApp, { signal }) =>
-    props.deps.view({
-      ...request.value,
-      signal,
-      spaceKey: props.spaceKey,
-    }),
-  { watch: [() => props.spaceKey] },
+  (signal) => props.deps.view({ ...request.value, signal, spaceKey: props.spaceKey }),
 )
 const attributes = computed(() => data.value?.attributes ?? [])
 
@@ -145,7 +139,7 @@ const {
   execute: runSearch,
   message: searchMessage,
   pending: searching,
-} = await useQuery(
+} = await useApiQuery(
   () => `backlog-search:${props.spaceKey}`,
   () =>
     props.deps.search({
