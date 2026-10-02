@@ -2,8 +2,9 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { SpacePageDeps } from './SpacePage.deps'
-import type { SpacePageData } from './SpacePage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type { SpacePageData, SpacePageDeps } from './SpacePage.deps'
 import SpacePage from './SpacePage.vue'
 
 const pageData: SpacePageData = {
@@ -30,8 +31,6 @@ const pageData: SpacePageData = {
   canCreateBoards: true,
   canManage: true,
   color: '#4774d4',
-  id: '4',
-  key: 'product',
   name: 'Product',
 }
 
@@ -51,10 +50,7 @@ afterEach(async () => {
 })
 
 it('shows the space and links to its backlog, board, creation, and settings pages', async () => {
-  const view = vi.fn<SpacePageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  }))
+  const view = vi.fn<SpacePageDeps['view']>(async () => pageData)
 
   await mount(view)
 
@@ -70,8 +66,9 @@ it('shows the space and links to its backlog, board, creation, and settings page
 
 it('hides management actions when the member lacks permission', async () => {
   const view = vi.fn<SpacePageDeps['view']>(async () => ({
-    data: { ...pageData, canCreateBoards: false, canManage: false },
-    status: 'success',
+    ...pageData,
+    canCreateBoards: false,
+    canManage: false,
   }))
 
   await mount(view)
@@ -83,8 +80,8 @@ it('hides management actions when the member lacks permission', async () => {
 it('reloads the space when the failed request is retried', async () => {
   const view = vi
     .fn<SpacePageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(view)
   await page.getByRole('button', { name: 'Try again' }).click()

@@ -3,7 +3,7 @@ import { assert, test } from 'vitest'
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 import { COLORS } from '~/constants/colors'
 
-import { createViewSpace } from './viewSpace'
+import { createSpacePageDeps } from './SpacePage.deps.impl'
 
 test('maps the space and its board summaries', async () => {
   const { client } = createTestApiClient((_request, path) => {
@@ -42,15 +42,12 @@ test('maps the space and its board summaries', async () => {
     ]
   })
 
-  const result = await createViewSpace(client)({ spaceKey: 'WEB' })
+  const { boards } = await createSpacePageDeps(client).view({ spaceKey: 'WEB' })
 
-  assert.equal(result.status === 'success' && result.data.boards[0]?.kind, 'backlog')
-  assert.equal(result.status === 'success' && result.data.boards[0]?.issueCount, 2)
-  assert.equal(result.status === 'success' && result.data.boards[0]?.name, 'Backlog')
-  assert.deepEqual(result.status === 'success' && result.data.boards.map((board) => board.name), [
-    'Backlog',
-    'New',
-    'Middle',
-    'Old',
-  ])
+  assert.equal(boards[0]?.kind, 'backlog')
+  assert.equal(boards[0]?.issueCount, 2)
+  assert.deepEqual(
+    boards.map((board) => board.name),
+    ['Backlog', 'New', 'Middle', 'Old'],
+  )
 })

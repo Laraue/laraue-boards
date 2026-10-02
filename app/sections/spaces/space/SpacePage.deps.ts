@@ -1,12 +1,25 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
+// Every dep resolves with its data or rejects with an `ApiError`.
 
-import type { SpacePageData } from './SpacePage.types'
+export type SpaceBoardStatus = 'Active' | 'Done' | 'New'
 
-export type ViewSpace = (input: {
-  signal?: AbortSignal
-  spaceKey: string
-}) => Promise<QueryResult<SpacePageData>>
+export type SpaceBoardSummary = {
+  color: string
+  id: string
+  issueCount: number
+  kind: 'backlog' | 'board'
+  name: string
+  status: SpaceBoardStatus
+  statuses: Array<{ color: string; count: number; name: string }>
+}
+
+export type SpacePageData = {
+  boards: SpaceBoardSummary[]
+  canCreateBoards: boolean
+  canManage: boolean
+  color: string
+  name: string
+}
 
 export type SpacePageDeps = {
-  view: ViewSpace
+  view: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<SpacePageData>
 }

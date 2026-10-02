@@ -22,7 +22,7 @@
               v-if="page.canManage"
               :aria-label="t('spaceSettings')"
               class="secondary"
-              :to="organizationRoutes.spaceSettings(page.key)">
+              :to="organizationRoutes.spaceSettings(spaceKey)">
               <Settings />
               <span class="btn-label">{{ t('settings') }}</span>
             </NuxtLink>
@@ -30,7 +30,7 @@
               v-if="page.canCreateBoards"
               :aria-label="t('createBoard')"
               class="primary"
-              :to="organizationRoutes.newBoard(page.key)">
+              :to="organizationRoutes.newBoard(spaceKey)">
               <Plus />
               <span class="btn-label">{{ t('createBoard') }}</span>
             </NuxtLink>
@@ -43,7 +43,7 @@
           <h2 class="space-section-title">{{ t('backlog') }}</h2>
           <NuxtLink
             class="backlog-summary"
-            :to="organizationRoutes.backlog(page.key)">
+            :to="organizationRoutes.backlog(spaceKey)">
             <div class="summary-title">
               <ListTodo :style="{ color: backlog.color }" />
               <strong>{{ t('backlog') }}</strong>
@@ -64,7 +64,7 @@
               v-for="board in regularBoards"
               :key="board.id"
               class="board-summary"
-              :to="organizationRoutes.board(page.key, board.id)">
+              :to="organizationRoutes.board(spaceKey, board.id)">
               <div class="summary-title">
                 <BoardIcon :style="{ color: board.color }" />
                 <strong>{{ board.name }}</strong>
@@ -156,10 +156,9 @@ const { t, tp } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `space:${props.spaceKey}`,
-  (_nuxtApp, { signal }) => props.deps.view({ signal, spaceKey: props.spaceKey }),
-  { watch: [() => props.spaceKey] },
+  (signal) => props.deps.view({ signal, spaceKey: props.spaceKey }),
 )
 
 const boards = computed(() => data.value?.boards ?? [])
