@@ -55,7 +55,7 @@ claude mcp add --transport http boards https://boards.laraue.com/boards-mcp/mcp 
 
 Задайте `BOARDS_API_KEY` в переменных окружения вашей оболочки, чтобы ключ не лежал в файле.
 
-После подключения читайте [Бэклог для разработки с ИИ](/ru/documentation/integrations/ai-agent-backlog) — что можно попросить агента.
+После подключения читайте [Бэклог для разработки с ИИ](/ru/documentation/use-cases/ai-agent-backlog) — что можно попросить агента.
 
 ## Что умеет Claude
 
@@ -74,6 +74,6 @@ Claude предлагает только те действия, которые �
 
 ## Связанные страницы
 
-- [Бэклог для разработки с ИИ](/ru/documentation/integrations/ai-agent-backlog) — подключение Claude Code и Cursor и что можно попросить агента
+- [Бэклог для разработки с ИИ](/ru/documentation/use-cases/ai-agent-backlog) — подключение Claude Code и Cursor и что можно попросить агента
 - [API-ключи — подключение своих инструментов к Boards](/ru/documentation/integrations/api-keys)
 - [Управление правами доступа](/ru/documentation/working-in-a-team/permissions)

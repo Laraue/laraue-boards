@@ -14,13 +14,21 @@
         {{ item }}
       </li>
     </ul>
-    <a
-      class="info-card-link"
-      :href="linkHref"
-      :rel="external ? 'noopener' : undefined"
-      :target="external ? '_blank' : undefined">
-      {{ linkText }} &#8594;
-    </a>
+    <div class="info-card-links">
+      <a
+        class="info-card-link"
+        :href="linkHref"
+        :rel="external ? 'noopener' : undefined"
+        :target="external ? '_blank' : undefined">
+        {{ linkText }} &#8594;
+      </a>
+      <a
+        v-if="moreHref && moreText"
+        class="info-card-more"
+        :href="moreHref">
+        {{ moreText }}
+      </a>
+    </div>
   </div>
 </template>
 
@@ -31,6 +39,8 @@ defineProps<{
   items?: string[]
   linkHref: string
   linkText: string
+  moreHref?: string
+  moreText?: string
   title: string
 }>()
 </script>
@@ -119,5 +129,24 @@ defineProps<{
 
 .info-card:hover .info-card-link {
   gap: 10px;
+}
+
+.info-card-links {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+}
+
+.info-card-more {
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.info-card-more:hover {
+  color: var(--color-text);
 }
 </style>

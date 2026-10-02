@@ -59,3 +59,4 @@ updatedAt: 2026-08-20
 - [Авто- и ручной режим сохранения](/ru/documentation/integrations/telegram-save-modes) — что происходит с сообщениями после привязки чата
 - [Поиск issues из любого чата Telegram](/ru/documentation/integrations/telegram-inline-search)
 - [Управление правами доступа](/ru/documentation/working-in-a-team/permissions)
+- [Групповой чат Telegram — в командную доску задач](/ru/documentation/use-cases/telegram-group-chat-task-board) — руководство от начала до конца

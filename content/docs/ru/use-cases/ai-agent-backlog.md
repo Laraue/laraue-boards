@@ -4,7 +4,7 @@ description: Как работать с ИИ-агентом для разраб�
 keywords: [mcp сервер для управления проектами, claude code бэклог, ai-агент бэклог, что такое mcp сервер, ai-агент для разработки задачи, cursor доска задач, mcp сервер что это]
 type: documentation
 project: boards
-order: 8
+order: 3
 createdAt: 2026-10-01
 updatedAt: 2026-10-01
 ---
