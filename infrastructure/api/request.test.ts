@@ -41,6 +41,12 @@ test('throws the status of other errors', async () => {
   await expect(call).rejects.toMatchObject({ reason: '', status: 500 })
 })
 
+test('throws the status of a failed response with an empty body', async () => {
+  const call = request(Promise.resolve({ error: undefined, response: response(401) }))
+
+  await expect(call).rejects.toMatchObject({ status: 401 })
+})
+
 test('throws status 0 when the request itself fails', async () => {
   const call = request(Promise.reject(new TypeError('network failed')))
 

@@ -31,7 +31,9 @@ export const request = async <Response extends ApiResponse<unknown>>(
   }
 
   const { data, error } = response
-  if (error === undefined) {
+  // A failed response with an empty body (a bare 401 or 404) comes back without an `error`, so the
+  // HTTP status decides.
+  if (error === undefined && response.response.ok) {
     return data as NonNullable<Response['data']>
   }
   const { status } = response.response
