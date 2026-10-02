@@ -2,11 +2,10 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { ActionResult } from '#infrastructure/api/apiResult'
+import { ApiError } from '#infrastructure/api/request'
 import { COLORS } from '~/constants/colors'
 
-import type { AttributePageDeps } from './AttributePage.deps'
-import type { Attribute } from './AttributePage.types'
+import type { Attribute, AttributePageDeps } from './AttributePage.deps'
 import AttributePage from './AttributePage.vue'
 
 const textAttribute: Attribute = {
@@ -33,9 +32,9 @@ const createDeps = (
   overrides: Partial<AttributePageDeps> = {},
   attribute: Attribute = textAttribute,
 ): AttributePageDeps => ({
-  delete: vi.fn<AttributePageDeps['delete']>(async () => ({ data: true, status: 'success' })),
-  update: vi.fn<AttributePageDeps['update']>(async () => ({ data: true, status: 'success' })),
-  view: vi.fn<AttributePageDeps['view']>(async () => ({ data: attribute, status: 'success' })),
+  delete: vi.fn<AttributePageDeps['delete']>(async () => {}),
+  update: vi.fn<AttributePageDeps['update']>(async () => {}),
+  view: vi.fn<AttributePageDeps['view']>(async () => attribute),
   ...overrides,
 })
 
@@ -73,7 +72,7 @@ it('shows the options of the loaded list attribute', async () => {
 })
 
 it('submits the edited name and color', async () => {
-  const update = vi.fn<AttributePageDeps['update']>(async () => ({ data: true, status: 'success' }))
+  const update = vi.fn<AttributePageDeps['update']>(async () => {})
   const onFinished = vi.fn<() => void>()
 
   await mount(createDeps({ update }), onFinished)
@@ -93,7 +92,7 @@ it('submits the edited name and color', async () => {
 })
 
 it('submits edited options keeping the id of the existing ones', async () => {
-  const update = vi.fn<AttributePageDeps['update']>(async () => ({ data: true, status: 'success' }))
+  const update = vi.fn<AttributePageDeps['update']>(async () => {})
 
   await mount(createDeps({ update }, listAttribute), vi.fn<() => void>())
 
@@ -118,7 +117,7 @@ it('submits edited options keeping the id of the existing ones', async () => {
 })
 
 it('removes an option and keeps the last one undeletable', async () => {
-  const update = vi.fn<AttributePageDeps['update']>(async () => ({ data: true, status: 'success' }))
+  const update = vi.fn<AttributePageDeps['update']>(async () => {})
 
   await mount(createDeps({ update }, listAttribute), vi.fn<() => void>())
 
@@ -150,10 +149,9 @@ it('offers one blank option for a list attribute without values', async () => {
 })
 
 it('keeps the form open and shows the validation message returned by the backend', async () => {
-  const update = vi.fn<AttributePageDeps['update']>(async (): Promise<ActionResult<true>> => ({
-    message: 'Name is already taken.',
-    status: 'validation-error',
-  }))
+  const update = vi.fn<AttributePageDeps['update']>(async () => {
+    throw new ApiError(400, 'Name is already taken.')
+  })
   const onFinished = vi.fn<() => void>()
 
   await mount(createDeps({ update }), onFinished)
@@ -165,10 +163,7 @@ it('keeps the form open and shows the validation message returned by the backend
 })
 
 it('deletes the attribute after confirmation', async () => {
-  const deleteAttribute = vi.fn<AttributePageDeps['delete']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const deleteAttribute = vi.fn<AttributePageDeps['delete']>(async () => {})
   const onFinished = vi.fn<() => void>()
   vi.spyOn(window, 'confirm').mockReturnValue(true)
 
@@ -181,10 +176,7 @@ it('deletes the attribute after confirmation', async () => {
 })
 
 it('does not delete the attribute when confirmation is dismissed', async () => {
-  const deleteAttribute = vi.fn<AttributePageDeps['delete']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const deleteAttribute = vi.fn<AttributePageDeps['delete']>(async () => {})
   vi.spyOn(window, 'confirm').mockReturnValue(false)
 
   await mount(createDeps({ delete: deleteAttribute }), vi.fn<() => void>())

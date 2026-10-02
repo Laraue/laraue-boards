@@ -1,11 +1,11 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
-
-import type { AttributeListItem } from './AttributesPage.types'
-
-export type ViewAttributes = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<AttributeListItem[]>>
+export type AttributeListItem =
+  | { color: string; id: string; name: string; type: 'date' }
+  | { color: string; id: string; name: string; type: 'dateTime' }
+  | { color: string; id: string; name: string; type: 'decimal' }
+  | { color: string; id: string; name: string; type: 'integer' }
+  | { color: string; id: string; name: string; type: 'list' }
+  | { color: string; id: string; name: string; type: 'text' }
 
 export type AttributesPageDeps = {
-  view: ViewAttributes
+  view: (input: { signal?: AbortSignal }) => Promise<AttributeListItem[]>
 }

@@ -2,19 +2,16 @@ import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
-import { createCreateAttribute } from './createAttribute'
+import { createCreateAttributePageDeps } from './CreateAttributePage.deps.impl'
 
-test('maps create attribute request and response', async () => {
+test('sends list values for a list attribute', async () => {
   const { client, requests } = createTestApiClient(() => 42)
 
-  assert.deepEqual(
-    await createCreateAttribute(client)({
-      color: '#fff',
-      data: { listValues: ['Low', 'High'], type: 'list' },
-      name: 'Severity',
-    }),
-    { data: { id: '42' }, status: 'success' },
-  )
+  await createCreateAttributePageDeps(client).create({
+    color: '#fff',
+    data: { listValues: ['Low', 'High'], type: 'list' },
+    name: 'Severity',
+  })
   assert.deepEqual(await requests[0]!.json(), {
     color: '#fff',
     listValues: [{ name: 'Low' }, { name: 'High' }],
@@ -26,15 +23,27 @@ test('maps create attribute request and response', async () => {
 test('maps scalar attribute types', async () => {
   const { client, requests } = createTestApiClient(() => 42)
 
-  await createCreateAttribute(client)({ color: '#fff', data: { type: 'text' }, name: 'Priority' })
-  await createCreateAttribute(client)({
+  await createCreateAttributePageDeps(client).create({
+    color: '#fff',
+    data: { type: 'text' },
+    name: 'Priority',
+  })
+  await createCreateAttributePageDeps(client).create({
     color: '#fff',
     data: { type: 'integer' },
     name: 'Estimate',
   })
-  await createCreateAttribute(client)({ color: '#fff', data: { type: 'decimal' }, name: 'Cost' })
-  await createCreateAttribute(client)({ color: '#fff', data: { type: 'date' }, name: 'Due' })
-  await createCreateAttribute(client)({
+  await createCreateAttributePageDeps(client).create({
+    color: '#fff',
+    data: { type: 'decimal' },
+    name: 'Cost',
+  })
+  await createCreateAttributePageDeps(client).create({
+    color: '#fff',
+    data: { type: 'date' },
+    name: 'Due',
+  })
+  await createCreateAttributePageDeps(client).create({
     color: '#fff',
     data: { type: 'dateTime' },
     name: 'Starts',

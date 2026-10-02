@@ -46,8 +46,10 @@
 <script setup lang="ts">
 import { ChevronRight, Plus } from '@lucide/vue'
 
-import type { AttributesPageDeps } from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
-import type { AttributeListItem } from '~/sections/organizations/attributes/list-attributes/AttributesPage.types'
+import type {
+  AttributeListItem,
+  AttributesPageDeps,
+} from '~/sections/organizations/attributes/list-attributes/AttributesPage.deps'
 
 const props = defineProps<{ deps: AttributesPageDeps }>()
 
@@ -97,9 +99,8 @@ const typeLabels = {
 
 useHead({ title: t('attributes') })
 
-const { data, message, pending, refresh } = await useQuery(
-  'organization-attributes',
-  (_nuxtApp, { signal }) => props.deps.view({ signal }),
+const { data, message, pending, refresh } = await useApiQuery('organization-attributes', (signal) =>
+  props.deps.view({ signal }),
 )
 </script>
 
