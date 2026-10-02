@@ -2,7 +2,7 @@ import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
-import { createLoadOrganizationHistory } from './loadOrganizationHistory'
+import { createOrganizationHistoryPageDeps } from './OrganizationHistoryPage.deps.impl'
 
 test('loads filtered organization history', async () => {
   const { client, requests } = createTestApiClient(() => ({
@@ -19,15 +19,14 @@ test('loads filtered organization history', async () => {
     hasNextPage: false,
   }))
 
-  const result = await createLoadOrganizationHistory(client)({
+  const result = await createOrganizationHistoryPageDeps(client).loadPage({
     dateFrom: '2026-08-01T00:00:00.000Z',
     dateTo: '2026-08-24T23:59:59.999Z',
     ownerId: '00000000-0000-0000-0000-000000000001',
     page: 0,
   })
 
-  assert.equal(result.status, 'success')
-  assert.equal(result.status === 'success' && result.data.items[0]?.issueKey, 'WEB-12')
+  assert.equal(result.items[0]?.issueKey, 'WEB-12')
   assert.deepEqual(await requests[0]!.json(), {
     dateFrom: '2026-08-01T00:00:00.000Z',
     dateTo: '2026-08-24T23:59:59.999Z',

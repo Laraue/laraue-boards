@@ -1,9 +1,13 @@
+import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
+import { request } from '#infrastructure/api/request'
 import { diffLines } from '~/components/history-timeline/diffLines'
 import type {
   HistoryChangeViewModel,
   HistoryPageViewModel,
 } from '~/components/history-timeline/HistoryTimeline.types'
+
+import type { OrganizationHistoryPageDeps } from './OrganizationHistoryPage.deps'
 
 type Schemas = components['schemas']
 type Change = Schemas['HistoryItemChange']
@@ -91,7 +95,7 @@ const mapChange = (
   }
 }
 
-export const mapOrganizationHistoryPage = (
+const mapHistoryPage = (
   result: Schemas['ShortPaginatedResultOfOrganizationHistoryItem'],
   baseUrl: string,
 ): HistoryPageViewModel => ({
@@ -129,4 +133,39 @@ export const mapOrganizationHistoryPage = (
       },
     }
   }),
+})
+
+const PER_PAGE = 20
+
+export const createOrganizationHistoryPageDeps = (
+  client: ApiClient,
+): OrganizationHistoryPageDeps => ({
+  loadInitial: async ({ dateFrom, dateTo, ownerId, signal }) => {
+    const [members, history] = await Promise.all([
+      request(client.GET('/api/organizations/members', { signal })),
+      request(
+        client.POST('/api/organizations/history', {
+          body: { dateFrom, dateTo, ownerId, pagination: { page: 0, perPage: PER_PAGE } },
+          signal,
+        }),
+      ),
+    ])
+    return {
+      history: mapHistoryPage(history, client.baseUrl),
+      users: members
+        .map((member) => ({ label: member.displayName, value: member.userId }))
+        .toSorted((a, b) => a.label.localeCompare(b.label)),
+    }
+  },
+
+  loadPage: async ({ dateFrom, dateTo, ownerId, page, signal }) =>
+    mapHistoryPage(
+      await request(
+        client.POST('/api/organizations/history', {
+          body: { dateFrom, dateTo, ownerId, pagination: { page, perPage: PER_PAGE } },
+          signal,
+        }),
+      ),
+      client.baseUrl,
+    ),
 })

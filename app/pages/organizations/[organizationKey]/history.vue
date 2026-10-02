@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import type { LocationQueryRaw } from 'vue-router'
 
-import { createOrganizationHistoryPageDeps } from '~/sections/organizations/history/deps-impl'
+import { createOrganizationHistoryPageDeps } from '~/sections/organizations/history/OrganizationHistoryPage.deps.impl'
 import OrganizationHistoryPage from '~/sections/organizations/history/OrganizationHistoryPage.vue'
 
 const route = useRoute('organizations-organizationKey-history')

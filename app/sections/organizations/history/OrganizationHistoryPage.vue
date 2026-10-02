@@ -48,12 +48,6 @@
           v-if="data && (historyState.items.length || !pagePending)"
           :items="historyState.items"
           :label="t('entries')" />
-        <p
-          v-if="pageMessage"
-          class="form-error"
-          role="alert">
-          {{ pageMessage }}
-        </p>
         <div
           v-if="pagePending"
           class="history-loading"
@@ -62,11 +56,11 @@
           <span>{{ t('loading') }}</span>
         </div>
         <button
-          v-else-if="pageMessage || historyState.hasNextPage"
+          v-else-if="historyState.hasNextPage"
           class="secondary small history-more"
           type="button"
           @click="loadMore">
-          {{ pageMessage ? t('tryAgain') : t('loadMore') }}
+          {{ t('loadMore') }}
         </button>
       </section>
     </template>
@@ -98,7 +92,6 @@ const { t } = useI18n({
     loading: 'Loading history…',
     loadMore: 'Load more',
     to: 'To',
-    tryAgain: 'Try again',
     user: 'User',
   },
   ru: {
@@ -110,7 +103,6 @@ const { t } = useI18n({
     loading: 'Загрузка истории…',
     loadMore: 'Загрузить ещё',
     to: 'До',
-    tryAgain: 'Повторить попытку',
     user: 'Пользователь',
   },
 })
@@ -130,23 +122,11 @@ const requestFilters = () => ({
   dateTo: filters.value.dateTo ? `${filters.value.dateTo}T23:59:59.999Z` : undefined,
   ownerId: filters.value.ownerId || undefined,
 })
-const { data, message, pending, refresh } = await useQuery(
-  'organization-history',
-  (_nuxtApp, { signal }) => props.deps.loadInitial({ ...requestFilters(), signal }),
+const { data, message, pending, refresh } = await useApiQuery('organization-history', (signal) =>
+  props.deps.loadInitial({ ...requestFilters(), signal }),
 )
 
-const requestedPage = ref(0)
-const {
-  data: pageData,
-  execute: executePage,
-  message: pageMessage,
-  pending: pagePending,
-} = await useQuery(
-  'organization-history-page',
-  (_nuxtApp, { signal }) =>
-    props.deps.loadPage({ ...requestFilters(), page: requestedPage.value, signal }),
-  { immediate: false },
-)
+const { execute: executePage, pending: pagePending } = useApiAction(props.deps.loadPage)
 
 const withLink = (item: HistoryItemViewModel): HistoryItemViewModel => ({
   ...item,
@@ -166,18 +146,17 @@ const loadPage = async (replace = false) => {
     return
   }
 
-  requestedPage.value = replace ? 0 : historyState.page
-  await executePage()
-  const page = pageData.value
+  const requestedPage = replace ? 0 : historyState.page
+  const page = await executePage({ ...requestFilters(), page: requestedPage })
 
   if (!page) {
     return
   }
 
-  const items = page.items.map(withLink)
+  const items = page.value.items.map(withLink)
   historyState.items = replace ? items : [...historyState.items, ...items]
-  historyState.hasNextPage = page.hasNextPage
-  historyState.page = requestedPage.value + 1
+  historyState.hasNextPage = page.value.hasNextPage
+  historyState.page = requestedPage + 1
 }
 
 const loadMore = () => loadPage()
