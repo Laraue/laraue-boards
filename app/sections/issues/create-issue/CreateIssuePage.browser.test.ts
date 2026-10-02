@@ -2,8 +2,9 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { CreateIssuePageDeps } from './CreateIssuePage.deps'
-import type { CreateIssuePageData } from './CreateIssuePage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type { CreateIssuePageData, CreateIssuePageDeps } from './CreateIssuePage.deps'
 import CreateIssuePage from './CreateIssuePage.vue'
 
 const pageData: CreateIssuePageData = { attributes: [] }
@@ -43,7 +44,7 @@ const createDeps = (overrides: Partial<CreateIssuePageDeps> = {}): CreateIssuePa
       ]),
     },
   },
-  view: vi.fn<CreateIssuePageDeps['view']>(async () => ({ data: pageData, status: 'success' })),
+  view: vi.fn<CreateIssuePageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
@@ -66,8 +67,8 @@ afterEach(async () => {
 it('reloads the form data when the failed request is retried', async () => {
   const view = vi
     .fn<CreateIssuePageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps({ view }), vi.fn<(issueKey: string) => void>())
 
