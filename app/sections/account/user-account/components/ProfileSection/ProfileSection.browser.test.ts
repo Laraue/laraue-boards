@@ -2,17 +2,21 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { ProfileSectionDeps } from './ProfileSection.deps'
 import ProfileSection from './ProfileSection.vue'
 
 const createDeps = (overrides: Partial<ProfileSectionDeps> = {}): ProfileSectionDeps => ({
   update: vi.fn<ProfileSectionDeps['update']>(async ({ displayName, familyName, givenName }) => ({
-    data: { displayName, familyName, givenName },
-    status: 'success',
+    displayName,
+    familyName,
+    givenName,
   })),
   view: vi.fn<ProfileSectionDeps['view']>(async () => ({
-    data: { displayName: 'Ada Lovelace', familyName: 'Lovelace', givenName: 'Ada' },
-    status: 'success',
+    displayName: 'Ada Lovelace',
+    familyName: 'Lovelace',
+    givenName: 'Ada',
   })),
   ...overrides,
 })
@@ -66,7 +70,9 @@ it('does not save an empty display name', async () => {
 
 it('shows why the profile was not saved', async () => {
   const deps = createDeps({
-    update: vi.fn<ProfileSectionDeps['update']>(async () => ({ code: 503, status: 'error' })),
+    update: vi.fn<ProfileSectionDeps['update']>(async () => {
+      throw new ApiError(503)
+    }),
   })
   const onUpdated = await mount(deps)
 

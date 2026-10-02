@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { createUserAccountPageDeps } from '~/sections/account/user-account/deps-impl'
+import { createUserAccountPageDeps } from '~/sections/account/user-account/UserAccountPage.deps.impl'
 import UserAccountPage from '~/sections/account/user-account/UserAccountPage.vue'
 
 definePageMeta({ layout: false })

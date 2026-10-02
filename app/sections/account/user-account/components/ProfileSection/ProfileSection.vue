@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import type { ProfileSectionDeps } from './ProfileSection.deps'
-import type { GlobalProfile, UpdateGlobalProfileInput } from './ProfileSection.types'
+import type { GlobalProfile } from './ProfileSection.deps'
 
 const props = defineProps<{
   deps: ProfileSectionDeps
@@ -110,14 +110,9 @@ const {
   message: queryMessage,
   pending,
   refresh,
-} = await useQuery('account-global-profile', (_nuxtApp, { signal }) => props.deps.view({ signal }))
+} = await useApiQuery('account-global-profile', (signal) => props.deps.view({ signal }))
 
-const state = reactive({
-  displayName: data.value?.displayName ?? '',
-  familyName: data.value?.familyName ?? '',
-  givenName: data.value?.givenName ?? '',
-  saved: false,
-})
+const state = reactive({ displayName: '', familyName: '', givenName: '', saved: false })
 
 const fill = (profile: GlobalProfile | undefined): void => {
   state.displayName = profile?.displayName ?? ''
@@ -125,28 +120,23 @@ const fill = (profile: GlobalProfile | undefined): void => {
   state.givenName = profile?.givenName ?? ''
 }
 
-watch(data, fill)
+watch(data, fill, { immediate: true })
 
-const {
-  execute: update,
-  message: saveMessage,
-  pending: saving,
-} = useAction<[UpdateGlobalProfileInput], GlobalProfile>(props.deps.update, {
-  onSuccess: async (profile) => {
-    // Shows the values as the server saved them.
-    fill(profile)
-    await props.onUpdated()
-    state.saved = true
-  },
-})
+const { execute: update, message: saveMessage, pending: saving } = useApiAction(props.deps.update)
 
-const save = (): void => {
+const save = async (): Promise<void> => {
   state.saved = false
-  void update({
+  const saved = await update({
     displayName: state.displayName,
     familyName: state.familyName,
     givenName: state.givenName,
   })
+  if (saved) {
+    // Shows the values as the server saved them.
+    fill(saved.value)
+    await props.onUpdated()
+    state.saved = true
+  }
 }
 </script>
 

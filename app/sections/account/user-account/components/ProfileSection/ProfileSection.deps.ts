@@ -1,16 +1,22 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+/**
+ * The user's global profile. Organizations keep their own copy of the name, taken when the user
+ * joined, so a change here reaches only organizations joined later.
+ */
+export type GlobalProfile = {
+  displayName: string
+  familyName: string
+  givenName: string
+}
 
-import type { GlobalProfile, UpdateGlobalProfileInput } from './ProfileSection.types'
-
-export type ViewGlobalProfile = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<GlobalProfile>>
-
-export type UpdateGlobalProfile = (
-  input: UpdateGlobalProfileInput,
-) => Promise<ActionResult<GlobalProfile>>
+/** Empty given/family names are cleared. */
+export type UpdateGlobalProfileInput = {
+  displayName: string
+  familyName: string
+  givenName: string
+}
 
 export type ProfileSectionDeps = {
-  update: UpdateGlobalProfile
-  view: ViewGlobalProfile
+  // Resolves with the profile as the server saved it.
+  update: (input: UpdateGlobalProfileInput) => Promise<GlobalProfile>
+  view: (input: { signal?: AbortSignal }) => Promise<GlobalProfile>
 }

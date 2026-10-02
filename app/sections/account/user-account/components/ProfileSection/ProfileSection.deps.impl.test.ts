@@ -2,7 +2,7 @@ import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
-import { createUpdateGlobalProfile } from './updateGlobalProfile'
+import { createProfileSectionDeps } from './ProfileSection.deps.impl'
 
 const savedProfile = {
   displayName: 'Ada Lovelace',
@@ -16,15 +16,12 @@ test('sends the trimmed names and returns the saved profile', async () => {
   const { client, requests } = createTestApiClient(() => savedProfile)
 
   assert.deepEqual(
-    await createUpdateGlobalProfile(client)({
+    await createProfileSectionDeps(client).update({
       displayName: ' Ada Lovelace ',
       familyName: 'Lovelace ',
       givenName: ' Ada',
     }),
-    {
-      data: { displayName: 'Ada Lovelace', familyName: '', givenName: 'Ada' },
-      status: 'success',
-    },
+    { displayName: 'Ada Lovelace', familyName: '', givenName: 'Ada' },
   )
   assert.deepEqual(await requests[0]!.json(), {
     displayName: 'Ada Lovelace',
@@ -36,7 +33,11 @@ test('sends the trimmed names and returns the saved profile', async () => {
 test('sends no given or family name when they are empty, to clear them', async () => {
   const { client, requests } = createTestApiClient(() => savedProfile)
 
-  await createUpdateGlobalProfile(client)({ displayName: 'Ada', familyName: ' ', givenName: '' })
+  await createProfileSectionDeps(client).update({
+    displayName: 'Ada',
+    familyName: ' ',
+    givenName: '',
+  })
 
   assert.deepEqual(await requests[0]!.json(), {
     displayName: 'Ada',
