@@ -135,37 +135,37 @@ const mapHistoryPage = (
   }),
 })
 
-const PER_PAGE = 20
-
 export const createOrganizationHistoryPageDeps = (
   client: ApiClient,
-): OrganizationHistoryPageDeps => ({
-  loadInitial: async ({ dateFrom, dateTo, ownerId, signal }) => {
-    const [members, history] = await Promise.all([
-      request(client.GET('/api/organizations/members', { signal })),
-      request(
-        client.POST('/api/organizations/history', {
-          body: { dateFrom, dateTo, ownerId, pagination: { page: 0, perPage: PER_PAGE } },
-          signal,
-        }),
-      ),
-    ])
-    return {
-      history: mapHistoryPage(history, client.baseUrl),
-      users: members
-        .map((member) => ({ label: member.displayName, value: member.userId }))
-        .toSorted((a, b) => a.label.localeCompare(b.label)),
-    }
-  },
-
-  loadPage: async ({ dateFrom, dateTo, ownerId, page, signal }) =>
+): OrganizationHistoryPageDeps => {
+  const loadHistory = async (
+    { dateFrom, dateTo, ownerId }: { dateFrom?: string; dateTo?: string; ownerId?: string },
+    page: number,
+    signal?: AbortSignal,
+  ) =>
     mapHistoryPage(
       await request(
         client.POST('/api/organizations/history', {
-          body: { dateFrom, dateTo, ownerId, pagination: { page, perPage: PER_PAGE } },
+          body: { dateFrom, dateTo, ownerId, pagination: { page, perPage: 20 } },
           signal,
         }),
       ),
       client.baseUrl,
-    ),
-})
+    )
+
+  return {
+    loadInitial: async ({ signal, ...filters }) => {
+      const [members, history] = await Promise.all([
+        request(client.GET('/api/organizations/members', { signal })),
+        loadHistory(filters, 0, signal),
+      ])
+      return {
+        history,
+        users: members
+          .map((member) => ({ label: member.displayName, value: member.userId }))
+          .toSorted((a, b) => a.label.localeCompare(b.label)),
+      }
+    },
+    loadPage: ({ page, ...filters }) => loadHistory(filters, page),
+  }
+}
