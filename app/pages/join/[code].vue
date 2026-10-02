@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { createJoinOrganizationPageDeps } from '~/sections/organizations/join-organization/deps-impl'
+import { createJoinOrganizationPageDeps } from '~/sections/organizations/join-organization/JoinOrganizationPage.deps.impl'
 import JoinOrganizationPage from '~/sections/organizations/join-organization/JoinOrganizationPage.vue'
 
 definePageMeta({ layout: false })
