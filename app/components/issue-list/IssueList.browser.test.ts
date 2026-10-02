@@ -31,10 +31,9 @@ const issues = [issueOf('ISS-1', 'First issue'), issueOf('ISS-2', 'Second issue'
 const createDeps = (overrides: Partial<MoveIssuesDialogDeps> = {}): IssueListDeps => ({
   moveIssuesDialog: {
     boardSelect: {
-      loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => ({
-        data: [{ label: 'Sprint board', value: '12' }],
-        status: 'success',
-      })),
+      loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => [
+        { label: 'Sprint board', value: '12' },
+      ]),
     },
     moveIssues: vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => ({
       data: true,

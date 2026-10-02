@@ -21,10 +21,9 @@ const createDeps = (): CreateIssueFormDeps => ({
     })),
   },
   boardSelect: {
-    loadBoards: vi.fn<CreateIssueFormDeps['boardSelect']['loadBoards']>(async () => ({
-      data: [{ label: 'Sprint board', value: '12' }],
-      status: 'success',
-    })),
+    loadBoards: vi.fn<CreateIssueFormDeps['boardSelect']['loadBoards']>(async () => [
+      { label: 'Sprint board', value: '12' },
+    ]),
   },
   create: vi.fn<CreateIssueFormDeps['create']>(async () => ({
     data: { issueKey: 'ISS-1' },

@@ -39,10 +39,7 @@ const createDeps = (overrides: Partial<BacklogPageDeps> = {}): BacklogPageDeps =
   issueList: {
     moveIssuesDialog: {
       boardSelect: {
-        loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => ({
-          data: [],
-          status: 'success',
-        })),
+        loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => []),
       },
       moveIssues: vi.fn<MoveIssuesDialogDeps['moveIssues']>(),
       spaceSelect: {

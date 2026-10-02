@@ -48,10 +48,9 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
     })),
   },
   boardSelect: {
-    loadBoards: vi.fn<IssuePageDeps['boardSelect']['loadBoards']>(async () => ({
-      data: [{ label: 'Sprint board', value: '12' }],
-      status: 'success',
-    })),
+    loadBoards: vi.fn<IssuePageDeps['boardSelect']['loadBoards']>(async () => [
+      { label: 'Sprint board', value: '12' },
+    ]),
   },
   comments: {
     create: vi.fn<IssuePageDeps['comments']['create']>(),
