@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { createCreateIssueFormDeps } from '~/components/create-issue-form/deps-impl'
+import { createCreateIssueFormDeps } from '~/components/create-issue-form/CreateIssueForm.deps.impl'
 
 import type { CreateIssuePageDeps } from '../CreateIssuePage.deps'
 import { createViewCreateIssue } from './viewCreateIssue'

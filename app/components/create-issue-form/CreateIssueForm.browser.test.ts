@@ -2,6 +2,8 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
 import CreateIssueForm from './CreateIssueForm.vue'
 
@@ -22,10 +24,7 @@ const createDeps = (): CreateIssueFormDeps => ({
       { label: 'Sprint board', value: '12' },
     ]),
   },
-  create: vi.fn<CreateIssueFormDeps['create']>(async () => ({
-    data: { issueKey: 'ISS-1' },
-    status: 'success',
-  })),
+  create: vi.fn<CreateIssueFormDeps['create']>(async () => 'ISS-1'),
   description: {
     summarizeContent: vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(async () => ({
       data: { content: 'Improved content', title: null },
@@ -122,10 +121,9 @@ it('creates an issue in a fixed board without showing destination selects', asyn
 it('keeps the form open and shows the message when creation fails', async () => {
   const onCreated = vi.fn<(issueKey: string) => void>()
   const deps = createDeps()
-  deps.create = vi.fn<CreateIssueFormDeps['create']>(async () => ({
-    message: 'This board no longer accepts issues.',
-    status: 'validation-error',
-  }))
+  deps.create = vi
+    .fn<CreateIssueFormDeps['create']>()
+    .mockRejectedValue(new ApiError(400, 'This board no longer accepts issues.'))
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,
     props: {

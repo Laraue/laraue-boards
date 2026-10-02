@@ -2,13 +2,13 @@ import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
-import { createCreateIssue } from './createIssue'
+import { createCreateIssueFormDeps } from './CreateIssueForm.deps.impl'
 
-test('maps the create issue request and response', async () => {
+test('sends the new issue as a form and resolves with its key', async () => {
   const { client, requests } = createTestApiClient(() => new Response('ISS-42'))
 
-  assert.deepEqual(
-    await createCreateIssue(client)({
+  assert.equal(
+    await createCreateIssueFormDeps(client).create({
       assigneeId: '9',
       attributeValues: [
         { attributeId: '3', type: 'text', value: 'Details' },
@@ -19,7 +19,7 @@ test('maps the create issue request and response', async () => {
       statusId: '5',
       title: 'Issue title',
     }),
-    { data: { issueKey: 'ISS-42' }, status: 'success' },
+    'ISS-42',
   )
 
   const form = await requests[0]!.formData()

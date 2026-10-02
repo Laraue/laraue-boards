@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
-import { createCreateIssueFormDeps } from '~/components/create-issue-form/deps-impl'
+import { createCreateIssueFormDeps } from '~/components/create-issue-form/CreateIssueForm.deps.impl'
 import { mapIssueAttributes } from '~/sections/issues/shared/api/issueAttributes'
 
 import type { CreateBacklogIssuePageDeps } from './CreateBacklogIssuePage.deps'

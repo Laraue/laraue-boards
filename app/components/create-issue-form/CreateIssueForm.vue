@@ -88,6 +88,7 @@
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'
 import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vue'
+import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 import IssueAttributeFields from '~/components/issue-attribute-fields/IssueAttributeFields.vue'
 import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
@@ -95,9 +96,15 @@ import IssueDescription from '~/sections/issues/issue/components/IssueDescriptio
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
 import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
-import type { CreateIssueFormProps } from './CreateIssueForm.types'
 
-const props = defineProps<CreateIssueFormProps & { deps: CreateIssueFormDeps }>()
+const props = defineProps<{
+  attributes: IssueAttributeField[]
+  // A fixed destination; without it the user picks the space and the board.
+  board?: { id: string; name: string; spaceKey: string }
+  deps: CreateIssueFormDeps
+  initialStatusId?: string
+  onCreated: (issueKey: string) => Promise<void> | void
+}>()
 
 const { t } = useI18n({
   en: {
@@ -141,23 +148,14 @@ const selectDeps = {
 }
 const boardId = computed(() => props.board?.id ?? form.boardId)
 const spaceKey = computed(() => props.board?.spaceKey ?? form.spaceKey)
-const {
-  execute: create,
-  message,
-  pending,
-} = useAction(props.deps.create, {
-  onSuccess: (issue) => props.onCreated(issue.issueKey),
-})
+const { execute: create, message, pending } = useApiAction(props.deps.create)
 
 const changeFiles = (files: File[]) => {
   form.files = files
 }
 
-const submit = () => {
-  if (!form.content.trim() || !form.statusId || !form.assigneeId) {
-    return
-  }
-  void create({
+const submit = async (): Promise<void> => {
+  const created = await create({
     assigneeId: form.assigneeId,
     attributeValues: getIssueAttributeValueInput(form.attributeValues, props.attributes),
     content: form.content,
@@ -165,6 +163,9 @@ const submit = () => {
     statusId: form.statusId,
     title: form.title,
   })
+  if (created) {
+    await props.onCreated(created.value)
+  }
 }
 </script>
 
