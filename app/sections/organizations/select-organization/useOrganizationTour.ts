@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import type { TourStateDeps, TourStep } from '~/composables/useTour'
 import { useTour } from '~/composables/useTour'
 
-import type { OrganizationPickerItem } from './OrganizationPickerPage.types'
+import type { OrganizationPickerItem } from './OrganizationPickerPage.deps'
 
 export const useOrganizationTour = (
   organizations: Readonly<Ref<OrganizationPickerItem[] | undefined>>,

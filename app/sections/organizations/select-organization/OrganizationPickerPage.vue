@@ -126,9 +126,9 @@ const { t } = useI18n({
 
 useHead({ title: t('organizations') })
 
-const { code, data, message, pending, refresh } = await useQuery(
+const { code, data, message, pending, refresh } = await useApiQuery(
   'organization-picker',
-  (_nuxtApp, { signal }) => props.deps.view({ signal }),
+  (signal) => props.deps.view({ signal }),
 )
 
 // This page has no layout, so nothing else sends a signed-out visitor to the login page.
@@ -150,13 +150,13 @@ const {
   execute: selectOrganization,
   message: selectMessage,
   pending: selecting,
-} = useAction(props.deps.select)
+} = useApiAction(props.deps.select)
 
 const {
   execute: leaveOrganization,
   message: leaveMessage,
   pending: leaving,
-} = useAction(props.deps.leave, { onSuccess: async () => refresh() })
+} = useApiAction(props.deps.leave)
 
 const select = async (organizationId: string, organizationKey: string): Promise<void> => {
   const selected = await selectOrganization({ organizationId })
@@ -165,9 +165,9 @@ const select = async (organizationId: string, organizationKey: string): Promise<
   }
 }
 
-const leave = (id: string, name: string): void => {
-  if (!selecting.value && !leaving.value && confirm(`${t('leave')} ${name}?`)) {
-    void leaveOrganization({ id })
+const leave = async (id: string, name: string): Promise<void> => {
+  if (confirm(`${t('leave')} ${name}?`) && (await leaveOrganization({ id }))) {
+    await refresh()
   }
 }
 </script>
