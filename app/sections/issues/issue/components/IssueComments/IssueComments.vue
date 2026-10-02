@@ -4,10 +4,10 @@
     class="issue-comments">
     <strong class="section-label">{{ t('comments') }}</strong>
     <p
-      v-if="state.message || summarizeMessage"
+      v-if="saveMessage || summarizeMessage"
       class="form-error"
       role="alert">
-      {{ state.message || summarizeMessage }}
+      {{ saveMessage || summarizeMessage }}
     </p>
     <div
       v-if="state.comments.length"
@@ -130,10 +130,7 @@
 <script setup lang="ts">
 import { LoaderCircle, Pencil, Sparkles, Trash2 } from '@lucide/vue'
 
-import { getErrorMessage } from '~/utils/getErrorMessage'
-
-import type { IssueCommentsDeps } from './IssueComments.deps'
-import type { IssueCommentViewModel } from './IssueComments.types'
+import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.deps'
 
 const props = defineProps<{
   deps: IssueCommentsDeps
@@ -141,7 +138,7 @@ const props = defineProps<{
   issueKey: string
 }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: {
     addComment: 'Add comment',
     adding: 'Adding…',
@@ -154,9 +151,7 @@ const { locale, t } = useI18n({
     editCommentBy: 'Edit comment by',
     improveWithAi: 'Clean up with AI',
     improvingWithAi: 'Cleaning up…',
-    loadError: 'Could not load comments.',
     save: 'Save',
-    saveError: 'Could not save comment.',
     saving: 'Saving…',
     writeComment: 'Write a comment',
     writeCommentPlaceholder: 'Write a comment…',
@@ -173,9 +168,7 @@ const { locale, t } = useI18n({
     editCommentBy: 'Изменить комментарий пользователя',
     improveWithAi: 'Привести в порядок с ИИ',
     improvingWithAi: 'Приводим в порядок…',
-    loadError: 'Не удалось загрузить комментарии.',
     save: 'Сохранить',
-    saveError: 'Не удалось сохранить комментарий.',
     saving: 'Сохранение…',
     writeComment: 'Написать комментарий',
     writeCommentPlaceholder: 'Напишите комментарий…',
@@ -188,7 +181,6 @@ const state = reactive({
   comments: props.initialComments,
   editingId: '',
   editText: '',
-  message: '',
   newText: '',
   pendingId: '',
   summarizingId: '',
@@ -198,48 +190,30 @@ const {
   execute: summarizeContent,
   message: summarizeMessage,
   pending: summarizing,
-} = useAction(props.deps.summarizeContent, {
-  onSuccess: (content) => {
-    if (state.summarizingId === 'new') {
-      state.newText = content
-    } else if (state.editingId === state.summarizingId) {
-      state.editText = content
-    }
-  },
-})
+} = useApiAction(props.deps.summarizeContent)
+// Creating, editing and deleting share one message, so they run through one action.
+const { execute: save, message: saveMessage } = useApiAction((action: () => Promise<void>) =>
+  action(),
+)
+const { execute: loadComments } = useApiAction(props.deps.load)
 
 const clearMessage = () => {
-  state.message = ''
+  saveMessage.value = undefined
   summarizeMessage.value = undefined
 }
 
-const refreshComments = async () => {
-  const result = await props.deps.load({ issueKey: props.issueKey })
-
-  if (result.status === 'success') {
-    state.comments = result.data
-  } else {
-    state.message = t('loadError')
-  }
-}
-
-const run = async (pendingId: string, action: () => ReturnType<IssueCommentsDeps['create']>) => {
+const run = async (pendingId: string, action: () => Promise<void>) => {
   clearMessage()
   state.pendingId = pendingId
-  const result = await action()
-
-  if (result.status !== 'success') {
-    state.pendingId = ''
-    state.message =
-      result.status === 'validation-error'
-        ? result.message || getErrorMessage(400, locale.value)
-        : t('saveError')
-    return false
+  const saved = await save(action)
+  if (saved) {
+    const loaded = await loadComments({ issueKey: props.issueKey })
+    if (loaded) {
+      state.comments = loaded.value
+    }
   }
-
-  await refreshComments()
   state.pendingId = ''
-  return true
+  return Boolean(saved)
 }
 
 const create = async () => {
@@ -276,12 +250,17 @@ const improveWithAi = async (id: string) => {
     return
   }
 
-  state.message = ''
+  clearMessage()
   state.summarizingId = id
-  try {
-    await summarizeContent({ content })
-  } finally {
-    state.summarizingId = ''
+  const summary = await summarizeContent({ content })
+  state.summarizingId = ''
+  if (!summary) {
+    return
+  }
+  if (id === 'new') {
+    state.newText = summary.value
+  } else if (state.editingId === id) {
+    state.editText = summary.value
   }
 }
 

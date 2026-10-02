@@ -2,11 +2,12 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
 import type { IssuePageDeps } from '~/sections/issues/issue/IssuePage.deps'
 import type {
   IssuePageSavedIssue,
   IssuePageViewModel,
-} from '~/sections/issues/issue/IssuePage.types'
+} from '~/sections/issues/issue/IssuePage.deps'
 
 import IssueDialog from './IssueDialog.vue'
 
@@ -64,7 +65,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   statusSelect: {
     loadStatuses: vi.fn<IssuePageDeps['statusSelect']['loadStatuses']>(),
   },
-  view: vi.fn<IssuePageDeps['view']>(async () => ({ data: issue, status: 'success' })),
+  view: vi.fn<IssuePageDeps['view']>(async () => issue),
   ...overrides,
 })
 
@@ -79,7 +80,7 @@ afterEach(async () => {
 it('lets the user close an unavailable issue dialog', async () => {
   const onClose = vi.fn<() => void>()
   const deps = createDeps({
-    view: vi.fn<IssuePageDeps['view']>(async () => ({ code: 404, status: 'error' })),
+    view: vi.fn<IssuePageDeps['view']>().mockRejectedValue(new ApiError(404)),
   })
 
   currentWrapper = await mountSuspended(IssueDialog, {
@@ -155,21 +156,18 @@ it('notifies the board and stays open after the issue is saved', async () => {
   const onSaved = vi.fn<(issue: IssuePageSavedIssue) => void>()
   const deps = createDeps({
     saveIssue: vi.fn<IssuePageDeps['saveIssue']>(async () => ({
-      data: {
-        boardId: '12',
-        complete: true,
-        content: 'Document the reproduction steps',
-        issueKey: 'ISS-1',
-        previousBoardId: '12',
-        previousIssueKey: 'ISS-1',
-        previousStatusId: '3',
-        spaceKey: 'product-AB12',
-        statusId: '3',
-        title: 'Fix the bug',
-      },
-      status: 'success',
+      boardId: '12',
+      complete: true,
+      content: 'Document the reproduction steps',
+      issueKey: 'ISS-1',
+      previousBoardId: '12',
+      previousIssueKey: 'ISS-1',
+      previousStatusId: '3',
+      spaceKey: 'product-AB12',
+      statusId: '3',
+      title: 'Fix the bug',
     })),
-    view: vi.fn<IssuePageDeps['view']>(async () => ({ data: issue, status: 'success' })),
+    view: vi.fn<IssuePageDeps['view']>(async () => issue),
   })
 
   currentWrapper = await mountSuspended(IssueDialog, {

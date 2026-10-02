@@ -41,7 +41,7 @@ import { X } from '@lucide/vue'
 import { confirmUnsavedChanges } from '~/composables/useUnsavedChangesWarning'
 import IssueSkeleton from '~/sections/issues/issue/components/IssueSkeleton.vue'
 import type { IssuePageDeps } from '~/sections/issues/issue/IssuePage.deps'
-import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.types'
+import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.deps'
 import IssuePage from '~/sections/issues/issue/IssuePage.vue'
 
 const props = defineProps<{

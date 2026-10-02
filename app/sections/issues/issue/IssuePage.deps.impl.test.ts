@@ -3,7 +3,7 @@ import { assert, test } from 'vitest'
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 
-import { createViewIssue } from './viewIssue'
+import { createIssuePageDeps } from './IssuePage.deps.impl'
 
 test('maps issue detail and comments', async () => {
   const comment = {
@@ -91,14 +91,13 @@ test('maps issue detail and comments', async () => {
         },
   )
 
-  const result = await createViewIssue(client)({ issueKey: 'ISS-1' })
+  const result = await createIssuePageDeps(client).view({ issueKey: 'ISS-1' })
 
-  assert(result.status === 'success')
-  assert.equal(result.data.content, '')
-  assert.equal(result.data.title, 'Fix it')
-  assert.equal(result.data.assigneeIsCurrentUser, true)
-  assert.equal(result.data.owner, 'Grace')
-  assert.deepEqual(result.data.attributes, [
+  assert.equal(result.content, '')
+  assert.equal(result.title, 'Fix it')
+  assert.equal(result.assigneeIsCurrentUser, true)
+  assert.equal(result.owner, 'Grace')
+  assert.deepEqual(result.attributes, [
     {
       color: '#222',
       id: '3',
@@ -129,14 +128,14 @@ test('maps issue detail and comments', async () => {
       value: '2',
     },
   ])
-  assert.deepEqual(result.data.attachments, [
+  assert.deepEqual(result.attachments, [
     {
       id: 'image',
       originalUrl: 'https://api.test/api/files/original',
       previewUrl: 'https://api.test/api/files/preview',
     },
   ])
-  assert.deepEqual(result.data.comments, [
+  assert.deepEqual(result.comments, [
     {
       canModify: true,
       createdAt: '2026-01-03T00:00:00Z',
@@ -147,4 +146,68 @@ test('maps issue detail and comments', async () => {
     },
   ])
   assert.deepEqual(paths(), ['/api/issues/ISS-1', '/api/issues/ISS-1/comments'])
+})
+
+test('returns the new issue key after moving it to another space', async () => {
+  const { client } = createTestApiClient((request) =>
+    request.method === 'PUT' ? new Response(null, { status: 204 }) : { 'ISS-42': 'BACKLOG-9000' },
+  )
+
+  const result = await createIssuePageDeps(client).saveIssue({
+    assigneeId: '4',
+    attributeValues: [],
+    boardId: '8',
+    content: 'Updated issue',
+    files: [],
+    issueKey: 'ISS-42',
+    previousBoardId: '7',
+    previousSpaceKey: 'ISS',
+    previousStatusId: '2',
+    removeAttachmentIds: [],
+    spaceKey: 'BRD',
+    statusId: '3',
+    title: 'Updated title',
+  })
+
+  assert.deepEqual(
+    { issueKey: result.issueKey, previousIssueKey: result.previousIssueKey },
+    { issueKey: 'BACKLOG-9000', previousIssueKey: 'ISS-42' },
+  )
+})
+
+test('reports a partial save when moving the issue fails', async () => {
+  const { client } = createTestApiClient((request) =>
+    request.method === 'PUT'
+      ? new Response(null, { status: 204 })
+      : new Response(null, { status: 503 }),
+  )
+
+  const result = await createIssuePageDeps(client).saveIssue({
+    assigneeId: '4',
+    attributeValues: [],
+    boardId: '8',
+    content: 'Updated issue',
+    files: [],
+    issueKey: 'ISS-42',
+    previousBoardId: '7',
+    previousSpaceKey: 'ISS',
+    previousStatusId: '2',
+    removeAttachmentIds: [],
+    spaceKey: 'BRD',
+    statusId: '3',
+    title: 'Updated title',
+  })
+
+  assert.deepEqual(result, {
+    boardId: '7',
+    complete: false,
+    content: 'Updated issue',
+    issueKey: 'ISS-42',
+    previousBoardId: '7',
+    previousIssueKey: 'ISS-42',
+    previousStatusId: '2',
+    spaceKey: 'ISS',
+    statusId: '2',
+    title: 'Updated title',
+  })
 })

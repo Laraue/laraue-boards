@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { createIssuePageDeps } from '~/sections/issues/issue/deps-impl'
+import { createIssuePageDeps } from '~/sections/issues/issue/IssuePage.deps.impl'
 
 import type { BoardPageDeps } from '../BoardPage.deps'
 import { createLoadMoreBoardIssues } from './loadMoreBoardIssues'

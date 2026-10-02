@@ -2,8 +2,10 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { IssueCommentsDeps } from './IssueComments.deps'
-import type { IssueCommentViewModel } from './IssueComments.types'
+import type { IssueCommentViewModel } from './IssueComments.deps'
 import IssueComments from './IssueComments.vue'
 
 const comments: IssueCommentViewModel[] = [
@@ -18,14 +20,11 @@ const comments: IssueCommentViewModel[] = [
 ]
 
 const createDeps = (overrides: Partial<IssueCommentsDeps> = {}): IssueCommentsDeps => ({
-  create: vi.fn<IssueCommentsDeps['create']>(async () => ({ data: true, status: 'success' })),
-  delete: vi.fn<IssueCommentsDeps['delete']>(async () => ({ data: true, status: 'success' })),
-  load: vi.fn<IssueCommentsDeps['load']>(async () => ({ data: comments, status: 'success' })),
-  summarizeContent: vi.fn<IssueCommentsDeps['summarizeContent']>(async () => ({
-    data: 'Improved content',
-    status: 'success',
-  })),
-  update: vi.fn<IssueCommentsDeps['update']>(async () => ({ data: true, status: 'success' })),
+  create: vi.fn<IssueCommentsDeps['create']>(async () => {}),
+  delete: vi.fn<IssueCommentsDeps['delete']>(async () => {}),
+  load: vi.fn<IssueCommentsDeps['load']>(async () => comments),
+  summarizeContent: vi.fn<IssueCommentsDeps['summarizeContent']>(async () => 'Improved content'),
+  update: vi.fn<IssueCommentsDeps['update']>(async () => {}),
   ...overrides,
 })
 
@@ -46,8 +45,8 @@ const mount = async (deps = createDeps()) => {
 }
 
 it('creates a comment', async () => {
-  const create = vi.fn<IssueCommentsDeps['create']>(async () => ({ data: true, status: 'success' }))
-  const load = vi.fn<IssueCommentsDeps['load']>(async () => ({ data: comments, status: 'success' }))
+  const create = vi.fn<IssueCommentsDeps['create']>(async () => {})
+  const load = vi.fn<IssueCommentsDeps['load']>(async () => comments)
   await mount(createDeps({ create, load }))
 
   await expect.element(page.getByRole('button', { name: 'Add comment' })).not.toBeInTheDocument()
@@ -62,7 +61,7 @@ it('creates a comment', async () => {
 it('keeps the text and shows a validation error when creating a comment fails', async () => {
   const create = vi
     .fn<IssueCommentsDeps['create']>()
-    .mockResolvedValue({ message: 'Comment is too long.', status: 'validation-error' })
+    .mockRejectedValue(new ApiError(400, 'Comment is too long.'))
   await mount(createDeps({ create }))
 
   await page.getByLabelText('Write a comment').fill('New comment')
@@ -73,8 +72,8 @@ it('keeps the text and shows a validation error when creating a comment fails', 
 })
 
 it('edits and deletes a comment', async () => {
-  const update = vi.fn<IssueCommentsDeps['update']>(async () => ({ data: true, status: 'success' }))
-  const remove = vi.fn<IssueCommentsDeps['delete']>(async () => ({ data: true, status: 'success' }))
+  const update = vi.fn<IssueCommentsDeps['update']>(async () => {})
+  const remove = vi.fn<IssueCommentsDeps['delete']>(async () => {})
   vi.stubGlobal('confirm', () => true)
   await mount(createDeps({ delete: remove, update }))
 

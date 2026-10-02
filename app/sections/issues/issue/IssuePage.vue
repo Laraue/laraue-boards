@@ -251,8 +251,7 @@ import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueDescription from './components/IssueDescription/IssueDescription.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
 import IssueSkeleton from './components/IssueSkeleton.vue'
-import type { IssuePageDeps } from './IssuePage.deps'
-import type { IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.types'
+import type { IssuePageDeps, IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.deps'
 
 const props = defineProps<{
   deps: IssuePageDeps
@@ -361,10 +360,10 @@ const {
   message: viewMessage,
   pending,
   refresh,
-} = await useQuery(
+} = await useApiQuery(
   () => `issue:${props.issueKey}`,
-  (_nuxtApp, { signal }) => props.deps.view({ issueKey: props.issueKey, signal }),
-  { lazy: props.lazy, watch: [() => props.issueKey] },
+  (signal) => props.deps.view({ issueKey: props.issueKey, signal }),
+  { lazy: props.lazy },
 )
 
 useHead({ title: computed(() => data.value?.issueKey ?? t('issue')) })
@@ -437,25 +436,20 @@ const {
   execute: saveIssue,
   message: saveMessage,
   pending: saving,
-} = useAction(props.deps.saveIssue, { onSuccess: handleSaved })
+} = useApiAction(props.deps.saveIssue)
 
 const {
   execute: deleteIssue,
   message: deleteMessage,
   pending: deleting,
-} = useAction(props.deps.deleteIssue, {
-  onSuccess: async () => {
-    await props.onDeleted?.(props.issueKey)
-    await leaveAfterIssueChanged()
-  },
-})
+} = useApiAction(props.deps.deleteIssue)
 
 const save = async () => {
   const issue = currentIssue.value
   if (!issue || !canSave.value) {
     return
   }
-  await saveIssue({
+  const saved = await saveIssue({
     assigneeId: state.assigneeId,
     attributeValues: getIssueAttributeValueInput(
       Object.fromEntries(Object.entries(state.attributeValues).filter(([, value]) => value)),
@@ -473,11 +467,15 @@ const save = async () => {
     statusId: state.statusId,
     title: state.title,
   })
+  if (saved) {
+    await handleSaved(saved.value)
+  }
 }
 
 const remove = async () => {
-  if (confirm(t('deleteConfirm'))) {
-    await deleteIssue({ issueKey: props.issueKey })
+  if (confirm(t('deleteConfirm')) && (await deleteIssue({ issueKey: props.issueKey }))) {
+    await props.onDeleted?.(props.issueKey)
+    await leaveAfterIssueChanged()
   }
 }
 

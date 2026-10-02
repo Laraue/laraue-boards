@@ -155,7 +155,7 @@ import type { BoardPageDeps } from '~/sections/boards/board/BoardPage.deps'
 import type { BoardPageFilterValue } from '~/sections/boards/board/BoardPage.types'
 import BoardColumn from '~/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '~/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
-import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.types'
+import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.deps'
 import { getErrorMessage } from '~/utils/getErrorMessage'
 import {
   getIssueAttributeFilterInput,

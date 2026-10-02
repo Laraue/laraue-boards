@@ -1,27 +1,17 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
-
-import type { IssueCommentViewModel } from './IssueComments.types'
-
-export type SummarizeContent = (input: { content: string }) => Promise<ActionResult<string>>
-
-export type CreateComment = (input: {
-  issueKey: string
+export type IssueCommentViewModel = {
+  canModify: boolean
+  createdAt: string
+  id: string
+  owner: { color: string; initials: string; name: string }
   text: string
-}) => Promise<ActionResult<true>>
-
-export type DeleteComment = (input: { id: string }) => Promise<ActionResult<true>>
-
-export type LoadComments = (input: {
-  issueKey: string
-  signal?: AbortSignal
-}) => Promise<QueryResult<IssueCommentViewModel[]>>
-
-export type UpdateComment = (input: { id: string; text: string }) => Promise<ActionResult<true>>
+  updatedAt: string
+}
 
 export type IssueCommentsDeps = {
-  create: CreateComment
-  delete: DeleteComment
-  load: LoadComments
-  summarizeContent: SummarizeContent
-  update: UpdateComment
+  create: (input: { issueKey: string; text: string }) => Promise<void>
+  delete: (input: { id: string }) => Promise<void>
+  load: (input: { issueKey: string; signal?: AbortSignal }) => Promise<IssueCommentViewModel[]>
+  // Resolves with the cleaned up text.
+  summarizeContent: (input: { content: string }) => Promise<string>
+  update: (input: { id: string; text: string }) => Promise<void>
 }

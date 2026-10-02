@@ -1,13 +1,13 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { executeQuery } from '#infrastructure/api/executeQuery'
 import type { components } from '#infrastructure/api/generated'
+import { request } from '#infrastructure/api/request'
 import { diffLines } from '~/components/history-timeline/diffLines'
 import type {
   HistoryChangeViewModel,
   HistoryPageViewModel,
 } from '~/components/history-timeline/HistoryTimeline.types'
 
-import type { LoadIssueHistory } from '../IssueHistory.deps'
+import type { IssueHistoryDeps } from './IssueHistory.deps'
 
 type Schemas = components['schemas']
 type Change = Schemas['HistoryItemChange']
@@ -135,14 +135,14 @@ const mapHistoryPage = (
   }),
 })
 
-export const createLoadIssueHistory =
-  (client: ApiClient): LoadIssueHistory =>
-  ({ issueKey, page }) =>
-    executeQuery({
-      map: (result) => result && mapHistoryPage(result, client.baseUrl),
-      request: () =>
-        client.POST('/api/issues/{key}/history', {
-          body: { pagination: { page, perPage: 20 } },
-          params: { path: { key: issueKey } },
-        }),
-    })
+export const createIssueHistoryDeps = (client: ApiClient): IssueHistoryDeps => ({
+  load: async ({ issueKey, page }) => {
+    const result = await request(
+      client.POST('/api/issues/{key}/history', {
+        body: { pagination: { page, perPage: 20 } },
+        params: { path: { key: issueKey } },
+      }),
+    )
+    return mapHistoryPage(result, client.baseUrl)
+  },
+})

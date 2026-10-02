@@ -2,7 +2,7 @@ import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
-import { createLoadIssueHistory } from './loadIssueHistory'
+import { createIssueHistoryDeps } from './IssueHistory.deps.impl'
 
 test('maps issue history and sends pagination', async () => {
   const { client, paths, requests } = createTestApiClient(() => ({
@@ -89,13 +89,9 @@ test('maps issue history and sends pagination', async () => {
     perPage: 20,
   }))
 
-  const result = await createLoadIssueHistory(client)({ issueKey: 'ISS-1', page: 2 })
+  const result = await createIssueHistoryDeps(client).load({ issueKey: 'ISS-1', page: 2 })
 
-  if (result.status !== 'success') {
-    assert.fail('Expected issue history to load')
-  }
-
-  assert.deepEqual(result.data, {
+  assert.deepEqual(result, {
     hasNextPage: true,
     items: [
       {

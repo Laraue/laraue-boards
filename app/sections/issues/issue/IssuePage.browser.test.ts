@@ -2,8 +2,9 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 
-import type { IssuePageDeps } from './IssuePage.deps'
-import type { IssuePageViewModel } from './IssuePage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type { IssuePageDeps, IssuePageViewModel } from './IssuePage.deps'
 import IssuePage from './IssuePage.vue'
 
 const issue: IssuePageViewModel = {
@@ -53,16 +54,12 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
     create: vi.fn<IssuePageDeps['comments']['create']>(),
     delete: vi.fn<IssuePageDeps['comments']['delete']>(),
     load: vi.fn<IssuePageDeps['comments']['load']>(),
-    summarizeContent: vi.fn<IssuePageDeps['comments']['summarizeContent']>(async () => ({
-      data: 'Improved content',
-      status: 'success',
-    })),
+    summarizeContent: vi.fn<IssuePageDeps['comments']['summarizeContent']>(
+      async () => 'Improved content',
+    ),
     update: vi.fn<IssuePageDeps['comments']['update']>(),
   },
-  deleteIssue: vi.fn<IssuePageDeps['deleteIssue']>(async () => ({
-    data: true,
-    status: 'success',
-  })),
+  deleteIssue: vi.fn<IssuePageDeps['deleteIssue']>(async () => {}),
   description: {
     summarizeContent: vi.fn<IssuePageDeps['description']['summarizeContent']>(async () => ({
       content: 'Improved content',
@@ -70,10 +67,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
     })),
   },
   history: {
-    load: vi.fn<IssuePageDeps['history']['load']>(async () => ({
-      data: { hasNextPage: false, items: [] },
-      status: 'success',
-    })),
+    load: vi.fn<IssuePageDeps['history']['load']>(async () => ({ hasNextPage: false, items: [] })),
   },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {
@@ -86,7 +80,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
       { label: 'To do', value: '3' },
     ]),
   },
-  view: vi.fn<IssuePageDeps['view']>(async () => ({ data: issue, status: 'success' })),
+  view: vi.fn<IssuePageDeps['view']>(async () => issue),
   ...overrides,
 })
 
@@ -113,7 +107,7 @@ afterEach(async () => {
 it('shows the loaded issue', async () => {
   await mount(
     createDeps({
-      view: vi.fn<IssuePageDeps['view']>(async () => ({ data: issue, status: 'success' })),
+      view: vi.fn<IssuePageDeps['view']>(async () => issue),
     }),
   )
 
@@ -124,8 +118,8 @@ it('previews markdown content', async () => {
   await mount(
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
-        data: { ...issue, content: '# Steps\n\nUse **preview**.' },
-        status: 'success',
+        ...issue,
+        content: '# Steps\n\nUse **preview**.',
       })),
     }),
   )
@@ -165,15 +159,9 @@ it('shows comments loaded after creating one', async () => {
     text: 'New comment',
     updatedAt: '2026-01-03T00:00:00Z',
   }
-  const create = vi.fn<IssuePageDeps['comments']['create']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
-  const load = vi.fn<IssuePageDeps['comments']['load']>(async () => ({
-    data: [comment],
-    status: 'success',
-  }))
-  const view = vi.fn<IssuePageDeps['view']>(async () => ({ data: issue, status: 'success' }))
+  const create = vi.fn<IssuePageDeps['comments']['create']>(async () => {})
+  const load = vi.fn<IssuePageDeps['comments']['load']>(async () => [comment])
+  const view = vi.fn<IssuePageDeps['view']>(async () => issue)
 
   await mount(
     createDeps({
@@ -181,10 +169,9 @@ it('shows comments loaded after creating one', async () => {
         create,
         delete: vi.fn<IssuePageDeps['comments']['delete']>(),
         load,
-        summarizeContent: vi.fn<IssuePageDeps['comments']['summarizeContent']>(async () => ({
-          data: 'Improved content',
-          status: 'success',
-        })),
+        summarizeContent: vi.fn<IssuePageDeps['comments']['summarizeContent']>(
+          async () => 'Improved content',
+        ),
         update: vi.fn<IssuePageDeps['comments']['update']>(),
       },
       view,
@@ -202,50 +189,47 @@ it('shows comments loaded after creating one', async () => {
 
 it('loads history only when its tab is opened', async () => {
   const loadHistory = vi.fn<IssuePageDeps['history']['load']>(async () => ({
-    data: {
-      hasNextPage: false,
-      items: [
-        {
-          changes: [
-            {
-              kind: 'status',
+    hasNextPage: false,
+    items: [
+      {
+        changes: [
+          {
+            kind: 'status',
 
-              newColor: null,
-              newValue: 'Done',
-              oldColor: null,
-              oldValue: 'To do',
-            },
-            {
-              commentAction: null,
-              diff: [
-                {
-                  kind: 'removed',
-                  oldLine: 1,
-                  spans: [
-                    { changed: false, text: '- List Item ' },
-                    { changed: true, text: '3' },
-                  ],
-                  text: '- List Item 3',
-                },
-                {
-                  kind: 'added',
-                  newLine: 1,
-                  spans: [
-                    { changed: false, text: '- List Item ' },
-                    { changed: true, text: '4' },
-                  ],
-                  text: '- List Item 4',
-                },
-              ],
-              kind: 'description',
-            },
-          ],
-          createdAt: '2026-01-03T00:00:00Z',
-          owner: { color: '#111', initials: 'A', name: 'Ada Lovelace' },
-        },
-      ],
-    },
-    status: 'success',
+            newColor: null,
+            newValue: 'Done',
+            oldColor: null,
+            oldValue: 'To do',
+          },
+          {
+            commentAction: null,
+            diff: [
+              {
+                kind: 'removed',
+                oldLine: 1,
+                spans: [
+                  { changed: false, text: '- List Item ' },
+                  { changed: true, text: '3' },
+                ],
+                text: '- List Item 3',
+              },
+              {
+                kind: 'added',
+                newLine: 1,
+                spans: [
+                  { changed: false, text: '- List Item ' },
+                  { changed: true, text: '4' },
+                ],
+                text: '- List Item 4',
+              },
+            ],
+            kind: 'description',
+          },
+        ],
+        createdAt: '2026-01-03T00:00:00Z',
+        owner: { color: '#111', initials: 'A', name: 'Ada Lovelace' },
+      },
+    ],
   }))
 
   await mount(createDeps({ history: { load: loadHistory } }))
@@ -283,24 +267,21 @@ it('stays on the page after the issue is saved', async () => {
   const onDirtyChange = vi.fn<(dirty: boolean) => void>()
   const view = vi
     .fn<IssuePageDeps['view']>()
-    .mockResolvedValueOnce({ data: issue, status: 'success' })
+    .mockResolvedValueOnce(issue)
     .mockImplementation(() => new Promise(() => {}))
   await mount(
     createDeps({
       saveIssue: vi.fn<IssuePageDeps['saveIssue']>(async () => ({
-        data: {
-          boardId: '12',
-          complete: true,
-          content: 'Document the reproduction steps',
-          issueKey: 'ISS-1',
-          previousBoardId: '12',
-          previousIssueKey: 'ISS-1',
-          previousStatusId: '3',
-          spaceKey: '7',
-          statusId: '3',
-          title: 'Fix the bug',
-        },
-        status: 'success',
+        boardId: '12',
+        complete: true,
+        content: 'Document the reproduction steps',
+        issueKey: 'ISS-1',
+        previousBoardId: '12',
+        previousIssueKey: 'ISS-1',
+        previousStatusId: '3',
+        spaceKey: '7',
+        statusId: '3',
+        title: 'Fix the bug',
       })),
       view,
     }),
@@ -321,10 +302,7 @@ it('stays on the page after the issue is saved', async () => {
 it('hides the actions when the issue cannot be edited', async () => {
   await mount(
     createDeps({
-      view: vi.fn<IssuePageDeps['view']>(async () => ({
-        data: { ...issue, canEdit: false },
-        status: 'success',
-      })),
+      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, canEdit: false })),
     }),
   )
 
@@ -335,8 +313,8 @@ it('hides the actions when the issue cannot be edited', async () => {
 it('reloads the issue when the failed request is retried', async () => {
   const view = vi
     .fn<IssuePageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: issue, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(issue)
 
   await mount(createDeps({ view }))
 
