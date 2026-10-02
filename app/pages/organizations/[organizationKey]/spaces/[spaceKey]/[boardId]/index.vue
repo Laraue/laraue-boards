@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import { onBeforeRouteUpdate, type LocationQueryRaw } from 'vue-router'
 
-import BoardPage from '~/sections/boards/board/BoardPage.vue'
 import { createBoardPageDeps } from '~/sections/boards/board/BoardPage.deps.impl'
+import BoardPage from '~/sections/boards/board/BoardPage.vue'
 import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.deps'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-boardId')
