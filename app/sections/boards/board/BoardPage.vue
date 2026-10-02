@@ -231,9 +231,9 @@ const state = reactive({
   closingIssueDialog: false,
   dragging: false,
   dragSnapshot: null as BoardPageViewModel | null,
+  failedColumnIds: new Set<string>(),
   filtering: false,
   loadingColumnIds: new Set<string>(),
-  failedColumnIds: new Set<string>(),
   movingIssueKeys: new Set<string>(),
 })
 
