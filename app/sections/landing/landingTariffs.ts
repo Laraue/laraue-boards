@@ -1,9 +1,8 @@
 import type { components } from '#infrastructure/api/billing.generated'
 import type { BillingApiClient } from '#infrastructure/api/client'
-import { executeQuery } from '#infrastructure/api/executeQuery'
+import { request } from '#infrastructure/api/request'
 
-import type { GetTariffs } from '../LandingPage.deps'
-import type { LandingTariff, LandingTariffs } from '../LandingPage.types'
+import type { LandingCurrency, LandingTariff, LandingTariffs } from './LandingPage.deps'
 
 type Schemas = components['schemas']
 type PersonalTariff = Schemas['PersonalSubscriptionLaraueBoardsPersonalSubscription']
@@ -46,20 +45,20 @@ const mapTariff = (
   tokens: toNumber(tariff.includedTokensCount),
 })
 
-// The response type is given explicitly: the endpoint documents no error responses, so it cannot
-// be inferred from the request.
-export const createGetTariffs =
-  (client: BillingApiClient): GetTariffs =>
-  (currency) =>
-    executeQuery<Schemas['GetServiceTariffsResponse'], LandingTariffs>({
-      map: (data) => ({
-        personal: data.personalSubscriptions
-          .filter(isBoardsTariff)
-          .map((tariff) => mapTariff(tariff, tariff.limitFreeTeamOrganizationsCount ?? null)),
-        team: data.teamSubscriptions.map((tariff) => mapTariff(tariff)),
-      }),
-      request: () =>
-        client.GET('/api/tariffs', {
-          params: { query: { CurrencyCode: currency, ServiceId: 'LaraueBoards' } },
-        }),
-    })
+// Billing's tariffs for the landing page, read on the server by `server/routes/landing`.
+export const loadLandingTariffs = async (
+  client: BillingApiClient,
+  currency: LandingCurrency,
+): Promise<LandingTariffs> => {
+  const data = await request(
+    client.GET('/api/tariffs', {
+      params: { query: { CurrencyCode: currency, ServiceId: 'LaraueBoards' } },
+    }),
+  )
+  return {
+    personal: data.personalSubscriptions
+      .filter(isBoardsTariff)
+      .map((tariff) => mapTariff(tariff, tariff.limitFreeTeamOrganizationsCount ?? null)),
+    team: data.teamSubscriptions.map((tariff) => mapTariff(tariff)),
+  }
+}

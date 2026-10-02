@@ -1,6 +1,6 @@
-import { assert, test } from 'vitest'
+import { assert, expect, test } from 'vitest'
 
-import { createGetDocsPage, createGetDocsTree } from './docsRequests'
+import { createDocsPageDeps } from './DocsPage.deps.impl'
 
 test('requests the docs tree of the language', async () => {
   const requests: { options: unknown; url: string }[] = []
@@ -17,18 +17,18 @@ test('requests the docs tree of the language', async () => {
     },
     path: [],
   }
-  const getTree = createGetDocsTree(async (url, options) => {
+  const { getTree } = createDocsPageDeps(async (url, options) => {
     requests.push({ options, url })
     return tree
   })
 
-  assert.deepEqual(await getTree('ru'), { data: tree, status: 'success' })
+  assert.deepEqual(await getTree('ru'), tree)
   assert.deepEqual(requests, [{ options: undefined, url: '/docs-content/ru' }])
 })
 
 test('requests a page by its path', async () => {
   const requests: { options: unknown; url: string }[] = []
-  const getPage = createGetDocsPage(async (url, options) => {
+  const { getPage } = createDocsPageDeps(async (url, options) => {
     requests.push({ options, url })
     return {}
   })
@@ -43,17 +43,17 @@ test('requests a page by its path', async () => {
 })
 
 test('reports the status code of a failed request', async () => {
-  const getPage = createGetDocsPage(async () => {
+  const { getPage } = createDocsPageDeps(async () => {
     throw Object.assign(new Error('Not Found'), { statusCode: 404 })
   })
 
-  assert.deepEqual(await getPage('en', ['missing']), { code: 404, status: 'error' })
+  await expect(getPage('en', ['missing'])).rejects.toMatchObject({ status: 404 })
 })
 
 test('reports a network failure', async () => {
-  const getTree = createGetDocsTree(async () => {
+  const { getTree } = createDocsPageDeps(async () => {
     throw new Error('offline')
   })
 
-  assert.deepEqual(await getTree('en'), { code: 0, status: 'error' })
+  await expect(getTree('en')).rejects.toMatchObject({ status: 0 })
 })

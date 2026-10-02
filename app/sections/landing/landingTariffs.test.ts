@@ -1,8 +1,8 @@
-import { assert, test } from 'vitest'
+import { assert, expect, test } from 'vitest'
 
 import { createTestBillingApiClient } from '#infrastructure/api/testApiClient'
 
-import { createGetTariffs } from './getTariffs'
+import { loadLandingTariffs } from './landingTariffs'
 
 const personal = {
   billingPeriod: 'Forever',
@@ -23,7 +23,7 @@ test('requests the Boards tariffs in the chosen currency', async () => {
     teamSubscriptions: [],
   }))
 
-  await createGetTariffs(client)('RUB')
+  await loadLandingTariffs(client, 'RUB')
 
   const url = new URL(requests[0]!.url)
   assert.equal(url.pathname, '/api/tariffs')
@@ -48,36 +48,33 @@ test('maps billing tariffs to the landing view model', async () => {
     ],
   }))
 
-  assert.deepEqual(await createGetTariffs(client)('USD'), {
-    data: {
-      personal: [
-        {
-          billing: { duration: 1, period: 'forever' },
-          currencyCode: 'USD',
-          formattedPrice: '0$',
-          freeOrganizations: 1,
-          id: 'free',
-          issuesPerMonth: 500,
-          price: 0,
-          title: 'Free',
-          tokens: 0,
-        },
-      ],
-      team: [
-        {
-          billing: { duration: 3, period: 'month' },
-          currencyCode: 'USD',
-          formattedPrice: '0$',
-          freeOrganizations: undefined,
-          id: 'free',
-          issuesPerMonth: undefined,
-          price: 6,
-          title: 'Team',
-          tokens: 750000,
-        },
-      ],
-    },
-    status: 'success',
+  assert.deepEqual(await loadLandingTariffs(client, 'USD'), {
+    personal: [
+      {
+        billing: { duration: 1, period: 'forever' },
+        currencyCode: 'USD',
+        formattedPrice: '0$',
+        freeOrganizations: 1,
+        id: 'free',
+        issuesPerMonth: 500,
+        price: 0,
+        title: 'Free',
+        tokens: 0,
+      },
+    ],
+    team: [
+      {
+        billing: { duration: 3, period: 'month' },
+        currencyCode: 'USD',
+        formattedPrice: '0$',
+        freeOrganizations: undefined,
+        id: 'free',
+        issuesPerMonth: undefined,
+        price: 6,
+        title: 'Team',
+        tokens: 750000,
+      },
+    ],
   })
 })
 
@@ -90,13 +87,10 @@ test('treats a personal tariff without an organization limit as unlimited', asyn
     teamSubscriptions: [],
   }))
 
-  const result = await createGetTariffs(client)('USD')
+  const result = await loadLandingTariffs(client, 'USD')
 
-  assert.equal(result.status, 'success')
   assert.deepEqual(
-    result.status === 'success'
-      ? result.data.personal.map((tariff) => tariff.freeOrganizations)
-      : [],
+    result.personal.map((tariff) => tariff.freeOrganizations),
     [null, null],
   )
 })
@@ -107,14 +101,11 @@ test('skips tariffs of other services', async () => {
     teamSubscriptions: [],
   }))
 
-  assert.deepEqual(await createGetTariffs(client)('USD'), {
-    data: { personal: [], team: [] },
-    status: 'success',
-  })
+  assert.deepEqual(await loadLandingTariffs(client, 'USD'), { personal: [], team: [] })
 })
 
 test('reports the status code of a failed response', async () => {
   const { client } = createTestBillingApiClient(() => new Response(null, { status: 503 }))
 
-  assert.deepEqual(await createGetTariffs(client)('USD'), { code: 503, status: 'error' })
+  await expect(loadLandingTariffs(client, 'USD')).rejects.toMatchObject({ status: 503 })
 })

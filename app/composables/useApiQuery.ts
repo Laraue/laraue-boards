@@ -9,9 +9,10 @@ type Loaded<Value> = { code: number; status: 'error' } | { status: 'success'; va
 export const useApiQuery = async <Value>(
   key: (() => string) | string,
   query: (signal: AbortSignal | undefined) => Promise<Value>,
-  options?: { immediate?: boolean; lazy?: boolean },
+  options?: { cached?: boolean; immediate?: boolean; lazy?: boolean },
 ) => {
   const locale = useLocale()
+  const { cached, ...asyncDataOptions } = options ?? {}
   const asyncData = await useAsyncData(
     key,
     async (_nuxtApp, { signal }): Promise<Loaded<Value>> => {
@@ -24,7 +25,18 @@ export const useApiQuery = async <Value>(
         return { code: error.status, status: 'error' }
       }
     },
-    options,
+    {
+      ...asyncDataOptions,
+      // A cached query reuses its last successful answer instead of loading it again.
+      ...(cached
+        ? {
+            getCachedData: (cacheKey, nuxtApp) => {
+              const previous = nuxtApp.payload.data[cacheKey] as Loaded<Value> | undefined
+              return previous?.status === 'success' ? previous : undefined
+            },
+          }
+        : {}),
+    },
   )
 
   const data = computed(() =>

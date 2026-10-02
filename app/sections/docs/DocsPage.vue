@@ -55,19 +55,18 @@ const { t } = useI18n(
 )
 
 const pageKey = `docs-page-${props.locale}-${props.path.join('/')}`
-const [{ data: tree }, { data: result }] = await Promise.all([
+const [{ data: tree }, { code, data: result }] = await Promise.all([
   // The menu is the same on every page: it is loaded once per language.
-  useQuery(`docs-tree-${props.locale}`, () => props.deps.getTree(props.locale), { cached: true }),
-  useAsyncData(pageKey, () => props.deps.getPage(props.locale, props.path)),
+  useApiQuery(`docs-tree-${props.locale}`, () => props.deps.getTree(props.locale), {
+    cached: true,
+  }),
+  useApiQuery(pageKey, () => props.deps.getPage(props.locale, props.path)),
 ])
 
-if (result.value?.status !== 'success' || !tree.value) {
-  throw createError({
-    fatal: true,
-    statusCode: result.value?.status === 'error' ? result.value.code || 500 : 500,
-  })
+if (!result.value || !tree.value) {
+  throw createError({ fatal: true, statusCode: code.value || 500 })
 }
-const page = result.value.data
+const page = result.value
 const menu = tree.value
 
 const otherLocale: Locale = props.locale === 'ru' ? 'en' : 'ru'
