@@ -90,12 +90,10 @@ onNuxtReady(async () => {
   }
 })
 
-const { execute: executeLogout, pending: loggingOut } = useAction(props.deps.logout, {
-  onSuccess: props.onLoggedOut,
-})
-const logout = () => {
-  if (!loggingOut.value) {
-    void executeLogout()
+const { execute: executeLogout, pending: loggingOut } = useApiAction(props.deps.logout)
+const logout = async () => {
+  if (!loggingOut.value && (await executeLogout())) {
+    await props.onLoggedOut()
   }
 }
 </script>

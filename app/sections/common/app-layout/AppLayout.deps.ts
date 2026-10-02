@@ -1,9 +1,25 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
 import type { TourStateDeps } from '~/composables/useTour'
 
-import type { AppLayoutData } from './AppLayout.types'
-
-export type Logout = () => Promise<ActionResult<true>>
+export type AppLayoutData = {
+  organization: {
+    canCreateSpaces: boolean
+    canManage: boolean
+    canManageAttributes: boolean
+    canMassMove: boolean
+    canUpdate: boolean
+    canViewBilling: boolean
+    color: string
+    id: string
+    initial: string
+    name: string
+  }
+  spaces: Array<{
+    color: string
+    key: string
+    name: string
+  }>
+  user: { color: string; initials: string; name: string; tariffName: string }
+}
 
 export type AppLayoutProblem =
   | { code: number; kind: 'load-failed' }
@@ -24,7 +40,8 @@ export type ViewAppLayout = (input: {
 }) => Promise<AppLayoutResult>
 
 export type AppLayoutDeps = {
-  logout: Logout
+  // Never fails: signing out goes ahead even when the request does.
+  logout: () => Promise<void>
   tour: TourStateDeps
   view: ViewAppLayout
 }

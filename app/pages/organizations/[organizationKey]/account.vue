@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
+import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
 import OrganizationAccountPage from '~/sections/organizations/account/OrganizationAccountPage.vue'
 
 const organizationRoutes = useOrganizationRoutes()

@@ -198,7 +198,7 @@ import {
 } from '@lucide/vue'
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
-import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
+import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
 import { docsPath } from '~/sections/docs/docsPaths'
 
 const props = defineProps<{
