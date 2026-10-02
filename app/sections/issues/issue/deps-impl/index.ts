@@ -5,7 +5,7 @@ import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.dep
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
 
 import { createIssueCommentsDeps } from '../components/IssueComments/deps-impl'
-import { createIssueDescriptionDeps } from '../components/IssueDescription/deps-impl'
+import { createIssueDescriptionDeps } from '../components/IssueDescription/IssueDescription.deps.impl'
 import { createIssueHistoryDeps } from '../components/IssueHistory/deps-impl'
 import type { IssuePageDeps } from '../IssuePage.deps'
 import { createDeleteIssue } from './deleteIssue'

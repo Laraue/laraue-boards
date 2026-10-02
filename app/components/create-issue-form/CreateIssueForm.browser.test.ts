@@ -27,8 +27,8 @@ const createDeps = (): CreateIssueFormDeps => ({
   create: vi.fn<CreateIssueFormDeps['create']>(async () => 'ISS-1'),
   description: {
     summarizeContent: vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(async () => ({
-      data: { content: 'Improved content', title: null },
-      status: 'success',
+      content: 'Improved content',
+      title: null,
     })),
   },
   spaceSelect: {
@@ -148,10 +148,7 @@ it('keeps the form open and shows the message when creation fails', async () => 
 it('fills the title and the content with the AI summary', async () => {
   const deps = createDeps()
   deps.description.summarizeContent = vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(
-    async () => ({
-      data: { content: '- Login fails on retry', title: 'Fix login retry' },
-      status: 'success',
-    }),
+    async () => ({ content: '- Login fails on retry', title: 'Fix login retry' }),
   )
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,

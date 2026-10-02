@@ -65,8 +65,8 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   })),
   description: {
     summarizeContent: vi.fn<IssuePageDeps['description']['summarizeContent']>(async () => ({
-      data: { content: 'Improved content', title: null },
-      status: 'success',
+      content: 'Improved content',
+      title: null,
     })),
   },
   history: {

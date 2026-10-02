@@ -27,7 +27,7 @@
             :disabled="summarizing || !model.trim()"
             :title="t('improveWithAiHint')"
             type="button"
-            @click="summarizeContent({ content: model })">
+            @click="summarizeContent">
             <LoaderCircle
               v-if="summarizing"
               class="markdown-toolbar-spinner" />
@@ -281,17 +281,20 @@ const model = defineModel<string>({ required: true })
 const titleModel = defineModel<string>('title', { default: '' })
 const state = reactive({ editing: false })
 const {
-  execute: summarizeContent,
+  execute: summarize,
   message,
   pending: summarizing,
-} = useAction(props.deps.summarizeContent, {
-  onSuccess: (summary) => {
-    model.value = summary.content
-    if (summary.title) {
-      titleModel.value = summary.title
-    }
-  },
-})
+} = useApiAction(props.deps.summarizeContent)
+const summarizeContent = async (): Promise<void> => {
+  const summary = await summarize({ content: model.value })
+  if (!summary) {
+    return
+  }
+  model.value = summary.value.content
+  if (summary.value.title) {
+    titleModel.value = summary.value.title
+  }
+}
 const clearMessage = () => {
   message.value = undefined
 }

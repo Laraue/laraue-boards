@@ -4,7 +4,7 @@ import { createAssigneeSelectDeps } from '~/components/assignee-select/AssigneeS
 import { createBoardSelectDeps } from '~/components/board-select/BoardSelect.deps.impl'
 import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps.impl'
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
-import { createIssueDescriptionDeps } from '~/sections/issues/issue/components/IssueDescription/deps-impl'
+import { createIssueDescriptionDeps } from '~/sections/issues/issue/components/IssueDescription/IssueDescription.deps.impl'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { createIssueFormData } from '~/sections/issues/shared/api/issueFormData'
 
