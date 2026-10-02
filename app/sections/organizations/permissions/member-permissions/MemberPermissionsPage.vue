@@ -31,8 +31,10 @@
 
 <script setup lang="ts">
 import MemberPermissionsForm from '~/sections/organizations/permissions/member-permissions/components/MemberPermissionsForm/MemberPermissionsForm.vue'
-import type { MemberPermissionsPageDeps } from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.deps'
-import type { MemberPermissions } from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.types'
+import type {
+  MemberPermissions,
+  MemberPermissionsPageDeps,
+} from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.deps'
 
 const props = defineProps<{
   deps: MemberPermissionsPageDeps
@@ -59,10 +61,9 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `member-permissions:${props.memberId}`,
-  (_nuxtApp, { signal }) => props.deps.view({ memberId: props.memberId, signal }),
-  { watch: [() => props.memberId] },
+  (signal) => props.deps.view({ memberId: props.memberId, signal }),
 )
 
 useHead({
@@ -77,19 +78,14 @@ const {
   execute: submit,
   message: submitMessage,
   pending: submitting,
-} = useAction<[MemberPermissions], true>(
-  (permissions) => props.deps.update({ memberId: props.memberId, permissions }),
-  {
-    onSuccess: async () => {
-      await props.onSaved()
-      saved.value = true
-    },
-  },
-)
+} = useApiAction(props.deps.update)
 
 const submitForm = async (permissions: MemberPermissions): Promise<void> => {
   saved.value = false
-  await submit(permissions)
+  if (await submit({ memberId: props.memberId, permissions })) {
+    await props.onSaved()
+    saved.value = true
+  }
 }
 </script>
 

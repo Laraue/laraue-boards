@@ -1,20 +1,64 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
-import type { QueryResult } from '#infrastructure/api/apiResult'
+export type AdminPermissions = {
+  canDeleteOrganization: boolean
+  canManageAttributes: boolean
+  canManageMembers: boolean
+  canMoveData: boolean
+  canUpdateOrganization: boolean
+}
 
-import type { MemberPermissions } from './MemberPermissionsPage.types'
-import type { MemberPermissionsPageData } from './MemberPermissionsPage.types'
+export type GlobalPermissions = {
+  canCreateBoards: boolean
+  canCreateIssues: boolean
+  canCreateSpaces: boolean
+  canDeleteBoards: boolean
+  canDeleteIssues: boolean
+  canDeleteSpaces: boolean
+  canManageRetros: boolean
+  canRead: boolean
+  canUpdateBoards: boolean
+  canUpdateIssues: boolean
+  canUpdateSpaces: boolean
+}
 
-export type UpdateMemberPermissions = (input: {
-  memberId: string
+export type DirectSpacePermissions = {
+  canCreateBoards: boolean
+  canCreateIssues: boolean
+  canDelete: boolean
+  canDeleteBoards: boolean
+  canDeleteIssues: boolean
+  canManageRetros: boolean
+  canRead: boolean
+  canUpdate: boolean
+  canUpdateBoards: boolean
+  canUpdateIssues: boolean
+}
+
+export type MemberPermissions = {
+  admin: AdminPermissions
+  direct: Record<string, DirectSpacePermissions>
+  global: GlobalPermissions
+}
+
+export type MemberPermissionsPageData = {
+  member: {
+    color: string
+    id: string
+    initials: string
+    isAdmin: boolean
+    isOwner: boolean
+    name: string
+  }
   permissions: MemberPermissions
-}) => Promise<ActionResult<true>>
-
-export type ViewMemberPermissions = (input: {
-  memberId: string
-  signal?: AbortSignal
-}) => Promise<QueryResult<MemberPermissionsPageData>>
+  spaces: Array<{
+    color: string
+    id: string
+    isDefault: boolean
+    name: string
+  }>
+}
 
 export type MemberPermissionsPageDeps = {
-  update: UpdateMemberPermissions
-  view: ViewMemberPermissions
+  update: (input: { memberId: string; permissions: MemberPermissions }) => Promise<void>
+  // Rejects with a 404 when the organization has no such member.
+  view: (input: { memberId: string; signal?: AbortSignal }) => Promise<MemberPermissionsPageData>
 }

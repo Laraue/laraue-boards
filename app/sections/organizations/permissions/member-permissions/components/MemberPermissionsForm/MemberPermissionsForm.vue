@@ -162,7 +162,7 @@ import type {
   GlobalPermissions,
   MemberPermissions,
   MemberPermissionsPageData,
-} from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.types'
+} from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.deps'
 
 import PermissionTable from './components/PermissionTable.vue'
 import {

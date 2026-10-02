@@ -2,10 +2,12 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { ActionResult } from '#infrastructure/api/apiResult'
+import { ApiError } from '#infrastructure/api/request'
 
-import type { MemberPermissionsPageDeps } from './MemberPermissionsPage.deps'
-import type { MemberPermissionsPageData } from './MemberPermissionsPage.types'
+import type {
+  MemberPermissionsPageData,
+  MemberPermissionsPageDeps,
+} from './MemberPermissionsPage.deps'
 import MemberPermissionsPage from './MemberPermissionsPage.vue'
 
 const pageData: MemberPermissionsPageData = {
@@ -64,14 +66,8 @@ const ownerPageData: MemberPermissionsPageData = {
 const createDeps = (
   overrides: Partial<MemberPermissionsPageDeps> = {},
 ): MemberPermissionsPageDeps => ({
-  update: vi.fn<MemberPermissionsPageDeps['update']>(async () => ({
-    data: true,
-    status: 'success',
-  })),
-  view: vi.fn<MemberPermissionsPageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  })),
+  update: vi.fn<MemberPermissionsPageDeps['update']>(async () => {}),
+  view: vi.fn<MemberPermissionsPageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
@@ -101,10 +97,7 @@ it('shows the member and their current permissions', async () => {
 })
 
 it('submits updated permissions and reports success', async () => {
-  const update = vi.fn<MemberPermissionsPageDeps['update']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const update = vi.fn<MemberPermissionsPageDeps['update']>(async () => {})
   const onSaved = vi.fn<() => void>()
 
   await mount(createDeps({ update }), onSaved)
@@ -124,12 +117,9 @@ it('submits updated permissions and reports success', async () => {
 })
 
 it('keeps the form open and shows the message when saving fails', async () => {
-  const update = vi.fn<MemberPermissionsPageDeps['update']>(
-    async (): Promise<ActionResult<true>> => ({
-      message: 'This member is no longer in the organization.',
-      status: 'validation-error',
-    }),
-  )
+  const update = vi.fn<MemberPermissionsPageDeps['update']>(async () => {
+    throw new ApiError(400, 'This member is no longer in the organization.')
+  })
   const onSaved = vi.fn<() => void>()
 
   await mount(createDeps({ update }), onSaved)
@@ -145,8 +135,8 @@ it('keeps the form open and shows the message when saving fails', async () => {
 it('reloads the member when the failed request is retried', async () => {
   const view = vi
     .fn<MemberPermissionsPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps({ view }), vi.fn<() => void>())
 
@@ -156,10 +146,7 @@ it('reloads the member when the failed request is retried', async () => {
 })
 
 it('disables the form for the organization owner', async () => {
-  const view = vi.fn<MemberPermissionsPageDeps['view']>(async () => ({
-    data: ownerPageData,
-    status: 'success',
-  }))
+  const view = vi.fn<MemberPermissionsPageDeps['view']>(async () => ownerPageData)
 
   await mount(createDeps({ view }), vi.fn<() => void>())
 

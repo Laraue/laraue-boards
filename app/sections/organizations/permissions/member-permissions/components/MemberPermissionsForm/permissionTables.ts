@@ -4,7 +4,7 @@ import type {
   GlobalPermissions,
   MemberPermissions,
   MemberPermissionsPageData,
-} from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.types'
+} from '~/sections/organizations/permissions/member-permissions/MemberPermissionsPage.deps'
 
 export type PermissionCell<Key extends string> = {
   checked: boolean
