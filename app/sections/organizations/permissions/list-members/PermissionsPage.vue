@@ -127,9 +127,9 @@ const organizationRoutes = useOrganizationRoutes()
 
 useHead({ title: t('permissions') })
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   'organization-permissions',
-  (_nuxtApp, { signal }) => props.deps.view({ signal }),
+  (signal) => props.deps.view({ signal }),
 )
 
 const state = reactive({
@@ -164,16 +164,16 @@ const {
   execute: regenerateJoinCode,
   message: regenerateMessage,
   pending: regenerating,
-} = useAction(props.deps.regenerateJoinCode, {
-  onSuccess: (code) => {
+} = useApiAction(props.deps.regenerateJoinCode)
+const regenerate = async (): Promise<void> => {
+  if (!confirm(t('regenerateConfirm'))) {
+    return
+  }
+  const regenerated = await regenerateJoinCode()
+  if (regenerated) {
     state.copied = false
     state.copyError = ''
-    state.joinCode = code
-  },
-})
-const regenerate = (): void => {
-  if (confirm(t('regenerateConfirm'))) {
-    void regenerateJoinCode()
+    state.joinCode = regenerated.value
   }
 }
 </script>
