@@ -1,0 +1,20 @@
+import type { ApiClient } from '#infrastructure/api/client'
+import { ApiError, request } from '#infrastructure/api/request'
+import { createCreateIssueFormDeps } from '~/components/create-issue-form/CreateIssueForm.deps.impl'
+import { mapIssueAttributes } from '~/sections/issues/shared/api/issueAttributes'
+
+import type { CreateBoardIssuePageDeps } from './CreateBoardIssuePage.deps'
+
+export const createCreateBoardIssuePageDeps = (client: ApiClient): CreateBoardIssuePageDeps => ({
+  form: createCreateIssueFormDeps(client),
+  view: async ({ boardId, signal }) => {
+    const [board, attributes] = await Promise.all([
+      request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
+      request(client.GET('/api/organizations/attributes', { signal })),
+    ])
+    if (!board.canCreateIssues) {
+      throw new ApiError(403)
+    }
+    return { attributes: mapIssueAttributes(attributes), boardName: board.name }
+  },
+})
