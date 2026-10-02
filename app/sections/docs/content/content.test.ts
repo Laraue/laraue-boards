@@ -16,7 +16,8 @@ const listFiles = (folder: string): string[] =>
 const files = Object.fromEntries(
   listFiles(docsFolder)
     .filter((path) => path.endsWith('.md'))
-    .map((path) => [relative(docsFolder, path), readFileSync(path, 'utf8')]),
+    // Keys use `/` like the app's own file list, also on Windows where `relative` gives `\`.
+    .map((path) => [relative(docsFolder, path).replaceAll('\\', '/'), readFileSync(path, 'utf8')]),
 )
 
 // The real documentation, not fixtures: a broken file or link should fail the build.
