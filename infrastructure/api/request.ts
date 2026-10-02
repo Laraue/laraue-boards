@@ -1,5 +1,8 @@
 import { getInvalidInputError, getResponseMessage } from './getInvalidInputError'
-import type { ApiResponse } from './tryRequest'
+
+type ApiResponse<Data, Error = unknown> =
+  | { data: Data; error?: never; response: Response }
+  | { data?: never; error: Error; response: Response }
 
 /** A request the API did not fulfil. `status` is 0 when no response came back; `reason` is the
  * backend's own text for the user (validation errors, payment required), empty otherwise. */

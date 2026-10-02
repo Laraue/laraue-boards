@@ -215,13 +215,21 @@ const addOption = () => {
   }
 }
 
-const toInput = ({ color, data, id, name }: AttributeDraft): UpdateAttributeInput => {
-  switch (data.type) {
+const toInput = ({
+  color,
+  data: attributeData,
+  id,
+  name,
+}: AttributeDraft): UpdateAttributeInput => {
+  switch (attributeData.type) {
     case 'list':
       return {
         color,
         data: {
-          listValues: data.listValues.map((option) => ({ id: option.id, name: option.name })),
+          listValues: attributeData.listValues.map((option) => ({
+            id: option.id,
+            name: option.name,
+          })),
           type: 'list',
         },
         id,
@@ -232,9 +240,9 @@ const toInput = ({ color, data, id, name }: AttributeDraft): UpdateAttributeInpu
     case 'decimal':
     case 'date':
     case 'dateTime':
-      return { color, data: { type: data.type }, id, name }
+      return { color, data: { type: attributeData.type }, id, name }
     default:
-      return assertNever(data)
+      return assertNever(attributeData)
   }
 }
 

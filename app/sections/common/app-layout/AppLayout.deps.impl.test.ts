@@ -1,4 +1,4 @@
-import { assert, test } from 'vitest'
+import { assert, expect, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
@@ -136,8 +136,8 @@ test('selects the organization from the url when only the organization cookie is
   assert.include(paths(), '/api/organizations/login')
 })
 
-test('clears the local session even when logout request fails', async () => {
+test('allows logout to finish even when the request fails', async () => {
   const { client } = createTestApiClient(() => new Response(null, { status: 503 }))
 
-  await createAppLayoutDeps(client).logout()
+  await expect(createAppLayoutDeps(client).logout()).resolves.toBeUndefined()
 })

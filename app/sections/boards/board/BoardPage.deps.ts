@@ -61,7 +61,11 @@ export type BoardPageDeps = {
     target?: { issueKey: string; position: 'After' | 'Before' }
     updateStatus: boolean
   }) => Promise<void>
-  moveIssueToBacklog: (input: { boardId: string; issueKey: string; spaceKey: string }) => Promise<void>
+  moveIssueToBacklog: (input: {
+    boardId: string
+    issueKey: string
+    spaceKey: string
+  }) => Promise<void>
   searchBoardIssues: (input: {
     boardId: string
     filters: IssueFilter[]

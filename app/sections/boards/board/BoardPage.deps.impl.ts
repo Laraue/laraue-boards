@@ -2,10 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
 import { createIssuePageDeps } from '~/sections/issues/issue/IssuePage.deps.impl'
-import {
-  mapIssueFilters,
-  mapRawIssueFilters,
-} from '~/sections/issues/shared/api/issueAttributes'
+import { mapIssueFilters, mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
 
 import type { BoardPageDeps, SearchBoardIssuesResult } from './BoardPage.deps'
 

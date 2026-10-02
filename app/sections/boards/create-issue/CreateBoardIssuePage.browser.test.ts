@@ -2,7 +2,10 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { CreateBoardIssuePageData, CreateBoardIssuePageDeps } from './CreateBoardIssuePage.deps'
+import type {
+  CreateBoardIssuePageData,
+  CreateBoardIssuePageDeps,
+} from './CreateBoardIssuePage.deps'
 import CreateBoardIssuePage from './CreateBoardIssuePage.vue'
 
 const pageData: CreateBoardIssuePageData = {
