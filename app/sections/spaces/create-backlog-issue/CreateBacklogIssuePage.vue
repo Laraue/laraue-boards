@@ -21,7 +21,7 @@
         </div>
         <CreateIssueForm
           :attributes="page.attributes"
-          :board="{ id: page.boardId, name: page.boardName, spaceKey: page.spaceKey }"
+          :board="{ id: page.boardId, name: page.boardName, spaceKey }"
           :deps="deps.form"
           :on-created="onCreated" />
       </section>
@@ -59,9 +59,8 @@ const { t } = useI18n({
 const organizationRoutes = useOrganizationRoutes()
 useHead({ title: t('addBacklogIssue') })
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `create-backlog-issue:${props.spaceKey}`,
-  (_nuxtApp, { signal }) => props.deps.view({ signal, spaceKey: props.spaceKey }),
-  { watch: [() => props.spaceKey] },
+  (signal) => props.deps.view({ signal, spaceKey: props.spaceKey }),
 )
 </script>

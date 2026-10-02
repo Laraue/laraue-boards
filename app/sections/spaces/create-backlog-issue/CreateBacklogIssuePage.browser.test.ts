@@ -2,15 +2,16 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { CreateBacklogIssuePageDeps } from './CreateBacklogIssuePage.deps'
-import type { CreateBacklogIssuePageData } from './CreateBacklogIssuePage.types'
+import type {
+  CreateBacklogIssuePageData,
+  CreateBacklogIssuePageDeps,
+} from './CreateBacklogIssuePage.deps'
 import CreateBacklogIssuePage from './CreateBacklogIssuePage.vue'
 
 const pageData: CreateBacklogIssuePageData = {
   attributes: [],
   boardId: '8',
   boardName: 'Backlog',
-  spaceKey: 'product-ABCD',
 }
 
 const createDeps = (
@@ -35,10 +36,7 @@ const createDeps = (
       loadStatuses: vi.fn<CreateBacklogIssuePageDeps['form']['statusSelect']['loadStatuses']>(),
     },
   },
-  view: vi.fn<CreateBacklogIssuePageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  })),
+  view: vi.fn<CreateBacklogIssuePageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
