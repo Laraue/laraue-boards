@@ -9,6 +9,5 @@ export type CreateBacklogIssuePageData = {
 
 export type CreateBacklogIssuePageDeps = {
   form: CreateIssueFormDeps
-  // Resolves with the page data or rejects with an `ApiError`.
   view: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<CreateBacklogIssuePageData>
 }

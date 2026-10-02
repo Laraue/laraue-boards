@@ -1,5 +1,3 @@
-// Every dep resolves with its data or rejects with an `ApiError`.
-
 export type SpaceBoardStatus = 'Active' | 'Done' | 'New'
 
 export type SpaceBoardSummary = {

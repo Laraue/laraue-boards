@@ -4,6 +4,5 @@ export type StatusSelectOption = {
 }
 
 export type StatusSelectDeps = {
-  // Resolves with the options or rejects with an `ApiError`.
   loadStatuses: (input: { boardId: string; signal?: AbortSignal }) => Promise<StatusSelectOption[]>
 }

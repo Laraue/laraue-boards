@@ -1,5 +1,3 @@
-// Every dep resolves with its data or rejects with an `ApiError`.
-
 export type BillingUsageViewModel = {
   limit: number
   remaining: number

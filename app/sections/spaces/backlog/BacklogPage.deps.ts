@@ -26,7 +26,6 @@ export type SearchBacklogResult = {
 
 export type BacklogPageDeps = {
   issueList: IssueListDeps
-  // `search` and `view` resolve with their data or reject with an `ApiError`.
   search: (input: {
     backlogBoardId: string
     filters: BacklogFilter[]

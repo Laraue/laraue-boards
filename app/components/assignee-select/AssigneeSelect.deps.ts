@@ -7,7 +7,6 @@ export type AssigneeSelectOption = {
 }
 
 export type AssigneeSelectDeps = {
-  // Resolves with the options or rejects with an `ApiError`.
   loadAssignees: (input: {
     signal?: AbortSignal
     spaceKey: string
