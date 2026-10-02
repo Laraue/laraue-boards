@@ -5,7 +5,6 @@ export type SpaceSettingsPageData = {
   canUpdate: boolean
   color: string
   name: string
-  spaceKey: string
 }
 
 export type UpdateSpaceInput = {

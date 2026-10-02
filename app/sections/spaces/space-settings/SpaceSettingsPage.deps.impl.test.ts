@@ -16,7 +16,6 @@ test('maps space settings data', async () => {
     canUpdate: false,
     color: '#fff',
     name: 'Product',
-    spaceKey: 'product',
   })
 })
 

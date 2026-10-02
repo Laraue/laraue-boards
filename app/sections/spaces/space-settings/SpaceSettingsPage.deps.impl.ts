@@ -32,7 +32,6 @@ export const createSpaceSettingsPageDeps = (client: ApiClient): SpaceSettingsPag
       canUpdate: details.canUpdate,
       color: space.color,
       name: space.name,
-      spaceKey,
     }
   },
 })

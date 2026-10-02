@@ -128,7 +128,7 @@ watch(
       return
     }
     form.color = value.color
-    form.key = value.spaceKey
+    form.key = props.spaceKey
     form.name = value.name
   },
   { immediate: true },
@@ -147,33 +147,20 @@ const {
   execute: removeSpace,
   message: removeMessage,
   pending: removing,
-} = useApiAction(props.deps.remove, {
-  onSuccess: props.onDeleted,
-})
+} = useApiAction(props.deps.remove)
 const submitting = computed(() => updating.value || removing.value)
 
 const update = async (): Promise<void> => {
-  const page = data.value
-  if (!page || submitting.value) {
-    return
-  }
   const key = form.key.trim()
-  const updated = await updateSpace({
-    color: form.color,
-    name: form.name,
-    newKey: key,
-    oldKey: page.spaceKey,
-  })
-  if (updated) {
+  const input = { color: form.color, name: form.name, newKey: key, oldKey: props.spaceKey }
+  if (await updateSpace(input)) {
     await props.onUpdated(key)
   }
 }
 
 const remove = async (): Promise<void> => {
-  const page = data.value
-  if (!page || submitting.value || !confirm(t('deleteConfirm'))) {
-    return
+  if (confirm(t('deleteConfirm')) && (await removeSpace({ spaceKey: props.spaceKey }))) {
+    await props.onDeleted()
   }
-  void removeSpace({ spaceKey: page.spaceKey })
 }
 </script>

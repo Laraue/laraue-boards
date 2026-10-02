@@ -4,16 +4,14 @@ import { ApiError } from '#infrastructure/api/request'
 import { useApiAction } from '~/composables/useApiAction'
 import { useToast } from '~/composables/useToast'
 
-test('calls onSuccess with the data and reports success', async () => {
-  const onSuccess = vi.fn<(value: string) => void>()
-  const { execute, message, pending } = useApiAction(async (value: string) => `${value}!`, {
-    onSuccess,
-  })
+test('runs the action and reports success', async () => {
+  const action = vi.fn<(value: string) => Promise<void>>(async () => {})
+  const { execute, message, pending } = useApiAction(action)
 
   assert.isTrue(await execute('hi'))
   assert.isFalse(pending.value)
   assert.isUndefined(message.value)
-  assert.deepEqual(onSuccess.mock.calls, [['hi!']])
+  assert.deepEqual(action.mock.calls, [['hi']])
 })
 
 test('keeps the backend text of a failure for the form', async () => {

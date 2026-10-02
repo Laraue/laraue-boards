@@ -12,7 +12,6 @@ const pageData: SpaceSettingsPageData = {
   canUpdate: true,
   color: '#4774d4',
   name: 'Product',
-  spaceKey: 'product',
 }
 
 const createDeps = (overrides: Partial<SpaceSettingsPageDeps> = {}): SpaceSettingsPageDeps => ({
