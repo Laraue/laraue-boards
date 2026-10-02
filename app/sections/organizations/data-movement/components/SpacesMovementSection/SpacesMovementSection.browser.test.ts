@@ -2,8 +2,9 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
 import type { OrganizationSelectDeps } from '~/components/organization-select/OrganizationSelect.deps'
-import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.types'
+import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.deps'
 
 import type { MoveSpacesDialogDeps } from './components/MoveSpacesDialog/MoveSpacesDialog.deps'
 import type { SpacesMovementSectionDeps } from './SpacesMovementSection.deps'
@@ -17,10 +18,7 @@ const spaces: DataMovementPageData['spaces'] = [
 
 const createDeps = (overrides: Partial<MoveSpacesDialogDeps> = {}): SpacesMovementSectionDeps => ({
   dialog: {
-    moveSpaces: vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => ({
-      data: true,
-      status: 'success',
-    })),
+    moveSpaces: vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => {}),
     organizationSelect: {
       loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [
         { label: 'Current', value: '1' },
@@ -75,10 +73,7 @@ it('shows an empty state when only the default space exists', async () => {
 })
 
 it('moves a single space through its row action without touching the selection', async () => {
-  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => {})
   const onMoved = vi.fn<() => void>()
 
   await mount(createDeps({ moveSpaces }), onMoved)
@@ -93,10 +88,7 @@ it('moves a single space through its row action without touching the selection',
 })
 
 it('moves every selected space through the bulk action', async () => {
-  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => {})
 
   await mount(createDeps({ moveSpaces }))
 
@@ -125,10 +117,9 @@ it('drops the selection when it is cleared', async () => {
 })
 
 it('keeps the dialog open and reports the failure without moving on', async () => {
-  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => ({
-    message: 'The destination organization is full.',
-    status: 'validation-error',
-  }))
+  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => {
+    throw new ApiError(400, 'The destination organization is full.')
+  })
   const onMoved = vi.fn<() => void>()
 
   await mount(createDeps({ moveSpaces }), onMoved)
@@ -144,10 +135,9 @@ it('keeps the dialog open and reports the failure without moving on', async () =
 })
 
 it('resets the destination and the previous failure when the dialog is opened again', async () => {
-  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => ({
-    message: 'The destination organization is full.',
-    status: 'validation-error',
-  }))
+  const moveSpaces = vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => {
+    throw new ApiError(400, 'The destination organization is full.')
+  })
 
   await mount(createDeps({ moveSpaces }))
 

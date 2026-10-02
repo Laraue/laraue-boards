@@ -50,9 +50,9 @@ const { t } = useI18n({
 
 useHead({ title: t('dataMovement') })
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   'organization-data-movement',
-  (_nuxtApp, { signal }) => props.deps.view({ signal }),
+  (signal) => props.deps.view({ signal }),
 )
 
 const onSpacesMoved = async () => {

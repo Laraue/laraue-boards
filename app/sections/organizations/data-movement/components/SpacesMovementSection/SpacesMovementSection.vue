@@ -49,7 +49,7 @@
 import { ArrowRightLeft } from '@lucide/vue'
 
 import { SpaceIcon } from '~/constants/icons'
-import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.types'
+import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.deps'
 
 import MoveSpacesDialog from './components/MoveSpacesDialog/MoveSpacesDialog.vue'
 import type { SpacesMovementSectionDeps } from './SpacesMovementSection.deps'

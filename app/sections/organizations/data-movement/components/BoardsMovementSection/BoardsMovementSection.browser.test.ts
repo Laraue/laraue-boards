@@ -2,9 +2,10 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
 import type { OrganizationSelectDeps } from '~/components/organization-select/OrganizationSelect.deps'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
-import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.types'
+import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.deps'
 
 import type { BoardsMovementSectionDeps } from './BoardsMovementSection.deps'
 import BoardsMovementSection from './BoardsMovementSection.vue'
@@ -25,10 +26,7 @@ const spaces: DataMovementPageData['spaces'] = [
 
 const createDeps = (overrides: Partial<MoveBoardsDialogDeps> = {}): BoardsMovementSectionDeps => ({
   dialog: {
-    moveBoards: vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => ({
-      data: true,
-      status: 'success',
-    })),
+    moveBoards: vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => {}),
     organizationSelect: {
       loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [
         { label: 'Current', value: '1' },
@@ -88,10 +86,7 @@ it('shows an empty state when no space has boards', async () => {
 })
 
 it('moves a single board through its row action without touching the selection', async () => {
-  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => {})
   const onMoved = vi.fn<() => void>()
 
   await mount(createDeps({ moveBoards }), onMoved)
@@ -110,10 +105,7 @@ it('moves a single board through its row action without touching the selection',
 })
 
 it('moves every selected board through the bulk action', async () => {
-  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => {})
 
   await mount(createDeps({ moveBoards }))
 
@@ -143,10 +135,9 @@ it('drops the selection when it is cleared', async () => {
 })
 
 it('keeps the dialog open and reports the failure without moving on', async () => {
-  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => ({
-    message: 'The destination space is full.',
-    status: 'validation-error',
-  }))
+  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => {
+    throw new ApiError(400, 'The destination space is full.')
+  })
   const onMoved = vi.fn<() => void>()
 
   await mount(createDeps({ moveBoards }), onMoved)
@@ -160,10 +151,9 @@ it('keeps the dialog open and reports the failure without moving on', async () =
 })
 
 it('clears the previous failure when the dialog is opened again', async () => {
-  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => ({
-    message: 'The destination space is full.',
-    status: 'validation-error',
-  }))
+  const moveBoards = vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => {
+    throw new ApiError(400, 'The destination space is full.')
+  })
 
   await mount(createDeps({ moveBoards }))
 
