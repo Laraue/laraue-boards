@@ -74,10 +74,7 @@ import type { IssueFiltersValue } from '~/components/issue-filters/IssueFilters.
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
 import IssueList from '~/components/issue-list/IssueList.vue'
 import type { IssuesPageDeps } from '~/sections/issues/issues/IssuesPage.deps'
-import {
-  issueBoardStatuses,
-  type IssueBoardStatus,
-} from '~/sections/issues/issues/IssuesPage.types'
+import { issueBoardStatuses, type IssueBoardStatus } from '~/sections/issues/issues/IssuesPage.deps'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -139,10 +136,9 @@ const request = computed(() => ({
   spaceIds: readIssueSpaceQuery(props.routeQuery.space),
 }))
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `issues:${props.organizationKey}`,
-  (_nuxtApp, { signal }) => props.deps.view({ ...request.value, signal }),
-  { watch: [() => props.organizationKey] },
+  (signal) => props.deps.view({ ...request.value, signal }),
 )
 
 useHead({ title: t('allIssues') })
@@ -163,7 +159,7 @@ const {
   execute: runSearch,
   message: searchMessage,
   pending: searching,
-} = await useQuery(
+} = await useApiQuery(
   () => `issues-search:${props.organizationKey}`,
   () =>
     props.deps.searchIssues({

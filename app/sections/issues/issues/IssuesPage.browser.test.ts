@@ -3,14 +3,14 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
+import { ApiError } from '#infrastructure/api/request'
 import type { BoardSelectDeps } from '~/components/board-select/BoardSelect.deps'
 import type { MoveIssuesDialogDeps } from '~/components/issue-list/components/move-issues-dialog/MoveIssuesDialog.deps'
 import type { IssueListItem } from '~/components/issue-list/IssueList.types'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
-import type { IssuesPageDeps } from './IssuesPage.deps'
-import type { IssuesPageData } from './IssuesPage.types'
+import type { IssuesPageData, IssuesPageDeps } from './IssuesPage.deps'
 import IssuesPage from './IssuesPage.vue'
 
 const issueOf = (issueKey: string, title: string): IssueListItem => ({
@@ -51,10 +51,10 @@ const createDeps = (overrides: Partial<IssuesPageDeps> = {}): IssuesPageDeps => 
     },
   },
   searchIssues: vi.fn<IssuesPageDeps['searchIssues']>(async () => ({
-    data: { hasNextPage: false, issues: [issueOf('ISS-2', 'Searched issue')] },
-    status: 'success',
+    hasNextPage: false,
+    issues: [issueOf('ISS-2', 'Searched issue')],
   })),
-  view: vi.fn<IssuesPageDeps['view']>(async () => ({ data: pageData, status: 'success' })),
+  view: vi.fn<IssuesPageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
@@ -79,7 +79,7 @@ afterEach(async () => {
 })
 
 it('loads the issues for the current route query', async () => {
-  const view = vi.fn<IssuesPageDeps['view']>(async () => ({ data: pageData, status: 'success' }))
+  const view = vi.fn<IssuesPageDeps['view']>(async () => pageData)
 
   await mount(createDeps({ view }), vi.fn<(query: LocationQueryRaw) => void>(), {
     page: '2',
@@ -99,10 +99,7 @@ it('links to the issue creation page only when a space exists', async () => {
 })
 
 it('hides the issue creation link when there is no space', async () => {
-  const view = vi.fn<IssuesPageDeps['view']>(async () => ({
-    data: { ...pageData, spaces: [] },
-    status: 'success',
-  }))
+  const view = vi.fn<IssuesPageDeps['view']>(async () => ({ ...pageData, spaces: [] }))
 
   await mount(createDeps({ view }))
 
@@ -131,8 +128,8 @@ it('removes the search from the route query when it is cleared', async () => {
 
 it('searches again when the route query changes and shows the new issues', async () => {
   const searchIssues = vi.fn<IssuesPageDeps['searchIssues']>(async () => ({
-    data: { hasNextPage: false, issues: [issueOf('ISS-2', 'Searched issue')] },
-    status: 'success',
+    hasNextPage: false,
+    issues: [issueOf('ISS-2', 'Searched issue')],
   }))
 
   await mount(createDeps({ searchIssues }))
@@ -143,10 +140,7 @@ it('searches again when the route query changes and shows the new issues', async
 })
 
 it('shows the failure message when searching fails and keeps the previous issues', async () => {
-  const searchIssues = vi.fn<IssuesPageDeps['searchIssues']>(async () => ({
-    code: 403,
-    status: 'error',
-  }))
+  const searchIssues = vi.fn<IssuesPageDeps['searchIssues']>().mockRejectedValue(new ApiError(403))
 
   await mount(createDeps({ searchIssues }))
   await currentWrapper!.setProps({ routeQuery: { search: 'bug' } })
@@ -158,8 +152,8 @@ it('shows the failure message when searching fails and keeps the previous issues
 it('reloads the issues when the failed request is retried', async () => {
   const view = vi
     .fn<IssuesPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps({ view }))
 

@@ -3,7 +3,7 @@ import { assert, test } from 'vitest'
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 import { COLORS } from '~/constants/colors'
 
-import { createSearchIssues } from './searchIssues'
+import { createIssuesPageDeps } from './IssuesPage.deps.impl'
 
 const response = () => ({
   data: [
@@ -35,11 +35,39 @@ const response = () => ({
   hasNextPage: true,
 })
 
+test('loads the initial issues page data', async () => {
+  const { client } = createTestApiClient((_request, path) => {
+    if (path === '/api/organizations/attributes') {
+      return []
+    }
+    if (path === '/api/spaces') {
+      return [{ key: 'product', name: 'Product' }]
+    }
+    return { data: [], hasNextPage: false }
+  })
+
+  assert.deepEqual(
+    await createIssuesPageDeps(client).view({
+      attributeQuery: {},
+      epicStatuses: [],
+      page: 1,
+      search: '',
+      spaceIds: [],
+    }),
+    {
+      attributes: [],
+      hasNextPage: false,
+      issues: [],
+      spaces: [{ label: 'Product', value: 'product' }],
+    },
+  )
+})
+
 test('maps searched issues', async () => {
   const { client } = createTestApiClient(response)
 
   assert.deepEqual(
-    await createSearchIssues(client)({
+    await createIssuesPageDeps(client).searchIssues({
       epicStatuses: [],
       filters: [],
       page: 1,
@@ -47,40 +75,37 @@ test('maps searched issues', async () => {
       spaceIds: [],
     }),
     {
-      data: {
-        hasNextPage: true,
-        issues: [
-          {
-            assignee: 'Ada',
-            assigneeColor: '#111',
-            assigneeInitial: 'A',
-            boardColor: '#222',
-            boardName: 'Roadmap',
-            canMove: true,
-            issueKey: 'ISS-1',
-            spaceColor: '#333',
-            spaceName: 'Product',
-            status: 'Todo',
-            statusColor: '#444',
-            title: 'Fix search',
-          },
-          {
-            assignee: 'Grace',
-            assigneeColor: '#555',
-            assigneeInitial: '?',
-            boardColor: '#666',
-            boardName: 'Backlog board',
-            canMove: false,
-            issueKey: 'ISS-2',
-            spaceColor: '#777',
-            spaceName: 'Product',
-            status: null,
-            statusColor: COLORS.gray,
-            title: '',
-          },
-        ],
-      },
-      status: 'success',
+      hasNextPage: true,
+      issues: [
+        {
+          assignee: 'Ada',
+          assigneeColor: '#111',
+          assigneeInitial: 'A',
+          boardColor: '#222',
+          boardName: 'Roadmap',
+          canMove: true,
+          issueKey: 'ISS-1',
+          spaceColor: '#333',
+          spaceName: 'Product',
+          status: 'Todo',
+          statusColor: '#444',
+          title: 'Fix search',
+        },
+        {
+          assignee: 'Grace',
+          assigneeColor: '#555',
+          assigneeInitial: '?',
+          boardColor: '#666',
+          boardName: 'Backlog board',
+          canMove: false,
+          issueKey: 'ISS-2',
+          spaceColor: '#777',
+          spaceName: 'Product',
+          status: null,
+          statusColor: COLORS.gray,
+          title: '',
+        },
+      ],
     },
   )
 })
@@ -88,7 +113,7 @@ test('maps searched issues', async () => {
 test('maps filters, paging and search to the request body', async () => {
   const { client, requests } = createTestApiClient(response)
 
-  await createSearchIssues(client)({
+  await createIssuesPageDeps(client).searchIssues({
     epicStatuses: ['New', 'Active'],
     filters: [
       { attributeId: '3', searchString: 'urgent', type: 'text' },
@@ -116,7 +141,7 @@ test('maps filters, paging and search to the request body', async () => {
 test('omits an empty search and space filter', async () => {
   const { client, requests } = createTestApiClient(response)
 
-  await createSearchIssues(client)({
+  await createIssuesPageDeps(client).searchIssues({
     epicStatuses: [],
     filters: [],
     page: 1,
