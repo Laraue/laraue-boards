@@ -2,14 +2,14 @@ import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
-import { createSaveBoardSettings } from './saveBoardSettings'
+import { createBoardSettingsPageDeps } from './BoardSettingsPage.deps.impl'
 
 test('saves board and column changes', async () => {
   const { client, requests } = createTestApiClient((request, path) =>
     request.method === 'POST' && path === '/api/statuses' ? 9 : new Response(null, { status: 200 }),
   )
 
-  const result = await createSaveBoardSettings(client)({
+  await createBoardSettingsPageDeps(client).save({
     boardId: '7',
     color: '#111',
     columns: [
@@ -25,7 +25,6 @@ test('saves board and column changes', async () => {
     status: 'Done',
   })
 
-  assert.deepEqual(result, { data: true, status: 'success' })
   assert.deepEqual(
     requests.map((request) => [request.method, new URL(request.url).pathname]),
     [
@@ -56,7 +55,7 @@ test('updates a column when only its category changed', async () => {
   const { client, requests } = createTestApiClient(() => new Response(null, { status: 200 }))
   const column = { color: '#222', id: '2', name: 'Doing' }
 
-  await createSaveBoardSettings(client)({
+  await createBoardSettingsPageDeps(client).save({
     boardId: '7',
     color: '#111',
     columns: [{ ...column, category: 'Completed' }],
@@ -79,5 +78,31 @@ test('updates a column when only its category changed', async () => {
     color: '#222',
     id: '2',
     name: 'Doing',
+  })
+})
+
+test('maps board settings and sorts columns', async () => {
+  const { client } = createTestApiClient(() => ({
+    canDelete: true,
+    canUpdate: true,
+    color: '#111',
+    name: 'Roadmap',
+    status: 'Active',
+    statuses: [
+      { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
+      { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
+    ],
+  }))
+
+  assert.deepEqual(await createBoardSettingsPageDeps(client).view({ boardId: '12' }), {
+    canDelete: true,
+    canUpdate: true,
+    color: '#111',
+    columns: [
+      { category: 'Created', color: '#333', id: '1', name: 'To do' },
+      { category: 'Completed', color: '#222', id: '2', name: 'Done' },
+    ],
+    name: 'Roadmap',
+    status: 'Active',
   })
 })

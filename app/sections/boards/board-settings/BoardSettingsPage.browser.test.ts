@@ -2,8 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 
-import type { BoardSettingsPageDeps } from './BoardSettingsPage.deps'
-import type { BoardSettingsPageData } from './BoardSettingsPage.types'
+import type { BoardSettingsPageData, BoardSettingsPageDeps } from './BoardSettingsPage.deps'
 import BoardSettingsPage from './BoardSettingsPage.vue'
 
 const board: BoardSettingsPageData = {
@@ -40,14 +39,14 @@ afterEach(async () => {
 })
 
 it('saves the board name edited by the user', async () => {
-  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => ({ data: true, status: 'success' }))
+  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => {})
   const onSaved = vi.fn<() => void>()
 
   await mount(
     {
       remove: vi.fn<BoardSettingsPageDeps['remove']>(),
       save,
-      view: vi.fn<BoardSettingsPageDeps['view']>(async () => ({ data: board, status: 'success' })),
+      view: vi.fn<BoardSettingsPageDeps['view']>(async () => board),
     },
     onSaved,
   )
@@ -67,13 +66,13 @@ it('saves the board name edited by the user', async () => {
 })
 
 it('saves a column category picked by the user', async () => {
-  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => ({ data: true, status: 'success' }))
+  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => {})
 
   await mount(
     {
       remove: vi.fn<BoardSettingsPageDeps['remove']>(),
       save,
-      view: vi.fn<BoardSettingsPageDeps['view']>(async () => ({ data: board, status: 'success' })),
+      view: vi.fn<BoardSettingsPageDeps['view']>(async () => board),
     },
     vi.fn<() => void>(),
   )
@@ -91,13 +90,13 @@ it('saves a column category picked by the user', async () => {
 })
 
 it('reorders columns through keyboard drag and drop before saving', async () => {
-  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => ({ data: true, status: 'success' }))
+  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => {})
 
   await mount(
     {
       remove: vi.fn<BoardSettingsPageDeps['remove']>(),
       save,
-      view: vi.fn<BoardSettingsPageDeps['view']>(async () => ({ data: board, status: 'success' })),
+      view: vi.fn<BoardSettingsPageDeps['view']>(async () => board),
     },
     vi.fn<() => void>(),
   )

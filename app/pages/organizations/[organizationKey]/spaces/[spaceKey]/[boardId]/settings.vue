@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import BoardSettingsPage from '~/sections/boards/board-settings/BoardSettingsPage.vue'
-import { createBoardSettingsPageDeps } from '~/sections/boards/board-settings/deps-impl'
+import { createBoardSettingsPageDeps } from '~/sections/boards/board-settings/BoardSettingsPage.deps.impl'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-boardId-settings')
 const boardId = computed(() => String(route.params.boardId))

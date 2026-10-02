@@ -87,7 +87,7 @@ import { isSortable } from '@dnd-kit/vue/sortable'
 import { Plus } from '@lucide/vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
-import type { BoardSettingsPageData } from '~/sections/boards/board-settings/BoardSettingsPage.types'
+import type { BoardSettingsPageData } from '~/sections/boards/board-settings/BoardSettingsPage.deps'
 import BoardColumnSetting from '~/sections/boards/board-settings/components/BoardColumnSetting/BoardColumnSetting.vue'
 
 import type {

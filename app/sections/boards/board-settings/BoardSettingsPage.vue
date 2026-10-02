@@ -34,8 +34,10 @@
 
 <script setup lang="ts">
 import { BoardIcon } from '~/constants/icons'
-import type { BoardSettingsPageDeps } from '~/sections/boards/board-settings/BoardSettingsPage.deps'
-import type { BoardSettingsPageData } from '~/sections/boards/board-settings/BoardSettingsPage.types'
+import type {
+  BoardSettingsPageData,
+  BoardSettingsPageDeps,
+} from '~/sections/boards/board-settings/BoardSettingsPage.deps'
 import type { BoardSettingsFormInput } from '~/sections/boards/board-settings/components/BoardSettingsForm.types'
 import BoardSettingsForm from '~/sections/boards/board-settings/components/BoardSettingsForm.vue'
 
@@ -70,10 +72,9 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `board-settings:${props.boardId}`,
-  (_nuxtApp, { signal }) => props.deps.view({ boardId: props.boardId, signal }),
-  { watch: [() => props.boardId] },
+  (signal) => props.deps.view({ boardId: props.boardId, signal }),
 )
 
 useHead({
@@ -84,37 +85,31 @@ const {
   execute: saveSettings,
   message: saveMessage,
   pending: saving,
-} = useAction(props.deps.save, {
-  onSuccess: props.onSaved,
-})
+} = useApiAction(props.deps.save)
+const {
+  execute: removeBoard,
+  message: removeMessage,
+  pending: removing,
+} = useApiAction(props.deps.remove)
 
 const save = async (page: BoardSettingsPageData, input: BoardSettingsFormInput): Promise<void> => {
-  if (saving.value || removing.value) {
-    return
-  }
-  const result = await saveSettings({
+  const saved = await saveSettings({
     boardId: props.boardId,
     originalColumns: page.columns,
     originalStatus: page.status,
     ...input,
   })
-  if (result === undefined) {
+  if (saved) {
+    await props.onSaved()
+  } else {
+    // A failed save may have applied some of the changes already.
     await refresh()
   }
 }
 
-const {
-  execute: removeBoard,
-  message: removeMessage,
-  pending: removing,
-} = useAction(props.deps.remove, {
-  onSuccess: props.onDeleted,
-})
-
 const remove = async (): Promise<void> => {
-  if (saving.value || removing.value || !confirm(t('deleteConfirm'))) {
-    return
+  if (confirm(t('deleteConfirm')) && (await removeBoard({ boardId: props.boardId }))) {
+    await props.onDeleted()
   }
-  void removeBoard({ boardId: props.boardId })
 }
 </script>

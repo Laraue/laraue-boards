@@ -2,7 +2,7 @@ import type {
   BoardSettingsColumnDraft,
   BoardSettingsPageData,
   BoardSettingsStatus,
-} from '../BoardSettingsPage.types'
+} from '../BoardSettingsPage.deps'
 
 export type BoardSettingsFormInput = {
   color: string
