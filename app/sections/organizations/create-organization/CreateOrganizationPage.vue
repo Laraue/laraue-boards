@@ -19,7 +19,7 @@
         </div>
       </div>
       <p class="muted">{{ t('createDescription') }}</p>
-      <form @submit.prevent="submit({ color: form.color, name: form.name, slug: form.slug })">
+      <form @submit.prevent="submit">
         <label for="create-organization-name">{{ t('name') }}</label>
         <input
           id="create-organization-name"
@@ -98,13 +98,13 @@ const form = reactive({
 
 useHead({ title: t('createOrganization') })
 
-const {
-  execute: submit,
-  message,
-  pending,
-} = useAction(props.deps.create, {
-  onSuccess: props.onCreated,
-})
+const { execute: create, message, pending } = useApiAction(props.deps.create)
+
+const submit = async (): Promise<void> => {
+  if (await create({ ...form })) {
+    await props.onCreated()
+  }
+}
 </script>
 
 <style scoped>

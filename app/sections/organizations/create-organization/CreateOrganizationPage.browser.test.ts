@@ -2,7 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { ActionResult } from '#infrastructure/api/apiResult'
+import { ApiError } from '#infrastructure/api/request'
 import { COLORS, DEFAULT_COLOR } from '~/constants/colors'
 
 import type { CreateOrganizationPageDeps } from './CreateOrganizationPage.deps'
@@ -33,10 +33,7 @@ afterEach(async () => {
 })
 
 it('submits the entered organization with the default color and reports success', async () => {
-  const create = vi.fn<CreateOrganizationPageDeps['create']>(async () => ({
-    data: { organizationId: 'org-1' },
-    status: 'success',
-  }))
+  const create = vi.fn<CreateOrganizationPageDeps['create']>(async () => {})
   const onCreated = vi.fn<() => void>()
 
   await mount(create, onCreated)
@@ -52,10 +49,7 @@ it('submits the entered organization with the default color and reports success'
 })
 
 it('submits the color picked from the palette', async () => {
-  const create = vi.fn<CreateOrganizationPageDeps['create']>(async () => ({
-    data: { organizationId: 'org-1' },
-    status: 'success',
-  }))
+  const create = vi.fn<CreateOrganizationPageDeps['create']>(async () => {})
 
   await mount(create)
 
@@ -71,12 +65,9 @@ it('submits the color picked from the palette', async () => {
 })
 
 it('keeps the form open and shows the validation message returned by the backend', async () => {
-  const create = vi.fn<CreateOrganizationPageDeps['create']>(
-    async (): Promise<ActionResult<{ organizationId: string }>> => ({
-      message: 'Slug is already taken.',
-      status: 'validation-error',
-    }),
-  )
+  const create = vi.fn<CreateOrganizationPageDeps['create']>(async () => {
+    throw new ApiError(400, 'Slug is already taken.')
+  })
   const onCreated = vi.fn<() => void>()
 
   await mount(create, onCreated)
