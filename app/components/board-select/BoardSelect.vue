@@ -39,8 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BoardSelectDeps } from './BoardSelect.deps'
-import type { BoardSelectOption } from './BoardSelect.types'
+import type { BoardSelectDeps, BoardSelectOption } from './BoardSelect.deps'
 
 const props = withDefaults(
   defineProps<{
@@ -77,9 +76,9 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { clear, data, execute, message, pending, status } = await useQuery(
+const { clear, data, execute, message, pending, status } = await useApiQuery(
   `board-select:${useId()}`,
-  (_nuxtApp, { signal }) => props.deps.loadBoards({ signal, spaceKey: props.spaceKey }),
+  (signal) => props.deps.loadBoards({ signal, spaceKey: props.spaceKey }),
   { immediate: false },
 )
 

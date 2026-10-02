@@ -15,14 +15,11 @@ afterEach(async () => {
 it('shows the current plan and available usage limits', async () => {
   const deps: BillingPageDeps = {
     view: vi.fn<BillingPageDeps['view']>(async () => ({
-      data: {
-        freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
-        issuesPerMonth: null,
-        kind: 'personal' as const,
-        subscriptionCode: 'Pro',
-        tokens: { limit: 1000, remaining: 850, used: 150 },
-      },
-      status: 'success' as const,
+      freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
+      issuesPerMonth: null,
+      kind: 'personal',
+      subscriptionCode: 'Pro',
+      tokens: { limit: 1000, remaining: 850, used: 150 },
     })),
   }
 

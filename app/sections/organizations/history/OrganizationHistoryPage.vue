@@ -4,7 +4,7 @@
     :error-title="t('loadError')"
     :loading-text="t('loading')"
     :message="message"
-    :on-retry="retry"
+    :on-retry="refresh"
     :pending="pending">
     <template #default="{ data: view }">
       <section class="history-page">
@@ -45,15 +45,9 @@
           </label>
         </form>
         <HistoryTimeline
-          v-if="data && (historyState.items.length || !pagePending)"
+          v-if="historyState.items.length || !pagePending"
           :items="historyState.items"
           :label="t('entries')" />
-        <p
-          v-if="pageMessage"
-          class="form-error"
-          role="alert">
-          {{ pageMessage }}
-        </p>
         <div
           v-if="pagePending"
           class="history-loading"
@@ -62,11 +56,11 @@
           <span>{{ t('loading') }}</span>
         </div>
         <button
-          v-else-if="pageMessage || historyState.hasNextPage"
+          v-else-if="historyState.hasNextPage"
           class="secondary small history-more"
           type="button"
-          @click="loadMore">
-          {{ pageMessage ? t('tryAgain') : t('loadMore') }}
+          @click="loadPage()">
+          {{ t('loadMore') }}
         </button>
       </section>
     </template>
@@ -98,7 +92,6 @@ const { t } = useI18n({
     loading: 'Loading history…',
     loadMore: 'Load more',
     to: 'To',
-    tryAgain: 'Try again',
     user: 'User',
   },
   ru: {
@@ -110,7 +103,6 @@ const { t } = useI18n({
     loading: 'Загрузка истории…',
     loadMore: 'Загрузить ещё',
     to: 'До',
-    tryAgain: 'Повторить попытку',
     user: 'Пользователь',
   },
 })
@@ -125,28 +117,16 @@ const filters = computed(() => ({
   ownerId: queryValue(props.routeQuery.user),
 }))
 const form = reactive({ ...filters.value })
-const requestFilters = () => ({
+const requestFilters = computed(() => ({
   dateFrom: filters.value.dateFrom ? `${filters.value.dateFrom}T00:00:00.000Z` : undefined,
   dateTo: filters.value.dateTo ? `${filters.value.dateTo}T23:59:59.999Z` : undefined,
   ownerId: filters.value.ownerId || undefined,
-})
-const { data, message, pending, refresh } = await useQuery(
-  'organization-history',
-  (_nuxtApp, { signal }) => props.deps.loadInitial({ ...requestFilters(), signal }),
+}))
+const { data, message, pending, refresh } = await useApiQuery('organization-history', (signal) =>
+  props.deps.loadInitial({ ...requestFilters.value, signal }),
 )
 
-const requestedPage = ref(0)
-const {
-  data: pageData,
-  execute: executePage,
-  message: pageMessage,
-  pending: pagePending,
-} = await useQuery(
-  'organization-history-page',
-  (_nuxtApp, { signal }) =>
-    props.deps.loadPage({ ...requestFilters(), page: requestedPage.value, signal }),
-  { immediate: false },
-)
+const { execute: executePage, pending: pagePending } = useApiAction(props.deps.loadPage)
 
 const withLink = (item: HistoryItemViewModel): HistoryItemViewModel => ({
   ...item,
@@ -156,31 +136,26 @@ const withLink = (item: HistoryItemViewModel): HistoryItemViewModel => ({
 })
 
 const historyState = reactive({
-  hasNextPage: data.value?.history.hasNextPage ?? false,
-  items: data.value?.history.items.map(withLink) ?? ([] as HistoryItemViewModel[]),
+  hasNextPage: false,
+  items: [] as HistoryItemViewModel[],
   page: 1,
 })
 
 const loadPage = async (replace = false) => {
-  if (pagePending.value) {
+  const filtersOnRequest = requestFilters.value
+  const requestedPage = replace ? 0 : historyState.page
+  const page = await executePage({ ...filtersOnRequest, page: requestedPage })
+
+  // A page that answers after the filters changed belongs to a list no longer shown.
+  if (!page || requestFilters.value !== filtersOnRequest) {
     return
   }
 
-  requestedPage.value = replace ? 0 : historyState.page
-  await executePage()
-  const page = pageData.value
-
-  if (!page) {
-    return
-  }
-
-  const items = page.items.map(withLink)
+  const items = page.value.items.map(withLink)
   historyState.items = replace ? items : [...historyState.items, ...items]
-  historyState.hasNextPage = page.hasNextPage
-  historyState.page = requestedPage.value + 1
+  historyState.hasNextPage = page.value.hasNextPage
+  historyState.page = requestedPage + 1
 }
-
-const loadMore = () => loadPage()
 
 const applyFilters = () => {
   const query: LocationQueryRaw = {}
@@ -196,20 +171,22 @@ const applyFilters = () => {
   void props.onUpdateQuery(query)
 }
 
-const retry = () => refresh()
-
 watch(filters, (value) => {
   Object.assign(form, value)
   void loadPage(true)
 })
-watch(data, (value) => {
-  if (!value) {
-    return
-  }
-  historyState.items = value.history.items.map(withLink)
-  historyState.hasNextPage = value.history.hasNextPage
-  historyState.page = 1
-})
+watch(
+  data,
+  (value) => {
+    if (!value) {
+      return
+    }
+    historyState.items = value.history.items.map(withLink)
+    historyState.hasNextPage = value.history.hasNextPage
+    historyState.page = 1
+  },
+  { immediate: true },
+)
 useHead({ title: t('history') })
 </script>
 

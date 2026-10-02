@@ -2,6 +2,8 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { CreateSpacePageDeps } from './CreateSpacePage.deps'
 import CreateSpacePage from './CreateSpacePage.vue'
 
@@ -23,10 +25,7 @@ afterEach(async () => {
 })
 
 it('submits the entered space and reports its key', async () => {
-  const create = vi.fn<CreateSpacePageDeps['create']>(async () => ({
-    data: { spaceKey: 'product' },
-    status: 'success',
-  }))
+  const create = vi.fn<CreateSpacePageDeps['create']>(async () => 'product')
   const onCreated = vi.fn<(spaceKey: string) => void>()
 
   await mount(create, onCreated)
@@ -43,10 +42,9 @@ it('submits the entered space and reports its key', async () => {
 })
 
 it('keeps the form open and shows a backend validation message', async () => {
-  const create = vi.fn<CreateSpacePageDeps['create']>(async () => ({
-    message: 'Key is already taken.',
-    status: 'validation-error',
-  }))
+  const create = vi
+    .fn<CreateSpacePageDeps['create']>()
+    .mockRejectedValue(new ApiError(400, 'Key is already taken.'))
   const onCreated = vi.fn<(spaceKey: string) => void>()
 
   await mount(create, onCreated)

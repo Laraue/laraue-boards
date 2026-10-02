@@ -56,18 +56,16 @@ Components do not know about `ApiClient`, URLs, DTOs, or HTTP details. They rece
 through `deps` and work with their own inputs and view models.
 
 `deps-impl` is the only API boundary. It sends requests, maps generated API types to component-owned
-types, and returns a consistent result:
+types, and returns data on success or throws an `ApiError` on request failure.
 
-- `QueryResult` for reads: data or an error code;
-- `ActionResult` for changes: data, an error, or a validation error.
+Use `request` for normal reads and actions. It keeps network and validation errors consistent, while
+API-response mapping stays next to its operation. A loader that combines several requests still
+returns component-owned data and does not expose API details. Dependencies with domain problems can
+catch `ApiError` and return their own typed result.
 
-Use `executeQuery` and `executeAction` for normal reads and actions. They keep network and
-validation errors consistent, while API-response mapping stays next to its operation. A loader that
-combines several requests still returns the same contract and does not expose API details.
-
-Vue components use `useQuery` for loading, retry, pending state, and query errors. They use
-`useAction` for mutations, pending state, validation errors, and action errors. The component only
-defines UX: what to render, when to refresh, whether to update optimistically, and where to
+Vue components use `useApiQuery` for loading, retry, pending state, and query errors. They use
+`useApiAction` for mutations, pending state, validation errors, and action errors. The component
+only defines UX: what to render, when to refresh, whether to update optimistically, and where to
 navigate.
 
 ## Adding a page section

@@ -1,15 +1,31 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 
-import type {
-  BoardSettingsColumn,
-  BoardSettingsColumnDraft,
-  BoardSettingsPageData,
-  BoardSettingsStatus,
-} from './BoardSettingsPage.types'
+export type BoardSettingsStatus = 'Active' | 'Done' | 'New'
 
-export type RemoveBoard = (input: { boardId: string }) => Promise<ActionResult<true>>
+export type BoardSettingsColumn = {
+  category: StatusCategory
+  color: string
+  id: string
+  name: string
+}
 
-export type SaveBoardSettings = (input: {
+export type BoardSettingsPageData = {
+  canDelete: boolean
+  canUpdate: boolean
+  color: string
+  columns: BoardSettingsColumn[]
+  name: string
+  status: BoardSettingsStatus
+}
+
+export type BoardSettingsColumnDraft = {
+  category: StatusCategory
+  color: string
+  id: null | string
+  name: string
+}
+
+export type SaveBoardSettingsInput = {
   boardId: string
   color: string
   columns: BoardSettingsColumnDraft[]
@@ -17,15 +33,10 @@ export type SaveBoardSettings = (input: {
   originalColumns: BoardSettingsColumn[]
   originalStatus: BoardSettingsStatus
   status: BoardSettingsStatus
-}) => Promise<ActionResult<true>>
-
-export type ViewBoardSettings = (input: {
-  boardId: string
-  signal?: AbortSignal
-}) => Promise<QueryResult<BoardSettingsPageData>>
+}
 
 export type BoardSettingsPageDeps = {
-  remove: RemoveBoard
-  save: SaveBoardSettings
-  view: ViewBoardSettings
+  remove: (input: { boardId: string }) => Promise<void>
+  save: (input: SaveBoardSettingsInput) => Promise<void>
+  view: (input: { boardId: string; signal?: AbortSignal }) => Promise<BoardSettingsPageData>
 }

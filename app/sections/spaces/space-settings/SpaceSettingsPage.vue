@@ -116,10 +116,9 @@ const form = reactive({
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `space-settings:${props.spaceKey}`,
-  (_nuxtApp, { signal }) => props.deps.view({ signal, spaceKey: props.spaceKey }),
-  { watch: [() => props.spaceKey] },
+  (signal) => props.deps.view({ signal, spaceKey: props.spaceKey }),
 )
 
 watch(
@@ -129,7 +128,7 @@ watch(
       return
     }
     form.color = value.color
-    form.key = value.spaceKey
+    form.key = props.spaceKey
     form.name = value.name
   },
   { immediate: true },
@@ -143,40 +142,25 @@ const {
   execute: updateSpace,
   message: updateMessage,
   pending: updating,
-} = useAction(props.deps.update)
-
-const update = async (): Promise<void> => {
-  const page = data.value
-  if (!page || removing.value) {
-    return
-  }
-  const key = form.key.trim()
-  const updated = await updateSpace({
-    color: form.color,
-    name: form.name,
-    newKey: key,
-    oldKey: page.spaceKey,
-  })
-  if (updated) {
-    await props.onUpdated(key)
-  }
-}
-
+} = useApiAction(props.deps.update)
 const {
   execute: removeSpace,
   message: removeMessage,
   pending: removing,
-} = useAction(props.deps.remove, {
-  onSuccess: props.onDeleted,
-})
-
+} = useApiAction(props.deps.remove)
 const submitting = computed(() => updating.value || removing.value)
 
-const remove = async (): Promise<void> => {
-  const page = data.value
-  if (!page || submitting.value || !confirm(t('deleteConfirm'))) {
-    return
+const update = async (): Promise<void> => {
+  const key = form.key.trim()
+  const input = { color: form.color, name: form.name, newKey: key, oldKey: props.spaceKey }
+  if (await updateSpace(input)) {
+    await props.onUpdated(key)
   }
-  void removeSpace({ spaceKey: page.spaceKey })
+}
+
+const remove = async (): Promise<void> => {
+  if (confirm(t('deleteConfirm')) && (await removeSpace({ spaceKey: props.spaceKey }))) {
+    await props.onDeleted()
+  }
 }
 </script>

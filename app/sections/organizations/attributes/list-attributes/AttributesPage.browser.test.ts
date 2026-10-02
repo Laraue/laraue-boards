@@ -2,10 +2,10 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
 import { COLORS } from '~/constants/colors'
 
-import type { AttributesPageDeps } from './AttributesPage.deps'
-import type { AttributeListItem } from './AttributesPage.types'
+import type { AttributeListItem, AttributesPageDeps } from './AttributesPage.deps'
 import AttributesPage from './AttributesPage.vue'
 
 const attributes: AttributeListItem[] = [
@@ -30,10 +30,7 @@ afterEach(async () => {
 })
 
 it('links every attribute to its page and labels its type', async () => {
-  const view = vi.fn<AttributesPageDeps['view']>(async () => ({
-    data: attributes,
-    status: 'success',
-  }))
+  const view = vi.fn<AttributesPageDeps['view']>(async () => attributes)
 
   await mount(view)
 
@@ -48,10 +45,7 @@ it('links every attribute to its page and labels its type', async () => {
 })
 
 it('links to the attribute creation page', async () => {
-  const view = vi.fn<AttributesPageDeps['view']>(async () => ({
-    data: attributes,
-    status: 'success',
-  }))
+  const view = vi.fn<AttributesPageDeps['view']>(async () => attributes)
 
   await mount(view)
 
@@ -61,7 +55,7 @@ it('links to the attribute creation page', async () => {
 })
 
 it('shows no attribute links when the list is empty', async () => {
-  const view = vi.fn<AttributesPageDeps['view']>(async () => ({ data: [], status: 'success' }))
+  const view = vi.fn<AttributesPageDeps['view']>(async () => [])
 
   await mount(view)
 
@@ -72,8 +66,8 @@ it('shows no attribute links when the list is empty', async () => {
 it('reloads the attributes when the failed request is retried', async () => {
   const view = vi
     .fn<AttributesPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: attributes, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(attributes)
 
   await mount(view)
 

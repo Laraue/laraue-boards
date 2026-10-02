@@ -32,8 +32,8 @@ const depsOf = (
   googleSignInButton: googleSignInButtonDeps(),
   telegramSignInButton: telegramSignInButtonDeps(),
   view: vi.fn<ConnectedAccountsSectionDeps['view']>(async () => ({
-    data: { google: false, telegram: true },
-    status: 'success',
+    google: false,
+    telegram: true,
   })),
   ...overrides,
 })
@@ -53,12 +53,9 @@ const mount = async (deps: ConnectedAccountsSectionDeps) => {
 it('connects Google and shows it as connected', async () => {
   const view = vi
     .fn<ConnectedAccountsSectionDeps['view']>()
-    .mockResolvedValueOnce({ data: { google: false, telegram: true }, status: 'success' })
-    .mockResolvedValueOnce({ data: { google: true, telegram: true }, status: 'success' })
-  const connectGoogle = vi.fn<ConnectedAccountsSectionDeps['connectGoogle']>(async () => ({
-    data: 'linked',
-    status: 'success',
-  }))
+    .mockResolvedValueOnce({ google: false, telegram: true })
+    .mockResolvedValueOnce({ google: true, telegram: true })
+  const connectGoogle = vi.fn<ConnectedAccountsSectionDeps['connectGoogle']>(async () => 'linked')
 
   await mount(depsOf({ connectGoogle, view }))
   await page.getByRole('button', { name: 'Connect Google' }).click()
@@ -71,10 +68,9 @@ it('connects Google and shows it as connected', async () => {
 })
 
 it('explains why an account used by another Laraue Boards account was not connected', async () => {
-  const connectGoogle = vi.fn<ConnectedAccountsSectionDeps['connectGoogle']>(async () => ({
-    data: 'owner-has-data',
-    status: 'success',
-  }))
+  const connectGoogle = vi.fn<ConnectedAccountsSectionDeps['connectGoogle']>(
+    async () => 'owner-has-data',
+  )
 
   await mount(depsOf({ connectGoogle }))
   await page.getByRole('button', { name: 'Connect Google' }).click()
@@ -89,10 +85,9 @@ it('explains why an account used by another Laraue Boards account was not connec
 })
 
 it('sends the user returned by the Telegram popup', async () => {
-  const connectTelegram = vi.fn<ConnectedAccountsSectionDeps['connectTelegram']>(async () => ({
-    data: 'linked',
-    status: 'success',
-  }))
+  const connectTelegram = vi.fn<ConnectedAccountsSectionDeps['connectTelegram']>(
+    async () => 'linked',
+  )
   const user: TelegramUser = { auth_date: 123, first_name: 'Ada', hash: 'signed', id: 42 }
 
   await mount(
@@ -101,8 +96,8 @@ it('sends the user returned by the Telegram popup', async () => {
       googleSignInButton: googleSignInButtonDeps(),
       telegramSignInButton: telegramSignInButtonDeps(user),
       view: vi.fn<ConnectedAccountsSectionDeps['view']>(async () => ({
-        data: { google: true, telegram: false },
-        status: 'success',
+        google: true,
+        telegram: false,
       })),
     }),
   )

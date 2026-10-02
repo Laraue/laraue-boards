@@ -2,17 +2,13 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { ActionResult } from '#infrastructure/api/apiResult'
+import { ApiError } from '#infrastructure/api/request'
 import { COLORS, DEFAULT_COLOR } from '~/constants/colors'
 
 import type { CreateAttributePageDeps } from './CreateAttributePage.deps'
 import CreateAttributePage from './CreateAttributePage.vue'
 
-const succeeds = () =>
-  vi.fn<CreateAttributePageDeps['create']>(async () => ({
-    data: { id: '9' },
-    status: 'success',
-  }))
+const succeeds = () => vi.fn<CreateAttributePageDeps['create']>(async () => {})
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
@@ -141,12 +137,9 @@ it('drops the options when switching back to a text attribute', async () => {
 })
 
 it('keeps the form open and shows the validation message returned by the backend', async () => {
-  const create = vi.fn<CreateAttributePageDeps['create']>(
-    async (): Promise<ActionResult<{ id: string }>> => ({
-      message: 'Name is already taken.',
-      status: 'validation-error',
-    }),
-  )
+  const create = vi.fn<CreateAttributePageDeps['create']>(async () => {
+    throw new ApiError(400, 'Name is already taken.')
+  })
   const onCreated = vi.fn<() => void>()
 
   await mount(create, onCreated)

@@ -3,14 +3,14 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
+import { ApiError } from '#infrastructure/api/request'
 import type { BoardSelectDeps } from '~/components/board-select/BoardSelect.deps'
 import type { MoveIssuesDialogDeps } from '~/components/issue-list/components/move-issues-dialog/MoveIssuesDialog.deps'
 import type { IssueListItem } from '~/components/issue-list/IssueList.types'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
-import type { BacklogPageDeps } from './BacklogPage.deps'
-import type { BacklogPageData } from './BacklogPage.types'
+import type { BacklogPageData, BacklogPageDeps } from './BacklogPage.deps'
 import BacklogPage from './BacklogPage.vue'
 
 const issueOf = (issueKey: string, title: string): IssueListItem => ({
@@ -32,7 +32,6 @@ const pageData: BacklogPageData = {
   color: '#4774d4',
   hasNextPage: false,
   issues: [issueOf('ISS-1', 'First issue')],
-  spaceKey: 'product',
   title: 'Backlog',
 }
 
@@ -40,34 +39,22 @@ const createDeps = (overrides: Partial<BacklogPageDeps> = {}): BacklogPageDeps =
   issueList: {
     moveIssuesDialog: {
       boardSelect: {
-        loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => ({
-          data: [],
-          status: 'success',
-        })),
+        loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => []),
       },
       moveIssues: vi.fn<MoveIssuesDialogDeps['moveIssues']>(),
       spaceSelect: {
-        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => ({
-          data: [],
-          status: 'success',
-        })),
+        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => []),
       },
       statusSelect: {
-        loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
-          data: [],
-          status: 'success',
-        })),
+        loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => []),
       },
     },
   },
   search: vi.fn<BacklogPageDeps['search']>(async () => ({
-    data: { hasNextPage: false, issues: [issueOf('ISS-2', 'Searched issue')] },
-    status: 'success',
+    hasNextPage: false,
+    issues: [issueOf('ISS-2', 'Searched issue')],
   })),
-  view: vi.fn<BacklogPageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  })),
+  view: vi.fn<BacklogPageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
@@ -91,10 +78,7 @@ afterEach(async () => {
 })
 
 it('loads the current backlog and links to issue creation', async () => {
-  const view = vi.fn<BacklogPageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  }))
+  const view = vi.fn<BacklogPageDeps['view']>(async () => pageData)
 
   await mount(createDeps({ view }), vi.fn<(query: LocationQueryRaw) => void>(), {
     page: '2',
@@ -118,8 +102,8 @@ it('pushes typed search into the route query and drops the page', async () => {
 
 it('searches again when the route query changes and shows the new issues', async () => {
   const search = vi.fn<BacklogPageDeps['search']>(async () => ({
-    data: { hasNextPage: false, issues: [issueOf('ISS-2', 'Searched issue')] },
-    status: 'success',
+    hasNextPage: false,
+    issues: [issueOf('ISS-2', 'Searched issue')],
   }))
 
   await mount(createDeps({ search }))
@@ -129,10 +113,7 @@ it('searches again when the route query changes and shows the new issues', async
 })
 
 it('shows a search failure while keeping the previous issues', async () => {
-  const search = vi.fn<BacklogPageDeps['search']>(async () => ({
-    code: 403,
-    status: 'error',
-  }))
+  const search = vi.fn<BacklogPageDeps['search']>().mockRejectedValue(new ApiError(403))
 
   await mount(createDeps({ search }))
   await currentWrapper!.setProps({ routeQuery: { search: 'bug' } })
@@ -144,8 +125,8 @@ it('shows a search failure while keeping the previous issues', async () => {
 it('reloads the backlog when the failed request is retried', async () => {
   const view = vi
     .fn<BacklogPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps({ view }))
   await page.getByRole('button', { name: 'Try again' }).click()

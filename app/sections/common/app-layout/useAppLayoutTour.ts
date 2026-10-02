@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import type { TourStateDeps, TourStep } from '~/composables/useTour'
 import { useTour } from '~/composables/useTour'
 
-import type { AppLayoutData } from './AppLayout.types'
+import type { AppLayoutData } from './AppLayout.deps'
 
 export const useAppLayoutTour = (
   data: Readonly<Ref<AppLayoutData | undefined>>,

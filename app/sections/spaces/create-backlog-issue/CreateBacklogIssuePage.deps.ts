@@ -1,14 +1,13 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
 import type { CreateIssueFormDeps } from '~/components/create-issue-form/CreateIssueForm.deps'
+import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 
-import type { CreateBacklogIssuePageData } from './CreateBacklogIssuePage.types'
-
-export type ViewBacklogIssue = (input: {
-  signal?: AbortSignal
-  spaceKey: string
-}) => Promise<QueryResult<CreateBacklogIssuePageData>>
+export type CreateBacklogIssuePageData = {
+  attributes: IssueAttributeField[]
+  boardId: string
+  boardName: string
+}
 
 export type CreateBacklogIssuePageDeps = {
   form: CreateIssueFormDeps
-  view: ViewBacklogIssue
+  view: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<CreateBacklogIssuePageData>
 }

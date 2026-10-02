@@ -1,13 +1,20 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 
-import type { CreateBoardInput, CreateBoardPageData } from './CreateBoardPage.types'
+type BoardStatus = { category: StatusCategory; color: string; name: string }
 
-export type CreateBoard = (input: CreateBoardInput) => Promise<ActionResult<{ boardId: string }>>
+export type CreateBoardInput = {
+  color: string
+  name: string
+  spaceKey: string
+  statuses?: BoardStatus[]
+}
+
+export type CreateBoardPageData = {
+  boards: Array<{ label: string; statuses: BoardStatus[]; value: string }>
+}
 
 export type CreateBoardPageDeps = {
-  create: CreateBoard
-  view: (input: {
-    signal?: AbortSignal
-    spaceKey: string
-  }) => Promise<QueryResult<CreateBoardPageData>>
+  // Resolves with the id the backend gave the board.
+  create: (input: CreateBoardInput) => Promise<string>
+  view: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<CreateBoardPageData>
 }

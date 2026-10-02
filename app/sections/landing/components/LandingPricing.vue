@@ -89,7 +89,7 @@
 import type { Locale } from '~/composables/useI18n'
 
 import { appUrl } from '../landingLinks'
-import type { LandingCurrency, LandingTariff, LandingTariffs } from '../LandingPage.types'
+import type { LandingCurrency, LandingTariff, LandingTariffs } from '../LandingPage.deps'
 import { useLandingOffers } from '../useLandingSeo'
 import LandingIcon from './LandingIcon.vue'
 import LandingSection from './LandingSection.vue'

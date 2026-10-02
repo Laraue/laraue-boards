@@ -6,10 +6,10 @@ import type { MemberProfilePageDeps } from './MemberProfilePage.deps'
 import MemberProfilePage from './MemberProfilePage.vue'
 
 const createDeps = (overrides: Partial<MemberProfilePageDeps> = {}): MemberProfilePageDeps => ({
-  update: vi.fn<MemberProfilePageDeps['update']>(async () => ({ data: true, status: 'success' })),
+  update: vi.fn<MemberProfilePageDeps['update']>(async () => {}),
   view: vi.fn<MemberProfilePageDeps['view']>(async () => ({
-    data: { color: '#4774d4', displayName: 'Ada Lovelace' },
-    status: 'success',
+    color: '#4774d4',
+    displayName: 'Ada Lovelace',
   })),
   ...overrides,
 })

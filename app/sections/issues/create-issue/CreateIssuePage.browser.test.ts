@@ -2,8 +2,9 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { CreateIssuePageDeps } from './CreateIssuePage.deps'
-import type { CreateIssuePageData } from './CreateIssuePage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type { CreateIssuePageData, CreateIssuePageDeps } from './CreateIssuePage.deps'
 import CreateIssuePage from './CreateIssuePage.vue'
 
 const pageData: CreateIssuePageData = { attributes: [] }
@@ -12,46 +13,38 @@ const createDeps = (overrides: Partial<CreateIssuePageDeps> = {}): CreateIssuePa
   form: {
     assigneeSelect: {
       loadAssignees: vi.fn<CreateIssuePageDeps['form']['assigneeSelect']['loadAssignees']>(
-        async () => ({
-          data: [
-            {
-              color: '#4774d4',
-              initials: 'AL',
-              isCurrentUser: false,
-              label: 'Ann Lee',
-              value: '9',
-            },
-          ],
-          status: 'success',
-        }),
+        async () => [
+          {
+            color: '#4774d4',
+            initials: 'AL',
+            isCurrentUser: false,
+            label: 'Ann Lee',
+            value: '9',
+          },
+        ],
       ),
     },
     boardSelect: {
-      loadBoards: vi.fn<CreateIssuePageDeps['form']['boardSelect']['loadBoards']>(async () => ({
-        data: [{ label: 'Sprint board', value: '12' }],
-        status: 'success',
-      })),
+      loadBoards: vi.fn<CreateIssuePageDeps['form']['boardSelect']['loadBoards']>(async () => [
+        { label: 'Sprint board', value: '12' },
+      ]),
     },
     create: vi.fn<CreateIssuePageDeps['form']['create']>(),
     description: {
       summarizeContent: vi.fn<CreateIssuePageDeps['form']['description']['summarizeContent']>(),
     },
     spaceSelect: {
-      loadSpaces: vi.fn<CreateIssuePageDeps['form']['spaceSelect']['loadSpaces']>(async () => ({
-        data: [{ label: 'Product', value: '7' }],
-        status: 'success',
-      })),
+      loadSpaces: vi.fn<CreateIssuePageDeps['form']['spaceSelect']['loadSpaces']>(async () => [
+        { label: 'Product', value: '7' },
+      ]),
     },
     statusSelect: {
-      loadStatuses: vi.fn<CreateIssuePageDeps['form']['statusSelect']['loadStatuses']>(
-        async () => ({
-          data: [{ label: 'To do', value: '1' }],
-          status: 'success',
-        }),
-      ),
+      loadStatuses: vi.fn<CreateIssuePageDeps['form']['statusSelect']['loadStatuses']>(async () => [
+        { label: 'To do', value: '1' },
+      ]),
     },
   },
-  view: vi.fn<CreateIssuePageDeps['view']>(async () => ({ data: pageData, status: 'success' })),
+  view: vi.fn<CreateIssuePageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
@@ -74,8 +67,8 @@ afterEach(async () => {
 it('reloads the form data when the failed request is retried', async () => {
   const view = vi
     .fn<CreateIssuePageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps({ view }), vi.fn<(issueKey: string) => void>())
 

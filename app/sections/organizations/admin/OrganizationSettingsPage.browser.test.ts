@@ -2,8 +2,12 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { OrganizationSettingsPageDeps } from './OrganizationSettingsPage.deps'
-import type { OrganizationSettingsPageData } from './OrganizationSettingsPage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type {
+  OrganizationSettingsPageData,
+  OrganizationSettingsPageDeps,
+} from './OrganizationSettingsPage.deps'
 import OrganizationSettingsPage from './OrganizationSettingsPage.vue'
 
 const pageData: OrganizationSettingsPageData = {
@@ -18,18 +22,9 @@ const pageData: OrganizationSettingsPageData = {
 const createDeps = (
   overrides: Partial<OrganizationSettingsPageDeps> = {},
 ): OrganizationSettingsPageDeps => ({
-  remove: vi.fn<OrganizationSettingsPageDeps['remove']>(async () => ({
-    data: true,
-    status: 'success',
-  })),
-  updateOrganization: vi.fn<OrganizationSettingsPageDeps['updateOrganization']>(async () => ({
-    data: true,
-    status: 'success',
-  })),
-  view: vi.fn<OrganizationSettingsPageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  })),
+  remove: vi.fn<OrganizationSettingsPageDeps['remove']>(async () => {}),
+  updateOrganization: vi.fn<OrganizationSettingsPageDeps['updateOrganization']>(async () => {}),
+  view: vi.fn<OrganizationSettingsPageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
@@ -62,7 +57,7 @@ it('shows the loaded settings', async () => {
 
 it('submits the edited settings and reports success', async () => {
   const updateOrganization = vi.fn<OrganizationSettingsPageDeps['updateOrganization']>(
-    async () => ({ data: true, status: 'success' }),
+    async () => {},
   )
   const onUpdated = vi.fn<() => void>()
 
@@ -82,9 +77,9 @@ it('submits the edited settings and reports success', async () => {
 })
 
 it('keeps the form open and shows the validation message returned by the backend', async () => {
-  const updateOrganization = vi.fn<OrganizationSettingsPageDeps['updateOrganization']>(
-    async () => ({ message: 'Name is already taken.', status: 'validation-error' }),
-  )
+  const updateOrganization = vi.fn<OrganizationSettingsPageDeps['updateOrganization']>(async () => {
+    throw new ApiError(400, 'Name is already taken.')
+  })
   const onUpdated = vi.fn<() => void>()
 
   await mount(createDeps({ updateOrganization }), onUpdated)
@@ -96,10 +91,7 @@ it('keeps the form open and shows the validation message returned by the backend
 })
 
 it('deletes the organization after confirmation', async () => {
-  const remove = vi.fn<OrganizationSettingsPageDeps['remove']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const remove = vi.fn<OrganizationSettingsPageDeps['remove']>(async () => {})
   const onDeleted = vi.fn<() => void>()
   vi.spyOn(window, 'confirm').mockReturnValue(true)
 
@@ -113,8 +105,8 @@ it('deletes the organization after confirmation', async () => {
 it('reloads the settings when the failed request is retried', async () => {
   const view = vi
     .fn<OrganizationSettingsPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps({ view }), vi.fn<() => void>())
 
@@ -125,8 +117,9 @@ it('reloads the settings when the failed request is retried', async () => {
 
 it('hides unavailable settings actions', async () => {
   const view = vi.fn<OrganizationSettingsPageDeps['view']>(async () => ({
-    data: { ...pageData, canDelete: false, canUpdate: false },
-    status: 'success',
+    ...pageData,
+    canDelete: false,
+    canUpdate: false,
   }))
 
   await mount(createDeps({ view }), vi.fn<() => void>())

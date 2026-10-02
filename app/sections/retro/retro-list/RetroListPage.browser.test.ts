@@ -2,8 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { RetroListPageDeps } from './RetroListPage.deps'
-import type { RetroListItemViewModel } from './RetroListPage.types'
+import type { RetroListItemViewModel, RetroListPageDeps } from './RetroListPage.deps'
 import RetroListPage from './RetroListPage.vue'
 
 const retros: RetroListItemViewModel[] = [
@@ -45,17 +44,14 @@ const mount = async (
 }
 
 const listing = (data = retros, hasNextPage = false, canCreate = true) =>
-  vi.fn<RetroListPageDeps['view']>(async () => ({
-    data: { canCreate, hasNextPage, retros: data },
-    status: 'success',
-  }))
+  vi.fn<RetroListPageDeps['view']>(async () => ({ canCreate, hasNextPage, retros: data }))
 
 afterEach(async () => {
   await currentWrapper?.unmount()
   currentWrapper = undefined
 })
 
-const successfulRemove = async () => ({ data: true as const, status: 'success' as const })
+const successfulRemove = async () => {}
 
 it('lists past retros with their state and links to each board', async () => {
   await mount({
@@ -77,11 +73,7 @@ const startingDeps = (startRetro: RetroListPageDeps['startRetro'], data = retros
   view: listing(data),
 })
 
-const successfulStart = () =>
-  vi.fn<RetroListPageDeps['startRetro']>(async () => ({
-    data: { retroId: '9' },
-    status: 'success',
-  }))
+const successfulStart = () => vi.fn<RetroListPageDeps['startRetro']>(async () => '9')
 
 it('deletes a retro after a confirmation', async () => {
   const removeRetro = vi.fn<RetroListPageDeps['removeRetro']>(successfulRemove)

@@ -94,11 +94,12 @@
 <script setup lang="ts">
 import { Plus, Trash2 } from '@lucide/vue'
 
-import type { AttributePageDeps } from '~/sections/organizations/attributes/attribute/AttributePage.deps'
 import type {
   Attribute,
   AttributeDraft,
-} from '~/sections/organizations/attributes/attribute/AttributePage.types'
+  AttributePageDeps,
+  UpdateAttributeInput,
+} from '~/sections/organizations/attributes/attribute/AttributePage.deps'
 import { assertNever } from '~/utils/assertNever'
 
 const props = defineProps<{
@@ -144,10 +145,9 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `attribute:${props.attributeId}`,
-  (_nuxtApp, { signal }) => props.deps.view({ attributeId: props.attributeId, signal }),
-  { watch: [() => props.attributeId] },
+  (signal) => props.deps.view({ attributeId: props.attributeId, signal }),
 )
 
 useHead({
@@ -158,17 +158,13 @@ const {
   execute: update,
   message: updateMessage,
   pending: updating,
-} = useAction(props.deps.update, {
-  onSuccess: props.onFinished,
-})
+} = useApiAction(props.deps.update)
 
 const {
   execute: deleteAttribute,
   message: deleteMessage,
   pending: deleting,
-} = useAction(props.deps.delete, {
-  onSuccess: props.onFinished,
-})
+} = useApiAction(props.deps.delete)
 
 const submitting = computed(() => updating.value || deleting.value)
 
@@ -219,51 +215,49 @@ const addOption = () => {
   }
 }
 
-const submit = () => {
-  const value = draft.value
-  if (!value) {
-    return
-  }
-  const base = { color: value.color, id: value.id, name: value.name }
-  switch (value.data.type) {
-    case 'text':
-      void update({ ...base, data: { type: 'text' } })
-      break
+const toInput = ({
+  color,
+  data: attributeData,
+  id,
+  name,
+}: AttributeDraft): UpdateAttributeInput => {
+  switch (attributeData.type) {
     case 'list':
-      void update({
-        ...base,
+      return {
+        color,
         data: {
-          listValues: value.data.listValues.map((option) => ({
+          listValues: attributeData.listValues.map((option) => ({
             id: option.id,
             name: option.name,
           })),
           type: 'list',
         },
-      })
-      break
+        id,
+        name,
+      }
+    case 'text':
     case 'integer':
-      void update({ ...base, data: { type: 'integer' } })
-      break
     case 'decimal':
-      void update({ ...base, data: { type: 'decimal' } })
-      break
     case 'date':
-      void update({ ...base, data: { type: 'date' } })
-      break
     case 'dateTime':
-      void update({ ...base, data: { type: 'dateTime' } })
-      break
+      return { color, data: { type: attributeData.type }, id, name }
     default:
-      assertNever(value.data)
+      return assertNever(attributeData)
   }
 }
 
-const remove = (attribute: Attribute) => {
-  if (submitting.value) {
-    return
+const submit = async () => {
+  if (draft.value && (await update(toInput(draft.value)))) {
+    await props.onFinished()
   }
-  if (confirm(`${t('deleteAttribute')} "${attribute.name}"?`)) {
-    void deleteAttribute({ id: attribute.id })
+}
+
+const remove = async (attribute: Attribute) => {
+  if (
+    confirm(`${t('deleteAttribute')} "${attribute.name}"?`) &&
+    (await deleteAttribute({ id: attribute.id }))
+  ) {
+    await props.onFinished()
   }
 }
 </script>

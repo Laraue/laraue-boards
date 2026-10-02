@@ -1,28 +1,22 @@
 <template>
   <div class="issue-history-state">
     <HistoryTimeline
-      v-if="state.items.length || !state.pending"
+      v-if="state.items.length || !pending"
       :items="state.items"
       :label="label ?? t('label')" />
-    <p
-      v-if="state.message"
-      class="form-error"
-      role="alert">
-      {{ state.message }}
-    </p>
     <div
-      v-if="state.pending"
+      v-if="pending"
       class="history-loading"
       role="status">
       <LoaderCircle class="spin" />
       <span>{{ t('loading') }}</span>
     </div>
     <button
-      v-else-if="state.message || state.hasNextPage"
+      v-else-if="state.failed || state.hasNextPage"
       class="secondary small history-more"
       type="button"
       @click="load()">
-      {{ state.message ? t('tryAgain') : t('loadMore') }}
+      {{ state.failed ? t('tryAgain') : t('loadMore') }}
     </button>
   </div>
 </template>
@@ -35,29 +29,20 @@ import HistoryTimeline from '~/components/history-timeline/HistoryTimeline.vue'
 
 import type { IssueHistoryDeps } from './IssueHistory.deps'
 
-const props = withDefaults(
-  defineProps<{
-    deps: IssueHistoryDeps
-    errorMessage?: string
-    issueKey: string
-    label?: string
-  }>(),
-  {
-    errorMessage: undefined,
-    label: undefined,
-  },
-)
+const props = defineProps<{
+  deps: IssueHistoryDeps
+  issueKey: string
+  label?: string
+}>()
 
 const { t } = useI18n({
   en: {
-    defaultError: 'Could not load issue history.',
     label: 'Issue history',
     loading: 'Loading history…',
     loadMore: 'Load more',
     tryAgain: 'Try again',
   },
   ru: {
-    defaultError: 'Не удалось загрузить историю задачи.',
     label: 'История задачи',
     loading: 'Загрузка истории…',
     loadMore: 'Загрузить ещё',
@@ -66,40 +51,27 @@ const { t } = useI18n({
 })
 
 const state = reactive({
+  failed: false,
   hasNextPage: false,
   items: [] as HistoryItemViewModel[],
-  message: '',
   page: 0,
-  pending: false,
-  refreshing: false,
 })
 
+const { execute: loadPage, pending } = useApiAction(props.deps.load)
+
+// `replace` reloads from the first page, e.g. after the issue was saved.
 const load = async (replace = false) => {
-  if (state.pending || state.refreshing) {
+  if (pending.value) {
     return
   }
-
   const requestedPage = replace ? 0 : state.page
-  state[replace ? 'refreshing' : 'pending'] = true
-  state.message = ''
-  const result = await props.deps.load({ issueKey: props.issueKey, page: requestedPage })
-  state.pending = false
-  state.refreshing = false
-
-  if (result.status !== 'success') {
-    if (!replace) {
-      state.message = props.errorMessage ?? t('defaultError')
-    }
+  const loaded = await loadPage({ issueKey: props.issueKey, page: requestedPage })
+  state.failed = !loaded
+  if (!loaded) {
     return
   }
-
-  if (replace) {
-    state.items = result.data.items
-  } else {
-    state.items.push(...result.data.items)
-  }
-
-  state.hasNextPage = result.data.hasNextPage
+  state.items = replace ? loaded.value.items : [...state.items, ...loaded.value.items]
+  state.hasNextPage = loaded.value.hasNextPage
   state.page = requestedPage + 1
 }
 

@@ -1,14 +1,16 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+/** How the user is shown in this organization. */
+export type MemberProfile = {
+  color: string
+  displayName: string
+}
 
-import type { MemberProfile, UpdateMemberProfileInput } from './MemberProfilePage.types'
-
-export type ViewMemberProfile = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<MemberProfile>>
-
-export type UpdateMemberProfile = (input: UpdateMemberProfileInput) => Promise<ActionResult<true>>
+/** An empty `displayName` takes the name from the user's profile again. */
+export type UpdateMemberProfileInput = {
+  color: string
+  displayName: string
+}
 
 export type MemberProfilePageDeps = {
-  update: UpdateMemberProfile
-  view: ViewMemberProfile
+  update: (input: UpdateMemberProfileInput) => Promise<void>
+  view: (input: { signal?: AbortSignal }) => Promise<MemberProfile>
 }

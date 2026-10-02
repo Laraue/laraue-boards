@@ -112,17 +112,15 @@ const { t } = useI18n({
 
 useHead({ title: t('yourAccount') })
 
-const { data, message, pending, refresh } = await useQuery('user-account', (_nuxtApp, { signal }) =>
+const { data, message, pending, refresh } = await useApiQuery('user-account', (signal) =>
   props.deps.view({ signal }),
 )
 
-const { execute: executeLogout, pending: loggingOut } = useAction(props.deps.logout, {
-  onSuccess: props.onLoggedOut,
-})
+const { execute: executeLogout, pending: loggingOut } = useApiAction(props.deps.logout)
 
-const logout = (): void => {
-  if (!loggingOut.value) {
-    void executeLogout()
+const logout = async (): Promise<void> => {
+  if (!loggingOut.value && (await executeLogout())) {
+    await props.onLoggedOut()
   }
 }
 

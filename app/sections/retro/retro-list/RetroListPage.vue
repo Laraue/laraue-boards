@@ -95,8 +95,10 @@ import { Plus, Trash2 } from '@lucide/vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { RetroIcon } from '~/constants/icons'
-import type { RetroListPageDeps } from '~/sections/retro/retro-list/RetroListPage.deps'
-import type { RetroListItemViewModel } from '~/sections/retro/retro-list/RetroListPage.types'
+import type {
+  RetroListItemViewModel,
+  RetroListPageDeps,
+} from '~/sections/retro/retro-list/RetroListPage.deps'
 
 const props = defineProps<{
   deps: RetroListPageDeps
@@ -146,16 +148,13 @@ const organizationRoutes = useOrganizationRoutes()
 
 const page = computed(() => Math.max(1, Number(props.routeQuery.page) || 1))
 
-const { data, message, pending, refresh } = await useQuery(
-  'retros',
-  (_nuxtApp, { signal }) => props.deps.view({ page: page.value, signal }),
-  { watch: [page] },
+const { data, message, pending, refresh } = await useApiQuery(
+  () => `retros:${page.value}`,
+  (signal) => props.deps.view({ page: page.value, signal }),
 )
 
-const { execute: startRetro, pending: starting } = useAction(props.deps.startRetro, {
-  onSuccess: ({ retroId }) => props.onOpen(retroId),
-})
-const { execute: removeRetro, pending: removing } = useAction(props.deps.removeRetro)
+const { execute: startRetro, pending: starting } = useApiAction(props.deps.startRetro)
+const { execute: removeRetro, pending: removing } = useApiAction(props.deps.removeRetro)
 const { formatLocalDate } = useFormatters()
 
 // Nothing is carried over unless the team says so by continuing from a specific retro.
@@ -164,8 +163,9 @@ const remove = async (retro: RetroListItemViewModel) => {
   if (!confirm(t('deleteConfirm', { name: retro.name }))) {
     return
   }
-  await removeRetro({ retroId: retro.id })
-  await refresh()
+  if (await removeRetro({ retroId: retro.id })) {
+    await refresh()
+  }
 }
 
 const updatePage = (value: number) => {
@@ -178,11 +178,14 @@ const updatePage = (value: number) => {
   void props.onUpdateQuery(nextQuery)
 }
 
-const start = (basedOn: null | RetroListItemViewModel) => {
-  void startRetro({
+const start = async (basedOn: null | RetroListItemViewModel) => {
+  const started = await startRetro({
     basedOnRetroId: basedOn?.id ?? null,
     name: formatLocalDate(new Date()),
   })
+  if (started) {
+    await props.onOpen(started.value)
+  }
 }
 
 useHead({ title: t('retro') })

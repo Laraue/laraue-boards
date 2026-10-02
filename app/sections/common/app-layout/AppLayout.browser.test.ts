@@ -4,8 +4,7 @@ import { page } from 'vitest/browser'
 
 import type { TourStateDeps } from '~/composables/useTour'
 
-import type { AppLayoutDeps, RoutableProblem } from './AppLayout.deps'
-import type { AppLayoutData } from './AppLayout.types'
+import type { AppLayoutData, AppLayoutDeps, RoutableProblem } from './AppLayout.deps'
 import AppLayout from './AppLayout.vue'
 
 const data: AppLayoutData = {
@@ -61,7 +60,7 @@ afterEach(async () => {
 })
 
 it('shows desktop navigation and logs out on request', async () => {
-  const logout = vi.fn<AppLayoutDeps['logout']>(async () => ({ data: true, status: 'success' }))
+  const logout = vi.fn<AppLayoutDeps['logout']>(async () => {})
   await page.viewport(1280, 800)
   const onLoggedOut = await mount(createDeps({ logout }))
 

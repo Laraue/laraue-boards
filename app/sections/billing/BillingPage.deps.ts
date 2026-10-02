@@ -1,7 +1,24 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
+export type BillingUsageViewModel = {
+  limit: number
+  remaining: number
+  used: number
+}
 
-import type { BillingPageData } from './BillingPage.types'
+type BillingPageCommonData = {
+  issuesPerMonth: BillingUsageViewModel | null
+  subscriptionCode: string
+  tokens: BillingUsageViewModel
+}
+
+export type BillingPageData =
+  | (BillingPageCommonData & {
+      freeTeamOrganizations: BillingUsageViewModel | null
+      kind: 'personal'
+    })
+  | (BillingPageCommonData & {
+      kind: 'team'
+    })
 
 export type BillingPageDeps = {
-  view: (input: { signal?: AbortSignal }) => Promise<QueryResult<BillingPageData>>
+  view: (input: { signal?: AbortSignal }) => Promise<BillingPageData>
 }

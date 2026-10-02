@@ -91,8 +91,11 @@
 import { Plus, Trash2 } from '@lucide/vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
-import type { CreateAttributePageDeps } from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.deps'
-import type { AttributeDraft } from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.types'
+import type {
+  AttributeDraft,
+  CreateAttributeInput,
+  CreateAttributePageDeps,
+} from '~/sections/organizations/attributes/create-attribute/CreateAttributePage.deps'
 import { assertNever } from '~/utils/assertNever'
 
 const props = defineProps<{
@@ -143,13 +146,7 @@ const organizationRoutes = useOrganizationRoutes()
 
 useHead({ title: t('createAttribute') })
 
-const {
-  execute: create,
-  message,
-  pending,
-} = useAction(props.deps.create, {
-  onSuccess: props.onCreated,
-})
+const { execute: create, message, pending } = useApiAction(props.deps.create)
 
 let nextOptionKey = 0
 
@@ -191,36 +188,28 @@ const changeType = (event: Event) => {
   }
 }
 
-const submit = () => {
-  const value = draft
-  const base = { color: value.color, name: value.name }
-  switch (value.data.type) {
-    case 'text':
-      void create({ ...base, data: { type: 'text' } })
-      break
+const toInput = ({ color, data, name }: AttributeDraft): CreateAttributeInput => {
+  switch (data.type) {
     case 'list':
-      void create({
-        ...base,
-        data: {
-          listValues: value.data.listValues.map((option) => option.name),
-          type: 'list',
-        },
-      })
-      break
+      return {
+        color,
+        data: { listValues: data.listValues.map((option) => option.name), type: 'list' },
+        name,
+      }
+    case 'text':
     case 'integer':
-      void create({ ...base, data: { type: 'integer' } })
-      break
     case 'decimal':
-      void create({ ...base, data: { type: 'decimal' } })
-      break
     case 'date':
-      void create({ ...base, data: { type: 'date' } })
-      break
     case 'dateTime':
-      void create({ ...base, data: { type: 'dateTime' } })
-      break
+      return { color, data: { type: data.type }, name }
     default:
-      assertNever(value.data)
+      return assertNever(data)
+  }
+}
+
+const submit = async () => {
+  if (await create(toInput(draft))) {
+    await props.onCreated()
   }
 }
 </script>

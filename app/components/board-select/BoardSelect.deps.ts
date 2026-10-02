@@ -1,12 +1,8 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
-
-import type { BoardSelectOption } from './BoardSelect.types'
-
-export type LoadBoards = (input: {
-  signal?: AbortSignal
-  spaceKey: string
-}) => Promise<QueryResult<BoardSelectOption[]>>
+export type BoardSelectOption = {
+  label: string
+  value: string
+}
 
 export type BoardSelectDeps = {
-  loadBoards: LoadBoards
+  loadBoards: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<BoardSelectOption[]>
 }

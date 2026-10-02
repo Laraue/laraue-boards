@@ -1,19 +1,19 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
-import type { QueryResult } from '#infrastructure/api/apiResult'
 import type { TourStateDeps } from '~/composables/useTour'
 
-import type { OrganizationPickerItem } from './OrganizationPickerPage.types'
-
-export type SelectOrganization = (input: { organizationId: string }) => Promise<ActionResult<true>>
-export type LeaveOrganization = (input: { id: string }) => Promise<ActionResult<true>>
-
-export type ViewOrganizationPicker = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<OrganizationPickerItem[]>>
+export type OrganizationPickerItem = {
+  canLeave: boolean
+  color: string
+  description: string
+  id: string
+  initial: string
+  isPersonal: boolean
+  key: string
+  name: string
+}
 
 export type OrganizationPickerPageDeps = {
-  leave: LeaveOrganization
-  select: SelectOrganization
+  leave: (input: { id: string }) => Promise<void>
+  select: (input: { organizationId: string }) => Promise<void>
   tour: TourStateDeps
-  view: ViewOrganizationPicker
+  view: (input: { signal?: AbortSignal }) => Promise<OrganizationPickerItem[]>
 }

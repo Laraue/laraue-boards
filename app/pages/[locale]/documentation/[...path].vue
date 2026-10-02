@@ -7,8 +7,8 @@
 </template>
 
 <script setup lang="ts">
-import { createDocsPageDeps } from '~/sections/docs/deps-impl'
-import type { DocsFetcher } from '~/sections/docs/deps-impl/docsRequests'
+import type { DocsFetcher } from '~/sections/docs/DocsPage.deps.impl'
+import { createDocsPageDeps } from '~/sections/docs/DocsPage.deps.impl'
 import DocsPage from '~/sections/docs/DocsPage.vue'
 
 definePageMeta({

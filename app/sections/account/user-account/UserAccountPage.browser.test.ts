@@ -28,21 +28,15 @@ const depsOf = (overrides: Partial<UserAccountPageDeps> = {}): UserAccountPageDe
     connectTelegram: vi.fn<UserAccountPageDeps['connectedAccounts']['connectTelegram']>(),
     googleSignInButton: { loadGoogleSignIn: async () => undefined },
     telegramSignInButton: { loadTelegramSignIn: async () => undefined },
-    view: async () => ({ data: { google: true, telegram: true }, status: 'success' }),
+    view: async () => ({ google: true, telegram: true }),
   },
   interface: createPreferences(),
-  logout: vi.fn<UserAccountPageDeps['logout']>(async () => ({ data: true, status: 'success' })),
+  logout: vi.fn<UserAccountPageDeps['logout']>(async () => {}),
   profile: {
     update: vi.fn<UserAccountPageDeps['profile']['update']>(),
-    view: async () => ({
-      data: { displayName: 'Ada Lovelace', familyName: 'Lovelace', givenName: 'Ada' },
-      status: 'success',
-    }),
+    view: async () => ({ displayName: 'Ada Lovelace', familyName: 'Lovelace', givenName: 'Ada' }),
   },
-  view: async () => ({
-    data: { initials: 'AL', kind: 'signed-in' },
-    status: 'success',
-  }),
+  view: async () => ({ initials: 'AL', kind: 'signed-in' }),
   ...overrides,
 })
 
@@ -89,9 +83,7 @@ it('changes the theme and the language for the whole account', async () => {
 })
 
 it('sends a signed-out visitor to sign in', async () => {
-  const onSignedOut = await mount(
-    depsOf({ view: async () => ({ data: { kind: 'signed-out' }, status: 'success' }) }),
-  )
+  const onSignedOut = await mount(depsOf({ view: async () => ({ kind: 'signed-out' }) }))
 
   await vi.waitFor(() => expect(onSignedOut).toHaveBeenCalledOnce())
 })

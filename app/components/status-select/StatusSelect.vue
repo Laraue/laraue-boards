@@ -39,8 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { StatusSelectDeps } from './StatusSelect.deps'
-import type { StatusSelectOption } from './StatusSelect.types'
+import type { StatusSelectDeps, StatusSelectOption } from './StatusSelect.deps'
 
 const props = withDefaults(
   defineProps<{
@@ -79,9 +78,9 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { clear, data, execute, message, pending, status } = await useQuery(
+const { clear, data, execute, message, pending, status } = await useApiQuery(
   `status-select:${useId()}`,
-  (_nuxtApp, { signal }) => props.deps.loadStatuses({ boardId: props.boardId, signal }),
+  (signal) => props.deps.loadStatuses({ boardId: props.boardId, signal }),
   { immediate: props.eager && Boolean(props.boardId) },
 )
 

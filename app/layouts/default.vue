@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import type { RoutableProblem } from '~/sections/common/app-layout/AppLayout.deps'
+import { createAppLayoutDeps } from '~/sections/common/app-layout/AppLayout.deps.impl'
 import AppLayout from '~/sections/common/app-layout/AppLayout.vue'
-import { createAppLayoutDeps } from '~/sections/common/app-layout/deps-impl'
 
 const { organizationKey } = useOrganizationRoutes()
 const route = useRoute()

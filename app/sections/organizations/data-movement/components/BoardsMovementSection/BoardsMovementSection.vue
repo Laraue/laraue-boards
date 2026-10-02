@@ -63,7 +63,7 @@
 import { ArrowRightLeft } from '@lucide/vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
-import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.types'
+import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.deps'
 
 import type { BoardsMovementSectionDeps } from './BoardsMovementSection.deps'
 import MoveBoardsDialog from './components/MoveBoardsDialog/MoveBoardsDialog.vue'

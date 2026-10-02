@@ -3,8 +3,7 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import type { LocationQueryRaw } from 'vue-router'
 
-import type { BoardPageDeps } from './BoardPage.deps'
-import type { BoardPageViewModel } from './BoardPage.types'
+import type { BoardPageDeps, BoardPageViewModel } from './BoardPage.deps'
 import BoardPage from './BoardPage.vue'
 
 const board: BoardPageViewModel = {
@@ -39,10 +38,7 @@ const mount = async ({
     moveBoardIssue: vi.fn<BoardPageDeps['moveBoardIssue']>(),
     moveIssueToBacklog,
     searchBoardIssues: vi.fn<BoardPageDeps['searchBoardIssues']>(),
-    view: vi.fn<BoardPageDeps['view']>(async () => ({
-      data,
-      status: 'success',
-    })),
+    view: vi.fn<BoardPageDeps['view']>(async () => data),
   }
   currentWrapper = await mountSuspended(BoardPage, {
     attachTo: document.body,
@@ -103,10 +99,7 @@ it('requests issue creation in the selected column', async () => {
 })
 
 it('moves an issue to backlog and removes it from the board', async () => {
-  const moveIssueToBacklog = vi.fn<BoardPageDeps['moveIssueToBacklog']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const moveIssueToBacklog = vi.fn<BoardPageDeps['moveIssueToBacklog']>(async () => {})
 
   await mount({
     data: {

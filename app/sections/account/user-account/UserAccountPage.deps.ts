@@ -1,20 +1,17 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
-
 import type { ConnectedAccountsSectionDeps } from './components/ConnectedAccountsSection/ConnectedAccountsSection.deps'
 import type { InterfaceSectionDeps } from './components/InterfaceSection/InterfaceSection.deps'
 import type { ProfileSectionDeps } from './components/ProfileSection/ProfileSection.deps'
-import type { UserAccountView } from './UserAccountPage.types'
 
-export type ViewUserAccount = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<UserAccountView>>
-
-export type Logout = () => Promise<ActionResult<true>>
+// The initials come from the user's global profile (null when it couldn't be read); there's no
+// global color - a person is shown per organization.
+export type UserAccountView =
+  | { initials: null | string; kind: 'signed-in' }
+  | { kind: 'signed-out' }
 
 export type UserAccountPageDeps = {
   connectedAccounts: ConnectedAccountsSectionDeps
   interface: InterfaceSectionDeps
-  logout: Logout
+  logout: () => Promise<void>
   profile: ProfileSectionDeps
-  view: ViewUserAccount
+  view: (input: { signal?: AbortSignal }) => Promise<UserAccountView>
 }

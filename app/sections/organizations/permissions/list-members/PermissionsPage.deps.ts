@@ -1,14 +1,19 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+export type PermissionsPageMember = {
+  color: string
+  id: string
+  initials: string
+  isAdmin: boolean
+  isOwner: boolean
+  name: string
+}
 
-import type { PermissionsPageData } from './PermissionsPage.types'
-
-export type RegenerateJoinCode = () => Promise<ActionResult<string>>
-
-export type ViewPermissions = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<PermissionsPageData>>
+export type PermissionsPageData = {
+  joinCode: string
+  members: PermissionsPageMember[]
+}
 
 export type PermissionsPageDeps = {
-  regenerateJoinCode: RegenerateJoinCode
-  view: ViewPermissions
+  // Resolves with the new join code.
+  regenerateJoinCode: () => Promise<string>
+  view: (input: { signal?: AbortSignal }) => Promise<PermissionsPageData>
 }

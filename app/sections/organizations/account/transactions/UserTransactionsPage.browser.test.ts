@@ -14,22 +14,19 @@ afterEach(async () => {
 
 it('shows transaction details and requests the current route page', async () => {
   const view = vi.fn<UserTransactionsPageDeps['view']>(async () => ({
-    data: {
-      hasNextPage: true,
-      transactions: [
-        {
-          createdAt: '2026-09-19T10:00:00Z',
-          delta: -25,
-          error: null,
-          finishedAt: null,
-          id: 'transaction-1',
-          ownerName: null,
-          reason: 'Spend',
-          status: 'Confirmed',
-        },
-      ],
-    },
-    status: 'success',
+    hasNextPage: true,
+    transactions: [
+      {
+        createdAt: '2026-09-19T10:00:00Z',
+        delta: -25,
+        error: null,
+        finishedAt: null,
+        id: 'transaction-1',
+        ownerName: null,
+        reason: 'Spend',
+        status: 'Confirmed',
+      },
+    ],
   }))
 
   currentWrapper = await mountSuspended(UserTransactionsPage, {

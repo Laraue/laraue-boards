@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { createTransactionsPageDeps } from '~/sections/organizations/admin/transactions/deps-impl'
+import { createTransactionsPageDeps } from '~/sections/organizations/admin/transactions/OrganizationTransactionsPage.deps.impl'
 import OrganizationTransactionsPage from '~/sections/organizations/admin/transactions/OrganizationTransactionsPage.vue'
 
 const { t } = useI18n({

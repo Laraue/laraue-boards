@@ -54,10 +54,10 @@
         </div>
 
         <p
-          v-if="state.moveError"
+          v-if="moveMessage"
           class="form-error"
           role="alert">
-          {{ state.moveError }}
+          {{ moveMessage }}
         </p>
 
         <DragDropProvider
@@ -80,7 +80,7 @@
               :key="column.id"
               :can-create-issues="page.canCreateIssues"
               :can-move-issues="page.canMoveIssues"
-              :load-more-error="state.loadMoreErrors.get(column.id) ?? null"
+              :load-more-failed="state.failedColumnIds.has(column.id)"
               :loading-more="state.loadingColumnIds.has(column.id)"
               :moving-issue-keys="state.movingIssueKeys"
               :on-create-issue="onCreateIssue"
@@ -111,7 +111,7 @@ import type {
   LoadMoreBoardIssuesResult,
   SearchBoardIssuesResult,
   BoardPageViewModel,
-} from '~/sections/boards/board/BoardPage.types'
+} from '~/sections/boards/board/BoardPage.deps'
 
 const mergeRefreshedBoard = (
   board: BoardPageViewModel,
@@ -151,12 +151,10 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
 import { BoardIcon } from '~/constants/icons'
-import type { BoardPageDeps } from '~/sections/boards/board/BoardPage.deps'
-import type { BoardPageFilterValue } from '~/sections/boards/board/BoardPage.types'
+import type { BoardPageDeps, BoardPageFilterValue } from '~/sections/boards/board/BoardPage.deps'
 import BoardColumn from '~/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '~/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
-import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.types'
-import { getErrorMessage } from '~/utils/getErrorMessage'
+import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.deps'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -179,7 +177,7 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
-const { locale, t } = useI18n({
+const { t } = useI18n({
   en: {
     addIssue: 'Add issue',
     backToSpace: 'Back to space',
@@ -187,7 +185,6 @@ const { locale, t } = useI18n({
     boardSettings: 'Board settings',
     loadError: 'Could not load board',
     loading: 'Loading board…',
-    moveError: 'Could not move the issue.',
     searchIssues: 'Search issues',
     settings: 'Settings',
   },
@@ -198,7 +195,6 @@ const { locale, t } = useI18n({
     boardSettings: 'Настройки доски',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
-    moveError: 'Не удалось переместить задачу.',
     searchIssues: 'Поиск задач',
     settings: 'Настройки',
   },
@@ -235,29 +231,21 @@ const state = reactive({
   closingIssueDialog: false,
   dragging: false,
   dragSnapshot: null as BoardPageViewModel | null,
+  failedColumnIds: new Set<string>(),
   filtering: false,
   loadingColumnIds: new Set<string>(),
-  loadMoreErrors: new Map<string, string>(),
-  moveError: null as null | string,
   movingIssueKeys: new Set<string>(),
-  queryError: undefined as string | undefined,
 })
 
-const {
-  data,
-  message: queryMessage,
-  pending,
-  refresh,
-} = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `board:${props.boardId}`,
-  (_nuxtApp, { signal }) =>
+  (signal) =>
     props.deps.view({
       attributeQuery: attributeQuery.value,
       boardId: props.boardId,
       search: search.value,
       signal,
     }),
-  { watch: [() => props.boardId] },
 )
 
 const viewModel = ref<BoardPageViewModel>()
@@ -265,19 +253,20 @@ watch(
   data,
   (value) => {
     if (value) {
-      state.queryError = undefined
       viewModel.value = value
     }
   },
   { immediate: true },
 )
-const message = computed(() => state.queryError ?? queryMessage.value)
-const { execute: executeMoveBoardIssue, message: moveBoardIssueMessage } = useAction(
+const { execute: executeMoveBoardIssue, message: moveBoardIssueMessage } = useApiAction(
   props.deps.moveBoardIssue,
 )
-const { execute: executeMoveIssueToBacklog, message: moveIssueToBacklogMessage } = useAction(
+const { execute: executeMoveIssueToBacklog, message: moveIssueToBacklogMessage } = useApiAction(
   props.deps.moveIssueToBacklog,
 )
+const moveMessage = computed(() => moveBoardIssueMessage.value ?? moveIssueToBacklogMessage.value)
+const { execute: searchBoardIssues } = useApiAction(props.deps.searchBoardIssues)
+const { execute: loadMoreBoardIssues } = useApiAction(props.deps.loadMoreBoardIssues)
 const issueAttributes = computed(() => viewModel.value?.attributes ?? [])
 const attributeFilters = computed(() =>
   normalizeIssueAttributeFilters(attributeQuery.value, issueAttributes.value),
@@ -334,7 +323,7 @@ watch(
     scheduleSearch.cancel()
     state.filtering = false
     state.loadingColumnIds.clear()
-    state.loadMoreErrors.clear()
+    state.failedColumnIds.clear()
   },
 )
 
@@ -390,22 +379,18 @@ const handleIssueDeleted = (issueKey: string) => {
 const searchIssues = async () => {
   scheduleSearch.cancel()
   state.filtering = true
-  const result = await props.deps.searchBoardIssues({
+  const result = await searchBoardIssues({
     boardId: props.boardId,
     filters: filterInput.value,
     search: search.value,
     take: LOAD_MORE_TAKE,
   })
   state.filtering = false
-  if (result.status === 'error') {
-    state.queryError = getErrorMessage(result.code, locale.value)
-    return
-  }
   const current = viewModel.value
-  if (!current) {
+  if (!result || !current) {
     return
   }
-  const issuesByColumn = new Map(result.data.columns.map((column) => [column.id, column]))
+  const issuesByColumn = new Map(result.value.columns.map((column) => [column.id, column]))
   viewModel.value = {
     ...current,
     columns: current.columns.map((column) => {
@@ -416,7 +401,7 @@ const searchIssues = async () => {
         issues: issues?.issues ?? [],
       }
     }),
-    issueCount: result.data.issueCount,
+    issueCount: result.value.issueCount,
   }
 }
 
@@ -432,7 +417,7 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
         .filter((column) => statusIds.has(column.id))
         .map(async (column) => ({
           columnId: column.id,
-          result: await props.deps.loadMoreBoardIssues({
+          result: await loadMoreBoardIssues({
             filters: filterInput.value,
             offset: 0,
             search: search.value,
@@ -441,7 +426,7 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
           }),
         })),
     ),
-    props.deps.searchBoardIssues({
+    searchBoardIssues({
       boardId: props.boardId,
       filters: filterInput.value,
       search: search.value,
@@ -450,28 +435,20 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
   ])
 
   const refreshedColumns = new Map<string, LoadMoreBoardIssuesResult>()
-  for (const response of columns) {
-    if (response.result.status === 'error') {
-      state.loadMoreErrors.set(
-        response.columnId,
-        getErrorMessage(response.result.code, locale.value),
-      )
+  for (const { columnId, result } of columns) {
+    if (result) {
+      state.failedColumnIds.delete(columnId)
+      refreshedColumns.set(columnId, result.value)
     } else {
-      state.loadMoreErrors.delete(response.columnId)
-      refreshedColumns.set(response.columnId, response.result.data)
+      state.failedColumnIds.add(columnId)
     }
-  }
-
-  let refreshedSummary: SearchBoardIssuesResult | undefined
-  if (summary.status === 'success') {
-    refreshedSummary = summary.data
   }
 
   const latest = viewModel.value
   if (!latest) {
     return
   }
-  viewModel.value = mergeRefreshedBoard(latest, refreshedColumns, refreshedSummary)
+  viewModel.value = mergeRefreshedBoard(latest, refreshedColumns, summary?.value)
 }
 
 const moveIssue = async (input: {
@@ -498,7 +475,6 @@ const moveIssue = async (input: {
 
   scheduleSearch.cancel()
   state.filtering = false
-  state.moveError = null
   state.movingIssueKeys.add(input.issueKey)
   const result = await executeMoveBoardIssue({
     issueKey: input.issueKey,
@@ -506,9 +482,8 @@ const moveIssue = async (input: {
     target,
     updateStatus: input.updateStatus,
   })
-  if (result === undefined) {
+  if (!result) {
     viewModel.value = input.revert
-    state.moveError = moveBoardIssueMessage.value ?? t('moveError')
   }
   state.movingIssueKeys.delete(input.issueKey)
 }
@@ -519,7 +494,6 @@ const moveToBacklog = async (issueKey: string) => {
     return
   }
 
-  state.moveError = null
   state.movingIssueKeys.add(issueKey)
   const result = await executeMoveIssueToBacklog({
     boardId: props.boardId,
@@ -528,8 +502,6 @@ const moveToBacklog = async (issueKey: string) => {
   })
   if (result) {
     viewModel.value = removeIssueFromBoard(current, issueKey)
-  } else {
-    state.moveError = moveIssueToBacklogMessage.value ?? t('moveError')
   }
   state.movingIssueKeys.delete(issueKey)
 }
@@ -542,11 +514,11 @@ const loadMoreIssues = async (statusId: string) => {
   }
 
   state.loadingColumnIds.add(statusId)
-  state.loadMoreErrors.delete(statusId)
+  state.failedColumnIds.delete(statusId)
   const requestedSearch = search.value
   const requestedFilterKey = filterKey.value
 
-  const result = await props.deps.loadMoreBoardIssues({
+  const result = await loadMoreBoardIssues({
     filters: filterInput.value,
     offset: column.issues.length,
     search: requestedSearch,
@@ -559,8 +531,8 @@ const loadMoreIssues = async (statusId: string) => {
   if (search.value !== requestedSearch || filterKey.value !== requestedFilterKey) {
     return
   }
-  if (result.status === 'error') {
-    state.loadMoreErrors.set(statusId, getErrorMessage(result.code, locale.value))
+  if (!result) {
+    state.failedColumnIds.add(statusId)
     return
   }
   const latest = viewModel.value
@@ -573,8 +545,8 @@ const loadMoreIssues = async (statusId: string) => {
       currentColumn.id === statusId
         ? {
             ...currentColumn,
-            hasNext: result.data.hasNext,
-            issues: [...currentColumn.issues, ...result.data.issues],
+            hasNext: result.value.hasNext,
+            issues: [...currentColumn.issues, ...result.value.issues],
           }
         : currentColumn,
     ),

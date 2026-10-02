@@ -2,8 +2,9 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { PermissionsPageDeps } from './PermissionsPage.deps'
-import type { PermissionsPageMember } from './PermissionsPage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type { PermissionsPageDeps, PermissionsPageMember } from './PermissionsPage.deps'
 import PermissionsPage from './PermissionsPage.vue'
 
 const members: PermissionsPageMember[] = [
@@ -59,10 +60,7 @@ afterEach(async () => {
 })
 
 it('links every member to their permissions and labels their role', async () => {
-  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({
-    data: { joinCode: 'invite-123', members },
-    status: 'success',
-  }))
+  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({ joinCode: 'invite-123', members }))
 
   await mount(view)
 
@@ -78,14 +76,10 @@ it('links every member to their permissions and labels their role', async () => 
 })
 
 it('replaces the invitation link after confirmation', async () => {
-  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({
-    data: { joinCode: 'invite-123', members },
-    status: 'success',
-  }))
-  const regenerateJoinCode = vi.fn<PermissionsPageDeps['regenerateJoinCode']>(async () => ({
-    data: 'invite-456',
-    status: 'success',
-  }))
+  const view = vi.fn<PermissionsPageDeps['view']>(async () => ({ joinCode: 'invite-123', members }))
+  const regenerateJoinCode = vi.fn<PermissionsPageDeps['regenerateJoinCode']>(
+    async () => 'invite-456',
+  )
   vi.spyOn(window, 'confirm').mockReturnValue(true)
 
   await mount(view, regenerateJoinCode)
@@ -100,8 +94,8 @@ it('replaces the invitation link after confirmation', async () => {
 it('reloads the members when the failed request is retried', async () => {
   const view = vi
     .fn<PermissionsPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: { joinCode: 'invite-123', members }, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue({ joinCode: 'invite-123', members })
 
   await mount(view)
 

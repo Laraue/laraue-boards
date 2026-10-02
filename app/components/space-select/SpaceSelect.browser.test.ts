@@ -2,17 +2,17 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { SpaceSelectDeps } from './SpaceSelect.deps'
 import SpaceSelect from './SpaceSelect.vue'
 
 const perOrganization = () =>
-  vi.fn<SpaceSelectDeps['loadSpaces']>(async ({ organizationId }) => ({
-    data:
-      organizationId === '2'
-        ? [{ label: 'Marketing', value: '30' }]
-        : [{ label: 'Development', value: '10' }],
-    status: 'success',
-  }))
+  vi.fn<SpaceSelectDeps['loadSpaces']>(async ({ organizationId }) =>
+    organizationId === '2'
+      ? [{ label: 'Marketing', value: '30' }]
+      : [{ label: 'Development', value: '10' }],
+  )
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
@@ -55,10 +55,7 @@ it('reloads and clears the selection when the organization changes', async () =>
 })
 
 it('shows an error when loading fails', async () => {
-  const loadSpaces = vi.fn<SpaceSelectDeps['loadSpaces']>(async () => ({
-    code: 500,
-    status: 'error',
-  }))
+  const loadSpaces = vi.fn<SpaceSelectDeps['loadSpaces']>().mockRejectedValue(new ApiError(500))
 
   await mount({ loadSpaces })
   await page.getByLabelText('Space').click()

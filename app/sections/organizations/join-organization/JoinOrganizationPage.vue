@@ -99,25 +99,25 @@ const state = reactive({ loginRequired: false })
 
 useHead({ title: t('joinOrganization') })
 
-const { execute: join, message: joinMessage, pending } = useAction(props.deps.join)
+const { execute: join, message: joinMessage, pending } = useApiAction(props.deps.join)
 
 const {
   execute: loginViaTelegramMiniApp,
   message: miniAppMessage,
   pending: miniAppPending,
-} = useAction(props.deps.loginViaTelegramMiniApp)
+} = useApiAction(props.deps.loginViaTelegramMiniApp)
 
 const {
   execute: loginViaTelegramWidget,
   message: widgetMessage,
   pending: widgetPending,
-} = useAction(props.deps.loginViaTelegramWidget)
+} = useApiAction(props.deps.loginViaTelegramWidget)
 
 const {
   execute: loginViaGoogle,
   message: googleMessage,
   pending: googlePending,
-} = useAction(props.deps.loginViaGoogle)
+} = useApiAction(props.deps.loginViaGoogle)
 
 const busy = computed(
   () => pending.value || miniAppPending.value || widgetPending.value || googlePending.value,
@@ -132,7 +132,7 @@ const message = computed(
 
 const showLogin = async (): Promise<void> => {
   const miniApp = await loginViaTelegramMiniApp()
-  if (miniApp?.authenticated) {
+  if (miniApp?.value) {
     await accept()
     return
   }
@@ -142,9 +142,9 @@ const showLogin = async (): Promise<void> => {
 
 const accept = async (): Promise<void> => {
   const outcome = await join({ code: props.code })
-  if (outcome === 'joined') {
+  if (outcome?.value === 'joined') {
     await props.onJoined()
-  } else if (outcome === 'sign-in-required') {
+  } else if (outcome?.value === 'sign-in-required') {
     await showLogin()
   }
 }

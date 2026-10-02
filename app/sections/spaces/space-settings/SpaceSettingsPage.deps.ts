@@ -1,20 +1,19 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
-import type { QueryResult } from '#infrastructure/api/apiResult'
+export type SpaceSettingsPageData = {
+  canDelete: boolean
+  canUpdate: boolean
+  color: string
+  name: string
+}
 
-import type { UpdateSpaceInput } from './SpaceSettingsPage.types'
-import type { SpaceSettingsPageData } from './SpaceSettingsPage.types'
-
-export type RemoveSpace = (input: { spaceKey: string }) => Promise<ActionResult<true>>
-
-export type UpdateSpace = (input: UpdateSpaceInput) => Promise<ActionResult<true>>
-
-export type ViewSpaceSettings = (input: {
-  signal?: AbortSignal
-  spaceKey: string
-}) => Promise<QueryResult<SpaceSettingsPageData>>
+export type UpdateSpaceInput = {
+  color: string
+  name: string
+  newKey: string
+  oldKey: string
+}
 
 export type SpaceSettingsPageDeps = {
-  remove: RemoveSpace
-  update: UpdateSpace
-  view: ViewSpaceSettings
+  remove: (input: { spaceKey: string }) => Promise<void>
+  update: (input: UpdateSpaceInput) => Promise<void>
+  view: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<SpaceSettingsPageData>
 }

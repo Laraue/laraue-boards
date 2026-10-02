@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import { createApiKeysPageDeps } from '~/sections/organizations/account/api-keys/ApiKeysPage.deps.impl'
 import ApiKeysPage from '~/sections/organizations/account/api-keys/ApiKeysPage.vue'
-import { createApiKeysPageDeps } from '~/sections/organizations/account/api-keys/deps-impl'
 
 const { t } = useI18n({
   en: { apiKeys: 'API keys' },

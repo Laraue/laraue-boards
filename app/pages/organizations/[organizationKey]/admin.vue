@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { ArrowRightLeft, History, Settings, ShieldCheck, Tags } from '@lucide/vue'
 
-import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.types'
+import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
 
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()

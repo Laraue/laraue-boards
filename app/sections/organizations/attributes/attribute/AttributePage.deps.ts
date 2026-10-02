@@ -1,20 +1,47 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
-import type { QueryResult } from '#infrastructure/api/apiResult'
+export type Attribute = {
+  color: string
+  data:
+    | { listValues: Array<{ id: string; name: string }>; type: 'list' }
+    | { type: 'date' }
+    | { type: 'dateTime' }
+    | { type: 'decimal' }
+    | { type: 'integer' }
+    | { type: 'text' }
+  id: string
+  name: string
+}
 
-import type { UpdateAttributeInput } from './AttributePage.types'
-import type { Attribute } from './AttributePage.types'
+type DraftListValue = { id: null | string; key: number; name: string }
 
-export type DeleteAttribute = (input: { id: string }) => Promise<ActionResult<true>>
+export type AttributeDraft = {
+  color: string
+  data:
+    | { listValues: DraftListValue[]; type: 'list' }
+    | { type: 'date' }
+    | { type: 'dateTime' }
+    | { type: 'decimal' }
+    | { type: 'integer' }
+    | { type: 'text' }
+  id: string
+  name: string
+}
 
-export type UpdateAttribute = (input: UpdateAttributeInput) => Promise<ActionResult<true>>
-
-export type ViewAttribute = (input: {
-  attributeId: string
-  signal?: AbortSignal
-}) => Promise<QueryResult<Attribute>>
+export type UpdateAttributeInput = {
+  color: string
+  data:
+    | { listValues: Array<{ id: null | string; name: string }>; type: 'list' }
+    | { type: 'date' }
+    | { type: 'dateTime' }
+    | { type: 'decimal' }
+    | { type: 'integer' }
+    | { type: 'text' }
+  id: string
+  name: string
+}
 
 export type AttributePageDeps = {
-  delete: DeleteAttribute
-  update: UpdateAttribute
-  view: ViewAttribute
+  delete: (input: { id: string }) => Promise<void>
+  update: (input: UpdateAttributeInput) => Promise<void>
+  // Rejects with a 404 when the organization has no such attribute.
+  view: (input: { attributeId: string; signal?: AbortSignal }) => Promise<Attribute>
 }

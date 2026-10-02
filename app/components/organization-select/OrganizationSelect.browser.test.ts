@@ -2,6 +2,8 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { OrganizationSelectDeps } from './OrganizationSelect.deps'
 import OrganizationSelect from './OrganizationSelect.vue'
 
@@ -10,13 +12,10 @@ const createDeps = (
 ): OrganizationSelectDeps => ({ loadOrganizations })
 
 const loadTwo = () =>
-  vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => ({
-    data: [
-      { label: 'Acme', value: '1' },
-      { label: 'Globex', value: '2' },
-    ],
-    status: 'success',
-  }))
+  vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [
+    { label: 'Acme', value: '1' },
+    { label: 'Globex', value: '2' },
+  ])
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
@@ -44,10 +43,7 @@ it('loads the options once the select is focused', async () => {
 })
 
 it('shows the empty state when there are no organizations', async () => {
-  const loadOrganizations = vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => ({
-    data: [],
-    status: 'success',
-  }))
+  const loadOrganizations = vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [])
 
   await mount(createDeps(loadOrganizations))
   await page.getByLabelText('Organization').click()
@@ -58,10 +54,9 @@ it('shows the empty state when there are no organizations', async () => {
 })
 
 it('shows an error when loading fails', async () => {
-  const loadOrganizations = vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => ({
-    code: 500,
-    status: 'error',
-  }))
+  const loadOrganizations = vi
+    .fn<OrganizationSelectDeps['loadOrganizations']>()
+    .mockRejectedValue(new ApiError(500))
 
   await mount(createDeps(loadOrganizations))
   await page.getByLabelText('Organization').click()

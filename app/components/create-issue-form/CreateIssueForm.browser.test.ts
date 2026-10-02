@@ -2,51 +2,44 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
 import CreateIssueForm from './CreateIssueForm.vue'
 
 const createDeps = (): CreateIssueFormDeps => ({
   assigneeSelect: {
-    loadAssignees: vi.fn<CreateIssueFormDeps['assigneeSelect']['loadAssignees']>(async () => ({
-      data: [
-        {
-          color: '#4774d4',
-          initials: 'AL',
-          isCurrentUser: true,
-          label: 'Ann Lee',
-          value: '9',
-        },
-      ],
-      status: 'success',
-    })),
+    loadAssignees: vi.fn<CreateIssueFormDeps['assigneeSelect']['loadAssignees']>(async () => [
+      {
+        color: '#4774d4',
+        initials: 'AL',
+        isCurrentUser: true,
+        label: 'Ann Lee',
+        value: '9',
+      },
+    ]),
   },
   boardSelect: {
-    loadBoards: vi.fn<CreateIssueFormDeps['boardSelect']['loadBoards']>(async () => ({
-      data: [{ label: 'Sprint board', value: '12' }],
-      status: 'success',
-    })),
+    loadBoards: vi.fn<CreateIssueFormDeps['boardSelect']['loadBoards']>(async () => [
+      { label: 'Sprint board', value: '12' },
+    ]),
   },
-  create: vi.fn<CreateIssueFormDeps['create']>(async () => ({
-    data: { issueKey: 'ISS-1' },
-    status: 'success',
-  })),
+  create: vi.fn<CreateIssueFormDeps['create']>(async () => 'ISS-1'),
   description: {
     summarizeContent: vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(async () => ({
-      data: { content: 'Improved content', title: null },
-      status: 'success',
+      content: 'Improved content',
+      title: null,
     })),
   },
   spaceSelect: {
-    loadSpaces: vi.fn<CreateIssueFormDeps['spaceSelect']['loadSpaces']>(async () => ({
-      data: [{ label: 'Product', value: '7' }],
-      status: 'success',
-    })),
+    loadSpaces: vi.fn<CreateIssueFormDeps['spaceSelect']['loadSpaces']>(async () => [
+      { label: 'Product', value: '7' },
+    ]),
   },
   statusSelect: {
-    loadStatuses: vi.fn<CreateIssueFormDeps['statusSelect']['loadStatuses']>(async () => ({
-      data: [{ label: 'To do', value: '1' }],
-      status: 'success',
-    })),
+    loadStatuses: vi.fn<CreateIssueFormDeps['statusSelect']['loadStatuses']>(async () => [
+      { label: 'To do', value: '1' },
+    ]),
   },
 })
 
@@ -96,13 +89,10 @@ it('creates an issue in a fixed board without showing destination selects', asyn
   const onCreated = vi.fn<(issueKey: string) => void>()
   const deps = createDeps()
   deps.statusSelect.loadStatuses = vi.fn<CreateIssueFormDeps['statusSelect']['loadStatuses']>(
-    async () => ({
-      data: [
-        { label: 'To do', value: '1' },
-        { label: 'In progress', value: '2' },
-      ],
-      status: 'success',
-    }),
+    async () => [
+      { label: 'To do', value: '1' },
+      { label: 'In progress', value: '2' },
+    ],
   )
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,
@@ -131,10 +121,9 @@ it('creates an issue in a fixed board without showing destination selects', asyn
 it('keeps the form open and shows the message when creation fails', async () => {
   const onCreated = vi.fn<(issueKey: string) => void>()
   const deps = createDeps()
-  deps.create = vi.fn<CreateIssueFormDeps['create']>(async () => ({
-    message: 'This board no longer accepts issues.',
-    status: 'validation-error',
-  }))
+  deps.create = vi
+    .fn<CreateIssueFormDeps['create']>()
+    .mockRejectedValue(new ApiError(400, 'This board no longer accepts issues.'))
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,
     props: {
@@ -159,10 +148,7 @@ it('keeps the form open and shows the message when creation fails', async () => 
 it('fills the title and the content with the AI summary', async () => {
   const deps = createDeps()
   deps.description.summarizeContent = vi.fn<CreateIssueFormDeps['description']['summarizeContent']>(
-    async () => ({
-      data: { content: '- Login fails on retry', title: 'Fix login retry' },
-      status: 'success',
-    }),
+    async () => ({ content: '- Login fails on retry', title: 'Fix login retry' }),
   )
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,

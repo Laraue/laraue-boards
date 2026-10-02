@@ -1,9 +1,25 @@
-import type { ActionResult, QueryResult } from '#infrastructure/api/apiResult'
+export type ApiKeyViewModel = {
+  createdAt: string
+  id: string
+  keyPrefix: string
+  lastUsedAt: null | string
+  name: string
+  revokedAt: null | string
+}
 
-import type { ApiKeysPageData, CreatedApiKey } from './ApiKeysPage.types'
+export type ApiKeysPageData = {
+  hasNextPage: boolean
+  keys: ApiKeyViewModel[]
+}
+
+export type CreatedApiKey = {
+  id: string
+  rawKey: string
+}
 
 export type ApiKeysPageDeps = {
-  create: (input: { name: string }) => Promise<ActionResult<CreatedApiKey>>
-  revoke: (input: { id: string }) => Promise<ActionResult<true>>
-  view: (input: { page: number; signal?: AbortSignal }) => Promise<QueryResult<ApiKeysPageData>>
+  // Resolves with the key itself, which is shown only this once.
+  create: (input: { name: string }) => Promise<CreatedApiKey>
+  revoke: (input: { id: string }) => Promise<void>
+  view: (input: { page: number; signal?: AbortSignal }) => Promise<ApiKeysPageData>
 }

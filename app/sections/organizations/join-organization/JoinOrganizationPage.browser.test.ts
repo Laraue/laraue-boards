@@ -28,10 +28,9 @@ const depsOf = (overrides: Partial<JoinOrganizationPageDeps> = {}): JoinOrganiza
   googleSignInButton: googleSignInButtonDeps(),
   join: vi.fn<JoinOrganizationPageDeps['join']>(),
   loginViaGoogle: vi.fn<JoinOrganizationPageDeps['loginViaGoogle']>(),
-  loginViaTelegramMiniApp: vi.fn<JoinOrganizationPageDeps['loginViaTelegramMiniApp']>(async () => ({
-    data: { authenticated: false },
-    status: 'success',
-  })),
+  loginViaTelegramMiniApp: vi.fn<JoinOrganizationPageDeps['loginViaTelegramMiniApp']>(
+    async () => false,
+  ),
   loginViaTelegramWidget: vi.fn<JoinOrganizationPageDeps['loginViaTelegramWidget']>(),
   telegramSignInButton: telegramSignInButtonDeps(),
   ...overrides,
@@ -50,10 +49,7 @@ const mount = async (
 }
 
 it('accepts the invitation code and continues to the organization picker', async () => {
-  const join = vi.fn<JoinOrganizationPageDeps['join']>(async () => ({
-    data: 'joined',
-    status: 'success',
-  }))
+  const join = vi.fn<JoinOrganizationPageDeps['join']>(async () => 'joined')
   const onJoined = vi.fn<() => void>()
 
   await mount(depsOf({ join }), onJoined)
@@ -68,10 +64,10 @@ it('accepts the invitation code and continues to the organization picker', async
 it('signs in inside a Telegram Mini App and retries the invitation', async () => {
   const join = vi
     .fn<JoinOrganizationPageDeps['join']>()
-    .mockResolvedValueOnce({ data: 'sign-in-required', status: 'success' })
-    .mockResolvedValueOnce({ data: 'joined', status: 'success' })
+    .mockResolvedValueOnce('sign-in-required')
+    .mockResolvedValueOnce('joined')
   const loginViaTelegramMiniApp = vi.fn<JoinOrganizationPageDeps['loginViaTelegramMiniApp']>(
-    async () => ({ data: { authenticated: true }, status: 'success' }),
+    async () => true,
   )
   const onJoined = vi.fn<() => void>()
 
@@ -86,10 +82,10 @@ it('signs in inside a Telegram Mini App and retries the invitation', async () =>
 it('shows the Telegram widget in a regular browser and retries after login', async () => {
   const join = vi
     .fn<JoinOrganizationPageDeps['join']>()
-    .mockResolvedValueOnce({ data: 'sign-in-required', status: 'success' })
-    .mockResolvedValueOnce({ data: 'joined', status: 'success' })
+    .mockResolvedValueOnce('sign-in-required')
+    .mockResolvedValueOnce('joined')
   const loginViaTelegramWidget = vi.fn<JoinOrganizationPageDeps['loginViaTelegramWidget']>(
-    async () => ({ data: true, status: 'success' }),
+    async () => {},
   )
   const onJoined = vi.fn<() => void>()
   const user: TelegramUser = { auth_date: 123, first_name: 'Ada', hash: 'signed', id: 42 }
@@ -110,12 +106,9 @@ it('shows the Telegram widget in a regular browser and retries after login', asy
 it('signs in with Google in a regular browser and retries the invitation', async () => {
   const join = vi
     .fn<JoinOrganizationPageDeps['join']>()
-    .mockResolvedValueOnce({ data: 'sign-in-required', status: 'success' })
-    .mockResolvedValueOnce({ data: 'joined', status: 'success' })
-  const loginViaGoogle = vi.fn<JoinOrganizationPageDeps['loginViaGoogle']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+    .mockResolvedValueOnce('sign-in-required')
+    .mockResolvedValueOnce('joined')
+  const loginViaGoogle = vi.fn<JoinOrganizationPageDeps['loginViaGoogle']>(async () => {})
   const onJoined = vi.fn<() => void>()
 
   await mount(

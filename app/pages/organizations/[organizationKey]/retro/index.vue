@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import type { LocationQueryRaw } from 'vue-router'
 
-import { createRetroListPageDeps } from '~/sections/retro/retro-list/deps-impl'
+import { createRetroListPageDeps } from '~/sections/retro/retro-list/RetroListPage.deps.impl'
 import RetroListPage from '~/sections/retro/retro-list/RetroListPage.vue'
 
 const organizationRoutes = useOrganizationRoutes()

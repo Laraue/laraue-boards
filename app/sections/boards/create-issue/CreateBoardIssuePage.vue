@@ -21,7 +21,7 @@
         </div>
         <CreateIssueForm
           :attributes="page.attributes"
-          :board="{ id: boardId, name: page.boardName, spaceKey: page.spaceKey }"
+          :board="{ id: boardId, name: page.boardName, spaceKey }"
           :deps="deps.form"
           :initial-status-id="initialStatusId"
           :on-created="onCreated" />
@@ -62,10 +62,8 @@ const { t } = useI18n({
 const organizationRoutes = useOrganizationRoutes()
 useHead({ title: t('addIssue') })
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `create-board-issue:${props.boardId}`,
-  (_nuxtApp, { signal }) =>
-    props.deps.view({ boardId: props.boardId, signal, spaceKey: props.spaceKey }),
-  { watch: [() => props.boardId] },
+  (signal) => props.deps.view({ boardId: props.boardId, signal }),
 )
 </script>

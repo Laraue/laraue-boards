@@ -1,0 +1,143 @@
+import { assert, expect, test } from 'vitest'
+
+import { createTestApiClient } from '#infrastructure/api/testApiClient'
+
+import { createAppLayoutDeps } from './AppLayout.deps.impl'
+
+test('loads the requested organization layout', async () => {
+  const { client } = createTestApiClient((_request, path) => {
+    switch (path) {
+      case '/api/organizations/current':
+        return {
+          canCreateSpaces: true,
+          canManage: true,
+          canManageAttributes: true,
+          canMassMove: false,
+          canViewBilling: true,
+          color: '#123',
+          id: 1,
+          memberProfile: { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' },
+          name: 'Acme',
+        }
+      case '/api/organizations':
+        return [
+          {
+            canUpdate: true,
+            id: 1,
+            isPersonal: false,
+            name: 'Acme',
+            slug: 'acme',
+            slugPostfix: 'AB12',
+          },
+        ]
+      case '/api/spaces':
+        return [{ color: '#789', isDefault: false, key: 'DEV', name: 'Development' }]
+      case '/api/billing/tariff':
+        return { name: 'Free' }
+      default:
+        return new Response(null, { status: 404 })
+    }
+  })
+
+  assert.deepEqual(await createAppLayoutDeps(client).view({ organizationKey: 'acme-AB12' }), {
+    data: {
+      organization: {
+        canCreateSpaces: true,
+        canManage: true,
+        canManageAttributes: true,
+        canMassMove: false,
+        canUpdate: true,
+        canViewBilling: true,
+        color: '#123',
+        id: '1',
+        initial: 'A',
+        name: 'Acme',
+      },
+      spaces: [{ color: '#789', key: 'DEV', name: 'Development' }],
+      user: { color: '#456', initials: 'AL', name: 'Ada Lovelace', tariffName: 'Free' },
+    },
+    status: 'success',
+  })
+})
+
+test('keeps an unauthenticated response distinct from forbidden access', async () => {
+  const signedOut = createTestApiClient(() => new Response(null, { status: 401 }))
+  const forbidden = createTestApiClient(() => new Response(null, { status: 403 }))
+
+  assert.deepEqual(
+    await createAppLayoutDeps(signedOut.client).view({ organizationKey: 'acme-AB12' }),
+    {
+      problem: { kind: 'signed-out' },
+      status: 'problem',
+    },
+  )
+  assert.deepEqual(
+    await createAppLayoutDeps(forbidden.client).view({ organizationKey: 'acme-AB12' }),
+    {
+      problem: { kind: 'no-access' },
+      status: 'problem',
+    },
+  )
+})
+
+test('reports a server failure as a failed load rather than a missing organization', async () => {
+  const { client } = createTestApiClient(() => new Response(null, { status: 503 }))
+
+  assert.deepEqual(await createAppLayoutDeps(client).view({ organizationKey: 'acme-AB12' }), {
+    problem: { code: 503, kind: 'load-failed' },
+    status: 'problem',
+  })
+})
+
+test('selects the organization from the url when only the organization cookie is missing', async () => {
+  let organizationSelected = false
+  const { client, paths } = createTestApiClient((_request, path) => {
+    switch (path) {
+      case '/api/organizations/current':
+        return organizationSelected
+          ? {
+              canCreateSpaces: true,
+              canManage: true,
+              canManageAttributes: true,
+              canMassMove: false,
+              canViewBilling: true,
+              color: '#123',
+              id: 1,
+              memberProfile: { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' },
+              name: 'Acme',
+            }
+          : new Response(null, { status: 401 })
+      case '/api/organizations':
+        return [
+          {
+            canUpdate: true,
+            id: 1,
+            isPersonal: false,
+            name: 'Acme',
+            slug: 'acme',
+            slugPostfix: 'AB12',
+          },
+        ]
+      case '/api/organizations/login':
+        organizationSelected = true
+        return new Response('ok')
+      case '/api/spaces':
+        return []
+      case '/api/billing/tariff':
+        return { name: 'Free' }
+      default:
+        return new Response(null, { status: 404 })
+    }
+  })
+
+  const result = await createAppLayoutDeps(client).view({ organizationKey: 'acme-AB12' })
+
+  assert.equal(result.status, 'success')
+  assert.include(paths(), '/api/organizations/login')
+})
+
+test('allows logout to finish even when the request fails', async () => {
+  const { client } = createTestApiClient(() => new Response(null, { status: 503 }))
+
+  await expect(createAppLayoutDeps(client).logout()).resolves.toBeUndefined()
+})

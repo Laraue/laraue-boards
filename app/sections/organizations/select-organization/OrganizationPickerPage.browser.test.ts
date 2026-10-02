@@ -2,11 +2,13 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { ActionResult } from '#infrastructure/api/apiResult'
+import { ApiError } from '#infrastructure/api/request'
 import type { TourStateDeps } from '~/composables/useTour'
 
-import type { OrganizationPickerPageDeps } from './OrganizationPickerPage.deps'
-import type { OrganizationPickerItem } from './OrganizationPickerPage.types'
+import type {
+  OrganizationPickerItem,
+  OrganizationPickerPageDeps,
+} from './OrganizationPickerPage.deps'
 import OrganizationPickerPage from './OrganizationPickerPage.vue'
 
 type Item = OrganizationPickerItem
@@ -53,14 +55,8 @@ afterEach(async () => {
 })
 
 it('shows organizations and selects one', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    data: [organization],
-    status: 'success',
-  }))
-  const select = vi.fn<OrganizationPickerPageDeps['select']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => [organization])
+  const select = vi.fn<OrganizationPickerPageDeps['select']>(async () => {})
   const onSelected = vi.fn<(organizationKey: string) => void>()
 
   await mount(createDeps(view, select), onSelected)
@@ -72,10 +68,7 @@ it('shows organizations and selects one', async () => {
 })
 
 it('shows no organizations when the list is empty', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    data: [],
-    status: 'success',
-  }))
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => [])
 
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
 
@@ -86,14 +79,8 @@ it('shows no organizations when the list is empty', async () => {
 })
 
 it('leaves a team organization and reloads the list', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    data: [organization],
-    status: 'success',
-  }))
-  const leave = vi.fn<OrganizationPickerPageDeps['leave']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => [organization])
+  const leave = vi.fn<OrganizationPickerPageDeps['leave']>(async () => {})
   vi.spyOn(window, 'confirm').mockReturnValue(true)
 
   await mount(createDeps(view, undefined, leave), vi.fn<(organizationKey: string) => void>())
@@ -104,10 +91,9 @@ it('leaves a team organization and reloads the list', async () => {
 })
 
 it('does not offer leaving an owned organization', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    data: [{ ...organization, canLeave: false }],
-    status: 'success',
-  }))
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => [
+    { ...organization, canLeave: false },
+  ])
 
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
 
@@ -117,10 +103,9 @@ it('does not offer leaving an owned organization', async () => {
 it('introduces the personal organization once', async () => {
   const tour = createTourDeps()
   tour.loadStatus.mockResolvedValue(undefined)
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    data: [{ ...organization, description: 'Personal organization', isPersonal: true }],
-    status: 'success',
-  }))
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => [
+    { ...organization, description: 'Personal organization', isPersonal: true },
+  ])
 
   await mount({ ...createDeps(view), tour }, vi.fn<(organizationKey: string) => void>())
 
@@ -142,8 +127,8 @@ it('introduces the personal organization once', async () => {
 it('reloads the organizations when the failed request is retried', async () => {
   const view = vi
     .fn<OrganizationPickerPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: [organization], status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue([organization])
 
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
 
@@ -155,16 +140,10 @@ it('reloads the organizations when the failed request is retried', async () => {
 })
 
 it('stays on the picker and shows the message when selecting fails', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    data: [organization],
-    status: 'success',
-  }))
-  const select = vi.fn<OrganizationPickerPageDeps['select']>(
-    async (): Promise<ActionResult<true>> => ({
-      message: 'This organization is no longer available.',
-      status: 'validation-error',
-    }),
-  )
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => [organization])
+  const select = vi.fn<OrganizationPickerPageDeps['select']>(async () => {
+    throw new ApiError(400, 'This organization is no longer available.')
+  })
   const onSelected = vi.fn<(organizationKey: string) => void>()
 
   await mount(createDeps(view, select), onSelected)
@@ -178,10 +157,9 @@ it('stays on the picker and shows the message when selecting fails', async () =>
 })
 
 it('sends a signed-out visitor to the login page', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    code: 401,
-    status: 'error',
-  }))
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => {
+    throw new ApiError(401)
+  })
   const onSignedOut = vi.fn<() => void>()
 
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>(), onSignedOut)
@@ -190,10 +168,9 @@ it('sends a signed-out visitor to the login page', async () => {
 })
 
 it('keeps a failed load on the page when the visitor is not signed out', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => ({
-    code: 500,
-    status: 'error',
-  }))
+  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => {
+    throw new ApiError(500)
+  })
   const onSignedOut = vi.fn<() => void>()
 
   await mount(createDeps(view), vi.fn<(organizationKey: string) => void>(), onSignedOut)

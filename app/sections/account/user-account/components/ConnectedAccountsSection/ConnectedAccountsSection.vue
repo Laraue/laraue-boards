@@ -80,8 +80,7 @@ import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInB
 import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
 import TelegramSignInButton from '~/components/telegram-sign-in-button/TelegramSignInButton.vue'
 
-import type { ConnectedAccountsSectionDeps } from './ConnectedAccountsSection.deps'
-import type { ConnectOutcome } from './ConnectedAccountsSection.types'
+import type { ConnectedAccountsSectionDeps, ConnectOutcome } from './ConnectedAccountsSection.deps'
 
 type Provider = 'google' | 'telegram'
 
@@ -151,9 +150,7 @@ const {
   message: queryMessage,
   pending,
   refresh,
-} = await useQuery('account-connected-accounts', (_nuxtApp, { signal }) =>
-  props.deps.view({ signal }),
-)
+} = await useApiQuery('account-connected-accounts', (signal) => props.deps.view({ signal }))
 
 const onConnected = async (provider: Provider, outcome: ConnectOutcome): Promise<void> => {
   state.provider = provider
@@ -167,16 +164,12 @@ const {
   execute: connectTelegram,
   message: telegramMessage,
   pending: connectingTelegram,
-} = useAction(props.deps.connectTelegram, {
-  onSuccess: (outcome) => onConnected('telegram', outcome),
-})
+} = useApiAction(props.deps.connectTelegram)
 const {
   execute: connectGoogle,
   message: googleMessage,
   pending: connectingGoogle,
-} = useAction(props.deps.connectGoogle, {
-  onSuccess: (outcome) => onConnected('google', outcome),
-})
+} = useApiAction(props.deps.connectGoogle)
 
 const busy = computed(() => connectingTelegram.value || connectingGoogle.value)
 
@@ -202,15 +195,17 @@ const sectionMessage = computed(
   () => telegramMessage.value || googleMessage.value || queryMessage.value,
 )
 
-const connectTelegramAccount = (user: TelegramUser): void => {
-  if (!busy.value) {
-    void connectTelegram(user)
+const connectTelegramAccount = async (user: TelegramUser): Promise<void> => {
+  const connected = !busy.value && (await connectTelegram(user))
+  if (connected) {
+    await onConnected('telegram', connected.value)
   }
 }
 
-const connectGoogleAccount = (code: string): void => {
-  if (!busy.value) {
-    void connectGoogle({ code })
+const connectGoogleAccount = async (code: string): Promise<void> => {
+  const connected = !busy.value && (await connectGoogle({ code }))
+  if (connected) {
+    await onConnected('google', connected.value)
   }
 }
 </script>

@@ -142,36 +142,31 @@ const { locale, t } = useI18n({
 // The privacy policy is on laraue.com, in the visitor's language.
 const privacyUrl = computed(() => laraueUrl(locale.value, '/privacy'))
 
-onMounted(() => void loginViaTelegramMiniApp())
+onMounted(async () => {
+  const miniApp = await loginViaTelegramMiniApp()
+  if (miniApp?.value) {
+    await props.onLoggedIn()
+  }
+})
 useHead({ title: t('signIn') })
 
 const {
   execute: loginViaTelegramMiniApp,
   message: miniAppMessage,
   pending: miniAppSubmitting,
-} = useAction(props.deps.loginViaTelegramMiniApp, {
-  onSuccess: async ({ authenticated }) => {
-    if (authenticated) {
-      await props.onLoggedIn()
-    }
-  },
-})
+} = useApiAction(props.deps.loginViaTelegramMiniApp)
 
 const {
   execute: loginViaTelegramWidget,
   message: widgetMessage,
   pending: widgetSubmitting,
-} = useAction(props.deps.loginViaTelegramWidget, {
-  onSuccess: props.onLoggedIn,
-})
+} = useApiAction(props.deps.loginViaTelegramWidget)
 
 const {
   execute: loginViaGoogle,
   message: googleMessage,
   pending: googleSubmitting,
-} = useAction(props.deps.loginViaGoogle, {
-  onSuccess: props.onLoggedIn,
-})
+} = useApiAction(props.deps.loginViaGoogle)
 
 const submitting = computed(
   () => miniAppSubmitting.value || widgetSubmitting.value || googleSubmitting.value,
@@ -182,14 +177,18 @@ const loginWidget = async (input: TelegramUser): Promise<void> => {
   if (submitting.value) {
     return
   }
-  await loginViaTelegramWidget(input)
+  if (await loginViaTelegramWidget(input)) {
+    await props.onLoggedIn()
+  }
 }
 
 const loginGoogle = async (code: string): Promise<void> => {
   if (submitting.value) {
     return
   }
-  await loginViaGoogle({ code, languageCode: navigator.language })
+  if (await loginViaGoogle({ code, languageCode: navigator.language })) {
+    await props.onLoggedIn()
+  }
 }
 </script>
 

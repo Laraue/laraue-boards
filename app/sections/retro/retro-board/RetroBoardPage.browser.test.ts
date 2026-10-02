@@ -3,8 +3,14 @@ import type { DOMWrapper } from '@vue/test-utils'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { RetroBoardPageDeps } from './RetroBoardPage.deps'
-import type { RetroBoardViewModel, RetroChannel, RetroChannelMessage } from './RetroBoardPage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type {
+  RetroBoardPageDeps,
+  RetroBoardViewModel,
+  RetroChannel,
+  RetroChannelMessage,
+} from './RetroBoardPage.deps'
 import RetroBoardPage from './RetroBoardPage.vue'
 
 const member = {
@@ -90,7 +96,7 @@ const createTestChannel = () => {
   return { channel, emit: (message: RetroChannelMessage) => handler?.(message) }
 }
 
-const successfulAction = async () => ({ data: true as const, status: 'success' as const })
+const successfulAction = async () => {}
 
 const pointer = (type: string, clientX: number, clientY: number) =>
   new PointerEvent(type, { bubbles: true, buttons: 1, clientX, clientY })
@@ -110,17 +116,11 @@ let testHost: HTMLDivElement | undefined
 
 const mount = async ({
   advancePhase = vi.fn<RetroBoardPageDeps['advancePhase']>(successfulAction),
-  createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => ({
-    data: { id: 'new-card' },
-    status: 'success',
-  })),
+  createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => 'new-card'),
   createChannel,
   data = board,
   finishRetro = vi.fn<RetroBoardPageDeps['finishRetro']>(successfulAction),
-  groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => ({
-    data: { id: 'group-1' },
-    status: 'success',
-  })),
+  groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => 'group-1'),
   moveCard = vi.fn<RetroBoardPageDeps['moveCard']>(successfulAction),
   moveGroup = vi.fn<RetroBoardPageDeps['moveGroup']>(successfulAction),
   removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(successfulAction),
@@ -136,7 +136,7 @@ const mount = async ({
   ungroup = vi.fn<RetroBoardPageDeps['ungroup']>(successfulAction),
   updateCard = vi.fn<RetroBoardPageDeps['updateCard']>(successfulAction),
   updateSettings = vi.fn<RetroBoardPageDeps['updateSettings']>(successfulAction),
-  view = vi.fn<RetroBoardPageDeps['view']>(async () => ({ data, status: 'success' })),
+  view = vi.fn<RetroBoardPageDeps['view']>(async () => data),
 }: {
   advancePhase?: RetroBoardPageDeps['advancePhase']
   createCard?: RetroBoardPageDeps['createCard']
@@ -336,9 +336,7 @@ it('hides the timer separator before an unavailable stop action', async () => {
 
 it('starts editing a created card', async () => {
   const { channel } = createTestChannel()
-  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => {
-    return { data: { id: 'new-card' }, status: 'success' }
-  })
+  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => 'new-card')
 
   await mount({ createCard, createChannel: () => channel })
   await nextTick()
@@ -382,7 +380,7 @@ it('creates and focuses immediately, then saves typed text after the create resp
   await editor.trigger('blur')
   expect(cardWithText('Typed before the response')).toBeDefined()
   expect(updateCard).not.toHaveBeenCalled()
-  resolveCreate({ data: { id: 'created-card' }, status: 'success' })
+  resolveCreate('created-card')
   await vi.waitFor(() =>
     expect(updateCard).toHaveBeenCalledWith({
       id: 'created-card',
@@ -397,8 +395,8 @@ it('keeps a failed creation and its text for retry', async () => {
   const { channel } = createTestChannel()
   const createCard = vi
     .fn<RetroBoardPageDeps['createCard']>()
-    .mockResolvedValueOnce({ code: 500, status: 'error' })
-    .mockResolvedValueOnce({ data: { id: 'retried-card' }, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(500))
+    .mockResolvedValueOnce('retried-card')
   await mount({ createCard, createChannel: () => channel })
   await currentWrapper!.get('.retro-canvas').trigger('dblclick', { clientX: 400, clientY: 300 })
   await currentWrapper!.get('textarea.card-text').setValue('Keep this note')
@@ -412,10 +410,7 @@ it('keeps a failed creation and its text for retry', async () => {
 
 it('creates from the native click following a canvas double tap', async () => {
   const { channel } = createTestChannel()
-  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => ({
-    data: { id: 'touch-created' },
-    status: 'success',
-  }))
+  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => 'touch-created')
   await mount({ createCard, createChannel: () => channel })
   const canvas = currentWrapper!.get('.retro-canvas')
   const tap = () => {
@@ -446,10 +441,7 @@ it('creates from the native click following a canvas double tap', async () => {
 
 it('turns the notes toggle back to private as soon as a note is written', async () => {
   const { channel } = createTestChannel()
-  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => ({
-    data: { id: 'new-card' },
-    status: 'success',
-  }))
+  const createCard = vi.fn<RetroBoardPageDeps['createCard']>(async () => 'new-card')
 
   await mount({ createCard, createChannel: () => channel })
 
@@ -602,7 +594,7 @@ it('edits only action cards during actions', async () => {
 
 it('syncs a realtime change after unchanged editing ends', async () => {
   const live = createTestChannel()
-  const view = vi.fn<RetroBoardPageDeps['view']>(async () => ({ data: board, status: 'success' }))
+  const view = vi.fn<RetroBoardPageDeps['view']>(async () => board)
 
   await mount({ createChannel: () => live.channel, view })
 
@@ -618,10 +610,7 @@ it('syncs a realtime change after unchanged editing ends', async () => {
 
 it('applies a live card update without reloading the board', async () => {
   const live = createTestChannel()
-  const view = vi.fn<RetroBoardPageDeps['view']>(async () => ({
-    data: structuredClone(board),
-    status: 'success',
-  }))
+  const view = vi.fn<RetroBoardPageDeps['view']>(async () => structuredClone(board))
 
   await mount({ createChannel: () => live.channel, view })
   live.emit({
@@ -682,7 +671,7 @@ it('keeps edited text visible while a slow save is pending', async () => {
 
   expect(cardWithText('Saved text')).toBeDefined()
   expect(cardWithText('')).toBeUndefined()
-  resolveUpdate({ data: true, status: 'success' })
+  resolveUpdate()
 })
 
 it('selects on touch and focuses from the click following the second tap', async () => {
@@ -739,7 +728,7 @@ it('selects on one click and drops a deleted card before the server answers', as
   // Gone straight away - the request is still on the wire.
   expect(cardWithText('My note')).toBeUndefined()
 
-  resolveRemove({ data: true, status: 'success' })
+  resolveRemove()
 })
 
 it('lets the facilitator delete another participant note', async () => {
@@ -755,10 +744,9 @@ it('lets the facilitator delete another participant note', async () => {
 
 it('brings a deleted card back when the server refuses', async () => {
   const { channel } = createTestChannel()
-  const removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(async () => ({
-    code: 500,
-    status: 'error' as const,
-  }))
+  const removeCard = vi.fn<RetroBoardPageDeps['removeCard']>(async () => {
+    throw new ApiError(500)
+  })
 
   await mount({ createChannel: () => channel, removeCard })
   await cardWithText('My note')?.trigger('click')
@@ -941,10 +929,7 @@ const groupingBoard: RetroBoardViewModel = { ...board, phase: 'Group' }
 
 it('merges the picked notes into a topic', async () => {
   const { channel } = createTestChannel()
-  const groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => ({
-    data: { id: 'group-1' },
-    status: 'success',
-  }))
+  const groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => 'group-1')
 
   await mount({ createChannel: () => channel, data: groupingBoard, groupCards })
 
@@ -968,10 +953,7 @@ it('merges the picked notes into a topic', async () => {
 
 it('merges notes that already belong to different topics', async () => {
   const { channel } = createTestChannel()
-  const groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => ({
-    data: { id: 'group-3' },
-    status: 'success',
-  }))
+  const groupCards = vi.fn<RetroBoardPageDeps['groupCards']>(async () => 'group-3')
   const twoTopics: RetroBoardViewModel = {
     ...groupingBoard,
     cards: [
@@ -1094,7 +1076,7 @@ it('shows a new vote limit straight away, without the old number flashing back',
   expect(updateSettings).toHaveBeenCalledOnce()
   expect((currentWrapper!.get('.vote-counter-limit').element as HTMLInputElement).value).toBe('5')
 
-  resolveSave({ data: true, status: 'success' })
+  resolveSave()
   await nextTick()
 
   expect((currentWrapper!.get('.vote-counter-limit').element as HTMLInputElement).value).toBe('5')
@@ -1126,7 +1108,7 @@ it('shows a renamed topic straight away, without the old headline flashing back'
     'Slow releases',
   )
 
-  resolveSave({ data: true, status: 'success' })
+  resolveSave()
   await nextTick()
 
   expect((currentWrapper!.get('.group-box input').element as HTMLInputElement).value).toBe(
@@ -1136,10 +1118,9 @@ it('shows a renamed topic straight away, without the old headline flashing back'
 
 it('puts the old topic headline back when the rename is refused', async () => {
   const { channel } = createTestChannel()
-  const setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(async () => ({
-    code: 500,
-    status: 'error' as const,
-  }))
+  const setGroupTitle = vi.fn<RetroBoardPageDeps['setGroupTitle']>(async () => {
+    throw new ApiError(500)
+  })
 
   await mount({ createChannel: () => channel, data: groupedBoard, setGroupTitle })
 
@@ -1254,7 +1235,7 @@ it('does not apply a group movement twice when sync arrives before the API respo
       'Synced during drop',
     ),
   )
-  resolveMove({ data: true, status: 'success' })
+  resolveMove()
   await vi.waitFor(() => expect(cardWithText('My note')!.classes()).not.toContain('dragging'))
   expect(cardWithText('My note')!.attributes('style')).toContain('left: 60px')
   expect(cardWithText('Other note')!.attributes('style')).toContain('left: 300px')

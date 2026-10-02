@@ -67,16 +67,7 @@ const state = reactive({
 
 const dialog = useTemplateRef('dialog')
 
-const {
-  execute: moveSpaces,
-  message,
-  pending: moving,
-} = useAction(props.deps.moveSpaces, {
-  onSuccess: async () => {
-    dialog.value?.close()
-    await props.onMoved()
-  },
-})
+const { execute: moveSpaces, message, pending: moving } = useApiAction(props.deps.moveSpaces)
 
 const open = () => {
   message.value = undefined
@@ -84,8 +75,11 @@ const open = () => {
   dialog.value?.showModal()
 }
 
-const confirmMove = () => {
-  void moveSpaces({ destinationOrganizationId: state.organizationId, spaceKeys: props.ids })
+const confirmMove = async () => {
+  if (await moveSpaces({ destinationOrganizationId: state.organizationId, spaceKeys: props.ids })) {
+    dialog.value?.close()
+    await props.onMoved()
+  }
 }
 
 defineExpose({ open })

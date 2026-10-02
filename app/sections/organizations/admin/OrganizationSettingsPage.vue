@@ -60,8 +60,10 @@
 </template>
 
 <script setup lang="ts">
-import type { OrganizationSettingsPageDeps } from '~/sections/organizations/admin/OrganizationSettingsPage.deps'
-import type { UpdateOrganizationInput } from '~/sections/organizations/admin/OrganizationSettingsPage.types'
+import type {
+  OrganizationSettingsPageDeps,
+  UpdateOrganizationInput,
+} from '~/sections/organizations/admin/OrganizationSettingsPage.deps'
 
 const props = defineProps<{
   deps: OrganizationSettingsPageDeps
@@ -100,21 +102,20 @@ const { t } = useI18n({
   },
 })
 
-const { data, message, pending, refresh } = await useQuery(
-  'organization-settings',
-  (_nuxtApp, { signal }) => props.deps.view({ signal }),
+const { data, message, pending, refresh } = await useApiQuery('organization-settings', (signal) =>
+  props.deps.view({ signal }),
 )
 
-const state = reactive({
-  color: data.value?.color ?? '',
-  name: data.value?.name ?? '',
-  saved: false,
-})
+const state = reactive({ color: '', name: '', saved: false })
 
-watch(data, (settings) => {
-  state.color = settings?.color ?? ''
-  state.name = settings?.name ?? ''
-})
+watch(
+  data,
+  (settings) => {
+    state.color = settings?.color ?? ''
+    state.name = settings?.name ?? ''
+  },
+  { immediate: true },
+)
 
 useHead({
   title: computed(() => (state.name ? `${state.name} ${t('settings')}` : t('generalSettings'))),
@@ -124,27 +125,25 @@ const {
   execute: submit,
   message: submitMessage,
   pending: submitting,
-} = useAction<[UpdateOrganizationInput], true>(props.deps.updateOrganization, {
-  onSuccess: async () => {
+} = useApiAction(props.deps.updateOrganization)
+
+const submitForm = async (input: UpdateOrganizationInput): Promise<void> => {
+  state.saved = false
+  if (await submit(input)) {
     await props.onUpdated()
     state.saved = true
-  },
-})
-
-const submitForm = (input: UpdateOrganizationInput): void => {
-  state.saved = false
-  void submit(input)
+  }
 }
 
 const {
   execute: removeOrganization,
   message: removeMessage,
   pending: removing,
-} = useAction(props.deps.remove, { onSuccess: props.onDeleted })
+} = useApiAction(props.deps.remove)
 const busy = computed(() => submitting.value || removing.value)
-const remove = (id: string): void => {
-  if (!busy.value && confirm(t('deleteConfirm'))) {
-    void removeOrganization({ id })
+const remove = async (id: string): Promise<void> => {
+  if (confirm(t('deleteConfirm')) && (await removeOrganization({ id }))) {
+    await props.onDeleted()
   }
 }
 </script>

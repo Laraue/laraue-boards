@@ -57,7 +57,7 @@ const { t } = useI18n({
 const organizationRoutes = useOrganizationRoutes()
 useHead({ title: t('addIssue') })
 
-const { data, message, pending, refresh } = await useQuery('create-issue', (_nuxtApp, { signal }) =>
+const { data, message, pending, refresh } = await useApiQuery('create-issue', (signal) =>
   props.deps.view({ signal }),
 )
 </script>

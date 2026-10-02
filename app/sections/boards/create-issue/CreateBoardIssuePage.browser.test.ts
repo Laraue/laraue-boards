@@ -2,14 +2,15 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { CreateBoardIssuePageDeps } from './CreateBoardIssuePage.deps'
-import type { CreateBoardIssuePageData } from './CreateBoardIssuePage.types'
+import type {
+  CreateBoardIssuePageData,
+  CreateBoardIssuePageDeps,
+} from './CreateBoardIssuePage.deps'
 import CreateBoardIssuePage from './CreateBoardIssuePage.vue'
 
 const pageData: CreateBoardIssuePageData = {
   attributes: [],
   boardName: 'Roadmap',
-  spaceKey: 'product-AB12',
 }
 
 const createDeps = (
@@ -34,10 +35,7 @@ const createDeps = (
       loadStatuses: vi.fn<CreateBoardIssuePageDeps['form']['statusSelect']['loadStatuses']>(),
     },
   },
-  view: vi.fn<CreateBoardIssuePageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  })),
+  view: vi.fn<CreateBoardIssuePageDeps['view']>(async () => pageData),
   ...overrides,
 })
 

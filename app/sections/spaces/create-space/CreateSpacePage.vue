@@ -8,7 +8,7 @@
         <h1>{{ t('createSpace') }}</h1>
       </div>
     </div>
-    <form @submit.prevent="submit({ color: form.color, key: form.key.trim(), name: form.name })">
+    <form @submit.prevent="submit">
       <label for="create-space-name">{{ t('name') }}</label>
       <input
         id="create-space-name"
@@ -72,11 +72,12 @@ const form = reactive({
 
 useHead({ title: t('createSpace') })
 
-const {
-  execute: submit,
-  message,
-  pending,
-} = useAction(props.deps.create, {
-  onSuccess: (space) => props.onCreated(space.spaceKey),
-})
+const { execute: create, message, pending } = useApiAction(props.deps.create)
+
+const submit = async (): Promise<void> => {
+  const created = await create({ color: form.color, key: form.key.trim(), name: form.name })
+  if (created) {
+    await props.onCreated(created.value)
+  }
+}
 </script>

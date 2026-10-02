@@ -1,12 +1,23 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
+export type SpaceBoardStatus = 'Active' | 'Done' | 'New'
 
-import type { SpacePageData } from './SpacePage.types'
+export type SpaceBoardSummary = {
+  color: string
+  id: string
+  issueCount: number
+  kind: 'backlog' | 'board'
+  name: string
+  status: SpaceBoardStatus
+  statuses: Array<{ color: string; count: number; name: string }>
+}
 
-export type ViewSpace = (input: {
-  signal?: AbortSignal
-  spaceKey: string
-}) => Promise<QueryResult<SpacePageData>>
+export type SpacePageData = {
+  boards: SpaceBoardSummary[]
+  canCreateBoards: boolean
+  canManage: boolean
+  color: string
+  name: string
+}
 
 export type SpacePageDeps = {
-  view: ViewSpace
+  view: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<SpacePageData>
 }

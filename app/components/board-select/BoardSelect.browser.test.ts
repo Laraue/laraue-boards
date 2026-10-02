@@ -21,10 +21,9 @@ afterEach(async () => {
 
 it('loads boards when the user focuses the select', async () => {
   await mount({
-    loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => ({
-      data: [{ label: 'Sprint board', value: '12' }],
-      status: 'success',
-    })),
+    loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => [
+      { label: 'Sprint board', value: '12' },
+    ]),
   })
 
   await page.getByLabelText('Board').click()
@@ -33,13 +32,11 @@ it('loads boards when the user focuses the select', async () => {
 })
 
 it('clears the selected board when the space changes', async () => {
-  const loadBoards = vi.fn<BoardSelectDeps['loadBoards']>(async ({ spaceKey }) => ({
-    data:
-      spaceKey === 'backlog'
-        ? [{ label: 'Backlog board', value: '20' }]
-        : [{ label: 'Sprint board', value: '12' }],
-    status: 'success',
-  }))
+  const loadBoards = vi.fn<BoardSelectDeps['loadBoards']>(async ({ spaceKey }) =>
+    spaceKey === 'backlog'
+      ? [{ label: 'Backlog board', value: '20' }]
+      : [{ label: 'Sprint board', value: '12' }],
+  )
   await mount({ loadBoards })
   await page.getByLabelText('Board').click()
   await page.getByLabelText('Board').selectOptions('12')
@@ -58,13 +55,10 @@ it('clears the selected board when the space changes', async () => {
 it('hides the excluded board from the destination choices', async () => {
   await mount(
     {
-      loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => ({
-        data: [
-          { label: 'Current board', value: '12' },
-          { label: 'Sprint board', value: '13' },
-        ],
-        status: 'success',
-      })),
+      loadBoards: vi.fn<BoardSelectDeps['loadBoards']>(async () => [
+        { label: 'Current board', value: '12' },
+        { label: 'Sprint board', value: '13' },
+      ]),
     },
     { excludedValue: '12' },
   )

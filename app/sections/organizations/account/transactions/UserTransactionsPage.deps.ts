@@ -1,10 +1,23 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
+export type TransactionReason = 'DailyGrant' | 'Expiry' | 'Purchase' | 'Spend' | 'TariffGrant'
 
-import type { UserTransactionsPageData } from './UserTransactionsPage.types'
+export type TransactionStatus = 'Canceled' | 'Confirmed' | 'Started'
+
+export type TransactionViewModel = {
+  createdAt: string
+  delta: number
+  error: null | string
+  finishedAt: null | string
+  id: string
+  ownerName: null | string
+  reason: TransactionReason
+  status: TransactionStatus
+}
+
+export type UserTransactionsPageData = {
+  hasNextPage: boolean
+  transactions: TransactionViewModel[]
+}
 
 export type UserTransactionsPageDeps = {
-  view: (input: {
-    page: number
-    signal?: AbortSignal
-  }) => Promise<QueryResult<UserTransactionsPageData>>
+  view: (input: { page: number; signal?: AbortSignal }) => Promise<UserTransactionsPageData>
 }

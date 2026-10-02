@@ -123,10 +123,9 @@ const form = reactive({
   statuses: [] as Array<{ category: StatusCategory; color: string; id: number; name: string }>,
 })
 
-const { data } = await useQuery(
+const { data } = await useApiQuery(
   () => `create-board:${props.spaceKey}`,
-  (_nuxtApp, { signal }) => props.deps.view({ signal, spaceKey: props.spaceKey }),
-  { watch: [() => props.spaceKey] },
+  (signal) => props.deps.view({ signal, spaceKey: props.spaceKey }),
 )
 
 let nextStatusId = 0
@@ -145,24 +144,21 @@ const copyStatuses = () => {
   form.statuses = (source?.statuses ?? []).map((status) => ({ ...status, id: ++nextStatusId }))
 }
 
-const create = () => {
-  void submit({
+useHead({ title: t('createBoard') })
+
+const { execute: submit, message, pending } = useApiAction(props.deps.create)
+
+const create = async () => {
+  const created = await submit({
     color: form.color,
     name: form.name,
     spaceKey: props.spaceKey,
     statuses: form.statuses.map(({ category, color, name }) => ({ category, color, name })),
   })
+  if (created) {
+    await props.onCreated(created.value)
+  }
 }
-
-useHead({ title: t('createBoard') })
-
-const {
-  execute: submit,
-  message,
-  pending,
-} = useAction(props.deps.create, {
-  onSuccess: (board) => props.onCreated(board.boardId),
-})
 </script>
 
 <style scoped>

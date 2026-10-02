@@ -1,12 +1,11 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
-
-import type { SpaceSelectOption } from './SpaceSelect.types'
-
-export type LoadSpaces = (input: {
-  organizationId?: string
-  signal?: AbortSignal
-}) => Promise<QueryResult<SpaceSelectOption[]>>
+export type SpaceSelectOption = {
+  label: string
+  value: string
+}
 
 export type SpaceSelectDeps = {
-  loadSpaces: LoadSpaces
+  loadSpaces: (input: {
+    organizationId?: string
+    signal?: AbortSignal
+  }) => Promise<SpaceSelectOption[]>
 }

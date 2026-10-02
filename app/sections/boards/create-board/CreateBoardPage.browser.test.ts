@@ -10,7 +10,7 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 const mount = async (
   create: CreateBoardPageDeps['create'],
   onCreated: (boardId: string) => void,
-  view: CreateBoardPageDeps['view'] = async () => ({ data: { boards: [] }, status: 'success' }),
+  view: CreateBoardPageDeps['view'] = async () => ({ boards: [] }),
 ) => {
   currentWrapper = await mountSuspended(CreateBoardPage, {
     attachTo: document.body,
@@ -32,22 +32,16 @@ afterEach(async () => {
 })
 
 it('copies statuses into the editor before creating', async () => {
-  const create = vi.fn<CreateBoardPageDeps['create']>(async () => ({
-    data: { boardId: '12' },
-    status: 'success',
-  }))
+  const create = vi.fn<CreateBoardPageDeps['create']>(async () => '12')
 
   await mount(create, vi.fn(), async () => ({
-    data: {
-      boards: [
-        {
-          label: 'Development',
-          statuses: [{ category: 'Created', color: '#111111', name: 'To do' }],
-          value: '7',
-        },
-      ],
-    },
-    status: 'success',
+    boards: [
+      {
+        label: 'Development',
+        statuses: [{ category: 'Created', color: '#111111', name: 'To do' }],
+        value: '7',
+      },
+    ],
   }))
   await page.getByLabelText('Name').fill('Roadmap')
   await page.getByLabelText('Copy statuses from').selectOptions('7')
@@ -64,10 +58,7 @@ it('copies statuses into the editor before creating', async () => {
 })
 
 it('starts added statuses as not started, then in progress', async () => {
-  const create = vi.fn<CreateBoardPageDeps['create']>(async () => ({
-    data: { boardId: '12' },
-    status: 'success',
-  }))
+  const create = vi.fn<CreateBoardPageDeps['create']>(async () => '12')
 
   await mount(create, vi.fn())
   await page.getByLabelText('Name').fill('Roadmap')
@@ -88,10 +79,7 @@ it('starts added statuses as not started, then in progress', async () => {
 })
 
 it('creates a board from the entered name', async () => {
-  const create = vi.fn<CreateBoardPageDeps['create']>(async () => ({
-    data: { boardId: '12' },
-    status: 'success',
-  }))
+  const create = vi.fn<CreateBoardPageDeps['create']>(async () => '12')
   const onCreated = vi.fn<(boardId: string) => void>()
 
   await mount(create, onCreated)

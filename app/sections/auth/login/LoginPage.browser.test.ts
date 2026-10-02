@@ -39,10 +39,7 @@ it('continues automatically after a Telegram mini app sign-in', async () => {
     {
       googleSignInButton: googleSignInButtonDeps(),
       loginViaGoogle: vi.fn<LoginPageDeps['loginViaGoogle']>(),
-      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => ({
-        data: { authenticated: true },
-        status: 'success',
-      })),
+      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => true),
       loginViaTelegramWidget: vi.fn<LoginPageDeps['loginViaTelegramWidget']>(),
       telegramSignInButton: telegramSignInButtonDeps(),
     },
@@ -53,10 +50,7 @@ it('continues automatically after a Telegram mini app sign-in', async () => {
 })
 
 it('sends the user returned by the Telegram widget', async () => {
-  const loginViaTelegramWidget = vi.fn<LoginPageDeps['loginViaTelegramWidget']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const loginViaTelegramWidget = vi.fn<LoginPageDeps['loginViaTelegramWidget']>(async () => {})
   const onLoggedIn = vi.fn<() => void>()
   const user: TelegramUser = { auth_date: 123, first_name: 'Ada', hash: 'signed', id: 42 }
 
@@ -64,10 +58,7 @@ it('sends the user returned by the Telegram widget', async () => {
     {
       googleSignInButton: googleSignInButtonDeps(),
       loginViaGoogle: vi.fn<LoginPageDeps['loginViaGoogle']>(),
-      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => ({
-        data: { authenticated: false },
-        status: 'success',
-      })),
+      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => false),
       loginViaTelegramWidget,
       telegramSignInButton: telegramSignInButtonDeps(user),
     },
@@ -80,20 +71,14 @@ it('sends the user returned by the Telegram widget', async () => {
 })
 
 it('signs in with the authorization code returned by Google', async () => {
-  const loginViaGoogle = vi.fn<LoginPageDeps['loginViaGoogle']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const loginViaGoogle = vi.fn<LoginPageDeps['loginViaGoogle']>(async () => {})
   const onLoggedIn = vi.fn<() => void>()
 
   await mount(
     {
       googleSignInButton: googleSignInButtonDeps(),
       loginViaGoogle,
-      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => ({
-        data: { authenticated: false },
-        status: 'success',
-      })),
+      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => false),
       loginViaTelegramWidget: vi.fn<LoginPageDeps['loginViaTelegramWidget']>(),
       telegramSignInButton: telegramSignInButtonDeps(),
     },
@@ -116,10 +101,7 @@ it('links the privacy policy under the sign-in buttons', async () => {
     {
       googleSignInButton: googleSignInButtonDeps(),
       loginViaGoogle: vi.fn<LoginPageDeps['loginViaGoogle']>(),
-      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => ({
-        data: { authenticated: false },
-        status: 'success',
-      })),
+      loginViaTelegramMiniApp: vi.fn<LoginPageDeps['loginViaTelegramMiniApp']>(async () => false),
       loginViaTelegramWidget: vi.fn<LoginPageDeps['loginViaTelegramWidget']>(),
       telegramSignInButton: telegramSignInButtonDeps(),
     },

@@ -39,8 +39,7 @@ import LandingPlatforms from './components/LandingPlatforms.vue'
 import LandingPricing from './components/LandingPricing.vue'
 import LandingStructure from './components/LandingStructure.vue'
 import LandingUseCases from './components/LandingUseCases.vue'
-import type { LandingPageDeps } from './LandingPage.deps'
-import type { LandingCurrency } from './LandingPage.types'
+import type { LandingCurrency, LandingPageDeps } from './LandingPage.deps'
 import { useLandingSeo } from './useLandingSeo'
 
 const props = defineProps<{ deps: LandingPageDeps; locale: Locale }>()
@@ -64,10 +63,9 @@ const { t } = useI18n(
 // Prices are loaded on the server for the first render (so they are in the HTML search engines see)
 // and again in the browser when the visitor switches the currency.
 const currency = ref<LandingCurrency>('USD')
-const { data: tariffs } = await useQuery(
+const { data: tariffs } = await useApiQuery(
   () => `landing-tariffs-${currency.value}`,
   () => props.deps.getTariffs(currency.value),
-  { watch: [currency] },
 )
 
 useLandingSeo(props.locale, { description: t('seoDescription'), title: t('seoTitle') })

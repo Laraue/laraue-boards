@@ -1,9 +1,10 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
-
-import type { CreateSpaceInput } from './CreateSpacePage.types'
-
-export type CreateSpace = (input: CreateSpaceInput) => Promise<ActionResult<{ spaceKey: string }>>
+export type CreateSpaceInput = {
+  color: string
+  key: string
+  name: string
+}
 
 export type CreateSpacePageDeps = {
-  create: CreateSpace
+  // Resolves with the key the backend gave the new space.
+  create: (input: CreateSpaceInput) => Promise<string>
 }

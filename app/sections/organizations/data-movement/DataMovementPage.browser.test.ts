@@ -2,13 +2,13 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
 import type { OrganizationSelectDeps } from '~/components/organization-select/OrganizationSelect.deps'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 
 import type { MoveBoardsDialogDeps } from './components/BoardsMovementSection/components/MoveBoardsDialog/MoveBoardsDialog.deps'
 import type { MoveSpacesDialogDeps } from './components/SpacesMovementSection/components/MoveSpacesDialog/MoveSpacesDialog.deps'
-import type { DataMovementPageDeps } from './DataMovementPage.deps'
-import type { DataMovementPageData } from './DataMovementPage.types'
+import type { DataMovementPageData, DataMovementPageDeps } from './DataMovementPage.deps'
 import DataMovementPage from './DataMovementPage.vue'
 
 const pageData: DataMovementPageData = {
@@ -26,43 +26,31 @@ const pageData: DataMovementPageData = {
 }
 
 const createOrganizationSelect = (): OrganizationSelectDeps => ({
-  loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => ({
-    data: [
-      { label: 'Current', value: '1' },
-      { label: 'Target', value: '2' },
-    ],
-    status: 'success',
-  })),
+  loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [
+    { label: 'Current', value: '1' },
+    { label: 'Target', value: '2' },
+  ]),
 })
 
 const createDeps = (view?: DataMovementPageDeps['view']): DataMovementPageDeps => ({
   boardsMovementSection: {
     dialog: {
-      moveBoards: vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => ({
-        data: true,
-        status: 'success',
-      })),
+      moveBoards: vi.fn<MoveBoardsDialogDeps['moveBoards']>(async () => {}),
       organizationSelect: createOrganizationSelect(),
       spaceSelect: {
-        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => ({
-          data: [{ label: 'Development', value: '10' }],
-          status: 'success',
-        })),
+        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => [
+          { label: 'Development', value: '10' },
+        ]),
       },
     },
   },
   spacesMovementSection: {
     dialog: {
-      moveSpaces: vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => ({
-        data: true,
-        status: 'success',
-      })),
+      moveSpaces: vi.fn<MoveSpacesDialogDeps['moveSpaces']>(async () => {}),
       organizationSelect: createOrganizationSelect(),
     },
   },
-  view:
-    view ??
-    vi.fn<DataMovementPageDeps['view']>(async () => ({ data: pageData, status: 'success' })),
+  view: view ?? vi.fn<DataMovementPageDeps['view']>(async () => pageData),
 })
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
@@ -93,8 +81,8 @@ it('feeds both sections with the loaded spaces and boards', async () => {
 it('refreshes the page and notifies the layout after spaces moved', async () => {
   const view = vi
     .fn<DataMovementPageDeps['view']>()
-    .mockResolvedValueOnce({ data: pageData, status: 'success' })
-    .mockResolvedValue({ data: { ...pageData, spaces: [] }, status: 'success' })
+    .mockResolvedValueOnce(pageData)
+    .mockResolvedValue({ ...pageData, spaces: [] })
   const onSpacesMoved = vi.fn<() => void>()
 
   await mount(createDeps(view), onSpacesMoved)
@@ -112,11 +100,8 @@ it('refreshes the page and notifies the layout after spaces moved', async () => 
 it('refreshes the page without notifying the layout after boards moved', async () => {
   const view = vi
     .fn<DataMovementPageDeps['view']>()
-    .mockResolvedValueOnce({ data: pageData, status: 'success' })
-    .mockResolvedValue({
-      data: { ...pageData, spaces: [{ ...pageData.spaces[0]!, boards: [] }] },
-      status: 'success',
-    })
+    .mockResolvedValueOnce(pageData)
+    .mockResolvedValue({ ...pageData, spaces: [{ ...pageData.spaces[0]!, boards: [] }] })
   const onSpacesMoved = vi.fn<() => void>()
 
   await mount(createDeps(view), onSpacesMoved)
@@ -134,8 +119,8 @@ it('refreshes the page without notifying the layout after boards moved', async (
 it('reloads the page when the failed request is retried', async () => {
   const view = vi
     .fn<DataMovementPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps(view))
 
