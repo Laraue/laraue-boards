@@ -45,11 +45,11 @@
           v-if="loadingMore"
           class="column-sentinel-loader" />
         <button
-          v-else-if="loadMoreError"
+          v-else-if="loadMoreFailed"
           class="column-sentinel-retry"
           type="button"
           @click="onLoadMore(viewModel.id)">
-          {{ loadMoreError }}
+          {{ t('loadMoreRetry') }}
         </button>
       </div>
     </div>
@@ -70,7 +70,7 @@ const props = defineProps<{
   canCreateIssues: boolean
   canMoveIssues: boolean
   loadingMore: boolean
-  loadMoreError: null | string
+  loadMoreFailed: boolean
   movingIssueKeys: Set<string>
   onCreateIssue: (statusId: string) => void
   onLoadMore: (statusId: string) => void
@@ -84,12 +84,14 @@ const { t } = useI18n({
     addIssue: 'Add issue',
     addIssueTo: 'Add issue to',
     dropIssues: 'Drop issues here',
+    loadMoreRetry: 'Could not load more issues. Try again',
     noIssues: 'No issues',
   },
   ru: {
     addIssue: 'Добавить задачу',
     addIssueTo: 'Добавить задачу в',
     dropIssues: 'Перетащите задачи сюда',
+    loadMoreRetry: 'Не удалось загрузить задачи. Повторить',
     noIssues: 'Задач нет',
   },
 })
