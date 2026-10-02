@@ -4,16 +4,21 @@
     class="issue-comments">
     <strong class="section-label">{{ t('comments') }}</strong>
     <p
-      v-if="saveMessage || summarizeMessage"
+      v-if="loadMessage || saveMessage || summarizeMessage"
       class="form-error"
       role="alert">
-      {{ saveMessage || summarizeMessage }}
+      {{ loadMessage || saveMessage || summarizeMessage }}
+    </p>
+    <p
+      v-if="!comments"
+      class="muted">
+      {{ t('loading') }}
     </p>
     <div
-      v-if="state.comments.length"
+      v-else-if="comments.length"
       class="issue-comment-list">
       <article
-        v-for="comment in state.comments"
+        v-for="comment in comments"
         :key="comment.id"
         class="issue-comment">
         <span
@@ -134,7 +139,6 @@ import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.d
 
 const props = defineProps<{
   deps: IssueCommentsDeps
-  initialComments: IssueCommentViewModel[]
   issueKey: string
 }>()
 
@@ -151,6 +155,7 @@ const { t } = useI18n({
     editCommentBy: 'Edit comment by',
     improveWithAi: 'Clean up with AI',
     improvingWithAi: 'Cleaning up…',
+    loading: 'Loading comments…',
     save: 'Save',
     saving: 'Saving…',
     writeComment: 'Write a comment',
@@ -168,6 +173,7 @@ const { t } = useI18n({
     editCommentBy: 'Изменить комментарий пользователя',
     improveWithAi: 'Привести в порядок с ИИ',
     improvingWithAi: 'Приводим в порядок…',
+    loading: 'Загрузка комментариев…',
     save: 'Сохранить',
     saving: 'Сохранение…',
     writeComment: 'Написать комментарий',
@@ -177,8 +183,18 @@ const { t } = useI18n({
 
 const { formatDateTime } = useFormatters()
 
+// Lazy, so the issue itself shows without waiting for its comments.
+const {
+  data: comments,
+  message: loadMessage,
+  refresh: refreshComments,
+} = await useApiQuery(
+  () => `issue-comments:${props.issueKey}`,
+  (signal) => props.deps.load({ issueKey: props.issueKey, signal }),
+  { lazy: true },
+)
+
 const state = reactive({
-  comments: props.initialComments,
   editingId: '',
   editText: '',
   newText: '',
@@ -195,8 +211,6 @@ const {
 const { execute: save, message: saveMessage } = useApiAction((action: () => Promise<void>) =>
   action(),
 )
-const { execute: loadComments } = useApiAction(props.deps.load)
-
 const clearMessage = () => {
   saveMessage.value = undefined
   summarizeMessage.value = undefined
@@ -207,10 +221,7 @@ const run = async (pendingId: string, action: () => Promise<void>) => {
   state.pendingId = pendingId
   const saved = await save(action)
   if (saved) {
-    const loaded = await loadComments({ issueKey: props.issueKey })
-    if (loaded) {
-      state.comments = loaded.value
-    }
+    await refreshComments()
   }
   state.pendingId = ''
   return Boolean(saved)

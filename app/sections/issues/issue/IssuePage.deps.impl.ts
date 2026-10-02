@@ -66,10 +66,7 @@ const mapAttachments = (
     return [{ id: attachment.id, originalUrl: fileUrl(originalId), previewUrl: fileUrl(previewId) }]
   })
 
-const mapIssue = (
-  issue: Schemas['IssueDetailDto'],
-  baseUrl: string,
-): Omit<IssuePageViewModel, 'comments'> => ({
+const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageViewModel => ({
   assignee: issue.assignee.displayName,
   assigneeColor: issue.assignee.color,
   assigneeId: issue.assigneeId,
@@ -94,85 +91,80 @@ const mapIssue = (
   updatedAt: issue.updatedAt,
 })
 
-export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => {
-  const comments = createIssueCommentsDeps(client)
+export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
+  assigneeSelect: createAssigneeSelectDeps(client),
+  boardSelect: createBoardSelectDeps(client),
+  comments: createIssueCommentsDeps(client),
 
-  return {
-    assigneeSelect: createAssigneeSelectDeps(client),
-    boardSelect: createBoardSelectDeps(client),
-    comments,
+  deleteIssue: async ({ issueKey }) => {
+    await request(client.DELETE('/api/issues/{key}', { params: { path: { key: issueKey } } }))
+  },
 
-    deleteIssue: async ({ issueKey }) => {
-      await request(client.DELETE('/api/issues/{key}', { params: { path: { key: issueKey } } }))
-    },
+  description: createIssueDescriptionDeps(client),
+  history: createIssueHistoryDeps(client),
 
-    description: createIssueDescriptionDeps(client),
-    history: createIssueHistoryDeps(client),
-
-    // Saving and moving to another status are two requests: when only the move fails, the
-    // save still stands and the issue stays where it was.
-    saveIssue: async (input) => {
-      await request(
-        client.PUT('/api/issues/{key}', {
-          body: {},
-          bodySerializer: () =>
-            updateIssueFormData({
-              ...input,
-              attributeValues: mapIssueAttributeValues(input.attributeValues),
-            }),
-          params: { path: { key: input.issueKey } },
+  // Saving and moving to another status are two requests: when only the move fails, the
+  // save still stands and the issue stays where it was.
+  saveIssue: async (input) => {
+    await request(
+      client.PUT('/api/issues/{key}', {
+        body: {},
+        bodySerializer: () =>
+          updateIssueFormData({
+            ...input,
+            attributeValues: mapIssueAttributeValues(input.attributeValues),
+          }),
+        params: { path: { key: input.issueKey } },
+      }),
+    )
+    const saved = {
+      boardId: input.boardId,
+      complete: true,
+      content: input.content,
+      issueKey: input.issueKey,
+      previousBoardId: input.previousBoardId,
+      previousIssueKey: input.issueKey,
+      previousStatusId: input.previousStatusId,
+      spaceKey: input.previousSpaceKey,
+      statusId: input.statusId,
+      title: input.title,
+    }
+    if (input.statusId === input.previousStatusId) {
+      return saved
+    }
+    let movedKeys: Record<string, string>
+    try {
+      movedKeys = await request(
+        client.POST('/api/issues/status', {
+          body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
         }),
       )
-      const saved = {
-        boardId: input.boardId,
-        complete: true,
-        content: input.content,
-        issueKey: input.issueKey,
-        previousBoardId: input.previousBoardId,
-        previousIssueKey: input.issueKey,
-        previousStatusId: input.previousStatusId,
-        spaceKey: input.previousSpaceKey,
-        statusId: input.statusId,
-        title: input.title,
+    } catch (error) {
+      if (!isApiError(error)) {
+        throw error
       }
-      if (input.statusId === input.previousStatusId) {
-        return saved
+      return {
+        ...saved,
+        boardId: input.previousBoardId,
+        complete: false,
+        statusId: input.previousStatusId,
       }
-      let movedKeys: Record<string, string>
-      try {
-        movedKeys = await request(
-          client.POST('/api/issues/status', {
-            body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
-          }),
-        )
-      } catch (error) {
-        if (!isApiError(error)) {
-          throw error
-        }
-        return {
-          ...saved,
-          boardId: input.previousBoardId,
-          complete: false,
-          statusId: input.previousStatusId,
-        }
-      }
-      // Moving to another space gives the issue a new key.
-      const issueKey = movedKeys[input.issueKey]
-      if (!issueKey) {
-        throw new ApiError(0)
-      }
-      return { ...saved, issueKey, spaceKey: input.spaceKey }
-    },
+    }
+    // Moving to another space gives the issue a new key.
+    const issueKey = movedKeys[input.issueKey]
+    if (!issueKey) {
+      throw new ApiError(0)
+    }
+    return { ...saved, issueKey, spaceKey: input.spaceKey }
+  },
 
-    spaceSelect: createSpaceSelectDeps(client),
-    statusSelect: createStatusSelectDeps(client),
+  spaceSelect: createSpaceSelectDeps(client),
+  statusSelect: createStatusSelectDeps(client),
 
-    view: async ({ issueKey, signal }) => {
-      const [issue, issueComments] = await Promise.all([
-        request(client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal })),
-        comments.load({ issueKey, signal }),
-      ])
-      return { ...mapIssue(issue, client.baseUrl), comments: issueComments }
-    },
-  }
-}
+  view: async ({ issueKey, signal }) => {
+    const issue = await request(
+      client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
+    )
+    return mapIssue(issue, client.baseUrl)
+  },
+})

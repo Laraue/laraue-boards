@@ -18,7 +18,6 @@ const issue: IssuePageViewModel = {
   boardId: '12',
   boardLabel: 'Sprint board',
   canEdit: true,
-  comments: [],
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
   issueKey: 'ISS-1',
@@ -53,7 +52,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   comments: {
     create: vi.fn<IssuePageDeps['comments']['create']>(),
     delete: vi.fn<IssuePageDeps['comments']['delete']>(),
-    load: vi.fn<IssuePageDeps['comments']['load']>(),
+    load: vi.fn<IssuePageDeps['comments']['load']>(async () => []),
     summarizeContent: vi.fn<IssuePageDeps['comments']['summarizeContent']>(
       async () => 'Improved content',
     ),
@@ -160,7 +159,10 @@ it('shows comments loaded after creating one', async () => {
     updatedAt: '2026-01-03T00:00:00Z',
   }
   const create = vi.fn<IssuePageDeps['comments']['create']>(async () => {})
-  const load = vi.fn<IssuePageDeps['comments']['load']>(async () => [comment])
+  const load = vi
+    .fn<IssuePageDeps['comments']['load']>()
+    .mockResolvedValueOnce([])
+    .mockResolvedValue([comment])
   const view = vi.fn<IssuePageDeps['view']>(async () => issue)
 
   await mount(
@@ -178,12 +180,11 @@ it('shows comments loaded after creating one', async () => {
     }),
   )
 
-  expect(load).not.toHaveBeenCalled()
   await page.getByLabelText('Write a comment').fill('New comment')
   await page.getByRole('button', { name: 'Add comment' }).click()
 
   await expect.element(page.getByText('New comment')).toBeInTheDocument()
-  expect(load).toHaveBeenCalledWith({ issueKey: 'ISS-1' })
+  expect(load).toHaveBeenCalledTimes(2)
   expect(view).toHaveBeenCalledOnce()
 })
 

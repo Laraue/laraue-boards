@@ -121,7 +121,6 @@
                   <IssueComments
                     :key="issue.issueKey"
                     :deps="deps.comments"
-                    :initial-comments="issue.comments"
                     :issue-key="issue.issueKey" />
                 </div>
                 <div

@@ -39,7 +39,7 @@ afterEach(async () => {
 const mount = async (deps = createDeps()) => {
   currentWrapper = await mountSuspended(IssueComments, {
     attachTo: document.body,
-    props: { deps, initialComments: comments, issueKey: 'ISS-1' },
+    props: { deps, issueKey: 'ISS-1' },
   })
   return currentWrapper
 }
@@ -55,7 +55,7 @@ it('creates a comment', async () => {
   await page.getByRole('button', { name: 'Add comment' }).click()
 
   expect(create).toHaveBeenCalledWith({ issueKey: 'ISS-1', text: 'New comment' })
-  expect(load).toHaveBeenCalledWith({ issueKey: 'ISS-1' })
+  expect(load).toHaveBeenCalledTimes(2)
 })
 
 it('keeps the text and shows a validation error when creating a comment fails', async () => {

@@ -8,10 +8,7 @@ import type {
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
-import type {
-  IssueCommentsDeps,
-  IssueCommentViewModel,
-} from './components/IssueComments/IssueComments.deps'
+import type { IssueCommentsDeps } from './components/IssueComments/IssueComments.deps'
 import type { IssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps'
 import type { IssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps'
 
@@ -55,7 +52,6 @@ export type IssuePageViewModel = {
   boardId: string
   boardLabel: string
   canEdit: boolean
-  comments: IssueCommentViewModel[]
   content: string
   createdAt: string
   issueKey: string
