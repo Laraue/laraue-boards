@@ -4,22 +4,22 @@ import { getErrorMessage } from '~/utils/getErrorMessage'
 
 /** Runs an action that throws an `ApiError` on failure. A failure with the backend's own text
  * (validation, payment required) belongs to the form; anything else is a toast. `execute`
- * resolves whether the action succeeded. */
-export const useApiAction = <Args extends unknown[]>(
-  action: (...args: Args) => Promise<unknown>,
+ * resolves `{ value }` on success, even for an action without one, and `undefined` on failure. */
+export const useApiAction = <Args extends unknown[], Value>(
+  action: (...args: Args) => Promise<Value>,
 ) => {
   const locale = useLocale()
   const pending = ref(false)
   const message = ref<string | undefined>()
   const toast = useToast()
 
-  const execute = async (...args: Args): Promise<boolean> => {
+  const execute = async (...args: Args): Promise<undefined | { value: Value }> => {
     // The previous message stays up until the retry has an answer, so the form does not flicker mid-request.
     pending.value = true
     try {
-      await action(...args)
+      const value = await action(...args)
       message.value = undefined
-      return true
+      return { value }
     } catch (error) {
       if (!isApiError(error)) {
         throw error
@@ -30,7 +30,7 @@ export const useApiAction = <Args extends unknown[]>(
         message.value = undefined
         toast.show(getErrorMessage(error.status, locale.value))
       }
-      return false
+      return undefined
     } finally {
       pending.value = false
     }
