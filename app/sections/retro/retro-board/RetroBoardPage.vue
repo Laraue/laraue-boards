@@ -744,8 +744,8 @@ import {
 } from '@lucide/vue'
 
 import RetroCanvas from '~/sections/retro/retro-board/components/RetroCanvas/RetroCanvas.vue'
-import type { RetroBoardPageDeps } from '~/sections/retro/retro-board/RetroBoardPage.deps'
 import type {
+  RetroBoardPageDeps,
   RetroBoardViewModel,
   RetroCardViewModel,
   RetroChannel,
@@ -753,7 +753,7 @@ import type {
   RetroGroupViewModel,
   RetroMember,
   RetroPhase,
-} from '~/sections/retro/retro-board/RetroBoardPage.types'
+} from '~/sections/retro/retro-board/RetroBoardPage.deps'
 
 const props = defineProps<{ deps: RetroBoardPageDeps; retroId: string }>()
 
@@ -1174,10 +1174,9 @@ const {
   message,
   pending,
   refresh: refreshQuery,
-} = await useQuery(
+} = await useApiQuery(
   () => `retro:${props.retroId}`,
-  (_nuxtApp, { signal }) => props.deps.view({ retroId: props.retroId, signal }),
-  { watch: [() => props.retroId] },
+  (signal) => props.deps.view({ retroId: props.retroId, signal }),
 )
 const retry = () => refreshQuery({ dedupe: 'defer' })
 
@@ -1910,27 +1909,27 @@ const dragRejects = (board: RetroBoardViewModel, sectionId: string) => {
   return dragged !== undefined && !canDropOn(board, dragged, sectionId)
 }
 
-const { execute: executeCreate } = useAction(props.deps.createCard)
-const { execute: executeMove } = useAction(props.deps.moveCard)
-const { execute: executeMoveGroup } = useAction(props.deps.moveGroup)
-const { execute: executeUpdate } = useAction(props.deps.updateCard)
-const { execute: executeVote } = useAction(props.deps.toggleVote)
-const { execute: executeAssign } = useAction(props.deps.setCardAssignee)
-const { execute: executeGroup } = useAction(props.deps.groupCards)
-const { execute: executeUngroup } = useAction(props.deps.ungroup)
-const { execute: executeResetVotes } = useAction(props.deps.resetVotes)
-const { execute: executeGroupTitle } = useAction(props.deps.setGroupTitle)
-const { execute: executeDone } = useAction(props.deps.toggleDone)
-const { execute: executeRemove } = useAction(props.deps.removeCard)
-const { execute: executeReveal } = useAction(props.deps.toggleReveal)
-const { execute: executeRename } = useAction(props.deps.renameRetro)
-const { execute: executeRevealMine } = useAction(props.deps.setMyCardsRevealed)
-const { execute: executeFinish } = useAction(props.deps.finishRetro)
-const { execute: executeHandOver } = useAction(props.deps.transferOwnership)
-const { execute: executeAdvancePhase } = useAction(props.deps.advancePhase)
-const { execute: executeRevertPhase } = useAction(props.deps.revertPhase)
-const { execute: executeSettings } = useAction(props.deps.updateSettings)
-const { execute: executeTimer } = useAction(props.deps.setPhaseTimer)
+const { execute: executeCreate } = useApiAction(props.deps.createCard)
+const { execute: executeMove } = useApiAction(props.deps.moveCard)
+const { execute: executeMoveGroup } = useApiAction(props.deps.moveGroup)
+const { execute: executeUpdate } = useApiAction(props.deps.updateCard)
+const { execute: executeVote } = useApiAction(props.deps.toggleVote)
+const { execute: executeAssign } = useApiAction(props.deps.setCardAssignee)
+const { execute: executeGroup } = useApiAction(props.deps.groupCards)
+const { execute: executeUngroup } = useApiAction(props.deps.ungroup)
+const { execute: executeResetVotes } = useApiAction(props.deps.resetVotes)
+const { execute: executeGroupTitle } = useApiAction(props.deps.setGroupTitle)
+const { execute: executeDone } = useApiAction(props.deps.toggleDone)
+const { execute: executeRemove } = useApiAction(props.deps.removeCard)
+const { execute: executeReveal } = useApiAction(props.deps.toggleReveal)
+const { execute: executeRename } = useApiAction(props.deps.renameRetro)
+const { execute: executeRevealMine } = useApiAction(props.deps.setMyCardsRevealed)
+const { execute: executeFinish } = useApiAction(props.deps.finishRetro)
+const { execute: executeHandOver } = useApiAction(props.deps.transferOwnership)
+const { execute: executeAdvancePhase } = useApiAction(props.deps.advancePhase)
+const { execute: executeRevertPhase } = useApiAction(props.deps.revertPhase)
+const { execute: executeSettings } = useApiAction(props.deps.updateSettings)
+const { execute: executeTimer } = useApiAction(props.deps.setPhaseTimer)
 
 // The new limit is what the facilitator typed, from the moment they leave the field - showing the
 // old one again until the save comes back reads as the edit having been dropped.
@@ -2362,30 +2361,30 @@ const persistCreatedCard = (localId: string): Promise<string | undefined> => {
         }
         return undefined
       }
-      createdCardIds.set(localId, created.id)
+      createdCardIds.set(localId, created.value)
       if (data.value !== board || !state.localCards.has(localId)) {
-        return created.id
+        return created.value
       }
-      if (!board.cards.some((item) => item.id === created.id)) {
-        board.cards.push({ ...card, id: created.id })
+      if (!board.cards.some((item) => item.id === created.value)) {
+        board.cards.push({ ...card, id: created.value })
       }
       const pendingText = state.pendingTexts.get(localId)
       if (pendingText !== undefined) {
-        state.pendingTexts.set(created.id, pendingText)
+        state.pendingTexts.set(created.value, pendingText)
         state.pendingTexts.delete(localId)
       }
       if (state.editingId === localId) {
-        state.editingId = created.id
+        state.editingId = created.value
       }
       if (state.selectedId === localId) {
-        state.selectedId = created.id
+        state.selectedId = created.value
       }
       if (state.removedCardIds.has(localId)) {
-        state.removedCardIds.add(created.id)
+        state.removedCardIds.add(created.value)
       }
       state.localCards.delete(localId)
       triggerRef(data)
-      return created.id
+      return created.value
     })
     .finally(() => {
       creatingCards.delete(localId)
@@ -2889,8 +2888,8 @@ const mergeSelection = async () => {
   const created = await executeGroup({ cards, retroId: props.retroId })
 
   if (created) {
-    if (!board.groups.some((group) => group.id === created.id)) {
-      board.groups.push({ cardIds, id: created.id, title: '', votedByMe: false, votes: 0 })
+    if (!board.groups.some((group) => group.id === created.value)) {
+      board.groups.push({ cardIds, id: created.value, title: '', votedByMe: false, votes: 0 })
     }
     const positions = new Map(cards.map((card) => [card.id, card]))
 
@@ -2898,7 +2897,7 @@ const mergeSelection = async () => {
       const position = positions.get(card.id)
 
       if (position) {
-        card.groupId = created.id
+        card.groupId = created.value
         card.x = position.x
         card.y = position.y
       }

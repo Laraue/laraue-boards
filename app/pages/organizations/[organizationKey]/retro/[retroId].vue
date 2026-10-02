@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { createRetroBoardPageDeps } from '~/sections/retro/retro-board/deps-impl'
+import { createRetroBoardPageDeps } from '~/sections/retro/retro-board/RetroBoardPage.deps.impl'
 import RetroBoardPage from '~/sections/retro/retro-board/RetroBoardPage.vue'
 
 const route = useRoute('organizations-organizationKey-retro-retroId')

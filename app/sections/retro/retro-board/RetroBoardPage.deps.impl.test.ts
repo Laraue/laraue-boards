@@ -2,7 +2,7 @@ import { assert, test } from 'vitest'
 
 import { createTestRetroApiClient } from '#infrastructure/api/testApiClient'
 
-import { createViewRetro } from './viewRetro'
+import { createRetroBoardPageDeps } from './RetroBoardPage.deps.impl'
 
 const author = {
   color: '#333',
@@ -56,29 +56,26 @@ test('maps the retro and counts the cards the current user still keeps covered',
     votesPerUser: 3,
   }))
 
-  const result = await createViewRetro(client)({ retroId: '7' })
+  const result = await createRetroBoardPageDeps(client, '').view({ retroId: '7' })
 
   assert.equal(paths()[0], '/api/retro/7')
-  assert.equal(result.status, 'success')
-  assert.deepEqual(result.status === 'success' ? result.data.participants[0] : undefined, {
+  assert.deepEqual(result.participants[0], {
     color: '#333',
     initials: 'AL',
     name: 'Ada Lovelace',
     userId: 'user-1',
   })
-  assert.deepEqual(result.status === 'success' ? result.data.sections : undefined, [
+  assert.deepEqual(result.sections, [
     { color: '#489c61', id: '5', name: 'Good' },
     { color: '#a44', id: '6', name: 'Actions' },
   ])
   assert.deepEqual(
-    result.status === 'success'
-      ? {
-          finished: result.data.finished,
-          hidden: result.data.cards.filter((mine) => mine.isMine && !mine.revealed).length,
-          revealed: result.data.cards.filter((mine) => mine.isMine && mine.revealed).length,
-          sectionId: result.data.cards[0]?.sectionId,
-        }
-      : undefined,
+    {
+      finished: result.finished,
+      hidden: result.cards.filter((mine) => mine.isMine && !mine.revealed).length,
+      revealed: result.cards.filter((mine) => mine.isMine && mine.revealed).length,
+      sectionId: result.cards[0]?.sectionId,
+    },
     { finished: false, hidden: 1, revealed: 1, sectionId: '5' },
   )
 })
