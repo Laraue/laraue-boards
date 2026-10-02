@@ -12,18 +12,15 @@ const createDeps = (overrides: Partial<CreateIssuePageDeps> = {}): CreateIssuePa
   form: {
     assigneeSelect: {
       loadAssignees: vi.fn<CreateIssuePageDeps['form']['assigneeSelect']['loadAssignees']>(
-        async () => ({
-          data: [
-            {
-              color: '#4774d4',
-              initials: 'AL',
-              isCurrentUser: false,
-              label: 'Ann Lee',
-              value: '9',
-            },
-          ],
-          status: 'success',
-        }),
+        async () => [
+          {
+            color: '#4774d4',
+            initials: 'AL',
+            isCurrentUser: false,
+            label: 'Ann Lee',
+            value: '9',
+          },
+        ],
       ),
     },
     boardSelect: {
@@ -36,18 +33,14 @@ const createDeps = (overrides: Partial<CreateIssuePageDeps> = {}): CreateIssuePa
       summarizeContent: vi.fn<CreateIssuePageDeps['form']['description']['summarizeContent']>(),
     },
     spaceSelect: {
-      loadSpaces: vi.fn<CreateIssuePageDeps['form']['spaceSelect']['loadSpaces']>(async () => ({
-        data: [{ label: 'Product', value: '7' }],
-        status: 'success',
-      })),
+      loadSpaces: vi.fn<CreateIssuePageDeps['form']['spaceSelect']['loadSpaces']>(async () => [
+        { label: 'Product', value: '7' },
+      ]),
     },
     statusSelect: {
-      loadStatuses: vi.fn<CreateIssuePageDeps['form']['statusSelect']['loadStatuses']>(
-        async () => ({
-          data: [{ label: 'To do', value: '1' }],
-          status: 'success',
-        }),
-      ),
+      loadStatuses: vi.fn<CreateIssuePageDeps['form']['statusSelect']['loadStatuses']>(async () => [
+        { label: 'To do', value: '1' },
+      ]),
     },
   },
   view: vi.fn<CreateIssuePageDeps['view']>(async () => ({ data: pageData, status: 'success' })),

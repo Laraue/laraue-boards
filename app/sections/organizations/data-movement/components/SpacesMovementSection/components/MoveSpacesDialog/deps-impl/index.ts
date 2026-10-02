@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { createOrganizationSelectDeps } from '~/components/organization-select/deps-impl'
+import { createOrganizationSelectDeps } from '~/components/organization-select/OrganizationSelect.deps.impl'
 
 import type { MoveSpacesDialogDeps } from '../MoveSpacesDialog.deps'
 import { createMoveSpaces } from './moveSpaces'

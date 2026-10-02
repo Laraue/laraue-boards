@@ -1,12 +1,9 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
-
-import type { StatusSelectOption } from './StatusSelect.types'
-
-export type LoadStatuses = (input: {
-  boardId: string
-  signal?: AbortSignal
-}) => Promise<QueryResult<StatusSelectOption[]>>
+export type StatusSelectOption = {
+  label: string
+  value: string
+}
 
 export type StatusSelectDeps = {
-  loadStatuses: LoadStatuses
+  // Resolves with the options or rejects with an `ApiError`.
+  loadStatuses: (input: { boardId: string; signal?: AbortSignal }) => Promise<StatusSelectOption[]>
 }

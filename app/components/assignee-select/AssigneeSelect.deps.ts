@@ -1,12 +1,15 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
-
-import type { AssigneeSelectOption } from './AssigneeSelect.types'
-
-export type LoadAssignees = (input: {
-  signal?: AbortSignal
-  spaceKey: string
-}) => Promise<QueryResult<AssigneeSelectOption[]>>
+export type AssigneeSelectOption = {
+  color: string
+  initials: string
+  isCurrentUser: boolean
+  label: string
+  value: string
+}
 
 export type AssigneeSelectDeps = {
-  loadAssignees: LoadAssignees
+  // Resolves with the options or rejects with an `ApiError`.
+  loadAssignees: (input: {
+    signal?: AbortSignal
+    spaceKey: string
+  }) => Promise<AssigneeSelectOption[]>
 }

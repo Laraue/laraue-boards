@@ -30,19 +30,15 @@ const createDeps = (overrides: Partial<MoveBoardsDialogDeps> = {}): BoardsMoveme
       status: 'success',
     })),
     organizationSelect: {
-      loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => ({
-        data: [
-          { label: 'Current', value: '1' },
-          { label: 'Target', value: '2' },
-        ],
-        status: 'success',
-      })),
+      loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [
+        { label: 'Current', value: '1' },
+        { label: 'Target', value: '2' },
+      ]),
     },
     spaceSelect: {
-      loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => ({
-        data: [{ label: 'Development', value: '10' }],
-        status: 'success',
-      })),
+      loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => [
+        { label: 'Development', value: '10' },
+      ]),
     },
     ...overrides,
   },

@@ -39,8 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { OrganizationSelectDeps } from './OrganizationSelect.deps'
-import type { OrganizationSelectOption } from './OrganizationSelect.types'
+import type { OrganizationSelectDeps, OrganizationSelectOption } from './OrganizationSelect.deps'
 
 const props = withDefaults(
   defineProps<{
@@ -74,9 +73,9 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { data, execute, message, pending, status } = await useQuery(
+const { data, execute, message, pending, status } = await useApiQuery(
   `organization-select:${useId()}`,
-  (_nuxtApp, { signal }) => props.deps.loadOrganizations({ signal }),
+  (signal) => props.deps.loadOrganizations({ signal }),
   { immediate: false },
 )
 

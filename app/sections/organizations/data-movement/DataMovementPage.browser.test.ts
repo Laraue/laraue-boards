@@ -26,13 +26,10 @@ const pageData: DataMovementPageData = {
 }
 
 const createOrganizationSelect = (): OrganizationSelectDeps => ({
-  loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => ({
-    data: [
-      { label: 'Current', value: '1' },
-      { label: 'Target', value: '2' },
-    ],
-    status: 'success',
-  })),
+  loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [
+    { label: 'Current', value: '1' },
+    { label: 'Target', value: '2' },
+  ]),
 })
 
 const createDeps = (view?: DataMovementPageDeps['view']): DataMovementPageDeps => ({
@@ -44,10 +41,9 @@ const createDeps = (view?: DataMovementPageDeps['view']): DataMovementPageDeps =
       })),
       organizationSelect: createOrganizationSelect(),
       spaceSelect: {
-        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => ({
-          data: [{ label: 'Development', value: '10' }],
-          status: 'success',
-        })),
+        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => [
+          { label: 'Development', value: '10' },
+        ]),
       },
     },
   },

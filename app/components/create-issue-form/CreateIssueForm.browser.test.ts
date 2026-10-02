@@ -7,18 +7,15 @@ import CreateIssueForm from './CreateIssueForm.vue'
 
 const createDeps = (): CreateIssueFormDeps => ({
   assigneeSelect: {
-    loadAssignees: vi.fn<CreateIssueFormDeps['assigneeSelect']['loadAssignees']>(async () => ({
-      data: [
-        {
-          color: '#4774d4',
-          initials: 'AL',
-          isCurrentUser: true,
-          label: 'Ann Lee',
-          value: '9',
-        },
-      ],
-      status: 'success',
-    })),
+    loadAssignees: vi.fn<CreateIssueFormDeps['assigneeSelect']['loadAssignees']>(async () => [
+      {
+        color: '#4774d4',
+        initials: 'AL',
+        isCurrentUser: true,
+        label: 'Ann Lee',
+        value: '9',
+      },
+    ]),
   },
   boardSelect: {
     loadBoards: vi.fn<CreateIssueFormDeps['boardSelect']['loadBoards']>(async () => [
@@ -36,16 +33,14 @@ const createDeps = (): CreateIssueFormDeps => ({
     })),
   },
   spaceSelect: {
-    loadSpaces: vi.fn<CreateIssueFormDeps['spaceSelect']['loadSpaces']>(async () => ({
-      data: [{ label: 'Product', value: '7' }],
-      status: 'success',
-    })),
+    loadSpaces: vi.fn<CreateIssueFormDeps['spaceSelect']['loadSpaces']>(async () => [
+      { label: 'Product', value: '7' },
+    ]),
   },
   statusSelect: {
-    loadStatuses: vi.fn<CreateIssueFormDeps['statusSelect']['loadStatuses']>(async () => ({
-      data: [{ label: 'To do', value: '1' }],
-      status: 'success',
-    })),
+    loadStatuses: vi.fn<CreateIssueFormDeps['statusSelect']['loadStatuses']>(async () => [
+      { label: 'To do', value: '1' },
+    ]),
   },
 })
 
@@ -95,13 +90,10 @@ it('creates an issue in a fixed board without showing destination selects', asyn
   const onCreated = vi.fn<(issueKey: string) => void>()
   const deps = createDeps()
   deps.statusSelect.loadStatuses = vi.fn<CreateIssueFormDeps['statusSelect']['loadStatuses']>(
-    async () => ({
-      data: [
-        { label: 'To do', value: '1' },
-        { label: 'In progress', value: '2' },
-      ],
-      status: 'success',
-    }),
+    async () => [
+      { label: 'To do', value: '1' },
+      { label: 'In progress', value: '2' },
+    ],
   )
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,

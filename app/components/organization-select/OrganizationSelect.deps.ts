@@ -1,11 +1,9 @@
-import type { QueryResult } from '#infrastructure/api/apiResult'
-
-import type { OrganizationSelectOption } from './OrganizationSelect.types'
-
-export type LoadOrganizations = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<OrganizationSelectOption[]>>
+export type OrganizationSelectOption = {
+  label: string
+  value: string
+}
 
 export type OrganizationSelectDeps = {
-  loadOrganizations: LoadOrganizations
+  // Resolves with the options or rejects with an `ApiError`.
+  loadOrganizations: (input: { signal?: AbortSignal }) => Promise<OrganizationSelectOption[]>
 }

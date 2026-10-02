@@ -46,8 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AssigneeSelectDeps } from './AssigneeSelect.deps'
-import type { AssigneeSelectOption } from './AssigneeSelect.types'
+import type { AssigneeSelectDeps, AssigneeSelectOption } from './AssigneeSelect.deps'
 
 const props = withDefaults(
   defineProps<{
@@ -86,9 +85,9 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { clear, data, execute, message, pending, status } = await useQuery(
+const { clear, data, execute, message, pending, status } = await useApiQuery(
   `assignee-select:${useId()}`,
-  (_nuxtApp, { signal }) => props.deps.loadAssignees({ signal, spaceKey: props.spaceKey }),
+  (signal) => props.deps.loadAssignees({ signal, spaceKey: props.spaceKey }),
   { immediate: props.eager && Boolean(props.spaceKey) },
 )
 

@@ -22,13 +22,10 @@ const createDeps = (overrides: Partial<MoveSpacesDialogDeps> = {}): SpacesMoveme
       status: 'success',
     })),
     organizationSelect: {
-      loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => ({
-        data: [
-          { label: 'Current', value: '1' },
-          { label: 'Target', value: '2' },
-        ],
-        status: 'success',
-      })),
+      loadOrganizations: vi.fn<OrganizationSelectDeps['loadOrganizations']>(async () => [
+        { label: 'Current', value: '1' },
+        { label: 'Target', value: '2' },
+      ]),
     },
     ...overrides,
   },

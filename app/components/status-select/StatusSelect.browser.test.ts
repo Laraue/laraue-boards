@@ -25,10 +25,9 @@ afterEach(async () => {
 
 it('loads statuses when the user focuses the select', async () => {
   await mount({
-    loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
-      data: [{ label: 'To do', value: '3' }],
-      status: 'success',
-    })),
+    loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => [
+      { label: 'To do', value: '3' },
+    ]),
   })
 
   await page.getByLabelText('Status').click()
@@ -39,13 +38,10 @@ it('loads statuses when the user focuses the select', async () => {
 it('selects the first status when the initial status is unavailable', async () => {
   await mount(
     {
-      loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
-        data: [
-          { label: 'To do', value: '3' },
-          { label: 'Done', value: '5' },
-        ],
-        status: 'success',
-      })),
+      loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => [
+        { label: 'To do', value: '3' },
+        { label: 'Done', value: '5' },
+      ]),
     },
     '12',
     { eager: true, modelValue: '999', selectFirst: true },
@@ -55,10 +51,9 @@ it('selects the first status when the initial status is unavailable', async () =
 })
 
 it('clears the selected status when the board changes', async () => {
-  const loadStatuses = vi.fn<StatusSelectDeps['loadStatuses']>(async ({ boardId }) => ({
-    data: boardId === '13' ? [{ label: 'Done', value: '5' }] : [{ label: 'To do', value: '3' }],
-    status: 'success',
-  }))
+  const loadStatuses = vi.fn<StatusSelectDeps['loadStatuses']>(async ({ boardId }) =>
+    boardId === '13' ? [{ label: 'Done', value: '5' }] : [{ label: 'To do', value: '3' }],
+  )
   await mount({ loadStatuses })
   await page.getByLabelText('Status').click()
   await page.getByLabelText('Status').selectOptions('3')

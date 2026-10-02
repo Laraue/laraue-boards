@@ -39,8 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SpaceSelectDeps } from './SpaceSelect.deps'
-import type { SpaceSelectOption } from './SpaceSelect.types'
+import type { SpaceSelectDeps, SpaceSelectOption } from './SpaceSelect.deps'
 
 const props = withDefaults(
   defineProps<{
@@ -76,9 +75,9 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { clear, data, execute, message, pending, status } = await useQuery(
+const { clear, data, execute, message, pending, status } = await useApiQuery(
   `space-select:${useId()}`,
-  (_nuxtApp, { signal }) => props.deps.loadSpaces({ organizationId: props.organizationId, signal }),
+  (signal) => props.deps.loadSpaces({ organizationId: props.organizationId, signal }),
   { immediate: false },
 )
 

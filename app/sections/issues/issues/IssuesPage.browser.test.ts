@@ -43,16 +43,10 @@ const createDeps = (overrides: Partial<IssuesPageDeps> = {}): IssuesPageDeps => 
       },
       moveIssues: vi.fn<MoveIssuesDialogDeps['moveIssues']>(),
       spaceSelect: {
-        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => ({
-          data: [],
-          status: 'success',
-        })),
+        loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => []),
       },
       statusSelect: {
-        loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => ({
-          data: [],
-          status: 'success',
-        })),
+        loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => []),
       },
     },
   },

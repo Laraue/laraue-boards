@@ -2,15 +2,12 @@ import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
-import { createLoadStatuses } from './loadStatuses'
+import { createStatusSelectDeps } from './StatusSelect.deps.impl'
 
 test('does not request statuses without a board', async () => {
   const { client, paths } = createTestApiClient(() => undefined)
 
-  assert.deepEqual(await createLoadStatuses(client)({ boardId: '' }), {
-    data: [],
-    status: 'success',
-  })
+  assert.deepEqual(await createStatusSelectDeps(client).loadStatuses({ boardId: '' }), [])
   assert.deepEqual(paths(), [])
 })
 
@@ -22,11 +19,8 @@ test('sorts and maps status options', async () => {
     ],
   }))
 
-  assert.deepEqual(await createLoadStatuses(client)({ boardId: '3' }), {
-    data: [
-      { label: 'Todo', value: '4' },
-      { label: 'Done', value: '5' },
-    ],
-    status: 'success',
-  })
+  assert.deepEqual(await createStatusSelectDeps(client).loadStatuses({ boardId: '3' }), [
+    { label: 'Todo', value: '4' },
+    { label: 'Done', value: '5' },
+  ])
 })

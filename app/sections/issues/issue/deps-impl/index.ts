@@ -1,8 +1,8 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { createAssigneeSelectDeps } from '~/components/assignee-select/deps-impl'
+import { createAssigneeSelectDeps } from '~/components/assignee-select/AssigneeSelect.deps.impl'
 import { createBoardSelectDeps } from '~/components/board-select/BoardSelect.deps.impl'
-import { createSpaceSelectDeps } from '~/components/space-select/deps-impl'
-import { createStatusSelectDeps } from '~/components/status-select/deps-impl'
+import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps.impl'
+import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
 
 import { createIssueCommentsDeps } from '../components/IssueComments/deps-impl'
 import { createIssueDescriptionDeps } from '../components/IssueDescription/deps-impl'
