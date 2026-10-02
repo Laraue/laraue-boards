@@ -2,6 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
 import type { BoardSelectDeps } from '~/components/board-select/BoardSelect.deps'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
@@ -35,10 +36,7 @@ const createDeps = (overrides: Partial<MoveIssuesDialogDeps> = {}): IssueListDep
         { label: 'Sprint board', value: '12' },
       ]),
     },
-    moveIssues: vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => ({
-      data: true,
-      status: 'success',
-    })),
+    moveIssues: vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => {}),
     spaceSelect: {
       loadSpaces: vi.fn<SpaceSelectDeps['loadSpaces']>(async () => [
         { label: 'Product', value: '7' },
@@ -104,10 +102,7 @@ it('shows the empty text when there are no issues', async () => {
 })
 
 it('moves a single issue through its row action without touching the selection', async () => {
-  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => {})
   const onMoved = vi.fn<() => void>()
 
   await mount(createDeps({ moveIssues }), onMoved)
@@ -122,10 +117,7 @@ it('moves a single issue through its row action without touching the selection',
 })
 
 it('moves every selected issue and clears the selection afterwards', async () => {
-  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => {})
 
   await mount(createDeps({ moveIssues }))
 
@@ -140,10 +132,9 @@ it('moves every selected issue and clears the selection afterwards', async () =>
 })
 
 it('keeps the dialog open and shows the message when moving fails', async () => {
-  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => ({
-    message: 'These issues can no longer be moved.',
-    status: 'validation-error',
-  }))
+  const moveIssues = vi
+    .fn<MoveIssuesDialogDeps['moveIssues']>()
+    .mockRejectedValue(new ApiError(400, 'These issues can no longer be moved.'))
   const onMoved = vi.fn<() => void>()
 
   await mount(createDeps({ moveIssues }), onMoved)
@@ -159,10 +150,9 @@ it('keeps the dialog open and shows the message when moving fails', async () => 
 })
 
 it('drops the failure message as soon as the destination changes', async () => {
-  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => ({
-    message: 'These issues can no longer be moved.',
-    status: 'validation-error',
-  }))
+  const moveIssues = vi
+    .fn<MoveIssuesDialogDeps['moveIssues']>()
+    .mockRejectedValue(new ApiError(400, 'These issues can no longer be moved.'))
 
   await mount(createDeps({ moveIssues }))
 

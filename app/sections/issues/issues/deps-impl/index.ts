@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { createIssueListDeps } from '~/components/issue-list/deps-impl'
+import { createIssueListDeps } from '~/components/issue-list/IssueList.deps.impl'
 
 import type { IssuesPageDeps } from '../IssuesPage.deps'
 import { createSearchIssues } from './searchIssues'

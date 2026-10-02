@@ -1,7 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
-import { createIssueListDeps } from '~/components/issue-list/deps-impl'
+import { createIssueListDeps } from '~/components/issue-list/IssueList.deps.impl'
 import type { IssueListItem } from '~/components/issue-list/IssueList.types'
 import { COLORS } from '~/constants/colors'
 import { mapIssueFilters, mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'

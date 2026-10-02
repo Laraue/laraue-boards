@@ -97,16 +97,7 @@ const state = reactive({
   statusId: '',
 })
 
-const {
-  execute: moveIssues,
-  message,
-  pending: moving,
-} = useAction(props.deps.moveIssues, {
-  onSuccess: async () => {
-    dialog.value?.close()
-    await props.onMoved()
-  },
-})
+const { execute: moveIssues, message, pending: moving } = useApiAction(props.deps.moveIssues)
 
 const open = (issueKeys: string[]) => {
   message.value = undefined
@@ -114,8 +105,11 @@ const open = (issueKeys: string[]) => {
   dialog.value?.showModal()
 }
 
-const move = () => {
-  void moveIssues({ issueKeys: state.issueKeys, statusId: state.statusId })
+const move = async (): Promise<void> => {
+  if (await moveIssues({ issueKeys: state.issueKeys, statusId: state.statusId })) {
+    dialog.value?.close()
+    await props.onMoved()
+  }
 }
 
 watch(
