@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { createLoginPageDeps } from '~/sections/auth/login/deps-impl'
+import { createLoginPageDeps } from '~/sections/auth/login/LoginPage.deps.impl'
 import LoginPage from '~/sections/auth/login/LoginPage.vue'
 
 definePageMeta({ layout: false })
