@@ -188,6 +188,38 @@ it('shows comments loaded after creating one', async () => {
   expect(view).toHaveBeenCalledOnce()
 })
 
+it('retries the first history page after a failed load', async () => {
+  const load = vi
+    .fn<IssuePageDeps['history']['load']>()
+    .mockRejectedValueOnce(new ApiError(503))
+    .mockResolvedValueOnce({
+      hasNextPage: false,
+      items: [
+        {
+          changes: [
+            {
+              kind: 'status',
+              newColor: null,
+              newValue: 'Done',
+              oldColor: null,
+              oldValue: 'To do',
+            },
+          ],
+          createdAt: '2026-01-03T00:00:00Z',
+          owner: { color: '#111', initials: 'A', name: 'Ada Lovelace' },
+        },
+      ],
+    })
+  await mount(createDeps({ history: { load } }))
+  await page.getByRole('tab', { name: 'History' }).click()
+  await page.getByRole('button', { name: 'Try again' }).click()
+
+  await expect.element(page.getByText('Done', { exact: true })).toBeInTheDocument()
+  expect(load).toHaveBeenCalledTimes(2)
+  expect(load).toHaveBeenNthCalledWith(2, { issueKey: 'ISS-1', page: 0 })
+  await expect.element(page.getByRole('button', { name: 'Try again' })).not.toBeInTheDocument()
+})
+
 it('loads history only when its tab is opened', async () => {
   const loadHistory = vi.fn<IssuePageDeps['history']['load']>(async () => ({
     hasNextPage: false,

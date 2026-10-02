@@ -12,11 +12,11 @@
       <span>{{ t('loading') }}</span>
     </div>
     <button
-      v-else-if="state.hasNextPage"
+      v-else-if="state.failed || state.hasNextPage"
       class="secondary small history-more"
       type="button"
       @click="load()">
-      {{ t('loadMore') }}
+      {{ state.failed ? t('tryAgain') : t('loadMore') }}
     </button>
   </div>
 </template>
@@ -40,15 +40,18 @@ const { t } = useI18n({
     label: 'Issue history',
     loading: 'Loading history…',
     loadMore: 'Load more',
+    tryAgain: 'Try again',
   },
   ru: {
     label: 'История задачи',
     loading: 'Загрузка истории…',
     loadMore: 'Загрузить ещё',
+    tryAgain: 'Повторить попытку',
   },
 })
 
 const state = reactive({
+  failed: false,
   hasNextPage: false,
   items: [] as HistoryItemViewModel[],
   page: 0,
@@ -63,6 +66,7 @@ const load = async (replace = false) => {
   }
   const requestedPage = replace ? 0 : state.page
   const loaded = await loadPage({ issueKey: props.issueKey, page: requestedPage })
+  state.failed = !loaded
   if (!loaded) {
     return
   }

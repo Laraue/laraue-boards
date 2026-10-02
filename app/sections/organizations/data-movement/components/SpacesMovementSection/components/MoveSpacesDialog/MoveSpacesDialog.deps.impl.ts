@@ -9,7 +9,7 @@ export const createMoveSpacesDialogDeps = (client: ApiClient): MoveSpacesDialogD
     if (!destinationOrganizationId || !spaceKeys.length) {
       throw new ApiError(400)
     }
-    await Promise.all(
+    const results = await Promise.allSettled(
       spaceKeys.map((spaceKey) =>
         request(
           client.POST('/api/movement/space/{key}/to-organization/{organizationId}', {
@@ -20,6 +20,10 @@ export const createMoveSpacesDialogDeps = (client: ApiClient): MoveSpacesDialogD
         ),
       ),
     )
+    const failure = results.find((result) => result.status === 'rejected')
+    if (failure?.status === 'rejected') {
+      throw failure.reason
+    }
   },
   organizationSelect: createOrganizationSelectDeps(client),
 })

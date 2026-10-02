@@ -10,7 +10,7 @@ export const createMoveBoardsDialogDeps = (client: ApiClient): MoveBoardsDialogD
     if (!boardIds.length || !destinationOrganizationId || !destinationSpaceKey) {
       throw new ApiError(400)
     }
-    await Promise.all(
+    const results = await Promise.allSettled(
       boardIds.map((boardId) =>
         request(
           client.POST('/api/movement/move-epic', {
@@ -23,6 +23,10 @@ export const createMoveBoardsDialogDeps = (client: ApiClient): MoveBoardsDialogD
         ),
       ),
     )
+    const failure = results.find((result) => result.status === 'rejected')
+    if (failure?.status === 'rejected') {
+      throw failure.reason
+    }
   },
   organizationSelect: createOrganizationSelectDeps(client),
   spaceSelect: createSpaceSelectDeps(client),
