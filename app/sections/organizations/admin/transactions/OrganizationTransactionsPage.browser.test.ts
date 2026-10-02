@@ -14,12 +14,9 @@ afterEach(async () => {
 
 it('filters organization transactions by member', async () => {
   const view = vi.fn<OrganizationTransactionsPageDeps['view']>(async () => ({
-    data: {
-      hasNextPage: false,
-      members: [{ id: 'user-1', name: 'Ada Lovelace' }],
-      transactions: [],
-    },
-    status: 'success',
+    hasNextPage: false,
+    members: [{ id: 'user-1', name: 'Ada Lovelace' }],
+    transactions: [],
   }))
 
   currentWrapper = await mountSuspended(OrganizationTransactionsPage, {

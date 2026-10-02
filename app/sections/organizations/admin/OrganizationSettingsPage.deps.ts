@@ -1,19 +1,21 @@
-import type { ActionResult } from '#infrastructure/api/apiResult'
-import type { QueryResult } from '#infrastructure/api/apiResult'
+export type OrganizationSettingsPageData = {
+  canDelete: boolean
+  canUpdate: boolean
+  color: string
+  id: string
+  name: string
+  slug: string
+}
 
-import type { UpdateOrganizationInput } from './OrganizationSettingsPage.types'
-import type { OrganizationSettingsPageData } from './OrganizationSettingsPage.types'
-
-export type RemoveOrganization = (input: { id: string }) => Promise<ActionResult<true>>
-
-export type UpdateOrganization = (input: UpdateOrganizationInput) => Promise<ActionResult<true>>
-
-export type ViewOrganizationSettings = (input: {
-  signal?: AbortSignal
-}) => Promise<QueryResult<OrganizationSettingsPageData>>
+export type UpdateOrganizationInput = {
+  color: string
+  id: string
+  name: string
+  slug: string
+}
 
 export type OrganizationSettingsPageDeps = {
-  remove: RemoveOrganization
-  updateOrganization: UpdateOrganization
-  view: ViewOrganizationSettings
+  remove: (input: { id: string }) => Promise<void>
+  updateOrganization: (input: UpdateOrganizationInput) => Promise<void>
+  view: (input: { signal?: AbortSignal }) => Promise<OrganizationSettingsPageData>
 }

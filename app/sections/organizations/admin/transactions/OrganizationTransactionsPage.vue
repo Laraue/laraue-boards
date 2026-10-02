@@ -43,12 +43,12 @@
 </template>
 
 <script setup lang="ts">
-import type { OrganizationTransactionsPageDeps } from './OrganizationTransactionsPage.deps'
 import type {
+  OrganizationTransactionsPageDeps,
   TransactionReason,
   TransactionStatus,
   TransactionViewModel,
-} from './OrganizationTransactionsPage.types'
+} from './OrganizationTransactionsPage.deps'
 
 const props = defineProps<{ deps: OrganizationTransactionsPageDeps }>()
 
@@ -100,11 +100,9 @@ const { t } = useI18n({
 const page = ref(1)
 const userId = ref('')
 const { formatDateTime, formatNumber } = useFormatters()
-const { data, message, pending, refresh } = await useQuery(
-  'billing-admin-transactions',
-  (_nuxtApp, { signal }) =>
-    props.deps.view({ page: page.value, signal, userId: userId.value || undefined }),
-  { watch: [page, userId] },
+const { data, message, pending, refresh } = await useApiQuery(
+  () => `billing-admin-transactions:${page.value}:${userId.value}`,
+  (signal) => props.deps.view({ page: page.value, signal, userId: userId.value || undefined }),
 )
 
 const tableLabels = computed(() => ({
