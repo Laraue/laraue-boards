@@ -2,8 +2,9 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
-import type { SpaceSettingsPageData } from './SpaceSettingsPage.types'
+import { ApiError } from '#infrastructure/api/request'
+
+import type { SpaceSettingsPageData, SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
 import SpaceSettingsPage from './SpaceSettingsPage.vue'
 
 const pageData: SpaceSettingsPageData = {
@@ -15,18 +16,9 @@ const pageData: SpaceSettingsPageData = {
 }
 
 const createDeps = (overrides: Partial<SpaceSettingsPageDeps> = {}): SpaceSettingsPageDeps => ({
-  remove: vi.fn<SpaceSettingsPageDeps['remove']>(async () => ({
-    data: true,
-    status: 'success',
-  })),
-  update: vi.fn<SpaceSettingsPageDeps['update']>(async () => ({
-    data: true,
-    status: 'success',
-  })),
-  view: vi.fn<SpaceSettingsPageDeps['view']>(async () => ({
-    data: pageData,
-    status: 'success',
-  })),
+  remove: vi.fn<SpaceSettingsPageDeps['remove']>(async () => {}),
+  update: vi.fn<SpaceSettingsPageDeps['update']>(async () => {}),
+  view: vi.fn<SpaceSettingsPageDeps['view']>(async () => pageData),
   ...overrides,
 })
 
@@ -51,10 +43,7 @@ afterEach(async () => {
 })
 
 it('submits edited settings and reports the trimmed key', async () => {
-  const update = vi.fn<SpaceSettingsPageDeps['update']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const update = vi.fn<SpaceSettingsPageDeps['update']>(async () => {})
   const onUpdated = vi.fn<(spaceKey: string) => void>()
 
   await mount(createDeps({ update }), vi.fn<() => void>(), onUpdated)
@@ -72,10 +61,7 @@ it('submits edited settings and reports the trimmed key', async () => {
 })
 
 it('deletes the space after confirmation', async () => {
-  const remove = vi.fn<SpaceSettingsPageDeps['remove']>(async () => ({
-    data: true,
-    status: 'success',
-  }))
+  const remove = vi.fn<SpaceSettingsPageDeps['remove']>(async () => {})
   const onDeleted = vi.fn<() => void>()
   vi.spyOn(window, 'confirm').mockReturnValue(true)
 
@@ -87,10 +73,9 @@ it('deletes the space after confirmation', async () => {
 })
 
 it('shows a validation message and stays on the page when updating fails', async () => {
-  const update = vi.fn<SpaceSettingsPageDeps['update']>(async () => ({
-    message: 'Key is already taken.',
-    status: 'validation-error',
-  }))
+  const update = vi
+    .fn<SpaceSettingsPageDeps['update']>()
+    .mockRejectedValue(new ApiError(400, 'Key is already taken.'))
   const onUpdated = vi.fn<(spaceKey: string) => void>()
 
   await mount(createDeps({ update }), vi.fn<() => void>(), onUpdated)
@@ -102,8 +87,9 @@ it('shows a validation message and stays on the page when updating fails', async
 
 it('hides unavailable settings actions', async () => {
   const view = vi.fn<SpaceSettingsPageDeps['view']>(async () => ({
-    data: { ...pageData, canDelete: false, canUpdate: false },
-    status: 'success',
+    ...pageData,
+    canDelete: false,
+    canUpdate: false,
   }))
 
   await mount(createDeps({ view }))
@@ -116,8 +102,8 @@ it('hides unavailable settings actions', async () => {
 it('reloads settings when the failed request is retried', async () => {
   const view = vi
     .fn<SpaceSettingsPageDeps['view']>()
-    .mockResolvedValueOnce({ code: 403, status: 'error' })
-    .mockResolvedValue({ data: pageData, status: 'success' })
+    .mockRejectedValueOnce(new ApiError(403))
+    .mockResolvedValue(pageData)
 
   await mount(createDeps({ view }))
   await page.getByRole('button', { name: 'Try again' }).click()

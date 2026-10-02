@@ -116,10 +116,9 @@ const form = reactive({
 
 const organizationRoutes = useOrganizationRoutes()
 
-const { data, message, pending, refresh } = await useQuery(
+const { data, message, pending, refresh } = await useApiQuery(
   () => `space-settings:${props.spaceKey}`,
-  (_nuxtApp, { signal }) => props.deps.view({ signal, spaceKey: props.spaceKey }),
-  { watch: [() => props.spaceKey] },
+  (signal) => props.deps.view({ signal, spaceKey: props.spaceKey }),
 )
 
 watch(
@@ -143,11 +142,19 @@ const {
   execute: updateSpace,
   message: updateMessage,
   pending: updating,
-} = useAction(props.deps.update)
+} = useApiAction(props.deps.update)
+const {
+  execute: removeSpace,
+  message: removeMessage,
+  pending: removing,
+} = useApiAction(props.deps.remove, {
+  onSuccess: props.onDeleted,
+})
+const submitting = computed(() => updating.value || removing.value)
 
 const update = async (): Promise<void> => {
   const page = data.value
-  if (!page || removing.value) {
+  if (!page || submitting.value) {
     return
   }
   const key = form.key.trim()
@@ -161,16 +168,6 @@ const update = async (): Promise<void> => {
     await props.onUpdated(key)
   }
 }
-
-const {
-  execute: removeSpace,
-  message: removeMessage,
-  pending: removing,
-} = useAction(props.deps.remove, {
-  onSuccess: props.onDeleted,
-})
-
-const submitting = computed(() => updating.value || removing.value)
 
 const remove = async (): Promise<void> => {
   const page = data.value
