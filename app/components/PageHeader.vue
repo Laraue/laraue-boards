@@ -113,6 +113,7 @@ const { t } = useI18n({
 <style scoped>
 /* Out to the scrolling area's edges; a sticky box stops at its padding, so it moves past it. */
 .page-header {
+  background: var(--color-background);
   flex: none;
   margin: calc(-1 * var(--layout-content-padding, 0px))
     calc(-1 * var(--layout-content-padding, 0px)) var(--layout-content-padding, 0px);

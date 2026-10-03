@@ -641,7 +641,7 @@ watch(dirty, setDirty, { immediate: true })
   border: 0;
   border-radius: 0;
   color: var(--color-text);
-  font-size: var(--font-size-title);
+  font-size: clamp(var(--font-size-title), 2vw, 31px);
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
   line-height: 1.25;
@@ -660,6 +660,7 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-form-side {
   display: grid;
+  font-size: 13px;
   gap: var(--space-4);
   max-height: 100%;
   min-height: 0;
@@ -668,7 +669,7 @@ watch(dirty, setDirty, { immediate: true })
 }
 
 .issue-form-side h2 {
-  font-size: var(--font-size-body);
+  font-size: inherit;
   margin: 0;
 }
 
@@ -677,6 +678,38 @@ watch(dirty, setDirty, { immediate: true })
   --control-height: var(--control-height-small);
 
   grid-auto-rows: var(--control-height);
+}
+
+.issue-properties :deep(.base-select-root) {
+  justify-items: start;
+}
+
+.issue-properties :deep(.base-select) {
+  width: fit-content;
+}
+
+.issue-properties :deep(:is(input, .base-select)) {
+  background: transparent;
+  border-color: transparent;
+  font-size: inherit;
+}
+
+.issue-properties :deep(.base-select-content) {
+  font-size: inherit;
+}
+
+.issue-properties :deep(:is(input, .base-select):hover:not(:disabled)) {
+  background: var(--color-hover);
+  border-color: var(--color-border);
+}
+
+.issue-properties:has(label:hover) :deep(:is(input, .base-select)) {
+  background: transparent;
+  border-color: transparent;
+}
+
+.issue-properties :deep(:is(input, .base-select):is(:focus-visible, [data-state='open'])) {
+  border-color: var(--color-focus);
 }
 
 .issue-properties,
@@ -713,6 +746,7 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-dates {
   border-top: 1px solid var(--color-divider);
+  grid-auto-rows: var(--control-height-small);
   padding-top: var(--space-4);
 }
 

@@ -47,14 +47,8 @@ const model = defineModel<T>({ required: true })
 </script>
 
 <style scoped>
-/* As Linear's "Activity": a line across ends what is above, then the tabs read as the section's
-   heading, the active one bright and the others muted. */
-.base-tabs {
-  border-top: 1px solid var(--color-border);
-  padding-top: var(--space-5);
-}
-
 .base-tabs-list {
+  border-bottom: 1px solid var(--color-divider);
   display: flex;
   gap: var(--space-5);
   overflow-x: auto;
@@ -66,23 +60,22 @@ const model = defineModel<T>({ required: true })
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-control);
-  /* Fainter than muted text, so the active one stands apart from the rest. */
-  color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  color: var(--color-muted);
   display: inline-flex;
   flex: none;
-  font-size: 15px;
-  /* One weight for every state: a bolder active tab would shift the ones after it. */
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-body);
+  font-weight: 400;
   gap: var(--space-2);
-  height: var(--control-height);
-  padding: 0;
+  height: 40px;
+  padding: 0 var(--space-2);
   transition: color var(--duration-fast) var(--ease-standard);
 }
 
 .base-tabs-tab > svg {
-  height: 18px;
-  width: 18px;
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .base-tabs-count {
@@ -98,7 +91,8 @@ const model = defineModel<T>({ required: true })
 }
 
 .base-tabs-tab[data-state='active'] {
-  color: var(--color-text);
+  border-bottom-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .base-tabs-tab[data-state='active'] .base-tabs-count {
@@ -121,7 +115,7 @@ const model = defineModel<T>({ required: true })
 
 @media (hover: hover) and (pointer: fine) {
   .base-tabs-tab:hover:not([data-state='active']) {
-    color: var(--color-muted);
+    color: var(--color-text);
   }
 }
 </style>
