@@ -131,21 +131,15 @@
         @click="sidebarOpen = false" />
     </Transition>
     <main>
-      <!-- ponytail: a page without its own PageHeader yet gets this button; drop it once every page has one. -->
-      <button
-        :aria-label="t('openMenu')"
-        class="icon-btn mobile-menu-button"
-        type="button"
-        @click="sidebarOpen = true">
-        <Menu />
-      </button>
+      <!-- ponytail: stands in for pages without their own PageHeader yet; drop it once every page has one. -->
+      <PageHeader class="layout-header" />
       <slot />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BookOpen, ChevronsUpDown, ClipboardList, History, Menu, Plus, Settings } from '@lucide/vue'
+import { BookOpen, ChevronsUpDown, ClipboardList, History, Plus, Settings } from '@lucide/vue'
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
@@ -169,7 +163,6 @@ const { locale, t } = useI18n({
     documentationNewTab: 'Documentation (opens in a new tab)',
     history: 'History',
     mainNavigation: 'Main navigation',
-    openMenu: 'Open menu',
     retro: 'Retro',
     spaceHint: 'A space groups the boards and issues of one project.',
     spaces: 'Spaces',
@@ -187,7 +180,6 @@ const { locale, t } = useI18n({
     documentationNewTab: 'Документация (откроется в новой вкладке)',
     history: 'История',
     mainNavigation: 'Главная навигация',
-    openMenu: 'Открыть меню',
     retro: 'Ретро',
     spaceHint: 'В разделе собраны доски и задачи проекта.',
     spaces: 'Разделы',
@@ -341,7 +333,11 @@ main :deep(.page-load-state) {
   padding: 0;
 }
 
-.mobile-menu-button {
+main:not(:has(.page-header:not(.layout-header))) {
+  grid-template-rows: auto 1fr;
+}
+
+main:has(.page-header:not(.layout-header)) > .layout-header {
   display: none;
 }
 
@@ -490,18 +486,6 @@ main :deep(.page-load-state) {
 
   main {
     grid-column: auto;
-  }
-
-  main:not(:has(.page-header)) :deep(.page-heading) {
-    padding-left: calc(var(--icon-btn-size) + var(--space-2));
-  }
-
-  main:not(:has(.page-header)) > .mobile-menu-button {
-    display: inline-flex;
-    left: var(--layout-content-padding);
-    position: absolute;
-    top: calc(var(--layout-content-padding) + var(--space-1));
-    z-index: 28;
   }
 }
 </style>

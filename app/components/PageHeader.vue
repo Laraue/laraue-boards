@@ -21,7 +21,7 @@
           <span aria-hidden="true">/</span>
         </template>
       </nav>
-      <h1>{{ title }}</h1>
+      <h1 v-if="title">{{ title }}</h1>
       <!-- What comes next from here, in the path's own style: "Board / + Add issue". -->
       <template v-if="$slots.default">
         <span
@@ -57,10 +57,13 @@ import type { RouteLocationRaw } from 'vue-router'
 
 const props = defineProps<{
   parents?: Array<{ label: string; to: RouteLocationRaw }>
-  title: string
+  // Left out only by the layout's stand-in for pages without their own header.
+  title?: string
 }>()
 
-useHead({ title: () => props.title })
+if (props.title !== undefined) {
+  useHead({ title: () => props.title })
+}
 const sidebarOpen = useSidebarOpen()
 const { t } = useI18n({
   en: { breadcrumbs: 'Breadcrumbs', openMenu: 'Open menu', yourAccount: 'Your Laraue account' },
@@ -152,6 +155,7 @@ h1 {
   display: flex;
   flex: none;
   gap: var(--space-2);
+  margin-left: auto;
 }
 
 .page-header-actions :deep(:is(.primary, .secondary)) {
