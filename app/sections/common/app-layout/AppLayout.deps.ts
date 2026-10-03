@@ -44,8 +44,6 @@ export type ViewAppLayout = (input: {
 }) => Promise<AppLayoutResult>
 
 export type AppLayoutDeps = {
-  // Never fails: signing out goes ahead even when the request does.
-  logout: () => Promise<void>
   tour: TourStateDeps
   view: ViewAppLayout
 }

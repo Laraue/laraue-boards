@@ -12,8 +12,8 @@
         <span>Laraue Boards</span>
       </NuxtLink>
       <div class="app-header-actions">
-        <slot name="actions" />
         <AppHeaderPreferences />
+        <slot name="actions" />
       </div>
     </header>
     <main>
@@ -31,12 +31,6 @@ defineProps<{ homePath: string }>()
   display: grid;
   grid-template-rows: auto 1fr;
   min-height: 100dvh;
-}
-
-.app-header {
-  margin-inline: auto;
-  max-width: 1120px;
-  width: 100%;
 }
 
 main {

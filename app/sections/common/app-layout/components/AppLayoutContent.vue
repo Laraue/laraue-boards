@@ -104,62 +104,23 @@
         </div>
       </nav>
       <div class="sidebar-footer">
-        <AppPopover class="sidebar-user-menu">
-          <template #trigger="{ open, toggle }">
-            <button
-              :aria-expanded="open"
-              aria-haspopup="true"
-              class="sidebar-user"
-              :class="{ active: open || within('organizations-organizationKey-account') }"
-              type="button"
-              @click="toggle">
-              <span
-                class="avatar"
-                :style="{ background: viewModel.user.color }">
-                {{ viewModel.user.initials }}
-              </span>
-              <span class="sidebar-user-info">
-                <strong>{{ viewModel.user.name }}</strong>
-                <small class="muted">
-                  {{ viewModel.user.tariffName || t('tariffUnavailable') }}
-                </small>
-              </span>
-            </button>
-          </template>
-          <template #default="{ close }">
-            <div
-              class="user-menu"
-              @click="closeUserMenu(close)">
-              <NuxtLink
-                class="user-menu-item"
-                to="/account">
-                <Globe />
-                <span>
-                  <strong>{{ t('yourAccount') }}</strong>
-                  <small class="muted">{{ t('yourAccountHint') }}</small>
-                </span>
-              </NuxtLink>
-              <NuxtLink
-                class="user-menu-item"
-                :to="organizationRoutes.account()">
-                <Building2 />
-                <span>
-                  <strong>{{ t('youIn', { organization: viewModel.organization.name }) }}</strong>
-                  <small class="muted">
-                    {{ t('youInHint', { organization: viewModel.organization.name }) }}
-                  </small>
-                </span>
-              </NuxtLink>
-              <button
-                class="user-menu-item danger"
-                type="button"
-                @click="props.onLogout">
-                <LogOut />
-                <strong>{{ t('logOut') }}</strong>
-              </button>
-            </div>
-          </template>
-        </AppPopover>
+        <NuxtLink
+          class="sidebar-user"
+          :class="{ active: within('organizations-organizationKey-account') }"
+          :to="organizationRoutes.account()"
+          @click="state.sidebarOpen = false">
+          <span
+            class="avatar"
+            :style="{ background: viewModel.user.color }">
+            {{ viewModel.user.initials }}
+          </span>
+          <span class="sidebar-user-info">
+            <strong>{{ viewModel.user.name }}</strong>
+            <small class="muted">
+              {{ viewModel.user.tariffName || t('tariffUnavailable') }}
+            </small>
+          </span>
+        </NuxtLink>
       </div>
     </aside>
     <Transition name="fade">
@@ -183,6 +144,12 @@
         </div>
         <div class="app-header-actions">
           <AppHeaderPreferences />
+          <NuxtLink
+            :aria-label="t('yourAccount')"
+            class="header-btn"
+            to="/account">
+            <CircleUser />
+          </NuxtLink>
         </div>
       </header>
       <main>
@@ -195,12 +162,10 @@
 <script setup lang="ts">
 import {
   BookOpen,
-  Building2,
   ChevronsUpDown,
+  CircleUser,
   ClipboardList,
-  Globe,
   History,
-  LogOut,
   Menu,
   Plus,
   Settings,
@@ -212,7 +177,6 @@ import AppBreadcrumbs from '~/sections/common/app-layout/components/AppBreadcrum
 import { docsPath } from '~/sections/docs/docsPaths'
 
 const props = defineProps<{
-  onLogout: () => void
   viewModel: AppLayoutData
 }>()
 const route = useRoute<OrganizationRouteName>()
@@ -229,7 +193,6 @@ const { locale, t } = useI18n({
     documentation: 'Documentation',
     documentationNewTab: 'Documentation (opens in a new tab)',
     history: 'History',
-    logOut: 'Log out',
     mainNavigation: 'Main navigation',
     openMenu: 'Open menu',
     retro: 'Retro',
@@ -237,10 +200,7 @@ const { locale, t } = useI18n({
     spaces: 'Spaces',
     switchOrganization: 'Switch organization',
     tariffUnavailable: 'Tariff unavailable',
-    youIn: 'You in {organization}',
-    youInHint: 'Profile, plan, transactions, API keys. Only in {organization}',
     yourAccount: 'Your Laraue account',
-    yourAccountHint: 'Sign-in methods, language and theme. In all organizations',
   },
   ru: {
     admin: 'Админка',
@@ -252,7 +212,6 @@ const { locale, t } = useI18n({
     documentation: 'Документация',
     documentationNewTab: 'Документация (откроется в новой вкладке)',
     history: 'История',
-    logOut: 'Выйти',
     mainNavigation: 'Главная навигация',
     openMenu: 'Открыть меню',
     retro: 'Ретро',
@@ -260,10 +219,7 @@ const { locale, t } = useI18n({
     spaces: 'Разделы',
     switchOrganization: 'Сменить организацию',
     tariffUnavailable: 'Тариф недоступен',
-    youIn: 'Вы в организации {organization}',
-    youInHint: 'Профиль, тариф, транзакции, API-ключи. Только в {organization}',
     yourAccount: 'Ваш аккаунт Laraue',
-    yourAccountHint: 'Способы входа, язык и тема. Во всех организациях',
   },
 })
 const active = (name: OrganizationRouteName) => route.name === name
@@ -292,10 +248,6 @@ const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   within('organizations-organizationKey-spaces-spaceKey') &&
   route.params.spaceKey !== undefined &&
   route.params.spaceKey === space.key
-const closeUserMenu = (close: () => void) => {
-  close()
-  state.sidebarOpen = false
-}
 </script>
 
 <style scoped>
@@ -451,12 +403,6 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
-.sidebar-footer .sidebar-user-menu {
-  --app-popover-width: 300px;
-
-  width: 100%;
-}
-
 .sidebar-user {
   align-items: center;
   background: transparent;
@@ -468,57 +414,13 @@ main :deep(.page-load-state) {
   min-width: 0;
   padding: var(--space-2);
   text-align: left;
+  text-decoration: none;
   transition: var(--transition-press);
   width: 100%;
 }
 
 .sidebar-user.active {
   background: var(--color-soft);
-}
-
-.user-menu {
-  display: grid;
-  gap: var(--space-1);
-  padding: var(--space-2);
-}
-
-.user-menu-item {
-  align-items: flex-start;
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-control);
-  color: var(--color-text);
-  display: flex;
-  gap: var(--space-3);
-  padding: var(--space-2);
-  text-align: left;
-  text-decoration: none;
-}
-
-.user-menu-item:hover {
-  background: var(--color-hover);
-}
-
-.user-menu-item > svg {
-  flex: none;
-  height: 18px;
-  margin-top: 1px;
-  width: 18px;
-}
-
-.user-menu-item > span {
-  display: grid;
-  gap: 2px;
-}
-
-.user-menu-item small {
-  font-size: var(--font-size-small);
-}
-
-.user-menu-item.danger {
-  border-radius: 0 0 var(--radius-control) var(--radius-control);
-  border-top: 1px solid var(--color-divider);
-  color: var(--color-danger);
 }
 
 .sidebar-user:hover {

@@ -30,7 +30,6 @@ const createTourDeps = () => ({
 })
 
 const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
-  logout: vi.fn<AppLayoutDeps['logout']>(),
   tour: createTourDeps(),
   view: vi.fn<AppLayoutDeps['view']>(async () => ({ data, status: 'success' })),
   ...overrides,
@@ -38,12 +37,11 @@ const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (deps: AppLayoutDeps, onLoggedOut = vi.fn<() => void>()) => {
+const mount = async (deps: AppLayoutDeps) => {
   currentWrapper = await mountSuspended(AppLayout, {
     attachTo: document.body,
     props: {
       deps,
-      onLoggedOut,
       onOrganizationSwitched: vi.fn<() => void>(),
       onViewProblem: vi.fn<(problem: RoutableProblem) => void>(),
       organizationKey: 'acme-ab12',
@@ -51,7 +49,6 @@ const mount = async (deps: AppLayoutDeps, onLoggedOut = vi.fn<() => void>()) => 
     route: '/organizations/acme-ab12/issues',
     slots: { default: '<p>Issues page</p>' },
   })
-  return onLoggedOut
 }
 
 afterEach(async () => {
@@ -59,19 +56,13 @@ afterEach(async () => {
   currentWrapper = undefined
 })
 
-it('shows desktop navigation and logs out on request', async () => {
-  const logout = vi.fn<AppLayoutDeps['logout']>(async () => {})
+it('shows desktop navigation', async () => {
   await page.viewport(1280, 800)
-  const onLoggedOut = await mount(createDeps({ logout }))
+  await mount(createDeps())
 
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: 'Create space' })).toBeInTheDocument()
   await expect.element(page.getByText('Free')).toBeInTheDocument()
-  await page.getByRole('button', { name: /Ada Lovelace Free/ }).click()
-  await page.getByRole('button', { name: 'Log out' }).click()
-
-  await vi.waitFor(() => expect(logout).toHaveBeenCalledOnce())
-  expect(onLoggedOut).toHaveBeenCalledOnce()
 })
 
 it('opens the navigation from the mobile menu button', async () => {
@@ -87,13 +78,11 @@ it('separates the own account from the account in the organization', async () =>
   await page.viewport(1280, 800)
   await mount(createDeps())
 
-  await page.getByRole('button', { name: /Ada Lovelace Free/ }).click()
-
   await expect
-    .element(page.getByRole('link', { name: /Your Laraue account/ }))
+    .element(page.getByRole('link', { name: 'Your Laraue account' }))
     .toHaveAttribute('href', '/account')
   await expect
-    .element(page.getByRole('link', { name: /You in Acme/ }))
+    .element(page.getByRole('link', { name: /Ada Lovelace Free/ }))
     .toHaveAttribute('href', '/organizations/acme-ab12/account')
 })
 

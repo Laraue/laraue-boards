@@ -1,7 +1,6 @@
 <template>
   <AppLayout
     :deps="deps"
-    :on-logged-out="onLoggedOut"
     :on-organization-switched="onOrganizationSwitched"
     :on-view-problem="onViewProblem"
     :organization-key="organizationKey">
@@ -33,9 +32,5 @@ const onViewProblem = async (problem: RoutableProblem): Promise<void> => {
       await navigateTo('/organizations')
     }
   }
-}
-const onLoggedOut = async (): Promise<void> => {
-  clearNuxtData()
-  await navigateTo('/login')
 }
 </script>
