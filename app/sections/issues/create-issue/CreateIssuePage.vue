@@ -1,8 +1,10 @@
 <template>
   <div>
     <PageHeader
-      :icon="ListPlus"
-      :parents="[{ icon: IconClipboardList, label: t('allIssues'), to: organizationRoutes.issues() }]"
+      :icon="IconPlaylistAdd"
+      :parents="[
+        { icon: IconClipboardList, label: t('allIssues'), to: organizationRoutes.issues() },
+      ]"
       :title="t('addIssue')" />
     <QueryState
       :data="data"

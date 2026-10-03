@@ -1,7 +1,7 @@
 <template>
   <section class="settings-page">
     <PageHeader
-      :icon="Settings"
+      :icon="IconSettings"
       :title="t('admin')" />
     <nav
       :aria-label="t('admin')"

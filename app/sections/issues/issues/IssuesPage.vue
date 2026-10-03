@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="ClipboardList"
+      :icon="IconClipboardList"
       :title="t('allIssues')">
       <NuxtLink
         v-if="data?.spaces.length"

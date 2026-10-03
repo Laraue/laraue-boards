@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="Settings"
+      :icon="IconSettings"
       :parents="[
         {
           color: data?.spaceColor,

@@ -1,7 +1,7 @@
 <template>
   <section class="account-page">
     <PageHeader
-      :icon="Building2"
+      :icon="IconBuilding"
       :title="t('youIn', { organization: organizationName })" />
     <p class="muted">
       {{ t('scope', { organization: organizationName }) }}

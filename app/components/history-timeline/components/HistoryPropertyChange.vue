@@ -2,18 +2,18 @@
   <span>{{ change.label }}:</span>
   <div class="history-value-change">
     <span :title="display(change.oldValue)">
-      <i
+      <AttributeIcon
         v-if="change.oldColor"
-        :style="{ background: change.oldColor }" />
+        :style="{ color: change.oldColor }" />
       {{ display(change.oldValue) }}
     </span>
     <IconArrowRight />
     <span
       class="history-new-value"
       :title="display(change.newValue)">
-      <i
+      <AttributeIcon
         v-if="change.newColor"
-        :style="{ background: change.newColor }" />
+        :style="{ color: change.newColor }" />
       {{ display(change.newValue) }}
     </span>
   </div>
@@ -21,6 +21,8 @@
 
 <script setup lang="ts">
 import { IconArrowRight } from '@tabler/icons-vue'
+
+import { AttributeIcon } from '~/constants/icons'
 
 import type { HistoryPropertyChangeViewModel } from '../HistoryTimeline.types'
 

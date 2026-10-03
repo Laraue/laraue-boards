@@ -1,7 +1,9 @@
 <template>
   <span>{{ t('status') }}:</span>
   <div class="history-value-change">
-    <span :title="change.oldValue ?? t('none')">
+    <span
+      class="issue-status"
+      :title="change.oldValue ?? t('none')">
       <i
         v-if="change.oldColor"
         :style="{ background: change.oldColor }" />
@@ -9,7 +11,7 @@
     </span>
     <IconArrowRight />
     <span
-      class="history-new-value"
+      class="issue-status history-new-value"
       :title="change.newValue ?? t('none')">
       <i
         v-if="change.newColor"

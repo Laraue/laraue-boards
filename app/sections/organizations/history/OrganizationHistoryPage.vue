@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="History"
+      :icon="IconHistory"
       :title="t('history')" />
     <QueryState
       :data="data"

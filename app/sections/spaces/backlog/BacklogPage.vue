@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="ListTodo"
+      :icon="IconListDetails"
       :parents="[
         {
           color: data?.spaceColor,

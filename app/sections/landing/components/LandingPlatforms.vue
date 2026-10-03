@@ -16,47 +16,19 @@
         <p class="platform-card-desc">{{ t('web_desc') }}</p>
         <ul class="platform-card-features">
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('web_f1') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('web_f2') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('web_f3') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('web_f4') }}</span>
           </li>
         </ul>
@@ -79,47 +51,19 @@
         <p class="platform-card-desc">{{ t('tg_desc') }}</p>
         <ul class="platform-card-features">
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('tg_f1') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('tg_f2') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('tg_f3') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('tg_f4') }}</span>
           </li>
         </ul>
@@ -144,47 +88,19 @@
         <p class="platform-card-desc">{{ t('mcp_desc') }}</p>
         <ul class="platform-card-features">
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('mcp_f1') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('mcp_f2') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('mcp_f3') }}</span>
           </li>
           <li>
-            <svg
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <IconCheck stroke="2.2" />
             <span>{{ t('mcp_f4') }}</span>
           </li>
         </ul>
@@ -200,6 +116,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconCheck } from '@tabler/icons-vue'
+
 import type { Locale } from '~/composables/useI18n'
 
 import { appUrl } from '../landingLinks'

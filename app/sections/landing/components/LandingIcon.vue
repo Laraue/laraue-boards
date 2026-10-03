@@ -3,7 +3,7 @@
     :is="icons[name]"
     aria-hidden="true"
     class="landing-icon"
-    :stroke="1.7" />
+    stroke="1.7" />
 </template>
 
 <script setup lang="ts">
@@ -25,6 +25,8 @@ import {
   IconWorld,
 } from '@tabler/icons-vue'
 
+defineProps<{ name: LandingIconName }>()
+
 const icons = {
   board: IconClipboardText,
   book: IconBook,
@@ -44,8 +46,6 @@ const icons = {
 }
 
 export type LandingIconName = keyof typeof icons
-
-defineProps<{ name: LandingIconName }>()
 </script>
 
 <style scoped>
