@@ -33,6 +33,10 @@ type Crumb = { label: string; to?: RouteLocationRaw }
 const route = useRoute<OrganizationRouteName>()
 const routes = useOrganizationRoutes()
 const pageTitle = useCurrentPageTitle()
+// The page sets its title while it renders, after this header, so the server's HTML can't have it.
+// It shows from mounting on, which keeps hydration identical to the server's HTML.
+const mounted = ref(false)
+onMounted(() => (mounted.value = true))
 const { t } = useI18n({
   en: {
     admin: 'Admin',
@@ -100,7 +104,7 @@ const parents = (): Crumb[] => {
 const crumbs = computed<Crumb[]>(() => [
   { label: props.viewModel.organization.name, to: routes.issues() },
   ...parents(),
-  ...(pageTitle.value ? [{ label: pageTitle.value }] : []),
+  ...(mounted.value && pageTitle.value ? [{ label: pageTitle.value }] : []),
 ])
 </script>
 

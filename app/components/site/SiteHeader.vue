@@ -93,7 +93,8 @@ const otherLocalePath = computed(
 
 <style scoped>
 .header {
-  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
   border-bottom: 1px solid var(--color-divider);
   left: 0;
   position: fixed;

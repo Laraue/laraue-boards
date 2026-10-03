@@ -397,7 +397,8 @@ textarea::placeholder {
 
 .app-header {
   align-items: center;
-  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
   border-bottom: 1px solid var(--color-divider);
   /* 55px plus the border, like SiteHeader: on a scaled screen the border is less than 1px, and
      the logo has to land on the same spot in both. */
@@ -407,6 +408,9 @@ textarea::placeholder {
   height: 55px;
   justify-content: space-between;
   padding: 0 var(--space-6);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .app-header-actions {

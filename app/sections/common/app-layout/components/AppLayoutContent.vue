@@ -130,7 +130,7 @@
         class="scrim"
         @click="state.sidebarOpen = false" />
     </Transition>
-    <div class="workspace">
+    <main>
       <header class="app-header">
         <div class="header-start">
           <button
@@ -152,10 +152,8 @@
           </NuxtLink>
         </div>
       </header>
-      <main>
-        <slot />
-      </main>
-    </div>
+      <slot />
+    </main>
   </div>
 </template>
 
@@ -348,15 +346,6 @@ aside > nav button.active {
   text-transform: uppercase;
 }
 
-.workspace {
-  display: flex;
-  flex-direction: column;
-  grid-column: 2;
-  height: 100dvh;
-  min-width: 0;
-  width: 100%;
-}
-
 .header-start {
   align-items: center;
   display: flex;
@@ -364,14 +353,23 @@ aside > nav button.active {
   min-width: 0;
 }
 
+/* The header scrolls with the page, so the page shows through it while it scrolls. */
 main {
   display: grid;
-  flex: 1;
-  min-height: 0;
+  grid-column: 2;
+  grid-template-rows: auto 1fr;
+  height: 100dvh;
   min-width: 0;
   overflow: auto;
   padding: var(--layout-content-padding);
   position: relative;
+}
+
+/* Out to main's edges; a sticky box stops at the scroll container's padding, so it moves past it. */
+main > .app-header {
+  margin: calc(-1 * var(--layout-content-padding)) calc(-1 * var(--layout-content-padding))
+    var(--layout-content-padding);
+  top: calc(-1 * var(--layout-content-padding));
 }
 
 main > :deep(*) {
@@ -530,7 +528,7 @@ main :deep(.page-load-state) {
     transform: none;
   }
 
-  .workspace {
+  main {
     grid-column: auto;
   }
 
