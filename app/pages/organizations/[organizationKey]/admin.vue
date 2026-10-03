@@ -60,12 +60,10 @@
 <script setup lang="ts">
 import { ArrowRightLeft, History, Settings, ShieldCheck, Tags } from '@lucide/vue'
 
-import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
-
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
-const { data } = useNuxtData<{ data?: AppLayoutData }>(appLayoutDataKey)
-const organization = computed(() => data.value?.data?.organization)
+const layout = useAppLayoutData()
+const organization = computed(() => layout.value?.organization)
 const within = (name: OrganizationRouteName) =>
   typeof route.name === 'string' && route.name.startsWith(name)
 const { t } = useI18n({
