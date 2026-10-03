@@ -584,15 +584,17 @@ watch(dirty, setDirty, { immediate: true })
   min-width: 0;
 }
 
+.issue-dialog-heading h1 {
+  font-size: 16px;
+}
+
 .issue-dialog-heading h1 a {
-  color: inherit;
+  color: var(--color-muted);
   text-decoration: none;
-  text-underline-offset: 3px;
 }
 
 .issue-dialog-heading h1 a:is(:hover, :focus-visible) {
-  color: var(--color-accent);
-  text-decoration: underline;
+  color: var(--color-text);
 }
 
 .issue-page-form {

@@ -161,7 +161,7 @@ const { t } = useI18n({
   width: 14px;
 }
 
-.page-header-path a:hover {
+.page-header-path a:is(:hover, :focus-visible) {
   color: var(--color-text);
 }
 
@@ -186,14 +186,11 @@ const { t } = useI18n({
   gap: var(--space-1);
   padding: 0;
   text-decoration: none;
-  text-underline-offset: 3px;
   white-space: nowrap;
 }
 
-/* Like the prototype's back link: no surface, the accent and an underline on hover. */
-.page-header-next :deep(:is(a, button):hover) {
-  color: var(--color-accent);
-  text-decoration: underline;
+.page-header-next :deep(:is(a, button):is(:hover, :focus-visible):not(:disabled)) {
+  color: var(--color-text);
 }
 
 .page-header-next :deep(:is(a, button):disabled) {
