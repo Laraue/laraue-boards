@@ -1,6 +1,7 @@
 <template>
   <div class="issue-description">
     <MarkdownEditor
+      ref="editor"
       v-model="model"
       :disabled="disabled"
       :label="t('content')"
@@ -10,6 +11,13 @@
       v-if="!disabled"
       class="issue-description-footer">
       <slot name="actions" />
+      <!-- The blocks "/" offers, found by a button rather than a line of text to read. -->
+      <IconButton
+        :label="t('insertBlock')"
+        :tooltip="t('insertBlockHint')"
+        @click="editor?.insertSlash()">
+        <IconSlash />
+      </IconButton>
       <!-- With a label, so it is seen; only with text, as there is nothing to improve before. -->
       <BaseButton
         v-if="model.trim()"
@@ -21,11 +29,6 @@
         <IconSparkles v-if="!summarizing" />
         {{ summarizing ? t('improvingWithAi') : t('improveWithAi') }}
       </BaseButton>
-      <span class="issue-description-hint">
-        {{ t('slashHintBefore') }}
-        <kbd>/</kbd>
-        {{ t('slashHintAfter') }}
-      </span>
       <p
         v-if="message"
         class="form-error"
@@ -37,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconSparkles } from '@tabler/icons-vue'
+import { IconSlash, IconSparkles } from '@tabler/icons-vue'
 
 import MarkdownEditor from '~/components/markdown-editor/MarkdownEditor.vue'
 
@@ -52,8 +55,8 @@ const { t } = useI18n({
     improveWithAi: 'Improve with AI',
     improveWithAiHint: 'Fixes the text and writes a title',
     improvingWithAi: 'Improving…',
-    slashHintAfter: 'for a heading, list, table and more',
-    slashHintBefore: 'Type',
+    insertBlock: 'Insert a block',
+    insertBlockHint: 'Heading, list, table and more (or type /)',
   },
   ru: {
     content: 'Содержимое',
@@ -61,14 +64,16 @@ const { t } = useI18n({
     improveWithAi: 'Улучшить с ИИ',
     improveWithAiHint: 'Поправит текст и придумает заголовок',
     improvingWithAi: 'Улучшаем…',
-    slashHintAfter: '— заголовок, список, таблица и другое',
-    slashHintBefore: 'Введите',
+    insertBlock: 'Вставить блок',
+    insertBlockHint: 'Заголовок, список, таблица и другое (или введите /)',
   },
 })
 
 const model = defineModel<string>({ required: true })
 // The AI summary comes with a title; the page owning the title field shares it here.
 const titleModel = defineModel<string>('title', { default: '' })
+
+const editor = useTemplateRef<InstanceType<typeof MarkdownEditor>>('editor')
 
 const {
   execute: summarize,
@@ -103,21 +108,6 @@ const summarizeContent = async (): Promise<void> => {
   display: flex;
   flex-wrap: wrap;
   gap: 2px;
-}
-
-.issue-description-hint {
-  color: var(--color-muted);
-  font-size: var(--font-size-small);
-  margin-left: var(--space-2);
-}
-
-.issue-description-hint kbd {
-  background: var(--color-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-small);
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-caption);
-  padding: 0 var(--space-1);
 }
 
 .issue-description-footer .form-error {

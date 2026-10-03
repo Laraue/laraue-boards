@@ -277,12 +277,10 @@ it('loads history only when its tab is opened', async () => {
   await expect.element(page.getByText('Status:')).toBeInTheDocument()
   await expect.element(page.getByText('Done')).toBeInTheDocument()
   await page.getByText('Description', { exact: true }).click()
-  await expect
-    .element(page.getByLabelText('Description changes split view'))
-    .toHaveTextContent('List Item 3')
-  await expect
-    .element(page.getByLabelText('Description changes split view'))
-    .toHaveTextContent('List Item 4')
+  const changes = page.getByLabelText('Description changes')
+  await expect.element(changes).toHaveTextContent('List Item')
+  await expect.element(changes.getByRole('deletion')).toHaveTextContent('3')
+  await expect.element(changes.getByRole('insertion')).toHaveTextContent('4')
   await expect.element(page.getByRole('button', { name: 'Unified' })).not.toBeInTheDocument()
 })
 

@@ -17,6 +17,7 @@
       <!-- Tiptap moves the menus' own elements, so a div of ours carries their look. -->
       <template v-if="!disabled">
         <BubbleMenu
+          class="markdown-editor-popup"
           :editor="editor"
           plugin-key="textMenu"
           :should-show="showTextMenu">
@@ -70,6 +71,7 @@
           </div>
         </BubbleMenu>
         <BubbleMenu
+          class="markdown-editor-popup"
           :editor="editor"
           plugin-key="tableMenu"
           :should-show="showTableMenu">
@@ -94,6 +96,7 @@
         </BubbleMenu>
         <!-- "/" on a line: the blocks it can become, filtered by what follows the slash. -->
         <FloatingMenu
+          class="markdown-editor-popup"
           :editor="editor"
           :options="{ offset: 4, placement: 'bottom-start' }"
           plugin-key="slashMenu"
@@ -529,6 +532,28 @@ type MenuContext = {
 const showTextMenu = ({ editor: current }: MenuContext) =>
   !current.state.selection.empty && !current.isActive('table')
 const showTableMenu = ({ editor: current }: MenuContext) => current.isActive('table')
+// For a button next to the editor: a "/" on an empty line, opening the list of blocks.
+const insertSlash = () => {
+  const current = editor.value
+  if (!current) {
+    return
+  }
+  const { $from, empty } = current.state.selection
+  if (empty && $from.parent.type.name === 'paragraph' && !$from.parent.textContent) {
+    current.chain().focus().insertContent('/').run()
+    return
+  }
+  current
+    .chain()
+    .insertContentAt(current.state.doc.content.size, {
+      content: [{ text: '/', type: 'text' }],
+      type: 'paragraph',
+    })
+    .focus('end')
+    .run()
+}
+
+defineExpose({ insertSlash })
 </script>
 
 <style scoped>
@@ -546,6 +571,11 @@ const showTableMenu = ({ editor: current }: MenuContext) => current.isActive('ta
   float: left;
   height: 0;
   pointer-events: none;
+}
+
+/* Tiptap's own element for each menu: over what follows, such as the comments below. */
+.markdown-editor-popup {
+  z-index: 10;
 }
 
 /* The menus over a selection, a table and an empty line. */
