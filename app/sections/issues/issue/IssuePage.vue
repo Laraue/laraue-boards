@@ -48,7 +48,7 @@
       :on-retry="refresh"
       :pending="pending && !data">
       <template #loading>
-        <IssueSkeleton />
+        <IssueSkeleton :in-dialog="inDialog" />
       </template>
       <template #default="{ data: issue }">
         <section class="issue-page">

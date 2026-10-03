@@ -29,7 +29,7 @@
           :on-dirty-change="setDirty"
           :on-saved="handleSaved" />
         <template #fallback>
-          <IssueSkeleton />
+          <IssueSkeleton in-dialog />
         </template>
       </ClientOnly>
     </div>
