@@ -10,10 +10,10 @@
         class="secondary"
         type="button"
         @click="togglePopover">
-        <LoaderCircle
+        <IconLoader2
           v-if="loading"
           class="issue-filters-loading" />
-        <ListFilter v-else />
+        <IconFilter v-else />
         {{ t('filters') }}
         <span v-if="activeCount">({{ activeCount }})</span>
       </button>
@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import { ListFilter, LoaderCircle } from '@lucide/vue'
+import { IconFilter, IconLoader2 } from '@tabler/icons-vue'
 
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 import { AttributeIcon } from '~/constants/icons'

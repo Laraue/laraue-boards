@@ -16,7 +16,7 @@ export type TourStateDeps = {
 
 const animate = (): boolean => !matchMedia('(prefers-reduced-motion: reduce)').matches
 
-/** Driver renders a bare &times; glyph; the app uses lucide icons everywhere else. */
+/** Driver renders a bare &times; glyph; the app uses Tabler icons everywhere else. */
 const renderCloseIcon = (popover: { closeButton: HTMLElement }): void => {
   popover.closeButton.innerHTML =
     '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 2 8 8M8 2 2 8"/></svg>'

@@ -25,7 +25,7 @@
             <strong class="section-label skeleton skeleton-copy">{{ t('attachments') }}</strong>
             <div class="skeleton-attachment-actions">
               <span class="secondary small skeleton skeleton-control">
-                <ImagePlus />
+                <IconPhotoPlus />
                 {{ t('chooseImages') }}
               </span>
               <span class="muted skeleton skeleton-copy skeleton-attachment-hint">
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ImagePlus } from '@lucide/vue'
+import { IconPhotoPlus } from '@tabler/icons-vue'
 
 const { t } = useI18n({
   en: {
@@ -142,7 +142,7 @@ const { t } = useI18n({
   pointer-events: none;
 }
 
-.skeleton-control .lucide {
+.skeleton-control .tabler-icon {
   visibility: hidden;
 }
 

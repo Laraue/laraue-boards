@@ -27,7 +27,7 @@
           :title="t('moveSpace')"
           type="button"
           @click="openDialog([space.key])">
-          <ArrowRightLeft />
+          <IconArrowsLeftRight />
         </button>
       </div>
       <p
@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightLeft } from '@lucide/vue'
+import { IconArrowsLeftRight } from '@tabler/icons-vue'
 
 import { SpaceIcon } from '~/constants/icons'
 import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.deps'

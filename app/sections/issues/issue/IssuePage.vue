@@ -13,7 +13,7 @@
               },
               {
                 color: data.boardColor,
-                icon: data.boardIsBacklog ? ListTodo : BoardIcon,
+                icon: data.boardIsBacklog ? IconListDetails : BoardIcon,
                 label: data.boardLabel || t('currentBoard'),
                 to: data.boardIsBacklog
                   ? organizationRoutes.backlog(data.spaceId)
@@ -32,10 +32,10 @@
           <Transition
             mode="out-in"
             name="icon-pop">
-            <Check
+            <IconCheck
               v-if="state.copied"
               key="check" />
-            <Link
+            <IconLink
               v-else
               key="link" />
           </Transition>
@@ -64,7 +64,7 @@
                 class="icon-btn"
                 type="button"
                 @click="leave">
-                <ArrowLeft />
+                <IconArrowLeft />
               </button>
               <div class="page-heading-text">
                 <h1>
@@ -82,10 +82,10 @@
                   <Transition
                     mode="out-in"
                     name="icon-pop">
-                    <Check
+                    <IconCheck
                       v-if="state.copied"
                       key="check" />
-                    <Link
+                    <IconLink
                       v-else
                       key="link" />
                   </Transition>
@@ -136,7 +136,7 @@
                       @click="activateTab('comments')"
                       @keydown.left.prevent="activateTab('history', true)"
                       @keydown.right.prevent="activateTab('history', true)">
-                      <MessageSquare />
+                      <IconMessage />
                       {{ t('comments') }}
                     </button>
                     <button
@@ -281,13 +281,13 @@
 
 <script setup lang="ts">
 import {
-  ArrowLeft,
-  Check,
-  History as HistoryIcon,
-  Link,
-  ListTodo,
-  MessageSquare,
-} from '@lucide/vue'
+  IconArrowLeft,
+  IconCheck,
+  IconHistory as HistoryIcon,
+  IconLink,
+  IconListDetails,
+  IconMessage,
+} from '@tabler/icons-vue'
 
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'

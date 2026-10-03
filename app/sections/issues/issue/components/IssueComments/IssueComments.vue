@@ -40,7 +40,7 @@
                 :title="t('edit')"
                 type="button"
                 @click="startEdit(comment)">
-                <Pencil />
+                <IconPencil />
               </button>
               <button
                 :aria-label="`${t('deleteCommentBy')} ${comment.owner.name}`"
@@ -49,10 +49,10 @@
                 :title="t('delete')"
                 type="button"
                 @click="remove(comment.id)">
-                <LoaderCircle
+                <IconLoader2
                   v-if="state.pendingId === comment.id"
                   class="spin" />
-                <Trash2 v-else />
+                <IconTrash v-else />
               </button>
             </div>
           </div>
@@ -70,10 +70,10 @@
                 :disabled="!!state.pendingId || summarizing"
                 type="button"
                 @click="improveWithAi(comment.id)">
-                <LoaderCircle
+                <IconLoader2
                   v-if="state.summarizingId === comment.id"
                   class="spin" />
-                <Sparkles v-else />
+                <IconSparkles v-else />
                 {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
               </button>
               <button
@@ -115,10 +115,10 @@
         :disabled="!!state.pendingId || summarizing"
         type="button"
         @click="improveWithAi('new')">
-        <LoaderCircle
+        <IconLoader2
           v-if="state.summarizingId === 'new'"
           class="spin" />
-        <Sparkles v-else />
+        <IconSparkles v-else />
         {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
       </button>
       <button
@@ -133,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import { LoaderCircle, Pencil, Sparkles, Trash2 } from '@lucide/vue'
+import { IconLoader2, IconPencil, IconSparkles, IconTrash } from '@tabler/icons-vue'
 
 import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.deps'
 

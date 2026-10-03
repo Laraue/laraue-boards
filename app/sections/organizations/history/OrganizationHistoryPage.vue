@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="History"
+      :icon="IconHistory"
       :title="t('history')" />
     <QueryState
       :data="data"
@@ -50,7 +50,7 @@
             v-if="pagePending"
             class="history-loading"
             role="status">
-            <LoaderCircle class="spin" />
+            <IconLoader2 class="spin" />
             <span>{{ t('loading') }}</span>
           </div>
           <button
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { History, LoaderCircle } from '@lucide/vue'
+import { IconHistory, IconLoader2 } from '@tabler/icons-vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import type { HistoryItemViewModel } from '~/components/history-timeline/HistoryTimeline.types'

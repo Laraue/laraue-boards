@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="ListPlus"
+      :icon="IconPlaylistAdd"
       :parents="[
         {
           color: data?.spaceColor,
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ListPlus } from '@lucide/vue'
+import { IconPlaylistAdd } from '@tabler/icons-vue'
 
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'

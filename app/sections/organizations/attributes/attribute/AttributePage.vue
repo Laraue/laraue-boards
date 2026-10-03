@@ -52,7 +52,7 @@
                   :disabled="draft.data.listValues.length === 1"
                   type="button"
                   @click="draft.data.listValues.splice(index, 1)">
-                  <Trash2 />
+                  <IconTrash />
                 </button>
               </div>
             </TransitionGroup>
@@ -60,7 +60,7 @@
               class="secondary add-option"
               type="button"
               @click="addOption">
-              <Plus />
+              <IconPlus />
               {{ t('addOption') }}
             </button>
           </fieldset>
@@ -81,7 +81,7 @@
               :disabled="submitting"
               type="button"
               @click="remove(attribute)">
-              <Trash2 />
+              <IconTrash />
               {{ t('deleteAttribute') }}
             </button>
           </div>
@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Trash2 } from '@lucide/vue'
+import { IconPlus, IconTrash } from '@tabler/icons-vue'
 
 import type {
   Attribute,

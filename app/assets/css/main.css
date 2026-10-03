@@ -120,10 +120,9 @@ button {
   outline-offset: 2px;
 }
 
-.lucide {
+.tabler-icon {
   flex: none;
   height: var(--icon-size);
-  stroke-width: 2;
   vertical-align: middle;
   width: var(--icon-size);
 }
@@ -341,7 +340,7 @@ textarea::placeholder {
   width: var(--icon-btn-size-small);
 }
 
-.small .lucide {
+.small .tabler-icon {
   height: 14px;
   width: 14px;
 }
@@ -622,6 +621,21 @@ input[type='search'] {
   flex: none;
   height: 8px;
   width: 8px;
+}
+
+.issue-status {
+  align-items: center;
+  background: var(--color-soft);
+  border-radius: var(--radius-pill);
+  color: var(--color-muted);
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  gap: 5px;
+  max-width: 160px;
+  padding: 2px var(--space-2);
+  white-space: nowrap;
 }
 
 /* Shared form primitives */

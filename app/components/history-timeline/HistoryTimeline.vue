@@ -33,7 +33,7 @@
                   v-if="item.owner.apiKeyName"
                   aria-hidden="true"
                   class="history-avatar-key">
-                  <KeyRound />
+                  <IconKey />
                 </span>
               </span>
               <time
@@ -49,7 +49,7 @@
                 class="history-head"
                 :class="{ 'history-head--deleted': isIssueDeleted(item) }">
                 <span class="history-issue">
-                  <Trash2
+                  <IconTrash
                     v-if="isIssueDeleted(item)"
                     :aria-label="t('issueDeleted')"
                     class="history-deleted-icon"
@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { KeyRound, Trash2 } from '@lucide/vue'
+import { IconKey, IconTrash } from '@tabler/icons-vue'
 
 import HistoryAssigneeChange from './components/HistoryAssigneeChange.vue'
 import HistoryAttachmentChange from './components/HistoryAttachmentChange.vue'
@@ -317,7 +317,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   width: 15px;
 }
 
-.history-avatar-key .lucide {
+.history-avatar-key .tabler-icon {
   height: 9px;
   width: 9px;
 }

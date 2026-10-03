@@ -16,7 +16,7 @@
         v-if="viewModel?.canCreateIssues"
         :aria-label="t('addIssue')"
         :to="organizationRoutes.newBoardIssue(spaceKey, viewModel.id)">
-        <Plus />
+        <IconPlus />
         <span class="btn-label">{{ t('addIssue') }}</span>
       </NuxtLink>
       <template
@@ -26,7 +26,7 @@
           :aria-label="t('boardSettings')"
           class="header-btn"
           :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)">
-          <Settings />
+          <IconSettings />
         </NuxtLink>
       </template>
     </PageHeader>
@@ -146,7 +146,7 @@ import { defaultPreset, Feedback, PointerActivationConstraints } from '@dnd-kit/
 import { move } from '@dnd-kit/helpers'
 import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
 import type { DragEndEvent, DragOverEvent } from '@dnd-kit/vue'
-import { Plus, Settings } from '@lucide/vue'
+import { IconPlus, IconSettings } from '@tabler/icons-vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 

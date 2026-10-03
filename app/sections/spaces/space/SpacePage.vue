@@ -8,7 +8,7 @@
         v-if="data?.canCreateBoards"
         :aria-label="t('createBoard')"
         :to="organizationRoutes.newBoard(spaceKey)">
-        <Plus />
+        <IconPlus />
         <span class="btn-label">{{ t('createBoard') }}</span>
       </NuxtLink>
       <template
@@ -18,7 +18,7 @@
           :aria-label="t('spaceSettings')"
           class="header-btn"
           :to="organizationRoutes.spaceSettings(spaceKey)">
-          <Settings />
+          <IconSettings />
         </NuxtLink>
       </template>
     </PageHeader>
@@ -39,7 +39,7 @@
               class="backlog-summary"
               :to="organizationRoutes.backlog(spaceKey)">
               <div class="summary-title">
-                <ListTodo :style="{ color: backlog.color }" />
+                <IconListDetails :style="{ color: backlog.color }" />
                 <strong>{{ t('backlog') }}</strong>
                 <span class="muted issue-count">{{ tp('issues', backlog.issueCount) }}</span>
               </div>
@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { ListTodo, Plus, Settings } from '@lucide/vue'
+import { IconListDetails, IconPlus, IconSettings } from '@tabler/icons-vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'

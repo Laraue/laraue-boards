@@ -31,7 +31,7 @@
         </span>
       </span>
       <span
-        class="status-pill"
+        class="issue-status"
         :title="displayStatus">
         <i
           class="dot"
@@ -45,7 +45,7 @@
         :title="t('moveToBoard')"
         type="button"
         @click.stop.prevent="props.onMove">
-        <ArrowRightLeft />
+        <IconArrowsLeftRight />
       </button>
     </div>
     <div class="issue-list-row-content">
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightLeft } from '@lucide/vue'
+import { IconArrowsLeftRight } from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
@@ -200,7 +200,7 @@ const displayStatus = computed(() => props.status ?? t('backlog'))
   gap: var(--space-1);
 }
 
-.issue-location .lucide {
+.issue-location .tabler-icon {
   height: 13px;
   width: 13px;
 }
@@ -221,21 +221,6 @@ const displayStatus = computed(() => props.status ?? t('backlog'))
   width: 20px;
 }
 
-.status-pill {
-  align-items: center;
-  background: var(--color-soft);
-  border-radius: var(--radius-pill);
-  color: var(--color-muted);
-  display: inline-flex;
-  flex-shrink: 0;
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  gap: 5px;
-  max-width: 160px;
-  padding: 2px var(--space-2);
-  white-space: nowrap;
-}
-
 @media (max-width: 500px) {
   .issue-list-row-top {
     flex-wrap: wrap;
@@ -246,7 +231,7 @@ const displayStatus = computed(() => props.status ?? t('backlog'))
     order: 1;
   }
 
-  .status-pill {
+  .issue-status {
     flex-shrink: 1;
     margin-left: auto;
     min-width: 0;

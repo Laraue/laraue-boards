@@ -1,7 +1,7 @@
 <template>
   <section class="account-page">
     <PageHeader
-      :icon="Building2"
+      :icon="IconBuilding"
       :title="t('youIn', { organization: organizationName })" />
     <p class="muted">
       {{ t('scope', { organization: organizationName }) }}
@@ -15,28 +15,28 @@
         class="page-tab"
         exact-active-class="active"
         :to="profileTo">
-        <UserRound />
+        <IconUser />
         {{ t('profile') }}
       </NuxtLink>
       <NuxtLink
         class="page-tab"
         exact-active-class="active"
         :to="planTo">
-        <CreditCard />
+        <IconCreditCard />
         {{ t('plan') }}
       </NuxtLink>
       <NuxtLink
         class="page-tab"
         exact-active-class="active"
         :to="transactionsTo">
-        <History />
+        <IconHistory />
         {{ t('transactions') }}
       </NuxtLink>
       <NuxtLink
         class="page-tab"
         exact-active-class="active"
         :to="apiKeysTo">
-        <KeyRound />
+        <IconKey />
         {{ t('apiKeys') }}
       </NuxtLink>
     </nav>
@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { Building2, CreditCard, History, KeyRound, UserRound } from '@lucide/vue'
+import { IconBuilding, IconCreditCard, IconHistory, IconKey, IconUser } from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 defineProps<{

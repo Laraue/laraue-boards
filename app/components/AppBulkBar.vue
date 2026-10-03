@@ -15,7 +15,7 @@
           class="primary"
           type="button"
           @click="onAction">
-          <ArrowRightLeft />
+          <IconArrowsLeftRight />
           {{ actionLabel }}
         </button>
       </div>
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightLeft } from '@lucide/vue'
+import { IconArrowsLeftRight } from '@tabler/icons-vue'
 
 const props = defineProps<{
   actionLabel: string

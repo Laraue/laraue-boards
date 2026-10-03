@@ -7,21 +7,21 @@
       class="primary"
       type="button"
       @click="retry">
-      <RefreshCw />
+      <IconRefresh />
       {{ t('tryAgain') }}
     </button>
     <button
       class="secondary"
       type="button"
       @click="goHome">
-      <House />
+      <IconHome />
       {{ t('goHome') }}
     </button>
   </AppErrorState>
 </template>
 
 <script setup lang="ts">
-import { House, RefreshCw } from '@lucide/vue'
+import { IconHome, IconRefresh } from '@tabler/icons-vue'
 
 import type { NuxtError } from '#app'
 

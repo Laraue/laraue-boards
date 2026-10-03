@@ -24,7 +24,7 @@
         class="icon-btn"
         type="button"
         @click="zoomBy(-1)">
-        <Minus />
+        <IconMinus />
       </button>
       <button
         class="secondary zoom-value"
@@ -38,7 +38,7 @@
         class="icon-btn"
         type="button"
         @click="zoomBy(1)">
-        <Plus />
+        <IconPlus />
       </button>
       <slot name="controls" />
     </div>
@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { Minus, Plus } from '@lucide/vue'
+import { IconMinus, IconPlus } from '@tabler/icons-vue'
 
 const props = defineProps<{
   onBackgroundPointerDown: () => void

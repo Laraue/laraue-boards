@@ -6,7 +6,7 @@
         :aria-label="t('yourAccount')"
         class="header-btn"
         to="/account">
-        <CircleUser />
+        <IconUserCircle />
       </NuxtLink>
     </template>
     <slot />
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { CircleUser } from '@lucide/vue'
+import { IconUserCircle } from '@tabler/icons-vue'
 
 const { t } = useI18n({
   en: { yourAccount: 'Your account' },

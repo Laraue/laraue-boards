@@ -30,8 +30,8 @@
           class="header-btn"
           type="button"
           @click="toggleTheme">
-          <Sun v-if="theme === 'dark'" />
-          <Moon v-else />
+          <IconSun v-if="theme === 'dark'" />
+          <IconMoon v-else />
         </button>
         <NuxtLink
           class="open-app"
@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { Moon, Sun } from '@lucide/vue'
+import { IconMoon, IconSun } from '@tabler/icons-vue'
 
 import type { Locale } from '~/composables/useI18n'
 import { docsPath } from '~/sections/docs/docsPaths'

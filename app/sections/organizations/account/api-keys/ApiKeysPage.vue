@@ -33,8 +33,8 @@
           class="secondary"
           type="button"
           @click="copyKey">
-          <Check v-if="copied" />
-          <Copy v-else />
+          <IconCheck v-if="copied" />
+          <IconCopy v-else />
           {{ copied ? t('copied') : t('copy') }}
         </button>
       </div>
@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { Check, Copy } from '@lucide/vue'
+import { IconCheck, IconCopy } from '@tabler/icons-vue'
 
 import type { ApiKeysPageDeps } from './ApiKeysPage.deps'
 

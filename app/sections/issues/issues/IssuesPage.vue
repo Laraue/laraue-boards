@@ -1,12 +1,12 @@
 <template>
   <div>
     <PageHeader
-      :icon="ClipboardList"
+      :icon="IconClipboardList"
       :title="t('allIssues')">
       <NuxtLink
         v-if="data?.spaces.length"
         :to="organizationRoutes.newIssue()">
-        <Plus />
+        <IconPlus />
         {{ t('addIssue') }}
       </NuxtLink>
     </PageHeader>
@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { ClipboardList, Plus } from '@lucide/vue'
+import { IconClipboardList, IconPlus } from '@tabler/icons-vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 

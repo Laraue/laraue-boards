@@ -12,13 +12,13 @@
     class="header-btn"
     type="button"
     @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
-    <Sun v-if="theme === 'dark'" />
-    <Moon v-else />
+    <IconSun v-if="theme === 'dark'" />
+    <IconMoon v-else />
   </button>
 </template>
 
 <script setup lang="ts">
-import { Moon, Sun } from '@lucide/vue'
+import { IconMoon, IconSun } from '@tabler/icons-vue'
 
 const { locale, setLocale, setTheme, theme } = useAppPreferences()
 const { t } = useI18n({

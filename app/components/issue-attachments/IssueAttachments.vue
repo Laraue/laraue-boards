@@ -16,7 +16,7 @@
         class="secondary small issue-attachment-picker"
         :class="{ 'issue-attachment-picker--disabled': disabled }"
         :for="inputId">
-        <ImagePlus />
+        <IconPhotoPlus />
         {{ files.length ? t('chooseOtherImages') : t('chooseImages') }}
       </label>
       <button
@@ -57,7 +57,7 @@
           class="icon-btn small issue-attachment-remove"
           type="button"
           @click="onRemoveAttachment(attachment.id)">
-          <X />
+          <IconX />
         </button>
       </div>
       <div
@@ -81,14 +81,14 @@
           class="icon-btn small issue-attachment-remove"
           type="button"
           @click="removeFile(index)">
-          <X />
+          <IconX />
         </button>
         <div
           v-if="disabled"
           :aria-label="t('uploading')"
           class="issue-attachment-uploading"
           role="status">
-          <Loader />
+          <IconLoader />
         </div>
       </div>
     </div>
@@ -104,7 +104,7 @@
           class="icon-btn issue-attachment-lightbox-close"
           type="button"
           @click="closeLightbox">
-          <X />
+          <IconX />
         </button>
         <img
           v-if="activeAttachment"
@@ -117,7 +117,7 @@
           :aria-label="t('loadingPreview')"
           class="issue-attachment-lightbox-loading"
           role="status">
-          <Loader />
+          <IconLoader />
         </div>
       </dialog>
     </Teleport>
@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { ImagePlus, Loader, X } from '@lucide/vue'
+import { IconLoader, IconPhotoPlus, IconX } from '@tabler/icons-vue'
 
 import { MAX_IMAGE_SIZE } from '~/constants/attachments'
 

@@ -4,7 +4,7 @@
       v-if="data"
       class="secondary back"
       :to="backPath || '/organizations'">
-      <ArrowLeft />
+      <IconArrowLeft />
       {{ backPath ? t('back') : t('backToOrganizations') }}
     </NuxtLink>
 
@@ -24,13 +24,13 @@
               :style="{ background: DEFAULT_COLOR }">
               {{ page.initials }}
             </span>
-            <CircleUser
+            <IconUserCircle
               v-else
               class="user-account-icon" />
             <div>
               <h1>{{ t('yourAccount') }}</h1>
               <p class="muted scope">
-                <Globe />
+                <IconWorld />
                 {{ t('scope') }}
               </p>
             </div>
@@ -39,7 +39,7 @@
               :disabled="loggingOut"
               type="button"
               @click="logout">
-              <LogOut />
+              <IconLogout />
               {{ t('logOut') }}
             </button>
           </div>
@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, CircleUser, Globe, LogOut } from '@lucide/vue'
+import { IconArrowLeft, IconLogout, IconUserCircle, IconWorld } from '@tabler/icons-vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
 

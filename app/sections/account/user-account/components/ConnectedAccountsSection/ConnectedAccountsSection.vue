@@ -29,7 +29,7 @@
             <span
               v-if="accounts.telegram"
               class="account-status">
-              <Check aria-hidden="true" />
+              <IconCheck aria-hidden="true" />
               {{ t('connected') }}
             </span>
             <TelegramSignInButton
@@ -50,7 +50,7 @@
             <span
               v-if="accounts.google"
               class="account-status">
-              <Check aria-hidden="true" />
+              <IconCheck aria-hidden="true" />
               {{ t('connected') }}
             </span>
             <small
@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { Check } from '@lucide/vue'
+import { IconCheck } from '@tabler/icons-vue'
 
 import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
 import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
@@ -265,7 +265,7 @@ const connectGoogleAccount = async (code: string): Promise<void> => {
   gap: var(--space-1);
 }
 
-.account-status .lucide {
+.account-status .tabler-icon {
   height: 16px;
   width: 16px;
 }

@@ -88,16 +88,9 @@
                 </span>
               </div>
               <div class="phone-status">
-                <svg
+                <IconChevronLeft
                   class="phone-back"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2.4"
-                  viewBox="0 0 24 24">
-                  <path d="M15 5l-7 7 7 7" />
-                </svg>
+                  stroke="2.4" />
                 <div class="phone-status-avatar"><LandingIcon name="chat" /></div>
                 <div>
                   <div class="phone-status-name">{{ t('hv_chat_title') }}</div>
@@ -136,15 +129,7 @@
             </div>
           </div>
           <div class="transform-arrow">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              viewBox="0 0 24 24">
-              <path d="M12 4v14M12 18l-5-5M12 18l5-5" />
-            </svg>
+            <IconArrowDown />
             <span>{{ t('hv_arrow') }}</span>
           </div>
           <div class="issue-card-mockup">
@@ -165,6 +150,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowDown, IconChevronLeft } from '@tabler/icons-vue'
+
 import type { Locale } from '~/composables/useI18n'
 
 import { docsPath } from '../../docs/docsPaths'

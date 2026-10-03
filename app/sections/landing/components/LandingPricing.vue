@@ -62,14 +62,7 @@
               <li
                 v-for="feature in features(tariff, group.perSeat)"
                 :key="feature">
-                <svg
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2.4"
-                  viewBox="0 0 24 24">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
+                <IconCheck stroke="2.4" />
                 <span>{{ feature }}</span>
               </li>
             </ul>
@@ -86,6 +79,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconCheck } from '@tabler/icons-vue'
+
 import type { Locale } from '~/composables/useI18n'
 
 import { appUrl } from '../landingLinks'

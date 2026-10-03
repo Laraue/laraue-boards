@@ -37,7 +37,7 @@
               :title="t('moveBoard')"
               type="button"
               @click="openDialog([board.id])">
-              <ArrowRightLeft />
+              <IconArrowsLeftRight />
             </button>
           </div>
         </div>
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightLeft } from '@lucide/vue'
+import { IconArrowsLeftRight } from '@tabler/icons-vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { DataMovementPageData } from '~/sections/organizations/data-movement/DataMovementPage.deps'

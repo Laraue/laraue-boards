@@ -1,7 +1,7 @@
 <template>
   <section class="settings-page">
     <PageHeader
-      :icon="Settings"
+      :icon="IconSettings"
       :title="t('admin')" />
     <nav
       :aria-label="t('admin')"
@@ -11,7 +11,7 @@
         class="page-tab"
         :class="{ active: route.name === 'organizations-organizationKey-admin' }"
         :to="organizationRoutes.admin()">
-        <Settings />
+        <IconSettings />
         {{ t('general') }}
       </NuxtLink>
       <NuxtLink
@@ -19,7 +19,7 @@
         class="page-tab"
         :class="{ active: within('organizations-organizationKey-admin-permissions') }"
         :to="organizationRoutes.permissions()">
-        <ShieldCheck />
+        <IconShieldCheck />
         {{ t('permissions') }}
       </NuxtLink>
       <NuxtLink
@@ -27,7 +27,7 @@
         class="page-tab"
         :class="{ active: within('organizations-organizationKey-admin-attributes') }"
         :to="organizationRoutes.attributes()">
-        <Tags />
+        <IconTags />
         {{ t('attributes') }}
       </NuxtLink>
       <NuxtLink
@@ -35,7 +35,7 @@
         class="page-tab"
         :class="{ active: within('organizations-organizationKey-admin-data-movement') }"
         :to="organizationRoutes.dataMovement()">
-        <ArrowRightLeft />
+        <IconArrowsLeftRight />
         {{ t('dataMovement') }}
       </NuxtLink>
       <NuxtLink
@@ -43,7 +43,7 @@
         class="page-tab"
         :class="{ active: within('organizations-organizationKey-admin-transactions') }"
         :to="organizationRoutes.adminTransactions()">
-        <History />
+        <IconHistory />
         {{ t('transactions') }}
       </NuxtLink>
     </nav>
@@ -53,7 +53,13 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightLeft, History, Settings, ShieldCheck, Tags } from '@lucide/vue'
+import {
+  IconArrowsLeftRight,
+  IconHistory,
+  IconSettings,
+  IconShieldCheck,
+  IconTags,
+} from '@tabler/icons-vue'
 
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()

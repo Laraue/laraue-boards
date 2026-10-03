@@ -12,7 +12,7 @@
         class="description-diff-removed">
         −{{ stats.removed }}
       </span>
-      <ChevronDown />
+      <IconChevronDown />
     </summary>
     <div class="description-diff-body">
       <div
@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronDown } from '@lucide/vue'
+import { IconChevronDown } from '@tabler/icons-vue'
 
 import IssueDiffText from './components/IssueDiffText.vue'
 import type { IssueDescriptionDiffLine } from './IssueDescriptionDiff.types'

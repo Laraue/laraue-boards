@@ -8,7 +8,7 @@
         class="header-btn page-header-menu"
         type="button"
         @click="sidebarOpen = true">
-        <Menu />
+        <IconMenu2 />
       </button>
       <!-- A phone has no room for the path, so it keeps the way back up it. -->
       <NuxtLink
@@ -16,7 +16,7 @@
         :aria-label="t('backTo', { page: back.label })"
         class="header-btn page-header-back"
         :to="back.to">
-        <ArrowLeft />
+        <IconArrowLeft />
       </NuxtLink>
       <nav
         v-if="parents?.length"
@@ -71,7 +71,7 @@
           :aria-label="t('yourAccount')"
           class="header-btn"
           to="/account">
-          <CircleUser />
+          <IconUserCircle />
         </NuxtLink>
       </span>
     </div>
@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, CircleUser, Menu } from '@lucide/vue'
+import { IconArrowLeft, IconMenu2, IconUserCircle } from '@tabler/icons-vue'
 import type { Component } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 

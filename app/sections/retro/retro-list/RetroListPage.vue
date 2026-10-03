@@ -9,7 +9,7 @@
         :disabled="starting"
         type="button"
         @click="start(null)">
-        <Plus />
+        <IconPlus />
         <span class="btn-label">{{ t('start') }}</span>
       </button>
     </PageHeader>
@@ -66,7 +66,7 @@
                   :title="t('delete')"
                   type="button"
                   @click="remove(retro)">
-                  <Trash2 />
+                  <IconTrash />
                 </button>
               </div>
             </div>
@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Trash2 } from '@lucide/vue'
+import { IconPlus, IconTrash } from '@tabler/icons-vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { RetroIcon } from '~/constants/icons'

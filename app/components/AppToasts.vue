@@ -9,8 +9,8 @@
           :key="toast.id"
           class="toast"
           :class="toast.tone">
-          <AlertTriangle v-if="toast.tone === 'error'" />
-          <Check v-else />
+          <IconAlertTriangle v-if="toast.tone === 'error'" />
+          <IconCheck v-else />
           <p>{{ toast.message }}</p>
           <span
             v-if="toast.count > 1"
@@ -22,7 +22,7 @@
             class="icon-btn small"
             type="button"
             @click="dismiss(toast.id)">
-            <X />
+            <IconX />
           </button>
         </div>
       </TransitionGroup>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertTriangle, Check, X } from '@lucide/vue'
+import { IconAlertTriangle, IconCheck, IconX } from '@tabler/icons-vue'
 
 const { dismiss, toasts } = useToast()
 const { t } = useI18n({
@@ -74,15 +74,15 @@ const { t } = useI18n({
   white-space: pre-line;
 }
 
-.toast > .lucide {
+.toast > .tabler-icon {
   flex: none;
 }
 
-.toast.error > .lucide {
+.toast.error > .tabler-icon {
   color: var(--color-danger);
 }
 
-.toast.success > .lucide {
+.toast.success > .tabler-icon {
   color: var(--color-success);
 }
 

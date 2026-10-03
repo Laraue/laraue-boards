@@ -1406,8 +1406,8 @@ it('keeps all topics visible and ranks vote leaders during discussion', async ()
   expect(cardWithText('First')?.find('.vote-result').classes()).toContain('rank-1')
   expect(cardWithText('Second')?.find('.vote-result').classes()).toContain('rank-2')
   expect(cardWithText('Third')?.find('.vote-result').classes()).toContain('rank-3')
-  expect(cardWithText('Also third')?.find('.vote-result .lucide-trophy').exists()).toBe(false)
-  expect(cardWithText('Fifth')?.find('.vote-result .lucide-trophy').exists()).toBe(false)
+  expect(cardWithText('Also third')?.find('.vote-result .tabler-icon-trophy').exists()).toBe(false)
+  expect(cardWithText('Fifth')?.find('.vote-result .tabler-icon-trophy').exists()).toBe(false)
   expect(cardWithText('Ship the fix')?.find('.vote-result').exists()).toBe(false)
 })
 
@@ -1559,7 +1559,7 @@ it('keeps all topics visible during discussion when nobody voted', async () => {
   expect(
     currentWrapper?.findAll('span.card-text').map((card: DOMWrapper<Element>) => card.text()),
   ).toEqual(['My note', 'Other note'])
-  expect(currentWrapper?.find('.vote-result .lucide-trophy').exists()).toBe(false)
+  expect(currentWrapper?.find('.vote-result .tabler-icon-trophy').exists()).toBe(false)
 })
 
 const twoPeopleBoard: RetroBoardViewModel = {
