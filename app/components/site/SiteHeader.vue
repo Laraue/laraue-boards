@@ -141,13 +141,16 @@ const otherLocalePath = computed(
 }
 
 .open-app {
+  align-items: center;
   background: var(--color-action);
   border-radius: var(--radius-control);
   color: #fff;
+  display: inline-flex;
   font-size: 13px;
   font-weight: var(--font-weight-semibold);
+  height: 32px;
   margin-left: var(--space-2);
-  padding: 7px 14px;
+  padding: 0 var(--space-3);
   text-decoration: none;
   transition: background var(--duration-base);
 }

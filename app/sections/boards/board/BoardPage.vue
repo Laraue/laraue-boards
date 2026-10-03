@@ -1,16 +1,34 @@
 <template>
   <div class="board-page">
     <PageHeader
+      :icon="BoardIcon"
+      :icon-color="viewModel?.color ?? undefined"
       :parents="[
-        { label: viewModel?.spaceName ?? spaceKey, to: organizationRoutes.space(spaceKey) },
+        {
+          color: viewModel?.spaceColor,
+          icon: SpaceIcon,
+          label: viewModel?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
       ]"
       :title="viewModel?.title ?? t('board')">
       <NuxtLink
         v-if="viewModel?.canCreateIssues"
+        :aria-label="t('addIssue')"
         :to="organizationRoutes.newBoardIssue(spaceKey, viewModel.id)">
         <Plus />
-        {{ t('addIssue') }}
+        <span class="btn-label">{{ t('addIssue') }}</span>
       </NuxtLink>
+      <template
+        v-if="viewModel && (viewModel.canUpdate || viewModel.canDelete)"
+        #actions>
+        <NuxtLink
+          :aria-label="t('boardSettings')"
+          class="header-btn"
+          :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)">
+          <Settings />
+        </NuxtLink>
+      </template>
     </PageHeader>
     <QueryState
       :data="viewModel"
@@ -33,14 +51,6 @@
               :loading="state.filtering"
               :model-value="filterValue"
               @update:model-value="updateFilters" />
-            <NuxtLink
-              v-if="page.canUpdate || page.canDelete"
-              :aria-label="t('boardSettings')"
-              class="secondary board-settings"
-              :to="organizationRoutes.boardSettings(spaceKey, page.id)">
-              <Settings />
-              <span class="btn-label">{{ t('settings') }}</span>
-            </NuxtLink>
           </div>
 
           <p
@@ -141,6 +151,7 @@ import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { BoardPageDeps, BoardPageFilterValue } from '~/sections/boards/board/BoardPage.deps'
 import BoardColumn from '~/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '~/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
@@ -175,7 +186,6 @@ const { t } = useI18n({
     loadError: 'Could not load board',
     loading: 'Loading board…',
     searchIssues: 'Search issues',
-    settings: 'Settings',
   },
   ru: {
     addIssue: 'Добавить задачу',
@@ -184,7 +194,6 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
     searchIssues: 'Поиск задач',
-    settings: 'Настройки',
   },
 })
 
@@ -765,10 +774,6 @@ const resolveIssueDialogCloseTarget = (input: {
   min-height: 0;
 }
 
-.board-settings {
-  margin-left: auto;
-}
-
 .board-content {
   display: flex;
   flex: 1;
@@ -800,10 +805,6 @@ const resolveIssueDialogCloseTarget = (input: {
     grid-template-columns: none;
     margin-top: var(--space-3);
     overscroll-behavior-inline: contain;
-  }
-
-  .board-settings .btn-label {
-    display: none;
   }
 }
 </style>

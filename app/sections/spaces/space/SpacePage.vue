@@ -1,112 +1,107 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: page }">
-      <section class="space-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <SpaceIcon
-              class="page-heading-icon"
-              :style="{ color: page.color }" />
-            <div class="page-heading-text">
-              <h1>{{ page.name }}</h1>
-            </div>
-          </div>
-          <div class="title-actions">
-            <NuxtLink
-              v-if="page.canManage"
-              :aria-label="t('spaceSettings')"
-              class="secondary"
-              :to="organizationRoutes.spaceSettings(spaceKey)">
-              <Settings />
-              <span class="btn-label">{{ t('settings') }}</span>
-            </NuxtLink>
-            <NuxtLink
-              v-if="page.canCreateBoards"
-              :aria-label="t('createBoard')"
-              class="primary"
-              :to="organizationRoutes.newBoard(spaceKey)">
-              <Plus />
-              <span class="btn-label">{{ t('createBoard') }}</span>
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div
-          v-if="backlog"
-          class="space-section">
-          <h2 class="space-section-title">{{ t('backlog') }}</h2>
-          <NuxtLink
-            class="backlog-summary"
-            :to="organizationRoutes.backlog(spaceKey)">
-            <div class="summary-title">
-              <ListTodo :style="{ color: backlog.color }" />
-              <strong>{{ t('backlog') }}</strong>
-              <span class="muted issue-count">{{ tp('issues', backlog.issueCount) }}</span>
-            </div>
-          </NuxtLink>
-        </div>
-
-        <div class="space-section">
-          <h2 class="space-section-title">
-            {{ t('boards') }}
-            <span class="muted">{{ regularBoards.length }}</span>
-          </h2>
+  <div>
+    <PageHeader
+      :icon="SpaceIcon"
+      :icon-color="data?.color"
+      :title="data?.name ?? t('space')">
+      <NuxtLink
+        v-if="data?.canCreateBoards"
+        :aria-label="t('createBoard')"
+        :to="organizationRoutes.newBoard(spaceKey)">
+        <Plus />
+        <span class="btn-label">{{ t('createBoard') }}</span>
+      </NuxtLink>
+      <template
+        v-if="data?.canManage"
+        #actions>
+        <NuxtLink
+          :aria-label="t('spaceSettings')"
+          class="header-btn"
+          :to="organizationRoutes.spaceSettings(spaceKey)">
+          <Settings />
+        </NuxtLink>
+      </template>
+    </PageHeader>
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default>
+        <section class="space-page">
           <div
-            v-if="regularBoards.length"
-            class="board-grid">
+            v-if="backlog"
+            class="space-section">
+            <h2 class="space-section-title">{{ t('backlog') }}</h2>
             <NuxtLink
-              v-for="board in regularBoards"
-              :key="board.id"
-              class="board-summary"
-              :to="organizationRoutes.board(spaceKey, board.id)">
+              class="backlog-summary"
+              :to="organizationRoutes.backlog(spaceKey)">
               <div class="summary-title">
-                <BoardIcon :style="{ color: board.color }" />
-                <strong>{{ board.name }}</strong>
-                <span
-                  class="board-status"
-                  :class="{
-                    'board-status--active': board.status === 'Active',
-                    'board-status--done': board.status === 'Done',
-                  }">
-                  {{ statusLabel(board.status) }}
-                </span>
-                <span class="muted issue-count">{{ tp('issues', board.issueCount) }}</span>
-              </div>
-              <div class="meter">
-                <span
-                  v-for="status in board.statuses"
-                  :key="status.name"
-                  :style="{
-                    flex: status.count || 0,
-                    background: status.color,
-                  }" />
-              </div>
-              <div class="summary-statuses">
-                <span
-                  v-for="status in board.statuses"
-                  :key="status.name">
-                  <span
-                    class="dot"
-                    :style="{ background: status.color }" />
-                  {{ status.count }} {{ status.name }}
-                </span>
+                <ListTodo :style="{ color: backlog.color }" />
+                <strong>{{ t('backlog') }}</strong>
+                <span class="muted issue-count">{{ tp('issues', backlog.issueCount) }}</span>
               </div>
             </NuxtLink>
           </div>
-          <AppEmptyState
-            v-else
-            :hint="t('emptyHint')"
-            :title="t('emptyTitle')" />
-        </div>
-      </section>
-    </template>
-  </QueryState>
+
+          <div class="space-section">
+            <h2 class="space-section-title">
+              {{ t('boards') }}
+              <span class="muted">{{ regularBoards.length }}</span>
+            </h2>
+            <div
+              v-if="regularBoards.length"
+              class="board-grid">
+              <NuxtLink
+                v-for="board in regularBoards"
+                :key="board.id"
+                class="board-summary"
+                :to="organizationRoutes.board(spaceKey, board.id)">
+                <div class="summary-title">
+                  <BoardIcon :style="{ color: board.color }" />
+                  <strong>{{ board.name }}</strong>
+                  <span
+                    class="board-status"
+                    :class="{
+                      'board-status--active': board.status === 'Active',
+                      'board-status--done': board.status === 'Done',
+                    }">
+                    {{ statusLabel(board.status) }}
+                  </span>
+                  <span class="muted issue-count">{{ tp('issues', board.issueCount) }}</span>
+                </div>
+                <div class="meter">
+                  <span
+                    v-for="status in board.statuses"
+                    :key="status.name"
+                    :style="{
+                      flex: status.count || 0,
+                      background: status.color,
+                    }" />
+                </div>
+                <div class="summary-statuses">
+                  <span
+                    v-for="status in board.statuses"
+                    :key="status.name">
+                    <span
+                      class="dot"
+                      :style="{ background: status.color }" />
+                    {{ status.count }} {{ status.name }}
+                  </span>
+                </div>
+              </NuxtLink>
+            </div>
+            <AppEmptyState
+              v-else
+              :hint="t('emptyHint')"
+              :title="t('emptyTitle')" />
+          </div>
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -169,8 +164,6 @@ const regularBoards = computed(() => boards.value.filter((board) => board.kind =
 
 const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
-
-useHead({ title: computed(() => data.value?.name ?? t('space')) })
 </script>
 
 <style scoped>

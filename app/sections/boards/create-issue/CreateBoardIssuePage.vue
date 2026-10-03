@@ -1,39 +1,48 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: page }">
-      <section>
-        <div class="title-row">
-          <div class="page-heading">
-            <AppBackLink
-              :label="t('backToBoard')"
-              :to="organizationRoutes.board(spaceKey, boardId)" />
-            <ListPlus class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>{{ t('addIssue') }}</h1>
-            </div>
-          </div>
-        </div>
-        <CreateIssueForm
-          :attributes="page.attributes"
-          :board="{ id: boardId, name: page.boardName, spaceKey }"
-          :deps="deps.form"
-          :initial-status-id="initialStatusId"
-          :on-created="onCreated" />
-      </section>
-    </template>
-  </QueryState>
+  <div>
+    <PageHeader
+      :icon="ListPlus"
+      :parents="[
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+        {
+          color: data?.boardColor,
+          icon: BoardIcon,
+          label: data?.boardName ?? t('board'),
+          to: organizationRoutes.board(spaceKey, boardId),
+        },
+      ]"
+      :title="t('addIssue')" />
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default="{ data: page }">
+        <section>
+          <CreateIssueForm
+            :attributes="page.attributes"
+            :board="{ id: boardId, name: page.boardName, spaceKey }"
+            :deps="deps.form"
+            :initial-status-id="initialStatusId"
+            :on-created="onCreated" />
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ListPlus } from '@lucide/vue'
 
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { CreateBoardIssuePageDeps } from '~/sections/boards/create-issue/CreateBoardIssuePage.deps'
 
 const props = defineProps<{
@@ -47,23 +56,22 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     addIssue: 'Add issue',
-    backToBoard: 'Back to board',
+    board: 'Board',
     loadError: 'Could not load issue form',
     loading: 'Loading issue form…',
   },
   ru: {
     addIssue: 'Добавить задачу',
-    backToBoard: 'Назад к доске',
+    board: 'Доска',
     loadError: 'Не удалось загрузить форму задачи',
     loading: 'Загрузка формы задачи…',
   },
 })
 
 const organizationRoutes = useOrganizationRoutes()
-useHead({ title: t('addIssue') })
 
 const { data, message, pending, refresh } = await useApiQuery(
   () => `create-board-issue:${props.boardId}`,
-  (signal) => props.deps.view({ boardId: props.boardId, signal }),
+  (signal) => props.deps.view({ boardId: props.boardId, signal, spaceKey: props.spaceKey }),
 )
 </script>

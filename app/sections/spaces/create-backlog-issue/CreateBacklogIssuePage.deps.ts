@@ -5,6 +5,8 @@ export type CreateBacklogIssuePageData = {
   attributes: IssueAttributeField[]
   boardId: string
   boardName: string
+  spaceColor: string
+  spaceName: string
 }
 
 export type CreateBacklogIssuePageDeps = {

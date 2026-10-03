@@ -1,74 +1,79 @@
 <template>
-  <section class="form-page">
-    <div class="page-heading">
-      <AppBackLink
-        :label="t('backToSpace')"
-        :to="organizationRoutes.space(spaceKey)" />
-      <div class="page-heading-text">
-        <h1>{{ t('createBoard') }}</h1>
-      </div>
-    </div>
-    <form @submit.prevent="create">
-      <label for="create-board-name">{{ t('name') }}</label>
-      <input
-        id="create-board-name"
-        v-model="form.name"
-        required />
-      <label>{{ t('color') }}</label>
-      <AppColorPicker v-model="form.color" />
-      <label for="create-board-source">{{ t('copyStatusesFrom') }}</label>
-      <select
-        id="create-board-source"
-        v-model="form.sourceBoardId"
-        @change="copyStatuses">
-        <option value="">{{ t('dontCopy') }}</option>
-        <option
-          v-for="board in data?.boards ?? []"
-          :key="board.value"
-          :value="board.value">
-          {{ board.label }}
-        </option>
-      </select>
-      <label>{{ t('statuses') }}</label>
-      <div
-        v-for="(status, index) in form.statuses"
-        :key="status.id"
-        class="status-row">
-        <AppColorPicker v-model="status.color" />
+  <div>
+    <PageHeader
+      :icon="BoardIcon"
+      :parents="[
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+      ]"
+      :title="t('createBoard')" />
+    <section class="form-page">
+      <form @submit.prevent="create">
+        <label for="create-board-name">{{ t('name') }}</label>
         <input
-          v-model="status.name"
-          :aria-label="t('statusName')"
+          id="create-board-name"
+          v-model="form.name"
           required />
-        <StatusCategorySelect v-model="status.category" />
+        <label>{{ t('color') }}</label>
+        <AppColorPicker v-model="form.color" />
+        <label for="create-board-source">{{ t('copyStatusesFrom') }}</label>
+        <select
+          id="create-board-source"
+          v-model="form.sourceBoardId"
+          @change="copyStatuses">
+          <option value="">{{ t('dontCopy') }}</option>
+          <option
+            v-for="board in data?.boards ?? []"
+            :key="board.value"
+            :value="board.value">
+            {{ board.label }}
+          </option>
+        </select>
+        <label>{{ t('statuses') }}</label>
+        <div
+          v-for="(status, index) in form.statuses"
+          :key="status.id"
+          class="status-row">
+          <AppColorPicker v-model="status.color" />
+          <input
+            v-model="status.name"
+            :aria-label="t('statusName')"
+            required />
+          <StatusCategorySelect v-model="status.category" />
+          <button
+            :aria-label="t('deleteStatus')"
+            class="icon-btn danger"
+            type="button"
+            @click="form.statuses.splice(index, 1)">
+            <Trash2 />
+          </button>
+        </div>
         <button
-          :aria-label="t('deleteStatus')"
-          class="icon-btn danger"
+          class="secondary add-status"
           type="button"
-          @click="form.statuses.splice(index, 1)">
-          <Trash2 />
+          @click="addStatus">
+          <Plus />
+          {{ t('addStatus') }}
         </button>
-      </div>
-      <button
-        class="secondary add-status"
-        type="button"
-        @click="addStatus">
-        <Plus />
-        {{ t('addStatus') }}
-      </button>
-      <p
-        v-if="message"
-        class="form-error">
-        {{ message }}
-      </p>
-      <div class="form-actions">
-        <button
-          class="primary"
-          :disabled="pending">
-          {{ pending ? t('creating') : t('createBoard') }}
-        </button>
-      </div>
-    </form>
-  </section>
+        <p
+          v-if="message"
+          class="form-error">
+          {{ message }}
+        </p>
+        <div class="form-actions">
+          <button
+            class="primary"
+            :disabled="pending">
+            {{ pending ? t('creating') : t('createBoard') }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -77,6 +82,7 @@ import { Plus, Trash2 } from '@lucide/vue'
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 import { DEFAULT_COLOR } from '~/constants/colors'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { CreateBoardPageDeps } from '~/sections/boards/create-board/CreateBoardPage.deps'
 
 const props = defineProps<{
@@ -88,7 +94,6 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     addStatus: 'Add status',
-    backToSpace: 'Back to space',
     color: 'Color',
     copyStatusesFrom: 'Copy statuses from',
     createBoard: 'Create board',
@@ -101,7 +106,6 @@ const { t } = useI18n({
   },
   ru: {
     addStatus: 'Добавить статус',
-    backToSpace: 'Назад к разделу',
     color: 'Цвет',
     copyStatusesFrom: 'Скопировать статусы из',
     createBoard: 'Создать доску',
@@ -143,8 +147,6 @@ const copyStatuses = () => {
   const source = data.value?.boards.find((board) => board.value === form.sourceBoardId)
   form.statuses = (source?.statuses ?? []).map((status) => ({ ...status, id: ++nextStatusId }))
 }
-
-useHead({ title: t('createBoard') })
 
 const { execute: submit, message, pending } = useApiAction(props.deps.create)
 

@@ -433,12 +433,48 @@ textarea::placeholder {
   justify-content: center;
   min-width: var(--icon-btn-size);
   padding: 0 var(--space-2);
+  position: relative;
   text-decoration: none;
 }
 
 .header-btn:hover {
   background: var(--color-hover);
   color: var(--color-text);
+}
+
+/* An icon names itself on hover: its aria-label in a tooltip under it, after a short pause. It
+   exists only while hovered, so a hidden one never widens the page. */
+.header-btn[aria-label]:hover::after {
+  animation: tooltip-in var(--duration-fast) var(--ease-standard) 400ms both;
+  background: var(--color-tooltip);
+  border-radius: var(--radius-small);
+  color: var(--color-tooltip-text);
+  content: attr(aria-label);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  left: 50%;
+  padding: var(--space-1) var(--space-2);
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  top: calc(100% + var(--space-1));
+  translate: -50% 0;
+  white-space: nowrap;
+  z-index: 50;
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* The header's rightmost button sits at the window's edge, so its tooltip opens to the left. */
+:is(.app-header-actions, .page-header-preferences)
+  > .header-btn[aria-label]:last-child:hover::after {
+  left: auto;
+  right: 0;
+  translate: none;
 }
 
 .header-btn > svg {
@@ -450,11 +486,6 @@ textarea::placeholder {
 @media (max-width: 767px) {
   .app-header {
     padding: 0 var(--space-4);
-  }
-
-  .header-btn {
-    height: 40px;
-    min-width: 40px;
   }
 }
 

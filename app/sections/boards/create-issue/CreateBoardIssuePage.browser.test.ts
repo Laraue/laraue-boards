@@ -10,7 +10,10 @@ import CreateBoardIssuePage from './CreateBoardIssuePage.vue'
 
 const pageData: CreateBoardIssuePageData = {
   attributes: [],
+  boardColor: '#4774d4',
   boardName: 'Roadmap',
+  spaceColor: '#4774d4',
+  spaceName: 'Product',
 }
 
 const createDeps = (
@@ -58,5 +61,7 @@ afterEach(async () => {
 it('shows the board selected by the page', async () => {
   await mount(createDeps(), vi.fn<(issueKey: string) => void>())
 
-  await expect.element(page.getByText('Roadmap')).toBeInTheDocument()
+  // The header's path links to the board, the form shows it as the issue's board.
+  await expect.element(page.getByRole('link', { name: 'Roadmap' })).toBeInTheDocument()
+  await expect.element(page.getByText('Roadmap', { exact: true }).last()).toBeInTheDocument()
 })

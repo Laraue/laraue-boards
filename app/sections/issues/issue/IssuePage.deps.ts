@@ -49,7 +49,10 @@ export type IssuePageViewModel = {
   assigneeIsCurrentUser: boolean
   attachments: IssueAttachmentViewModel[]
   attributes: IssuePageAttributeViewModel[]
+  boardColor: string
   boardId: string
+  // The backlog has its own page, not a board's.
+  boardIsBacklog: boolean
   boardLabel: string
   canEdit: boolean
   content: string
@@ -58,6 +61,7 @@ export type IssuePageViewModel = {
   owner: string
   ownerColor: string
   ownerInitial: string
+  spaceColor: string
   spaceId: string
   spaceLabel: string
   statusId: string

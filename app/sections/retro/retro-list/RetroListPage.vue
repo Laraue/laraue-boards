@@ -1,93 +1,88 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: listing }">
-      <section class="retro-list-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <RetroIcon class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>{{ t('retro') }}</h1>
-            </div>
-          </div>
-          <div class="title-actions">
-            <button
-              v-if="listing.canCreate"
-              class="primary"
-              :disabled="starting"
-              type="button"
-              @click="start(null)">
-              <Plus />
-              <span class="btn-label">{{ t('start') }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div
-          v-if="listing.retros.length"
-          class="retro-rows">
+  <div>
+    <PageHeader
+      :icon="RetroIcon"
+      :title="t('retro')">
+      <button
+        v-if="data?.canCreate"
+        :aria-label="t('start')"
+        :disabled="starting"
+        type="button"
+        @click="start(null)">
+        <Plus />
+        <span class="btn-label">{{ t('start') }}</span>
+      </button>
+    </PageHeader>
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default="{ data: listing }">
+        <section class="retro-list-page">
           <div
-            v-for="retro in listing.retros"
-            :key="retro.id"
-            class="retro-row-item">
-            <NuxtLink
-              class="retro-row"
-              :to="organizationRoutes.retro(retro.id)">
-              <strong class="retro-name">{{ retro.name }}</strong>
-              <span
-                class="retro-status"
-                :class="{ 'retro-status--active': !retro.finished }">
-                {{ retro.finished ? t('finished') : t('active') }}
-              </span>
-              <span class="muted retro-meta">{{ tp('cards', retro.cardCount) }}</span>
-              <span
-                v-if="retro.openActionCount > 0"
-                class="muted retro-meta">
-                {{ tp('openActions', retro.openActionCount) }}
-              </span>
-              <span class="muted retro-meta">{{ formatLocalDate(retro.createdAt) }}</span>
-            </NuxtLink>
+            v-if="listing.retros.length"
+            class="retro-rows">
             <div
-              v-if="(listing.canCreate && retro.openActionCount > 0) || retro.canManage"
-              class="retro-row-actions">
-              <button
-                v-if="listing.canCreate && retro.openActionCount > 0"
-                class="secondary small"
-                :disabled="starting"
-                :title="t('continueTitle', { name: retro.name })"
-                type="button"
-                @click="start(retro)">
-                {{ t('continue') }}
-              </button>
-              <button
-                v-if="retro.canManage"
-                :aria-label="t('delete')"
-                class="icon-btn small"
-                :disabled="removing"
-                :title="t('delete')"
-                type="button"
-                @click="remove(retro)">
-                <Trash2 />
-              </button>
+              v-for="retro in listing.retros"
+              :key="retro.id"
+              class="retro-row-item">
+              <NuxtLink
+                class="retro-row"
+                :to="organizationRoutes.retro(retro.id)">
+                <strong class="retro-name">{{ retro.name }}</strong>
+                <span
+                  class="retro-status"
+                  :class="{ 'retro-status--active': !retro.finished }">
+                  {{ retro.finished ? t('finished') : t('active') }}
+                </span>
+                <span class="muted retro-meta">{{ tp('cards', retro.cardCount) }}</span>
+                <span
+                  v-if="retro.openActionCount > 0"
+                  class="muted retro-meta">
+                  {{ tp('openActions', retro.openActionCount) }}
+                </span>
+                <span class="muted retro-meta">{{ formatLocalDate(retro.createdAt) }}</span>
+              </NuxtLink>
+              <div
+                v-if="(listing.canCreate && retro.openActionCount > 0) || retro.canManage"
+                class="retro-row-actions">
+                <button
+                  v-if="listing.canCreate && retro.openActionCount > 0"
+                  class="secondary small"
+                  :disabled="starting"
+                  :title="t('continueTitle', { name: retro.name })"
+                  type="button"
+                  @click="start(retro)">
+                  {{ t('continue') }}
+                </button>
+                <button
+                  v-if="retro.canManage"
+                  :aria-label="t('delete')"
+                  class="icon-btn small"
+                  :disabled="removing"
+                  :title="t('delete')"
+                  type="button"
+                  @click="remove(retro)">
+                  <Trash2 />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <AppEmptyState
-          v-else
-          :hint="t('emptyHint')"
-          :title="t('empty')" />
-        <PaginationControl
-          :has-next-page="listing.hasNextPage"
-          :page="page"
-          @update:page="updatePage" />
-      </section>
-    </template>
-  </QueryState>
+          <AppEmptyState
+            v-else
+            :hint="t('emptyHint')"
+            :title="t('empty')" />
+          <PaginationControl
+            :has-next-page="listing.hasNextPage"
+            :page="page"
+            @update:page="updatePage" />
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -187,8 +182,6 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
     await props.onOpen(started.value)
   }
 }
-
-useHead({ title: t('retro') })
 </script>
 
 <style scoped>

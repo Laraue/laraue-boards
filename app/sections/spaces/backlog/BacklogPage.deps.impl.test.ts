@@ -28,9 +28,10 @@ test('maps backlog page data', async () => {
     {
       attributes: [],
       backlogBoardId: '8',
-      color: '#123',
       hasNextPage: false,
       issues: [],
+      spaceColor: '#123',
+      spaceName: 'Product',
       title: 'Backlog',
     },
   )

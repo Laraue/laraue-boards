@@ -1,40 +1,38 @@
 <template>
-  <section class="form-page">
-    <div class="page-heading">
-      <SpaceIcon
-        class="page-heading-icon"
-        :style="{ color: form.color }" />
-      <div class="page-heading-text">
-        <h1>{{ t('createSpace') }}</h1>
-      </div>
-    </div>
-    <form @submit.prevent="submit">
-      <label for="create-space-name">{{ t('name') }}</label>
-      <input
-        id="create-space-name"
-        v-model="form.name"
-        required />
-      <label for="create-space-key">{{ t('key') }}</label>
-      <input
-        id="create-space-key"
-        v-model="form.key"
-        required />
-      <label>{{ t('color') }}</label>
-      <AppColorPicker v-model="form.color" />
-      <p
-        v-if="message"
-        class="form-error">
-        {{ message }}
-      </p>
-      <div class="form-actions">
-        <button
-          class="primary"
-          :disabled="pending">
-          {{ pending ? t('creating') : t('createSpace') }}
-        </button>
-      </div>
-    </form>
-  </section>
+  <div>
+    <PageHeader
+      :icon="SpaceIcon"
+      :icon-color="form.color"
+      :title="t('createSpace')" />
+    <section class="form-page">
+      <form @submit.prevent="submit">
+        <label for="create-space-name">{{ t('name') }}</label>
+        <input
+          id="create-space-name"
+          v-model="form.name"
+          required />
+        <label for="create-space-key">{{ t('key') }}</label>
+        <input
+          id="create-space-key"
+          v-model="form.key"
+          required />
+        <label>{{ t('color') }}</label>
+        <AppColorPicker v-model="form.color" />
+        <p
+          v-if="message"
+          class="form-error">
+          {{ message }}
+        </p>
+        <div class="form-actions">
+          <button
+            class="primary"
+            :disabled="pending">
+            {{ pending ? t('creating') : t('createSpace') }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -69,8 +67,6 @@ const form = reactive({
   key: '',
   name: '',
 })
-
-useHead({ title: t('createSpace') })
 
 const { execute: create, message, pending } = useApiAction(props.deps.create)
 

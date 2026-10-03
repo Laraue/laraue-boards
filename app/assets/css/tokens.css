@@ -8,14 +8,14 @@
   --color-soft: #efeff2;
   --color-hover: #e8e8ec;
   --color-text: #242429;
-  --color-muted: #71717b;
+  --color-muted: #686872;
   --color-border: #dddde2;
   /* Accent is for text, icons and lines; action fills a control under white text. They differ
      only in the dark theme, where accent text gets lighter to stay readable. */
-  --color-accent: #3568d4;
+  --color-accent: #3466d0;
   --color-accent-hover: #2e5fc5;
   --color-accent-soft: #e9effc;
-  --color-action: #3568d4;
+  --color-action: #3466d0;
   --color-action-hover: #2e5fc5;
   --color-focus: #7898de;
   --color-danger: #c7443e;
@@ -83,7 +83,7 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-background: #17191d;
+  --color-background: #1b1d21;
   --color-surface: #22252a;
   --color-workspace: #1c1f23;
   --color-divider: #31343a;

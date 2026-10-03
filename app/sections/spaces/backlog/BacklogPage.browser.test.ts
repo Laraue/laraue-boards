@@ -29,9 +29,10 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
 const pageData: BacklogPageData = {
   attributes: [],
   backlogBoardId: '8',
-  color: '#4774d4',
   hasNextPage: false,
   issues: [issueOf('ISS-1', 'First issue')],
+  spaceColor: '#4774d4',
+  spaceName: 'Product',
   title: 'Backlog',
 }
 

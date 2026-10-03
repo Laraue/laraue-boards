@@ -1,13 +1,8 @@
 <template>
   <section class="settings-page">
-    <div class="page-heading">
-      <Settings class="page-heading-icon" />
-      <div class="page-heading-text">
-        <h1>{{ t('admin') }}</h1>
-        <p class="muted">{{ t('description') }}</p>
-      </div>
-    </div>
-
+    <PageHeader
+      :icon="Settings"
+      :title="t('admin')" />
     <nav
       :aria-label="t('admin')"
       class="page-tabs">
@@ -71,7 +66,6 @@ const { t } = useI18n({
     admin: 'Administration',
     attributes: 'Attributes',
     dataMovement: 'Data movement',
-    description: 'Organization settings, members and usage.',
     general: 'General',
     permissions: 'Permissions',
     transactions: 'Transactions',
@@ -80,7 +74,6 @@ const { t } = useI18n({
     admin: 'Администрирование',
     attributes: 'Атрибуты',
     dataMovement: 'Перенос данных',
-    description: 'Настройки организации, участники и расходы.',
     general: 'Общие',
     permissions: 'Права доступа',
     transactions: 'Транзакции',
@@ -93,5 +86,10 @@ const { t } = useI18n({
   align-content: start;
   display: grid;
   gap: var(--space-6);
+}
+
+/* The header keeps its own spacing below it. */
+.settings-page > .page-header {
+  margin-bottom: calc(-1 * var(--space-6) + var(--layout-content-padding, 0px));
 }
 </style>

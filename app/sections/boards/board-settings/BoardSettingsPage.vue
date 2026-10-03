@@ -1,39 +1,47 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: page }">
-      <section class="form-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <AppBackLink
-              :label="t('backToBoard')"
-              :to="organizationRoutes.board(spaceKey, boardId)" />
-            <BoardIcon
-              class="page-heading-icon"
-              :style="{ color: page.color }" />
-            <div class="page-heading-text">
-              <h1>{{ t('editBoard') }}</h1>
-            </div>
-          </div>
-        </div>
-        <BoardSettingsForm
-          :error="saveMessage || removeMessage || null"
-          :on-delete="remove"
-          :on-update="(input) => save(page, input)"
-          :submitting="saving || removing"
-          :view-model="page" />
-      </section>
-    </template>
-  </QueryState>
+  <div>
+    <PageHeader
+      :icon="Settings"
+      :parents="[
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+        {
+          color: data?.color,
+          icon: BoardIcon,
+          label: data?.name ?? t('board'),
+          to: organizationRoutes.board(spaceKey, boardId),
+        },
+      ]"
+      :title="t('settings')" />
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default="{ data: page }">
+        <section class="form-page">
+          <BoardSettingsForm
+            :error="saveMessage || removeMessage || null"
+            :on-delete="remove"
+            :on-update="(input) => save(page, input)"
+            :submitting="saving || removing"
+            :view-model="page" />
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { BoardIcon } from '~/constants/icons'
+import { Settings } from '@lucide/vue'
+
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type {
   BoardSettingsPageData,
   BoardSettingsPageDeps,
@@ -51,22 +59,18 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
-    backToBoard: 'Back to board',
-    boardSettings: 'Board settings',
+    board: 'Board',
     deleteConfirm: 'Delete this board?',
-    editBoard: 'Edit board',
     loadError: 'Could not load board',
     loading: 'Loading board…',
-    settings: 'settings',
+    settings: 'Settings',
   },
   ru: {
-    backToBoard: 'Назад к доске',
-    boardSettings: 'Настройки доски',
+    board: 'Доска',
     deleteConfirm: 'Удалить эту доску?',
-    editBoard: 'Изменить доску',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
-    settings: 'настройки',
+    settings: 'Настройки',
   },
 })
 
@@ -74,12 +78,8 @@ const organizationRoutes = useOrganizationRoutes()
 
 const { data, message, pending, refresh } = await useApiQuery(
   () => `board-settings:${props.boardId}`,
-  (signal) => props.deps.view({ boardId: props.boardId, signal }),
+  (signal) => props.deps.view({ boardId: props.boardId, signal, spaceKey: props.spaceKey }),
 )
-
-useHead({
-  title: computed(() => (data.value ? `${data.value.name} ${t('settings')}` : t('boardSettings'))),
-})
 
 const {
   execute: saveSettings,

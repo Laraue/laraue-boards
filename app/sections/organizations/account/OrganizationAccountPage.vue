@@ -1,15 +1,12 @@
 <template>
   <section class="account-page">
-    <div class="page-heading">
-      <Building2 class="page-heading-icon" />
-      <div class="page-heading-text">
-        <h1>{{ t('youIn', { organization: organizationName }) }}</h1>
-        <p class="muted">
-          {{ t('scope', { organization: organizationName }) }}
-          <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
-        </p>
-      </div>
-    </div>
+    <PageHeader
+      :icon="Building2"
+      :title="t('youIn', { organization: organizationName })" />
+    <p class="muted">
+      {{ t('scope', { organization: organizationName }) }}
+      <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
+    </p>
 
     <nav
       :aria-label="t('youIn', { organization: organizationName })"
@@ -88,5 +85,14 @@ const { t } = useI18n({
   align-content: start;
   display: grid;
   gap: var(--space-6);
+}
+
+/* The header keeps its own spacing below it. */
+.account-page > .page-header {
+  margin-bottom: calc(-1 * var(--space-6) + var(--layout-content-padding, 0px));
+}
+
+.account-page > p {
+  margin: 0;
 }
 </style>

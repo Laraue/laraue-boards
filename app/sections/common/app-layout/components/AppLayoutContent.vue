@@ -104,6 +104,16 @@
         </div>
       </nav>
       <div class="sidebar-footer">
+        <!-- A phone's page header has no room for them, so they come with the menu. -->
+        <div class="sidebar-preferences">
+          <AppHeaderPreferences />
+          <NuxtLink
+            :aria-label="t('yourAccount')"
+            class="header-btn"
+            to="/account">
+            <CircleUser />
+          </NuxtLink>
+        </div>
         <NuxtLink
           class="sidebar-user"
           :class="{ active: within('organizations-organizationKey-account') }"
@@ -131,15 +141,21 @@
         @click="sidebarOpen = false" />
     </Transition>
     <main>
-      <!-- ponytail: stands in for pages without their own PageHeader yet; drop it once every page has one. -->
-      <PageHeader class="layout-header" />
       <slot />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { BookOpen, ChevronsUpDown, ClipboardList, History, Plus, Settings } from '@lucide/vue'
+import {
+  BookOpen,
+  ChevronsUpDown,
+  CircleUser,
+  ClipboardList,
+  History,
+  Plus,
+  Settings,
+} from '@lucide/vue'
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
@@ -168,6 +184,7 @@ const { locale, t } = useI18n({
     spaces: 'Spaces',
     switchOrganization: 'Switch organization',
     tariffUnavailable: 'Tariff unavailable',
+    yourAccount: 'Your Laraue account',
   },
   ru: {
     admin: 'Админка',
@@ -185,6 +202,7 @@ const { locale, t } = useI18n({
     spaces: 'Разделы',
     switchOrganization: 'Сменить организацию',
     tariffUnavailable: 'Тариф недоступен',
+    yourAccount: 'Ваш аккаунт Laraue',
   },
 })
 const active = (name: OrganizationRouteName) => route.name === name
@@ -220,7 +238,7 @@ const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   --layout-content-padding: var(--space-6);
 
   align-items: start;
-  background: var(--color-workspace);
+  background: var(--color-background);
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   min-height: 100dvh;
@@ -250,6 +268,7 @@ aside > nav {
   display: flex;
   flex: 1;
   flex-direction: column;
+  gap: var(--space-1);
   margin-bottom: var(--space-4);
 }
 
@@ -263,7 +282,6 @@ aside > nav button {
   display: flex;
   gap: var(--space-2);
   height: 36px;
-  margin: 1px 0;
   padding: 0 var(--space-3);
   text-align: left;
   text-decoration: none;
@@ -322,6 +340,7 @@ main {
   overflow: auto;
   padding: var(--layout-content-padding);
   position: relative;
+  scrollbar-gutter: stable;
 }
 
 main > :deep(*) {
@@ -331,14 +350,6 @@ main > :deep(*) {
 main :deep(.page-load-state) {
   min-height: 0;
   padding: 0;
-}
-
-main:not(:has(.page-header:not(.layout-header))) {
-  grid-template-rows: auto 1fr;
-}
-
-main:has(.page-header:not(.layout-header)) > .layout-header {
-  display: none;
 }
 
 .scrim {
@@ -355,6 +366,10 @@ main:has(.page-header:not(.layout-header)) > .layout-header {
   display: grid;
   gap: var(--space-2);
   padding-top: var(--space-3);
+}
+
+.sidebar-preferences {
+  display: none;
 }
 
 .sidebar-user {
@@ -486,6 +501,10 @@ main:has(.page-header:not(.layout-header)) > .layout-header {
 
   main {
     grid-column: auto;
+  }
+
+  .sidebar-preferences {
+    display: flex;
   }
 }
 </style>

@@ -1,67 +1,63 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: page }">
-      <section>
-        <div class="title-row">
-          <div class="page-heading">
-            <AppBackLink
-              :label="t('backToSpace')"
-              :to="organizationRoutes.space(spaceKey)" />
-            <ListTodo
-              class="page-heading-icon"
-              :style="{ color: page.color }" />
-            <div class="page-heading-text">
-              <h1>{{ page.title }}</h1>
-            </div>
+  <div>
+    <PageHeader
+      :icon="ListTodo"
+      :parents="[
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+      ]"
+      :title="data?.title ?? t('backlog')">
+      <NuxtLink :to="organizationRoutes.newBacklogIssue(spaceKey)">
+        <Plus />
+        {{ t('addIssue') }}
+      </NuxtLink>
+    </PageHeader>
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default="{ data: page }">
+        <section>
+          <div class="toolbar">
+            <input
+              :aria-label="t('searchIssues')"
+              :placeholder="t('searchIssues')"
+              type="search"
+              :value="request.search"
+              @input="updateSearch(($event.target as HTMLInputElement).value)" />
+            <IssueFilters
+              :attributes="page.attributes"
+              :loading="filtering"
+              :model-value="filterValue"
+              @update:model-value="updateFilters({ attributes: $event.attributes })" />
           </div>
-          <div class="title-actions">
-            <NuxtLink
-              :aria-label="t('addIssue')"
-              class="primary"
-              :to="organizationRoutes.newBacklogIssue(spaceKey)">
-              <Plus />
-              <span class="btn-label">{{ t('addIssue') }}</span>
-            </NuxtLink>
-          </div>
-        </div>
-        <div class="toolbar">
-          <input
-            :aria-label="t('searchIssues')"
-            :placeholder="t('searchIssues')"
-            type="search"
-            :value="request.search"
-            @input="updateSearch(($event.target as HTMLInputElement).value)" />
-          <IssueFilters
-            :attributes="page.attributes"
-            :loading="filtering"
-            :model-value="filterValue"
-            @update:model-value="updateFilters({ attributes: $event.attributes })" />
-        </div>
-        <p
-          v-if="searchMessage"
-          class="form-error">
-          {{ searchMessage }}
-        </p>
-        <IssueList
-          :deps="deps.issueList"
-          :empty-hint="t('emptyHint')"
-          :empty-text="t('emptyTitle')"
-          :excluded-move-board-id="page.backlogBoardId"
-          :filtering="filtering"
-          :has-next-page="hasNextPage"
-          :issues="issues"
-          :on-moved="searchIssues"
-          :on-update-page="updatePage"
-          :page="request.page" />
-      </section>
-    </template>
-  </QueryState>
+          <p
+            v-if="searchMessage"
+            class="form-error">
+            {{ searchMessage }}
+          </p>
+          <IssueList
+            :deps="deps.issueList"
+            :empty-hint="t('emptyHint')"
+            :empty-text="t('emptyTitle')"
+            :excluded-move-board-id="page.backlogBoardId"
+            :filtering="filtering"
+            :has-next-page="hasNextPage"
+            :issues="issues"
+            :on-moved="searchIssues"
+            :on-update-page="updatePage"
+            :page="request.page" />
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -72,6 +68,7 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 import type { IssueFiltersValue } from '~/components/issue-filters/IssueFilters.types'
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
 import IssueList from '~/components/issue-list/IssueList.vue'
+import { SpaceIcon } from '~/constants/icons'
 import type { BacklogPageDeps } from '~/sections/spaces/backlog/BacklogPage.deps'
 import {
   getIssueAttributeFilterInput,
@@ -91,7 +88,6 @@ const { t } = useI18n({
   en: {
     addIssue: 'Add issue',
     backlog: 'Backlog',
-    backToSpace: 'Back to space',
     emptyHint:
       'The backlog is where work waits. Park ideas and requests here, then move them onto a board when the team is ready to pick them up.',
     emptyTitle: 'The backlog is empty',
@@ -102,7 +98,6 @@ const { t } = useI18n({
   ru: {
     addIssue: 'Добавить задачу',
     backlog: 'Бэклог',
-    backToSpace: 'Назад к разделу',
     emptyHint:
       'Бэклог — место, где ждут работы. Сохраняйте здесь идеи и запросы, а затем переносите их на доску, когда команда будет готова.',
     emptyTitle: 'Бэклог пуст',
@@ -221,5 +216,4 @@ watch(
 onScopeDispose(() => {
   scheduleSearch.cancel()
 })
-useHead({ title: computed(() => data.value?.title ?? t('backlog')) })
 </script>

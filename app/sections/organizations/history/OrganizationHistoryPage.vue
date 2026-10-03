@@ -1,70 +1,69 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: view }">
-      <section class="history-page">
-        <div class="page-heading">
-          <History class="page-heading-icon" />
-          <div class="page-heading-text">
-            <h1>{{ t('history') }}</h1>
+  <div>
+    <PageHeader
+      :icon="History"
+      :title="t('history')" />
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default="{ data: view }">
+        <section class="history-page">
+          <form
+            class="history-filters"
+            @change="applyFilters"
+            @submit.prevent>
+            <label>
+              {{ t('user') }}
+              <select v-model="form.ownerId">
+                <option value="">{{ t('allUsers') }}</option>
+                <option
+                  v-for="user in view.users"
+                  :key="user.value"
+                  :value="user.value">
+                  {{ user.label }}
+                </option>
+              </select>
+            </label>
+            <label>
+              {{ t('from') }}
+              <input
+                v-model="form.dateFrom"
+                type="date" />
+            </label>
+            <label>
+              {{ t('to') }}
+              <input
+                v-model="form.dateTo"
+                :min="form.dateFrom || undefined"
+                type="date" />
+            </label>
+          </form>
+          <HistoryTimeline
+            v-if="historyState.items.length || !pagePending"
+            :items="historyState.items"
+            :label="t('entries')" />
+          <div
+            v-if="pagePending"
+            class="history-loading"
+            role="status">
+            <LoaderCircle class="spin" />
+            <span>{{ t('loading') }}</span>
           </div>
-        </div>
-        <form
-          class="history-filters"
-          @change="applyFilters"
-          @submit.prevent>
-          <label>
-            {{ t('user') }}
-            <select v-model="form.ownerId">
-              <option value="">{{ t('allUsers') }}</option>
-              <option
-                v-for="user in view.users"
-                :key="user.value"
-                :value="user.value">
-                {{ user.label }}
-              </option>
-            </select>
-          </label>
-          <label>
-            {{ t('from') }}
-            <input
-              v-model="form.dateFrom"
-              type="date" />
-          </label>
-          <label>
-            {{ t('to') }}
-            <input
-              v-model="form.dateTo"
-              :min="form.dateFrom || undefined"
-              type="date" />
-          </label>
-        </form>
-        <HistoryTimeline
-          v-if="historyState.items.length || !pagePending"
-          :items="historyState.items"
-          :label="t('entries')" />
-        <div
-          v-if="pagePending"
-          class="history-loading"
-          role="status">
-          <LoaderCircle class="spin" />
-          <span>{{ t('loading') }}</span>
-        </div>
-        <button
-          v-else-if="historyState.hasNextPage"
-          class="secondary small history-more"
-          type="button"
-          @click="loadPage()">
-          {{ t('loadMore') }}
-        </button>
-      </section>
-    </template>
-  </QueryState>
+          <button
+            v-else-if="historyState.hasNextPage"
+            class="secondary small history-more"
+            type="button"
+            @click="loadPage()">
+            {{ t('loadMore') }}
+          </button>
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -187,7 +186,6 @@ watch(
   },
   { immediate: true },
 )
-useHead({ title: t('history') })
 </script>
 
 <style scoped>
