@@ -54,7 +54,9 @@ const problem = computed(() =>
 const switchingOrganization = computed(() => problem.value?.kind === 'selecting-organization')
 
 const routableProblem = computed(() =>
-  problem.value?.kind === 'selecting-organization' ? undefined : problem.value,
+  problem.value?.kind === 'selecting-organization' || problem.value?.kind === 'signed-out'
+    ? undefined
+    : problem.value,
 )
 
 if (routableProblem.value) {

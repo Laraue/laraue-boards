@@ -1,13 +1,6 @@
 <template>
   <section class="join-page">
     <div class="join-card">
-      <div class="logo">
-        <img
-          alt=""
-          class="logo-mark"
-          :src="laraueLogoUrl" />
-        <span>Laraue Boards</span>
-      </div>
       <span class="join-badge"><UserPlus /></span>
       <div class="join-intro">
         <h1>{{ t('joinOrganization') }}</h1>
@@ -175,8 +168,8 @@ const loginGoogle = async (code: string): Promise<void> => {
 <style scoped>
 .join-page {
   display: grid;
-  min-height: 100dvh;
-  padding: var(--space-6);
+  min-height: 100%;
+  padding: var(--space-8) var(--space-4);
   place-items: center;
 }
 

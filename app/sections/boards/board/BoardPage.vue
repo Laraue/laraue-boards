@@ -299,9 +299,7 @@ const openIssue = (issueKey: string) => {
   void props.onPushQuery({ ...props.routeQuery, issue: issueKey })
 }
 
-useHead({
-  title: computed(() => viewModel.value?.title ?? t('board')),
-})
+usePageTitle(computed(() => viewModel.value?.title ?? t('board')))
 const scheduleSearch = debounce(() => void searchIssues(), 300)
 
 watch([search, filterKey], () => {

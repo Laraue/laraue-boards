@@ -1,15 +1,6 @@
 <template>
   <section class="org-picker">
     <div class="picker-card form-page">
-      <NuxtLink
-        class="logo"
-        to="/organizations">
-        <img
-          alt=""
-          class="logo-mark"
-          :src="laraueLogoUrl" />
-        <span>Laraue Boards</span>
-      </NuxtLink>
       <div class="page-heading">
         <AppBackLink
           :label="t('backToOrganizations')"
@@ -110,16 +101,11 @@ const submit = async (): Promise<void> => {
 <style scoped>
 .org-picker {
   display: grid;
-  min-height: 100dvh;
-  padding: var(--space-6);
-  place-items: center;
+  justify-items: center;
+  padding: var(--space-8) var(--space-4);
 }
 
 .picker-card {
   width: min(var(--form-page-max-width), 100%);
-}
-
-.picker-card > .logo {
-  margin-bottom: 48px;
 }
 </style>

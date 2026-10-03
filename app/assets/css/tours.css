@@ -120,13 +120,13 @@
 }
 
 .product-tour .driver-popover-next-btn {
-  background: var(--color-accent);
+  background: var(--color-action);
   border: 0;
   color: #fff;
 }
 
 .product-tour .driver-popover-next-btn:hover {
-  background: color-mix(in srgb, var(--color-accent) 88%, #000);
+  background: var(--color-action-hover);
 }
 
 .product-tour .driver-popover-prev-btn {

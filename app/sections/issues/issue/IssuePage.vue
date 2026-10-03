@@ -365,7 +365,7 @@ const {
   { lazy: props.lazy },
 )
 
-useHead({ title: computed(() => data.value?.issueKey ?? t('issue')) })
+usePageTitle(computed(() => data.value?.issueKey ?? t('issue')))
 
 const currentIssue = computed(() => data.value)
 const canSave = computed(

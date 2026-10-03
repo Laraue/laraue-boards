@@ -13,5 +13,5 @@ const { t } = useI18n({
 
 const deps = createTransactionsPageDeps(useApiClient())
 
-useHead({ title: t('transactions') })
+usePageTitle(t('transactions'))
 </script>

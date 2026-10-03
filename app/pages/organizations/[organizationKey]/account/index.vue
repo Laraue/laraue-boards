@@ -20,5 +20,5 @@ const onUpdated = async (): Promise<void> => {
   await refreshAppLayoutData()
 }
 
-useHead({ title: t('profile') })
+usePageTitle(t('profile'))
 </script>

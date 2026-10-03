@@ -9,7 +9,7 @@
      not affected. -->
 <style>
 .landing-root {
-  --landing-cta-bg: var(--color-accent);
+  --landing-cta-bg: var(--color-action);
   --landing-cta-border: transparent;
 
   background: var(--color-background);
@@ -20,7 +20,7 @@
 }
 
 :root[data-theme='dark'] .landing-root {
-  --landing-cta-bg: color-mix(in srgb, var(--color-accent) 38%, var(--color-background));
+  --landing-cta-bg: color-mix(in srgb, var(--color-action) 38%, var(--color-background));
   --landing-cta-border: var(--color-divider);
 }
 

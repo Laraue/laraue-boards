@@ -188,7 +188,7 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
   }
 }
 
-useHead({ title: t('retro') })
+usePageTitle(t('retro'))
 </script>
 
 <style scoped>

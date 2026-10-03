@@ -70,12 +70,12 @@ const isExternal = computed(() => props.link.startsWith('http'))
 }
 
 .btn.site {
-  background: var(--btn-site-bg, var(--color-accent));
+  background: var(--btn-site-bg, var(--color-action));
   color: var(--btn-site-color, #fff);
 }
 
 .btn.site:hover {
-  background: var(--btn-site-hover, color-mix(in srgb, var(--color-accent) 85%, #000));
+  background: var(--btn-site-hover, var(--color-action-hover));
 }
 
 .btn.telegram {

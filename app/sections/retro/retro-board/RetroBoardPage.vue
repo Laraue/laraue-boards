@@ -1462,7 +1462,7 @@ const everyone = (board: RetroBoardViewModel) => {
   )
 }
 
-useHead({ title: computed(() => data.value?.name ?? t('retro')) })
+usePageTitle(computed(() => data.value?.name ?? t('retro')))
 
 // The first four sections form a 2x2 board; anything after it stacks in a column on the right.
 const zoneRect = (index: number) => {
@@ -3253,8 +3253,8 @@ const finish = async () => {
 }
 
 .facilitator-phase.active .facilitator-phase-index {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+  background: var(--color-action);
+  border-color: var(--color-action);
   color: #fff;
 }
 

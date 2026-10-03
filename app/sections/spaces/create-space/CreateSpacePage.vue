@@ -70,7 +70,7 @@ const form = reactive({
   name: '',
 })
 
-useHead({ title: t('createSpace') })
+usePageTitle(t('createSpace'))
 
 const { execute: create, message, pending } = useApiAction(props.deps.create)
 

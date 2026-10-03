@@ -13,5 +13,5 @@ const { t } = useI18n({
 
 const deps = createApiKeysPageDeps(useApiClient())
 
-useHead({ title: t('apiKeys') })
+usePageTitle(t('apiKeys'))
 </script>

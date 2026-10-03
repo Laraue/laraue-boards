@@ -28,7 +28,11 @@ export type AppLayoutProblem =
   | { kind: 'signed-out' }
   | { kind: 'unknown-organization' }
 
-export type RoutableProblem = Exclude<AppLayoutProblem, { kind: 'selecting-organization' }>
+// A signed-out visitor is already on the way to sign in (see useApiClient), so the layout only waits.
+export type RoutableProblem = Exclude<
+  AppLayoutProblem,
+  { kind: 'selecting-organization' } | { kind: 'signed-out' }
+>
 
 export type AppLayoutResult =
   | { data: AppLayoutData; status: 'success' }

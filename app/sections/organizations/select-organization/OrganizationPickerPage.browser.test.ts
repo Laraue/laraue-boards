@@ -40,11 +40,10 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 const mount = async (
   props: OrganizationPickerPageDeps,
   onSelected: (organizationKey: string) => void,
-  onSignedOut: () => void = vi.fn<() => void>(),
 ) => {
   currentWrapper = await mountSuspended(OrganizationPickerPage, {
     attachTo: document.body,
-    props: { deps: props, onSelected, onSignedOut },
+    props: { deps: props, onSelected },
   })
   return currentWrapper
 }
@@ -156,25 +155,12 @@ it('stays on the picker and shows the message when selecting fails', async () =>
   expect(onSelected).not.toHaveBeenCalled()
 })
 
-it('sends a signed-out visitor to the login page', async () => {
-  const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => {
-    throw new ApiError(401)
-  })
-  const onSignedOut = vi.fn<() => void>()
-
-  await mount(createDeps(view), vi.fn<(organizationKey: string) => void>(), onSignedOut)
-
-  expect(onSignedOut).toHaveBeenCalledOnce()
-})
-
-it('keeps a failed load on the page when the visitor is not signed out', async () => {
+it('keeps a failed load on the page', async () => {
   const view = vi.fn<OrganizationPickerPageDeps['view']>(async () => {
     throw new ApiError(500)
   })
-  const onSignedOut = vi.fn<() => void>()
 
-  await mount(createDeps(view), vi.fn<(organizationKey: string) => void>(), onSignedOut)
+  await mount(createDeps(view), vi.fn<(organizationKey: string) => void>())
 
   await expect.element(page.getByText('Could not load organizations')).toBeInTheDocument()
-  expect(onSignedOut).not.toHaveBeenCalled()
 })

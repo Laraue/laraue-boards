@@ -389,7 +389,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .phone-input-send {
   align-items: center;
-  background: var(--color-accent);
+  background: var(--color-action);
   border-radius: 50%;
   color: #fff;
   display: flex;
@@ -422,7 +422,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .tg-bubble-avatar {
   align-items: center;
-  background: var(--color-accent);
+  background: var(--color-action);
   border-radius: 50%;
   color: #fff;
   display: flex;
@@ -547,7 +547,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .issue-card-avatar {
   align-items: center;
-  background: var(--color-accent);
+  background: var(--color-action);
   border-radius: 50%;
   color: #fff;
   display: flex;

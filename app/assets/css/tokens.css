@@ -10,10 +10,22 @@
   --color-text: #242429;
   --color-muted: #71717b;
   --color-border: #dddde2;
+  /* Accent is for text, icons and lines; action fills a control under white text. They differ
+     only in the dark theme, where accent text gets lighter to stay readable. */
   --color-accent: #3568d4;
+  --color-accent-hover: #2e5fc5;
   --color-accent-soft: #e9effc;
+  --color-action: #3568d4;
+  --color-action-hover: #2e5fc5;
+  --color-focus: #7898de;
   --color-danger: #c7443e;
+  --color-danger-soft: #fff0ee;
   --color-success: #35805e;
+  --color-success-soft: #e8f4ec;
+  --color-warning: #a97322;
+  --color-warning-soft: #fff1db;
+  --color-tooltip: #30343a;
+  --color-tooltip-text: #fff;
   --color-scrollbar: #d0d0d6;
   --color-scrollbar-hover: #aaaab3;
   --color-chart-neutral: #9898a2;
@@ -80,9 +92,17 @@
   --color-text: #edf0f4;
   --color-muted: #9da3ad;
   --color-border: #3a3e46;
+  --color-accent: #91aff2;
+  --color-accent-hover: #acc2f7;
   --color-accent-soft: #29344b;
+  --color-action-hover: #4779df;
+  --color-focus: #93acf0;
   --color-danger: #e37b75;
+  --color-danger-soft: #442c2c;
   --color-success: #6bb590;
+  --color-success-soft: #20392e;
+  --color-warning: #d4a464;
+  --color-warning-soft: #403322;
   --color-scrollbar: #41464e;
   --color-scrollbar-hover: #5e646e;
   --color-chart-neutral: #9097a2;

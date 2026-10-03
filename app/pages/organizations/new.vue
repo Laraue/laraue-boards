@@ -8,7 +8,7 @@
 import { createCreateOrganizationPageDeps } from '~/sections/organizations/create-organization/CreateOrganizationPage.deps.impl'
 import CreateOrganizationPage from '~/sections/organizations/create-organization/CreateOrganizationPage.vue'
 
-definePageMeta({ layout: false })
+definePageMeta({ layout: 'account' })
 const client = useApiClient()
 const deps = createCreateOrganizationPageDeps(client)
 const onCreated = async (): Promise<void> => {

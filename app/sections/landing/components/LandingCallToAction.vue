@@ -63,7 +63,7 @@ const texts = computed(() =>
 <style scoped>
 .cta-section {
   --btn-site-bg: #fff;
-  --btn-site-color: var(--color-accent);
+  --btn-site-color: var(--color-action);
   --btn-site-hover: color-mix(in srgb, #fff 88%, transparent);
   --btn-alt-bg: transparent;
   --btn-alt-border: rgb(255 255 255 / 50%);

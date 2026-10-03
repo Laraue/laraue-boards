@@ -48,7 +48,7 @@ const { t } = useI18n({
   },
 })
 
-useHead({ title: t('dataMovement') })
+usePageTitle(t('dataMovement'))
 
 const { data, message, pending, refresh } = await useApiQuery(
   'organization-data-movement',

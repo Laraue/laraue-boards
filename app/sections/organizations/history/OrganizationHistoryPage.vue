@@ -187,7 +187,7 @@ watch(
   },
   { immediate: true },
 )
-useHead({ title: t('history') })
+usePageTitle(t('history'))
 </script>
 
 <style scoped>

@@ -57,7 +57,7 @@ const { t } = useI18n({
 })
 
 const organizationRoutes = useOrganizationRoutes()
-useHead({ title: t('addBacklogIssue') })
+usePageTitle(t('addBacklogIssue'))
 
 const { data, message, pending, refresh } = await useApiQuery(
   () => `create-backlog-issue:${props.spaceKey}`,

@@ -169,17 +169,26 @@
         class="scrim"
         @click="state.sidebarOpen = false" />
     </Transition>
-    <main>
-      <button
-        v-if="!state.sidebarOpen"
-        :aria-label="t('openMenu')"
-        class="icon-btn mobile-menu-button"
-        type="button"
-        @click="state.sidebarOpen = true">
-        <Menu />
-      </button>
-      <slot />
-    </main>
+    <div class="workspace">
+      <header class="app-header">
+        <div class="header-start">
+          <button
+            :aria-label="t('openMenu')"
+            class="header-btn mobile-menu-button"
+            type="button"
+            @click="state.sidebarOpen = true">
+            <Menu />
+          </button>
+          <AppBreadcrumbs :view-model="viewModel" />
+        </div>
+        <div class="app-header-actions">
+          <AppHeaderPreferences />
+        </div>
+      </header>
+      <main>
+        <slot />
+      </main>
+    </div>
   </div>
 </template>
 
@@ -199,6 +208,7 @@ import {
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
+import AppBreadcrumbs from '~/sections/common/app-layout/components/AppBreadcrumbs.vue'
 import { docsPath } from '~/sections/docs/docsPaths'
 
 const props = defineProps<{
@@ -294,12 +304,8 @@ const closeUserMenu = (close: () => void) => {
 
   align-items: start;
   background: var(--color-workspace);
-  border-inline: 1px solid var(--color-divider);
-  box-shadow: var(--shadow-workspace);
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
-  margin-inline: auto;
-  max-width: var(--workspace-max-width);
   min-height: 100dvh;
 }
 
@@ -339,9 +345,9 @@ aside > nav button {
   color: var(--color-muted);
   display: flex;
   gap: var(--space-2);
-  height: var(--control-height);
-  margin: 2px 0;
-  padding: var(--space-2) var(--space-3);
+  height: 36px;
+  margin: 1px 0;
+  padding: 0 var(--space-3);
   text-align: left;
   text-decoration: none;
   transition: var(--transition-press);
@@ -371,8 +377,7 @@ aside > nav button:active {
 aside > nav a.active,
 aside > nav button.active {
   background: var(--color-accent-soft);
-  color: var(--color-text);
-  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
 }
 
 .nav-hint {
@@ -385,21 +390,36 @@ aside > nav button.active {
 .nav-title {
   color: var(--color-muted);
   font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.09em;
   padding: var(--space-5) var(--space-3) var(--space-2);
   text-transform: uppercase;
 }
 
-main {
-  display: grid;
+.workspace {
+  display: flex;
+  flex-direction: column;
   grid-column: 2;
   height: 100dvh;
+  min-width: 0;
+  width: 100%;
+}
+
+.header-start {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+main {
+  display: grid;
+  flex: 1;
+  min-height: 0;
   min-width: 0;
   overflow: auto;
   padding: var(--layout-content-padding);
   position: relative;
-  width: 100%;
 }
 
 main > :deep(*) {
@@ -413,10 +433,6 @@ main :deep(.page-load-state) {
 
 .mobile-menu-button {
   display: none;
-}
-
-.mobile-menu-button:hover {
-  background: var(--color-hover);
 }
 
 .scrim {
@@ -536,11 +552,12 @@ main :deep(.page-load-state) {
 
 .organization {
   align-items: center;
-  background: var(--color-soft);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
   border-radius: var(--radius-control);
   color: var(--color-text);
   display: flex;
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
   gap: var(--space-2);
   margin-bottom: var(--space-5);
   min-width: 0;
@@ -550,7 +567,7 @@ main :deep(.page-load-state) {
 
 .organization-select {
   align-items: center;
-  border: 1px solid transparent;
+  border: 0;
   border-radius: var(--radius-control);
   color: inherit;
   display: flex;
@@ -563,7 +580,7 @@ main :deep(.page-load-state) {
 }
 
 .organization-select:hover {
-  border-color: var(--color-border);
+  background: var(--color-hover);
 }
 
 .organization-select:active {
@@ -586,10 +603,7 @@ main :deep(.page-load-state) {
   .shell {
     --layout-content-padding: var(--space-3);
 
-    border-inline: 0;
-    box-shadow: none;
     display: block;
-    padding: 0;
   }
 
   :global(body:has(aside.open)) {
@@ -614,21 +628,16 @@ main :deep(.page-load-state) {
     transform: none;
   }
 
-  main {
+  .workspace {
     grid-column: auto;
-    width: 100%;
   }
 
-  main :deep(.page-heading) {
-    padding-left: calc(var(--icon-btn-size) + var(--space-2));
+  .app-header {
+    padding-left: var(--space-2);
   }
 
   .mobile-menu-button {
     display: inline-flex;
-    left: var(--layout-content-padding);
-    position: absolute;
-    top: calc(var(--layout-content-padding) + var(--space-1));
-    z-index: 28;
   }
 }
 </style>
