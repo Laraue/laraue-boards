@@ -663,12 +663,9 @@ watch(dirty, setDirty, { immediate: true })
   margin: 0;
 }
 
-/* A dense panel: its fields take the small control size through the tokens. */
+/* A dense panel: its fields take the small control size through the tokens, at the text's size. */
 .issue-properties {
   --control-height: var(--control-height-small);
-  --font-size-body: var(--font-size-small);
-
-  font-size: var(--font-size-small);
 }
 
 .issue-properties,
@@ -684,7 +681,6 @@ watch(dirty, setDirty, { immediate: true })
 .issue-property-label,
 .issue-dates dt {
   color: var(--color-muted);
-  font-size: var(--font-size-small);
   font-weight: normal;
   margin: 0;
   overflow-wrap: anywhere;
@@ -711,7 +707,6 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-dates dd {
   color: var(--color-muted);
-  font-size: var(--font-size-small);
   margin: 0;
 }
 

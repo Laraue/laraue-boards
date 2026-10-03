@@ -391,10 +391,6 @@ const remove = async (id: string) => {
   padding: 0;
 }
 
-.issue-comment-composer :deep(.markdown) {
-  min-height: calc(2 * 1.6em);
-}
-
 .issue-comment-composer:focus-within,
 .issue-comment-body:has(.issue-comment-composer:focus-within) {
   border-color: var(--color-focus);
