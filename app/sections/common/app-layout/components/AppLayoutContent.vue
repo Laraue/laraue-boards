@@ -238,7 +238,7 @@ const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   --layout-content-padding: var(--space-6);
 
   align-items: start;
-  background: var(--color-workspace);
+  background: var(--color-background);
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   min-height: 100dvh;
