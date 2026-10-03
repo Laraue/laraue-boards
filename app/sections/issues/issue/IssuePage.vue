@@ -56,11 +56,6 @@
           <div
             v-if="inDialog"
             class="issue-dialog-heading">
-            <IconButton
-              :label="t('back')"
-              @click="leave">
-              <IconArrowLeft />
-            </IconButton>
             <h1>
               <NuxtLink :to="issueRoute">
                 {{ issue.issueKey }}
@@ -264,7 +259,6 @@
 
 <script setup lang="ts">
 import {
-  IconArrowLeft,
   IconCheck,
   IconHistory,
   IconLink,
@@ -305,7 +299,6 @@ const { t } = useI18n({
     assignee: 'Assignee',
     attachImages: 'Attach images',
     attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
-    back: 'Back',
     board: 'Board',
     comments: 'Comments',
     copied: 'Copied',
@@ -336,7 +329,6 @@ const { t } = useI18n({
     assignee: 'Исполнитель',
     attachImages: 'Прикрепить изображения',
     attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',
-    back: 'Назад',
     board: 'Доска',
     comments: 'Комментарии',
     copied: 'Скопировано',
@@ -595,6 +587,12 @@ watch(dirty, setDirty, { immediate: true })
 .issue-dialog-heading h1 a {
   color: inherit;
   text-decoration: none;
+  text-underline-offset: 3px;
+}
+
+.issue-dialog-heading h1 a:is(:hover, :focus-visible) {
+  color: var(--color-accent);
+  text-decoration: underline;
 }
 
 .issue-page-form {
