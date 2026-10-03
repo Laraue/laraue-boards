@@ -10,7 +10,7 @@
 import { createLoginPageDeps } from '~/sections/auth/login/LoginPage.deps.impl'
 import LoginPage from '~/sections/auth/login/LoginPage.vue'
 
-definePageMeta({ layout: false })
+definePageMeta({ layout: 'public' })
 const config = useRuntimeConfig()
 const route = useRoute()
 const client = useApiClient()

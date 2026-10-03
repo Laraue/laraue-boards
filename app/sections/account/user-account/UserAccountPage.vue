@@ -1,31 +1,22 @@
 <template>
   <div class="user-account">
-    <header class="user-account-header">
-      <div class="logo">
-        <img
-          alt=""
-          class="logo-mark"
-          :src="laraueLogoUrl" />
-        <span>Laraue Boards</span>
-      </div>
-      <NuxtLink
-        v-if="account"
-        class="secondary"
-        :to="backPath || '/organizations'">
-        <ArrowLeft />
-        {{ backPath ? t('back') : t('backToOrganizations') }}
-      </NuxtLink>
-    </header>
+    <NuxtLink
+      v-if="data"
+      class="secondary back"
+      :to="backPath || '/organizations'">
+      <ArrowLeft />
+      {{ backPath ? t('back') : t('backToOrganizations') }}
+    </NuxtLink>
 
     <QueryState
-      :data="account"
+      :data="data"
       :error-title="t('loadError')"
       :loading-text="t('loading')"
       :message="message"
       :on-retry="refresh"
-      :pending="pending || data?.kind === 'signed-out'">
+      :pending="pending">
       <template #default="{ data: page }">
-        <main class="user-account-main">
+        <div class="user-account-main">
           <div class="user-account-title">
             <span
               v-if="page.initials"
@@ -63,7 +54,7 @@
             :telegram-bot-id="telegramBotId" />
 
           <InterfaceSection :deps="deps.interface" />
-        </main>
+        </div>
       </template>
     </QueryState>
   </div>
@@ -85,7 +76,6 @@ const props = defineProps<{
   deps: UserAccountPageDeps
   googleClientId: string
   onLoggedOut: () => Promise<void> | void
-  onSignedOut: () => Promise<void> | void
   telegramBotId: string
 }>()
 
@@ -123,40 +113,17 @@ const logout = async (): Promise<void> => {
     await props.onLoggedOut()
   }
 }
-
-const account = computed(() => (data.value?.kind === 'signed-in' ? data.value : undefined))
-
-watch(
-  () => data.value?.kind,
-  (kind) => {
-    if (kind === 'signed-out') {
-      void props.onSignedOut()
-    }
-  },
-  { immediate: true },
-)
 </script>
 
 <style scoped>
-/* The same frame as the app layout's workspace, so /account doesn't stretch to the window. */
 .user-account {
-  background: var(--color-workspace);
-  border-inline: 1px solid var(--color-divider);
-  box-shadow: var(--shadow-workspace);
-  margin-inline: auto;
-  max-width: var(--workspace-max-width);
-  min-height: 100dvh;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  width: min(760px, 100%);
 }
 
-.user-account-header {
-  align-items: center;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-divider);
-  display: flex;
-  gap: var(--space-4);
-  justify-content: space-between;
-  min-height: 60px;
-  padding: 0 var(--space-8);
+.back {
+  margin-bottom: var(--space-6);
 }
 
 .log-out {
@@ -167,9 +134,6 @@ watch(
 .user-account-main {
   display: grid;
   gap: var(--space-8);
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
-  width: min(760px, 100%);
 }
 
 .user-account-title {
@@ -209,11 +173,5 @@ watch(
   flex: none;
   height: 16px;
   width: 16px;
-}
-
-@media (max-width: 767px) {
-  .user-account-header {
-    padding: 0 var(--space-4);
-  }
 }
 </style>

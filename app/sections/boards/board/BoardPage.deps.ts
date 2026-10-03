@@ -20,6 +20,8 @@ export type BoardPageViewModel = {
   columns: BoardColumnViewModel[]
   id: string
   issueCount: number
+  // The key while the space isn't among the user's spaces.
+  spaceName: string
   title: string
 }
 
@@ -77,5 +79,6 @@ export type BoardPageDeps = {
     boardId: string
     search: string
     signal?: AbortSignal
+    spaceKey: string
   }) => Promise<BoardPageViewModel>
 }

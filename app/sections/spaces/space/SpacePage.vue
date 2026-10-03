@@ -170,9 +170,7 @@ const regularBoards = computed(() => boards.value.filter((board) => board.kind =
 const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
 
-useHead({
-  title: computed(() => data.value?.name ?? t('space')),
-})
+useHead({ title: computed(() => data.value?.name ?? t('space')) })
 </script>
 
 <style scoped>

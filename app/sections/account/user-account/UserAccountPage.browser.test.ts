@@ -36,26 +36,24 @@ const depsOf = (overrides: Partial<UserAccountPageDeps> = {}): UserAccountPageDe
     update: vi.fn<UserAccountPageDeps['profile']['update']>(),
     view: async () => ({ displayName: 'Ada Lovelace', familyName: 'Lovelace', givenName: 'Ada' }),
   },
-  view: async () => ({ initials: 'AL', kind: 'signed-in' }),
+  view: async () => ({ initials: 'AL' }),
   ...overrides,
 })
 
 const mount = async (
   deps: UserAccountPageDeps,
-  onSignedOut = vi.fn<() => void>(),
   backPath?: string,
   onLoggedOut = vi.fn<() => void>(),
 ) => {
   currentWrapper = await mountSuspended(UserAccountPage, {
     attachTo: document.body,
-    props: { backPath, deps, googleClientId: '', onLoggedOut, onSignedOut, telegramBotId: '' },
+    props: { backPath, deps, googleClientId: '', onLoggedOut, telegramBotId: '' },
     route: '/account',
   })
-  return onSignedOut
 }
 
 it('leads back to the page the user came from', async () => {
-  await mount(depsOf(), undefined, '/organizations')
+  await mount(depsOf(), '/organizations')
 
   await expect
     .element(page.getByRole('link', { name: 'Back' }))
@@ -82,16 +80,10 @@ it('changes the theme and the language for the whole account', async () => {
   expect(preferences.setLocale).toHaveBeenCalledWith('ru')
 })
 
-it('sends a signed-out visitor to sign in', async () => {
-  const onSignedOut = await mount(depsOf({ view: async () => ({ kind: 'signed-out' }) }))
-
-  await vi.waitFor(() => expect(onSignedOut).toHaveBeenCalledOnce())
-})
-
 it('logs out from the account page', async () => {
   const deps = depsOf()
   const onLoggedOut = vi.fn<() => void>()
-  await mount(deps, undefined, undefined, onLoggedOut)
+  await mount(deps, undefined, onLoggedOut)
 
   await page.getByRole('button', { name: 'Log out' }).click()
 

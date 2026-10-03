@@ -11,10 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
 import OrganizationAccountPage from '~/sections/organizations/account/OrganizationAccountPage.vue'
 
 const organizationRoutes = useOrganizationRoutes()
-const { data } = useNuxtData<{ data?: AppLayoutData }>(appLayoutDataKey)
-const organizationName = computed(() => data.value?.data?.organization.name ?? '')
+const layout = useAppLayoutData()
+const organizationName = computed(() => layout.value?.organization.name ?? '')
 </script>

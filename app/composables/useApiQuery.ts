@@ -49,7 +49,7 @@ export const useApiQuery = async <Value>(
   )
 
   // The HTTP status of a failed query (0 when it never got a response), for callers that react to
-  // a particular one - e.g. sending a signed-out visitor to the login page on 401.
+  // a particular one - e.g. a missing docs page.
   const code = computed(() =>
     asyncData.data.value?.status === 'error' ? asyncData.data.value.code : undefined,
   )

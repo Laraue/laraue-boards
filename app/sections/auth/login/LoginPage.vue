@@ -1,13 +1,6 @@
 <template>
   <section class="auth">
     <div class="auth-art">
-      <div class="logo">
-        <img
-          alt=""
-          class="logo-mark"
-          :src="laraueLogoUrl" />
-        <span>Laraue Boards</span>
-      </div>
       <div class="auth-copy">
         <h1>{{ t('heroTitle') }}</h1>
         <p>{{ t('heroDescription') }}</p>
@@ -37,13 +30,6 @@
     <div
       :aria-busy="submitting"
       class="auth-card">
-      <div class="logo">
-        <img
-          alt=""
-          class="logo-mark"
-          :src="laraueLogoUrl" />
-        <span>Laraue Boards</span>
-      </div>
       <h2>{{ t('welcomeBack') }}</h2>
       <p class="muted">
         {{ googleClientId ? t('continueWithTelegramOrGoogle') : t('continueWithTelegram') }}
@@ -196,7 +182,7 @@ const loginGoogle = async (code: string): Promise<void> => {
 .auth {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  min-height: 100dvh;
+  min-height: 100%;
 }
 
 .auth-art {
@@ -206,10 +192,6 @@ const loginGoogle = async (code: string): Promise<void> => {
   flex-direction: column;
   justify-content: space-between;
   padding: clamp(32px, 5vw, 64px);
-}
-
-.auth-art .logo {
-  color: white;
 }
 
 .auth-copy {
@@ -263,10 +245,6 @@ const loginGoogle = async (code: string): Promise<void> => {
   width: min(380px, calc(100% - 48px));
 }
 
-.auth-card > .logo {
-  display: none;
-}
-
 .auth-card h2 {
   font-size: 28px;
   letter-spacing: -0.02em;
@@ -308,10 +286,6 @@ const loginGoogle = async (code: string): Promise<void> => {
 
   .auth-card {
     width: min(380px, calc(100% - 32px));
-  }
-
-  .auth-card > .logo {
-    display: flex;
   }
 }
 </style>

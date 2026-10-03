@@ -4,7 +4,6 @@
     :deps="deps"
     :google-client-id="config.public.googleClientId"
     :on-logged-out="onLoggedOut"
-    :on-signed-out="onSignedOut"
     :telegram-bot-id="String(config.public.telegramBotId)" />
 </template>
 
@@ -12,7 +11,7 @@
 import { createUserAccountPageDeps } from '~/sections/account/user-account/UserAccountPage.deps.impl'
 import UserAccountPage from '~/sections/account/user-account/UserAccountPage.vue'
 
-definePageMeta({ layout: false })
+definePageMeta({ layout: 'account' })
 
 const config = useRuntimeConfig()
 const deps = createUserAccountPageDeps(useApiClient(), useAppPreferences())
@@ -29,9 +28,5 @@ onMounted(() => {
 const onLoggedOut = async (): Promise<void> => {
   clearNuxtData()
   await navigateTo('/login')
-}
-
-const onSignedOut = async (): Promise<void> => {
-  await navigateTo({ path: '/login', query: { redirect: '/account' } })
 }
 </script>

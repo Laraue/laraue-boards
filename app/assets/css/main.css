@@ -22,23 +22,7 @@
   }
 }
 body {
-  background:
-    radial-gradient(
-      circle at 12% 12%,
-      color-mix(in srgb, var(--color-accent) 16%, transparent),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 92% 28%,
-      color-mix(in srgb, var(--color-chart-3) 12%, transparent),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 68% 100%,
-      color-mix(in srgb, var(--color-chart-2) 8%, transparent),
-      transparent 24%
-    ),
-    var(--color-background);
+  background: var(--color-background);
   color: var(--color-text);
   font-family:
     'Inter',
@@ -51,6 +35,11 @@ body {
   line-height: 1.5;
   margin: 0;
   min-height: 100dvh;
+}
+/* Pages that scroll as a whole keep the scrollbar's place, so a short page and a long one center
+   their header the same way. The workspace scrolls inside and needs no gutter. */
+html:has(.landing-root, .standalone-shell) {
+  scrollbar-gutter: stable;
 }
 body:has(dialog[open]) {
   overflow: hidden;
@@ -186,10 +175,10 @@ input[type='checkbox']:hover {
   border-color: var(--color-muted);
 }
 input[type='checkbox']:checked {
-  background: var(--color-accent)
+  background: var(--color-action)
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E")
     center/12px no-repeat;
-  border-color: var(--color-accent);
+  border-color: var(--color-action);
 }
 input[type='checkbox']:focus-visible {
   box-shadow: var(--shadow-focus);
@@ -271,14 +260,14 @@ textarea::placeholder {
 }
 
 .primary {
-  background: var(--color-accent);
+  background: var(--color-action);
   border: 0;
   color: #fff;
   padding: 0 var(--space-4);
 }
 
 .primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-accent) 88%, #000);
+  background: var(--color-action-hover);
 }
 
 .secondary {
@@ -363,10 +352,12 @@ textarea::placeholder {
   align-items: center;
   color: var(--color-text);
   display: flex;
-  font-size: 20px;
-  font-weight: var(--font-weight-extrabold);
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
   gap: var(--space-2);
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03em;
+  /* Whole pixels, and not inherited: the landing page and the app have different line heights. */
+  line-height: 20px;
   text-decoration: none;
   transition: var(--transition-press);
 }
@@ -400,6 +391,71 @@ textarea::placeholder {
 
 .entity-avatar {
   border-radius: var(--radius-control);
+}
+
+/* The header every layout shares: the brand or the page's place on the left, actions on the right. */
+
+.app-header {
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  border-bottom: 1px solid var(--color-divider);
+  /* 55px plus the border, like SiteHeader: on a scaled screen the border is less than 1px, and
+     the logo has to land on the same spot in both. */
+  box-sizing: content-box;
+  display: flex;
+  gap: var(--space-3);
+  height: 55px;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.app-header-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* A borderless square action in a header: theme, language, menu. */
+.header-btn {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: inline-flex;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
+  height: var(--icon-btn-size);
+  justify-content: center;
+  min-width: var(--icon-btn-size);
+  padding: 0 var(--space-2);
+  text-decoration: none;
+}
+
+.header-btn:hover {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.header-btn > svg {
+  flex: none;
+  height: 16px;
+  width: 16px;
+}
+
+@media (max-width: 767px) {
+  .app-header {
+    padding: 0 var(--space-4);
+  }
+
+  .header-btn {
+    height: 40px;
+    min-width: 40px;
+  }
 }
 
 /* Page headings, toolbars, and states */
@@ -510,6 +566,11 @@ h1 {
   display: flex;
   gap: var(--space-2);
   margin-top: var(--space-4);
+}
+
+/* The space under a title row; under a PageHeader the page's own spacing is enough. */
+.toolbar:first-child {
+  margin-top: 0;
 }
 input[type='search'] {
   background: var(--color-surface)

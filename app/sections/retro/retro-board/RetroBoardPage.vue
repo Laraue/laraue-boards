@@ -3253,8 +3253,8 @@ const finish = async () => {
 }
 
 .facilitator-phase.active .facilitator-phase-index {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+  background: var(--color-action);
+  border-color: var(--color-action);
   color: #fff;
 }
 

@@ -11,7 +11,7 @@
 import { createJoinOrganizationPageDeps } from '~/sections/organizations/join-organization/JoinOrganizationPage.deps.impl'
 import JoinOrganizationPage from '~/sections/organizations/join-organization/JoinOrganizationPage.vue'
 
-definePageMeta({ layout: false })
+definePageMeta({ layout: 'public' })
 
 const route = useRoute('join-code')
 const config = useRuntimeConfig()

@@ -4,26 +4,11 @@
     :error-title="t('loadError')"
     :loading-text="t('loading')"
     :message="message"
-    :on-retry="retry"
+    :on-retry="refresh"
     :pending="pending">
     <template #default="{ data: organizations }">
       <section class="org-picker">
         <div class="picker-card">
-          <div class="picker-header">
-            <div class="logo">
-              <img
-                alt=""
-                class="logo-mark"
-                :src="laraueLogoUrl" />
-              <span>Laraue Boards</span>
-            </div>
-            <NuxtLink
-              class="secondary"
-              to="/account">
-              <CircleUser />
-              {{ t('yourAccount') }}
-            </NuxtLink>
-          </div>
           <h1>{{ t('chooseOrganization') }}</h1>
           <p class="muted">{{ t('selectWhere') }}</p>
           <div class="org-list">
@@ -82,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { CircleUser, LogOut, Plus } from '@lucide/vue'
+import { LogOut, Plus } from '@lucide/vue'
 
 import type { OrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
 import { useOrganizationTour } from '~/sections/organizations/select-organization/useOrganizationTour'
@@ -90,7 +75,6 @@ import { useOrganizationTour } from '~/sections/organizations/select-organizatio
 const props = defineProps<{
   deps: OrganizationPickerPageDeps
   onSelected: (organizationKey: string) => Promise<void> | void
-  onSignedOut: () => Promise<void> | void
 }>()
 
 const { t } = useI18n({
@@ -106,7 +90,6 @@ const { t } = useI18n({
     loading: 'Loading organizations…',
     organizations: 'Organizations',
     selectWhere: 'Select where you want to work today.',
-    yourAccount: 'Your Laraue account',
   },
   ru: {
     chooseOrganization: 'Выберите организацию',
@@ -120,29 +103,14 @@ const { t } = useI18n({
     loading: 'Загрузка организаций…',
     organizations: 'Организации',
     selectWhere: 'Выберите, где вы хотите работать сегодня.',
-    yourAccount: 'Ваш аккаунт Laraue',
   },
 })
 
 useHead({ title: t('organizations') })
 
-const { code, data, message, pending, refresh } = await useApiQuery(
-  'organization-picker',
-  (signal) => props.deps.view({ signal }),
+const { data, message, pending, refresh } = await useApiQuery('organization-picker', (signal) =>
+  props.deps.view({ signal }),
 )
-
-// This page has no layout, so nothing else sends a signed-out visitor to the login page.
-const leaveWhenSignedOut = async (): Promise<void> => {
-  if (code.value === 401) {
-    await props.onSignedOut()
-  }
-}
-await leaveWhenSignedOut()
-
-const retry = async (): Promise<void> => {
-  await refresh()
-  await leaveWhenSignedOut()
-}
 
 useOrganizationTour(data, props.deps.tour)
 
@@ -175,21 +143,12 @@ const leave = async (id: string, name: string): Promise<void> => {
 <style scoped>
 .org-picker {
   display: grid;
-  min-height: 100dvh;
-  padding: var(--space-6);
-  place-items: center;
+  justify-items: center;
+  padding: var(--space-8) var(--space-4);
 }
 
 .picker-card {
   width: min(var(--form-page-max-width), 100%);
-}
-
-.picker-header {
-  align-items: center;
-  display: flex;
-  gap: var(--space-3);
-  justify-content: space-between;
-  margin-bottom: 48px;
 }
 
 .org-list {

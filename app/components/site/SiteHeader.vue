@@ -6,9 +6,8 @@
         :to="homePath">
         <img
           alt=""
-          height="32"
-          :src="laraueLogoUrl"
-          width="32" />
+          class="logo-mark"
+          :src="laraueLogoUrl" />
         <span>Laraue Boards</span>
       </NuxtLink>
       <nav
@@ -20,20 +19,20 @@
         <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
       </nav>
       <div class="actions">
+        <NuxtLink
+          class="header-btn"
+          :hreflang="otherLocale"
+          :to="otherLocalePath">
+          {{ otherLocale.toUpperCase() }}
+        </NuxtLink>
         <button
           :aria-label="t('theme_toggle')"
-          class="theme-toggle"
+          class="header-btn"
           type="button"
           @click="toggleTheme">
           <Sun v-if="theme === 'dark'" />
           <Moon v-else />
         </button>
-        <NuxtLink
-          class="lang"
-          :hreflang="otherLocale"
-          :to="otherLocalePath">
-          {{ otherLocale.toUpperCase() }}
-        </NuxtLink>
         <NuxtLink
           class="open-app"
           to="/organizations">
@@ -108,26 +107,13 @@ const otherLocalePath = computed(
   align-items: center;
   display: flex;
   gap: 24px;
-  height: 60px;
+  /* Plus the header's border, like the app's header. */
+  height: 55px;
   margin: 0 auto;
   /* The width of the docs' content. The header has the same width on every page, so it does not
      change size when moving between the landing page and the docs. */
   max-width: 1360px;
   padding: 0 24px;
-}
-
-.logo {
-  align-items: center;
-  color: var(--color-text);
-  display: flex;
-  font-size: 16px;
-  font-weight: var(--font-weight-bold);
-  gap: 10px;
-  text-decoration: none;
-}
-
-.logo img {
-  border-radius: 8px;
 }
 
 .nav {
@@ -136,8 +122,7 @@ const otherLocalePath = computed(
   margin-left: auto;
 }
 
-.nav a,
-.lang {
+.nav a {
   color: var(--color-muted);
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
@@ -145,50 +130,30 @@ const otherLocalePath = computed(
   transition: color var(--duration-base);
 }
 
-.nav a:hover,
-.lang:hover {
+.nav a:hover {
   color: var(--color-text);
 }
 
 .actions {
   align-items: center;
   display: flex;
-  gap: 16px;
-}
-
-.theme-toggle {
-  align-items: center;
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  color: var(--color-muted);
-  display: flex;
-  height: 32px;
-  justify-content: center;
-  transition:
-    color var(--duration-base),
-    background var(--duration-base);
-  width: 32px;
-}
-
-.theme-toggle:hover {
-  background: var(--color-hover);
-  color: var(--color-text);
+  gap: var(--space-1);
 }
 
 .open-app {
-  background: var(--color-accent);
+  background: var(--color-action);
   border-radius: var(--radius-control);
   color: #fff;
   font-size: 13px;
   font-weight: var(--font-weight-semibold);
-  padding: 8px 16px;
+  margin-left: var(--space-2);
+  padding: 7px 14px;
   text-decoration: none;
   transition: background var(--duration-base);
 }
 
 .open-app:hover {
-  background: color-mix(in srgb, var(--color-accent) 85%, #000);
+  background: var(--color-action-hover);
 }
 
 @media (width <= 860px) {

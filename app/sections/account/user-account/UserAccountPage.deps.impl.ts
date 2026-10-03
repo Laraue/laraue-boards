@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { isApiError, request } from '#infrastructure/api/request'
+import { request } from '#infrastructure/api/request'
 import type { AppPreferences } from '~/composables/useAppPreferences'
 
 import { createConnectedAccountsSectionDeps } from './components/ConnectedAccountsSection/ConnectedAccountsSection.deps.impl'
@@ -20,16 +20,8 @@ export const createUserAccountPageDeps = (
 
   profile: createProfileSectionDeps(client),
 
-  // A signed-out visitor is sent to the login page rather than shown a failure.
   view: async ({ signal }) => {
-    try {
-      const user = await request(client.GET('/api/user', { signal }))
-      return { initials: user.initials ?? null, kind: 'signed-in' }
-    } catch (error) {
-      if (isApiError(error, 401)) {
-        return { kind: 'signed-out' }
-      }
-      throw error
-    }
+    const user = await request(client.GET('/api/user', { signal }))
+    return { initials: user.initials ?? null }
   },
 })

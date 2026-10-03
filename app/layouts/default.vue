@@ -1,7 +1,6 @@
 <template>
   <AppLayout
     :deps="deps"
-    :on-logged-out="onLoggedOut"
     :on-organization-switched="onOrganizationSwitched"
     :on-view-problem="onViewProblem"
     :organization-key="organizationKey">
@@ -15,7 +14,6 @@ import { createAppLayoutDeps } from '~/sections/common/app-layout/AppLayout.deps
 import AppLayout from '~/sections/common/app-layout/AppLayout.vue'
 
 const { organizationKey } = useOrganizationRoutes()
-const route = useRoute()
 const client = useApiClient()
 const deps = createAppLayoutDeps(client)
 const onOrganizationSwitched = () => globalThis.location.reload()
@@ -30,17 +28,9 @@ const onViewProblem = async (problem: RoutableProblem): Promise<void> => {
       showError(createError({ statusCode: 403 }))
       return
     }
-    case 'signed-out': {
-      await navigateTo({ path: '/login', query: { redirect: route.fullPath } })
-      return
-    }
     case 'unknown-organization': {
       await navigateTo('/organizations')
     }
   }
-}
-const onLoggedOut = async (): Promise<void> => {
-  clearNuxtData()
-  await navigateTo('/login')
 }
 </script>

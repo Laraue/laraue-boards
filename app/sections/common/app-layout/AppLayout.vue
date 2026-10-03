@@ -1,7 +1,6 @@
 <template>
   <AppLayoutContent
     v-if="data"
-    :on-logout="logout"
     :view-model="data">
     <slot />
   </AppLayoutContent>
@@ -24,7 +23,6 @@ import { useAppLayoutTour } from '~/sections/common/app-layout/useAppLayoutTour'
 
 const props = defineProps<{
   deps: AppLayoutDeps
-  onLoggedOut: () => Promise<void> | void
   onOrganizationSwitched: () => void
   onViewProblem: (problem: RoutableProblem) => Promise<void> | void
   organizationKey: string
@@ -54,7 +52,9 @@ const problem = computed(() =>
 const switchingOrganization = computed(() => problem.value?.kind === 'selecting-organization')
 
 const routableProblem = computed(() =>
-  problem.value?.kind === 'selecting-organization' ? undefined : problem.value,
+  problem.value?.kind === 'selecting-organization' || problem.value?.kind === 'signed-out'
+    ? undefined
+    : problem.value,
 )
 
 if (routableProblem.value) {
@@ -89,11 +89,4 @@ onNuxtReady(async () => {
     props.onOrganizationSwitched()
   }
 })
-
-const { execute: executeLogout, pending: loggingOut } = useApiAction(props.deps.logout)
-const logout = async () => {
-  if (!loggingOut.value && (await executeLogout())) {
-    await props.onLoggedOut()
-  }
-}
 </script>

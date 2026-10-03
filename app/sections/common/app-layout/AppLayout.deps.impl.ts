@@ -87,10 +87,6 @@ const loadAppLayout = async (
 }
 
 export const createAppLayoutDeps = (client: ApiClient): AppLayoutDeps => ({
-  logout: async () => {
-    await request(client.POST('/api/user/logout')).catch(() => undefined)
-  },
-
   // The tour is optional: a failure to load or save its state never reaches the layout.
   tour: {
     loadStatus: async () => {

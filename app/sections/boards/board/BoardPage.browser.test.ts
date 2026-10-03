@@ -16,6 +16,7 @@ const board: BoardPageViewModel = {
   columns: [],
   id: '12',
   issueCount: 0,
+  spaceName: 'Product',
   title: 'Roadmap',
 }
 
