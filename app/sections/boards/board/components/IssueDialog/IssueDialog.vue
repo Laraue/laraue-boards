@@ -114,7 +114,7 @@ watch(
   z-index: 1000;
 }
 .issue-dialog {
-  background: var(--color-workspace);
+  background: var(--color-background);
   inset: var(--space-8) 0 auto;
   margin: 0 auto;
   max-height: calc(100dvh - var(--space-8) - var(--space-8));

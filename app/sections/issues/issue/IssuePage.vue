@@ -578,7 +578,10 @@ watch(dirty, setDirty, { immediate: true })
 .issue-page {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
+  margin-inline: auto;
+  max-width: 1240px;
   min-height: 0;
+  width: 100%;
 }
 
 .issue-dialog-heading {
@@ -606,7 +609,7 @@ watch(dirty, setDirty, { immediate: true })
   align-items: start;
   column-gap: var(--space-8);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 336px;
+  grid-template-columns: minmax(0, 1fr) 304px;
   grid-template-rows: fit-content(100%);
   min-height: 0;
   overflow: hidden;
@@ -672,6 +675,8 @@ watch(dirty, setDirty, { immediate: true })
 /* A dense panel: its fields take the small control size through the tokens, at the text's size. */
 .issue-properties {
   --control-height: var(--control-height-small);
+
+  grid-auto-rows: var(--control-height);
 }
 
 .issue-properties,
