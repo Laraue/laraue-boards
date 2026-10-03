@@ -20,13 +20,13 @@
         v-for="comment in comments"
         :key="comment.id"
         class="issue-comment">
-        <span
-          class="avatar"
-          :style="{ background: comment.owner.color }">
-          {{ comment.owner.initials }}
-        </span>
         <div class="issue-comment-body">
           <div class="issue-comment-head">
+            <span
+              class="avatar"
+              :style="{ background: comment.owner.color }">
+              {{ comment.owner.initials }}
+            </span>
             <span class="issue-comment-name">{{ comment.owner.name }}</span>
             <time :datetime="comment.createdAt">{{ formatDateTime(comment.createdAt) }}</time>
             <div
@@ -193,6 +193,9 @@ const { t } = useI18n({
 
 const { formatDateTime } = useFormatters()
 
+// How many there are, for the tab holding them.
+const count = defineModel<number>('count', { default: 0 })
+
 // Lazy, so the issue itself shows without waiting for its comments.
 const {
   data: comments,
@@ -202,6 +205,14 @@ const {
   () => `issue-comments:${props.issueKey}`,
   (signal) => props.deps.load({ issueKey: props.issueKey, signal }),
   { lazy: true },
+)
+
+watch(
+  comments,
+  (loaded) => {
+    count.value = loaded?.length ?? 0
+  },
+  { immediate: true },
 )
 
 const state = reactive({
@@ -300,7 +311,7 @@ const remove = async (id: string) => {
 
 .issue-comment-list {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 /* Barely off the page, as in Linear: a tint and a faint line, so the text leads, not the box. */
@@ -312,42 +323,18 @@ const remove = async (id: string) => {
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
-/* A message: the author's avatar, then a bubble pointing at it, as in a chat. */
-.issue-comment {
-  align-items: start;
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: auto minmax(0, 1fr);
-}
-
-.issue-comment > .avatar {
-  font-size: var(--font-size-caption);
-  height: 28px;
-  width: 28px;
-}
-
+/* A card like a history entry: the author with the avatar on top, the text under it. */
 .issue-comment-body {
-  border-top-left-radius: var(--radius-small);
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
   min-width: 0;
-  padding: var(--space-3) var(--space-4);
-  position: relative;
+  padding: var(--space-2) var(--space-3);
 }
 
-/* The tail: a square turned on its corner, half of it out of the bubble, with its two outer borders. */
-.issue-comment-body::before {
-  background: inherit;
-  border-color: inherit;
-  border-style: solid;
-  border-width: 0 0 1px 1px;
-  content: '';
-  height: 8px;
-  left: -5px;
-  position: absolute;
-  top: 10px;
-  transform: rotate(45deg);
-  width: 8px;
+.issue-comment-head .avatar {
+  font-size: 9px;
+  height: 20px;
+  width: 20px;
 }
 
 .issue-comment-head {

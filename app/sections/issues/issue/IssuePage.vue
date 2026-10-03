@@ -120,13 +120,19 @@
                 <BaseTabs
                   v-model="state.activeTab"
                   :items="[
-                    { label: t('comments'), value: 'comments' },
-                    { label: t('history'), value: 'history' },
+                    {
+                      count: state.commentCount,
+                      icon: IconMessageCircle,
+                      label: t('comments'),
+                      value: 'comments',
+                    },
+                    { icon: IconHistory, label: t('history'), value: 'history' },
                   ]"
                   :label="t('issueActivity')">
                   <template #comments>
                     <IssueComments
                       :key="issue.issueKey"
+                      v-model:count="state.commentCount"
                       :deps="deps.comments"
                       :issue-key="issue.issueKey" />
                   </template>
@@ -262,8 +268,10 @@
 import {
   IconArrowLeft,
   IconCheck,
+  IconHistory,
   IconLink,
   IconListDetails,
+  IconMessageCircle,
   IconPaperclip,
 } from '@tabler/icons-vue'
 
@@ -368,6 +376,7 @@ const state = reactive({
   assigneeId: '',
   attributeValues: {} as Record<string, string>,
   boardId: '',
+  commentCount: 0,
   content: '',
   copied: false,
   dirty: false,
