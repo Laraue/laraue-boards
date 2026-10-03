@@ -16,11 +16,11 @@
     :on-open="load"
     :options="visibleOptions"
     :placeholder="placeholder ?? t('select')">
-    <template #prefix>
+    <template #icon="{ option }">
       <span
         class="avatar"
-        :style="{ background: selectedOption.color }">
-        {{ selectedOption.initials }}
+        :style="{ background: option?.color ?? 'var(--color-muted)' }">
+        {{ option?.initials ?? '?' }}
       </span>
     </template>
   </BaseSelect>
@@ -84,14 +84,6 @@ const visibleOptions = computed(() => {
     ? [initial, ...options.value]
     : options.value
 })
-
-const selectedOption = computed(
-  () =>
-    visibleOptions.value.find((option) => option.value === model.value) ?? {
-      color: 'var(--color-muted)',
-      initials: '?',
-    },
-)
 
 const load = () => {
   if (props.spaceKey && data.value === undefined && !pending.value) {

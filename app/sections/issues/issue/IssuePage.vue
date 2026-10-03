@@ -135,6 +135,7 @@
                     :deps="deps.spaceSelect"
                     :disabled="!issue.canEdit"
                     :initial-option="{
+                      color: issue.spaceColor,
                       label: issue.spaceLabel || t('currentSpace'),
                       value: issue.spaceId,
                     }" />
@@ -146,6 +147,8 @@
                     :deps="deps.boardSelect"
                     :disabled="!issue.canEdit"
                     :initial-option="{
+                      color: issue.boardColor,
+                      isBacklog: issue.boardIsBacklog,
                       label: issue.boardLabel || t('currentBoard'),
                       value: issue.boardId,
                     }"
@@ -159,6 +162,7 @@
                     :deps="deps.statusSelect"
                     :disabled="!issue.canEdit"
                     :initial-option="{
+                      color: issue.statusColor,
                       label: issue.statusLabel || t('currentStatus'),
                       value: issue.statusId,
                     }" />
@@ -237,12 +241,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  IconArrowLeft,
-  IconCheck,
-  IconLink,
-  IconListDetails,
-} from '@tabler/icons-vue'
+import { IconArrowLeft, IconCheck, IconLink, IconListDetails } from '@tabler/icons-vue'
 
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'

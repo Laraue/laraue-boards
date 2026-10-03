@@ -15,10 +15,18 @@
     "
     :on-open="load"
     :options="visibleOptions"
-    :placeholder="placeholder ?? t('select')" />
+    :placeholder="placeholder ?? t('select')">
+    <template #icon="{ option }">
+      <SpaceIcon
+        class="select-icon"
+        :style="{ color: option?.color }" />
+    </template>
+  </BaseSelect>
 </template>
 
 <script setup lang="ts">
+import { SpaceIcon } from '~/constants/icons'
+
 import type { SpaceSelectDeps, SpaceSelectOption } from './SpaceSelect.deps'
 
 const props = withDefaults(
@@ -88,3 +96,9 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+.select-icon {
+  color: var(--color-muted);
+}
+</style>

@@ -10,9 +10,11 @@
         :aria-busy="loading || undefined"
         class="base-select"
         :class="{ placeholder: !selectedOption }">
-        <slot name="prefix" />
+        <slot
+          name="icon"
+          :option="selectedOption" />
         <span class="base-select-value">{{ selectedOption?.label ?? placeholder }}</span>
-        <IconSelector class="base-select-chevron" />
+        <IconChevronDown class="base-select-chevron" />
       </SelectTrigger>
       <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
       <SelectContent
@@ -32,6 +34,9 @@
             class="base-select-item"
             :disabled="option.disabled"
             :value="toItemValue(option.value)">
+            <slot
+              name="icon"
+              :option="option" />
             <SelectItemText>{{ option.label }}</SelectItemText>
             <SelectItemIndicator class="base-select-check">
               <IconCheck />
@@ -43,8 +48,12 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { IconCheck, IconSelector } from '@tabler/icons-vue'
+<script lang="ts">
+export type BaseSelectOption = { disabled?: boolean; label: string; value: string }
+</script>
+
+<script setup lang="ts" generic="T extends BaseSelectOption">
+import { IconCheck, IconChevronDown } from '@tabler/icons-vue'
 import {
   SelectContent,
   SelectItem,
@@ -55,10 +64,6 @@ import {
   SelectViewport,
 } from 'reka-ui'
 
-export type BaseSelectOption = { disabled?: boolean; label: string; value: string }
-
-defineOptions({ inheritAttrs: false })
-
 const props = withDefaults(
   defineProps<{
     disabled?: boolean
@@ -66,7 +71,7 @@ const props = withDefaults(
     // Shown above the options instead of them: loading, nothing to pick, a load error.
     message?: string
     onOpen?: () => void
-    options: BaseSelectOption[]
+    options: T[]
     placeholder?: string
   }>(),
   {
@@ -78,7 +83,14 @@ const props = withDefaults(
   },
 )
 
+defineOptions({ inheritAttrs: false })
+
 const model = defineModel<string>({ required: true })
+
+defineSlots<{
+  // The option's icon, avatar or color, in the field and in the list; no option is the placeholder.
+  icon?: (props: { option: T | undefined }) => unknown
+}>()
 
 // Reka reserves '' for "nothing selected", so an option for '' (like "None") gets another value.
 const emptyValue = '\u0000'

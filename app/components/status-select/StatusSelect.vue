@@ -15,7 +15,13 @@
     "
     :on-open="load"
     :options="visibleOptions"
-    :placeholder="placeholder ?? t('select')" />
+    :placeholder="placeholder ?? t('select')">
+    <template #icon="{ option }">
+      <span
+        class="status-dot"
+        :style="{ background: option?.color }" />
+    </template>
+  </BaseSelect>
 </template>
 
 <script setup lang="ts">
@@ -108,3 +114,15 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+/* An 8px dot in an icon's 16px place, so the label lines up with the other selects. */
+.status-dot {
+  background: var(--color-muted);
+  border-radius: 50%;
+  flex: none;
+  height: 8px;
+  margin: 0 var(--space-1);
+  width: 8px;
+}
+</style>

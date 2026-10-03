@@ -33,6 +33,7 @@ const issue: IssuePageViewModel = {
   spaceColor: '#4774d4',
   spaceId: '7',
   spaceLabel: 'Product',
+  statusColor: '#444',
   statusId: '3',
   statusLabel: 'To do',
   title: 'Fix the bug',

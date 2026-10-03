@@ -4,16 +4,16 @@
   <header class="app-header page-header">
     <div class="page-header-start">
       <IconButton
-        :label="t('openMenu')"
         class="page-header-menu"
+        :label="t('openMenu')"
         @click="sidebarOpen = true">
         <IconMenu2 />
       </IconButton>
       <!-- A phone has no room for the path, so it keeps the way back up it. -->
       <IconButton
         v-if="back"
-        :label="t('backTo', { page: back.label })"
         class="page-header-back"
+        :label="t('backTo', { page: back.label })"
         :to="back.to">
         <IconArrowLeft />
       </IconButton>

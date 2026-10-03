@@ -5,8 +5,8 @@
     {{ locale === 'ru' ? 'EN' : 'RU' }}
   </IconButton>
   <IconButton
-    :label="theme === 'dark' ? t('lightTheme') : t('darkTheme')"
     :aria-pressed="theme === 'dark'"
+    :label="theme === 'dark' ? t('lightTheme') : t('darkTheme')"
     @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
     <IconSun v-if="theme === 'dark'" />
     <IconMoon v-else />

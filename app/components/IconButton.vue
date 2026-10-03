@@ -43,8 +43,6 @@ import { IconLoader2 } from '@tabler/icons-vue'
 import { TooltipContent, TooltipProvider, TooltipRoot, TooltipTrigger } from 'reka-ui'
 import type { RouteLocationRaw } from 'vue-router'
 
-defineOptions({ inheritAttrs: false })
-
 withDefaults(
   defineProps<{
     disabled?: boolean
@@ -66,6 +64,8 @@ withDefaults(
     variant: 'ghost',
   },
 )
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <style scoped>

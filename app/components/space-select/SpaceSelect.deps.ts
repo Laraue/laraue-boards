@@ -1,4 +1,6 @@
 export type SpaceSelectOption = {
+  // Colors the space's icon; without it the icon is muted.
+  color?: string
   label: string
   value: string
 }

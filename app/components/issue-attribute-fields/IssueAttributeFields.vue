@@ -86,15 +86,22 @@ const update = (id: string, value: string) => {
 </script>
 
 <style scoped>
+/* The icon sits inside the field, where a select shows its own icon. */
 .attribute-field {
-  align-items: center;
   display: grid;
-  gap: var(--space-2);
-  grid-template-columns: auto minmax(0, 1fr);
+  position: relative;
 }
 
 .attribute-icon {
-  height: 14px;
-  width: 14px;
+  left: calc(var(--space-3) + 1px);
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 1;
+}
+
+.attribute-field :deep(:is(input, .base-select)) {
+  padding-left: calc(var(--space-3) + var(--icon-size) + var(--space-2));
 }
 </style>

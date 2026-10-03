@@ -64,6 +64,7 @@ export type IssuePageViewModel = {
   spaceColor: string
   spaceId: string
   spaceLabel: string
+  statusColor: string
   statusId: string
   statusLabel: string
   title: string

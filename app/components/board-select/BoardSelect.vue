@@ -15,10 +15,21 @@
     "
     :on-open="load"
     :options="visibleOptions"
-    :placeholder="placeholder ?? t('select')" />
+    :placeholder="placeholder ?? t('select')">
+    <template #icon="{ option }">
+      <component
+        :is="option?.isBacklog ? IconListDetails : BoardIcon"
+        class="select-icon"
+        :style="{ color: option?.color }" />
+    </template>
+  </BaseSelect>
 </template>
 
 <script setup lang="ts">
+import { IconListDetails } from '@tabler/icons-vue'
+
+import { BoardIcon } from '~/constants/icons'
+
 import type { BoardSelectDeps, BoardSelectOption } from './BoardSelect.deps'
 
 const props = withDefaults(
@@ -91,3 +102,9 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+.select-icon {
+  color: var(--color-muted);
+}
+</style>

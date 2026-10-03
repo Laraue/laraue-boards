@@ -16,6 +16,6 @@ export const createSpaceSelectDeps = (client: ApiClient): SpaceSelectDeps => ({
           })
         : client.GET('/api/spaces', { signal }),
     )
-    return spaces.map((space) => ({ label: space.name, value: space.key }))
+    return spaces.map((space) => ({ color: space.color, label: space.name, value: space.key }))
   },
 })

@@ -374,9 +374,6 @@ onBeforeUnmount(() => {
   gap: var(--space-2);
 }
 
-
-
-
 .issue-attachment-paste-hint {
   align-self: center;
   font-size: var(--font-size-small);

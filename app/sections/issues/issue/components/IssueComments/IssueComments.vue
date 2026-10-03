@@ -49,7 +49,9 @@
               </IconButton>
             </div>
           </div>
-          <template v-if="state.editingId === comment.id">
+          <div
+            v-if="state.editingId === comment.id"
+            class="issue-comment-composer">
             <textarea
               v-model="state.editText"
               :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
@@ -60,32 +62,32 @@
               @keydown.enter.meta.exact.prevent="update(comment.id)" />
             <div class="issue-comment-form-actions">
               <BaseButton
-                size="small"
                 v-if="state.editText.trim()"
                 class="issue-comment-ai"
                 :disabled="!!state.pendingId || summarizing"
                 :loading="state.summarizingId === comment.id"
+                size="small"
                 @click="improveWithAi(comment.id)">
                 <IconSparkles v-if="state.summarizingId !== comment.id" />
                 {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
               </BaseButton>
-              <BaseButton
-                size="small"
+              <IconButton
                 :disabled="!!state.pendingId || summarizing"
-                variant="ghost"
+                :label="t('cancel')"
                 @click="cancelEdit">
-                {{ t('cancel') }}
-              </BaseButton>
-              <BaseButton
-                size="small"
+                <IconX />
+              </IconButton>
+              <IconButton
                 :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
+                :label="t('save')"
                 :loading="state.pendingId === comment.id"
-                variant="primary"
+                :tooltip="t('saveShortcut')"
+                :variant="state.editText.trim() ? 'primary' : 'ghost'"
                 @click="update(comment.id)">
-                {{ state.pendingId === comment.id ? t('saving') : t('save') }}
-              </BaseButton>
+                <IconCheck />
+              </IconButton>
             </div>
-          </template>
+          </div>
           <p
             v-else
             class="issue-comment-text">
@@ -100,17 +102,17 @@
         :aria-label="t('writeComment')"
         :disabled="!!state.pendingId || summarizing"
         :placeholder="t('writeCommentPlaceholder')"
-        rows="2"
+        rows="1"
         @input="clearMessage"
         @keydown.enter.ctrl.exact.prevent="create"
         @keydown.enter.meta.exact.prevent="create" />
       <div class="issue-comment-form-actions">
         <BaseButton
           v-if="state.newText.trim()"
-          size="small"
           class="issue-comment-ai"
           :disabled="!!state.pendingId || summarizing"
           :loading="state.summarizingId === 'new'"
+          size="small"
           @click="improveWithAi('new')">
           <IconSparkles v-if="state.summarizingId !== 'new'" />
           {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
@@ -130,7 +132,14 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowUp, IconPencil, IconSparkles, IconTrash } from '@tabler/icons-vue'
+import {
+  IconArrowUp,
+  IconCheck,
+  IconPencil,
+  IconSparkles,
+  IconTrash,
+  IconX,
+} from '@tabler/icons-vue'
 
 import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.deps'
 
@@ -154,7 +163,7 @@ const { t } = useI18n({
     improvingWithAi: 'Cleaning up…',
     loading: 'Loading comments…',
     save: 'Save',
-    saving: 'Saving…',
+    saveShortcut: 'Save (Ctrl+Enter)',
     writeComment: 'Write a comment',
     writeCommentPlaceholder: 'Write a comment…',
   },
@@ -172,7 +181,7 @@ const { t } = useI18n({
     improvingWithAi: 'Приводим в порядок…',
     loading: 'Загрузка комментариев…',
     save: 'Сохранить',
-    saving: 'Сохранение…',
+    saveShortcut: 'Сохранить (Ctrl+Enter)',
     writeComment: 'Написать комментарий',
     writeCommentPlaceholder: 'Напишите комментарий…',
   },
@@ -361,7 +370,6 @@ const remove = async (id: string) => {
 .issue-comment-composer textarea {
   background: transparent;
   border: 0;
-  min-height: 64px;
   padding: var(--space-1) var(--space-2);
   resize: none;
 }

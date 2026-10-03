@@ -5,7 +5,7 @@ import { createAssigneeSelectDeps } from '~/components/assignee-select/AssigneeS
 import { createBoardSelectDeps } from '~/components/board-select/BoardSelect.deps.impl'
 import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps.impl'
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
-import { DEFAULT_COLOR } from '~/constants/colors'
+import { COLORS, DEFAULT_COLOR } from '~/constants/colors'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
@@ -93,6 +93,7 @@ const mapIssue = (
   spaceColor: issue.spaceColor,
   spaceId: issue.spaceKey,
   spaceLabel: issue.spaceName,
+  statusColor: issue.statusColor ?? COLORS.gray,
   statusId: String(issue.statusId),
   statusLabel: issue.statusName ?? '',
   title: issue.title,
