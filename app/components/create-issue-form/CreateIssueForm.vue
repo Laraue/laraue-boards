@@ -1,19 +1,19 @@
 <template>
   <form
-    class="issue-form issue-form-page"
+    class="issue-form"
     @submit.prevent="submit">
     <div class="issue-form-main">
-      <div class="issue-field">
-        <label :for="`${idPrefix}-title`">{{ t('title') }}</label>
-        <input
+      <div class="issue-head">
+        <textarea
           :id="`${idPrefix}-title`"
-          v-model="form.title"
+          :aria-label="t('title')"
           class="issue-title-input"
           :maxlength="256"
-          :placeholder="t('titlePlaceholder')" />
-      </div>
-      <div class="issue-field issue-field-description">
-        <span class="issue-field-label">{{ t('description') }}</span>
+          :placeholder="t('titlePlaceholder')"
+          rows="1"
+          :value="form.title"
+          @input="changeTitle"
+          @keydown.enter.prevent />
         <IssueDescription
           v-model="form.content"
           v-model:title="form.title"
@@ -36,61 +36,65 @@
         :files="form.files"
         :on-change="changeFiles" />
     </div>
-    <div class="issue-form-side">
-      <template v-if="board">
-        <label>{{ t('board') }}</label>
-        <div class="selected-entity">{{ board.name }}</div>
-      </template>
-      <template v-else>
-        <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
-        <SpaceSelect
-          :id="`${idPrefix}-space`"
-          v-model="form.spaceKey"
-          :deps="selectDeps.spaceSelect" />
+    <aside
+      :aria-label="t('properties')"
+      class="issue-form-side">
+      <h2>{{ t('properties') }}</h2>
+      <div class="issue-properties">
+        <template v-if="board">
+          <span class="issue-property-label">{{ t('board') }}</span>
+          <div class="selected-entity">{{ board.name }}</div>
+        </template>
+        <template v-else>
+          <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
+          <SpaceSelect
+            :id="`${idPrefix}-space`"
+            v-model="form.spaceKey"
+            :deps="selectDeps.spaceSelect" />
 
-        <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
-        <BoardSelect
-          :id="`${idPrefix}-board`"
-          v-model="form.boardId"
-          :deps="selectDeps.boardSelect"
-          :space-key="form.spaceKey" />
-      </template>
+          <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
+          <BoardSelect
+            :id="`${idPrefix}-board`"
+            v-model="form.boardId"
+            :deps="selectDeps.boardSelect"
+            :space-key="form.spaceKey" />
+        </template>
 
-      <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
-      <StatusSelect
-        :id="`${idPrefix}-status`"
-        v-model="form.statusId"
-        :board-id="boardId"
-        :deps="deps.statusSelect"
-        eager
-        select-first />
+        <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
+        <StatusSelect
+          :id="`${idPrefix}-status`"
+          v-model="form.statusId"
+          :board-id="boardId"
+          :deps="deps.statusSelect"
+          eager
+          select-first />
 
-      <IssueAttributeFields
-        v-model="form.attributeValues"
-        :attributes="attributes" />
-
-      <label :for="`${idPrefix}-assignee`">{{ t('assignee') }}</label>
-      <AssigneeSelect
-        :id="`${idPrefix}-assignee`"
-        v-model="form.assigneeId"
-        :deps="deps.assigneeSelect"
-        eager
-        select-current-user
-        :space-key="spaceKey" />
-
+        <label :for="`${idPrefix}-assignee`">{{ t('assignee') }}</label>
+        <AssigneeSelect
+          :id="`${idPrefix}-assignee`"
+          v-model="form.assigneeId"
+          :deps="deps.assigneeSelect"
+          eager
+          select-current-user
+          :space-key="spaceKey" />
+        <IssueAttributeFields
+          v-model="form.attributeValues"
+          :attributes="attributes" />
+      </div>
+    </aside>
+    <div class="issue-actions">
       <p
         v-if="message"
         class="form-error">
         {{ message }}
       </p>
-    </div>
-    <div class="page-actions">
-      <button
-        class="primary"
+      <BaseButton
         :disabled="pending || !form.content.trim() || !form.statusId || !form.assigneeId"
-        type="submit">
+        :loading="pending"
+        type="submit"
+        variant="primary">
         {{ pending ? t('adding') : t('addIssue') }}
-      </button>
+      </BaseButton>
     </div>
   </form>
 </template>
@@ -127,7 +131,7 @@ const { t } = useI18n({
     attachImages: 'Attach images',
     attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
     board: 'Board',
-    description: 'Description',
+    properties: 'Properties',
     space: 'Space',
     status: 'Status',
     title: 'Title',
@@ -140,7 +144,7 @@ const { t } = useI18n({
     attachImages: 'Прикрепить изображения',
     attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',
     board: 'Доска',
-    description: 'Описание',
+    properties: 'Свойства',
     space: 'Раздел',
     status: 'Статус',
     title: 'Заголовок',
@@ -172,6 +176,10 @@ const changeFiles = (files: File[]) => {
   form.files = files
 }
 
+const changeTitle = (event: Event) => {
+  form.title = (event.target as HTMLTextAreaElement).value.replaceAll(/\s*\n\s*/g, ' ')
+}
+
 const submit = async (): Promise<void> => {
   const created = await create({
     assigneeId: form.assigneeId,
@@ -190,91 +198,143 @@ const submit = async (): Promise<void> => {
 <style scoped>
 .issue-form {
   align-items: start;
-  column-gap: var(--space-6);
+  column-gap: var(--space-8);
   display: grid;
-  grid-template-areas: 'main side';
-  grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+  grid-template-areas:
+    'main side'
+    'actions actions';
+  grid-template-columns: minmax(0, 1fr) 304px;
+  margin-inline: auto;
+  max-width: 1240px;
+  row-gap: var(--space-4);
   width: 100%;
 }
 
 .issue-title-input {
-  font-size: var(--font-size-title);
-  font-weight: normal;
-}
-
-.issue-field {
-  display: grid;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.issue-field-description {
-  grid-template-rows: max-content minmax(0, 1fr);
-  min-height: 0;
-}
-
-/* Same look as the global label: the description has no single control a label could point at. */
-.issue-field-label {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-text);
+  font-size: 26px;
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  max-height: none;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  resize: none;
 }
 
-.issue-field > label {
-  margin: 0;
+.issue-title-input:is(:hover, :focus, :disabled) {
+  border: 0;
+  box-shadow: none;
+}
+
+.issue-head {
+  display: grid;
+  gap: var(--space-4);
 }
 
 .issue-form-main {
-  align-self: stretch;
-  display: grid;
-  gap: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
   grid-area: main;
-  grid-auto-rows: max-content;
-  grid-template-rows: max-content minmax(200px, 1fr);
-  min-height: 0;
   min-width: 0;
-}
-
-.issue-form textarea {
-  min-height: 200px;
+  padding-right: var(--space-3);
 }
 
 .issue-form-side {
-  align-items: center;
   display: grid;
+  font-size: 13px;
   gap: var(--space-4);
   grid-area: side;
-  grid-auto-rows: minmax(var(--control-height), auto);
-  grid-template-columns: max-content minmax(0, 1fr);
-  place-self: start stretch;
+  min-width: 0;
 }
 
-.issue-form-side > label {
+.issue-form-side h2 {
+  font-size: inherit;
   margin: 0;
 }
 
-.issue-form-side > :is(.form-error, .page-actions) {
-  grid-column: 1 / -1;
+.issue-properties {
+  --control-height: var(--control-height-small);
+
+  align-items: center;
+  display: grid;
+  gap: var(--space-2) var(--space-3);
+  grid-auto-rows: var(--control-height);
+  grid-template-columns: 88px minmax(0, 1fr);
 }
 
-.issue-form-page {
-  margin-top: var(--space-5);
+.issue-properties :deep(label),
+.issue-property-label {
+  color: var(--color-muted);
+  font-weight: normal;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.issue-properties :deep(.base-select-root) {
+  justify-items: start;
+}
+
+.issue-properties :deep(.base-select) {
+  width: fit-content;
+}
+
+.issue-properties :deep(:is(input, .base-select)) {
+  background: transparent;
+  border-color: transparent;
+  font-size: inherit;
+}
+
+.issue-properties :deep(.base-select-content) {
+  font-size: inherit;
+}
+
+.issue-properties :deep(:is(input, .base-select):hover:not(:disabled)) {
+  background: var(--color-hover);
+  border-color: var(--color-border);
+}
+
+.issue-properties:has(label:hover)
+  :deep(:is(input, .base-select):not(:focus-visible, [data-state='open'])) {
+  background: transparent;
+  border-color: transparent;
+}
+
+.issue-properties :deep(:is(input, .base-select):is(:focus-visible, [data-state='open'])) {
+  border-color: var(--color-focus);
 }
 
 .selected-entity {
   align-items: center;
-  background: var(--color-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
   display: flex;
   min-height: var(--control-height);
   padding: 0 var(--space-3);
 }
 
+.issue-actions {
+  grid-area: actions;
+}
+
+.issue-actions .form-error {
+  margin: 0 0 var(--space-3);
+}
+
 @media (max-width: 767px) {
+  .issue-title-input {
+    font-size: var(--font-size-title);
+  }
+
   .issue-form {
     column-gap: 0;
     grid-template-areas:
       'main'
-      'side';
+      'side'
+      'actions';
     grid-template-columns: 1fr;
     row-gap: var(--space-5);
   }
