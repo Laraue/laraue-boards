@@ -144,7 +144,7 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-usePageTitle(t('createAttribute'))
+useHead({ title: t('createAttribute') })
 
 const { execute: create, message, pending } = useApiAction(props.deps.create)
 

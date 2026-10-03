@@ -77,9 +77,9 @@ const { data, message, pending, refresh } = await useApiQuery(
   (signal) => props.deps.view({ boardId: props.boardId, signal }),
 )
 
-usePageTitle(
-  computed(() => (data.value ? `${data.value.name} ${t('settings')}` : t('boardSettings'))),
-)
+useHead({
+  title: computed(() => (data.value ? `${data.value.name} ${t('settings')}` : t('boardSettings'))),
+})
 
 const {
   execute: saveSettings,

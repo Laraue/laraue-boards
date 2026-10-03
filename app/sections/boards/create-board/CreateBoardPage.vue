@@ -144,7 +144,7 @@ const copyStatuses = () => {
   form.statuses = (source?.statuses ?? []).map((status) => ({ ...status, id: ++nextStatusId }))
 }
 
-usePageTitle(t('createBoard'))
+useHead({ title: t('createBoard') })
 
 const { execute: submit, message, pending } = useApiAction(props.deps.create)
 

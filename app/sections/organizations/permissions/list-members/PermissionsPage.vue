@@ -125,7 +125,7 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 
-usePageTitle(t('permissions'))
+useHead({ title: t('permissions') })
 
 const { data, message, pending, refresh } = await useApiQuery(
   'organization-permissions',

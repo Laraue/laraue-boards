@@ -97,7 +97,7 @@ const typeLabels = {
   text: t('text'),
 } satisfies Record<AttributeListItem['type'], string>
 
-usePageTitle(t('attributes'))
+useHead({ title: t('attributes') })
 
 const { data, message, pending, refresh } = await useApiQuery('organization-attributes', (signal) =>
   props.deps.view({ signal }),

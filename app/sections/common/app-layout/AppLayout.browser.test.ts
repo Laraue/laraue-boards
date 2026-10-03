@@ -74,13 +74,10 @@ it('opens the navigation from the mobile menu button', async () => {
   await expect.element(page.getByRole('link', { name: 'All issues' })).toBeVisible()
 })
 
-it('separates the own account from the account in the organization', async () => {
+it('links the member to the account in the organization', async () => {
   await page.viewport(1280, 800)
   await mount(createDeps())
 
-  await expect
-    .element(page.getByRole('link', { name: 'Your Laraue account' }))
-    .toHaveAttribute('href', '/account')
   await expect
     .element(page.getByRole('link', { name: /Ada Lovelace Free/ }))
     .toHaveAttribute('href', '/organizations/acme-ab12/account')

@@ -111,12 +111,13 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
     ),
 
   // The attributes come first: the filters in the query are read against them.
-  view: async ({ attributeQuery, boardId, search, signal }) => {
+  view: async ({ attributeQuery, boardId, search, signal, spaceKey }) => {
     const attributes = mapRawIssueFilters(
       attributeQuery,
       await request(client.GET('/api/organizations/attributes', { signal })),
     )
-    const [board, columnIssues] = await Promise.all([
+    // The board doesn't carry its space's name; the spaces list does.
+    const [board, columnIssues, spaces] = await Promise.all([
       request(client.GET('/api/epics/{id}', { params: { path: { id: boardId } }, signal })),
       request(
         client.POST('/api/issues/board', {
@@ -129,6 +130,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
           signal,
         }),
       ),
+      request(client.GET('/api/spaces', { signal })),
     ])
     const issues = mapBoardIssues(columnIssues)
     const issuesByStatus = new Map(issues.columns.map((column) => [column.id, column]))
@@ -152,6 +154,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       }),
       id: boardId,
       issueCount: issues.issueCount,
+      spaceName: spaces.find((space) => space.key === spaceKey)?.name ?? spaceKey,
       title: board.name,
     }
   },

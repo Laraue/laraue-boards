@@ -100,7 +100,7 @@ const { t } = useI18n({
   },
 })
 
-usePageTitle(t('yourAccount'))
+useHead({ title: t('yourAccount') })
 
 const { data, message, pending, refresh } = await useApiQuery('user-account', (signal) =>
   props.deps.view({ signal }),

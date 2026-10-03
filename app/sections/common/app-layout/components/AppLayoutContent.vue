@@ -1,6 +1,6 @@
 <template>
   <div class="shell">
-    <aside :class="{ open: state.sidebarOpen }">
+    <aside :class="{ open: sidebarOpen }">
       <NuxtLink
         class="logo"
         :to="organizationRoutes.issues()">
@@ -12,7 +12,7 @@
       </NuxtLink>
       <div
         class="organization"
-        @click="state.sidebarOpen = false">
+        @click="sidebarOpen = false">
         <NuxtLink
           :aria-label="`${t('switchOrganization')}. ${t('currentOrganization')}: ${viewModel.organization.name}`"
           class="organization-select"
@@ -32,7 +32,7 @@
       </div>
       <nav
         :aria-label="t('mainNavigation')"
-        @click="state.sidebarOpen = false">
+        @click="sidebarOpen = false">
         <NuxtLink
           :class="{
             active: active('organizations-organizationKey-issues'),
@@ -108,7 +108,7 @@
           class="sidebar-user"
           :class="{ active: within('organizations-organizationKey-account') }"
           :to="organizationRoutes.account()"
-          @click="state.sidebarOpen = false">
+          @click="sidebarOpen = false">
           <span
             class="avatar"
             :style="{ background: viewModel.user.color }">
@@ -125,53 +125,30 @@
     </aside>
     <Transition name="fade">
       <button
-        v-if="state.sidebarOpen"
+        v-if="sidebarOpen"
         :aria-label="t('closeMenu')"
         class="scrim"
-        @click="state.sidebarOpen = false" />
+        @click="sidebarOpen = false" />
     </Transition>
     <main>
-      <header class="app-header">
-        <div class="header-start">
-          <button
-            :aria-label="t('openMenu')"
-            class="header-btn mobile-menu-button"
-            type="button"
-            @click="state.sidebarOpen = true">
-            <Menu />
-          </button>
-          <AppBreadcrumbs :view-model="viewModel" />
-        </div>
-        <div class="app-header-actions">
-          <AppHeaderPreferences />
-          <NuxtLink
-            :aria-label="t('yourAccount')"
-            class="header-btn"
-            to="/account">
-            <CircleUser />
-          </NuxtLink>
-        </div>
-      </header>
+      <!-- ponytail: a page without its own PageHeader yet gets this button; drop it once every page has one. -->
+      <button
+        :aria-label="t('openMenu')"
+        class="icon-btn mobile-menu-button"
+        type="button"
+        @click="sidebarOpen = true">
+        <Menu />
+      </button>
       <slot />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  BookOpen,
-  ChevronsUpDown,
-  CircleUser,
-  ClipboardList,
-  History,
-  Menu,
-  Plus,
-  Settings,
-} from '@lucide/vue'
+import { BookOpen, ChevronsUpDown, ClipboardList, History, Menu, Plus, Settings } from '@lucide/vue'
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
-import AppBreadcrumbs from '~/sections/common/app-layout/components/AppBreadcrumbs.vue'
 import { docsPath } from '~/sections/docs/docsPaths'
 
 const props = defineProps<{
@@ -179,7 +156,7 @@ const props = defineProps<{
 }>()
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
-const state = reactive({ sidebarOpen: false })
+const sidebarOpen = useSidebarOpen()
 const { locale, t } = useI18n({
   en: {
     admin: 'Admin',
@@ -198,7 +175,6 @@ const { locale, t } = useI18n({
     spaces: 'Spaces',
     switchOrganization: 'Switch organization',
     tariffUnavailable: 'Tariff unavailable',
-    yourAccount: 'Your Laraue account',
   },
   ru: {
     admin: 'Админка',
@@ -217,7 +193,6 @@ const { locale, t } = useI18n({
     spaces: 'Разделы',
     switchOrganization: 'Сменить организацию',
     tariffUnavailable: 'Тариф недоступен',
-    yourAccount: 'Ваш аккаунт Laraue',
   },
 })
 const active = (name: OrganizationRouteName) => route.name === name
@@ -346,30 +321,15 @@ aside > nav button.active {
   text-transform: uppercase;
 }
 
-.header-start {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-/* The header scrolls with the page, so the page shows through it while it scrolls. */
+/* The page's own header (PageHeader) scrolls with it, so the page shows through it while it scrolls. */
 main {
   display: grid;
   grid-column: 2;
-  grid-template-rows: auto 1fr;
   height: 100dvh;
   min-width: 0;
   overflow: auto;
   padding: var(--layout-content-padding);
   position: relative;
-}
-
-/* Out to main's edges; a sticky box stops at the scroll container's padding, so it moves past it. */
-main > .app-header {
-  margin: calc(-1 * var(--layout-content-padding)) calc(-1 * var(--layout-content-padding))
-    var(--layout-content-padding);
-  top: calc(-1 * var(--layout-content-padding));
 }
 
 main > :deep(*) {
@@ -532,12 +492,16 @@ main :deep(.page-load-state) {
     grid-column: auto;
   }
 
-  .app-header {
-    padding-left: var(--space-2);
+  main:not(:has(.page-header)) :deep(.page-heading) {
+    padding-left: calc(var(--icon-btn-size) + var(--space-2));
   }
 
-  .mobile-menu-button {
+  main:not(:has(.page-header)) > .mobile-menu-button {
     display: inline-flex;
+    left: var(--layout-content-padding);
+    position: absolute;
+    top: calc(var(--layout-content-padding) + var(--space-1));
+    z-index: 28;
   }
 }
 </style>

@@ -1,109 +1,100 @@
 <template>
-  <QueryState
-    :data="viewModel"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: page }">
-      <section class="board-content">
-        <div class="title-row">
-          <div class="page-heading">
-            <AppBackLink
-              :label="t('backToSpace')"
-              :to="organizationRoutes.space(spaceKey)" />
-            <BoardIcon
-              class="page-heading-icon"
-              :style="{ color: page.color || undefined }" />
-            <div class="page-heading-text">
-              <h1>{{ page.title }}</h1>
-            </div>
-          </div>
-          <div class="title-actions">
+  <div class="board-page">
+    <PageHeader
+      :parents="[
+        { label: viewModel?.spaceName ?? spaceKey, to: organizationRoutes.space(spaceKey) },
+      ]"
+      :title="viewModel?.title ?? t('board')">
+      <NuxtLink
+        v-if="viewModel?.canCreateIssues"
+        :to="organizationRoutes.newBoardIssue(spaceKey, viewModel.id)">
+        <Plus />
+        {{ t('addIssue') }}
+      </NuxtLink>
+    </PageHeader>
+    <QueryState
+      :data="viewModel"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default="{ data: page }">
+        <section class="board-content">
+          <div class="toolbar">
+            <input
+              :aria-label="t('searchIssues')"
+              :placeholder="t('searchIssues')"
+              type="search"
+              :value="search"
+              @input="updateSearch(($event.target as HTMLInputElement).value)" />
+            <IssueFilters
+              :attributes="page.attributes"
+              :loading="state.filtering"
+              :model-value="filterValue"
+              @update:model-value="updateFilters" />
             <NuxtLink
               v-if="page.canUpdate || page.canDelete"
               :aria-label="t('boardSettings')"
-              class="secondary"
+              class="secondary board-settings"
               :to="organizationRoutes.boardSettings(spaceKey, page.id)">
               <Settings />
               <span class="btn-label">{{ t('settings') }}</span>
             </NuxtLink>
-            <NuxtLink
-              v-if="page.canCreateIssues"
-              class="primary"
-              :to="organizationRoutes.newBoardIssue(spaceKey, page.id)">
-              <Plus />
-              <span class="btn-label">{{ t('addIssue') }}</span>
-            </NuxtLink>
           </div>
-        </div>
 
-        <div class="toolbar">
-          <input
-            :aria-label="t('searchIssues')"
-            :placeholder="t('searchIssues')"
-            type="search"
-            :value="search"
-            @input="updateSearch(($event.target as HTMLInputElement).value)" />
-          <IssueFilters
-            :attributes="page.attributes"
-            :loading="state.filtering"
-            :model-value="filterValue"
-            @update:model-value="updateFilters" />
-        </div>
+          <p
+            v-if="moveMessage"
+            class="form-error"
+            role="alert">
+            {{ moveMessage }}
+          </p>
 
-        <p
-          v-if="moveMessage"
-          class="form-error"
-          role="alert">
-          {{ moveMessage }}
-        </p>
-
-        <DragDropProvider
-          :plugins="plugins"
-          :sensors="sensors"
-          @drag-end="handleDragEnd"
-          @drag-over="handleDragOver"
-          @drag-start="handleDragStart">
-          <div
-            id="board-scroll-area"
-            ref="board"
-            :aria-busy="state.filtering || state.movingIssueKeys.size > 0"
-            class="board"
-            :class="{
-              'board--dragging': state.dragging,
-              'results-stale': state.filtering,
-            }">
-            <BoardColumn
-              v-for="column in page.columns"
-              :key="column.id"
-              :can-create-issues="page.canCreateIssues"
-              :can-move-issues="page.canMoveIssues"
-              :load-more-failed="state.failedColumnIds.has(column.id)"
-              :loading-more="state.loadingColumnIds.has(column.id)"
-              :moving-issue-keys="state.movingIssueKeys"
-              :on-create-issue="onCreateIssue"
-              :on-load-more="loadMoreIssues"
-              :on-move-to-backlog="moveToBacklog"
-              :on-open-issue="openIssue"
-              :view-model="column" />
-          </div>
-          <BoardScrollMap
-            :column-count="page.columns.length"
-            :target="board" />
-        </DragDropProvider>
-        <IssueDialog
-          v-if="issueKey && !state.closingIssueDialog"
-          :deps="deps.issueDialog"
-          :issue-key="issueKey"
-          :on-close="closeIssueDialog"
-          :on-deleted="handleIssueDeleted"
-          :on-dirty-change="onIssueDirtyChange"
-          :on-saved="handleIssueSaved" />
-      </section>
-    </template>
-  </QueryState>
+          <DragDropProvider
+            :plugins="plugins"
+            :sensors="sensors"
+            @drag-end="handleDragEnd"
+            @drag-over="handleDragOver"
+            @drag-start="handleDragStart">
+            <div
+              id="board-scroll-area"
+              ref="board"
+              :aria-busy="state.filtering || state.movingIssueKeys.size > 0"
+              class="board"
+              :class="{
+                'board--dragging': state.dragging,
+                'results-stale': state.filtering,
+              }">
+              <BoardColumn
+                v-for="column in page.columns"
+                :key="column.id"
+                :can-create-issues="page.canCreateIssues"
+                :can-move-issues="page.canMoveIssues"
+                :load-more-failed="state.failedColumnIds.has(column.id)"
+                :loading-more="state.loadingColumnIds.has(column.id)"
+                :moving-issue-keys="state.movingIssueKeys"
+                :on-create-issue="onCreateIssue"
+                :on-load-more="loadMoreIssues"
+                :on-move-to-backlog="moveToBacklog"
+                :on-open-issue="openIssue"
+                :view-model="column" />
+            </div>
+            <BoardScrollMap
+              :column-count="page.columns.length"
+              :target="board" />
+          </DragDropProvider>
+          <IssueDialog
+            v-if="issueKey && !state.closingIssueDialog"
+            :deps="deps.issueDialog"
+            :issue-key="issueKey"
+            :on-close="closeIssueDialog"
+            :on-deleted="handleIssueDeleted"
+            :on-dirty-change="onIssueDirtyChange"
+            :on-saved="handleIssueSaved" />
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script lang="ts">
@@ -150,7 +141,6 @@ import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
-import { BoardIcon } from '~/constants/icons'
 import type { BoardPageDeps, BoardPageFilterValue } from '~/sections/boards/board/BoardPage.deps'
 import BoardColumn from '~/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '~/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
@@ -180,7 +170,6 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     addIssue: 'Add issue',
-    backToSpace: 'Back to space',
     board: 'Board',
     boardSettings: 'Board settings',
     loadError: 'Could not load board',
@@ -190,7 +179,6 @@ const { t } = useI18n({
   },
   ru: {
     addIssue: 'Добавить задачу',
-    backToSpace: 'Назад к разделу',
     board: 'Доска',
     boardSettings: 'Настройки доски',
     loadError: 'Не удалось загрузить доску',
@@ -245,6 +233,7 @@ const { data, message, pending, refresh } = await useApiQuery(
       boardId: props.boardId,
       search: search.value,
       signal,
+      spaceKey: props.spaceKey,
     }),
 )
 
@@ -299,7 +288,6 @@ const openIssue = (issueKey: string) => {
   void props.onPushQuery({ ...props.routeQuery, issue: issueKey })
 }
 
-usePageTitle(computed(() => viewModel.value?.title ?? t('board')))
 const scheduleSearch = debounce(() => void searchIssues(), 300)
 
 watch([search, filterKey], () => {
@@ -771,9 +759,21 @@ const resolveIssueDialogCloseTarget = (input: {
 </script>
 
 <style scoped>
-.board-content {
+.board-page {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+
+.board-settings {
+  margin-left: auto;
+}
+
+.board-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
   overflow: hidden;
   position: relative;
 }
@@ -800,6 +800,10 @@ const resolveIssueDialogCloseTarget = (input: {
     grid-template-columns: none;
     margin-top: var(--space-3);
     overscroll-behavior-inline: contain;
+  }
+
+  .board-settings .btn-label {
+    display: none;
   }
 }
 </style>

@@ -141,7 +141,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   (signal) => props.deps.view({ ...request.value, signal }),
 )
 
-usePageTitle(t('allIssues'))
+useHead({ title: t('allIssues') })
 
 const attributes = computed(() => data.value?.attributes ?? [])
 const attributeFilters = computed(() =>

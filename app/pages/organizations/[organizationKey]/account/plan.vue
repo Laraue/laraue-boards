@@ -13,5 +13,5 @@ const { t } = useI18n({
 
 const deps = createBillingPageDeps(useApiClient())
 
-usePageTitle(t('plan'))
+useHead({ title: t('plan') })
 </script>

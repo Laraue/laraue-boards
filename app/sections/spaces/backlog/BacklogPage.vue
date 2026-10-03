@@ -221,5 +221,5 @@ watch(
 onScopeDispose(() => {
   scheduleSearch.cancel()
 })
-usePageTitle(computed(() => data.value?.title ?? t('backlog')))
+useHead({ title: computed(() => data.value?.title ?? t('backlog')) })
 </script>

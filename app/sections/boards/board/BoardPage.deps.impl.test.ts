@@ -9,6 +9,9 @@ test('maps board columns in status order with their issues', async () => {
     if (path === '/api/organizations/attributes') {
       return []
     }
+    if (path === '/api/spaces') {
+      return [{ color: '#555', key: 'product', name: 'Product' }]
+    }
     if (path === '/api/epics/7') {
       return {
         canCreateIssues: true,
@@ -53,7 +56,12 @@ test('maps board columns in status order with their issues', async () => {
   })
 
   assert.deepEqual(
-    await createBoardPageDeps(client).view({ attributeQuery: {}, boardId: '7', search: '' }),
+    await createBoardPageDeps(client).view({
+      attributeQuery: {},
+      boardId: '7',
+      search: '',
+      spaceKey: 'product',
+    }),
     {
       attributes: [],
       canCreateIssues: true,
@@ -83,6 +91,7 @@ test('maps board columns in status order with their issues', async () => {
       ],
       id: '7',
       issueCount: 2,
+      spaceName: 'Product',
       title: 'Roadmap',
     },
   )
@@ -103,6 +112,7 @@ test('searches the board with the filters read from the query', async () => {
     attributeQuery: { 3: ['urgent'] },
     boardId: '7',
     search: 'bug',
+    spaceKey: 'product',
   })
 
   const search = requests.find((value) => new URL(value.url).pathname === '/api/issues/board')

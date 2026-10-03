@@ -117,7 +117,9 @@ watch(
   { immediate: true },
 )
 
-usePageTitle(computed(() => (state.name ? `${state.name} ${t('settings')}` : t('generalSettings'))))
+useHead({
+  title: computed(() => (state.name ? `${state.name} ${t('settings')}` : t('generalSettings'))),
+})
 
 const {
   execute: submit,

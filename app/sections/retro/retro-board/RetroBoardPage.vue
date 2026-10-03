@@ -1462,7 +1462,7 @@ const everyone = (board: RetroBoardViewModel) => {
   )
 }
 
-usePageTitle(computed(() => data.value?.name ?? t('retro')))
+useHead({ title: computed(() => data.value?.name ?? t('retro')) })
 
 // The first four sections form a 2x2 board; anything after it stacks in a column on the right.
 const zoneRect = (index: number) => {

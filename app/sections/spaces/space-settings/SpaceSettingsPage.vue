@@ -134,7 +134,9 @@ watch(
   { immediate: true },
 )
 
-usePageTitle(computed(() => (data.value ? `${data.value.name} ${t('settings')}` : t('editSpace'))))
+useHead({
+  title: computed(() => (data.value ? `${data.value.name} ${t('settings')}` : t('editSpace'))),
+})
 
 const {
   execute: updateSpace,

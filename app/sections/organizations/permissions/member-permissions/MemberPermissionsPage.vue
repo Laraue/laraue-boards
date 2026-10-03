@@ -66,11 +66,11 @@ const { data, message, pending, refresh } = await useApiQuery(
   (signal) => props.deps.view({ memberId: props.memberId, signal }),
 )
 
-usePageTitle(
-  computed(() =>
+useHead({
+  title: computed(() =>
     data.value ? `${data.value.member.name} ${t('permissions')}` : t('memberPermissions'),
   ),
-)
+})
 
 const saved = ref(false)
 
