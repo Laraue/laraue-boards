@@ -11,13 +11,16 @@
         <Plus />
         <span class="btn-label">{{ t('createBoard') }}</span>
       </NuxtLink>
-      <NuxtLink
+      <template
         v-if="data?.canManage"
-        :aria-label="t('spaceSettings')"
-        :to="organizationRoutes.spaceSettings(spaceKey)">
-        <Settings />
-        <span class="btn-label">{{ t('settings') }}</span>
-      </NuxtLink>
+        #actions>
+        <NuxtLink
+          :aria-label="t('spaceSettings')"
+          class="header-btn"
+          :to="organizationRoutes.spaceSettings(spaceKey)">
+          <Settings />
+        </NuxtLink>
+      </template>
     </PageHeader>
     <QueryState
       :data="data"

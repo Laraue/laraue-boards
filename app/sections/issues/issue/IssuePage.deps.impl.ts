@@ -5,6 +5,7 @@ import { createAssigneeSelectDeps } from '~/components/assignee-select/AssigneeS
 import { createBoardSelectDeps } from '~/components/board-select/BoardSelect.deps.impl'
 import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps.impl'
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
+import { DEFAULT_COLOR } from '~/constants/colors'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
@@ -66,7 +67,11 @@ const mapAttachments = (
     return [{ id: attachment.id, originalUrl: fileUrl(originalId), previewUrl: fileUrl(previewId) }]
   })
 
-const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageViewModel => ({
+const mapIssue = (
+  issue: Schemas['IssueDetailDto'],
+  baseUrl: string,
+  boardIsBacklog: boolean,
+): IssuePageViewModel => ({
   assignee: issue.assignee.displayName,
   assigneeColor: issue.assignee.color,
   assigneeId: issue.assigneeId,
@@ -74,7 +79,9 @@ const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageV
   assigneeIsCurrentUser: issue.assignee.isCurrentUser,
   attachments: mapAttachments(issue.attachments, baseUrl),
   attributes: issue.attributeValues.map(mapAttribute),
+  boardColor: issue.epicColor ?? DEFAULT_COLOR,
   boardId: String(issue.epicId),
+  boardIsBacklog,
   boardLabel: issue.epicName ?? '',
   canEdit: issue.canEdit,
   content: issue.content ?? '',
@@ -166,6 +173,12 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
     const issue = await request(
       client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
     )
-    return mapIssue(issue, client.baseUrl)
+    // ponytail: a second round trip only to tell the backlog from a board for the path; an
+    // epicIsDefault on IssueDetailDto would make it one.
+    const boards = await request(
+      client.GET('/api/spaces/{key}/epics', { params: { path: { key: issue.spaceKey } }, signal }),
+    )
+    const board = boards.find((item) => String(item.id) === String(issue.epicId))
+    return mapIssue(issue, client.baseUrl, board?.isDefault ?? false)
   },
 })

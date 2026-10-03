@@ -46,7 +46,7 @@
           :style="{ color: iconColor }" />
         <span>{{ title }}</span>
       </h1>
-      <!-- What the page offers, in the path's own style: "Board / + Add issue". -->
+      <!-- What can be made under the page, as the path's next step: "Board / + Add issue". -->
       <template v-if="$slots.default">
         <span
           aria-hidden="true"
@@ -57,6 +57,12 @@
           <slot />
         </span>
       </template>
+      <!-- What can be done to the page itself (settings, copy link): icon buttons by its title. -->
+      <span
+        v-if="$slots.actions"
+        class="page-header-page-actions">
+        <slot name="actions" />
+      </span>
     </div>
     <div class="page-header-actions">
       <span class="page-header-preferences">
@@ -202,6 +208,12 @@ const { t } = useI18n({
   width: 14px;
 }
 
+.page-header-page-actions {
+  display: flex;
+  flex: none;
+  margin-left: var(--space-2);
+}
+
 /* The page stands out from its path by color alone, not weight. */
 h1 {
   font-size: var(--font-size-body);
@@ -239,6 +251,15 @@ h1 {
   /* Language, theme and the account come with the menu instead. */
   .page-header-preferences {
     display: none;
+  }
+
+  /* Which leaves the right edge to the page's own actions. */
+  .page-header-start {
+    flex: 1;
+  }
+
+  .page-header-page-actions {
+    margin-left: auto;
   }
 
   /* A phone has room for the title only. */

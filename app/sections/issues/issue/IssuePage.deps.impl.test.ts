@@ -6,78 +6,82 @@ import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime
 import { createIssuePageDeps } from './IssuePage.deps.impl'
 
 test('maps issue detail', async () => {
-  const { client, paths } = createTestApiClient(() => ({
-    assignee: {
-      color: '#111',
-      displayName: 'Ada',
-      initials: 'A',
-      isCurrentUser: true,
-    },
-    assigneeId: '9',
-    attachments: [
-      {
-        fileName: 'image.png',
-        id: 'image',
-        originalFileId: 'original',
-        previewFileId: 'preview',
-        type: 'Image',
-      },
-      {
-        fileName: 'video.mp4',
-        id: 'file',
-        originalFileId: 'file',
-        previewFileId: 'file',
-        type: 'Video',
-      },
-    ],
-    attributeValues: [
-      {
-        color: '#222',
-        id: 3,
-        listValues: [{ id: 4, name: 'High' }],
-        name: 'Priority',
-        type: 'List',
-        value: '4',
-      },
-      {
-        color: '#555',
-        id: 6,
-        listValues: [],
-        name: 'Starts',
-        type: 'DateTime',
-        value: '2026-08-22T12:30:00Z',
-      },
-      {
-        color: '#666',
-        id: 7,
-        listValues: [],
-        name: 'Estimate',
-        type: 'Decimal',
-        value: 1,
-      },
-      {
-        color: '#777',
-        id: 8,
-        listValues: [],
-        name: 'Points',
-        type: 'Integer',
-        value: 2,
-      },
-    ],
-    canEdit: true,
-    content: null,
-    epicId: 7,
-    epicName: null,
-    key: 'ISS-1',
-    owner: { color: '#333', displayName: 'Grace', initials: 'G' },
-    spaceKey: 'product',
-    spaceName: 'Product',
-    statusId: 5,
-    statusName: null,
-    time: '2026-01-01T00:00:00Z',
-    title: 'Fix it',
-    updatedAt: '2026-01-02T00:00:00Z',
-  }))
+  const { client, paths } = createTestApiClient((_request, path) =>
+    path === '/api/spaces/product/epics'
+      ? [{ id: 7, isDefault: true, name: 'Backlog' }]
+      : {
+          assignee: {
+            color: '#111',
+            displayName: 'Ada',
+            initials: 'A',
+            isCurrentUser: true,
+          },
+          assigneeId: '9',
+          attachments: [
+            {
+              fileName: 'image.png',
+              id: 'image',
+              originalFileId: 'original',
+              previewFileId: 'preview',
+              type: 'Image',
+            },
+            {
+              fileName: 'video.mp4',
+              id: 'file',
+              originalFileId: 'file',
+              previewFileId: 'file',
+              type: 'Video',
+            },
+          ],
+          attributeValues: [
+            {
+              color: '#222',
+              id: 3,
+              listValues: [{ id: 4, name: 'High' }],
+              name: 'Priority',
+              type: 'List',
+              value: '4',
+            },
+            {
+              color: '#555',
+              id: 6,
+              listValues: [],
+              name: 'Starts',
+              type: 'DateTime',
+              value: '2026-08-22T12:30:00Z',
+            },
+            {
+              color: '#666',
+              id: 7,
+              listValues: [],
+              name: 'Estimate',
+              type: 'Decimal',
+              value: 1,
+            },
+            {
+              color: '#777',
+              id: 8,
+              listValues: [],
+              name: 'Points',
+              type: 'Integer',
+              value: 2,
+            },
+          ],
+          canEdit: true,
+          content: null,
+          epicId: 7,
+          epicName: null,
+          key: 'ISS-1',
+          owner: { color: '#333', displayName: 'Grace', initials: 'G' },
+          spaceKey: 'product',
+          spaceName: 'Product',
+          statusId: 5,
+          statusName: null,
+          time: '2026-01-01T00:00:00Z',
+          title: 'Fix it',
+          updatedAt: '2026-01-02T00:00:00Z',
+        },
+  )
 
   const result = await createIssuePageDeps(client).view({ issueKey: 'ISS-1' })
 
@@ -85,6 +89,7 @@ test('maps issue detail', async () => {
   assert.equal(result.title, 'Fix it')
   assert.equal(result.assigneeIsCurrentUser, true)
   assert.equal(result.owner, 'Grace')
+  assert.equal(result.boardIsBacklog, true)
   assert.deepEqual(result.attributes, [
     {
       color: '#222',
@@ -123,7 +128,7 @@ test('maps issue detail', async () => {
       previewUrl: 'https://api.test/api/files/preview',
     },
   ])
-  assert.deepEqual(paths(), ['/api/issues/ISS-1'])
+  assert.deepEqual(paths(), ['/api/issues/ISS-1', '/api/spaces/product/epics'])
 })
 
 test('returns the new issue key after moving it to another space', async () => {

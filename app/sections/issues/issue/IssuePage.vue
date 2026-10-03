@@ -11,26 +11,36 @@
                 label: data.spaceLabel,
                 to: organizationRoutes.space(data.spaceId),
               },
+              {
+                color: data.boardColor,
+                icon: data.boardIsBacklog ? ListTodo : BoardIcon,
+                label: data.boardLabel || t('currentBoard'),
+                to: data.boardIsBacklog
+                  ? organizationRoutes.backlog(data.spaceId)
+                  : organizationRoutes.board(data.spaceId, data.boardId),
+              },
             ]
           : []
       "
       :title="data?.issueKey ?? issueKey">
-      <button
-        :aria-label="t('copyIssueLink')"
-        type="button"
-        @click="copyIssueLink">
-        <Transition
-          mode="out-in"
-          name="icon-pop">
-          <Check
-            v-if="state.copied"
-            key="check" />
-          <Link
-            v-else
-            key="link" />
-        </Transition>
-        <span class="btn-label">{{ state.copied ? t('copied') : t('copyLink') }}</span>
-      </button>
+      <template #actions>
+        <button
+          :aria-label="state.copied ? t('copied') : t('copyIssueLink')"
+          class="header-btn"
+          type="button"
+          @click="copyIssueLink">
+          <Transition
+            mode="out-in"
+            name="icon-pop">
+            <Check
+              v-if="state.copied"
+              key="check" />
+            <Link
+              v-else
+              key="link" />
+          </Transition>
+        </button>
+      </template>
     </PageHeader>
     <QueryState
       :data="data"
@@ -270,7 +280,14 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, Check, History as HistoryIcon, Link, MessageSquare } from '@lucide/vue'
+import {
+  ArrowLeft,
+  Check,
+  History as HistoryIcon,
+  Link,
+  ListTodo,
+  MessageSquare,
+} from '@lucide/vue'
 
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'
@@ -278,7 +295,7 @@ import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vu
 import IssueAttributeFields from '~/components/issue-attribute-fields/IssueAttributeFields.vue'
 import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
-import { SpaceIcon } from '~/constants/icons'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
 import IssueComments from './components/IssueComments/IssueComments.vue'
@@ -307,7 +324,6 @@ const { t } = useI18n({
     comments: 'Comments',
     copied: 'Copied',
     copyIssueLink: 'Copy issue link',
-    copyLink: 'Copy link',
     created: 'Created',
     currentBoard: 'Current board',
     currentSpace: 'Current space',
@@ -336,7 +352,6 @@ const { t } = useI18n({
     comments: 'Комментарии',
     copied: 'Скопировано',
     copyIssueLink: 'Копировать ссылку на задачу',
-    copyLink: 'Копировать ссылку',
     created: 'Создана',
     currentBoard: 'Текущая доска',
     currentSpace: 'Текущий раздел',

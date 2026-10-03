@@ -19,6 +19,16 @@
         <Plus />
         <span class="btn-label">{{ t('addIssue') }}</span>
       </NuxtLink>
+      <template
+        v-if="viewModel && (viewModel.canUpdate || viewModel.canDelete)"
+        #actions>
+        <NuxtLink
+          :aria-label="t('boardSettings')"
+          class="header-btn"
+          :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)">
+          <Settings />
+        </NuxtLink>
+      </template>
     </PageHeader>
     <QueryState
       :data="viewModel"
@@ -41,14 +51,6 @@
               :loading="state.filtering"
               :model-value="filterValue"
               @update:model-value="updateFilters" />
-            <NuxtLink
-              v-if="page.canUpdate || page.canDelete"
-              :aria-label="t('boardSettings')"
-              class="secondary board-settings"
-              :to="organizationRoutes.boardSettings(spaceKey, page.id)">
-              <Settings />
-              <span class="btn-label">{{ t('settings') }}</span>
-            </NuxtLink>
           </div>
 
           <p
@@ -184,7 +186,6 @@ const { t } = useI18n({
     loadError: 'Could not load board',
     loading: 'Loading board…',
     searchIssues: 'Search issues',
-    settings: 'Settings',
   },
   ru: {
     addIssue: 'Добавить задачу',
@@ -193,7 +194,6 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
     searchIssues: 'Поиск задач',
-    settings: 'Настройки',
   },
 })
 
@@ -774,10 +774,6 @@ const resolveIssueDialogCloseTarget = (input: {
   min-height: 0;
 }
 
-.board-settings {
-  margin-left: auto;
-}
-
 .board-content {
   display: flex;
   flex: 1;
@@ -809,10 +805,6 @@ const resolveIssueDialogCloseTarget = (input: {
     grid-template-columns: none;
     margin-top: var(--space-3);
     overscroll-behavior-inline: contain;
-  }
-
-  .board-settings .btn-label {
-    display: none;
   }
 }
 </style>
