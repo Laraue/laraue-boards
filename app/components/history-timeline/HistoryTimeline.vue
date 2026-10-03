@@ -17,39 +17,6 @@
             v-for="(item, index) in day.items"
             :key="`${item.createdAt}-${index}`"
             class="history-item">
-            <div class="history-meta">
-              <span
-                :aria-label="ownerHint(item.owner)"
-                class="history-avatar"
-                role="img"
-                :title="ownerHint(item.owner)">
-                <span
-                  aria-hidden="true"
-                  class="avatar"
-                  :style="{ background: item.owner.color }">
-                  {{ item.owner.initials }}
-                </span>
-                <span
-                  v-if="item.owner.apiKeyName"
-                  aria-hidden="true"
-                  class="history-avatar-key">
-                  <IconKey />
-                </span>
-              </span>
-              <span class="history-owner">{{ item.owner.name }}</span>
-              <span
-                v-if="item.owner.apiKeyName"
-                class="history-key">
-                <IconKey />
-                {{ t('viaKey', { key: item.owner.apiKeyName }) }}
-              </span>
-              <time
-                class="history-time"
-                :datetime="item.createdAt"
-                :title="formatDateTime(item.createdAt)">
-                {{ formatTime(item.createdAt) }}
-              </time>
-            </div>
             <div class="history-content">
               <div
                 v-if="item.link || isIssueDeleted(item)"
@@ -112,6 +79,40 @@
                     :change="change" />
                 </div>
               </div>
+            </div>
+            <!-- Who, how and when, on the right, so they take no line of their own. -->
+            <div class="history-aside">
+              <span
+                :aria-label="ownerHint(item.owner)"
+                class="history-avatar"
+                role="img"
+                :title="ownerHint(item.owner)">
+                <span
+                  aria-hidden="true"
+                  class="avatar"
+                  :style="{ background: item.owner.color }">
+                  {{ item.owner.initials }}
+                </span>
+                <span
+                  v-if="item.owner.apiKeyName"
+                  aria-hidden="true"
+                  class="history-avatar-key">
+                  <IconKey />
+                </span>
+              </span>
+              <span class="history-owner">{{ item.owner.name }}</span>
+              <span
+                v-if="item.owner.apiKeyName"
+                class="history-key">
+                <IconKey />
+                {{ t('viaKey', { key: item.owner.apiKeyName }) }}
+              </span>
+              <time
+                class="history-time"
+                :datetime="item.createdAt"
+                :title="formatDateTime(item.createdAt)">
+                {{ formatTime(item.createdAt) }}
+              </time>
             </div>
           </article>
         </div>
@@ -240,10 +241,9 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 </script>
 
 <style scoped>
-/* An activity feed a size smaller than the issue, each save in a card tinted like the comments. */
+/* An activity feed, each save in a card tinted like the comments. */
 .issue-history {
   display: grid;
-  font-size: var(--font-size-small);
   gap: var(--space-4);
 }
 
@@ -254,7 +254,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 
 .history-day-label {
   color: var(--color-muted);
-  font-size: var(--font-size-caption);
+  font-size: var(--font-size-small);
   font-weight: var(--font-weight-semibold);
   letter-spacing: 0.04em;
   margin: 0 0 var(--space-2);
@@ -266,27 +266,30 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   gap: var(--space-2);
 }
 
-/* Who, how and when on top, the changes under it. */
+/* One row: the changes, then who, how and when; no line of its own for the author. */
 .history-item {
+  align-items: start;
   background: var(--color-workspace);
   border: 1px solid var(--color-divider);
   border-radius: var(--radius-card);
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
   padding: var(--space-3) var(--space-4);
-}
-
-.history-meta {
-  align-items: center;
-  color: var(--color-muted);
-  display: flex;
-  gap: var(--space-2);
-  min-height: 20px;
 }
 
 .history-owner {
   color: var(--color-text);
   font-weight: var(--font-weight-medium);
+}
+
+.history-aside {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-small);
+  gap: var(--space-2);
+  min-height: 20px;
 }
 
 /* Changed through an API key: its name, so a change by an agent is not taken for the person's. */
@@ -302,7 +305,6 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 }
 
 .history-time {
-  margin-left: auto;
   white-space: nowrap;
 }
 
