@@ -10,7 +10,7 @@ let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 const mount = async (
   create: CreateBoardPageDeps['create'],
   onCreated: (boardId: string) => void,
-  view: CreateBoardPageDeps['view'] = async () => ({ boards: [] }),
+  view: CreateBoardPageDeps['view'] = async () => ({ boards: [], spaceName: 'Product' }),
 ) => {
   currentWrapper = await mountSuspended(CreateBoardPage, {
     attachTo: document.body,
@@ -42,6 +42,7 @@ it('copies statuses into the editor before creating', async () => {
         value: '7',
       },
     ],
+    spaceName: 'Product',
   }))
   await page.getByLabelText('Name').fill('Roadmap')
   await page.getByLabelText('Copy statuses from').selectOptions('7')

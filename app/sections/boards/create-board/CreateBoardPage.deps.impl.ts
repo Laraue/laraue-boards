@@ -15,12 +15,15 @@ export const createCreateBoardPageDeps = (client: ApiClient): CreateBoardPageDep
     ),
 
   view: async ({ signal, spaceKey }) => {
-    const boards = await request(
-      client.POST('/api/epics/get-with-statuses', {
-        body: { pagination: { page: 0, perPage: 100 }, spaceKey },
-        signal,
-      }),
-    )
+    const [boards, spaces] = await Promise.all([
+      request(
+        client.POST('/api/epics/get-with-statuses', {
+          body: { pagination: { page: 0, perPage: 100 }, spaceKey },
+          signal,
+        }),
+      ),
+      request(client.GET('/api/spaces', { signal })),
+    ])
     return {
       boards: boards.data.map((board) => ({
         label: board.epicName,
@@ -31,6 +34,7 @@ export const createCreateBoardPageDeps = (client: ApiClient): CreateBoardPageDep
         })),
         value: String(board.epicId),
       })),
+      spaceName: spaces.find((space) => space.key === spaceKey)?.name ?? spaceKey,
     }
   },
 })

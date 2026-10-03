@@ -1,19 +1,45 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="viewMessage"
-    :on-retry="refresh"
-    :pending="pending && !data">
-    <template #loading>
-      <IssueSkeleton />
-    </template>
-    <template #default="{ data: issue }">
-      <section class="issue-page">
-        <div class="title-row">
-          <div class="page-heading">
-            <slot name="leading">
+  <div class="issue-page-root">
+    <PageHeader
+      v-if="!inDialog"
+      :parents="
+        data ? [{ label: data.spaceLabel, to: organizationRoutes.space(data.spaceId) }] : []
+      "
+      :title="data?.issueKey ?? issueKey">
+      <button
+        :aria-label="t('copyIssueLink')"
+        type="button"
+        @click="copyIssueLink">
+        <Transition
+          mode="out-in"
+          name="icon-pop">
+          <Check
+            v-if="state.copied"
+            key="check" />
+          <Link
+            v-else
+            key="link" />
+        </Transition>
+        <span class="btn-label">{{ state.copied ? t('copied') : t('copyLink') }}</span>
+      </button>
+    </PageHeader>
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="viewMessage"
+      :on-retry="refresh"
+      :pending="pending && !data">
+      <template #loading>
+        <IssueSkeleton />
+      </template>
+      <template #default="{ data: issue }">
+        <section class="issue-page">
+          <!-- The board's dialog has no page header of its own. -->
+          <div
+            v-if="inDialog"
+            class="title-row">
+            <div class="page-heading">
               <button
                 :aria-label="t('back')"
                 class="icon-btn"
@@ -21,218 +47,217 @@
                 @click="leave">
                 <ArrowLeft />
               </button>
-            </slot>
-            <div class="page-heading-text">
-              <h1>
-                <NuxtLink :to="issueRoute">
-                  {{ issue.issueKey }}
-                </NuxtLink>
-              </h1>
-              <button
-                :aria-label="t('copyIssueLink')"
-                class="issue-copy"
-                :class="{ 'issue-copy--copied': state.copied }"
-                :title="t('copyIssueLink')"
-                type="button"
-                @click="copyIssueLink">
-                <Transition
-                  mode="out-in"
-                  name="icon-pop">
-                  <Check
-                    v-if="state.copied"
-                    key="check" />
-                  <Link
-                    v-else
-                    key="link" />
-                </Transition>
-              </button>
-            </div>
-            <slot name="actions" />
-          </div>
-        </div>
-        <form
-          class="issue-form issue-page-form"
-          @submit.prevent="save">
-          <div class="issue-form-content">
-            <div class="issue-form-main">
-              <input
-                id="issue-title"
-                v-model="state.title"
-                :aria-label="t('title')"
-                class="issue-title-input"
-                :disabled="!issue.canEdit"
-                :maxlength="256"
-                :placeholder="t('titlePlaceholder')" />
-              <IssueDescription
-                v-model="state.content"
-                v-model:title="state.title"
-                :deps="deps.description"
-                :disabled="!issue.canEdit" />
-              <IssueAttachments
-                :key="issue.issueKey"
-                :attachments="issue.attachments"
-                :disabled="!issue.canEdit || saving || deleting"
-                :files="state.files"
-                :on-change="changeFiles"
-                :on-remove-attachment="removeAttachment"
-                :removed-attachment-ids="state.removedAttachmentIds" />
-              <section class="issue-activity">
-                <div
-                  :aria-label="t('issueActivity')"
-                  class="issue-tabs"
-                  role="tablist">
-                  <button
-                    id="comments-tab"
-                    ref="commentsTab"
-                    aria-controls="comments-panel"
-                    :aria-selected="state.activeTab === 'comments'"
-                    class="issue-tab"
-                    role="tab"
-                    :tabindex="state.activeTab === 'comments' ? 0 : -1"
-                    type="button"
-                    @click="activateTab('comments')"
-                    @keydown.left.prevent="activateTab('history', true)"
-                    @keydown.right.prevent="activateTab('history', true)">
-                    <MessageSquare />
-                    {{ t('comments') }}
-                  </button>
-                  <button
-                    id="history-tab"
-                    ref="historyTab"
-                    aria-controls="history-panel"
-                    :aria-selected="state.activeTab === 'history'"
-                    class="issue-tab"
-                    role="tab"
-                    :tabindex="state.activeTab === 'history' ? 0 : -1"
-                    type="button"
-                    @click="activateTab('history')"
-                    @keydown.left.prevent="activateTab('comments', true)"
-                    @keydown.right.prevent="activateTab('comments', true)">
-                    <HistoryIcon />
-                    {{ t('history') }}
-                  </button>
-                </div>
-                <div
-                  v-show="state.activeTab === 'comments'"
-                  id="comments-panel"
-                  aria-labelledby="comments-tab"
-                  class="issue-tab-panel"
-                  role="tabpanel">
-                  <IssueComments
-                    :key="issue.issueKey"
-                    :deps="deps.comments"
-                    :issue-key="issue.issueKey" />
-                </div>
-                <div
-                  v-show="state.activeTab === 'history'"
-                  id="history-panel"
-                  aria-labelledby="history-tab"
-                  class="issue-tab-panel"
-                  role="tabpanel">
-                  <IssueHistory
-                    v-if="state.historyOpened"
-                    :key="issue.issueKey"
-                    ref="history"
-                    :deps="deps.history"
-                    :issue-key="issue.issueKey" />
-                </div>
-              </section>
-            </div>
-            <div class="issue-form-side">
-              <label>{{ t('space') }}</label>
-              <SpaceSelect
-                :key="`space-${issue.issueKey}`"
-                v-model="state.pickedSpaceId"
-                :deps="deps.spaceSelect"
-                :disabled="!issue.canEdit"
-                :initial-option="{
-                  label: issue.spaceLabel || t('currentSpace'),
-                  value: issue.spaceId,
-                }" />
-              <label>{{ t('board') }}</label>
-              <BoardSelect
-                :key="`board-${issue.issueKey}`"
-                v-model="state.boardId"
-                :deps="deps.boardSelect"
-                :disabled="!issue.canEdit"
-                :initial-option="{
-                  label: issue.boardLabel || t('currentBoard'),
-                  value: issue.boardId,
-                }"
-                :space-key="state.pickedSpaceId" />
-              <label>{{ t('status') }}</label>
-              <StatusSelect
-                :key="`status-${issue.issueKey}`"
-                v-model="state.statusId"
-                :board-id="state.boardId"
-                :deps="deps.statusSelect"
-                :disabled="!issue.canEdit"
-                :initial-option="{
-                  label: issue.statusLabel || t('currentStatus'),
-                  value: issue.statusId,
-                }" />
-              <label>{{ t('assignee') }}</label>
-              <AssigneeSelect
-                :key="`assignee-${issue.issueKey}`"
-                v-model="state.assigneeId"
-                :deps="deps.assigneeSelect"
-                :disabled="!issue.canEdit"
-                :initial-option="{
-                  color: issue.assigneeColor,
-                  initials: issue.assigneeInitial,
-                  isCurrentUser: issue.assigneeIsCurrentUser,
-                  label: issue.assignee,
-                  value: issue.assigneeId,
-                }"
-                :space-key="state.pickedSpaceId" />
-              <label>{{ t('owner') }}</label>
-              <div class="issue-person">
-                <span
-                  class="avatar"
-                  :style="{ background: issue.ownerColor }">
-                  {{ issue.ownerInitial }}
-                </span>
-                <span>{{ issue.owner }}</span>
+              <div class="page-heading-text">
+                <h1>
+                  <NuxtLink :to="issueRoute">
+                    {{ issue.issueKey }}
+                  </NuxtLink>
+                </h1>
+                <button
+                  :aria-label="t('copyIssueLink')"
+                  class="issue-copy"
+                  :class="{ 'issue-copy--copied': state.copied }"
+                  :title="t('copyIssueLink')"
+                  type="button"
+                  @click="copyIssueLink">
+                  <Transition
+                    mode="out-in"
+                    name="icon-pop">
+                    <Check
+                      v-if="state.copied"
+                      key="check" />
+                    <Link
+                      v-else
+                      key="link" />
+                  </Transition>
+                </button>
               </div>
-              <IssueAttributeFields
-                v-if="issue.attributes.length"
-                v-model="state.attributeValues"
-                :attributes="issue.attributes"
-                :disabled="!issue.canEdit" />
-              <span class="issue-date-label">{{ t('created') }}</span>
-              <time :datetime="issue.createdAt">{{ formatDateTime(issue.createdAt) }}</time>
-              <span class="issue-date-label">{{ t('updated') }}</span>
-              <time :datetime="issue.updatedAt">{{ formatDateTime(issue.updatedAt) }}</time>
             </div>
           </div>
-          <div
-            v-if="issue.canEdit"
-            class="issue-actions">
-            <p
-              v-if="saveMessage || deleteMessage"
-              class="form-error">
-              {{ saveMessage || deleteMessage }}
-            </p>
-            <div class="form-actions">
-              <button
-                class="primary"
-                :disabled="!canSave || saving || deleting"
-                type="submit">
-                {{ saving ? t('saving') : t('saveChanges') }}
-              </button>
-              <button
-                class="secondary danger"
-                :disabled="saving || deleting"
-                type="button"
-                @click="remove">
-                {{ t('deleteIssue') }}
-              </button>
+          <form
+            class="issue-form issue-page-form"
+            @submit.prevent="save">
+            <div class="issue-form-content">
+              <div class="issue-form-main">
+                <input
+                  id="issue-title"
+                  v-model="state.title"
+                  :aria-label="t('title')"
+                  class="issue-title-input"
+                  :disabled="!issue.canEdit"
+                  :maxlength="256"
+                  :placeholder="t('titlePlaceholder')" />
+                <IssueDescription
+                  v-model="state.content"
+                  v-model:title="state.title"
+                  :deps="deps.description"
+                  :disabled="!issue.canEdit" />
+                <IssueAttachments
+                  :key="issue.issueKey"
+                  :attachments="issue.attachments"
+                  :disabled="!issue.canEdit || saving || deleting"
+                  :files="state.files"
+                  :on-change="changeFiles"
+                  :on-remove-attachment="removeAttachment"
+                  :removed-attachment-ids="state.removedAttachmentIds" />
+                <section class="issue-activity">
+                  <div
+                    :aria-label="t('issueActivity')"
+                    class="issue-tabs"
+                    role="tablist">
+                    <button
+                      id="comments-tab"
+                      ref="commentsTab"
+                      aria-controls="comments-panel"
+                      :aria-selected="state.activeTab === 'comments'"
+                      class="issue-tab"
+                      role="tab"
+                      :tabindex="state.activeTab === 'comments' ? 0 : -1"
+                      type="button"
+                      @click="activateTab('comments')"
+                      @keydown.left.prevent="activateTab('history', true)"
+                      @keydown.right.prevent="activateTab('history', true)">
+                      <MessageSquare />
+                      {{ t('comments') }}
+                    </button>
+                    <button
+                      id="history-tab"
+                      ref="historyTab"
+                      aria-controls="history-panel"
+                      :aria-selected="state.activeTab === 'history'"
+                      class="issue-tab"
+                      role="tab"
+                      :tabindex="state.activeTab === 'history' ? 0 : -1"
+                      type="button"
+                      @click="activateTab('history')"
+                      @keydown.left.prevent="activateTab('comments', true)"
+                      @keydown.right.prevent="activateTab('comments', true)">
+                      <HistoryIcon />
+                      {{ t('history') }}
+                    </button>
+                  </div>
+                  <div
+                    v-show="state.activeTab === 'comments'"
+                    id="comments-panel"
+                    aria-labelledby="comments-tab"
+                    class="issue-tab-panel"
+                    role="tabpanel">
+                    <IssueComments
+                      :key="issue.issueKey"
+                      :deps="deps.comments"
+                      :issue-key="issue.issueKey" />
+                  </div>
+                  <div
+                    v-show="state.activeTab === 'history'"
+                    id="history-panel"
+                    aria-labelledby="history-tab"
+                    class="issue-tab-panel"
+                    role="tabpanel">
+                    <IssueHistory
+                      v-if="state.historyOpened"
+                      :key="issue.issueKey"
+                      ref="history"
+                      :deps="deps.history"
+                      :issue-key="issue.issueKey" />
+                  </div>
+                </section>
+              </div>
+              <div class="issue-form-side">
+                <label>{{ t('space') }}</label>
+                <SpaceSelect
+                  :key="`space-${issue.issueKey}`"
+                  v-model="state.pickedSpaceId"
+                  :deps="deps.spaceSelect"
+                  :disabled="!issue.canEdit"
+                  :initial-option="{
+                    label: issue.spaceLabel || t('currentSpace'),
+                    value: issue.spaceId,
+                  }" />
+                <label>{{ t('board') }}</label>
+                <BoardSelect
+                  :key="`board-${issue.issueKey}`"
+                  v-model="state.boardId"
+                  :deps="deps.boardSelect"
+                  :disabled="!issue.canEdit"
+                  :initial-option="{
+                    label: issue.boardLabel || t('currentBoard'),
+                    value: issue.boardId,
+                  }"
+                  :space-key="state.pickedSpaceId" />
+                <label>{{ t('status') }}</label>
+                <StatusSelect
+                  :key="`status-${issue.issueKey}`"
+                  v-model="state.statusId"
+                  :board-id="state.boardId"
+                  :deps="deps.statusSelect"
+                  :disabled="!issue.canEdit"
+                  :initial-option="{
+                    label: issue.statusLabel || t('currentStatus'),
+                    value: issue.statusId,
+                  }" />
+                <label>{{ t('assignee') }}</label>
+                <AssigneeSelect
+                  :key="`assignee-${issue.issueKey}`"
+                  v-model="state.assigneeId"
+                  :deps="deps.assigneeSelect"
+                  :disabled="!issue.canEdit"
+                  :initial-option="{
+                    color: issue.assigneeColor,
+                    initials: issue.assigneeInitial,
+                    isCurrentUser: issue.assigneeIsCurrentUser,
+                    label: issue.assignee,
+                    value: issue.assigneeId,
+                  }"
+                  :space-key="state.pickedSpaceId" />
+                <label>{{ t('owner') }}</label>
+                <div class="issue-person">
+                  <span
+                    class="avatar"
+                    :style="{ background: issue.ownerColor }">
+                    {{ issue.ownerInitial }}
+                  </span>
+                  <span>{{ issue.owner }}</span>
+                </div>
+                <IssueAttributeFields
+                  v-if="issue.attributes.length"
+                  v-model="state.attributeValues"
+                  :attributes="issue.attributes"
+                  :disabled="!issue.canEdit" />
+                <span class="issue-date-label">{{ t('created') }}</span>
+                <time :datetime="issue.createdAt">{{ formatDateTime(issue.createdAt) }}</time>
+                <span class="issue-date-label">{{ t('updated') }}</span>
+                <time :datetime="issue.updatedAt">{{ formatDateTime(issue.updatedAt) }}</time>
+              </div>
             </div>
-          </div>
-        </form>
-      </section>
-    </template>
-  </QueryState>
+            <div
+              v-if="issue.canEdit"
+              class="issue-actions">
+              <p
+                v-if="saveMessage || deleteMessage"
+                class="form-error">
+                {{ saveMessage || deleteMessage }}
+              </p>
+              <div class="form-actions">
+                <button
+                  class="primary"
+                  :disabled="!canSave || saving || deleting"
+                  type="submit">
+                  {{ saving ? t('saving') : t('saveChanges') }}
+                </button>
+                <button
+                  class="secondary danger"
+                  :disabled="saving || deleting"
+                  type="button"
+                  @click="remove">
+                  {{ t('deleteIssue') }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -254,6 +279,8 @@ import type { IssuePageDeps, IssuePageSavedIssue, IssuePageViewModel } from './I
 
 const props = defineProps<{
   deps: IssuePageDeps
+  // In the board's dialog, which has no page header to show the issue in.
+  inDialog?: boolean
   issueKey: string
   lazy?: boolean
   onBack: () => Promise<void> | void
@@ -268,7 +295,9 @@ const { t } = useI18n({
     back: 'Back',
     board: 'Board',
     comments: 'Comments',
+    copied: 'Copied',
     copyIssueLink: 'Copy issue link',
+    copyLink: 'Copy link',
     created: 'Created',
     currentBoard: 'Current board',
     currentSpace: 'Current space',
@@ -295,7 +324,9 @@ const { t } = useI18n({
     back: 'Назад',
     board: 'Доска',
     comments: 'Комментарии',
+    copied: 'Скопировано',
     copyIssueLink: 'Копировать ссылку на задачу',
+    copyLink: 'Копировать ссылку',
     created: 'Создана',
     currentBoard: 'Текущая доска',
     currentSpace: 'Текущий раздел',
@@ -365,7 +396,10 @@ const {
   { lazy: props.lazy },
 )
 
-useHead({ title: computed(() => data.value?.issueKey ?? t('issue')) })
+// The page header names the issue on its own page.
+if (props.inDialog) {
+  useHead({ title: computed(() => data.value?.issueKey ?? t('issue')) })
+}
 
 const currentIssue = computed(() => data.value)
 const canSave = computed(
@@ -520,11 +554,16 @@ watch(dirty, setDirty, { immediate: true })
 </script>
 
 <style scoped>
+/* The issue scrolls inside itself, under the page header, in the space the page has left. */
+.issue-page-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .issue-page {
-  align-self: start;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  max-height: 100%;
   min-height: 0;
 }
 

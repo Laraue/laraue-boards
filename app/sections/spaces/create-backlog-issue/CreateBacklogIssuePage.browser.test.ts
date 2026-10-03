@@ -12,6 +12,7 @@ const pageData: CreateBacklogIssuePageData = {
   attributes: [],
   boardId: '8',
   boardName: 'Backlog',
+  spaceName: 'Product',
 }
 
 const createDeps = (
@@ -59,5 +60,7 @@ afterEach(async () => {
 it('shows the backlog selected by the page', async () => {
   await mount(createDeps(), vi.fn<(issueKey: string) => void>())
 
-  await expect.element(page.getByText('Backlog', { exact: true })).toBeInTheDocument()
+  // The header's path links to the backlog, the form shows it as the issue's board.
+  await expect.element(page.getByRole('link', { name: 'Backlog' })).toBeInTheDocument()
+  await expect.element(page.getByText('Backlog', { exact: true }).last()).toBeInTheDocument()
 })

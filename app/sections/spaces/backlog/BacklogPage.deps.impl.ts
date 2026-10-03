@@ -74,9 +74,9 @@ export const createBacklogPageDeps = (client: ApiClient): BacklogPageDeps => ({
     return {
       attributes: attributeData.attributes,
       backlogBoardId: String(backlog.id),
-      color: space.color,
       hasNextPage: issues.hasNextPage,
       issues: issues.data.map(mapIssue),
+      spaceName: space.name,
       title: backlog.name,
     }
   },

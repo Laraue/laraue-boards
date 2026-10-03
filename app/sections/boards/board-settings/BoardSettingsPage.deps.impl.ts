@@ -90,10 +90,12 @@ export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPag
     }
   },
 
-  view: async ({ boardId, signal }) => {
-    const board = await request(
-      client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal }),
-    )
+  view: async ({ boardId, signal, spaceKey }) => {
+    // The board doesn't carry its space's name; the spaces list does.
+    const [board, spaces] = await Promise.all([
+      request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
+      request(client.GET('/api/spaces', { signal })),
+    ])
     return {
       canDelete: board.canDelete ?? false,
       canUpdate: board.canUpdate ?? false,
@@ -107,6 +109,7 @@ export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPag
           name: status.name,
         })),
       name: board.name,
+      spaceName: spaces.find((space) => space.key === spaceKey)?.name ?? spaceKey,
       status: board.status,
     }
   },

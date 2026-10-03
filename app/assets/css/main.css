@@ -451,11 +451,6 @@ textarea::placeholder {
   .app-header {
     padding: 0 var(--space-4);
   }
-
-  .header-btn {
-    height: 40px;
-    min-width: 40px;
-  }
 }
 
 /* Page headings, toolbars, and states */

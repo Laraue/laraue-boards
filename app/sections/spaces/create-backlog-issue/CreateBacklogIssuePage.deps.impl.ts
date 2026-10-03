@@ -18,8 +18,9 @@ export const createCreateBacklogIssuePageDeps = (
         client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
       ),
     ])
+    const space = spaces.find((item) => item.key === spaceKey)
     const backlog = boards.find((board) => board.isDefault)
-    if (!spaces.some((space) => space.key === spaceKey) || !backlog) {
+    if (!space || !backlog) {
       throw new ApiError(404)
     }
     const board = await request(
@@ -32,6 +33,7 @@ export const createCreateBacklogIssuePageDeps = (
       attributes: mapIssueAttributes(attributes),
       boardId: String(backlog.id),
       boardName: backlog.name,
+      spaceName: space.name,
     }
   },
 })

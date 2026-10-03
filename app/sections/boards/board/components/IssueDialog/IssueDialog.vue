@@ -21,6 +21,7 @@
       <ClientOnly>
         <IssuePage
           :deps="deps"
+          in-dialog
           :issue-key="issueKey"
           lazy
           :on-back="() => close()"

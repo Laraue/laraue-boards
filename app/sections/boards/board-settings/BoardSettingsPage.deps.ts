@@ -15,6 +15,8 @@ export type BoardSettingsPageData = {
   color: string
   columns: BoardSettingsColumn[]
   name: string
+  // The key when the space isn't among the user's spaces.
+  spaceName: string
   status: BoardSettingsStatus
 }
 
@@ -38,5 +40,9 @@ export type SaveBoardSettingsInput = {
 export type BoardSettingsPageDeps = {
   remove: (input: { boardId: string }) => Promise<void>
   save: (input: SaveBoardSettingsInput) => Promise<void>
-  view: (input: { boardId: string; signal?: AbortSignal }) => Promise<BoardSettingsPageData>
+  view: (input: {
+    boardId: string
+    signal?: AbortSignal
+    spaceKey: string
+  }) => Promise<BoardSettingsPageData>
 }

@@ -1,72 +1,66 @@
 <template>
-  <QueryState
-    :data="data"
-    :error-title="t('loadError')"
-    :loading-text="t('loading')"
-    :message="message"
-    :on-retry="refresh"
-    :pending="pending">
-    <template #default="{ data: view }">
-      <section>
-        <div class="title-row">
-          <div class="page-heading">
-            <ClipboardList class="page-heading-icon" />
-            <div class="page-heading-text">
-              <h1>{{ t('allIssues') }}</h1>
-            </div>
+  <div>
+    <PageHeader :title="t('allIssues')">
+      <NuxtLink
+        v-if="data?.spaces.length"
+        :to="organizationRoutes.newIssue()">
+        <Plus />
+        {{ t('addIssue') }}
+      </NuxtLink>
+    </PageHeader>
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default="{ data: view }">
+        <section>
+          <div class="toolbar">
+            <input
+              :aria-label="t('searchIssues')"
+              :placeholder="t('searchIssues')"
+              type="search"
+              :value="request.search"
+              @input="updateSearch(($event.target as HTMLInputElement).value)" />
+            <IssueFilters
+              :attributes="view.attributes"
+              :epic-statuses="epicStatusOptions"
+              :loading="filtering"
+              :model-value="filterValue"
+              :spaces="view.spaces"
+              @update:model-value="
+                updateFilters({
+                  attributes: $event.attributes,
+                  epicStatuses: $event.epicStatuses ?? [],
+                  spaceIds: $event.spaceIds ?? [],
+                })
+              " />
           </div>
-          <NuxtLink
-            v-if="view.spaces.length"
-            :aria-label="t('addIssue')"
-            class="primary"
-            :to="organizationRoutes.newIssue()">
-            <Plus />
-            <span class="btn-label">{{ t('addIssue') }}</span>
-          </NuxtLink>
-        </div>
-        <div class="toolbar">
-          <input
-            :aria-label="t('searchIssues')"
-            :placeholder="t('searchIssues')"
-            type="search"
-            :value="request.search"
-            @input="updateSearch(($event.target as HTMLInputElement).value)" />
-          <IssueFilters
-            :attributes="view.attributes"
-            :epic-statuses="epicStatusOptions"
-            :loading="filtering"
-            :model-value="filterValue"
-            :spaces="view.spaces"
-            @update:model-value="
-              updateFilters({
-                attributes: $event.attributes,
-                epicStatuses: $event.epicStatuses ?? [],
-                spaceIds: $event.spaceIds ?? [],
-              })
-            " />
-        </div>
-        <p
-          v-if="searchMessage"
-          class="form-error">
-          {{ searchMessage }}
-        </p>
-        <IssueList
-          :deps="deps.issueList"
-          :empty-hint="t('emptyHint')"
-          :empty-text="t('emptyTitle')"
-          :filtering="filtering"
-          :has-next-page="hasNextPage"
-          :issues="issues"
-          :on-moved="searchIssues"
-          :on-update-page="updatePage"
-          :page="request.page" />
-      </section>
-    </template>
-  </QueryState>
+          <p
+            v-if="searchMessage"
+            class="form-error">
+            {{ searchMessage }}
+          </p>
+          <IssueList
+            :deps="deps.issueList"
+            :empty-hint="t('emptyHint')"
+            :empty-text="t('emptyTitle')"
+            :filtering="filtering"
+            :has-next-page="hasNextPage"
+            :issues="issues"
+            :on-moved="searchIssues"
+            :on-update-page="updatePage"
+            :page="request.page" />
+        </section>
+      </template>
+    </QueryState>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ClipboardList, Plus } from '@lucide/vue'
+import { Plus } from '@lucide/vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
@@ -140,8 +134,6 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `issues:${props.organizationKey}`,
   (signal) => props.deps.view({ ...request.value, signal }),
 )
-
-useHead({ title: t('allIssues') })
 
 const attributes = computed(() => data.value?.attributes ?? [])
 const attributeFilters = computed(() =>

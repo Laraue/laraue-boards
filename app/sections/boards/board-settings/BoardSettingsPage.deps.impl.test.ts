@@ -82,19 +82,27 @@ test('updates a column when only its category changed', async () => {
 })
 
 test('maps board settings and sorts columns', async () => {
-  const { client } = createTestApiClient(() => ({
-    canDelete: true,
-    canUpdate: true,
-    color: '#111',
-    name: 'Roadmap',
-    status: 'Active',
-    statuses: [
-      { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
-      { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
-    ],
-  }))
+  const { client } = createTestApiClient((_request, path) =>
+    path === '/api/spaces'
+      ? [{ key: 'product', name: 'Product' }]
+      : {
+          canDelete: true,
+          canUpdate: true,
+          color: '#111',
+          name: 'Roadmap',
+          status: 'Active',
+          statuses: [
+            { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
+            { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
+          ],
+        },
+  )
 
-  assert.deepEqual(await createBoardSettingsPageDeps(client).view({ boardId: '12' }), {
+  const view = await createBoardSettingsPageDeps(client).view({
+    boardId: '12',
+    spaceKey: 'product',
+  })
+  assert.deepEqual(view, {
     canDelete: true,
     canUpdate: true,
     color: '#111',
@@ -103,6 +111,7 @@ test('maps board settings and sorts columns', async () => {
       { category: 'Completed', color: '#222', id: '2', name: 'Done' },
     ],
     name: 'Roadmap',
+    spaceName: 'Product',
     status: 'Active',
   })
 })

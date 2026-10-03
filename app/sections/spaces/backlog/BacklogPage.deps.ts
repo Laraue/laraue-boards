@@ -5,9 +5,10 @@ import type { IssueListItem } from '~/components/issue-list/IssueList.types'
 export type BacklogPageData = {
   attributes: IssueAttributeField[]
   backlogBoardId: string
-  color: string
   hasNextPage: boolean
   issues: IssueListItem[]
+  // The space's own name, for the path to it.
+  spaceName: string
   title: string
 }
 

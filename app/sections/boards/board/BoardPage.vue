@@ -7,9 +7,10 @@
       :title="viewModel?.title ?? t('board')">
       <NuxtLink
         v-if="viewModel?.canCreateIssues"
+        :aria-label="t('addIssue')"
         :to="organizationRoutes.newBoardIssue(spaceKey, viewModel.id)">
         <Plus />
-        {{ t('addIssue') }}
+        <span class="btn-label">{{ t('addIssue') }}</span>
       </NuxtLink>
     </PageHeader>
     <QueryState

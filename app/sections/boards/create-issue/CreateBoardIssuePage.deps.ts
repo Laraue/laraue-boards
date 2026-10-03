@@ -4,10 +4,16 @@ import type { IssueAttributeField } from '~/components/issue-attribute-fields/Is
 export type CreateBoardIssuePageData = {
   attributes: IssueAttributeField[]
   boardName: string
+  // The key when the space isn't among the user's spaces.
+  spaceName: string
 }
 
 export type CreateBoardIssuePageDeps = {
   form: CreateIssueFormDeps
   // Rejects with a 403 when the user cannot create issues on the board.
-  view: (input: { boardId: string; signal?: AbortSignal }) => Promise<CreateBoardIssuePageData>
+  view: (input: {
+    boardId: string
+    signal?: AbortSignal
+    spaceKey: string
+  }) => Promise<CreateBoardIssuePageData>
 }

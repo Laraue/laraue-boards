@@ -89,10 +89,11 @@ const mount = async (
   deps: IssuePageDeps,
   onBack: () => Promise<void> | void = vi.fn<() => void>(),
   onDirtyChange = vi.fn<(dirty: boolean) => void>(),
+  inDialog = false,
 ) => {
   currentWrapper = await mountSuspended(IssuePage, {
     attachTo: document.body,
-    props: { deps, issueKey: 'ISS-1', onBack, onDirtyChange },
+    props: { deps, inDialog, issueKey: 'ISS-1', onBack, onDirtyChange },
     route: '/organizations/acme-ab12/issues/ISS-1',
   })
   return currentWrapper
@@ -284,10 +285,10 @@ it('loads history only when its tab is opened', async () => {
   await expect.element(page.getByRole('button', { name: 'Unified' })).not.toBeInTheDocument()
 })
 
-it('leaves the page when back is pressed', async () => {
+it('leaves the dialog when back is pressed', async () => {
   const onBack = vi.fn<() => Promise<void>>(() => new Promise(() => {}))
 
-  await mount(createDeps(), onBack)
+  await mount(createDeps(), onBack, undefined, true)
 
   await page.getByRole('button', { name: 'Back' }).click()
 

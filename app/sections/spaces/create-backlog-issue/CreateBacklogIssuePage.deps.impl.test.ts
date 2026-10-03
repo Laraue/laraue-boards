@@ -25,6 +25,7 @@ test('maps backlog issue page data', async () => {
     attributes: [],
     boardId: '8',
     boardName: 'Backlog',
+    spaceName: 'Product',
   })
 })
 

@@ -10,6 +10,14 @@
         @click="sidebarOpen = true">
         <Menu />
       </button>
+      <!-- A phone has no room for the path, so it keeps the way back up it. -->
+      <NuxtLink
+        v-if="back"
+        :aria-label="t('backTo', { page: back.label })"
+        class="header-btn page-header-back"
+        :to="back.to">
+        <ArrowLeft />
+      </NuxtLink>
       <nav
         v-if="parents?.length"
         :aria-label="t('breadcrumbs')"
@@ -22,7 +30,7 @@
         </template>
       </nav>
       <h1 v-if="title">{{ title }}</h1>
-      <!-- What comes next from here, in the path's own style: "Board / + Add issue". -->
+      <!-- What the page offers, in the path's own style: "Board / + Add issue". -->
       <template v-if="$slots.default">
         <span
           aria-hidden="true"
@@ -35,24 +43,21 @@
       </template>
     </div>
     <div class="page-header-actions">
-      <slot name="actions" />
-      <span
-        v-if="$slots.actions"
-        aria-hidden="true"
-        class="page-header-divider" />
-      <AppHeaderPreferences />
-      <NuxtLink
-        :aria-label="t('yourAccount')"
-        class="header-btn"
-        to="/account">
-        <CircleUser />
-      </NuxtLink>
+      <span class="page-header-preferences">
+        <AppHeaderPreferences />
+        <NuxtLink
+          :aria-label="t('yourAccount')"
+          class="header-btn"
+          to="/account">
+          <CircleUser />
+        </NuxtLink>
+      </span>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { CircleUser, Menu } from '@lucide/vue'
+import { ArrowLeft, CircleUser, Menu } from '@lucide/vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 const props = defineProps<{
@@ -64,10 +69,17 @@ const props = defineProps<{
 if (props.title !== undefined) {
   useHead({ title: () => props.title })
 }
+const back = computed(() => props.parents?.at(-1))
 const sidebarOpen = useSidebarOpen()
 const { t } = useI18n({
-  en: { breadcrumbs: 'Breadcrumbs', openMenu: 'Open menu', yourAccount: 'Your Laraue account' },
+  en: {
+    backTo: 'Back to {page}',
+    breadcrumbs: 'Breadcrumbs',
+    openMenu: 'Open menu',
+    yourAccount: 'Your Laraue account',
+  },
   ru: {
+    backTo: 'Назад: {page}',
     breadcrumbs: 'Навигационная цепочка',
     openMenu: 'Открыть меню',
     yourAccount: 'Ваш аккаунт Laraue',
@@ -120,26 +132,37 @@ const { t } = useI18n({
 .page-header-next {
   display: flex;
   flex: none;
-  gap: var(--space-2);
+  gap: var(--space-4);
 }
 
-.page-header-next :deep(a) {
+.page-header-next :deep(:is(a, button)) {
   align-items: center;
+  background: none;
+  border: 0;
   color: var(--color-muted);
+  cursor: pointer;
   display: inline-flex;
+  font: inherit;
   gap: var(--space-1);
+  padding: 0;
   text-decoration: none;
   text-underline-offset: 3px;
   white-space: nowrap;
 }
 
 /* Like the prototype's back link: no surface, the accent and an underline on hover. */
-.page-header-next :deep(a:hover) {
+.page-header-next :deep(:is(a, button):hover) {
   color: var(--color-accent);
   text-decoration: underline;
 }
 
-.page-header-next :deep(a > svg) {
+.page-header-next :deep(:is(a, button):disabled) {
+  cursor: default;
+  opacity: 0.6;
+  text-decoration: none;
+}
+
+.page-header-next :deep(:is(a, button) > svg) {
   height: 14px;
   width: 14px;
 }
@@ -158,20 +181,12 @@ h1 {
   margin-left: auto;
 }
 
-.page-header-actions :deep(:is(.primary, .secondary)) {
-  font-size: 13px;
-  height: 32px;
-  padding: 0 var(--space-3);
+.page-header-preferences {
+  display: contents;
 }
 
-.page-header-divider {
-  align-self: stretch;
-  background: var(--color-divider);
-  margin-block: var(--space-3);
-  width: 1px;
-}
-
-.page-header-menu {
+.page-header-menu,
+.page-header-back {
   display: none;
 }
 
@@ -180,8 +195,14 @@ h1 {
     padding-left: var(--space-2);
   }
 
-  .page-header-menu {
+  .page-header-menu,
+  .page-header-back {
     display: inline-flex;
+  }
+
+  /* Language, theme and the account come with the menu instead. */
+  .page-header-preferences {
+    display: none;
   }
 
   /* A phone has room for the title only. */
@@ -189,12 +210,8 @@ h1 {
     display: none;
   }
 
-  /* The buttons' 40px touch targets already keep them apart. */
-  .page-header-actions {
-    gap: 0;
-  }
-
-  .page-header-actions :deep(.btn-label) {
+  /* A phone keeps the actions' icons. */
+  .page-header-next :deep(.btn-label) {
     display: none;
   }
 }
