@@ -29,7 +29,7 @@
             {{ message }}
           </p>
           <SelectItem
-            v-for="option in options"
+            v-for="option in loading ? [] : options"
             :key="option.value"
             class="base-select-item"
             :disabled="option.disabled"
@@ -168,6 +168,7 @@ const selected = computed({
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
+  font-size: var(--font-size-body);
   max-height: var(--reka-select-content-available-height);
   max-width: calc(100vw - var(--space-6));
   min-width: var(--reka-select-trigger-width);
@@ -211,7 +212,10 @@ const selected = computed({
 }
 
 .base-select-message {
+  align-items: center;
   color: var(--color-muted);
+  display: flex;
+  min-height: var(--control-height-small);
   padding: var(--space-1) var(--space-2);
 }
 </style>
