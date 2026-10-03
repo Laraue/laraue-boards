@@ -27,7 +27,7 @@
           <span class="organization-name">
             {{ viewModel.organization.name }}
           </span>
-          <ChevronsUpDown class="organization-switch-icon" />
+          <IconSelector class="organization-switch-icon" />
         </NuxtLink>
       </div>
       <nav
@@ -39,13 +39,13 @@
           }"
           data-tour="all-issues"
           :to="organizationRoutes.issues()">
-          <ClipboardList />
+          <IconClipboardList />
           {{ t('allIssues') }}
         </NuxtLink>
         <NuxtLink
           :class="{ active: active('organizations-organizationKey-history') }"
           :to="organizationRoutes.history()">
-          <History />
+          <IconHistory />
           {{ t('history') }}
         </NuxtLink>
         <div
@@ -73,7 +73,7 @@
           v-if="viewModel.organization.canCreateSpaces"
           exact-active-class="active"
           :to="organizationRoutes.newSpace()">
-          <Plus />
+          <IconPlus />
           {{ t('createSpace') }}
         </NuxtLink>
         <div class="sidebar-bottom">
@@ -82,7 +82,7 @@
             :class="{ active: within('organizations-organizationKey-admin') }"
             data-tour="organization-settings"
             :to="adminHome">
-            <Settings />
+            <IconSettings />
             {{ t('admin') }}
           </NuxtLink>
           <NuxtLink
@@ -98,7 +98,7 @@
             :href="docsPath(locale)"
             rel="noopener noreferrer"
             target="_blank">
-            <BookOpen />
+            <IconBook />
             {{ t('documentation') }}
           </a>
         </div>
@@ -111,7 +111,7 @@
             :aria-label="t('yourAccount')"
             class="header-btn"
             to="/account">
-            <CircleUser />
+            <IconUserCircle />
           </NuxtLink>
         </div>
         <NuxtLink
@@ -148,14 +148,14 @@
 
 <script setup lang="ts">
 import {
-  BookOpen,
-  ChevronsUpDown,
-  CircleUser,
-  ClipboardList,
-  History,
-  Plus,
-  Settings,
-} from '@lucide/vue'
+  IconBook,
+  IconClipboardList,
+  IconHistory,
+  IconPlus,
+  IconSelector,
+  IconSettings,
+  IconUserCircle,
+} from '@tabler/icons-vue'
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'

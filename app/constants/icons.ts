@@ -1,6 +1,6 @@
 export {
-  Tag as AttributeIcon,
-  Columns3 as BoardIcon,
-  Repeat2 as RetroIcon,
-  Layers3 as SpaceIcon,
-} from '@lucide/vue'
+  IconLayoutColumns as BoardIcon,
+  IconRepeat as RetroIcon,
+  IconStack2 as SpaceIcon,
+  IconTag as AttributeIcon,
+} from '@tabler/icons-vue'

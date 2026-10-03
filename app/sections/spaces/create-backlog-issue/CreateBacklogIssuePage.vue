@@ -10,7 +10,7 @@
           to: organizationRoutes.space(spaceKey),
         },
         {
-          icon: ListTodo,
+          icon: IconListDetails,
           label: data?.boardName ?? t('backlog'),
           to: organizationRoutes.backlog(spaceKey),
         },
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ListPlus, ListTodo } from '@lucide/vue'
+import { IconListDetails, IconPlaylistAdd } from '@tabler/icons-vue'
 
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
 import { SpaceIcon } from '~/constants/icons'

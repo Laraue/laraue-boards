@@ -49,14 +49,14 @@
             class="icon-btn danger"
             type="button"
             @click="form.statuses.splice(index, 1)">
-            <Trash2 />
+            <IconTrash />
           </button>
         </div>
         <button
           class="secondary add-status"
           type="button"
           @click="addStatus">
-          <Plus />
+          <IconPlus />
           {{ t('addStatus') }}
         </button>
         <p
@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Trash2 } from '@lucide/vue'
+import { IconPlus, IconTrash } from '@tabler/icons-vue'
 
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'

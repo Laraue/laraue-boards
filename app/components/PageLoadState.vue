@@ -4,7 +4,7 @@
       class="state"
       :class="{ hidden: !loading }">
       <span class="icon-badge loading">
-        <Loader />
+        <IconLoader />
       </span>
       <p>{{ loadingText }}</p>
     </div>
@@ -12,7 +12,7 @@
       class="state"
       :class="{ hidden: loading }">
       <span class="icon-badge error">
-        <AlertTriangle />
+        <IconAlertTriangle />
       </span>
       <p class="muted">{{ errorText }}</p>
       <button
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertTriangle, Loader } from '@lucide/vue'
+import { IconAlertTriangle, IconLoader } from '@tabler/icons-vue'
 
 const props = defineProps<{
   errorText: string

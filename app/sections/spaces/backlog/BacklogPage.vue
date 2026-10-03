@@ -12,7 +12,7 @@
       ]"
       :title="data?.title ?? t('backlog')">
       <NuxtLink :to="organizationRoutes.newBacklogIssue(spaceKey)">
-        <Plus />
+        <IconPlus />
         {{ t('addIssue') }}
       </NuxtLink>
     </PageHeader>
@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ListTodo, Plus } from '@lucide/vue'
+import { IconListDetails, IconPlus } from '@tabler/icons-vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 

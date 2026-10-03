@@ -10,7 +10,7 @@
       class="icon-btn drag-handle"
       :disabled="disabled"
       type="button">
-      <GripVertical />
+      <IconGripVertical />
     </button>
     <span
       v-else
@@ -35,14 +35,14 @@
       :disabled="disabled"
       type="button"
       @click="props.onDelete">
-      <Trash2 />
+      <IconTrash />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
-import { GripVertical, Trash2 } from '@lucide/vue'
+import { IconGripVertical, IconTrash } from '@tabler/icons-vue'
 
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'

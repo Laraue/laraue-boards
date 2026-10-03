@@ -6,21 +6,21 @@
         <p>{{ t('heroDescription') }}</p>
         <div class="auth-flow">
           <span class="auth-flow-step">
-            <MessageCircle aria-hidden="true" />
+            <IconMessageCircle aria-hidden="true" />
             {{ t('message') }}
           </span>
-          <ArrowRight
+          <IconArrowRight
             aria-hidden="true"
             class="auth-flow-arrow" />
           <span class="auth-flow-step">
-            <SquareKanban aria-hidden="true" />
+            <IconLayoutKanban aria-hidden="true" />
             {{ t('issue') }}
           </span>
-          <ArrowRight
+          <IconArrowRight
             aria-hidden="true"
             class="auth-flow-arrow" />
           <span class="auth-flow-step">
-            <CircleCheck aria-hidden="true" />
+            <IconCircleCheck aria-hidden="true" />
             {{ t('done') }}
           </span>
         </div>
@@ -73,7 +73,12 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRight, CircleCheck, MessageCircle, SquareKanban } from '@lucide/vue'
+import {
+  IconArrowRight,
+  IconCircleCheck,
+  IconLayoutKanban,
+  IconMessageCircle,
+} from '@tabler/icons-vue'
 
 import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
 import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'

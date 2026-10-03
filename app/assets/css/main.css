@@ -120,10 +120,9 @@ button {
   outline-offset: 2px;
 }
 
-.lucide {
+.tabler-icon {
   flex: none;
   height: var(--icon-size);
-  stroke-width: 2;
   vertical-align: middle;
   width: var(--icon-size);
 }
@@ -341,7 +340,7 @@ textarea::placeholder {
   width: var(--icon-btn-size-small);
 }
 
-.small .lucide {
+.small .tabler-icon {
   height: 14px;
   width: 14px;
 }

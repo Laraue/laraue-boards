@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { Settings } from '@lucide/vue'
+import { IconSettings } from '@tabler/icons-vue'
 
 import { SpaceIcon } from '~/constants/icons'
 import type { SpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'

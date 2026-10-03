@@ -13,7 +13,7 @@
           :title="t('addIssue')"
           type="button"
           @click="onCreateIssue(viewModel.id)">
-          <Plus />
+          <IconPlus />
         </button>
         <span>{{ viewModel.issueCount }}</span>
       </span>
@@ -41,7 +41,7 @@
         v-if="viewModel.hasNext"
         ref="sentinel"
         class="column-sentinel">
-        <Loader
+        <IconLoader
           v-if="loadingMore"
           class="column-sentinel-loader" />
         <button
@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { CollisionPriority } from '@dnd-kit/abstract'
 import { useDroppable } from '@dnd-kit/vue'
-import { Loader, Plus } from '@lucide/vue'
+import { IconLoader, IconPlus } from '@tabler/icons-vue'
 
 import { COLORS } from '~/constants/colors'
 import IssueCard from '~/sections/boards/board/components/BoardColumn/components/IssueCard.vue'

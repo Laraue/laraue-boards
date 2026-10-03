@@ -16,7 +16,7 @@
           class="icon-btn retro-menu"
           type="button"
           @click="sidebarOpen = true">
-          <Menu />
+          <IconMenu2 />
         </button>
         <div class="retro-title">
           <h1 v-if="!canRename(board)">{{ board.name }}</h1>
@@ -37,7 +37,7 @@
             type="button"
             @click.stop="focusNameInput"
             @pointerdown.stop>
-            <Pencil />
+            <IconPencil />
           </button>
           <span
             v-if="board.finished"
@@ -73,7 +73,7 @@
                     {{ member.initials }}
                   </span>
                   {{ member.name }}
-                  <Crown
+                  <IconCrown
                     v-if="member.userId === board.owner.userId"
                     :aria-label="t('owner')"
                     class="presence-role"
@@ -97,7 +97,7 @@
           <button
             class="secondary small"
             type="button">
-            <CircleHelp aria-hidden="true" />
+            <IconHelpCircle aria-hidden="true" />
             {{ t('guide') }}
           </button>
           <div class="board-help-panel">
@@ -150,7 +150,7 @@
               type="button"
               @click="state.phasesCollapsed = !state.phasesCollapsed">
               <h2>{{ t('retroPlan') }}</h2>
-              <ChevronDown aria-hidden="true" />
+              <IconChevronDown aria-hidden="true" />
             </button>
             <div v-else>
               <h2>{{ t('currentPhase') }}</h2>
@@ -208,7 +208,7 @@
               v-if="board.phase === 'Collect' && myNotes.total > 0"
               class="phase-control">
               <span class="phase-control-label">
-                <StickyNote aria-hidden="true" />
+                <IconNote aria-hidden="true" />
                 {{ t('notes') }}:
               </span>
               <button
@@ -225,7 +225,7 @@
               v-if="board.phase === 'Vote'"
               class="phase-control vote-controls">
               <span class="phase-control-label">
-                <ThumbsUp aria-hidden="true" />
+                <IconThumbUp aria-hidden="true" />
                 {{ t('votes') }}:
               </span>
               <div class="vote-counter">
@@ -250,7 +250,7 @@
                 :title="t('resetVotesTitle')"
                 type="button"
                 @click="resetVotes()">
-                <RotateCcw />
+                <IconRotate />
               </button>
             </div>
 
@@ -258,7 +258,7 @@
               v-if="canRunTimer(board) && (board.canManage || countdown !== undefined)"
               class="phase-control phase-timer">
               <span class="phase-control-label">
-                <Timer aria-hidden="true" />
+                <IconStopwatch aria-hidden="true" />
                 {{ t('timer') }}:
               </span>
               <template v-if="countdown === undefined">
@@ -321,7 +321,7 @@
             class="secondary danger small facilitator-finish"
             type="button"
             @click="finish">
-            <Archive />
+            <IconArchive />
             {{ t('finishRetro') }}
           </button>
         </aside>
@@ -340,8 +340,8 @@
               :title="state.fullscreen ? t('leaveFullscreen') : t('openFullscreen')"
               type="button"
               @click="toggleFullscreen">
-              <Minimize v-if="state.fullscreen" />
-              <Maximize v-else />
+              <IconMinimize v-if="state.fullscreen" />
+              <IconMaximize v-else />
             </button>
           </template>
 
@@ -351,7 +351,7 @@
               :key="cursor.member.userId"
               class="remote-cursor"
               :style="{ left: `${cursor.x}px`, top: `${cursor.y}px` }">
-              <MousePointer2 :style="{ color: cursor.member.color }" />
+              <IconPointer :style="{ color: cursor.member.color }" />
               <span
                 class="remote-cursor-name"
                 :style="{ background: cursor.member.color }">
@@ -414,7 +414,7 @@
                   type="button"
                   @click.stop="splitGroup(group.id)"
                   @pointerdown.stop>
-                  <Layers2 />
+                  <IconStack />
                 </button>
               </div>
               <div
@@ -432,7 +432,7 @@
                   type="button"
                   @click.stop="voteGroup(group)"
                   @pointerdown.stop>
-                  <ThumbsUp />
+                  <IconThumbUp />
                 </button>
                 <span
                   v-else
@@ -444,7 +444,7 @@
                     'vote-result',
                     voteResultClasses(groupRank(board, group)),
                   ]">
-                  <Trophy
+                  <IconTrophy
                     v-if="groupRank(board, group)"
                     aria-hidden="true" />
                   <span
@@ -552,7 +552,7 @@
                     :style="{ background: card.assignee.color }">
                     {{ card.assignee.initials }}
                   </span>
-                  <UserRound v-else />
+                  <IconUser v-else />
                   <span class="assignee-name">{{ card.assignee?.name ?? t('unassigned') }}</span>
                 </summary>
                 <div
@@ -577,7 +577,7 @@
                     :class="{ active: !card.assignee }"
                     type="button"
                     @click="assign(card, null, $event)">
-                    <UserRound />
+                    <IconUser />
                     {{ t('unassigned') }}
                   </button>
                 </div>
@@ -600,7 +600,7 @@
                   type="button"
                   @click.stop="vote(card)"
                   @pointerdown.stop>
-                  <ThumbsUp />
+                  <IconThumbUp />
                 </button>
                 <span
                   v-else
@@ -614,7 +614,7 @@
                     'vote-result',
                     voteResultClasses(discussionRanks.get(card.id)),
                   ]">
-                  <Trophy
+                  <IconTrophy
                     v-if="discussionRanks.get(card.id)"
                     aria-hidden="true" />
                   <span
@@ -650,7 +650,7 @@
                   type="button"
                   @click.stop="done(card)"
                   @pointerdown.stop>
-                  <CircleCheck />
+                  <IconCircleCheck />
                 </button>
                 <button
                   v-if="
@@ -664,8 +664,8 @@
                   type="button"
                   @click.stop="toggleReveal(card)"
                   @pointerdown.stop>
-                  <Eye v-if="card.revealed" />
-                  <EyeOff v-else />
+                  <IconEye v-if="card.revealed" />
+                  <IconEyeOff v-else />
                 </button>
               </div>
               <div
@@ -684,7 +684,7 @@
                   type="button"
                   @click.stop="startEdit(card)"
                   @pointerdown.stop>
-                  <Pencil />
+                  <IconPencil />
                 </button>
                 <button
                   v-if="card.isMine || board.canManage"
@@ -693,7 +693,7 @@
                   type="button"
                   @click.stop="destroy(card)"
                   @pointerdown.stop>
-                  <Trash2 />
+                  <IconTrash />
                 </button>
               </div>
             </article>
@@ -710,7 +710,7 @@
             :disabled="state.groupSelection.length < 2"
             type="button"
             @click="mergeSelection()">
-            <Group />
+            <IconBoxMultiple />
             {{ t('mergeIntoTopic') }}
           </button>
           <button
@@ -727,30 +727,30 @@
 
 <script setup lang="ts">
 import {
-  Archive,
-  ChevronDown,
-  CircleCheck,
-  CircleHelp,
-  Crown,
-  Eye,
-  EyeOff,
-  Group,
-  ListChecks,
-  Maximize,
-  Menu,
-  RotateCcw,
-  MessagesSquare,
-  Minimize,
-  MousePointer2,
-  Pencil,
-  StickyNote,
-  ThumbsUp,
-  Timer,
-  Trophy,
-  UserRound,
-  Trash2,
-  Layers2,
-} from '@lucide/vue'
+  IconArchive,
+  IconBoxMultiple,
+  IconChevronDown,
+  IconCircleCheck,
+  IconCrown,
+  IconEye,
+  IconEyeOff,
+  IconHelpCircle,
+  IconListCheck,
+  IconMaximize,
+  IconMenu2,
+  IconMessages,
+  IconMinimize,
+  IconNote,
+  IconPencil,
+  IconPointer,
+  IconRotate,
+  IconStack,
+  IconStopwatch,
+  IconThumbUp,
+  IconTrash,
+  IconTrophy,
+  IconUser,
+} from '@tabler/icons-vue'
 
 import RetroCanvas from '~/sections/retro/retro-board/components/RetroCanvas/RetroCanvas.vue'
 import type {
@@ -968,11 +968,11 @@ const LIVE_TTL_MS = 2000
 
 const PHASES: RetroPhase[] = ['Collect', 'Group', 'Vote', 'Discuss', 'Actions']
 const PHASE_ICONS = {
-  Actions: ListChecks,
-  Collect: StickyNote,
-  Discuss: MessagesSquare,
-  Group,
-  Vote: ThumbsUp,
+  Actions: IconListCheck,
+  Collect: IconNote,
+  Discuss: IconMessages,
+  Group: IconBoxMultiple,
+  Vote: IconThumbUp,
 }
 
 const PHASE_KEYS = {
@@ -4050,7 +4050,7 @@ textarea.card-text:focus {
   width: 14px;
 }
 
-.assignee-trigger > .lucide {
+.assignee-trigger > .tabler-icon {
   height: 12px;
   width: 12px;
 }
@@ -4114,7 +4114,7 @@ textarea.card-text:focus {
   width: 18px;
 }
 
-.assignee-row > .lucide {
+.assignee-row > .tabler-icon {
   height: 12px;
   margin: 3px;
   width: 12px;
@@ -4139,7 +4139,7 @@ textarea.card-text:focus {
   pointer-events: none;
 }
 
-.vote-result .lucide {
+.vote-result .tabler-icon {
   height: 18px;
   width: 18px;
 }

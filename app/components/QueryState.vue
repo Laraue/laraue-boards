@@ -4,7 +4,7 @@
     name="loading">
     <section class="page-state">
       <span class="icon-badge loading">
-        <Loader />
+        <IconLoader />
       </span>
       <p>{{ translatedLoadingText }}</p>
     </section>
@@ -13,7 +13,7 @@
     v-else-if="message !== undefined"
     class="page-state">
     <span class="icon-badge error">
-      <AlertTriangle />
+      <IconAlertTriangle />
     </span>
     <h2>{{ translatedErrorTitle }}</h2>
     <p class="muted">{{ message }}</p>
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts" generic="Value">
-import { AlertTriangle, Loader } from '@lucide/vue'
+import { IconAlertTriangle, IconLoader } from '@tabler/icons-vue'
 
 const props = defineProps<{
   data?: Value

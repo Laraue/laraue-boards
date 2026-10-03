@@ -17,7 +17,7 @@
             :title="t('visual')"
             type="button"
             @click="state.editing = false">
-            <Eye aria-hidden="true" />
+            <IconEye aria-hidden="true" />
             {{ t('visual') }}
           </button>
         </div>
@@ -28,10 +28,10 @@
             :title="t('improveWithAiHint')"
             type="button"
             @click="summarizeContent">
-            <LoaderCircle
+            <IconLoader2
               v-if="summarizing"
               class="markdown-toolbar-spinner" />
-            <Sparkles
+            <IconSparkles
               v-else
               aria-hidden="true" />
             {{ summarizing ? t('improvingWithAi') : t('improveWithAi') }}
@@ -44,7 +44,7 @@
             :title="t('boldShortcut')"
             type="button"
             @click="wrap('**', '**', t('boldText'))">
-            <Bold aria-hidden="true" />
+            <IconBold aria-hidden="true" />
           </button>
           <button
             :aria-label="t('italic')"
@@ -52,7 +52,7 @@
             :title="t('italicShortcut')"
             type="button"
             @click="wrap('*', '*', t('italicText'))">
-            <Italic aria-hidden="true" />
+            <IconItalic aria-hidden="true" />
           </button>
           <button
             :aria-label="t('strikethrough')"
@@ -60,7 +60,7 @@
             :title="t('strikethrough')"
             type="button"
             @click="wrap('~~', '~~', t('strikethroughText'))">
-            <Strikethrough aria-hidden="true" />
+            <IconStrikethrough aria-hidden="true" />
           </button>
           <select
             :aria-label="t('headingLevel')"
@@ -89,7 +89,7 @@
             :title="t('quote')"
             type="button"
             @click="prefixLines('> ', t('quote'))">
-            <Quote aria-hidden="true" />
+            <IconQuote aria-hidden="true" />
           </button>
           <button
             :aria-label="t('bulletedList')"
@@ -97,7 +97,7 @@
             :title="t('bulletedList')"
             type="button"
             @click="prefixLines('- ', t('listItem'))">
-            <List aria-hidden="true" />
+            <IconList aria-hidden="true" />
           </button>
           <button
             :aria-label="t('numberedList')"
@@ -105,7 +105,7 @@
             :title="t('numberedList')"
             type="button"
             @click="prefixLines('', t('listItem'), true)">
-            <ListOrdered aria-hidden="true" />
+            <IconListNumbers aria-hidden="true" />
           </button>
         </div>
 
@@ -116,7 +116,7 @@
             :title="t('inlineCode')"
             type="button"
             @click="wrap('`', '`', t('code'))">
-            <Code aria-hidden="true" />
+            <IconCode aria-hidden="true" />
           </button>
           <button
             :aria-label="t('codeBlock')"
@@ -124,7 +124,7 @@
             :title="t('codeBlock')"
             type="button"
             @click="wrap('```\n', '\n```', t('code'))">
-            <SquareCode aria-hidden="true" />
+            <IconSourceCode aria-hidden="true" />
           </button>
           <button
             :aria-label="t('link')"
@@ -180,20 +180,20 @@
 
 <script setup lang="ts">
 import {
-  Bold,
-  Code,
-  Eye,
-  Image as ImageIcon,
-  Italic,
-  Link as LinkIcon,
-  LoaderCircle,
-  List,
-  ListOrdered,
-  Quote,
-  SquareCode,
-  Sparkles,
-  Strikethrough,
-} from '@lucide/vue'
+  IconBold,
+  IconCode,
+  IconEye,
+  IconItalic,
+  IconLink as LinkIcon,
+  IconList,
+  IconListNumbers,
+  IconLoader2,
+  IconPhoto as ImageIcon,
+  IconQuote,
+  IconSourceCode,
+  IconSparkles,
+  IconStrikethrough,
+} from '@tabler/icons-vue'
 
 import { renderMarkdown } from '~/utils/renderMarkdown'
 
@@ -494,7 +494,7 @@ const handleKeydown = (event: KeyboardEvent) => {
   width: auto;
 }
 
-.markdown-toolbar .lucide {
+.markdown-toolbar .tabler-icon {
   height: 15px;
   width: 15px;
 }

@@ -40,7 +40,7 @@
                 :title="t('leaveOrganization')"
                 type="button"
                 @click="leave(organization.id, organization.name)">
-                <LogOut />
+                <IconLogout />
               </button>
             </div>
             <AppEmptyState
@@ -52,7 +52,7 @@
             class="secondary"
             data-tour="create-organization"
             to="/organizations/new">
-            <Plus />
+            <IconPlus />
             {{ t('createOrganization') }}
           </NuxtLink>
           <p
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { LogOut, Plus } from '@lucide/vue'
+import { IconLogout, IconPlus } from '@tabler/icons-vue'
 
 import type { OrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
 import { useOrganizationTour } from '~/sections/organizations/select-organization/useOrganizationTour'

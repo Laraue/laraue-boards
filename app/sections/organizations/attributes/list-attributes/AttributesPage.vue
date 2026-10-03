@@ -13,7 +13,7 @@
             :aria-label="t('newAttribute')"
             class="primary"
             :to="organizationRoutes.newAttribute()">
-            <Plus />
+            <IconPlus />
             <span class="btn-label">{{ t('newAttribute') }}</span>
           </NuxtLink>
         </div>
@@ -31,7 +31,7 @@
                 {{ typeLabels[attribute.type] }}
               </small>
             </span>
-            <ChevronRight />
+            <IconChevronRight />
           </NuxtLink>
         </div>
         <AppEmptyState
@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Plus } from '@lucide/vue'
+import { IconChevronRight, IconPlus } from '@tabler/icons-vue'
 
 import { AttributeIcon } from '~/constants/icons'
 import type {
@@ -138,11 +138,11 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
   translate: 0 var(--press-offset);
 }
 
-.attribute-list a > .lucide:last-child {
+.attribute-list a > .tabler-icon:last-child {
   color: var(--color-muted);
 }
 
-.attribute-list a > .lucide:first-child {
+.attribute-list a > .tabler-icon:first-child {
   height: 16px;
   width: 16px;
 }

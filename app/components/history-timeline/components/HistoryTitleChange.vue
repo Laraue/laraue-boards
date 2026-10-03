@@ -4,7 +4,7 @@
     <span :title="change.oldValue ?? t('none')">
       {{ change.oldValue ?? t('none') }}
     </span>
-    <ArrowRight />
+    <IconArrowRight />
     <span
       class="history-new-value"
       :title="change.newValue ?? t('none')">
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRight } from '@lucide/vue'
+import { IconArrowRight } from '@tabler/icons-vue'
 
 import type { HistoryTitleChangeViewModel } from '../HistoryTimeline.types'
 

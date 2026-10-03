@@ -45,7 +45,7 @@
         :title="t('moveToBoard')"
         type="button"
         @click.stop.prevent="props.onMove">
-        <ArrowRightLeft />
+        <IconArrowsLeftRight />
       </button>
     </div>
     <div class="issue-list-row-content">
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRightLeft } from '@lucide/vue'
+import { IconArrowsLeftRight } from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
@@ -200,7 +200,7 @@ const displayStatus = computed(() => props.status ?? t('backlog'))
   gap: var(--space-1);
 }
 
-.issue-location .lucide {
+.issue-location .tabler-icon {
   height: 13px;
   width: 13px;
 }

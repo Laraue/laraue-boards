@@ -28,7 +28,7 @@
     <Transition
       mode="out-in"
       name="icon-pop">
-      <Loader
+      <IconLoader
         v-if="moving"
         key="loader"
         :aria-label="t('savingPosition')"
@@ -41,7 +41,7 @@
         :title="t('moveToBacklog')"
         type="button"
         @click="onMoveToBacklog(viewModel.issueKey)">
-        <Undo2 />
+        <IconArrowBackUp />
       </button>
     </Transition>
   </article>
@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
-import { Loader, Undo2 } from '@lucide/vue'
+import { IconArrowBackUp, IconLoader } from '@tabler/icons-vue'
 
 import type { IssueCardViewModel } from './IssueCard.types'
 

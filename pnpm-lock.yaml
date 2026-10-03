@@ -20,15 +20,15 @@ importers:
       '@dnd-kit/vue':
         specifier: ^0.5.0
         version: 0.5.0(vue@3.5.40(typescript@6.0.3))
-      '@lucide/vue':
-        specifier: ^1.26.0
-        version: 1.26.0(vue@3.5.40(typescript@6.0.3))
       '@microsoft/signalr':
         specifier: ^10.0.11
         version: 10.0.11
       '@nuxtjs/sitemap':
         specifier: ^8.3.4
         version: 8.5.1(c91879f0d5213f111c08529673b9e09e)
+      '@tabler/icons-vue':
+        specifier: ^3.35.0
+        version: 3.48.0(vue@3.5.40(typescript@6.0.3))
       diff:
         specifier: ^9.0.0
         version: 9.0.0
@@ -704,11 +704,6 @@ packages:
 
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
-
-  '@lucide/vue@1.26.0':
-    resolution: {integrity: sha512-jz00zLm8+i7VzBuQTbmjChIvIKehaIK5YbOVC+bab7qTh4JTkCd0XJQ4l5TY57gT08fMPVlvUITROB/vm/xImA==}
-    peerDependencies:
-      vue: '>=3.0.1'
 
   '@mapbox/node-pre-gyp@2.0.3':
     resolution: {integrity: sha512-uwPAhccfFJlsfCxMYTwOdVfOz3xqyj8xYL3zJj8f0pb30tLohnnFPhLuqp4/qoEz8sNxe4SESZedcBojRefIzg==}
@@ -1667,6 +1662,14 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@tabler/icons-vue@3.48.0':
+    resolution: {integrity: sha512-HXv8qVtZgYMhF/yxoBKddhc2BRQ9OGX8iiwSglOXvzST2qKMYeAj1uYJ9JNxn4EhyI93ySlbPqG1+yz1i+1xdw==}
+    peerDependencies:
+      vue: '>=3.0.1'
+
+  '@tabler/icons@3.48.0':
+    resolution: {integrity: sha512-lQk06gVHNVBnJp0UOgtth54mcZBJM7rdYKsAxKOProj1bbSAx+/xiuOWfHlyvgdL3M+Y+I0HINrjHa3ygp8eXQ==}
 
   '@tybys/wasm-util@0.10.3':
     resolution: {integrity: sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg==}
@@ -5709,10 +5712,6 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@lucide/vue@1.26.0(vue@3.5.40(typescript@6.0.3))':
-    dependencies:
-      vue: 3.5.40(typescript@6.0.3)
-
   '@mapbox/node-pre-gyp@2.0.3(supports-color@10.2.2)':
     dependencies:
       consola: 3.4.2
@@ -6783,6 +6782,13 @@ snapshots:
   '@speed-highlight/core@1.2.17': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@tabler/icons-vue@3.48.0(vue@3.5.40(typescript@6.0.3))':
+    dependencies:
+      '@tabler/icons': 3.48.0
+      vue: 3.5.40(typescript@6.0.3)
+
+  '@tabler/icons@3.48.0': {}
 
   '@tybys/wasm-util@0.10.3':
     dependencies:

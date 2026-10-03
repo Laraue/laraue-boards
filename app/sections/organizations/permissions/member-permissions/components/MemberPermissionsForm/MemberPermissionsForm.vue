@@ -68,7 +68,7 @@
         :key="space.id"
         class="space-permissions">
         <summary>
-          <ChevronRight class="disclosure-icon" />
+          <IconChevronRight class="disclosure-icon" />
           <SpaceIcon :style="{ color: space.color }" />
           <strong>{{ space.name }}</strong>
           <span
@@ -154,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight } from '@lucide/vue'
+import { IconChevronRight } from '@tabler/icons-vue'
 
 import { SpaceIcon } from '~/constants/icons'
 import type {

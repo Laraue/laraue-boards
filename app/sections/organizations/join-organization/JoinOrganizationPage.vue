@@ -1,7 +1,7 @@
 <template>
   <section class="join-page">
     <div class="join-card">
-      <span class="join-badge"><UserPlus /></span>
+      <span class="join-badge"><IconUserPlus /></span>
       <div class="join-intro">
         <h1>{{ t('joinOrganization') }}</h1>
         <p class="muted">{{ t('invitationDescription') }}</p>
@@ -12,7 +12,7 @@
         :disabled="busy"
         type="button"
         @click="accept">
-        <Loader
+        <IconLoader
           v-if="busy"
           class="spinning" />
         {{ busy ? t('pleaseWait') : message ? t('tryAgain') : t('acceptInvitation') }}
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { Loader, UserPlus } from '@lucide/vue'
+import { IconLoader, IconUserPlus } from '@tabler/icons-vue'
 
 import GoogleSignInButton from '~/components/google-sign-in-button/GoogleSignInButton.vue'
 import type { TelegramUser } from '~/components/telegram-sign-in-button/TelegramSignInButton.types'
@@ -196,7 +196,7 @@ const loginGoogle = async (code: string): Promise<void> => {
   width: 56px;
 }
 
-.join-badge .lucide {
+.join-badge .tabler-icon {
   height: 28px;
   width: 28px;
 }

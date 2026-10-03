@@ -8,7 +8,7 @@
           :src="laraueLogoUrl" />
         <span>Laraue Boards</span>
       </div>
-      <span class="error-icon"><AlertTriangle /></span>
+      <span class="error-icon"><IconAlertTriangle /></span>
       <span class="error-code">{{ code }}</span>
       <h1>{{ title }}</h1>
       <p>{{ message }}</p>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertTriangle } from '@lucide/vue'
+import { IconAlertTriangle } from '@tabler/icons-vue'
 
 defineProps<{ code: string; message: string; title: string }>()
 </script>

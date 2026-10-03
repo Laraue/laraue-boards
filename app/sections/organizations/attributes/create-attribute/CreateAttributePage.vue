@@ -57,7 +57,7 @@
                 :disabled="draft.data.listValues.length === 1"
                 type="button"
                 @click="draft.data.listValues.splice(index, 1)">
-                <Trash2 />
+                <IconTrash />
               </button>
             </div>
           </TransitionGroup>
@@ -65,7 +65,7 @@
             class="secondary add-option"
             type="button"
             @click="addOption">
-            <Plus />
+            <IconPlus />
             {{ t('addOption') }}
           </button>
         </fieldset>
@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus, Trash2 } from '@lucide/vue'
+import { IconPlus, IconTrash } from '@tabler/icons-vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type {

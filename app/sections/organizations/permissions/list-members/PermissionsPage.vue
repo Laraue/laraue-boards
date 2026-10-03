@@ -10,7 +10,7 @@
       <section class="permissions-page">
         <div class="invitation-card">
           <div class="invitation-heading">
-            <span class="invitation-icon"><TicketCheck /></span>
+            <span class="invitation-icon"><IconTicket /></span>
             <div>
               <strong>{{ t('invitePeople') }}</strong>
               <p class="muted">{{ t('inviteDescription') }}</p>
@@ -21,7 +21,7 @@
               :disabled="regenerating"
               type="button"
               @click="regenerate">
-              <RefreshCw />
+              <IconRefresh />
               <span class="btn-label">
                 {{ regenerating ? t('creatingLinkProgress') : t('createLink') }}
               </span>
@@ -38,8 +38,8 @@
               :class="{ copied: state.copied }"
               type="button"
               @click="copyInvitation">
-              <Check v-if="state.copied" />
-              <Copy v-else />
+              <IconCheck v-if="state.copied" />
+              <IconCopy v-else />
               {{ state.copied ? t('copied') : t('copyLink') }}
             </button>
           </div>
@@ -67,7 +67,7 @@
                 {{ member.isOwner ? t('owner') : member.isAdmin ? t('admin') : t('member') }}
               </small>
             </span>
-            <ChevronRight />
+            <IconChevronRight />
           </NuxtLink>
         </div>
       </section>
@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { Check, ChevronRight, Copy, RefreshCw, TicketCheck } from '@lucide/vue'
+import { IconCheck, IconChevronRight, IconCopy, IconRefresh, IconTicket } from '@tabler/icons-vue'
 
 import type { PermissionsPageDeps } from '~/sections/organizations/permissions/list-members/PermissionsPage.deps'
 
@@ -247,7 +247,7 @@ const regenerate = async (): Promise<void> => {
   color: var(--color-text);
 }
 
-.regenerate-link .lucide {
+.regenerate-link .tabler-icon {
   height: 14px;
   width: 14px;
 }
@@ -283,7 +283,7 @@ const regenerate = async (): Promise<void> => {
   translate: 0 var(--press-offset);
 }
 
-.member-list a > .lucide:last-child {
+.member-list a > .tabler-icon:last-child {
   color: var(--color-muted);
 }
 

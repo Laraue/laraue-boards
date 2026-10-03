@@ -50,7 +50,7 @@
       :disabled="submitting"
       type="button"
       @click="addColumn">
-      <Plus />
+      <IconPlus />
       {{ t('addColumn') }}
     </button>
     <p
@@ -84,7 +84,7 @@ import { arrayMove } from '@dnd-kit/helpers'
 import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
 import type { DragEndEvent } from '@dnd-kit/vue'
 import { isSortable } from '@dnd-kit/vue/sortable'
-import { Plus } from '@lucide/vue'
+import { IconPlus } from '@tabler/icons-vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { BoardSettingsPageData } from '~/sections/boards/board-settings/BoardSettingsPage.deps'

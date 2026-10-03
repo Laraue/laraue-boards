@@ -15,7 +15,7 @@
       :title="t('closeDialog')"
       type="button"
       @click="close()">
-      <X />
+      <IconX />
     </button>
     <div class="issue-dialog-content">
       <ClientOnly>
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { X } from '@lucide/vue'
+import { IconX } from '@tabler/icons-vue'
 
 import { confirmUnsavedChanges } from '~/composables/useUnsavedChangesWarning'
 import IssueSkeleton from '~/sections/issues/issue/components/IssueSkeleton.vue'

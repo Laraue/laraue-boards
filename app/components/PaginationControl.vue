@@ -10,7 +10,7 @@
       :disabled="page === 1"
       type="button"
       @click="$emit('update:page', page - 1)">
-      <ChevronLeft />
+      <IconChevronLeft />
     </button>
     <input
       :aria-label="t('pageNumber')"
@@ -24,13 +24,13 @@
       :disabled="!hasNextPage"
       type="button"
       @click="$emit('update:page', page + 1)">
-      <ChevronRight />
+      <IconChevronRight />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ChevronLeft, ChevronRight } from '@lucide/vue'
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-vue'
 
 defineProps<{ hasNextPage: boolean; page: number }>()
 const emit = defineEmits<{ 'update:page': [page: number] }>()

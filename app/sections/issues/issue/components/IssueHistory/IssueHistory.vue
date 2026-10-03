@@ -8,7 +8,7 @@
       v-if="pending"
       class="history-loading"
       role="status">
-      <LoaderCircle class="spin" />
+      <IconLoader2 class="spin" />
       <span>{{ t('loading') }}</span>
     </div>
     <button
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { LoaderCircle } from '@lucide/vue'
+import { IconLoader2 } from '@tabler/icons-vue'
 
 import type { HistoryItemViewModel } from '~/components/history-timeline/HistoryTimeline.types'
 import HistoryTimeline from '~/components/history-timeline/HistoryTimeline.vue'
