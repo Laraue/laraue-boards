@@ -1,8 +1,15 @@
 <template>
   <div class="board-page">
     <PageHeader
+      :icon="BoardIcon"
+      :icon-color="viewModel?.color ?? undefined"
       :parents="[
-        { label: viewModel?.spaceName ?? spaceKey, to: organizationRoutes.space(spaceKey) },
+        {
+          color: viewModel?.spaceColor,
+          icon: SpaceIcon,
+          label: viewModel?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
       ]"
       :title="viewModel?.title ?? t('board')">
       <NuxtLink
@@ -142,6 +149,7 @@ import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { BoardPageDeps, BoardPageFilterValue } from '~/sections/boards/board/BoardPage.deps'
 import BoardColumn from '~/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '~/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'

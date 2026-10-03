@@ -1,9 +1,19 @@
 <template>
   <div>
     <PageHeader
+      :icon="ListPlus"
       :parents="[
-        { label: data?.spaceName ?? spaceKey, to: organizationRoutes.space(spaceKey) },
-        { label: data?.boardName ?? t('backlog'), to: organizationRoutes.backlog(spaceKey) },
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+        {
+          icon: ListTodo,
+          label: data?.boardName ?? t('backlog'),
+          to: organizationRoutes.backlog(spaceKey),
+        },
       ]"
       :title="t('addIssue')" />
     <QueryState
@@ -27,7 +37,10 @@
 </template>
 
 <script setup lang="ts">
+import { ListPlus, ListTodo } from '@lucide/vue'
+
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
+import { SpaceIcon } from '~/constants/icons'
 import type { CreateBacklogIssuePageDeps } from '~/sections/spaces/create-backlog-issue/CreateBacklogIssuePage.deps'
 
 const props = defineProps<{

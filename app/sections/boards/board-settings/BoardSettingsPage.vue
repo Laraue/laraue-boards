@@ -1,9 +1,20 @@
 <template>
   <div>
     <PageHeader
+      :icon="Settings"
       :parents="[
-        { label: data?.spaceName ?? spaceKey, to: organizationRoutes.space(spaceKey) },
-        { label: data?.name ?? t('board'), to: organizationRoutes.board(spaceKey, boardId) },
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+        {
+          color: data?.color,
+          icon: BoardIcon,
+          label: data?.name ?? t('board'),
+          to: organizationRoutes.board(spaceKey, boardId),
+        },
       ]"
       :title="t('settings')" />
     <QueryState
@@ -28,6 +39,9 @@
 </template>
 
 <script setup lang="ts">
+import { Settings } from '@lucide/vue'
+
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type {
   BoardSettingsPageData,
   BoardSettingsPageDeps,

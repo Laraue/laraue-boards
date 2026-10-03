@@ -1,7 +1,15 @@
 <template>
   <div>
     <PageHeader
-      :parents="[{ label: data?.name ?? spaceKey, to: organizationRoutes.space(spaceKey) }]"
+      :icon="Settings"
+      :parents="[
+        {
+          color: data?.color,
+          icon: SpaceIcon,
+          label: data?.name ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+      ]"
       :title="t('settings')" />
     <QueryState
       :data="data"
@@ -59,6 +67,9 @@
 </template>
 
 <script setup lang="ts">
+import { Settings } from '@lucide/vue'
+
+import { SpaceIcon } from '~/constants/icons'
 import type { SpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
 
 const props = defineProps<{

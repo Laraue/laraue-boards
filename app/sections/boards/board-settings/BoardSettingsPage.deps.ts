@@ -16,6 +16,7 @@ export type BoardSettingsPageData = {
   columns: BoardSettingsColumn[]
   name: string
   // The key when the space isn't among the user's spaces.
+  spaceColor: string
   spaceName: string
   status: BoardSettingsStatus
 }

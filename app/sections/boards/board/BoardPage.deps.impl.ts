@@ -1,6 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
+import { DEFAULT_COLOR } from '~/constants/colors'
 import { createIssuePageDeps } from '~/sections/issues/issue/IssuePage.deps.impl'
 import { mapIssueFilters, mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
 
@@ -116,7 +117,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       attributeQuery,
       await request(client.GET('/api/organizations/attributes', { signal })),
     )
-    // The board doesn't carry its space's name; the spaces list does.
+    // The board doesn't carry its space's name and color; the spaces list does.
     const [board, columnIssues, spaces] = await Promise.all([
       request(client.GET('/api/epics/{id}', { params: { path: { id: boardId } }, signal })),
       request(
@@ -134,6 +135,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
     ])
     const issues = mapBoardIssues(columnIssues)
     const issuesByStatus = new Map(issues.columns.map((column) => [column.id, column]))
+    const space = spaces.find((item) => item.key === spaceKey)
     return {
       attributes: attributes.attributes,
       canCreateIssues: board.canCreateIssues,
@@ -154,7 +156,8 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       }),
       id: boardId,
       issueCount: issues.issueCount,
-      spaceName: spaces.find((space) => space.key === spaceKey)?.name ?? spaceKey,
+      spaceColor: space?.color ?? DEFAULT_COLOR,
+      spaceName: space?.name ?? spaceKey,
       title: board.name,
     }
   },

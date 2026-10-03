@@ -58,6 +58,7 @@ export type IssuePageViewModel = {
   owner: string
   ownerColor: string
   ownerInitial: string
+  spaceColor: string
   spaceId: string
   spaceLabel: string
   statusId: string

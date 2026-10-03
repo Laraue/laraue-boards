@@ -1,6 +1,8 @@
 <template>
   <div>
-    <PageHeader :title="t('history')" />
+    <PageHeader
+      :icon="History"
+      :title="t('history')" />
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -65,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { LoaderCircle } from '@lucide/vue'
+import { History, LoaderCircle } from '@lucide/vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import type { HistoryItemViewModel } from '~/components/history-timeline/HistoryTimeline.types'

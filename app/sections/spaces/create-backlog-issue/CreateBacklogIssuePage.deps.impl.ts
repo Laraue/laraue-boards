@@ -33,6 +33,7 @@ export const createCreateBacklogIssuePageDeps = (
       attributes: mapIssueAttributes(attributes),
       boardId: String(backlog.id),
       boardName: backlog.name,
+      spaceColor: space.color,
       spaceName: space.name,
     }
   },

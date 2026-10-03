@@ -3,7 +3,16 @@
     <PageHeader
       v-if="!inDialog"
       :parents="
-        data ? [{ label: data.spaceLabel, to: organizationRoutes.space(data.spaceId) }] : []
+        data
+          ? [
+              {
+                color: data.spaceColor,
+                icon: SpaceIcon,
+                label: data.spaceLabel,
+                to: organizationRoutes.space(data.spaceId),
+              },
+            ]
+          : []
       "
       :title="data?.issueKey ?? issueKey">
       <button
@@ -269,6 +278,7 @@ import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vu
 import IssueAttributeFields from '~/components/issue-attribute-fields/IssueAttributeFields.vue'
 import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
+import { SpaceIcon } from '~/constants/icons'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
 import IssueComments from './components/IssueComments/IssueComments.vue'

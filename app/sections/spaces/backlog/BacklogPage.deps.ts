@@ -8,6 +8,7 @@ export type BacklogPageData = {
   hasNextPage: boolean
   issues: IssueListItem[]
   // The space's own name, for the path to it.
+  spaceColor: string
   spaceName: string
   title: string
 }

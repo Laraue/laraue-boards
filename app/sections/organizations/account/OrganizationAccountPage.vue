@@ -1,6 +1,8 @@
 <template>
   <section class="account-page">
-    <PageHeader :title="t('youIn', { organization: organizationName })" />
+    <PageHeader
+      :icon="Building2"
+      :title="t('youIn', { organization: organizationName })" />
     <p class="muted">
       {{ t('scope', { organization: organizationName }) }}
       <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
@@ -44,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { CreditCard, History, KeyRound, UserRound } from '@lucide/vue'
+import { Building2, CreditCard, History, KeyRound, UserRound } from '@lucide/vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 defineProps<{

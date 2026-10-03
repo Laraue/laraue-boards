@@ -24,6 +24,7 @@ const issue: IssuePageViewModel = {
   owner: 'Grace Hopper',
   ownerColor: '#222',
   ownerInitial: 'G',
+  spaceColor: '#4774d4',
   spaceId: '7',
   spaceLabel: 'Product',
   statusId: '3',

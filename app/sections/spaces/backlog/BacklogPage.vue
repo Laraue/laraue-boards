@@ -1,7 +1,15 @@
 <template>
   <div>
     <PageHeader
-      :parents="[{ label: data?.spaceName ?? spaceKey, to: organizationRoutes.space(spaceKey) }]"
+      :icon="ListTodo"
+      :parents="[
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+      ]"
       :title="data?.title ?? t('backlog')">
       <NuxtLink :to="organizationRoutes.newBacklogIssue(spaceKey)">
         <Plus />
@@ -53,13 +61,14 @@
 </template>
 
 <script setup lang="ts">
-import { Plus } from '@lucide/vue'
+import { ListTodo, Plus } from '@lucide/vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import type { IssueFiltersValue } from '~/components/issue-filters/IssueFilters.types'
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
 import IssueList from '~/components/issue-list/IssueList.vue'
+import { SpaceIcon } from '~/constants/icons'
 import type { BacklogPageDeps } from '~/sections/spaces/backlog/BacklogPage.deps'
 import {
   getIssueAttributeFilterInput,

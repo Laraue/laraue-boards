@@ -21,6 +21,7 @@ export type BoardPageViewModel = {
   id: string
   issueCount: number
   // The key while the space isn't among the user's spaces.
+  spaceColor: string
   spaceName: string
   title: string
 }

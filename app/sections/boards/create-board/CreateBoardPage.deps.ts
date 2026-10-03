@@ -12,6 +12,7 @@ export type CreateBoardInput = {
 export type CreateBoardPageData = {
   boards: Array<{ label: string; statuses: BoardStatus[]; value: string }>
   // The key when the space isn't among the user's spaces.
+  spaceColor: string
   spaceName: string
 }
 

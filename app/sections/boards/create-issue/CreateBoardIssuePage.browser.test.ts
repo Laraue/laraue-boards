@@ -10,7 +10,9 @@ import CreateBoardIssuePage from './CreateBoardIssuePage.vue'
 
 const pageData: CreateBoardIssuePageData = {
   attributes: [],
+  boardColor: '#4774d4',
   boardName: 'Roadmap',
+  spaceColor: '#4774d4',
   spaceName: 'Product',
 }
 

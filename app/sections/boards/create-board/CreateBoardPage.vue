@@ -1,7 +1,15 @@
 <template>
   <div>
     <PageHeader
-      :parents="[{ label: data?.spaceName ?? spaceKey, to: organizationRoutes.space(spaceKey) }]"
+      :icon="BoardIcon"
+      :parents="[
+        {
+          color: data?.spaceColor,
+          icon: SpaceIcon,
+          label: data?.spaceName ?? spaceKey,
+          to: organizationRoutes.space(spaceKey),
+        },
+      ]"
       :title="t('createBoard')" />
     <section class="form-page">
       <form @submit.prevent="create">
@@ -74,6 +82,7 @@ import { Plus, Trash2 } from '@lucide/vue'
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 import { DEFAULT_COLOR } from '~/constants/colors'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { CreateBoardPageDeps } from '~/sections/boards/create-board/CreateBoardPage.deps'
 
 const props = defineProps<{

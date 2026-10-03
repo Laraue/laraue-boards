@@ -111,6 +111,7 @@ test('maps board settings and sorts columns', async () => {
       { category: 'Completed', color: '#222', id: '2', name: 'Done' },
     ],
     name: 'Roadmap',
+    spaceColor: '#4774d4',
     spaceName: 'Product',
     status: 'Active',
   })

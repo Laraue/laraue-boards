@@ -6,9 +6,9 @@
       {{ attribute.name }}
     </label>
     <div class="attribute-field">
-      <span
-        class="attribute-dot"
-        :style="{ background: attribute.color }" />
+      <AttributeIcon
+        class="attribute-icon"
+        :style="{ color: attribute.color }" />
       <IssueAttributeTextField
         v-if="attribute.type === 'text'"
         :id="`${idPrefix}-${attribute.id}`"
@@ -52,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+import { AttributeIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
 
 import IssueAttributeDateField from './components/IssueAttributeDateField.vue'
@@ -92,9 +93,8 @@ const update = (id: string, value: string) => {
   grid-template-columns: auto minmax(0, 1fr);
 }
 
-.attribute-dot {
-  border-radius: var(--radius-pill);
-  height: 8px;
-  width: 8px;
+.attribute-icon {
+  height: 14px;
+  width: 14px;
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <section class="settings-page">
-    <PageHeader :title="t('admin')" />
+    <PageHeader
+      :icon="Settings"
+      :title="t('admin')" />
     <nav
       :aria-label="t('admin')"
       class="page-tabs">

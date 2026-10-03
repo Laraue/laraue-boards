@@ -1,6 +1,8 @@
 <template>
   <div>
-    <PageHeader :title="t('retro')">
+    <PageHeader
+      :icon="RetroIcon"
+      :title="t('retro')">
       <button
         v-if="data?.canCreate"
         :aria-label="t('start')"
@@ -87,6 +89,7 @@
 import { Plus, Trash2 } from '@lucide/vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
+import { RetroIcon } from '~/constants/icons'
 import type {
   RetroListItemViewModel,
   RetroListPageDeps,

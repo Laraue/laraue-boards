@@ -25,11 +25,27 @@
         <template
           v-for="parent in parents"
           :key="parent.label">
-          <NuxtLink :to="parent.to">{{ parent.label }}</NuxtLink>
+          <NuxtLink
+            class="page-header-crumb"
+            :to="parent.to">
+            <component
+              :is="parent.icon"
+              v-if="parent.icon"
+              :style="{ color: parent.color }" />
+            <span>{{ parent.label }}</span>
+          </NuxtLink>
           <span aria-hidden="true">/</span>
         </template>
       </nav>
-      <h1 v-if="title">{{ title }}</h1>
+      <h1
+        v-if="title"
+        class="page-header-crumb">
+        <component
+          :is="icon"
+          v-if="icon"
+          :style="{ color: iconColor }" />
+        <span>{{ title }}</span>
+      </h1>
       <!-- What the page offers, in the path's own style: "Board / + Add issue". -->
       <template v-if="$slots.default">
         <span
@@ -58,11 +74,14 @@
 
 <script setup lang="ts">
 import { ArrowLeft, CircleUser, Menu } from '@lucide/vue'
+import type { Component } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 
+// An icon takes the color of what it stands for (a space, a board), or the text's without one.
 const props = defineProps<{
-  parents?: Array<{ label: string; to: RouteLocationRaw }>
-  // Left out only by the layout's stand-in for pages without their own header.
+  icon?: Component
+  iconColor?: string
+  parents?: Array<{ color?: string; icon?: Component; label: string; to: RouteLocationRaw }>
   title?: string
 }>()
 
@@ -115,10 +134,26 @@ const { t } = useI18n({
 
 .page-header-path a {
   color: inherit;
-  overflow: hidden;
   text-decoration: none;
+}
+
+.page-header-crumb {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.page-header-crumb > span {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.page-header-crumb > svg {
+  flex: none;
+  height: 14px;
+  width: 14px;
 }
 
 .page-header-path a:hover {
@@ -167,10 +202,11 @@ const { t } = useI18n({
   width: 14px;
 }
 
+/* The page stands out from its path by color alone, not weight. */
 h1 {
-  font-size: 15px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.01em;
+  font-size: var(--font-size-body);
+  font-weight: inherit;
+  min-width: 0;
 }
 
 .page-header-actions {

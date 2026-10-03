@@ -83,6 +83,7 @@ const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageV
   owner: issue.owner.displayName,
   ownerColor: issue.owner.color,
   ownerInitial: issue.owner.initials,
+  spaceColor: issue.spaceColor,
   spaceId: issue.spaceKey,
   spaceLabel: issue.spaceName,
   statusId: String(issue.statusId),

@@ -24,7 +24,7 @@
             v-for="attribute in attributes"
             :key="attribute.id"
             :to="organizationRoutes.attribute(attribute.id)">
-            <span :style="{ background: attribute.color }" />
+            <AttributeIcon :style="{ color: attribute.color }" />
             <span class="attribute-name">
               <strong>{{ attribute.name }}</strong>
               <small class="muted">
@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import { ChevronRight, Plus } from '@lucide/vue'
 
+import { AttributeIcon } from '~/constants/icons'
 import type {
   AttributeListItem,
   AttributesPageDeps,
@@ -141,10 +142,9 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
   color: var(--color-muted);
 }
 
-.attribute-list a > span:first-child {
-  border-radius: var(--radius-pill);
-  height: 12px;
-  width: 12px;
+.attribute-list a > .lucide:first-child {
+  height: 16px;
+  width: 16px;
 }
 
 .attribute-name {

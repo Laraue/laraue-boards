@@ -1,5 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
+import { DEFAULT_COLOR } from '~/constants/colors'
 
 import type { CreateBoardPageDeps } from './CreateBoardPage.deps'
 
@@ -24,6 +25,7 @@ export const createCreateBoardPageDeps = (client: ApiClient): CreateBoardPageDep
       ),
       request(client.GET('/api/spaces', { signal })),
     ])
+    const space = spaces.find((item) => item.key === spaceKey)
     return {
       boards: boards.data.map((board) => ({
         label: board.epicName,
@@ -34,7 +36,8 @@ export const createCreateBoardPageDeps = (client: ApiClient): CreateBoardPageDep
         })),
         value: String(board.epicId),
       })),
-      spaceName: spaces.find((space) => space.key === spaceKey)?.name ?? spaceKey,
+      spaceColor: space?.color ?? DEFAULT_COLOR,
+      spaceName: space?.name ?? spaceKey,
     }
   },
 })

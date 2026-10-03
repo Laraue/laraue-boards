@@ -1,6 +1,9 @@
 <template>
   <div>
-    <PageHeader :title="t('createSpace')" />
+    <PageHeader
+      :icon="SpaceIcon"
+      :icon-color="form.color"
+      :title="t('createSpace')" />
     <section class="form-page">
       <form @submit.prevent="submit">
         <label for="create-space-name">{{ t('name') }}</label>
@@ -34,6 +37,7 @@
 
 <script setup lang="ts">
 import { DEFAULT_COLOR } from '~/constants/colors'
+import { SpaceIcon } from '~/constants/icons'
 import type { CreateSpacePageDeps } from '~/sections/spaces/create-space/CreateSpacePage.deps'
 
 const props = defineProps<{

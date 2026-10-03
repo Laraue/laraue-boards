@@ -1,6 +1,8 @@
 <template>
   <div>
-    <PageHeader :title="t('allIssues')">
+    <PageHeader
+      :icon="ClipboardList"
+      :title="t('allIssues')">
       <NuxtLink
         v-if="data?.spaces.length"
         :to="organizationRoutes.newIssue()">
@@ -60,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { Plus } from '@lucide/vue'
+import { ClipboardList, Plus } from '@lucide/vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 

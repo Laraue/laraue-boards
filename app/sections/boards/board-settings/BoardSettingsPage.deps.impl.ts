@@ -96,6 +96,7 @@ export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPag
       request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
       request(client.GET('/api/spaces', { signal })),
     ])
+    const space = spaces.find((item) => item.key === spaceKey)
     return {
       canDelete: board.canDelete ?? false,
       canUpdate: board.canUpdate ?? false,
@@ -109,7 +110,8 @@ export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPag
           name: status.name,
         })),
       name: board.name,
-      spaceName: spaces.find((space) => space.key === spaceKey)?.name ?? spaceKey,
+      spaceColor: space?.color ?? DEFAULT_COLOR,
+      spaceName: space?.name ?? spaceKey,
       status: board.status,
     }
   },

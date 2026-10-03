@@ -1,6 +1,9 @@
 <template>
   <div>
-    <PageHeader :title="data?.name ?? t('space')">
+    <PageHeader
+      :icon="SpaceIcon"
+      :icon-color="data?.color"
+      :title="data?.name ?? t('space')">
       <NuxtLink
         v-if="data?.canCreateBoards"
         :aria-label="t('createBoard')"
@@ -101,7 +104,7 @@
 <script setup lang="ts">
 import { ListTodo, Plus, Settings } from '@lucide/vue'
 
-import { BoardIcon } from '~/constants/icons'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
 const props = defineProps<{ deps: SpacePageDeps; spaceKey: string }>()

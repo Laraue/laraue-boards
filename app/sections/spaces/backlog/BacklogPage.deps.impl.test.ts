@@ -30,6 +30,7 @@ test('maps backlog page data', async () => {
       backlogBoardId: '8',
       hasNextPage: false,
       issues: [],
+      spaceColor: '#123',
       spaceName: 'Product',
       title: 'Backlog',
     },

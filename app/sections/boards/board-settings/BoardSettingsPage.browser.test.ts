@@ -14,6 +14,7 @@ const board: BoardSettingsPageData = {
     { category: 'Completed', color: '#d65f63', id: '2', name: 'Done' },
   ],
   name: 'Roadmap',
+  spaceColor: '#4774d4',
   spaceName: 'Product',
   status: 'New',
 }

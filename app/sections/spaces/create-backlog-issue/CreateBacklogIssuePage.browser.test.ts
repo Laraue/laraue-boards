@@ -12,6 +12,7 @@ const pageData: CreateBacklogIssuePageData = {
   attributes: [],
   boardId: '8',
   boardName: 'Backlog',
+  spaceColor: '#4774d4',
   spaceName: 'Product',
 }
 

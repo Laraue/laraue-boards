@@ -3,8 +3,10 @@ import type { IssueAttributeField } from '~/components/issue-attribute-fields/Is
 
 export type CreateBoardIssuePageData = {
   attributes: IssueAttributeField[]
+  boardColor: string
   boardName: string
   // The key when the space isn't among the user's spaces.
+  spaceColor: string
   spaceName: string
 }
 

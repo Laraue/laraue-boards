@@ -46,9 +46,9 @@
           :class="{ active: attribute.id === activeAttribute?.id }"
           type="button"
           @click="activeFilterId = attribute.id">
-          <span
-            class="filter-dot"
-            :style="{ background: attribute.color }" />
+          <AttributeIcon
+            class="filter-icon"
+            :style="{ color: attribute.color }" />
           <span class="filter-label">{{ attribute.name }}</span>
           <small v-if="valueCount(attribute.id)">
             {{ valueCount(attribute.id) }}
@@ -159,6 +159,7 @@
 import { ListFilter, LoaderCircle } from '@lucide/vue'
 
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
+import { AttributeIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
 
 import IssueDateFilter from './components/IssueDateFilter.vue'
@@ -353,11 +354,10 @@ const toggleSpace = (spaceId: string) => {
   margin-top: auto;
 }
 
-.filter-dot {
-  border-radius: var(--radius-pill);
+.filter-icon {
   flex: none;
-  height: 8px;
-  width: 8px;
+  height: 14px;
+  width: 14px;
 }
 
 .filter-editor {
