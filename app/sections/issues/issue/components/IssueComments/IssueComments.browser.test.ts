@@ -68,7 +68,7 @@ it('keeps the text and shows a validation error when creating a comment fails', 
   await page.getByRole('button', { name: 'Add comment' }).click()
 
   await expect.element(page.getByRole('alert')).toHaveTextContent('Comment is too long.')
-  await expect.element(page.getByLabelText('Write a comment')).toHaveValue('New comment')
+  await expect.element(page.getByLabelText('Write a comment')).toHaveTextContent('New comment')
 })
 
 it('edits and deletes a comment', async () => {

@@ -156,7 +156,7 @@ it('fills the title and the content with the AI summary', async () => {
   })
 
   await page.getByLabelText('Content').fill('login fails on retry pls')
-  await page.getByRole('button', { name: 'Clean up and title with AI' }).click()
+  await page.getByRole('button', { name: 'Improve with AI' }).click()
 
   await expect.element(page.getByLabelText('Title', { exact: true })).toHaveValue('Fix login retry')
   await expect

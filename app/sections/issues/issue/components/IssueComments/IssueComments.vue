@@ -52,21 +52,20 @@
           <div
             v-if="state.editingId === comment.id"
             class="issue-comment-composer">
-            <textarea
+            <MarkdownEditor
               v-model="state.editText"
-              :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
               :disabled="!!state.pendingId || summarizing"
-              rows="1"
-              @input="clearMessage"
-              @keydown.enter.ctrl.exact.prevent="update(comment.id)"
-              @keydown.enter.meta.exact.prevent="update(comment.id)" />
+              :label="`${t('editCommentBy')} ${comment.owner.name}`"
+              @submit="update(comment.id)"
+              @update:model-value="clearMessage" />
             <div class="issue-comment-form-actions">
               <BaseButton
                 v-if="state.editText.trim()"
-                class="issue-comment-ai"
                 :disabled="!!state.pendingId || summarizing"
                 :loading="state.summarizingId === comment.id"
                 size="small"
+                :tooltip="t('improveWithAiHint')"
+                variant="ghost"
                 @click="improveWithAi(comment.id)">
                 <IconSparkles v-if="state.summarizingId !== comment.id" />
                 {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
@@ -88,31 +87,31 @@
               </IconButton>
             </div>
           </div>
-          <p
+          <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
+          <div
             v-else
-            class="issue-comment-text">
-            {{ comment.text }}
-          </p>
+            class="markdown"
+            v-html="renderMarkdown(comment.text)" />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
       </article>
     </div>
     <div class="issue-comment-composer">
-      <textarea
+      <MarkdownEditor
         v-model="state.newText"
-        :aria-label="t('writeComment')"
         :disabled="!!state.pendingId || summarizing"
+        :label="t('writeComment')"
         :placeholder="t('writeCommentPlaceholder')"
-        rows="1"
-        @input="clearMessage"
-        @keydown.enter.ctrl.exact.prevent="create"
-        @keydown.enter.meta.exact.prevent="create" />
+        @submit="create"
+        @update:model-value="clearMessage" />
       <div class="issue-comment-form-actions">
         <BaseButton
           v-if="state.newText.trim()"
-          class="issue-comment-ai"
           :disabled="!!state.pendingId || summarizing"
           :loading="state.summarizingId === 'new'"
           size="small"
+          :tooltip="t('improveWithAiHint')"
+          variant="ghost"
           @click="improveWithAi('new')">
           <IconSparkles v-if="state.summarizingId !== 'new'" />
           {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
@@ -141,6 +140,9 @@ import {
   IconX,
 } from '@tabler/icons-vue'
 
+import MarkdownEditor from '~/components/markdown-editor/MarkdownEditor.vue'
+import { renderMarkdown } from '~/utils/renderMarkdown'
+
 import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.deps'
 
 const props = defineProps<{
@@ -159,8 +161,9 @@ const { t } = useI18n({
     deleteConfirm: 'Delete this comment?',
     edit: 'Edit',
     editCommentBy: 'Edit comment by',
-    improveWithAi: 'Clean up with AI',
-    improvingWithAi: 'Cleaning up…',
+    improveWithAi: 'Improve with AI',
+    improveWithAiHint: 'Fixes the text',
+    improvingWithAi: 'Improving…',
     loading: 'Loading comments…',
     save: 'Save',
     saveShortcut: 'Save (Ctrl+Enter)',
@@ -177,8 +180,9 @@ const { t } = useI18n({
     deleteConfirm: 'Удалить этот комментарий?',
     edit: 'Изменить',
     editCommentBy: 'Изменить комментарий пользователя',
-    improveWithAi: 'Привести в порядок с ИИ',
-    improvingWithAi: 'Приводим в порядок…',
+    improveWithAi: 'Улучшить с ИИ',
+    improveWithAiHint: 'Поправит текст',
+    improvingWithAi: 'Улучшаем…',
     loading: 'Загрузка комментариев…',
     save: 'Сохранить',
     saveShortcut: 'Сохранить (Ctrl+Enter)',
@@ -294,34 +298,55 @@ const remove = async (id: string) => {
   gap: var(--space-4);
 }
 
+.issue-comment-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.issue-comment-body,
+.issue-comment-composer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+/* A message: the author's avatar, then a bubble pointing at it, as in a chat. */
 .issue-comment {
   align-items: start;
-  border-bottom: 1px solid var(--color-divider);
   display: grid;
   gap: var(--space-3);
   grid-template-columns: auto minmax(0, 1fr);
-  padding: var(--space-3) 0;
-}
-
-.issue-comment:first-child {
-  padding-top: 0;
 }
 
 .issue-comment > .avatar {
   font-size: var(--font-size-caption);
-  height: 24px;
-  width: 24px;
+  height: 28px;
+  width: 28px;
 }
 
 .issue-comment-body {
+  border-top-left-radius: var(--radius-small);
   display: grid;
-  gap: var(--space-1);
+  gap: var(--space-2);
   min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  position: relative;
 }
 
-.issue-comment-text {
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
+/* The tail: a square turned on its corner, half of it out of the bubble, with its two outer borders. */
+.issue-comment-body::before {
+  background: inherit;
+  border-color: inherit;
+  border-style: solid;
+  border-width: 0 0 1px 1px;
+  content: '';
+  height: 8px;
+  left: -5px;
+  position: absolute;
+  top: 10px;
+  transform: rotate(45deg);
+  width: 8px;
 }
 
 .issue-comment-head {
@@ -354,46 +379,34 @@ const remove = async (id: string) => {
 }
 
 .issue-comment-composer {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
   display: grid;
   gap: var(--space-2);
-  padding: var(--space-2);
-  transition: border-color var(--duration-fast) var(--ease-standard);
+  padding: var(--space-3) var(--space-4);
 }
 
-.issue-comment-composer:focus-within {
+/* Editing happens in the comment's own card, without a second frame. */
+.issue-comment .issue-comment-composer {
+  border: 0;
+  padding: 0;
+}
+
+.issue-comment-composer :deep(.markdown) {
+  min-height: calc(2 * 1.6em);
+}
+
+.issue-comment-composer:focus-within,
+.issue-comment-body:has(.issue-comment-composer:focus-within) {
   border-color: var(--color-focus);
 }
 
-.issue-comment-composer textarea {
-  background: transparent;
-  border: 0;
-  padding: var(--space-1) var(--space-2);
-  resize: none;
-}
-
-.issue-comment-form-actions .issue-comment-ai {
-  --ai-button-fill: var(--color-surface);
-
-  background:
-    linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
-    linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
-  border-color: transparent;
-}
-
 @media (hover: hover) and (pointer: fine) {
-  .issue-comment-composer:hover:not(:focus-within) {
-    border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
+  /* The comment's buttons show on hover, so the list reads as text. */
+  .issue-comment:not(:hover, :focus-within) .issue-comment-actions {
+    opacity: 0;
   }
 
-  .issue-comment-form-actions .issue-comment-ai:hover:not(:disabled) {
-    --ai-button-fill: var(--color-hover);
-
-    background:
-      linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
-      linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
+  .issue-comment-composer:hover:not(:focus-within) {
+    border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   }
 }
 </style>

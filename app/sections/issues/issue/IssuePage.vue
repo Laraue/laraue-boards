@@ -78,33 +78,36 @@
             @submit.prevent="save">
             <div class="issue-form-content">
               <div class="issue-form-main">
-                <!-- A textarea so a long title wraps; it is still one line of text. -->
-                <textarea
-                  id="issue-title"
-                  :aria-label="t('title')"
-                  class="issue-title-input"
-                  :disabled="!issue.canEdit"
-                  :maxlength="256"
-                  :placeholder="t('titlePlaceholder')"
-                  rows="1"
-                  :value="state.title"
-                  @input="changeTitle"
-                  @keydown.enter.prevent />
-                <IssueDescription
-                  v-model="state.content"
-                  v-model:title="state.title"
-                  :deps="deps.description"
-                  :disabled="!issue.canEdit">
-                  <template #actions>
-                    <IconButton
-                      :disabled="saving || deleting"
-                      :label="t('attachImages')"
-                      :tooltip="t('attachImagesHint')"
-                      @click="attachments?.pick()">
-                      <IconPaperclip />
-                    </IconButton>
-                  </template>
-                </IssueDescription>
+                <!-- The description belongs to the title: closer to it than the sections are. -->
+                <div class="issue-head">
+                  <!-- A textarea so a long title wraps; it is still one line of text. -->
+                  <textarea
+                    id="issue-title"
+                    :aria-label="t('title')"
+                    class="issue-title-input"
+                    :disabled="!issue.canEdit"
+                    :maxlength="256"
+                    :placeholder="t('titlePlaceholder')"
+                    rows="1"
+                    :value="state.title"
+                    @input="changeTitle"
+                    @keydown.enter.prevent />
+                  <IssueDescription
+                    v-model="state.content"
+                    v-model:title="state.title"
+                    :deps="deps.description"
+                    :disabled="!issue.canEdit">
+                    <template #actions>
+                      <IconButton
+                        :disabled="saving || deleting"
+                        :label="t('attachImages')"
+                        :tooltip="t('attachImagesHint')"
+                        @click="attachments?.pick()">
+                        <IconPaperclip />
+                      </IconButton>
+                    </template>
+                  </IssueDescription>
+                </div>
                 <IssueAttachments
                   :key="issue.issueKey"
                   ref="attachments"
@@ -576,6 +579,7 @@ watch(dirty, setDirty, { immediate: true })
   align-items: center;
   display: flex;
   gap: var(--space-2);
+  margin-bottom: var(--space-5);
   min-width: 0;
 }
 
@@ -588,16 +592,15 @@ watch(dirty, setDirty, { immediate: true })
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
-  margin-top: var(--space-5);
   min-height: 0;
   row-gap: var(--space-4);
 }
 
 .issue-form-content {
   align-items: start;
-  column-gap: calc(var(--space-8) + var(--space-4));
+  column-gap: var(--space-8);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 272px;
+  grid-template-columns: minmax(0, 1fr) 336px;
   grid-template-rows: fit-content(100%);
   min-height: 0;
   overflow: hidden;
@@ -606,7 +609,7 @@ watch(dirty, setDirty, { immediate: true })
 .issue-form-main {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-5);
   max-height: 100%;
   min-height: 0;
   min-width: 0;
@@ -619,9 +622,9 @@ watch(dirty, setDirty, { immediate: true })
   flex-shrink: 0;
 }
 
-/* The description belongs to the title: closer to it than the sections are to each other. */
-.issue-form-main > .issue-title-input + * {
-  margin-top: calc(var(--space-4) - var(--space-8));
+.issue-head {
+  display: grid;
+  gap: var(--space-5);
 }
 
 .issue-title-input {

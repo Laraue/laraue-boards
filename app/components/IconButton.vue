@@ -1,47 +1,33 @@
 <template>
-  <!-- Each button has its own provider so it works anywhere, a test mount included. -->
-  <TooltipProvider :delay-duration="600">
-    <TooltipRoot>
-      <TooltipTrigger as-child>
-        <NuxtLink
-          v-if="to"
-          v-bind="$attrs"
-          :aria-label="label"
-          class="icon-button"
-          :class="variant"
-          :to="to">
-          <slot />
-        </NuxtLink>
-        <button
-          v-else
-          v-bind="$attrs"
-          :aria-busy="loading || undefined"
-          :aria-label="label"
-          class="icon-button"
-          :class="variant"
-          :disabled="disabled || loading"
-          :type="type">
-          <IconLoader2
-            v-if="loading"
-            class="icon-button-spinner" />
-          <slot v-else />
-        </button>
-      </TooltipTrigger>
-      <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
-      <!-- Above by default; where there is no room (the header), Reka turns it below. -->
-      <TooltipContent
-        class="icon-button-tooltip"
-        side="top"
-        :side-offset="4">
-        {{ tooltip ?? label }}
-      </TooltipContent>
-    </TooltipRoot>
-  </TooltipProvider>
+  <BaseTooltip :text="tooltip ?? label">
+    <NuxtLink
+      v-if="to"
+      v-bind="$attrs"
+      :aria-label="label"
+      class="icon-button"
+      :class="variant"
+      :to="to">
+      <slot />
+    </NuxtLink>
+    <button
+      v-else
+      v-bind="$attrs"
+      :aria-busy="loading || undefined"
+      :aria-label="label"
+      class="icon-button"
+      :class="variant"
+      :disabled="disabled || loading"
+      :type="type">
+      <IconLoader2
+        v-if="loading"
+        class="icon-button-spinner" />
+      <slot v-else />
+    </button>
+  </BaseTooltip>
 </template>
 
 <script setup lang="ts">
 import { IconLoader2 } from '@tabler/icons-vue'
-import { TooltipContent, TooltipProvider, TooltipRoot, TooltipTrigger } from 'reka-ui'
 import type { RouteLocationRaw } from 'vue-router'
 
 withDefaults(
@@ -120,18 +106,5 @@ defineOptions({ inheritAttrs: false })
     background: var(--color-action-hover);
     color: #fff;
   }
-}
-</style>
-
-<style>
-/* Unscoped: the content is rendered by Reka, outside this component's root. */
-.icon-button-tooltip {
-  background: var(--color-tooltip);
-  border-radius: var(--radius-small);
-  color: var(--color-tooltip-text);
-  font-size: var(--font-size-small);
-  max-width: 240px;
-  padding: var(--space-1) var(--space-2);
-  z-index: 60;
 }
 </style>

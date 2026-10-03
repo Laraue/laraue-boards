@@ -1,5 +1,24 @@
 <template>
+  <!-- Without a tooltip the button is the root, so a parent's scoped class still styles it. -->
+  <BaseTooltip
+    v-if="tooltip"
+    :text="tooltip">
+    <button
+      v-bind="$attrs"
+      :aria-busy="loading || undefined"
+      class="base-button"
+      :class="[variant, size]"
+      :disabled="disabled || loading"
+      :type="type">
+      <IconLoader2
+        v-if="loading"
+        class="base-button-spinner" />
+      <slot />
+    </button>
+  </BaseTooltip>
   <button
+    v-else
+    v-bind="$attrs"
     :aria-busy="loading || undefined"
     class="base-button"
     :class="[variant, size]"
@@ -21,11 +40,22 @@ withDefaults(
     loading?: boolean
     // Small for secondary actions inside content; default for the main actions of a page.
     size?: 'default' | 'small'
+    // A hint on hover, in the same tooltip as the icon buttons'.
+    tooltip?: string
     type?: 'button' | 'submit'
     variant?: 'danger' | 'ghost' | 'neutral' | 'primary'
   }>(),
-  { disabled: false, loading: false, size: 'default', type: 'button', variant: 'neutral' },
+  {
+    disabled: false,
+    loading: false,
+    size: 'default',
+    tooltip: undefined,
+    type: 'button',
+    variant: 'neutral',
+  },
 )
+
+defineOptions({ inheritAttrs: false })
 </script>
 
 <style scoped>
