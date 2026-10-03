@@ -20,7 +20,7 @@
       <component
         :is="option?.isBacklog ? IconListDetails : BoardIcon"
         class="select-icon"
-        :style="{ color: option?.color }" />
+        :style="{ color: option?.isBacklog ? undefined : option?.color }" />
     </template>
   </BaseSelect>
 </template>

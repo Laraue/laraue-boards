@@ -284,14 +284,13 @@ it('loads history only when its tab is opened', async () => {
   await expect.element(page.getByRole('button', { name: 'Unified' })).not.toBeInTheDocument()
 })
 
-it('leaves the dialog when back is pressed', async () => {
-  const onBack = vi.fn<() => Promise<void>>(() => new Promise(() => {}))
+it('links the dialog heading to the issue page without a back button', async () => {
+  await mount(createDeps(), undefined, undefined, true)
 
-  await mount(createDeps(), onBack, undefined, true)
-
-  await page.getByRole('button', { name: 'Back' }).click()
-
-  expect(onBack).toHaveBeenCalledTimes(1)
+  await expect
+    .element(page.getByRole('link', { name: 'ISS-1' }))
+    .toHaveAttribute('href', '/organizations/acme-ab12/issues/ISS-1')
+  await expect.element(page.getByRole('button', { name: 'Back' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
 })
 

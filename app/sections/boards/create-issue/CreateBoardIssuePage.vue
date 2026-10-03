@@ -28,7 +28,14 @@
         <section>
           <CreateIssueForm
             :attributes="page.attributes"
-            :board="{ id: boardId, name: page.boardName, spaceKey }"
+            :board="{
+              color: page.boardColor,
+              id: boardId,
+              name: page.boardName,
+              spaceColor: page.spaceColor,
+              spaceKey,
+              spaceName: page.spaceName,
+            }"
             :deps="deps.form"
             :initial-status-id="initialStatusId"
             :on-created="onCreated" />

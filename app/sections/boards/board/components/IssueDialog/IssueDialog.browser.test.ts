@@ -129,7 +129,7 @@ it('lets the user close the dialog while the issue is still loading', async () =
   expect(onClose).toHaveBeenCalledOnce()
 })
 
-it('warns before the back button closes a dirty issue', async () => {
+it('warns before the close button closes a dirty issue', async () => {
   const onClose = vi.fn<() => void>()
   const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
 
@@ -147,7 +147,7 @@ it('warns before the back button closes a dirty issue', async () => {
   })
 
   await page.getByLabelText('Content').fill('Changed description')
-  await page.getByRole('button', { name: 'Back' }).click()
+  await page.getByRole('button', { name: 'Close dialog' }).click()
 
   expect(confirm).toHaveBeenCalledOnce()
   expect(onClose).not.toHaveBeenCalled()

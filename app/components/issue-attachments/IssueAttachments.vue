@@ -257,7 +257,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
 }
 
 .issue-attachment-gallery {
-  --attachment-size: 80px;
+  --attachment-size: 64px;
   display: grid;
   gap: var(--space-2);
   grid-auto-rows: var(--attachment-size);

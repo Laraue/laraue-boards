@@ -42,8 +42,18 @@
       <h2>{{ t('properties') }}</h2>
       <div class="issue-properties">
         <template v-if="board">
+          <span class="issue-property-label">{{ t('space') }}</span>
+          <div class="selected-entity">
+            <SpaceIcon :style="{ color: board.spaceColor }" />
+            <span>{{ board.spaceName ?? board.spaceKey }}</span>
+          </div>
           <span class="issue-property-label">{{ t('board') }}</span>
-          <div class="selected-entity">{{ board.name }}</div>
+          <div class="selected-entity">
+            <component
+              :is="board.isBacklog ? IconListDetails : BoardIcon"
+              :style="{ color: board.color }" />
+            <span>{{ board.name }}</span>
+          </div>
         </template>
         <template v-else>
           <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
@@ -100,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconPaperclip } from '@tabler/icons-vue'
+import { IconListDetails, IconPaperclip } from '@tabler/icons-vue'
 
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'
@@ -109,6 +119,7 @@ import type { IssueAttributeField } from '~/components/issue-attribute-fields/Is
 import IssueAttributeFields from '~/components/issue-attribute-fields/IssueAttributeFields.vue'
 import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import IssueDescription from '~/sections/issues/issue/components/IssueDescription/IssueDescription.vue'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
@@ -117,7 +128,15 @@ import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
 const props = defineProps<{
   attributes: IssueAttributeField[]
   // A fixed destination; without it the user picks the space and the board.
-  board?: { id: string; name: string; spaceKey: string }
+  board?: {
+    color?: string
+    id: string
+    isBacklog?: boolean
+    name: string
+    spaceColor?: string
+    spaceKey: string
+    spaceName?: string
+  }
   deps: CreateIssueFormDeps
   initialStatusId?: string
   onCreated: (issueKey: string) => Promise<void> | void
@@ -312,8 +331,22 @@ const submit = async (): Promise<void> => {
 .selected-entity {
   align-items: center;
   display: flex;
+  gap: var(--space-2);
   min-height: var(--control-height);
+  min-width: 0;
   padding: 0 var(--space-3);
+}
+
+.selected-entity > svg {
+  flex: none;
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.selected-entity > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .issue-actions {
