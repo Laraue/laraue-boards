@@ -44,14 +44,14 @@ it('reloads and clears the selection when the organization changes', async () =>
   await mount({ loadSpaces }, '1')
   await page.getByLabelText('Space').click()
   await expect.element(page.getByRole('option', { name: 'Development' })).toBeInTheDocument()
-  await page.getByLabelText('Space').selectOptions('10')
+  await page.getByRole('option', { name: 'Development' }).click()
 
   await userEvent.click(document.body)
   await currentWrapper!.setProps({ organizationId: '2' })
   await page.getByLabelText('Space').click()
 
   await expect.element(page.getByRole('option', { name: 'Marketing' })).toBeInTheDocument()
-  await expect.element(page.getByLabelText('Space')).toHaveValue('')
+  await expect.element(page.getByLabelText('Space')).toHaveTextContent('Select space')
 })
 
 it('shows an error when loading fails', async () => {

@@ -29,6 +29,7 @@ const issue: IssuePageViewModel = {
   spaceColor: '#4774d4',
   spaceId: '7',
   spaceLabel: 'Product',
+  statusColor: '#444',
   statusId: '3',
   statusLabel: 'To do',
   title: 'Fix the bug',
@@ -131,26 +132,23 @@ it('previews markdown content', async () => {
   await expect.element(page.getByText('preview', { exact: true })).toBeInTheDocument()
 })
 
+const bold = () => document.querySelector('[aria-label="Content"] strong')?.textContent
+
 it('formats selected description text', async () => {
   await mount(createDeps())
+  const modifier = /Mac/i.test(navigator.platform) ? 'Meta' : 'Control'
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
-  const textarea = document.querySelector<HTMLTextAreaElement>('textarea[aria-label="Content"]')
-  textarea?.setSelectionRange(0, 3)
-  await page.getByRole('button', { name: 'Bold' }).click()
+  await userEvent.keyboard(`{${modifier}>}a{/${modifier}}`)
+  await page.getByRole('button', { name: 'Bold (Ctrl+B)' }).click()
+  await vi.waitFor(() => expect(bold()).toBe('Fix the bug'))
 
-  await expect.element(page.getByLabelText('Content')).toHaveValue('**Fix** the bug')
-  await userEvent.keyboard(
-    /Mac/i.test(navigator.platform) ? '{Meta>}z{/Meta}' : '{Control>}z{/Control}',
-  )
-  await expect.element(page.getByLabelText('Content')).toHaveValue('Fix the bug')
+  await userEvent.keyboard(`{${modifier}>}z{/${modifier}}`)
+  await vi.waitFor(() => expect(bold()).toBeUndefined())
 
-  textarea?.setSelectionRange(0, textarea.value.length)
-  await page.getByLabelText('Heading level').selectOptions('###')
-  await expect.element(page.getByLabelText('Content')).toHaveValue('### Fix the bug')
-  await page.getByRole('button', { name: 'Return to visual' }).click()
-  await expect.element(page.getByRole('heading', { name: 'Fix the bug' })).toBeInTheDocument()
+  await userEvent.keyboard(`{${modifier}>}a{/${modifier}}`)
+  await userEvent.keyboard('### Steps')
+  await expect.element(page.getByRole('heading', { name: 'Steps' })).toBeInTheDocument()
 })
 
 it('shows comments loaded after creating one', async () => {
@@ -279,23 +277,20 @@ it('loads history only when its tab is opened', async () => {
   await expect.element(page.getByText('Status:')).toBeInTheDocument()
   await expect.element(page.getByText('Done')).toBeInTheDocument()
   await page.getByText('Description', { exact: true }).click()
-  await expect
-    .element(page.getByLabelText('Description changes split view'))
-    .toHaveTextContent('List Item 3')
-  await expect
-    .element(page.getByLabelText('Description changes split view'))
-    .toHaveTextContent('List Item 4')
+  const changes = page.getByLabelText('Description changes')
+  await expect.element(changes).toHaveTextContent('List Item')
+  await expect.element(changes.getByRole('deletion')).toHaveTextContent('3')
+  await expect.element(changes.getByRole('insertion')).toHaveTextContent('4')
   await expect.element(page.getByRole('button', { name: 'Unified' })).not.toBeInTheDocument()
 })
 
-it('leaves the dialog when back is pressed', async () => {
-  const onBack = vi.fn<() => Promise<void>>(() => new Promise(() => {}))
+it('links the dialog heading to the issue page without a back button', async () => {
+  await mount(createDeps(), undefined, undefined, true)
 
-  await mount(createDeps(), onBack, undefined, true)
-
-  await page.getByRole('button', { name: 'Back' }).click()
-
-  expect(onBack).toHaveBeenCalledTimes(1)
+  await expect
+    .element(page.getByRole('link', { name: 'ISS-1' }))
+    .toHaveAttribute('href', '/organizations/acme-ab12/issues/ISS-1')
+  await expect.element(page.getByRole('button', { name: 'Back' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
 })
 
@@ -326,7 +321,6 @@ it('stays on the page after the issue is saved', async () => {
     onDirtyChange,
   )
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await vi.waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true))
   await page.getByRole('button', { name: 'Save changes' }).click()

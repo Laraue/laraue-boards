@@ -74,5 +74,5 @@ it('reloads the form data when the failed request is retried', async () => {
 
   await page.getByRole('button', { name: 'Try again' }).click()
 
-  await expect.element(page.getByRole('button', { name: 'Edit description' })).toBeInTheDocument()
+  await expect.element(page.getByLabelText('Content')).toBeInTheDocument()
 })

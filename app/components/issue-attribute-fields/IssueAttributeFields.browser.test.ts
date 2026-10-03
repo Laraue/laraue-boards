@@ -46,7 +46,8 @@ it('returns the text value entered by the user', async () => {
 it('returns the selected list value', async () => {
   await mount()
 
-  await page.getByLabelText('Priority').selectOptions('high')
+  await page.getByLabelText('Priority').click()
+  await page.getByRole('option', { name: 'High' }).click()
 
   expect(currentWrapper!.emitted('update:modelValue')).toEqual([[{ priority: 'high' }]])
 })
@@ -54,7 +55,7 @@ it('returns the selected list value', async () => {
 it('shows the current list value', async () => {
   await mount({ priority: 'high' })
 
-  await expect.element(page.getByLabelText('Priority')).toHaveValue('high')
+  await expect.element(page.getByLabelText('Priority')).toHaveTextContent('High')
 })
 
 it('uses native controls for integer and date-time values', async () => {

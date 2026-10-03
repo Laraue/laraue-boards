@@ -56,7 +56,8 @@ dialog {
   opacity: 1;
   overflow: auto;
   padding: var(--space-6);
-  scale: 1;
+  /* none, not 1: any scale makes the dialog the containing block of fixed popups and clips them. */
+  scale: none;
   transition:
     opacity var(--duration-base) var(--ease-standard),
     scale var(--duration-base) var(--ease-standard),
@@ -116,8 +117,8 @@ button {
   touch-action: manipulation;
 }
 :where(a, button):focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 .tabler-icon {
@@ -218,8 +219,7 @@ select {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-focus);
+  border-color: var(--color-focus);
 }
 input::placeholder,
 textarea::placeholder {
@@ -416,70 +416,6 @@ textarea::placeholder {
   align-items: center;
   display: flex;
   gap: var(--space-1);
-}
-
-/* A borderless square action in a header: theme, language, menu. */
-.header-btn {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-control);
-  color: var(--color-muted);
-  display: inline-flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  height: var(--icon-btn-size);
-  justify-content: center;
-  min-width: var(--icon-btn-size);
-  padding: 0 var(--space-2);
-  position: relative;
-  text-decoration: none;
-}
-
-.header-btn:hover {
-  background: var(--color-hover);
-  color: var(--color-text);
-}
-
-/* An icon names itself on hover: its aria-label in a tooltip under it, after a short pause. It
-   exists only while hovered, so a hidden one never widens the page. */
-.header-btn[aria-label]:hover::after {
-  animation: tooltip-in var(--duration-fast) var(--ease-standard) 400ms both;
-  background: var(--color-tooltip);
-  border-radius: var(--radius-small);
-  color: var(--color-tooltip-text);
-  content: attr(aria-label);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  left: 50%;
-  padding: var(--space-1) var(--space-2);
-  pointer-events: none;
-  position: absolute;
-  text-align: center;
-  top: calc(100% + var(--space-1));
-  translate: -50% 0;
-  white-space: nowrap;
-  z-index: 50;
-}
-
-@keyframes tooltip-in {
-  from {
-    opacity: 0;
-  }
-}
-
-/* The header's rightmost button sits at the window's edge, so its tooltip opens to the left. */
-:is(.app-header-actions, .page-header-preferences)
-  > .header-btn[aria-label]:last-child:hover::after {
-  left: auto;
-  right: 0;
-  translate: none;
-}
-
-.header-btn > svg {
-  flex: none;
-  height: 16px;
-  width: 16px;
 }
 
 @media (max-width: 767px) {

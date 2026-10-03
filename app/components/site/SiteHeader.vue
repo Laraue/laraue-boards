@@ -19,20 +19,18 @@
         <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
       </nav>
       <div class="actions">
-        <NuxtLink
-          class="header-btn"
+        <IconButton
           :hreflang="otherLocale"
+          :label="otherLocale.toUpperCase()"
           :to="otherLocalePath">
           {{ otherLocale.toUpperCase() }}
-        </NuxtLink>
-        <button
-          :aria-label="t('theme_toggle')"
-          class="header-btn"
-          type="button"
+        </IconButton>
+        <IconButton
+          :label="t('theme_toggle')"
           @click="toggleTheme">
           <IconSun v-if="theme === 'dark'" />
           <IconMoon v-else />
-        </button>
+        </IconButton>
         <NuxtLink
           class="open-app"
           to="/organizations">

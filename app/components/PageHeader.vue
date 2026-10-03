@@ -3,21 +3,20 @@
 <template>
   <header class="app-header page-header">
     <div class="page-header-start">
-      <button
-        :aria-label="t('openMenu')"
-        class="header-btn page-header-menu"
-        type="button"
+      <IconButton
+        class="page-header-menu"
+        :label="t('openMenu')"
         @click="sidebarOpen = true">
         <IconMenu2 />
-      </button>
+      </IconButton>
       <!-- A phone has no room for the path, so it keeps the way back up it. -->
-      <NuxtLink
+      <IconButton
         v-if="back"
-        :aria-label="t('backTo', { page: back.label })"
-        class="header-btn page-header-back"
+        class="page-header-back"
+        :label="t('backTo', { page: back.label })"
         :to="back.to">
         <IconArrowLeft />
-      </NuxtLink>
+      </IconButton>
       <nav
         v-if="parents?.length"
         :aria-label="t('breadcrumbs')"
@@ -67,12 +66,11 @@
     <div class="page-header-actions">
       <span class="page-header-preferences">
         <AppHeaderPreferences />
-        <NuxtLink
-          :aria-label="t('yourAccount')"
-          class="header-btn"
+        <IconButton
+          :label="t('yourAccount')"
           to="/account">
           <IconUserCircle />
-        </NuxtLink>
+        </IconButton>
       </span>
     </div>
   </header>
@@ -115,6 +113,7 @@ const { t } = useI18n({
 <style scoped>
 /* Out to the scrolling area's edges; a sticky box stops at its padding, so it moves past it. */
 .page-header {
+  background: var(--color-background);
   flex: none;
   margin: calc(-1 * var(--layout-content-padding, 0px))
     calc(-1 * var(--layout-content-padding, 0px)) var(--layout-content-padding, 0px);
@@ -146,7 +145,10 @@ const { t } = useI18n({
 .page-header-crumb {
   align-items: center;
   display: inline-flex;
+  font-size: var(--font-size-body);
+  font-weight: inherit;
   gap: var(--space-1);
+  letter-spacing: normal;
   min-width: 0;
 }
 
@@ -162,7 +164,7 @@ const { t } = useI18n({
   width: 14px;
 }
 
-.page-header-path a:hover {
+.page-header-path a:is(:hover, :focus-visible) {
   color: var(--color-text);
 }
 
@@ -187,14 +189,11 @@ const { t } = useI18n({
   gap: var(--space-1);
   padding: 0;
   text-decoration: none;
-  text-underline-offset: 3px;
   white-space: nowrap;
 }
 
-/* Like the prototype's back link: no surface, the accent and an underline on hover. */
-.page-header-next :deep(:is(a, button):hover) {
-  color: var(--color-accent);
-  text-decoration: underline;
+.page-header-next :deep(:is(a, button):is(:hover, :focus-visible):not(:disabled)) {
+  color: var(--color-text);
 }
 
 .page-header-next :deep(:is(a, button):disabled) {
@@ -214,13 +213,6 @@ const { t } = useI18n({
   margin-left: var(--space-2);
 }
 
-/* The page stands out from its path by color alone, not weight. */
-h1 {
-  font-size: var(--font-size-body);
-  font-weight: inherit;
-  min-width: 0;
-}
-
 .page-header-actions {
   align-items: center;
   display: flex;
@@ -233,8 +225,8 @@ h1 {
   display: contents;
 }
 
-.page-header-menu,
-.page-header-back {
+/* :deep: the classes land on IconButton's button, which is not this component's own element. */
+.page-header-start :deep(:is(.page-header-menu, .page-header-back)) {
   display: none;
 }
 
@@ -243,8 +235,7 @@ h1 {
     padding-left: var(--space-2);
   }
 
-  .page-header-menu,
-  .page-header-back {
+  .page-header-start :deep(:is(.page-header-menu, .page-header-back)) {
     display: inline-flex;
   }
 

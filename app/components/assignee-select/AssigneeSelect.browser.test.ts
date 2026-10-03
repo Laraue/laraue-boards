@@ -61,13 +61,13 @@ it('clears the selected assignee when the space changes', async () => {
   )
   await mount({ loadAssignees }, '7')
   await page.getByLabelText('Assignee').click()
-  await page.getByLabelText('Assignee').selectOptions('9')
+  await page.getByRole('option', { name: 'Ada Lovelace' }).click()
 
   await userEvent.click(document.body)
   await currentWrapper!.setProps({ spaceKey: 'backlog' })
 
   expect(loadAssignees).toHaveBeenCalledOnce()
-  await expect.element(page.getByLabelText('Assignee')).toHaveValue('')
+  await expect.element(page.getByLabelText('Assignee')).toHaveTextContent('Select assignee')
 
   await page.getByLabelText('Assignee').click()
 

@@ -22,12 +22,11 @@
       <template
         v-if="viewModel && (viewModel.canUpdate || viewModel.canDelete)"
         #actions>
-        <NuxtLink
-          :aria-label="t('boardSettings')"
-          class="header-btn"
+        <IconButton
+          :label="t('boardSettings')"
           :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)">
           <IconSettings />
-        </NuxtLink>
+        </IconButton>
       </template>
     </PageHeader>
     <QueryState

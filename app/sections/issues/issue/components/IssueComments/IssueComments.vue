@@ -2,18 +2,19 @@
   <section
     :aria-label="t('comments')"
     class="issue-comments">
-    <strong class="section-label">{{ t('comments') }}</strong>
     <p
       v-if="loadMessage || saveMessage || summarizeMessage"
       class="form-error"
       role="alert">
       {{ loadMessage || saveMessage || summarizeMessage }}
     </p>
-    <p
+    <div
       v-if="!comments"
-      class="muted">
-      {{ t('loading') }}
-    </p>
+      class="issue-comments-loading"
+      role="status">
+      <IconLoader2 />
+      <span>{{ t('loading') }}</span>
+    </div>
     <div
       v-else-if="comments.length"
       class="issue-comment-list">
@@ -21,119 +22,132 @@
         v-for="comment in comments"
         :key="comment.id"
         class="issue-comment">
-        <span
-          class="avatar"
-          :style="{ background: comment.owner.color }">
-          {{ comment.owner.initials }}
-        </span>
         <div class="issue-comment-body">
           <div class="issue-comment-head">
+            <span
+              class="avatar"
+              :style="{ background: comment.owner.color }">
+              {{ comment.owner.initials }}
+            </span>
             <span class="issue-comment-name">{{ comment.owner.name }}</span>
             <time :datetime="comment.createdAt">{{ formatDateTime(comment.createdAt) }}</time>
             <div
               v-if="comment.canModify && state.editingId !== comment.id"
               class="issue-comment-actions">
-              <button
-                :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
-                class="icon-btn small"
+              <IconButton
                 :disabled="!!state.pendingId || summarizing"
-                :title="t('edit')"
-                type="button"
+                :label="`${t('editCommentBy')} ${comment.owner.name}`"
+                :tooltip="t('edit')"
                 @click="startEdit(comment)">
                 <IconPencil />
-              </button>
-              <button
-                :aria-label="`${t('deleteCommentBy')} ${comment.owner.name}`"
-                class="icon-btn danger small"
+              </IconButton>
+              <IconButton
                 :disabled="!!state.pendingId || summarizing"
-                :title="t('delete')"
-                type="button"
+                :label="`${t('deleteCommentBy')} ${comment.owner.name}`"
+                :loading="state.pendingId === comment.id"
+                :tooltip="t('delete')"
                 @click="remove(comment.id)">
-                <IconLoader2
-                  v-if="state.pendingId === comment.id"
-                  class="spin" />
-                <IconTrash v-else />
-              </button>
+                <IconTrash />
+              </IconButton>
             </div>
           </div>
-          <template v-if="state.editingId === comment.id">
-            <textarea
+          <div
+            v-if="state.editingId === comment.id"
+            class="issue-comment-composer">
+            <MarkdownEditor
               v-model="state.editText"
-              :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
               :disabled="!!state.pendingId || summarizing"
-              rows="1"
-              @input="clearMessage" />
-            <div class="form-actions issue-comment-form-actions">
-              <button
+              :label="`${t('editCommentBy')} ${comment.owner.name}`"
+              @submit="update(comment.id)"
+              @update:model-value="clearMessage" />
+            <div class="issue-comment-form-actions">
+              <BaseButton
                 v-if="state.editText.trim()"
-                class="secondary small issue-comment-ai"
                 :disabled="!!state.pendingId || summarizing"
-                type="button"
+                :loading="state.summarizingId === comment.id"
+                size="small"
+                :tooltip="t('improveWithAiHint')"
+                variant="ghost"
                 @click="improveWithAi(comment.id)">
-                <IconLoader2
-                  v-if="state.summarizingId === comment.id"
-                  class="spin" />
-                <IconSparkles v-else />
+                <IconSparkles v-if="state.summarizingId !== comment.id" />
                 {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
-              </button>
-              <button
-                class="primary small"
-                :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
-                type="button"
-                @click="update(comment.id)">
-                {{ state.pendingId === comment.id ? t('saving') : t('save') }}
-              </button>
-              <button
-                class="secondary small"
+              </BaseButton>
+              <IconButton
                 :disabled="!!state.pendingId || summarizing"
-                type="button"
+                :label="t('cancel')"
                 @click="cancelEdit">
-                {{ t('cancel') }}
-              </button>
+                <IconX />
+              </IconButton>
+              <IconButton
+                :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
+                :label="t('save')"
+                :loading="state.pendingId === comment.id"
+                :tooltip="t('saveShortcut')"
+                :variant="state.editText.trim() ? 'primary' : 'ghost'"
+                @click="update(comment.id)">
+                <IconCheck />
+              </IconButton>
             </div>
-          </template>
-          <p
+          </div>
+          <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
+          <div
             v-else
-            class="issue-comment-bubble">
-            {{ comment.text }}
-          </p>
+            class="markdown"
+            v-html="renderMarkdown(comment.text)" />
+          <!-- eslint-enable vue/no-v-html -->
         </div>
       </article>
     </div>
-    <textarea
-      v-model="state.newText"
-      :aria-label="t('writeComment')"
-      :disabled="!!state.pendingId || summarizing"
-      :placeholder="t('writeCommentPlaceholder')"
-      rows="1"
-      @input="clearMessage" />
+    <!-- Only once loaded, as the history: a comment written before would land out of place. -->
     <div
-      v-if="state.newText.trim()"
-      class="form-actions issue-comment-form-actions">
-      <button
-        class="secondary small issue-comment-ai"
+      v-if="comments"
+      class="issue-comment-composer">
+      <MarkdownEditor
+        v-model="state.newText"
         :disabled="!!state.pendingId || summarizing"
-        type="button"
-        @click="improveWithAi('new')">
-        <IconLoader2
-          v-if="state.summarizingId === 'new'"
-          class="spin" />
-        <IconSparkles v-else />
-        {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
-      </button>
-      <button
-        class="secondary small"
-        :disabled="!!state.pendingId || summarizing"
-        type="button"
-        @click="create">
-        {{ state.pendingId === 'new' ? t('adding') : t('addComment') }}
-      </button>
+        :label="t('writeComment')"
+        :placeholder="t('writeCommentPlaceholder')"
+        @submit="create"
+        @update:model-value="clearMessage" />
+      <div class="issue-comment-form-actions">
+        <BaseButton
+          v-if="state.newText.trim()"
+          :disabled="!!state.pendingId || summarizing"
+          :loading="state.summarizingId === 'new'"
+          size="small"
+          :tooltip="t('improveWithAiHint')"
+          variant="ghost"
+          @click="improveWithAi('new')">
+          <IconSparkles v-if="state.summarizingId !== 'new'" />
+          {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
+        </BaseButton>
+        <IconButton
+          :disabled="!state.newText.trim() || !!state.pendingId || summarizing"
+          :label="t('addComment')"
+          :loading="state.pendingId === 'new'"
+          :tooltip="t('addCommentShortcut')"
+          :variant="state.newText.trim() ? 'primary' : 'ghost'"
+          @click="create">
+          <IconArrowUp />
+        </IconButton>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { IconLoader2, IconPencil, IconSparkles, IconTrash } from '@tabler/icons-vue'
+import {
+  IconArrowUp,
+  IconCheck,
+  IconLoader2,
+  IconPencil,
+  IconSparkles,
+  IconTrash,
+  IconX,
+} from '@tabler/icons-vue'
+
+import MarkdownEditor from '~/components/markdown-editor/MarkdownEditor.vue'
+import { renderMarkdown } from '~/utils/renderMarkdown'
 
 import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.deps'
 
@@ -145,7 +159,7 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     addComment: 'Add comment',
-    adding: 'Adding…',
+    addCommentShortcut: 'Add comment (Ctrl+Enter)',
     cancel: 'Cancel',
     comments: 'Comments',
     delete: 'Delete',
@@ -153,17 +167,18 @@ const { t } = useI18n({
     deleteConfirm: 'Delete this comment?',
     edit: 'Edit',
     editCommentBy: 'Edit comment by',
-    improveWithAi: 'Clean up with AI',
-    improvingWithAi: 'Cleaning up…',
+    improveWithAi: 'Improve with AI',
+    improveWithAiHint: 'Fixes the text',
+    improvingWithAi: 'Improving…',
     loading: 'Loading comments…',
     save: 'Save',
-    saving: 'Saving…',
+    saveShortcut: 'Save (Ctrl+Enter)',
     writeComment: 'Write a comment',
     writeCommentPlaceholder: 'Write a comment…',
   },
   ru: {
     addComment: 'Добавить комментарий',
-    adding: 'Добавление…',
+    addCommentShortcut: 'Добавить комментарий (Ctrl+Enter)',
     cancel: 'Отмена',
     comments: 'Комментарии',
     delete: 'Удалить',
@@ -171,11 +186,12 @@ const { t } = useI18n({
     deleteConfirm: 'Удалить этот комментарий?',
     edit: 'Изменить',
     editCommentBy: 'Изменить комментарий пользователя',
-    improveWithAi: 'Привести в порядок с ИИ',
-    improvingWithAi: 'Приводим в порядок…',
+    improveWithAi: 'Улучшить с ИИ',
+    improveWithAiHint: 'Поправит текст',
+    improvingWithAi: 'Улучшаем…',
     loading: 'Загрузка комментариев…',
     save: 'Сохранить',
-    saving: 'Сохранение…',
+    saveShortcut: 'Сохранить (Ctrl+Enter)',
     writeComment: 'Написать комментарий',
     writeCommentPlaceholder: 'Напишите комментарий…',
   },
@@ -285,57 +301,59 @@ const remove = async (id: string) => {
 <style scoped>
 .issue-comments {
   display: grid;
-  gap: var(--space-3);
-  padding-bottom: var(--space-1);
+  gap: var(--space-4);
+}
+
+.issue-comments-loading {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-small);
+  gap: var(--space-2);
+}
+
+.issue-comments-loading svg {
+  animation: var(--animation-spin);
+  height: 14px;
+  width: 14px;
 }
 
 .issue-comment-list {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-2);
 }
 
-.issue-comment {
-  align-items: start;
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: auto minmax(0, 1fr);
+/* Barely off the page, as in Linear: a tint and a faint line, so the text leads, not the box. */
+.issue-comment-body,
+.issue-comment-composer {
+  background: var(--color-feed);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
-.issue-comment > .avatar {
-  font-size: var(--font-size-caption);
-  height: 28px;
-  width: 28px;
-}
-
+/* A card like a history entry: the author with the avatar on top, the text under it. */
 .issue-comment-body {
   display: grid;
   gap: var(--space-1);
-  justify-items: start;
   min-width: 0;
+  padding: var(--space-2) var(--space-3);
 }
 
-.issue-comment p {
-  margin: 0;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-
-.issue-comment-bubble {
-  background: var(--color-soft);
-  border-radius: var(--radius-card);
-  border-top-left-radius: var(--radius-small);
-  max-width: 100%;
-  padding: var(--space-1) var(--space-2);
+.issue-comment-head .avatar {
+  font-size: 9px;
+  height: 20px;
+  width: 20px;
 }
 
 .issue-comment-head {
   align-items: center;
   color: var(--color-muted);
   display: flex;
+  flex-wrap: wrap;
   font-size: var(--font-size-small);
   gap: var(--space-2);
-  justify-self: stretch;
-  min-height: var(--icon-btn-size-small);
+  min-height: 24px;
 }
 
 .issue-comment-name {
@@ -343,50 +361,45 @@ const remove = async (id: string) => {
   font-weight: var(--font-weight-semibold);
 }
 
+/* The buttons are taller than the line: they overlap it instead of pushing the text down. */
 .issue-comment-actions {
   display: flex;
-  gap: var(--space-1);
-  margin-left: auto;
-}
-
-.issue-comment-actions .icon-btn {
-  background: transparent;
-  border: 0;
-  color: var(--color-muted);
-}
-
-.issue-comment-actions .icon-btn:hover:not(:disabled) {
-  background: var(--color-soft);
-  color: var(--color-text);
-}
-
-.issue-comment-actions .icon-btn.danger:hover:not(:disabled) {
-  color: var(--color-danger);
-}
-
-.issue-comment-actions .spin {
-  animation: var(--animation-spin);
-}
-
-.issue-comment-body textarea {
-  width: 100%;
+  margin: calc(-1 * var(--space-1)) 0 calc(-1 * var(--space-1)) auto;
 }
 
 .issue-comment-form-actions {
-  gap: var(--space-1);
-  margin-top: 0;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
 }
 
-.issue-comment-ai {
-  --ai-button-fill: var(--color-surface);
-
-  background:
-    linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
-    linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
-  border: 1px solid transparent;
+.issue-comment-composer {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
 }
 
-.issue-comment-ai:hover {
-  --ai-button-fill: var(--color-hover);
+/* Editing happens in the comment's own card, without a second frame. */
+.issue-comment .issue-comment-composer {
+  border: 0;
+  padding: 0;
+}
+
+.issue-comment-composer:focus-within,
+.issue-comment-body:has(.issue-comment-composer:focus-within) {
+  border-color: var(--color-focus);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* The comment's buttons show on hover, so the list reads as text. */
+  .issue-comment:not(:hover, :focus-within) .issue-comment-actions {
+    opacity: 0;
+  }
+
+  .issue-comment-composer:hover:not(:focus-within) {
+    border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
+  }
 }
 </style>

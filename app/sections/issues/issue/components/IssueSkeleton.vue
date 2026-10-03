@@ -4,9 +4,9 @@
     class="issue-skeleton"
     role="status">
     <div
+      v-if="inDialog"
       aria-hidden="true"
       class="skeleton-header">
-      <span class="skeleton skeleton-back" />
       <span class="skeleton skeleton-copy skeleton-title">DEF-00</span>
       <span class="skeleton skeleton-link" />
     </div>
@@ -21,39 +21,42 @@
             <span class="skeleton skeleton-description-line skeleton-description-line--short" />
             <span class="skeleton skeleton-description-line skeleton-description-line--medium" />
           </div>
-          <div class="skeleton-attachments">
-            <strong class="section-label skeleton skeleton-copy">{{ t('attachments') }}</strong>
-            <div class="skeleton-attachment-actions">
-              <span class="secondary small skeleton skeleton-control">
-                <IconPhotoPlus />
-                {{ t('chooseImages') }}
-              </span>
-              <span class="muted skeleton skeleton-copy skeleton-attachment-hint">
-                {{ t('pasteHint') }}
-              </span>
-            </div>
+          <div class="skeleton-description-actions">
+            <span class="skeleton skeleton-icon" />
+            <span class="skeleton skeleton-icon" />
+            <span class="skeleton skeleton-ai" />
           </div>
           <div class="skeleton-comments">
-            <strong class="section-label skeleton skeleton-copy">{{ t('comments') }}</strong>
+            <div class="skeleton-tabs">
+              <span class="skeleton skeleton-copy skeleton-tab">{{ t('comments') }}</span>
+              <span class="skeleton skeleton-copy skeleton-tab">{{ t('history') }}</span>
+            </div>
             <span class="skeleton skeleton-comment-field" />
           </div>
         </div>
         <div class="skeleton-side">
-          <template
-            v-for="label in [t('space'), t('board'), t('status'), t('assignee')]"
-            :key="label">
-            <span class="skeleton skeleton-copy skeleton-label">{{ label }}</span>
-            <span class="skeleton skeleton-field" />
-          </template>
-          <span class="skeleton skeleton-copy skeleton-label">{{ t('owner') }}</span>
-          <div class="skeleton-person">
-            <span class="skeleton skeleton-avatar" />
-            <span class="skeleton skeleton-copy skeleton-name">win7user10</span>
+          <span class="skeleton skeleton-copy skeleton-properties-title">
+            {{ t('properties') }}
+          </span>
+          <div class="skeleton-properties">
+            <template
+              v-for="label in [t('space'), t('board'), t('status'), t('assignee')]"
+              :key="label">
+              <span class="skeleton skeleton-copy skeleton-label">{{ label }}</span>
+              <span class="skeleton skeleton-field" />
+            </template>
+            <span class="skeleton skeleton-copy skeleton-label">{{ t('owner') }}</span>
+            <div class="skeleton-person">
+              <span class="skeleton skeleton-avatar" />
+              <span class="skeleton skeleton-copy skeleton-name">win7user10</span>
+            </div>
           </div>
-          <span class="skeleton skeleton-copy skeleton-label">{{ t('created') }}</span>
-          <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
-          <span class="skeleton skeleton-copy skeleton-label">{{ t('updated') }}</span>
-          <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
+          <div class="skeleton-dates">
+            <span class="skeleton skeleton-copy skeleton-label">{{ t('created') }}</span>
+            <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
+            <span class="skeleton skeleton-copy skeleton-label">{{ t('updated') }}</span>
+            <span class="skeleton skeleton-copy skeleton-date">Jun 2, 2026, 7:26 AM</span>
+          </div>
         </div>
       </div>
       <div class="skeleton-actions">
@@ -65,20 +68,19 @@
 </template>
 
 <script setup lang="ts">
-import { IconPhotoPlus } from '@tabler/icons-vue'
+defineProps<{ inDialog?: boolean }>()
 
 const { t } = useI18n({
   en: {
     assignee: 'Assignee',
-    attachments: 'Attachments',
     board: 'Board',
-    chooseImages: 'Choose images',
     comments: 'Comments',
     created: 'Created',
     deleteIssue: 'Delete issue',
+    history: 'History',
     loadingIssue: 'Loading issue',
     owner: 'Owner',
-    pasteHint: 'or paste PNG/JPG with Ctrl+V',
+    properties: 'Properties',
     saveChanges: 'Save changes',
     space: 'Space',
     status: 'Status',
@@ -86,15 +88,14 @@ const { t } = useI18n({
   },
   ru: {
     assignee: 'Исполнитель',
-    attachments: 'Вложения',
     board: 'Доска',
-    chooseImages: 'Выбрать изображения',
     comments: 'Комментарии',
     created: 'Создана',
     deleteIssue: 'Удалить задачу',
+    history: 'История',
     loadingIssue: 'Загрузка задачи',
     owner: 'Владелец',
-    pasteHint: 'или вставьте PNG/JPG через Ctrl+V',
+    properties: 'Свойства',
     saveChanges: 'Сохранить изменения',
     space: 'Раздел',
     status: 'Статус',
@@ -108,8 +109,11 @@ const { t } = useI18n({
   align-self: start;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
+  margin-inline: auto;
   max-height: 100%;
+  max-width: 1240px;
   min-height: 0;
+  width: 100%;
 }
 
 .skeleton {
@@ -142,25 +146,18 @@ const { t } = useI18n({
   pointer-events: none;
 }
 
-.skeleton-control .tabler-icon {
-  visibility: hidden;
-}
-
 .skeleton-header {
   align-items: center;
   display: flex;
   gap: var(--space-2);
-  min-height: var(--control-height);
-}
-
-.skeleton-back {
-  height: var(--icon-btn-size);
-  width: var(--icon-btn-size);
+  margin-bottom: var(--space-5);
+  min-height: var(--icon-btn-size);
 }
 
 .skeleton-title {
-  font-size: var(--font-size-title);
-  font-weight: var(--font-weight-bold);
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
 }
 
 .skeleton-link {
@@ -172,32 +169,31 @@ const { t } = useI18n({
 .skeleton-form {
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
-  margin-top: var(--space-5);
   min-height: 0;
-  row-gap: var(--space-6);
+  row-gap: var(--space-4);
 }
 
 .skeleton-content {
   align-items: start;
-  column-gap: var(--space-6);
+  column-gap: var(--space-8);
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+  grid-template-columns: minmax(0, 1fr) 304px;
   grid-template-rows: fit-content(100%);
   min-height: 0;
   overflow: hidden;
-  padding-bottom: var(--space-1);
 }
 
 .skeleton-main {
   align-self: stretch;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-5);
   max-height: 100%;
   min-height: 0;
   min-width: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  padding: 0 var(--space-3) var(--space-4) 0;
 }
 
 .skeleton-main > * {
@@ -205,24 +201,19 @@ const { t } = useI18n({
 }
 
 .skeleton-description {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  gap: var(--space-3);
-  min-height: 200px;
-  padding: var(--space-3);
+  gap: var(--space-4);
 }
 
 .skeleton-description-title {
-  height: 20px;
-  width: 42%;
+  height: 32px;
+  width: 76%;
 }
 
 .skeleton-description-line {
   border-radius: var(--radius-small);
-  height: 12px;
+  height: 16px;
   width: 92%;
 }
 
@@ -234,32 +225,51 @@ const { t } = useI18n({
   width: 76%;
 }
 
-.skeleton-attachments,
 .skeleton-comments {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
-.skeleton-attachment-actions {
+.skeleton-description-actions {
   align-items: center;
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-4);
+  height: var(--icon-btn-size);
 }
 
-.skeleton-attachment-hint {
-  font-size: var(--font-size-small);
+.skeleton-icon {
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.skeleton-ai {
+  height: var(--icon-size);
+  width: 104px;
+}
+
+.skeleton-tabs {
+  align-items: center;
+  border-bottom: 1px solid var(--color-divider);
+  display: flex;
+  gap: var(--space-5);
+  height: 40px;
+  padding: 0 var(--space-2);
+}
+
+.skeleton-tab {
+  font-size: var(--font-size-body);
 }
 
 .skeleton-comment-field {
-  height: var(--control-height);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  height: 88px;
 }
 
 .skeleton-side {
-  align-items: center;
   display: grid;
+  font-size: 13px;
   gap: var(--space-4);
-  grid-auto-rows: minmax(var(--control-height), auto);
-  grid-template-columns: max-content minmax(0, 1fr);
   max-height: 100%;
   min-height: 0;
   overflow-y: auto;
@@ -267,39 +277,61 @@ const { t } = useI18n({
   place-self: start stretch;
 }
 
-.skeleton-label {
-  border-radius: var(--radius-small);
+.skeleton-properties,
+.skeleton-dates {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2) var(--space-3);
+  grid-auto-rows: var(--control-height-small);
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+
+.skeleton-properties-title {
   font-weight: var(--font-weight-semibold);
 }
 
+.skeleton-label {
+  border-radius: var(--radius-small);
+}
+
 .skeleton-field {
-  height: var(--control-height);
+  height: var(--icon-size);
+  margin-inline: var(--space-3);
+  width: 65%;
 }
 
 .skeleton-person {
   align-items: center;
   display: flex;
   gap: var(--space-2);
-  min-height: var(--control-height);
+  min-height: var(--control-height-small);
+  padding: 0 var(--space-3);
 }
 
 .skeleton-avatar {
   border-radius: var(--radius-pill);
-  height: 28px;
-  width: 28px;
+  height: 20px;
+  width: 20px;
 }
 
 .skeleton-name {
   white-space: nowrap;
 }
 
+.skeleton-dates {
+  border-top: 1px solid var(--color-divider);
+  padding-top: var(--space-4);
+}
+
 .skeleton-date {
+  max-width: 100%;
+  overflow: hidden;
   white-space: nowrap;
 }
 
 .skeleton-actions {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 @keyframes issue-skeleton-shimmer {
@@ -319,7 +351,7 @@ const { t } = useI18n({
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;
     overflow: auto;
-    row-gap: var(--space-5);
+    row-gap: var(--space-8);
   }
 
   .skeleton-main,
@@ -327,9 +359,8 @@ const { t } = useI18n({
     overflow: visible;
   }
 
-  .skeleton-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .skeleton-description-title {
+    height: 30px;
   }
 }
 </style>

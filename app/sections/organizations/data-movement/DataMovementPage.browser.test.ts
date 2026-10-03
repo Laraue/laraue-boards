@@ -109,7 +109,7 @@ it('refreshes the page without notifying the layout after boards moved', async (
   await page.getByLabelText('Move Board').click()
   await dialog().getByLabelText('Space').click()
   await expect.element(dialog().getByRole('option', { name: 'Development' })).toBeInTheDocument()
-  await dialog().getByLabelText('Space').selectOptions('10')
+  await dialog().getByRole('option', { name: 'Development' }).click()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
   await expect.element(page.getByText('No movable boards.')).toBeInTheDocument()

@@ -1,20 +1,16 @@
 <template>
-  <button
-    :aria-label="t('switchLanguage')"
-    class="header-btn"
-    type="button"
+  <IconButton
+    :label="t('switchLanguage')"
     @click="setLocale(locale === 'ru' ? 'en' : 'ru')">
     {{ locale === 'ru' ? 'EN' : 'RU' }}
-  </button>
-  <button
-    :aria-label="theme === 'dark' ? t('lightTheme') : t('darkTheme')"
+  </IconButton>
+  <IconButton
     :aria-pressed="theme === 'dark'"
-    class="header-btn"
-    type="button"
+    :label="theme === 'dark' ? t('lightTheme') : t('darkTheme')"
     @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
     <IconSun v-if="theme === 'dark'" />
     <IconMoon v-else />
-  </button>
+  </IconButton>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
+import { COLORS } from '~/constants/colors'
 
 import type { StatusSelectDeps } from './StatusSelect.deps'
 
@@ -14,6 +15,10 @@ export const createStatusSelectDeps = (client: ApiClient): StatusSelectDeps => (
     )
     return (board.statuses ?? [])
       .toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
-      .map((status) => ({ label: status.name, value: String(status.id) }))
+      .map((status) => ({
+        color: status.color ?? COLORS.gray,
+        label: status.name,
+        value: String(status.id),
+      }))
   },
 })

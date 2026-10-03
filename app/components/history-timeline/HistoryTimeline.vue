@@ -17,32 +17,6 @@
             v-for="(item, index) in day.items"
             :key="`${item.createdAt}-${index}`"
             class="history-item">
-            <div class="history-rail">
-              <span
-                :aria-label="ownerHint(item.owner)"
-                class="history-avatar"
-                role="img"
-                :title="ownerHint(item.owner)">
-                <span
-                  aria-hidden="true"
-                  class="avatar"
-                  :style="{ background: item.owner.color }">
-                  {{ item.owner.initials }}
-                </span>
-                <span
-                  v-if="item.owner.apiKeyName"
-                  aria-hidden="true"
-                  class="history-avatar-key">
-                  <IconKey />
-                </span>
-              </span>
-              <time
-                class="history-time"
-                :datetime="item.createdAt"
-                :title="formatDateTime(item.createdAt)">
-                {{ formatTime(item.createdAt) }}
-              </time>
-            </div>
             <div class="history-content">
               <div
                 v-if="item.link || isIssueDeleted(item)"
@@ -106,6 +80,40 @@
                 </div>
               </div>
             </div>
+            <!-- Who, how and when, on the right, so they take no line of their own. -->
+            <div class="history-aside">
+              <span
+                :aria-label="ownerHint(item.owner)"
+                class="history-avatar"
+                role="img"
+                :title="ownerHint(item.owner)">
+                <span
+                  aria-hidden="true"
+                  class="avatar"
+                  :style="{ background: item.owner.color }">
+                  {{ item.owner.initials }}
+                </span>
+                <span
+                  v-if="item.owner.apiKeyName"
+                  aria-hidden="true"
+                  class="history-avatar-key">
+                  <IconKey />
+                </span>
+              </span>
+              <span class="history-owner">{{ item.owner.name }}</span>
+              <span
+                v-if="item.owner.apiKeyName"
+                class="history-key">
+                <IconKey />
+                {{ t('viaKey', { key: item.owner.apiKeyName }) }}
+              </span>
+              <time
+                class="history-time"
+                :datetime="item.createdAt"
+                :title="formatDateTime(item.createdAt)">
+                {{ formatTime(item.createdAt) }}
+              </time>
+            </div>
           </article>
         </div>
       </section>
@@ -144,6 +152,7 @@ const { t } = useI18n({
     issueDeleted: 'Issue deleted',
     today: 'Today',
     viaApiKey: '{name} via API key {key}',
+    viaKey: 'via {key}',
     yesterday: 'Yesterday',
   },
   ru: {
@@ -152,6 +161,7 @@ const { t } = useI18n({
     issueDeleted: 'Задача удалена',
     today: 'Сегодня',
     viaApiKey: '{name} через API-ключ {key}',
+    viaKey: 'через {key}',
     yesterday: 'Вчера',
   },
 })
@@ -231,25 +241,15 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 </script>
 
 <style scoped>
+/* An activity feed, each save in a card tinted like the comments. */
 .issue-history {
   display: grid;
   gap: var(--space-4);
-  padding-bottom: var(--space-1);
 }
 
 .history-list {
   display: grid;
-  gap: var(--space-2);
-}
-
-.history-day-items {
-  display: grid;
-  gap: var(--space-3);
-}
-
-/* "YESTERDAY": the day's label in the app's section-label look, left-aligned over the avatars. */
-.history-day + .history-day {
-  margin-top: var(--space-5);
+  gap: var(--space-5);
 }
 
 .history-day-label {
@@ -257,49 +257,68 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-semibold);
   letter-spacing: 0.04em;
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-2);
   text-transform: uppercase;
 }
 
-/* Every entry is a card, like the other cards in the app. */
-.history-item {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+.history-day-items {
   display: grid;
-  gap: var(--space-3);
-  grid-template-columns: 56px minmax(0, 1fr);
-  padding: var(--space-4);
-  position: relative;
+  gap: var(--space-2);
 }
 
-/* The avatar with the time of the change under it, centered in a fixed-width column. */
-.history-rail {
-  align-content: start;
+/* One row: the changes, then who, how and when; no line of its own for the author. */
+.history-item {
+  align-items: start;
+  background: var(--color-feed);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
   display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+.history-owner {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.history-aside {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-small);
+  gap: var(--space-2);
+  min-height: 20px;
+}
+
+/* Changed through an API key: its name, so a change by an agent is not taken for the person's. */
+.history-key {
+  align-items: center;
+  display: inline-flex;
   gap: var(--space-1);
-  justify-items: center;
-  position: relative;
-  z-index: 1;
+}
+
+.history-key svg {
+  height: 12px;
+  width: 12px;
 }
 
 .history-time {
-  color: var(--color-muted);
-  font-size: var(--font-size-caption);
   white-space: nowrap;
 }
 
 .history-avatar {
-  height: 28px;
+  flex: none;
+  height: 20px;
   position: relative;
-  width: 28px;
+  width: 20px;
 }
 
 .history-avatar > .avatar {
-  font-size: var(--font-size-caption);
-  height: 28px;
-  width: 28px;
+  font-size: 9px;
+  height: 20px;
+  width: 20px;
 }
 
 /* A change made through an API key: a small key on the avatar's corner. */
@@ -310,21 +329,21 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   bottom: -4px;
   color: var(--color-muted);
   display: grid;
-  height: 15px;
+  height: 12px;
   place-items: center;
   position: absolute;
   right: -4px;
-  width: 15px;
+  width: 12px;
 }
 
 .history-avatar-key .tabler-icon {
-  height: 9px;
-  width: 9px;
+  height: 8px;
+  width: 8px;
 }
 
 .history-content {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
   min-width: 0;
 }
 
@@ -334,7 +353,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   min-width: 0;
 }
 
-/* The issue key and title as one link. The author is the avatar, with a key on it for an API key. */
+/* The issue key and title as one link (on the organization's history, across issues). */
 .history-head {
   align-items: baseline;
   display: flex;
@@ -354,22 +373,19 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   text-decoration: none;
 }
 
-/* Inline with the title, so it sits on the same text line. */
 .history-deleted-icon {
   color: var(--color-danger);
-  height: 16px;
-  margin-right: var(--space-2);
-  vertical-align: -3px;
-  width: 16px;
+  height: 14px;
+  margin-right: var(--space-1);
+  vertical-align: -2px;
+  width: 14px;
 }
 
-/* The issue key and the title share one size, weight and color; only the key is uppercase. Both are the link. */
 .history-issue {
-  font-size: calc(var(--font-size-body) * 1.1);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
 }
 
-/* The key and the title are one link to the issue, in the text color. */
 .history-issue-link {
   color: inherit;
   text-decoration: none;
@@ -426,9 +442,9 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 }
 
 :deep(.history-value-change .avatar) {
-  font-size: 9px;
-  height: 20px;
-  width: 20px;
+  font-size: 8px;
+  height: 16px;
+  width: 16px;
 }
 
 :deep(.history-new-value) {

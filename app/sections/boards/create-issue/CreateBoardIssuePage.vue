@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="IconPlaylistAdd"
+      :icon="IconPlus"
       :parents="[
         {
           color: data?.spaceColor,
@@ -28,7 +28,14 @@
         <section>
           <CreateIssueForm
             :attributes="page.attributes"
-            :board="{ id: boardId, name: page.boardName, spaceKey }"
+            :board="{
+              color: page.boardColor,
+              id: boardId,
+              name: page.boardName,
+              spaceColor: page.spaceColor,
+              spaceKey,
+              spaceName: page.spaceName,
+            }"
             :deps="deps.form"
             :initial-status-id="initialStatusId"
             :on-created="onCreated" />
@@ -39,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconPlaylistAdd } from '@tabler/icons-vue'
+import { IconPlus } from '@tabler/icons-vue'
 
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'

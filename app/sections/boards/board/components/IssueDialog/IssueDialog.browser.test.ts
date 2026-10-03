@@ -33,6 +33,7 @@ const issue: IssuePageViewModel = {
   spaceColor: '#4774d4',
   spaceId: '7',
   spaceLabel: 'Product',
+  statusColor: '#444',
   statusId: '3',
   statusLabel: 'To do',
   title: 'Fix the bug',
@@ -128,7 +129,7 @@ it('lets the user close the dialog while the issue is still loading', async () =
   expect(onClose).toHaveBeenCalledOnce()
 })
 
-it('warns before the back button closes a dirty issue', async () => {
+it('warns before the close button closes a dirty issue', async () => {
   const onClose = vi.fn<() => void>()
   const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
 
@@ -145,9 +146,8 @@ it('warns before the back button closes a dirty issue', async () => {
     route: '/organizations/acme-ab12/spaces/product-AB12/12?issue=ISS-1',
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Changed description')
-  await page.getByRole('button', { name: 'Back' }).click()
+  await page.getByRole('button', { name: 'Close dialog' }).click()
 
   expect(confirm).toHaveBeenCalledOnce()
   expect(onClose).not.toHaveBeenCalled()
@@ -185,7 +185,6 @@ it('notifies the board and stays open after the issue is saved', async () => {
     route: '/organizations/acme-ab12/spaces/product-AB12/12?issue=ISS-1',
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await page.getByRole('button', { name: 'Save changes' }).click()
 

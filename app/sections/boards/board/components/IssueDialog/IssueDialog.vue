@@ -29,7 +29,7 @@
           :on-dirty-change="setDirty"
           :on-saved="handleSaved" />
         <template #fallback>
-          <IssueSkeleton />
+          <IssueSkeleton in-dialog />
         </template>
       </ClientOnly>
     </div>
@@ -114,7 +114,7 @@ watch(
   z-index: 1000;
 }
 .issue-dialog {
-  background: var(--color-workspace);
+  background: var(--color-background);
   inset: var(--space-8) 0 auto;
   margin: 0 auto;
   max-height: calc(100dvh - var(--space-8) - var(--space-8));
@@ -143,12 +143,8 @@ watch(
   overflow: hidden;
   padding: 0;
 }
-/* layout reserves room for the mobile sidebar button; the dialog has none */
-.issue-dialog-content :deep(.page-heading) {
-  padding-left: 0;
-}
 /* the close button floats over the content so it stays reachable while loading */
-.issue-dialog-content :deep(.page-heading),
+.issue-dialog-content :deep(.issue-dialog-heading),
 .issue-dialog-content :deep(.skeleton-header) {
   padding-right: calc(var(--icon-btn-size) + var(--space-2));
 }
@@ -164,7 +160,7 @@ watch(
   }
   .issue-dialog[open] {
     opacity: 1;
-    scale: 1;
+    scale: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {

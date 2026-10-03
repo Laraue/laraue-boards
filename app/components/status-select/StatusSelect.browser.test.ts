@@ -47,7 +47,7 @@ it('selects the first status when the initial status is unavailable', async () =
     { eager: true, modelValue: '999', selectFirst: true },
   )
 
-  await expect.element(page.getByLabelText('Status')).toHaveValue('3')
+  await expect.element(page.getByLabelText('Status')).toHaveTextContent('To do')
 })
 
 it('clears the selected status when the board changes', async () => {
@@ -56,13 +56,13 @@ it('clears the selected status when the board changes', async () => {
   )
   await mount({ loadStatuses })
   await page.getByLabelText('Status').click()
-  await page.getByLabelText('Status').selectOptions('3')
+  await page.getByRole('option', { name: 'To do' }).click()
 
   await userEvent.click(document.body)
   await currentWrapper!.setProps({ boardId: '13' })
 
   expect(loadStatuses).toHaveBeenCalledOnce()
-  await expect.element(page.getByLabelText('Status')).toHaveValue('')
+  await expect.element(page.getByLabelText('Status')).toHaveTextContent('Select status')
 
   await page.getByLabelText('Status').click()
 

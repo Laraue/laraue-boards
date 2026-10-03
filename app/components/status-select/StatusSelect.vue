@@ -1,41 +1,27 @@
 <template>
-  <select
+  <BaseSelect
     v-bind="$attrs"
     v-model="model"
-    :aria-busy="pending"
     :disabled="disabled || !boardId"
-    @focus="load">
-    <option
-      v-if="!message"
-      disabled
-      value="">
-      {{ placeholder ?? t('select') }}
-    </option>
-    <option
-      v-if="message"
-      disabled
-      value="">
-      {{ t('loadError') }}
-    </option>
-    <option
-      v-else-if="pending"
-      disabled
-      value="__loading">
-      {{ t('loading') }}
-    </option>
-    <option
-      v-else-if="loaded && visibleOptions.length === 0"
-      disabled
-      value="__empty">
-      {{ t('empty') }}
-    </option>
-    <option
-      v-for="option in visibleOptions"
-      :key="option.value"
-      :value="option.value">
-      {{ option.label }}
-    </option>
-  </select>
+    :loading="pending"
+    :message="
+      message
+        ? t('loadError')
+        : pending
+          ? t('loading')
+          : loaded && visibleOptions.length === 0
+            ? t('empty')
+            : undefined
+    "
+    :on-open="load"
+    :options="visibleOptions"
+    :placeholder="placeholder ?? t('select')">
+    <template #icon="{ option }">
+      <span
+        class="status-dot"
+        :style="{ background: option?.color }" />
+    </template>
+  </BaseSelect>
 </template>
 
 <script setup lang="ts">
@@ -128,3 +114,15 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+/* An 8px dot in an icon's 16px place, so the label lines up with the other selects. */
+.status-dot {
+  background: var(--color-muted);
+  border-radius: 50%;
+  flex: none;
+  height: 8px;
+  margin: 0 var(--space-1);
+  width: 8px;
+}
+</style>

@@ -1,34 +1,15 @@
 <template>
   <div class="issue-attachments">
     <input
-      :id="inputId"
       ref="inputEl"
       accept="image/png,image/jpeg,.png,.jpg,.jpeg"
+      aria-hidden="true"
       class="issue-attachment-input"
       :disabled="disabled"
       multiple
+      tabindex="-1"
       type="file"
       @change="changeFiles" />
-    <strong class="section-label">{{ t('attachments') }}</strong>
-    <div class="issue-attachment-actions">
-      <label
-        :aria-disabled="disabled"
-        class="secondary small issue-attachment-picker"
-        :class="{ 'issue-attachment-picker--disabled': disabled }"
-        :for="inputId">
-        <IconPhotoPlus />
-        {{ files.length ? t('chooseOtherImages') : t('chooseImages') }}
-      </label>
-      <button
-        v-if="files.length || attachmentError"
-        class="secondary small"
-        :disabled="disabled"
-        type="button"
-        @click="clearFiles">
-        {{ t('clear') }}
-      </button>
-      <span class="muted issue-attachment-paste-hint">{{ t('pasteHint') }}</span>
-    </div>
     <span
       v-if="attachmentError"
       class="issue-attachment-error"
@@ -51,14 +32,13 @@
             :alt="`${t('attachment')} ${index + 1}`"
             :src="attachment.previewUrl" />
         </button>
-        <button
+        <IconButton
           v-if="onRemoveAttachment && !disabled"
-          :aria-label="`${t('removeAttachment')} ${index + 1}`"
-          class="icon-btn small issue-attachment-remove"
-          type="button"
+          class="issue-attachment-remove"
+          :label="`${t('removeAttachment')} ${index + 1}`"
           @click="onRemoveAttachment(attachment.id)">
           <IconX />
-        </button>
+        </IconButton>
       </div>
       <div
         v-for="(preview, index) in pendingPreviews"
@@ -75,14 +55,13 @@
             :src="preview.url" />
           <span>{{ preview.file.name }}</span>
         </button>
-        <button
+        <IconButton
           v-if="!disabled"
-          :aria-label="`${t('remove')} ${preview.file.name}`"
-          class="icon-btn small issue-attachment-remove"
-          type="button"
+          class="issue-attachment-remove"
+          :label="`${t('remove')} ${preview.file.name}`"
           @click="removeFile(index)">
           <IconX />
-        </button>
+        </IconButton>
         <div
           v-if="disabled"
           :aria-label="t('uploading')"
@@ -125,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconLoader, IconPhotoPlus, IconX } from '@tabler/icons-vue'
+import { IconLoader, IconX } from '@tabler/icons-vue'
 
 import { MAX_IMAGE_SIZE } from '~/constants/attachments'
 
@@ -144,15 +123,10 @@ const { t } = useI18n({
   en: {
     attachment: 'Attachment',
     attachmentPreview: 'Attachment preview',
-    attachments: 'Attachments',
-    chooseImages: 'Choose images',
-    chooseOtherImages: 'Choose other images',
-    clear: 'Clear',
     closePreview: 'Close attachment preview',
     loadingPreview: 'Loading attachment preview',
     open: 'Open',
     openAttachment: 'Open attachment',
-    pasteHint: 'or paste PNG/JPG with Ctrl+V',
     remove: 'Remove',
     removeAttachment: 'Remove attachment',
     tooLarge: 'Some images were not added because they are larger than 3 MB.',
@@ -161,15 +135,10 @@ const { t } = useI18n({
   ru: {
     attachment: 'Вложение',
     attachmentPreview: 'Предпросмотр вложения',
-    attachments: 'Вложения',
-    chooseImages: 'Выбрать изображения',
-    chooseOtherImages: 'Выбрать другие изображения',
-    clear: 'Очистить',
     closePreview: 'Закрыть предпросмотр вложения',
     loadingPreview: 'Загрузка предпросмотра вложения',
     open: 'Открыть',
     openAttachment: 'Открыть вложение',
-    pasteHint: 'или вставьте PNG/JPG через Ctrl+V',
     remove: 'Удалить',
     removeAttachment: 'Удалить вложение',
     tooLarge: 'Некоторые изображения не добавлены: их размер превышает 3 МБ.',
@@ -179,7 +148,6 @@ const { t } = useI18n({
 
 const activeAttachment = ref<null | { alt: string; url: string }>(null)
 const attachmentError = ref('')
-const inputId = useId()
 const inputEl = useTemplateRef('inputEl')
 const lightboxEl = useTemplateRef('lightboxEl')
 const lightboxLoading = ref(false)
@@ -217,14 +185,6 @@ const getSupportedImages = (files: File[] | FileList) => {
   const images = Array.from(files).filter((file) => supportedImageTypes.has(file.type))
   attachmentError.value = images.some((file) => file.size > MAX_IMAGE_SIZE) ? t('tooLarge') : ''
   return images.filter((file) => file.size <= MAX_IMAGE_SIZE)
-}
-
-const clearFiles = () => {
-  if (inputEl.value) {
-    inputEl.value.value = ''
-  }
-  attachmentError.value = ''
-  props.onChange([])
 }
 
 const removeFile = (index: number) => {
@@ -279,9 +239,17 @@ onBeforeUnmount(() => {
   revokePreviews()
   window.removeEventListener('paste', pasteFiles)
 })
+
+// The page has the button for it (a paperclip by the description).
+defineExpose({ pick: () => inputEl.value?.click() })
 </script>
 
 <style scoped>
+/* Only a hidden input until there is something to show. */
+.issue-attachments:not(:has(.issue-attachment-gallery, .issue-attachment-error)) {
+  display: none;
+}
+
 .issue-attachments {
   display: grid;
   gap: var(--space-3);
@@ -297,8 +265,9 @@ onBeforeUnmount(() => {
 }
 
 .issue-attachment-preview {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
+  background: var(--color-feed);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
 }
@@ -318,6 +287,7 @@ onBeforeUnmount(() => {
 }
 
 .issue-attachment-gallery img {
+  display: block;
   height: 100%;
   object-fit: cover;
   width: 100%;
@@ -337,7 +307,7 @@ onBeforeUnmount(() => {
 
 .issue-attachment-uploading {
   align-items: center;
-  background: color-mix(in srgb, var(--color-surface) 65%, transparent);
+  background: color-mix(in srgb, var(--color-feed) 85%, transparent);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -346,16 +316,25 @@ onBeforeUnmount(() => {
 
 .issue-attachment-uploading svg {
   animation: var(--animation-spin);
-  color: var(--color-accent);
-  height: 32px;
-  width: 32px;
+  color: var(--color-muted);
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
-.issue-attachment-remove {
+:deep(.issue-attachment-remove) {
+  --icon-btn-size: var(--icon-btn-size-small);
+
+  background: var(--color-feed);
   position: absolute;
   right: var(--space-1);
   top: var(--space-1);
   z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .issue-attachment-preview:not(:hover, :focus-within) :deep(.issue-attachment-remove) {
+    opacity: 0;
+  }
 }
 
 .issue-attachment-input {
@@ -366,34 +345,6 @@ onBeforeUnmount(() => {
   position: absolute;
   white-space: nowrap;
   width: 1px;
-}
-
-.issue-attachment-actions {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.issue-attachment-picker {
-  cursor: pointer;
-  margin: 0;
-}
-
-.issue-attachment-picker--disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.issue-attachments:has(.issue-attachment-input:focus-visible) .issue-attachment-picker {
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-focus);
-}
-
-.issue-attachment-paste-hint {
-  align-self: center;
-  font-size: var(--font-size-small);
 }
 
 .issue-attachment-error {
@@ -449,8 +400,8 @@ onBeforeUnmount(() => {
 .issue-attachment-lightbox-loading svg {
   animation: var(--animation-spin);
   color: var(--color-accent);
-  height: 32px;
-  width: 32px;
+  height: 24px;
+  width: 24px;
 }
 
 .issue-attachment-lightbox-close {

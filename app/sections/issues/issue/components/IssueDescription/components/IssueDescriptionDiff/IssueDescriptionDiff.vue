@@ -14,87 +14,86 @@
       </span>
       <IconChevronDown />
     </summary>
-    <div class="description-diff-body">
-      <div
-        :aria-label="t('splitView')"
-        class="diff-split">
-        <div class="diff-split-head">
-          <span>{{ t('before') }}</span>
-          <span>{{ t('after') }}</span>
-        </div>
+    <!-- One column, as text is read: a line changed in place shows its words struck out and added. -->
+    <div
+      :aria-label="t('changes')"
+      class="description-diff-body">
+      <template
+        v-for="(row, rowIndex) in rows"
+        :key="rowIndex">
         <div
-          v-for="(row, rowIndex) in splitRows"
-          :key="rowIndex"
-          class="diff-split-row">
-          <div
-            v-if="row.separator"
-            class="diff-split-separator">
-            {{ t('unchangedLines') }}
-          </div>
-          <template v-else>
-            <div
-              class="diff-split-side"
-              :class="{ 'diff-line--removed': row.oldLine }">
-              <span class="diff-number">{{ row.oldLine?.oldLine }}</span>
-              <span class="diff-marker">{{ row.oldLine ? '−' : '' }}</span>
-              <IssueDiffText :line="row.oldLine" />
-            </div>
-            <div
-              class="diff-split-side"
-              :class="{ 'diff-line--added': row.newLine }">
-              <span class="diff-number">{{ row.newLine?.newLine }}</span>
-              <span class="diff-marker">{{ row.newLine ? '+' : '' }}</span>
-              <IssueDiffText :line="row.newLine" />
-            </div>
-          </template>
+          v-if="row.kind === 'separator'"
+          class="diff-separator">
+          {{ t('unchangedLines') }}
         </div>
-      </div>
+        <p
+          v-else
+          class="diff-line"
+          :class="`diff-line--${row.kind}`">
+          <template
+            v-for="(part, partIndex) in row.parts"
+            :key="partIndex">
+            <del v-if="part.kind === 'removed'">{{ part.text }}</del>
+            <ins v-else-if="part.kind === 'added'">{{ part.text }}</ins>
+            <template v-else>{{ part.text }}</template>
+          </template>
+        </p>
+      </template>
     </div>
   </details>
 </template>
 
 <script setup lang="ts">
 import { IconChevronDown } from '@tabler/icons-vue'
+import { diffWordsWithSpace } from 'diff'
 
-import IssueDiffText from './components/IssueDiffText.vue'
 import type { IssueDescriptionDiffLine } from './IssueDescriptionDiff.types'
 
 const props = defineProps<{ diff: IssueDescriptionDiffLine[]; label: string }>()
 
 const { t } = useI18n({
   en: {
-    after: 'After',
-    before: 'Before',
-    splitView: 'Description changes split view',
-    unchangedLines: '@@ unchanged lines',
+    changes: 'Description changes',
+    unchangedLines: '··· unchanged lines',
   },
   ru: {
-    after: 'После',
-    before: 'До',
-    splitView: 'Разница описания в двух панелях',
-    unchangedLines: '@@ неизменённые строки',
+    changes: 'Изменения описания',
+    unchangedLines: '··· строки без изменений',
   },
 })
+
+type Part = { kind: 'added' | 'removed' | 'same'; text: string }
+type Row = { kind: 'added' | 'changed' | 'removed'; parts: Part[] } | { kind: 'separator' }
 
 const stats = computed(() => ({
   added: props.diff.filter((line) => line.kind === 'added').length,
   removed: props.diff.filter((line) => line.kind === 'removed').length,
 }))
 
-const splitRows = computed(() => {
-  const rows: Array<{
-    newLine?: IssueDescriptionDiffLine
-    oldLine?: IssueDescriptionDiffLine
-    separator?: true
-  }> = []
+const wholeLine = (line: IssueDescriptionDiffLine): Row => ({
+  kind: line.kind === 'added' ? 'added' : 'removed',
+  parts: [{ kind: line.kind === 'added' ? 'added' : 'removed', text: line.text || ' ' }],
+})
+
+// A removed line and the added one in its place become one line with the changed words marked;
+// the lines left over stay whole.
+const rows = computed(() => {
+  const result: Row[] = []
   let added: IssueDescriptionDiffLine[] = []
   let removed: IssueDescriptionDiffLine[] = []
 
   const flush = () => {
-    for (let index = 0; index < Math.max(added.length, removed.length); index++) {
-      rows.push({ newLine: added[index], oldLine: removed[index] })
+    const paired = Math.min(added.length, removed.length)
+    for (let index = 0; index < paired; index++) {
+      result.push({
+        kind: 'changed',
+        parts: diffWordsWithSpace(removed[index]!.text, added[index]!.text).map((change) => ({
+          kind: change.added ? 'added' : change.removed ? 'removed' : 'same',
+          text: change.value,
+        })),
+      })
     }
-
+    result.push(...removed.slice(paired).map(wholeLine), ...added.slice(paired).map(wholeLine))
     added = []
     removed = []
   }
@@ -102,17 +101,16 @@ const splitRows = computed(() => {
   for (const line of props.diff) {
     if (line.kind === 'separator') {
       flush()
-      rows.push({ separator: true })
+      result.push({ kind: 'separator' })
     } else if (line.kind === 'added') {
       added.push(line)
     } else {
       removed.push(line)
     }
   }
-
   flush()
 
-  return rows
+  return result
 })
 </script>
 
@@ -163,98 +161,65 @@ const splitRows = computed(() => {
 
 .description-diff-body {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-divider);
   border-radius: var(--radius-control);
+  display: grid;
   margin-top: var(--space-2);
   max-height: 320px;
-  overflow-x: hidden;
   overflow-y: auto;
+  padding: var(--space-1) 0;
 }
 
-.diff-split {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-small);
-}
-
-.diff-split-head,
-.diff-split-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.diff-split-head {
-  background: var(--color-soft);
-  color: var(--color-muted);
-  font-family: inherit;
-  font-weight: var(--font-weight-semibold);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.diff-split-head > span {
-  padding: var(--space-1) var(--space-2);
-}
-
-.diff-split-head > span:first-child {
-  box-shadow: inset 3px 0 var(--color-danger);
-}
-
-.diff-split-head > span:last-child {
-  box-shadow: inset 3px 0 var(--color-success);
-}
-
-.diff-split-head > span + span,
-.diff-split-side + .diff-split-side {
-  border-left: 1px solid var(--color-border);
-}
-
-.diff-split-separator {
-  background: var(--color-accent-soft);
-  color: var(--color-muted);
-  grid-column: 1 / -1;
-  padding: var(--space-1) var(--space-2);
-}
-
-.diff-split-side {
-  display: grid;
-  grid-template-columns: 4ch 3ch minmax(0, 1fr);
-  min-width: 0;
-}
-
-.diff-line--removed {
-  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface));
-  box-shadow: inset 3px 0 var(--color-danger);
+/* The text as written, a line each; a bar on the left tells a whole line added or removed. */
+.diff-line {
+  color: var(--color-text);
+  /* Whole pixels, so the tinted lines meet without hairline seams. */
+  line-height: var(--space-5);
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding: 0 var(--space-3);
+  white-space: pre-wrap;
 }
 
 .diff-line--added {
-  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
-  box-shadow: inset 3px 0 var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
+  box-shadow: inset 2px 0 var(--color-success);
 }
 
-.diff-number,
-.diff-marker {
-  align-content: start;
-  color: var(--color-muted);
-  padding: 0 var(--space-1);
-  text-align: right;
-  user-select: none;
+.diff-line--removed {
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+  box-shadow: inset 2px 0 var(--color-danger);
 }
 
-.diff-number {
-  background: color-mix(in srgb, var(--color-soft) 55%, transparent);
-}
-
-.diff-marker {
-  font-weight: var(--font-weight-semibold);
-  text-align: center;
-}
-
-.diff-line--removed > .diff-marker {
+/* Not by color alone: removed is struck out, added is underlined. */
+.diff-line del {
+  background: color-mix(in srgb, var(--color-danger) 16%, transparent);
   color: var(--color-danger);
+  text-decoration: line-through;
 }
 
-.diff-line--added > .diff-marker {
+.diff-line ins {
+  background: color-mix(in srgb, var(--color-success) 16%, transparent);
   color: var(--color-success);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* A whole line is already marked by its bar: added reads as plain text, removed stays struck out. */
+.diff-line--added ins {
+  background: none;
+  color: inherit;
+  text-decoration: none;
+}
+
+.diff-line--removed del {
+  background: none;
+  color: var(--color-muted);
+}
+
+.diff-separator {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  padding: var(--space-1) var(--space-3);
 }
 </style>
