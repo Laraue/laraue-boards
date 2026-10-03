@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="BoardIcon"
+      :icon="IconPlus"
       :parents="[
         {
           color: data?.spaceColor,
@@ -82,7 +82,7 @@ import { IconPlus, IconTrash } from '@tabler/icons-vue'
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'
 import { DEFAULT_COLOR } from '~/constants/colors'
-import { BoardIcon, SpaceIcon } from '~/constants/icons'
+import { SpaceIcon } from '~/constants/icons'
 import type { CreateBoardPageDeps } from '~/sections/boards/create-board/CreateBoardPage.deps'
 
 const props = defineProps<{

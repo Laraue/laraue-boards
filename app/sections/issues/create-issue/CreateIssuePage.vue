@@ -1,7 +1,7 @@
 <template>
   <div>
     <PageHeader
-      :icon="IconPlaylistAdd"
+      :icon="IconPlus"
       :parents="[
         { icon: IconClipboardList, label: t('allIssues'), to: organizationRoutes.issues() },
       ]"
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconClipboardList, IconPlaylistAdd } from '@tabler/icons-vue'
+import { IconClipboardList, IconPlus } from '@tabler/icons-vue'
 
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
 import type { CreateIssuePageDeps } from '~/sections/issues/create-issue/CreateIssuePage.deps'

@@ -145,7 +145,10 @@ const { t } = useI18n({
 .page-header-crumb {
   align-items: center;
   display: inline-flex;
+  font-size: var(--font-size-body);
+  font-weight: inherit;
   gap: var(--space-1);
+  letter-spacing: normal;
   min-width: 0;
 }
 
@@ -208,13 +211,6 @@ const { t } = useI18n({
   display: flex;
   flex: none;
   margin-left: var(--space-2);
-}
-
-/* The page stands out from its path by color alone, not weight. */
-h1 {
-  font-size: var(--font-size-body);
-  font-weight: inherit;
-  min-width: 0;
 }
 
 .page-header-actions {

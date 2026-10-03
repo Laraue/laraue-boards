@@ -32,14 +32,13 @@
             :alt="`${t('attachment')} ${index + 1}`"
             :src="attachment.previewUrl" />
         </button>
-        <button
+        <IconButton
           v-if="onRemoveAttachment && !disabled"
-          :aria-label="`${t('removeAttachment')} ${index + 1}`"
-          class="icon-btn small issue-attachment-remove"
-          type="button"
+          class="issue-attachment-remove"
+          :label="`${t('removeAttachment')} ${index + 1}`"
           @click="onRemoveAttachment(attachment.id)">
           <IconX />
-        </button>
+        </IconButton>
       </div>
       <div
         v-for="(preview, index) in pendingPreviews"
@@ -56,14 +55,13 @@
             :src="preview.url" />
           <span>{{ preview.file.name }}</span>
         </button>
-        <button
+        <IconButton
           v-if="!disabled"
-          :aria-label="`${t('remove')} ${preview.file.name}`"
-          class="icon-btn small issue-attachment-remove"
-          type="button"
+          class="issue-attachment-remove"
+          :label="`${t('remove')} ${preview.file.name}`"
           @click="removeFile(index)">
           <IconX />
-        </button>
+        </IconButton>
         <div
           v-if="disabled"
           :aria-label="t('uploading')"
@@ -259,7 +257,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
 }
 
 .issue-attachment-gallery {
-  --attachment-size: 64px;
+  --attachment-size: 80px;
   display: grid;
   gap: var(--space-2);
   grid-auto-rows: var(--attachment-size);
@@ -267,8 +265,9 @@ defineExpose({ pick: () => inputEl.value?.click() })
 }
 
 .issue-attachment-preview {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
+  background: var(--color-feed);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
 }
@@ -288,6 +287,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
 }
 
 .issue-attachment-gallery img {
+  display: block;
   height: 100%;
   object-fit: cover;
   width: 100%;
@@ -307,7 +307,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
 
 .issue-attachment-uploading {
   align-items: center;
-  background: color-mix(in srgb, var(--color-surface) 65%, transparent);
+  background: color-mix(in srgb, var(--color-feed) 85%, transparent);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -316,16 +316,25 @@ defineExpose({ pick: () => inputEl.value?.click() })
 
 .issue-attachment-uploading svg {
   animation: var(--animation-spin);
-  color: var(--color-accent);
-  height: 32px;
-  width: 32px;
+  color: var(--color-muted);
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
-.issue-attachment-remove {
+:deep(.issue-attachment-remove) {
+  --icon-btn-size: var(--icon-btn-size-small);
+
+  background: var(--color-feed);
   position: absolute;
   right: var(--space-1);
   top: var(--space-1);
   z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .issue-attachment-preview:not(:hover, :focus-within) :deep(.issue-attachment-remove) {
+    opacity: 0;
+  }
 }
 
 .issue-attachment-input {
@@ -391,8 +400,8 @@ defineExpose({ pick: () => inputEl.value?.click() })
 .issue-attachment-lightbox-loading svg {
   animation: var(--animation-spin);
   color: var(--color-accent);
-  height: 32px;
-  width: 32px;
+  height: 24px;
+  width: 24px;
 }
 
 .issue-attachment-lightbox-close {
