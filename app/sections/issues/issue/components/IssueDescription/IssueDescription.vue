@@ -437,14 +437,12 @@ const handleKeydown = (event: KeyboardEvent) => {
 .issue-description {
   display: flex;
   flex-direction: column;
-  min-height: 200px;
 }
 
 /* Editor frame */
 
 .issue-description-frame {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid transparent;
   border-radius: var(--radius-card);
   display: flex;
   flex-direction: column;
@@ -455,9 +453,20 @@ const handleKeydown = (event: KeyboardEvent) => {
     box-shadow var(--duration-fast) var(--ease-standard);
 }
 
-.issue-description--writing .issue-description-frame:focus-within {
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-focus);
+/* Read as plain text: hover only outlines it; writing turns it into a field. */
+.issue-description--writing .issue-description-frame {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+.issue-description-frame:has(.issue-description-preview--editable:hover) {
+  border-color: var(--color-border);
+}
+.issue-description--writing .issue-description-frame:focus-within,
+.issue-description-frame:has(.issue-description-preview:focus-visible) {
+  border-color: var(--color-focus);
+}
+.issue-description-preview:focus-visible {
+  outline: none;
 }
 
 .markdown-toolbar {
@@ -549,6 +558,10 @@ const handleKeydown = (event: KeyboardEvent) => {
 .issue-description-preview {
   flex-grow: 1;
   max-height: none;
+}
+
+/* Read, the description is as tall as its text; written, it leaves room to write. */
+.issue-description-frame textarea {
   min-height: 200px;
 }
 

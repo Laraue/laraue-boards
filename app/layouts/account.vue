@@ -2,12 +2,11 @@
 <template>
   <AppStandaloneShell home-path="/organizations">
     <template #actions>
-      <NuxtLink
-        :aria-label="t('yourAccount')"
-        class="header-btn"
+      <IconButton
+        :label="t('yourAccount')"
         to="/account">
         <IconUserCircle />
-      </NuxtLink>
+      </IconButton>
     </template>
     <slot />
   </AppStandaloneShell>

@@ -1,48 +1,29 @@
 <template>
-  <div class="assignee-select">
-    <span
-      class="avatar"
-      :style="{ background: selectedOption.color }">
-      {{ selectedOption.initials }}
-    </span>
-    <select
-      v-bind="$attrs"
-      v-model="model"
-      :aria-busy="pending"
-      :disabled="disabled || !spaceKey"
-      @focus="load">
-      <option
-        v-if="!message"
-        disabled
-        value="">
-        {{ placeholder ?? t('select') }}
-      </option>
-      <option
-        v-if="message"
-        disabled
-        value="">
-        {{ t('loadError') }}
-      </option>
-      <option
-        v-else-if="pending"
-        disabled
-        value="__loading">
-        {{ t('loading') }}
-      </option>
-      <option
-        v-else-if="loaded && visibleOptions.length === 0"
-        disabled
-        value="__empty">
-        {{ t('empty') }}
-      </option>
-      <option
-        v-for="option in visibleOptions"
-        :key="option.value"
-        :value="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-  </div>
+  <BaseSelect
+    v-bind="$attrs"
+    v-model="model"
+    :disabled="disabled || !spaceKey"
+    :loading="pending"
+    :message="
+      message
+        ? t('loadError')
+        : pending
+          ? t('loading')
+          : loaded && visibleOptions.length === 0
+            ? t('empty')
+            : undefined
+    "
+    :on-open="load"
+    :options="visibleOptions"
+    :placeholder="placeholder ?? t('select')">
+    <template #prefix>
+      <span
+        class="avatar"
+        :style="{ background: selectedOption.color }">
+        {{ selectedOption.initials }}
+      </span>
+    </template>
+  </BaseSelect>
 </template>
 
 <script setup lang="ts">
@@ -141,17 +122,9 @@ watch(
 </script>
 
 <style scoped>
-.assignee-select {
-  align-items: center;
-  display: grid;
-  gap: var(--space-2);
-  grid-template-columns: auto minmax(0, 1fr);
-  min-height: var(--control-height);
-}
-
 .avatar {
   font-size: var(--font-size-caption);
-  height: 28px;
-  width: 28px;
+  height: 20px;
+  width: 20px;
 }
 </style>

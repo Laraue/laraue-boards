@@ -1,16 +1,9 @@
 <template>
-  <select
+  <BaseSelect
     :id="id"
     v-model="model"
-    :disabled="disabled">
-    <option value="">{{ t('none') }}</option>
-    <option
-      v-for="option in options"
-      :key="option.value"
-      :value="option.value">
-      {{ option.label }}
-    </option>
-  </select>
+    :disabled="disabled"
+    :options="[{ label: t('none'), value: '' }, ...options]" />
 </template>
 
 <script setup lang="ts">

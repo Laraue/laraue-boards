@@ -81,13 +81,13 @@ const dialog = () => page.getByRole('dialog')
 const chooseDestination = async () => {
   await dialog().getByLabelText('Space').click()
   await expect.element(dialog().getByRole('option', { name: 'Product' })).toBeInTheDocument()
-  await dialog().getByLabelText('Space').selectOptions('7')
+  await dialog().getByRole('option', { name: 'Product' }).click()
   await dialog().getByLabelText('Board').click()
   await expect.element(dialog().getByRole('option', { name: 'Sprint board' })).toBeInTheDocument()
-  await dialog().getByLabelText('Board').selectOptions('12')
+  await dialog().getByRole('option', { name: 'Sprint board' }).click()
   await dialog().getByLabelText('Column').click()
   await expect.element(dialog().getByRole('option', { name: 'To do' })).toBeInTheDocument()
-  await dialog().getByLabelText('Column').selectOptions('3')
+  await dialog().getByRole('option', { name: 'To do' }).click()
 }
 
 afterEach(async () => {
@@ -163,7 +163,8 @@ it('drops the failure message as soon as the destination changes', async () => {
     .element(dialog().getByText('These issues can no longer be moved.'))
     .toBeInTheDocument()
 
-  await dialog().getByLabelText('Column').selectOptions('4')
+  await dialog().getByLabelText('Column').click()
+  await dialog().getByRole('option', { name: 'Done' }).click()
 
   await expect
     .element(dialog().getByText('These issues can no longer be moved.'))

@@ -43,13 +43,13 @@
   --space-8: 32px;
 
   --radius-small: 4px;
-  --radius-control: 8px;
+  --radius-control: 6px;
   --radius-card: 12px;
   --radius-dialog: 16px;
   --radius-pill: 999px;
 
-  --control-height: 40px;
-  --control-height-small: 28px;
+  --control-height: 36px;
+  --control-height-small: 32px;
   --icon-btn-size: 32px;
   --icon-btn-size-small: 24px;
   --icon-size: 16px;
@@ -68,7 +68,9 @@
   --form-page-max-width: 620px;
   --workspace-max-width: 1440px;
 
-  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-accent) 16%, transparent);
+  /* Focus stays inside the element: an outer ring gets clipped by scrolling parents and overlaps
+     neighbours. */
+  --shadow-focus: inset 0 0 0 1px var(--color-focus);
   --shadow-card: 0 1px 2px #1018280d;
   --shadow-popover: 0 20px 60px #10182830;
   --shadow-workspace: 0 0 40px #1018280d;

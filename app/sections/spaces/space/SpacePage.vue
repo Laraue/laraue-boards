@@ -14,12 +14,11 @@
       <template
         v-if="data?.canManage"
         #actions>
-        <NuxtLink
-          :aria-label="t('spaceSettings')"
-          class="header-btn"
+        <IconButton
+          :label="t('spaceSettings')"
           :to="organizationRoutes.spaceSettings(spaceKey)">
           <IconSettings />
-        </NuxtLink>
+        </IconButton>
       </template>
     </PageHeader>
     <QueryState

@@ -179,9 +179,9 @@ const { t } = useI18n({
 
 .skeleton-content {
   align-items: start;
-  column-gap: var(--space-6);
+  column-gap: calc(var(--space-8) + var(--space-4));
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+  grid-template-columns: minmax(0, 1fr) 272px;
   grid-template-rows: fit-content(100%);
   min-height: 0;
   overflow: hidden;
@@ -259,7 +259,7 @@ const { t } = useI18n({
   display: grid;
   gap: var(--space-4);
   grid-auto-rows: minmax(var(--control-height), auto);
-  grid-template-columns: max-content minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 1fr);
   max-height: 100%;
   min-height: 0;
   overflow-y: auto;

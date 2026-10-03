@@ -24,10 +24,8 @@
       "
       :title="data?.issueKey ?? issueKey">
       <template #actions>
-        <button
-          :aria-label="state.copied ? t('copied') : t('copyIssueLink')"
-          class="header-btn"
-          type="button"
+        <IconButton
+          :label="state.copied ? t('copied') : t('copyIssueLink')"
           @click="copyIssueLink">
           <Transition
             mode="out-in"
@@ -39,7 +37,7 @@
               v-else
               key="link" />
           </Transition>
-        </button>
+        </IconButton>
       </template>
     </PageHeader>
     <QueryState
@@ -57,44 +55,26 @@
           <!-- The board's dialog has no page header of its own. -->
           <div
             v-if="inDialog"
-            class="title-row">
-            <div class="page-heading">
-              <button
-                :aria-label="t('back')"
-                class="icon-btn"
-                type="button"
-                @click="leave">
-                <IconArrowLeft />
-              </button>
-              <div class="page-heading-text">
-                <h1>
-                  <NuxtLink :to="issueRoute">
-                    {{ issue.issueKey }}
-                  </NuxtLink>
-                </h1>
-                <button
-                  :aria-label="t('copyIssueLink')"
-                  class="issue-copy"
-                  :class="{ 'issue-copy--copied': state.copied }"
-                  :title="t('copyIssueLink')"
-                  type="button"
-                  @click="copyIssueLink">
-                  <Transition
-                    mode="out-in"
-                    name="icon-pop">
-                    <IconCheck
-                      v-if="state.copied"
-                      key="check" />
-                    <IconLink
-                      v-else
-                      key="link" />
-                  </Transition>
-                </button>
-              </div>
-            </div>
+            class="issue-dialog-heading">
+            <IconButton
+              :label="t('back')"
+              @click="leave">
+              <IconArrowLeft />
+            </IconButton>
+            <h1>
+              <NuxtLink :to="issueRoute">
+                {{ issue.issueKey }}
+              </NuxtLink>
+            </h1>
+            <IconButton
+              :label="state.copied ? t('copied') : t('copyIssueLink')"
+              @click="copyIssueLink">
+              <IconCheck v-if="state.copied" />
+              <IconLink v-else />
+            </IconButton>
           </div>
           <form
-            class="issue-form issue-page-form"
+            class="issue-page-form"
             @submit.prevent="save">
             <div class="issue-form-content">
               <div class="issue-form-main">
@@ -119,134 +99,110 @@
                   :on-change="changeFiles"
                   :on-remove-attachment="removeAttachment"
                   :removed-attachment-ids="state.removedAttachmentIds" />
-                <section class="issue-activity">
-                  <div
-                    :aria-label="t('issueActivity')"
-                    class="issue-tabs"
-                    role="tablist">
-                    <button
-                      id="comments-tab"
-                      ref="commentsTab"
-                      aria-controls="comments-panel"
-                      :aria-selected="state.activeTab === 'comments'"
-                      class="issue-tab"
-                      role="tab"
-                      :tabindex="state.activeTab === 'comments' ? 0 : -1"
-                      type="button"
-                      @click="activateTab('comments')"
-                      @keydown.left.prevent="activateTab('history', true)"
-                      @keydown.right.prevent="activateTab('history', true)">
-                      <IconMessage />
-                      {{ t('comments') }}
-                    </button>
-                    <button
-                      id="history-tab"
-                      ref="historyTab"
-                      aria-controls="history-panel"
-                      :aria-selected="state.activeTab === 'history'"
-                      class="issue-tab"
-                      role="tab"
-                      :tabindex="state.activeTab === 'history' ? 0 : -1"
-                      type="button"
-                      @click="activateTab('history')"
-                      @keydown.left.prevent="activateTab('comments', true)"
-                      @keydown.right.prevent="activateTab('comments', true)">
-                      <HistoryIcon />
-                      {{ t('history') }}
-                    </button>
-                  </div>
-                  <div
-                    v-show="state.activeTab === 'comments'"
-                    id="comments-panel"
-                    aria-labelledby="comments-tab"
-                    class="issue-tab-panel"
-                    role="tabpanel">
+                <BaseTabs
+                  v-model="state.activeTab"
+                  :items="[
+                    { label: t('comments'), value: 'comments' },
+                    { label: t('history'), value: 'history' },
+                  ]"
+                  :label="t('issueActivity')">
+                  <template #comments>
                     <IssueComments
                       :key="issue.issueKey"
                       :deps="deps.comments"
                       :issue-key="issue.issueKey" />
-                  </div>
-                  <div
-                    v-show="state.activeTab === 'history'"
-                    id="history-panel"
-                    aria-labelledby="history-tab"
-                    class="issue-tab-panel"
-                    role="tabpanel">
+                  </template>
+                  <template #history>
                     <IssueHistory
                       v-if="state.historyOpened"
                       :key="issue.issueKey"
                       ref="history"
                       :deps="deps.history"
                       :issue-key="issue.issueKey" />
+                  </template>
+                </BaseTabs>
+              </div>
+              <aside
+                :aria-label="t('properties')"
+                class="issue-form-side">
+                <h2>{{ t('properties') }}</h2>
+                <div class="issue-properties">
+                  <label for="issue-space">{{ t('space') }}</label>
+                  <SpaceSelect
+                    id="issue-space"
+                    :key="`space-${issue.issueKey}`"
+                    v-model="state.pickedSpaceId"
+                    :deps="deps.spaceSelect"
+                    :disabled="!issue.canEdit"
+                    :initial-option="{
+                      label: issue.spaceLabel || t('currentSpace'),
+                      value: issue.spaceId,
+                    }" />
+                  <label for="issue-board">{{ t('board') }}</label>
+                  <BoardSelect
+                    id="issue-board"
+                    :key="`board-${issue.issueKey}`"
+                    v-model="state.boardId"
+                    :deps="deps.boardSelect"
+                    :disabled="!issue.canEdit"
+                    :initial-option="{
+                      label: issue.boardLabel || t('currentBoard'),
+                      value: issue.boardId,
+                    }"
+                    :space-key="state.pickedSpaceId" />
+                  <label for="issue-status">{{ t('status') }}</label>
+                  <StatusSelect
+                    id="issue-status"
+                    :key="`status-${issue.issueKey}`"
+                    v-model="state.statusId"
+                    :board-id="state.boardId"
+                    :deps="deps.statusSelect"
+                    :disabled="!issue.canEdit"
+                    :initial-option="{
+                      label: issue.statusLabel || t('currentStatus'),
+                      value: issue.statusId,
+                    }" />
+                  <label for="issue-assignee">{{ t('assignee') }}</label>
+                  <AssigneeSelect
+                    id="issue-assignee"
+                    :key="`assignee-${issue.issueKey}`"
+                    v-model="state.assigneeId"
+                    :deps="deps.assigneeSelect"
+                    :disabled="!issue.canEdit"
+                    :initial-option="{
+                      color: issue.assigneeColor,
+                      initials: issue.assigneeInitial,
+                      isCurrentUser: issue.assigneeIsCurrentUser,
+                      label: issue.assignee,
+                      value: issue.assigneeId,
+                    }"
+                    :space-key="state.pickedSpaceId" />
+                  <span class="issue-property-label">{{ t('owner') }}</span>
+                  <div class="issue-person">
+                    <span
+                      class="avatar"
+                      :style="{ background: issue.ownerColor }">
+                      {{ issue.ownerInitial }}
+                    </span>
+                    <span>{{ issue.owner }}</span>
                   </div>
-                </section>
-              </div>
-              <div class="issue-form-side">
-                <label>{{ t('space') }}</label>
-                <SpaceSelect
-                  :key="`space-${issue.issueKey}`"
-                  v-model="state.pickedSpaceId"
-                  :deps="deps.spaceSelect"
-                  :disabled="!issue.canEdit"
-                  :initial-option="{
-                    label: issue.spaceLabel || t('currentSpace'),
-                    value: issue.spaceId,
-                  }" />
-                <label>{{ t('board') }}</label>
-                <BoardSelect
-                  :key="`board-${issue.issueKey}`"
-                  v-model="state.boardId"
-                  :deps="deps.boardSelect"
-                  :disabled="!issue.canEdit"
-                  :initial-option="{
-                    label: issue.boardLabel || t('currentBoard'),
-                    value: issue.boardId,
-                  }"
-                  :space-key="state.pickedSpaceId" />
-                <label>{{ t('status') }}</label>
-                <StatusSelect
-                  :key="`status-${issue.issueKey}`"
-                  v-model="state.statusId"
-                  :board-id="state.boardId"
-                  :deps="deps.statusSelect"
-                  :disabled="!issue.canEdit"
-                  :initial-option="{
-                    label: issue.statusLabel || t('currentStatus'),
-                    value: issue.statusId,
-                  }" />
-                <label>{{ t('assignee') }}</label>
-                <AssigneeSelect
-                  :key="`assignee-${issue.issueKey}`"
-                  v-model="state.assigneeId"
-                  :deps="deps.assigneeSelect"
-                  :disabled="!issue.canEdit"
-                  :initial-option="{
-                    color: issue.assigneeColor,
-                    initials: issue.assigneeInitial,
-                    isCurrentUser: issue.assigneeIsCurrentUser,
-                    label: issue.assignee,
-                    value: issue.assigneeId,
-                  }"
-                  :space-key="state.pickedSpaceId" />
-                <label>{{ t('owner') }}</label>
-                <div class="issue-person">
-                  <span
-                    class="avatar"
-                    :style="{ background: issue.ownerColor }">
-                    {{ issue.ownerInitial }}
-                  </span>
-                  <span>{{ issue.owner }}</span>
+                  <IssueAttributeFields
+                    v-if="issue.attributes.length"
+                    v-model="state.attributeValues"
+                    :attributes="issue.attributes"
+                    :disabled="!issue.canEdit" />
                 </div>
-                <IssueAttributeFields
-                  v-if="issue.attributes.length"
-                  v-model="state.attributeValues"
-                  :attributes="issue.attributes"
-                  :disabled="!issue.canEdit" />
-                <span class="issue-date-label">{{ t('created') }}</span>
-                <time :datetime="issue.createdAt">{{ formatDateTime(issue.createdAt) }}</time>
-                <span class="issue-date-label">{{ t('updated') }}</span>
-                <time :datetime="issue.updatedAt">{{ formatDateTime(issue.updatedAt) }}</time>
-              </div>
+                <dl class="issue-dates">
+                  <dt>{{ t('created') }}</dt>
+                  <dd>
+                    <time :datetime="issue.createdAt">{{ formatDateTime(issue.createdAt) }}</time>
+                  </dd>
+                  <dt>{{ t('updated') }}</dt>
+                  <dd>
+                    <time :datetime="issue.updatedAt">{{ formatDateTime(issue.updatedAt) }}</time>
+                  </dd>
+                </dl>
+              </aside>
             </div>
             <div
               v-if="issue.canEdit"
@@ -256,20 +212,21 @@
                 class="form-error">
                 {{ saveMessage || deleteMessage }}
               </p>
-              <div class="form-actions">
-                <button
-                  class="primary"
-                  :disabled="!canSave || saving || deleting"
-                  type="submit">
+              <div class="issue-actions-buttons">
+                <BaseButton
+                  :disabled="!canSave || deleting"
+                  :loading="saving"
+                  type="submit"
+                  variant="primary">
                   {{ saving ? t('saving') : t('saveChanges') }}
-                </button>
-                <button
-                  class="secondary danger"
-                  :disabled="saving || deleting"
-                  type="button"
+                </BaseButton>
+                <BaseButton
+                  :disabled="saving"
+                  :loading="deleting"
+                  variant="danger"
                   @click="remove">
                   {{ t('deleteIssue') }}
-                </button>
+                </BaseButton>
               </div>
             </div>
           </form>
@@ -283,10 +240,8 @@
 import {
   IconArrowLeft,
   IconCheck,
-  IconHistory as HistoryIcon,
   IconLink,
   IconListDetails,
-  IconMessage,
 } from '@tabler/icons-vue'
 
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
@@ -336,6 +291,7 @@ const { t } = useI18n({
     loadError: 'Could not load issue',
     loading: 'Loading issue…',
     owner: 'Owner',
+    properties: 'Properties',
     saveChanges: 'Save changes',
     saveWarning: 'Changes were saved, but the issue could not be moved. Try again.',
     saving: 'Saving…',
@@ -364,6 +320,7 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить задачу',
     loading: 'Загрузка задачи…',
     owner: 'Владелец',
+    properties: 'Свойства',
     saveChanges: 'Сохранить изменения',
     saveWarning: 'Изменения сохранены, но задачу не удалось переместить. Повторите попытку.',
     saving: 'Сохранение…',
@@ -396,19 +353,12 @@ const state = reactive({
 })
 
 const history = useTemplateRef<InstanceType<typeof IssueHistory>>('history')
-const commentsTab = useTemplateRef<HTMLButtonElement>('commentsTab')
-const historyTab = useTemplateRef<HTMLButtonElement>('historyTab')
 
-const activateTab = async (tab: 'comments' | 'history', focus = false) => {
-  state.activeTab = tab
-  state.historyOpened ||= tab === 'history'
-
-  if (focus) {
-    await nextTick()
-    const target = tab === 'comments' ? commentsTab : historyTab
-    target.value?.focus()
-  }
-}
+// History loads when its tab is first opened and stays after that.
+watch(
+  () => state.activeTab,
+  (tab) => (state.historyOpened ||= tab === 'history'),
+)
 
 const {
   data,
@@ -592,139 +542,123 @@ watch(dirty, setDirty, { immediate: true })
   min-height: 0;
 }
 
+.issue-dialog-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.issue-dialog-heading h1 a {
+  color: inherit;
+  text-decoration: none;
+}
+
 .issue-page-form {
   display: grid;
-  grid-template-areas:
-    'content'
-    'actions';
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
   margin-top: var(--space-5);
   min-height: 0;
-  row-gap: var(--space-6);
+  row-gap: var(--space-4);
 }
 
+.issue-form-content {
+  align-items: start;
+  column-gap: calc(var(--space-8) + var(--space-4));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 272px;
+  grid-template-rows: fit-content(100%);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* The editable boxes (title, description) stick out by their padding, so their text lines up with
+   the rest; the column scrolls and clips, so its padding makes room for them. */
 .issue-form-main {
-  align-self: stretch;
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-8);
   max-height: 100%;
   min-height: 0;
   min-width: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding-right: var(--space-1);
+  padding: 0 var(--space-3) var(--space-4);
 }
 
 .issue-form-main > * {
   flex-shrink: 0;
 }
 
+.issue-form-main > .issue-title-input + * {
+  margin-top: calc(-1 * var(--space-6));
+}
+
+.issue-form-main > .issue-description {
+  margin-inline: calc(-1 * var(--space-3));
+}
+
 .issue-title-input {
+  background: transparent;
+  border-color: transparent;
   font-size: var(--font-size-title);
-  font-weight: normal;
+  font-weight: var(--font-weight-semibold);
+  height: auto;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin-inline: calc(-1 * var(--space-3));
+  padding: var(--space-1) var(--space-3);
+  width: calc(100% + var(--space-6));
 }
 
-.issue-form-content {
-  align-items: start;
-  column-gap: var(--space-5);
-  display: grid;
-  grid-area: content;
-  grid-template-areas: 'main side';
-  grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
-  grid-template-rows: fit-content(100%);
-  min-height: 0;
-  overflow: hidden;
-  padding-bottom: var(--space-1);
-  width: 100%;
+.issue-title-input:hover:not(:disabled) {
+  border-color: var(--color-border);
 }
 
-.issue-form-content .issue-form-main {
-  grid-area: main;
-}
-
-.issue-form-content .issue-form-side {
-  grid-area: side;
+.issue-title-input:focus {
+  border-color: var(--color-focus);
 }
 
 .issue-form-side {
-  align-items: center;
   display: grid;
   gap: var(--space-4);
-  grid-auto-rows: minmax(var(--control-height), auto);
-  grid-template-columns: max-content minmax(0, 1fr);
   max-height: 100%;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  place-self: start stretch;
 }
 
-.issue-activity {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.issue-tabs {
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  gap: 0;
-}
-
-.issue-tab {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  color: var(--color-muted);
-  display: inline-flex;
-  font-weight: var(--font-weight-semibold);
-  gap: var(--space-2);
-  margin-bottom: -1px;
-  min-height: var(--control-height);
-  padding: var(--space-2) var(--space-3);
-  position: relative;
-}
-
-.issue-tab:first-child {
-  padding-left: 0;
-}
-
-.issue-tab::after {
-  background: transparent;
-  border-radius: var(--radius-pill);
-  bottom: 0;
-  content: '';
-  height: 2px;
-  left: 0;
-  position: absolute;
-  right: 0;
-}
-
-.issue-tab:hover {
-  color: var(--color-text);
-}
-
-.issue-tab[aria-selected='true'] {
-  color: var(--color-accent);
-}
-
-.issue-tab[aria-selected='true']::after {
-  background: var(--color-accent);
-}
-
-.issue-tab > svg {
-  height: 17px;
-  width: 17px;
-}
-
-.issue-tab-panel {
-  min-width: 0;
-}
-
-.issue-form-side > label {
+.issue-form-side h2 {
+  font-size: var(--font-size-body);
   margin: 0;
+}
+
+/* A dense panel: its fields take the small control size through the tokens. */
+.issue-properties {
+  --control-height: var(--control-height-small);
+  --font-size-body: var(--font-size-small);
+
+  font-size: var(--font-size-small);
+}
+
+.issue-properties,
+.issue-dates {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2) var(--space-3);
+  grid-template-columns: 88px minmax(0, 1fr);
+  margin: 0;
+}
+
+.issue-properties :deep(label),
+.issue-property-label,
+.issue-dates dt {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  font-weight: normal;
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .issue-person {
@@ -732,94 +666,51 @@ watch(dirty, setDirty, { immediate: true })
   display: flex;
   gap: var(--space-2);
   min-height: var(--control-height);
+  padding: 0 var(--space-3);
 }
 
 .issue-person .avatar {
   font-size: var(--font-size-caption);
-  height: 28px;
-  width: 28px;
+  height: 20px;
+  width: 20px;
 }
 
-.issue-date-label {
-  font-weight: var(--font-weight-semibold);
+.issue-dates {
+  border-top: 1px solid var(--color-divider);
+  padding-top: var(--space-4);
 }
 
-.issue-actions {
-  grid-area: actions;
-}
-
-.issue-actions .form-error {
+.issue-dates dd {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
   margin: 0;
 }
 
-.issue-actions .form-actions {
-  margin-top: 0;
+.issue-actions {
+  padding-inline: var(--space-3);
 }
 
-.issue-actions .form-error + .form-actions {
-  margin-top: var(--space-4);
+.issue-actions .form-error {
+  margin: 0 0 var(--space-3);
 }
 
-.issue-copy {
-  background: transparent;
-  border: 0;
-  color: var(--color-muted);
-  display: inline-flex;
-  padding: 0;
-  transition: var(--transition-press);
-}
-
-.issue-copy:hover {
-  color: var(--color-text);
-}
-
-.issue-copy:active {
-  translate: 0 var(--press-offset);
-}
-
-.issue-copy--copied {
-  color: var(--color-success);
-}
-
-.page-heading h1 a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.page-heading h1 a:hover {
-  color: var(--color-accent);
+.issue-actions-buttons {
+  display: flex;
+  gap: var(--space-2);
 }
 
 @media (max-width: 767px) {
-  .page-heading-text {
-    align-items: center;
-    flex-direction: row;
-    gap: var(--space-2);
-  }
-
   .issue-form-content {
-    column-gap: 0;
-    grid-template-areas:
-      'main'
-      'side';
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;
     overflow: auto;
-    row-gap: var(--space-5);
+    row-gap: var(--space-8);
   }
 
   .issue-form-main,
   .issue-form-side {
+    max-height: none;
     overflow: visible;
-  }
-
-  .issue-form-side {
-    width: auto;
-  }
-
-  .issue-actions .form-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 </style>

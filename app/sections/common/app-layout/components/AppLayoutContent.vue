@@ -107,12 +107,11 @@
         <!-- A phone's page header has no room for them, so they come with the menu. -->
         <div class="sidebar-preferences">
           <AppHeaderPreferences />
-          <NuxtLink
-            :aria-label="t('yourAccount')"
-            class="header-btn"
+          <IconButton
+            :label="t('yourAccount')"
             to="/account">
             <IconUserCircle />
-          </NuxtLink>
+          </IconButton>
         </div>
         <NuxtLink
           class="sidebar-user"

@@ -45,11 +45,9 @@ const createDeps = (): CreateIssueFormDeps => ({
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const chooseOption = async (label: string, option: string, value: string) => {
-  const select = page.getByLabelText(label)
-  await select.click()
-  await expect.element(page.getByRole('option', { name: option })).toBeInTheDocument()
-  await select.selectOptions(value)
+const chooseOption = async (label: string, option: string) => {
+  await page.getByLabelText(label).click()
+  await page.getByRole('option', { name: option }).click()
 }
 
 afterEach(async () => {
@@ -68,10 +66,10 @@ it('lets the user choose a destination and create an issue from the issue list',
   await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Title').fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
-  await chooseOption('Space', 'Product', '7')
-  await chooseOption('Board', 'Sprint board', '12')
-  await expect.element(page.getByLabelText('Status')).toHaveValue('1')
-  await expect.element(page.getByLabelText('Assignee')).toHaveValue('9')
+  await chooseOption('Space', 'Product')
+  await chooseOption('Board', 'Sprint board')
+  await expect.element(page.getByLabelText('Status')).toHaveTextContent('To do')
+  await expect.element(page.getByLabelText('Assignee')).toHaveTextContent('Ann Lee')
   await page.getByRole('button', { name: 'Add issue' }).click()
 
   expect(deps.create).toHaveBeenCalledWith({
@@ -108,8 +106,8 @@ it('creates an issue in a fixed board without showing destination selects', asyn
   await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Title').fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
-  await expect.element(page.getByLabelText('Status')).toHaveValue('2')
-  await expect.element(page.getByLabelText('Assignee')).toHaveValue('9')
+  await expect.element(page.getByLabelText('Status')).toHaveTextContent('In progress')
+  await expect.element(page.getByLabelText('Assignee')).toHaveTextContent('Ann Lee')
   await page.getByRole('button', { name: 'Add issue' }).click()
 
   await expect.element(page.getByText('Sprint board')).toBeInTheDocument()
@@ -137,8 +135,8 @@ it('keeps the form open and shows the message when creation fails', async () => 
   await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Title').fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
-  await chooseOption('Status', 'To do', '1')
-  await chooseOption('Assignee', 'Ann Lee', '9')
+  await chooseOption('Status', 'To do')
+  await chooseOption('Assignee', 'Ann Lee')
   await page.getByRole('button', { name: 'Add issue' }).click()
 
   await expect.element(page.getByText('This board no longer accepts issues.')).toBeInTheDocument()
@@ -183,8 +181,8 @@ it('adds an issue without a title so the server generates it', async () => {
 
   await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
-  await chooseOption('Status', 'To do', '1')
-  await chooseOption('Assignee', 'Ann Lee', '9')
+  await chooseOption('Status', 'To do')
+  await chooseOption('Assignee', 'Ann Lee')
   await page.getByRole('button', { name: 'Add issue' }).click()
 
   expect(deps.create).toHaveBeenCalledWith(
@@ -206,8 +204,8 @@ it('does not let an issue be added without a description', async () => {
   })
 
   await page.getByLabelText('Title').fill('Bug title')
-  await chooseOption('Status', 'To do', '1')
-  await chooseOption('Assignee', 'Ann Lee', '9')
+  await chooseOption('Status', 'To do')
+  await chooseOption('Assignee', 'Ann Lee')
 
   await expect.element(page.getByRole('button', { name: 'Add issue' })).toBeDisabled()
 })

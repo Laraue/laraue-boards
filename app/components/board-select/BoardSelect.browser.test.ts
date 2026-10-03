@@ -39,13 +39,13 @@ it('clears the selected board when the space changes', async () => {
   )
   await mount({ loadBoards })
   await page.getByLabelText('Board').click()
-  await page.getByLabelText('Board').selectOptions('12')
+  await page.getByRole('option', { name: 'Sprint board' }).click()
 
   await userEvent.click(document.body)
   await currentWrapper!.setProps({ spaceKey: 'backlog' })
 
   expect(loadBoards).toHaveBeenCalledOnce()
-  await expect.element(page.getByLabelText('Board')).toHaveValue('')
+  await expect.element(page.getByLabelText('Board')).toHaveTextContent('Select board')
 
   await page.getByLabelText('Board').click()
 

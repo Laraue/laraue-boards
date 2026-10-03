@@ -3,21 +3,20 @@
 <template>
   <header class="app-header page-header">
     <div class="page-header-start">
-      <button
-        :aria-label="t('openMenu')"
-        class="header-btn page-header-menu"
-        type="button"
+      <IconButton
+        :label="t('openMenu')"
+        class="page-header-menu"
         @click="sidebarOpen = true">
         <IconMenu2 />
-      </button>
+      </IconButton>
       <!-- A phone has no room for the path, so it keeps the way back up it. -->
-      <NuxtLink
+      <IconButton
         v-if="back"
-        :aria-label="t('backTo', { page: back.label })"
-        class="header-btn page-header-back"
+        :label="t('backTo', { page: back.label })"
+        class="page-header-back"
         :to="back.to">
         <IconArrowLeft />
-      </NuxtLink>
+      </IconButton>
       <nav
         v-if="parents?.length"
         :aria-label="t('breadcrumbs')"
@@ -67,12 +66,11 @@
     <div class="page-header-actions">
       <span class="page-header-preferences">
         <AppHeaderPreferences />
-        <NuxtLink
-          :aria-label="t('yourAccount')"
-          class="header-btn"
+        <IconButton
+          :label="t('yourAccount')"
           to="/account">
           <IconUserCircle />
-        </NuxtLink>
+        </IconButton>
       </span>
     </div>
   </header>
@@ -233,8 +231,8 @@ h1 {
   display: contents;
 }
 
-.page-header-menu,
-.page-header-back {
+/* :deep: the classes land on IconButton's button, which is not this component's own element. */
+.page-header-start :deep(:is(.page-header-menu, .page-header-back)) {
   display: none;
 }
 
@@ -243,8 +241,7 @@ h1 {
     padding-left: var(--space-2);
   }
 
-  .page-header-menu,
-  .page-header-back {
+  .page-header-start :deep(:is(.page-header-menu, .page-header-back)) {
     display: inline-flex;
   }
 

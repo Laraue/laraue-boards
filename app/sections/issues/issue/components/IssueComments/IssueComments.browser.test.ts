@@ -49,9 +49,9 @@ it('creates a comment', async () => {
   const load = vi.fn<IssueCommentsDeps['load']>(async () => comments)
   await mount(createDeps({ create, load }))
 
-  await expect.element(page.getByRole('button', { name: 'Add comment' })).not.toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Add comment' })).toBeDisabled()
   await page.getByLabelText('Write a comment').fill('New comment')
-  await expect.element(page.getByRole('button', { name: 'Add comment' })).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Add comment' })).toBeEnabled()
   await page.getByRole('button', { name: 'Add comment' }).click()
 
   expect(create).toHaveBeenCalledWith({ issueKey: 'ISS-1', text: 'New comment' })

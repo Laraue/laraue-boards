@@ -2,7 +2,6 @@
   <section
     :aria-label="t('comments')"
     class="issue-comments">
-    <strong class="section-label">{{ t('comments') }}</strong>
     <p
       v-if="loadMessage || saveMessage || summarizeMessage"
       class="form-error"
@@ -33,27 +32,21 @@
             <div
               v-if="comment.canModify && state.editingId !== comment.id"
               class="issue-comment-actions">
-              <button
-                :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
-                class="icon-btn small"
+              <IconButton
                 :disabled="!!state.pendingId || summarizing"
-                :title="t('edit')"
-                type="button"
+                :label="`${t('editCommentBy')} ${comment.owner.name}`"
+                :tooltip="t('edit')"
                 @click="startEdit(comment)">
                 <IconPencil />
-              </button>
-              <button
-                :aria-label="`${t('deleteCommentBy')} ${comment.owner.name}`"
-                class="icon-btn danger small"
+              </IconButton>
+              <IconButton
                 :disabled="!!state.pendingId || summarizing"
-                :title="t('delete')"
-                type="button"
+                :label="`${t('deleteCommentBy')} ${comment.owner.name}`"
+                :loading="state.pendingId === comment.id"
+                :tooltip="t('delete')"
                 @click="remove(comment.id)">
-                <IconLoader2
-                  v-if="state.pendingId === comment.id"
-                  class="spin" />
-                <IconTrash v-else />
-              </button>
+                <IconTrash />
+              </IconButton>
             </div>
           </div>
           <template v-if="state.editingId === comment.id">
@@ -62,78 +55,82 @@
               :aria-label="`${t('editCommentBy')} ${comment.owner.name}`"
               :disabled="!!state.pendingId || summarizing"
               rows="1"
-              @input="clearMessage" />
-            <div class="form-actions issue-comment-form-actions">
-              <button
+              @input="clearMessage"
+              @keydown.enter.ctrl.exact.prevent="update(comment.id)"
+              @keydown.enter.meta.exact.prevent="update(comment.id)" />
+            <div class="issue-comment-form-actions">
+              <BaseButton
+                size="small"
                 v-if="state.editText.trim()"
-                class="secondary small issue-comment-ai"
+                class="issue-comment-ai"
                 :disabled="!!state.pendingId || summarizing"
-                type="button"
+                :loading="state.summarizingId === comment.id"
                 @click="improveWithAi(comment.id)">
-                <IconLoader2
-                  v-if="state.summarizingId === comment.id"
-                  class="spin" />
-                <IconSparkles v-else />
+                <IconSparkles v-if="state.summarizingId !== comment.id" />
                 {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
-              </button>
-              <button
-                class="primary small"
-                :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
-                type="button"
-                @click="update(comment.id)">
-                {{ state.pendingId === comment.id ? t('saving') : t('save') }}
-              </button>
-              <button
-                class="secondary small"
+              </BaseButton>
+              <BaseButton
+                size="small"
                 :disabled="!!state.pendingId || summarizing"
-                type="button"
+                variant="ghost"
                 @click="cancelEdit">
                 {{ t('cancel') }}
-              </button>
+              </BaseButton>
+              <BaseButton
+                size="small"
+                :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
+                :loading="state.pendingId === comment.id"
+                variant="primary"
+                @click="update(comment.id)">
+                {{ state.pendingId === comment.id ? t('saving') : t('save') }}
+              </BaseButton>
             </div>
           </template>
           <p
             v-else
-            class="issue-comment-bubble">
+            class="issue-comment-text">
             {{ comment.text }}
           </p>
         </div>
       </article>
     </div>
-    <textarea
-      v-model="state.newText"
-      :aria-label="t('writeComment')"
-      :disabled="!!state.pendingId || summarizing"
-      :placeholder="t('writeCommentPlaceholder')"
-      rows="1"
-      @input="clearMessage" />
-    <div
-      v-if="state.newText.trim()"
-      class="form-actions issue-comment-form-actions">
-      <button
-        class="secondary small issue-comment-ai"
+    <div class="issue-comment-composer">
+      <textarea
+        v-model="state.newText"
+        :aria-label="t('writeComment')"
         :disabled="!!state.pendingId || summarizing"
-        type="button"
-        @click="improveWithAi('new')">
-        <IconLoader2
-          v-if="state.summarizingId === 'new'"
-          class="spin" />
-        <IconSparkles v-else />
-        {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
-      </button>
-      <button
-        class="secondary small"
-        :disabled="!!state.pendingId || summarizing"
-        type="button"
-        @click="create">
-        {{ state.pendingId === 'new' ? t('adding') : t('addComment') }}
-      </button>
+        :placeholder="t('writeCommentPlaceholder')"
+        rows="2"
+        @input="clearMessage"
+        @keydown.enter.ctrl.exact.prevent="create"
+        @keydown.enter.meta.exact.prevent="create" />
+      <div class="issue-comment-form-actions">
+        <BaseButton
+          v-if="state.newText.trim()"
+          size="small"
+          class="issue-comment-ai"
+          :disabled="!!state.pendingId || summarizing"
+          :loading="state.summarizingId === 'new'"
+          @click="improveWithAi('new')">
+          <IconSparkles v-if="state.summarizingId !== 'new'" />
+          {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
+        </BaseButton>
+        <IconButton
+          :disabled="!state.newText.trim() || !!state.pendingId || summarizing"
+          :label="t('addComment')"
+          :loading="state.pendingId === 'new'"
+          :tooltip="t('addCommentShortcut')"
+          :variant="state.newText.trim() ? 'primary' : 'ghost'"
+          @click="create">
+          <IconArrowUp />
+        </IconButton>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { IconLoader2, IconPencil, IconSparkles, IconTrash } from '@tabler/icons-vue'
+import { IconArrowUp, IconPencil, IconSparkles, IconTrash } from '@tabler/icons-vue'
 
 import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.deps'
 
@@ -145,7 +142,7 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     addComment: 'Add comment',
-    adding: 'Adding…',
+    addCommentShortcut: 'Add comment (Ctrl+Enter)',
     cancel: 'Cancel',
     comments: 'Comments',
     delete: 'Delete',
@@ -163,7 +160,7 @@ const { t } = useI18n({
   },
   ru: {
     addComment: 'Добавить комментарий',
-    adding: 'Добавление…',
+    addCommentShortcut: 'Добавить комментарий (Ctrl+Enter)',
     cancel: 'Отмена',
     comments: 'Комментарии',
     delete: 'Удалить',
@@ -285,57 +282,47 @@ const remove = async (id: string) => {
 <style scoped>
 .issue-comments {
   display: grid;
-  gap: var(--space-3);
-  padding-bottom: var(--space-1);
-}
-
-.issue-comment-list {
-  display: grid;
   gap: var(--space-4);
 }
 
 .issue-comment {
   align-items: start;
+  border-bottom: 1px solid var(--color-divider);
   display: grid;
   gap: var(--space-3);
   grid-template-columns: auto minmax(0, 1fr);
+  padding: var(--space-3) 0;
+}
+
+.issue-comment:first-child {
+  padding-top: 0;
 }
 
 .issue-comment > .avatar {
   font-size: var(--font-size-caption);
-  height: 28px;
-  width: 28px;
+  height: 24px;
+  width: 24px;
 }
 
 .issue-comment-body {
   display: grid;
   gap: var(--space-1);
-  justify-items: start;
   min-width: 0;
 }
 
-.issue-comment p {
-  margin: 0;
+.issue-comment-text {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
-}
-
-.issue-comment-bubble {
-  background: var(--color-soft);
-  border-radius: var(--radius-card);
-  border-top-left-radius: var(--radius-small);
-  max-width: 100%;
-  padding: var(--space-1) var(--space-2);
 }
 
 .issue-comment-head {
   align-items: center;
   color: var(--color-muted);
   display: flex;
+  flex-wrap: wrap;
   font-size: var(--font-size-small);
   gap: var(--space-2);
-  justify-self: stretch;
-  min-height: var(--icon-btn-size-small);
+  min-height: 24px;
 }
 
 .issue-comment-name {
@@ -343,50 +330,62 @@ const remove = async (id: string) => {
   font-weight: var(--font-weight-semibold);
 }
 
+/* The buttons are taller than the line: they overlap it instead of pushing the text down. */
 .issue-comment-actions {
   display: flex;
-  gap: var(--space-1);
-  margin-left: auto;
-}
-
-.issue-comment-actions .icon-btn {
-  background: transparent;
-  border: 0;
-  color: var(--color-muted);
-}
-
-.issue-comment-actions .icon-btn:hover:not(:disabled) {
-  background: var(--color-soft);
-  color: var(--color-text);
-}
-
-.issue-comment-actions .icon-btn.danger:hover:not(:disabled) {
-  color: var(--color-danger);
-}
-
-.issue-comment-actions .spin {
-  animation: var(--animation-spin);
-}
-
-.issue-comment-body textarea {
-  width: 100%;
+  margin: calc(-1 * var(--space-1)) 0 calc(-1 * var(--space-1)) auto;
 }
 
 .issue-comment-form-actions {
-  gap: var(--space-1);
-  margin-top: 0;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
 }
 
-.issue-comment-ai {
+.issue-comment-composer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.issue-comment-composer:focus-within {
+  border-color: var(--color-focus);
+}
+
+.issue-comment-composer textarea {
+  background: transparent;
+  border: 0;
+  min-height: 64px;
+  padding: var(--space-1) var(--space-2);
+  resize: none;
+}
+
+.issue-comment-form-actions .issue-comment-ai {
   --ai-button-fill: var(--color-surface);
 
   background:
     linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
     linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
-  border: 1px solid transparent;
+  border-color: transparent;
 }
 
-.issue-comment-ai:hover {
-  --ai-button-fill: var(--color-hover);
+@media (hover: hover) and (pointer: fine) {
+  .issue-comment-composer:hover:not(:focus-within) {
+    border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
+  }
+
+  .issue-comment-form-actions .issue-comment-ai:hover:not(:disabled) {
+    --ai-button-fill: var(--color-hover);
+
+    background:
+      linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
+      linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
+  }
 }
 </style>

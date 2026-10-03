@@ -1,32 +1,32 @@
 <template>
   <div class="issue-attachments">
     <input
-      :id="inputId"
       ref="inputEl"
       accept="image/png,image/jpeg,.png,.jpg,.jpeg"
+      aria-hidden="true"
       class="issue-attachment-input"
       :disabled="disabled"
       multiple
+      tabindex="-1"
       type="file"
       @change="changeFiles" />
     <strong class="section-label">{{ t('attachments') }}</strong>
     <div class="issue-attachment-actions">
-      <label
-        :aria-disabled="disabled"
-        class="secondary small issue-attachment-picker"
-        :class="{ 'issue-attachment-picker--disabled': disabled }"
-        :for="inputId">
+      <BaseButton
+        :disabled="disabled"
+        size="small"
+        @click="inputEl?.click()">
         <IconPhotoPlus />
         {{ files.length ? t('chooseOtherImages') : t('chooseImages') }}
-      </label>
-      <button
+      </BaseButton>
+      <BaseButton
         v-if="files.length || attachmentError"
-        class="secondary small"
         :disabled="disabled"
-        type="button"
+        size="small"
+        variant="ghost"
         @click="clearFiles">
         {{ t('clear') }}
-      </button>
+      </BaseButton>
       <span class="muted issue-attachment-paste-hint">{{ t('pasteHint') }}</span>
     </div>
     <span
@@ -179,7 +179,6 @@ const { t } = useI18n({
 
 const activeAttachment = ref<null | { alt: string; url: string }>(null)
 const attachmentError = ref('')
-const inputId = useId()
 const inputEl = useTemplateRef('inputEl')
 const lightboxEl = useTemplateRef('lightboxEl')
 const lightboxLoading = ref(false)
@@ -375,21 +374,8 @@ onBeforeUnmount(() => {
   gap: var(--space-2);
 }
 
-.issue-attachment-picker {
-  cursor: pointer;
-  margin: 0;
-}
 
-.issue-attachment-picker--disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-  pointer-events: none;
-}
 
-.issue-attachments:has(.issue-attachment-input:focus-visible) .issue-attachment-picker {
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-focus);
-}
 
 .issue-attachment-paste-hint {
   align-self: center;
