@@ -147,9 +147,9 @@ const selected = computed({
 
 .base-select-chevron {
   color: var(--color-muted);
-  height: 14px;
+  height: 12px;
   margin-left: auto;
-  width: 14px;
+  width: 12px;
 }
 
 /* Hover strengthens the border, like a text field's. */

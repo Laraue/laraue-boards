@@ -633,7 +633,7 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-head {
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
 .issue-title-input {
@@ -641,7 +641,7 @@ watch(dirty, setDirty, { immediate: true })
   border: 0;
   border-radius: 0;
   color: var(--color-text);
-  font-size: clamp(var(--font-size-title), 2vw, 31px);
+  font-size: 26px;
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
   line-height: 1.25;
@@ -703,7 +703,8 @@ watch(dirty, setDirty, { immediate: true })
   border-color: var(--color-border);
 }
 
-.issue-properties:has(label:hover) :deep(:is(input, .base-select)) {
+.issue-properties:has(label:hover)
+  :deep(:is(input, .base-select):not(:focus-visible, [data-state='open'])) {
   background: transparent;
   border-color: transparent;
 }
@@ -765,6 +766,10 @@ watch(dirty, setDirty, { immediate: true })
 }
 
 @media (max-width: 767px) {
+  .issue-title-input {
+    font-size: var(--font-size-title);
+  }
+
   .issue-form-content {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;
