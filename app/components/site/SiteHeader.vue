@@ -93,8 +93,7 @@ const otherLocalePath = computed(
 
 <style scoped>
 .header {
-  backdrop-filter: blur(12px);
-  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  background: var(--color-surface);
   border-bottom: 1px solid var(--color-divider);
   left: 0;
   position: fixed;
@@ -107,7 +106,8 @@ const otherLocalePath = computed(
   align-items: center;
   display: flex;
   gap: 24px;
-  height: 56px;
+  /* Plus the header's border, like the app's header. */
+  height: 55px;
   margin: 0 auto;
   /* The width of the docs' content. The header has the same width on every page, so it does not
      change size when moving between the landing page and the docs. */

@@ -36,4 +36,11 @@ defineProps<{ homePath: string }>()
 main {
   min-width: 0;
 }
+
+/* The site's width (see SiteHeader), so the brand stays put between the landing page and sign-in. */
+@media (min-width: 768px) {
+  .app-header {
+    padding-inline: max(var(--space-6), (100% - 1360px) / 2 + var(--space-6));
+  }
+}
 </style>

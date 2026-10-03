@@ -36,6 +36,11 @@ body {
   margin: 0;
   min-height: 100dvh;
 }
+/* Pages that scroll as a whole keep the scrollbar's place, so a short page and a long one center
+   their header the same way. The workspace scrolls inside and needs no gutter. */
+html:has(.landing-root, .standalone-shell) {
+  scrollbar-gutter: stable;
+}
 body:has(dialog[open]) {
   overflow: hidden;
 }
@@ -351,6 +356,8 @@ textarea::placeholder {
   font-weight: var(--font-weight-semibold);
   gap: var(--space-2);
   letter-spacing: -0.03em;
+  /* Whole pixels, and not inherited: the landing page and the app have different line heights. */
+  line-height: 20px;
   text-decoration: none;
   transition: var(--transition-press);
 }
@@ -390,10 +397,14 @@ textarea::placeholder {
 
 .app-header {
   align-items: center;
+  background: var(--color-surface);
   border-bottom: 1px solid var(--color-divider);
+  /* 55px plus the border, like SiteHeader: on a scaled screen the border is less than 1px, and
+     the logo has to land on the same spot in both. */
+  box-sizing: content-box;
   display: flex;
   gap: var(--space-3);
-  height: 56px;
+  height: 55px;
   justify-content: space-between;
   padding: 0 var(--space-6);
 }
