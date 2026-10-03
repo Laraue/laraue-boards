@@ -2,6 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import PageHeader from '~/components/PageHeader.vue'
 import type { TourStateDeps } from '~/composables/useTour'
 
 import type { AppLayoutData, AppLayoutDeps, RoutableProblem } from './AppLayout.deps'
@@ -37,7 +38,7 @@ const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (deps: AppLayoutDeps) => {
+const mount = async (deps: AppLayoutDeps, content: () => unknown = () => h('p', 'Issues page')) => {
   currentWrapper = await mountSuspended(AppLayout, {
     attachTo: document.body,
     props: {
@@ -47,7 +48,7 @@ const mount = async (deps: AppLayoutDeps) => {
       organizationKey: 'acme-ab12',
     },
     route: '/organizations/acme-ab12/issues',
-    slots: { default: '<p>Issues page</p>' },
+    slots: { default: content },
   })
 }
 
@@ -65,9 +66,9 @@ it('shows desktop navigation', async () => {
   await expect.element(page.getByText('Free')).toBeInTheDocument()
 })
 
-it('opens the navigation from the mobile menu button', async () => {
+it("opens the navigation from the page header's menu button", async () => {
   await page.viewport(390, 844)
-  await mount(createDeps())
+  await mount(createDeps(), () => h(PageHeader, { title: 'All issues' }))
 
   await page.getByRole('button', { name: 'Open menu' }).click()
 

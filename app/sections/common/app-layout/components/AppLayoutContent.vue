@@ -141,8 +141,6 @@
         @click="sidebarOpen = false" />
     </Transition>
     <main>
-      <!-- ponytail: stands in for pages without their own PageHeader yet; drop it once every page has one. -->
-      <PageHeader class="layout-header" />
       <slot />
     </main>
   </div>
@@ -352,14 +350,6 @@ main > :deep(*) {
 main :deep(.page-load-state) {
   min-height: 0;
   padding: 0;
-}
-
-main:not(:has(.page-header:not(.layout-header))) {
-  grid-template-rows: auto 1fr;
-}
-
-main:has(.page-header:not(.layout-header)) > .layout-header {
-  display: none;
 }
 
 .scrim {

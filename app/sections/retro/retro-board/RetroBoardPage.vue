@@ -10,6 +10,14 @@
       <section
         class="retro"
         :class="{ 'retro--focused': state.fullscreen }">
+        <!-- The board has no page header, so a phone opens the menu from here. -->
+        <button
+          :aria-label="t('openMenu')"
+          class="icon-btn retro-menu"
+          type="button"
+          @click="sidebarOpen = true">
+          <Menu />
+        </button>
         <div class="retro-title">
           <h1 v-if="!canRename(board)">{{ board.name }}</h1>
           <input
@@ -729,6 +737,7 @@ import {
   Group,
   ListChecks,
   Maximize,
+  Menu,
   RotateCcw,
   MessagesSquare,
   Minimize,
@@ -810,6 +819,7 @@ const { t, tp } = useI18n({
     onBoard: 'On the board',
     onRetro: 'On this retro',
     openFullscreen: 'Open full screen',
+    openMenu: 'Open menu',
     owner: 'Owner',
     participants: 'Participants',
     peopleOnRetro: 'People on this retro',
@@ -906,6 +916,7 @@ const { t, tp } = useI18n({
     onBoard: 'На доске',
     onRetro: 'На этой ретроспективе',
     openFullscreen: 'Открыть полный экран',
+    openMenu: 'Открыть меню',
     owner: 'Владелец',
     participants: 'Участники',
     peopleOnRetro: 'Участники ретроспективы',
@@ -1115,6 +1126,8 @@ const focusEditor = () => {
     target.focus({ preventScroll: true })
   }
 }
+
+const sidebarOpen = useSidebarOpen()
 
 const nameInput = shallowRef<HTMLInputElement>()
 const focusNameInput = () => {
@@ -3120,7 +3133,12 @@ const finish = async () => {
   margin: 0;
   position: fixed;
   width: 100%;
-  z-index: 20;
+  /* Above the sidebar (30), so the board takes the whole window. */
+  z-index: 40;
+}
+
+.retro-menu {
+  display: none;
 }
 
 .retro > .retro-canvas {
@@ -4183,6 +4201,14 @@ textarea.card-text:focus {
   .retro {
     --facilitator-width: 220px;
     --retro-title-size: 18px;
+  }
+
+  .retro-menu {
+    display: inline-flex;
+    left: var(--space-3);
+    position: absolute;
+    top: var(--space-4);
+    z-index: 8;
   }
 
   .retro-title {
