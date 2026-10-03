@@ -193,9 +193,6 @@ const { t } = useI18n({
 
 const { formatDateTime } = useFormatters()
 
-// How many there are, for the tab holding them.
-const count = defineModel<number>('count', { default: 0 })
-
 // Lazy, so the issue itself shows without waiting for its comments.
 const {
   data: comments,
@@ -205,14 +202,6 @@ const {
   () => `issue-comments:${props.issueKey}`,
   (signal) => props.deps.load({ issueKey: props.issueKey, signal }),
   { lazy: true },
-)
-
-watch(
-  comments,
-  (loaded) => {
-    count.value = loaded?.length ?? 0
-  },
-  { immediate: true },
 )
 
 const state = reactive({

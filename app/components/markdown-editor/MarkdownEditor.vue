@@ -6,8 +6,18 @@
       v-if="!editor"
       class="markdown-editor-content">
       <div
+        v-if="fallback"
         class="tiptap markdown"
         v-html="fallback" />
+      <div
+        v-else
+        class="tiptap markdown">
+        <p
+          class="is-editor-empty"
+          :data-placeholder="disabled ? undefined : placeholder">
+          <br />
+        </p>
+      </div>
     </div>
     <!-- eslint-enable vue/no-v-html -->
     <template v-else>
@@ -252,7 +262,7 @@ const editor = useEditor({
     handleKeyDown: (_view, event) => handleSlashKey(event) || handleSubmitKey(event),
   },
   extensions: [
-    StarterKit.configure({ link: { openOnClick: false } }),
+    StarterKit.configure({ link: { openOnClick: false }, trailingNode: false }),
     // Inline, as markdown has it: an image is part of a paragraph.
     Image.configure({ inline: true }),
     TableKit,

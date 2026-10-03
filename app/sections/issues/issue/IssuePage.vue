@@ -121,7 +121,6 @@
                   v-model="state.activeTab"
                   :items="[
                     {
-                      count: state.commentCount,
                       icon: IconMessageCircle,
                       label: t('comments'),
                       value: 'comments',
@@ -132,7 +131,6 @@
                   <template #comments>
                     <IssueComments
                       :key="issue.issueKey"
-                      v-model:count="state.commentCount"
                       :deps="deps.comments"
                       :issue-key="issue.issueKey" />
                   </template>
@@ -376,7 +374,6 @@ const state = reactive({
   assigneeId: '',
   attributeValues: {} as Record<string, string>,
   boardId: '',
-  commentCount: 0,
   content: '',
   copied: false,
   dirty: false,
