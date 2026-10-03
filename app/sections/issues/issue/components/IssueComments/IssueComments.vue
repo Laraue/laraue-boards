@@ -303,10 +303,11 @@ const remove = async (id: string) => {
   gap: var(--space-3);
 }
 
+/* Barely off the page, as in Linear: a tint and a faint line, so the text leads, not the box. */
 .issue-comment-body,
 .issue-comment-composer {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--color-workspace);
+  border: 1px solid var(--color-divider);
   border-radius: var(--radius-card);
   transition: border-color var(--duration-fast) var(--ease-standard);
 }

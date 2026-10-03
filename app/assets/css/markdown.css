@@ -22,12 +22,13 @@
   line-height: 1.25;
 }
 
+/* Relative, so a smaller text (comments) gets smaller headings. */
 .markdown h1 {
-  font-size: 20px;
+  font-size: 1.4em;
 }
 
 .markdown h2 {
-  font-size: 17px;
+  font-size: 1.2em;
 }
 
 .markdown :is(h3, h4, h5, h6) {
