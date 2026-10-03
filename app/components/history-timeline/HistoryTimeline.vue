@@ -269,7 +269,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 /* One row: the changes, then who, how and when; no line of its own for the author. */
 .history-item {
   align-items: start;
-  background: var(--color-workspace);
+  background: var(--color-feed);
   border: 1px solid var(--color-divider);
   border-radius: var(--radius-card);
   display: grid;

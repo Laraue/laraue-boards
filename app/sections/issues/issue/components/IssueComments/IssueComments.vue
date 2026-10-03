@@ -8,11 +8,13 @@
       role="alert">
       {{ loadMessage || saveMessage || summarizeMessage }}
     </p>
-    <p
+    <div
       v-if="!comments"
-      class="muted">
-      {{ t('loading') }}
-    </p>
+      class="issue-comments-loading"
+      role="status">
+      <IconLoader2 />
+      <span>{{ t('loading') }}</span>
+    </div>
     <div
       v-else-if="comments.length"
       class="issue-comment-list">
@@ -96,7 +98,10 @@
         </div>
       </article>
     </div>
-    <div class="issue-comment-composer">
+    <!-- Only once loaded, as the history: a comment written before would land out of place. -->
+    <div
+      v-if="comments"
+      class="issue-comment-composer">
       <MarkdownEditor
         v-model="state.newText"
         :disabled="!!state.pendingId || summarizing"
@@ -134,6 +139,7 @@
 import {
   IconArrowUp,
   IconCheck,
+  IconLoader2,
   IconPencil,
   IconSparkles,
   IconTrash,
@@ -298,6 +304,20 @@ const remove = async (id: string) => {
   gap: var(--space-4);
 }
 
+.issue-comments-loading {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-small);
+  gap: var(--space-2);
+}
+
+.issue-comments-loading svg {
+  animation: var(--animation-spin);
+  height: 14px;
+  width: 14px;
+}
+
 .issue-comment-list {
   display: grid;
   gap: var(--space-2);
@@ -306,7 +326,7 @@ const remove = async (id: string) => {
 /* Barely off the page, as in Linear: a tint and a faint line, so the text leads, not the box. */
 .issue-comment-body,
 .issue-comment-composer {
-  background: var(--color-workspace);
+  background: var(--color-feed);
   border: 1px solid var(--color-divider);
   border-radius: var(--radius-card);
   transition: border-color var(--duration-fast) var(--ease-standard);

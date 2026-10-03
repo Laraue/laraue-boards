@@ -293,7 +293,6 @@ aside > nav button {
   border: 1px solid currentcolor;
   border-radius: var(--radius-pill);
   font-size: var(--font-size-caption);
-  margin-left: auto;
   padding: 0 var(--space-2);
 }
 
