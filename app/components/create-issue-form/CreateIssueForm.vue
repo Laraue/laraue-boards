@@ -17,9 +17,20 @@
         <IssueDescription
           v-model="form.content"
           v-model:title="form.title"
-          :deps="deps.description" />
+          :deps="deps.description">
+          <template #actions>
+            <IconButton
+              :disabled="pending"
+              :label="t('attachImages')"
+              :tooltip="t('attachImagesHint')"
+              @click="attachments?.pick()">
+              <IconPaperclip />
+            </IconButton>
+          </template>
+        </IssueDescription>
       </div>
       <IssueAttachments
+        ref="attachments"
         :attachments="[]"
         :disabled="pending"
         :files="form.files"
@@ -85,6 +96,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconPaperclip } from '@tabler/icons-vue'
+
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'
 import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vue'
@@ -111,6 +124,8 @@ const { t } = useI18n({
     adding: 'Adding…',
     addIssue: 'Add issue',
     assignee: 'Assignee',
+    attachImages: 'Attach images',
+    attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
     board: 'Board',
     description: 'Description',
     space: 'Space',
@@ -122,6 +137,8 @@ const { t } = useI18n({
     adding: 'Добавление…',
     addIssue: 'Добавить задачу',
     assignee: 'Исполнитель',
+    attachImages: 'Прикрепить изображения',
+    attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',
     board: 'Доска',
     description: 'Описание',
     space: 'Раздел',
@@ -132,6 +149,7 @@ const { t } = useI18n({
 })
 
 const idPrefix = useId()
+const attachments = useTemplateRef<InstanceType<typeof IssueAttachments>>('attachments')
 const form = reactive({
   assigneeId: '',
   attributeValues: {} as Record<string, string>,

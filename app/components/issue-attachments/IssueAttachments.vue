@@ -10,25 +10,6 @@
       tabindex="-1"
       type="file"
       @change="changeFiles" />
-    <strong class="section-label">{{ t('attachments') }}</strong>
-    <div class="issue-attachment-actions">
-      <BaseButton
-        :disabled="disabled"
-        size="small"
-        @click="inputEl?.click()">
-        <IconPhotoPlus />
-        {{ files.length ? t('chooseOtherImages') : t('chooseImages') }}
-      </BaseButton>
-      <BaseButton
-        v-if="files.length || attachmentError"
-        :disabled="disabled"
-        size="small"
-        variant="ghost"
-        @click="clearFiles">
-        {{ t('clear') }}
-      </BaseButton>
-      <span class="muted issue-attachment-paste-hint">{{ t('pasteHint') }}</span>
-    </div>
     <span
       v-if="attachmentError"
       class="issue-attachment-error"
@@ -125,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconLoader, IconPhotoPlus, IconX } from '@tabler/icons-vue'
+import { IconLoader, IconX } from '@tabler/icons-vue'
 
 import { MAX_IMAGE_SIZE } from '~/constants/attachments'
 
@@ -144,15 +125,10 @@ const { t } = useI18n({
   en: {
     attachment: 'Attachment',
     attachmentPreview: 'Attachment preview',
-    attachments: 'Attachments',
-    chooseImages: 'Choose images',
-    chooseOtherImages: 'Choose other images',
-    clear: 'Clear',
     closePreview: 'Close attachment preview',
     loadingPreview: 'Loading attachment preview',
     open: 'Open',
     openAttachment: 'Open attachment',
-    pasteHint: 'or paste PNG/JPG with Ctrl+V',
     remove: 'Remove',
     removeAttachment: 'Remove attachment',
     tooLarge: 'Some images were not added because they are larger than 3 MB.',
@@ -161,15 +137,10 @@ const { t } = useI18n({
   ru: {
     attachment: 'Вложение',
     attachmentPreview: 'Предпросмотр вложения',
-    attachments: 'Вложения',
-    chooseImages: 'Выбрать изображения',
-    chooseOtherImages: 'Выбрать другие изображения',
-    clear: 'Очистить',
     closePreview: 'Закрыть предпросмотр вложения',
     loadingPreview: 'Загрузка предпросмотра вложения',
     open: 'Открыть',
     openAttachment: 'Открыть вложение',
-    pasteHint: 'или вставьте PNG/JPG через Ctrl+V',
     remove: 'Удалить',
     removeAttachment: 'Удалить вложение',
     tooLarge: 'Некоторые изображения не добавлены: их размер превышает 3 МБ.',
@@ -216,14 +187,6 @@ const getSupportedImages = (files: File[] | FileList) => {
   const images = Array.from(files).filter((file) => supportedImageTypes.has(file.type))
   attachmentError.value = images.some((file) => file.size > MAX_IMAGE_SIZE) ? t('tooLarge') : ''
   return images.filter((file) => file.size <= MAX_IMAGE_SIZE)
-}
-
-const clearFiles = () => {
-  if (inputEl.value) {
-    inputEl.value.value = ''
-  }
-  attachmentError.value = ''
-  props.onChange([])
 }
 
 const removeFile = (index: number) => {
@@ -278,9 +241,17 @@ onBeforeUnmount(() => {
   revokePreviews()
   window.removeEventListener('paste', pasteFiles)
 })
+
+// The page has the button for it (a paperclip by the description).
+defineExpose({ pick: () => inputEl.value?.click() })
 </script>
 
 <style scoped>
+/* Only a hidden input until there is something to show. */
+.issue-attachments:not(:has(.issue-attachment-gallery, .issue-attachment-error)) {
+  display: none;
+}
+
 .issue-attachments {
   display: grid;
   gap: var(--space-3);
@@ -365,18 +336,6 @@ onBeforeUnmount(() => {
   position: absolute;
   white-space: nowrap;
   width: 1px;
-}
-
-.issue-attachment-actions {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.issue-attachment-paste-hint {
-  align-self: center;
-  font-size: var(--font-size-small);
 }
 
 .issue-attachment-error {

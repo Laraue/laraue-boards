@@ -28,9 +28,10 @@
         </button>
       </TooltipTrigger>
       <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
+      <!-- Above by default; where there is no room (the header), Reka turns it below. -->
       <TooltipContent
         class="icon-button-tooltip"
-        side="bottom"
+        side="top"
         :side-offset="4">
         {{ tooltip ?? label }}
       </TooltipContent>

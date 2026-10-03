@@ -63,8 +63,7 @@ it('lets the user choose a destination and create an issue from the issue list',
     props: { attributes: [], deps, onCreated },
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
-  await page.getByLabelText('Title').fill('Bug title')
+  await page.getByLabelText('Title', { exact: true }).fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Space', 'Product')
   await chooseOption('Board', 'Sprint board')
@@ -103,8 +102,7 @@ it('creates an issue in a fixed board without showing destination selects', asyn
     },
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
-  await page.getByLabelText('Title').fill('Bug title')
+  await page.getByLabelText('Title', { exact: true }).fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
   await expect.element(page.getByLabelText('Status')).toHaveTextContent('In progress')
   await expect.element(page.getByLabelText('Assignee')).toHaveTextContent('Ann Lee')
@@ -132,8 +130,7 @@ it('keeps the form open and shows the message when creation fails', async () => 
     },
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
-  await page.getByLabelText('Title').fill('Bug title')
+  await page.getByLabelText('Title', { exact: true }).fill('Bug title')
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Status', 'To do')
   await chooseOption('Assignee', 'Ann Lee')
@@ -158,12 +155,13 @@ it('fills the title and the content with the AI summary', async () => {
     },
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('login fails on retry pls')
   await page.getByRole('button', { name: 'Clean up and title with AI' }).click()
 
-  await expect.element(page.getByLabelText('Title')).toHaveValue('Fix login retry')
-  await expect.element(page.getByLabelText('Content')).toHaveValue('- Login fails on retry')
+  await expect.element(page.getByLabelText('Title', { exact: true })).toHaveValue('Fix login retry')
+  await expect
+    .element(page.getByLabelText('Content').getByRole('listitem'))
+    .toHaveTextContent('Login fails on retry')
 })
 
 it('adds an issue without a title so the server generates it', async () => {
@@ -179,7 +177,6 @@ it('adds an issue without a title so the server generates it', async () => {
     },
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
   await chooseOption('Status', 'To do')
   await chooseOption('Assignee', 'Ann Lee')
@@ -203,7 +200,7 @@ it('does not let an issue be added without a description', async () => {
     },
   })
 
-  await page.getByLabelText('Title').fill('Bug title')
+  await page.getByLabelText('Title', { exact: true }).fill('Bug title')
   await chooseOption('Status', 'To do')
   await chooseOption('Assignee', 'Ann Lee')
 

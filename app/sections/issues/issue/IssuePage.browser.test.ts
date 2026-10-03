@@ -132,26 +132,23 @@ it('previews markdown content', async () => {
   await expect.element(page.getByText('preview', { exact: true })).toBeInTheDocument()
 })
 
+const bold = () => document.querySelector('[aria-label="Content"] strong')?.textContent
+
 it('formats selected description text', async () => {
   await mount(createDeps())
+  const modifier = /Mac/i.test(navigator.platform) ? 'Meta' : 'Control'
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Fix the bug')
-  const textarea = document.querySelector<HTMLTextAreaElement>('textarea[aria-label="Content"]')
-  textarea?.setSelectionRange(0, 3)
-  await page.getByRole('button', { name: 'Bold' }).click()
+  await userEvent.keyboard(`{${modifier}>}a{/${modifier}}`)
+  await page.getByRole('button', { name: 'Bold (Ctrl+B)' }).click()
+  await vi.waitFor(() => expect(bold()).toBe('Fix the bug'))
 
-  await expect.element(page.getByLabelText('Content')).toHaveValue('**Fix** the bug')
-  await userEvent.keyboard(
-    /Mac/i.test(navigator.platform) ? '{Meta>}z{/Meta}' : '{Control>}z{/Control}',
-  )
-  await expect.element(page.getByLabelText('Content')).toHaveValue('Fix the bug')
+  await userEvent.keyboard(`{${modifier}>}z{/${modifier}}`)
+  await vi.waitFor(() => expect(bold()).toBeUndefined())
 
-  textarea?.setSelectionRange(0, textarea.value.length)
-  await page.getByLabelText('Heading level').selectOptions('###')
-  await expect.element(page.getByLabelText('Content')).toHaveValue('### Fix the bug')
-  await page.getByRole('button', { name: 'Return to visual' }).click()
-  await expect.element(page.getByRole('heading', { name: 'Fix the bug' })).toBeInTheDocument()
+  await userEvent.keyboard(`{${modifier}>}a{/${modifier}}`)
+  await userEvent.keyboard('### Steps')
+  await expect.element(page.getByRole('heading', { name: 'Steps' })).toBeInTheDocument()
 })
 
 it('shows comments loaded after creating one', async () => {
@@ -327,7 +324,6 @@ it('stays on the page after the issue is saved', async () => {
     onDirtyChange,
   )
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await vi.waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true))
   await page.getByRole('button', { name: 'Save changes' }).click()

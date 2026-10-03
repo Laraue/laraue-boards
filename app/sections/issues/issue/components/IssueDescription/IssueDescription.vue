@@ -1,176 +1,147 @@
 <template>
-  <div
-    ref="root"
-    class="issue-description"
-    :class="{ 'issue-description--writing': isWriting }">
-    <div class="issue-description-frame">
+  <div class="issue-description">
+    <!-- Rendered on the server and until the editor mounts, so the text does not jump in. -->
+    <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
+    <div
+      v-if="!editor"
+      class="issue-description-content">
       <div
-        v-if="isWriting"
-        :aria-label="t('markdownFormatting')"
-        class="markdown-toolbar"
-        role="toolbar">
-        <div class="markdown-toolbar-group">
-          <button
-            :aria-label="t('returnToVisual')"
-            class="markdown-toolbar-return"
-            :disabled="summarizing"
-            :title="t('visual')"
-            type="button"
-            @click="state.editing = false">
-            <IconEye aria-hidden="true" />
-            {{ t('visual') }}
-          </button>
-        </div>
-        <div class="markdown-toolbar-group">
-          <button
-            class="markdown-toolbar-ai"
-            :disabled="summarizing || !model.trim()"
-            :title="t('improveWithAiHint')"
-            type="button"
-            @click="summarizeContent">
-            <IconLoader2
-              v-if="summarizing"
-              class="markdown-toolbar-spinner" />
-            <IconSparkles
-              v-else
-              aria-hidden="true" />
-            {{ summarizing ? t('improvingWithAi') : t('improveWithAi') }}
-          </button>
-        </div>
-        <div class="markdown-toolbar-group">
-          <button
-            :aria-label="t('bold')"
-            :disabled="summarizing"
-            :title="t('boldShortcut')"
-            type="button"
-            @click="wrap('**', '**', t('boldText'))">
-            <IconBold aria-hidden="true" />
-          </button>
-          <button
-            :aria-label="t('italic')"
-            :disabled="summarizing"
-            :title="t('italicShortcut')"
-            type="button"
-            @click="wrap('*', '*', t('italicText'))">
-            <IconItalic aria-hidden="true" />
-          </button>
-          <button
-            :aria-label="t('strikethrough')"
-            :disabled="summarizing"
-            :title="t('strikethrough')"
-            type="button"
-            @click="wrap('~~', '~~', t('strikethroughText'))">
-            <IconStrikethrough aria-hidden="true" />
-          </button>
-          <select
-            :aria-label="t('headingLevel')"
-            :disabled="summarizing"
-            :title="t('headingLevel')"
-            value=""
-            @change="insertHeading">
-            <option
-              disabled
-              value="">
-              H
-            </option>
-            <option value="#">H1</option>
-            <option value="##">H2</option>
-            <option value="###">H3</option>
-            <option value="####">H4</option>
-            <option value="#####">H5</option>
-            <option value="######">H6</option>
-          </select>
-        </div>
-
-        <div class="markdown-toolbar-group">
-          <button
-            :aria-label="t('quote')"
-            :disabled="summarizing"
-            :title="t('quote')"
-            type="button"
-            @click="prefixLines('> ', t('quote'))">
-            <IconQuote aria-hidden="true" />
-          </button>
-          <button
-            :aria-label="t('bulletedList')"
-            :disabled="summarizing"
-            :title="t('bulletedList')"
-            type="button"
-            @click="prefixLines('- ', t('listItem'))">
-            <IconList aria-hidden="true" />
-          </button>
-          <button
-            :aria-label="t('numberedList')"
-            :disabled="summarizing"
-            :title="t('numberedList')"
-            type="button"
-            @click="prefixLines('', t('listItem'), true)">
-            <IconListNumbers aria-hidden="true" />
-          </button>
-        </div>
-
-        <div class="markdown-toolbar-group">
-          <button
-            :aria-label="t('inlineCode')"
-            :disabled="summarizing"
-            :title="t('inlineCode')"
-            type="button"
-            @click="wrap('`', '`', t('code'))">
-            <IconCode aria-hidden="true" />
-          </button>
-          <button
-            :aria-label="t('codeBlock')"
-            :disabled="summarizing"
-            :title="t('codeBlock')"
-            type="button"
-            @click="wrap('```\n', '\n```', t('code'))">
-            <IconSourceCode aria-hidden="true" />
-          </button>
-          <button
-            :aria-label="t('link')"
-            :disabled="summarizing"
-            :title="t('linkShortcut')"
-            type="button"
-            @click="insertLink">
-            <LinkIcon aria-hidden="true" />
-          </button>
-          <button
-            :aria-label="t('image')"
-            :disabled="summarizing"
-            :title="t('image')"
-            type="button"
-            @click="wrap('![', '](https://example.com/image.jpg)', t('description'))">
-            <ImageIcon aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-
-      <textarea
-        v-if="isWriting"
-        ref="textarea"
-        v-model="model"
-        :aria-label="t('content')"
-        :disabled="summarizing"
-        :placeholder="t('descriptionPlaceholder')"
-        rows="8"
-        @input="clearMessage"
-        @keydown="handleKeydown" />
-
-      <!-- eslint-disable-next-line vue/no-v-html -- sanitized by renderMarkdown -->
-      <article
-        v-else
-        :aria-label="disabled ? t('descriptionPreview') : t('editDescription')"
-        class="issue-description-preview"
-        :class="{ 'issue-description-preview--editable': !disabled }"
-        :role="disabled ? undefined : 'button'"
-        :tabindex="disabled ? undefined : 0"
-        @click="startEditing"
-        @keydown.enter.prevent="startEditing"
-        @keydown.space.prevent="startEditing"
-        v-html="preview" />
+        class="tiptap"
+        v-html="fallback" />
+    </div>
+    <!-- eslint-enable vue/no-v-html -->
+    <template v-else>
+      <EditorContent
+        class="issue-description-content"
+        :editor="editor" />
+      <!-- Tiptap moves the menus' own elements, so a div of ours carries their look. -->
+      <template v-if="!disabled">
+        <BubbleMenu
+          :editor="editor"
+          plugin-key="textMenu"
+          :should-show="showTextMenu">
+          <!-- mousedown.prevent: a click in the menu keeps the text selected. -->
+          <div
+            class="issue-description-menu"
+            @mousedown.prevent>
+            <div class="issue-description-style">
+              <button
+                :aria-expanded="styleMenuOpen"
+                aria-haspopup="menu"
+                class="issue-description-style-trigger"
+                :title="t('textStyle')"
+                type="button"
+                @click="styleMenuOpen = !styleMenuOpen">
+                Aa
+                <IconChevronDown />
+              </button>
+              <div
+                v-if="styleMenuOpen"
+                class="issue-description-list issue-description-style-list"
+                role="menu">
+                <button
+                  v-for="style in textStyles"
+                  :key="style.label"
+                  :aria-checked="style.isActive?.()"
+                  class="issue-description-list-item"
+                  role="menuitemradio"
+                  type="button"
+                  @click="applyStyle(style)">
+                  <component :is="style.icon" />
+                  {{ style.label }}
+                </button>
+              </div>
+            </div>
+            <template
+              v-for="group in textActions"
+              :key="group[0]!.label">
+              <span class="issue-description-menu-divider" />
+              <IconButton
+                v-for="action in group"
+                :key="action.label"
+                :class="{ active: action.isActive?.() }"
+                :label="action.label"
+                @click="action.run">
+                <component :is="action.icon" />
+              </IconButton>
+            </template>
+          </div>
+        </BubbleMenu>
+        <BubbleMenu
+          :editor="editor"
+          plugin-key="tableMenu"
+          :should-show="showTableMenu">
+          <div
+            class="issue-description-menu"
+            @mousedown.prevent>
+            <template
+              v-for="(group, index) in tableActions"
+              :key="index">
+              <span
+                v-if="index"
+                class="issue-description-menu-divider" />
+              <IconButton
+                v-for="action in group"
+                :key="action.label"
+                :label="action.label"
+                @click="action.run">
+                <component :is="action.icon" />
+              </IconButton>
+            </template>
+          </div>
+        </BubbleMenu>
+        <!-- "/" on a line: the blocks it can become, filtered by what follows the slash. -->
+        <FloatingMenu
+          :editor="editor"
+          :options="{ offset: 4, placement: 'bottom-start' }"
+          plugin-key="slashMenu"
+          :should-show="showSlashMenu">
+          <div
+            :aria-label="t('blocks')"
+            class="issue-description-list"
+            role="listbox">
+            <template
+              v-for="(command, index) in slashCommands"
+              :key="command.label">
+              <span
+                v-if="index && command.group !== slashCommands[index - 1]!.group"
+                class="issue-description-list-divider" />
+              <button
+                :aria-selected="index === slash.index"
+                class="issue-description-list-item"
+                role="option"
+                type="button"
+                @click="runSlashCommand(command)"
+                @mousedown.prevent
+                @mouseenter="slash.index = index">
+                <component :is="command.icon" />
+                {{ command.label }}
+                <kbd v-if="command.shortcut">{{ command.shortcut }}</kbd>
+              </button>
+            </template>
+          </div>
+        </FloatingMenu>
+      </template>
+    </template>
+    <div
+      v-if="!disabled"
+      class="issue-description-footer">
+      <slot name="actions" />
+      <IconButton
+        :disabled="!model.trim()"
+        :label="t('improveWithAi')"
+        :loading="summarizing"
+        :tooltip="t('improveWithAiHint')"
+        @click="summarizeContent">
+        <IconSparkles />
+      </IconButton>
+      <span class="issue-description-hint">
+        <kbd>/</kbd>
+        {{ t('slashHint') }}
+      </span>
       <p
-        v-if="isWriting && message"
-        class="form-error issue-description-error"
+        v-if="message"
+        class="form-error"
         role="alert">
         {{ message }}
       </p>
@@ -180,20 +151,39 @@
 
 <script setup lang="ts">
 import {
+  IconBlockquote,
   IconBold,
+  IconChevronDown,
   IconCode,
-  IconEye,
+  IconColumnInsertRight,
+  IconColumnRemove,
+  IconH1,
+  IconH2,
+  IconH3,
   IconItalic,
-  IconLink as LinkIcon,
+  IconLink,
   IconList,
+  IconListCheck,
   IconListNumbers,
-  IconLoader2,
-  IconPhoto as ImageIcon,
-  IconQuote,
+  IconPilcrow,
+  IconRowInsertBottom,
+  IconRowRemove,
+  IconSeparatorHorizontal,
   IconSourceCode,
   IconSparkles,
   IconStrikethrough,
+  IconTable,
+  IconTableOff,
 } from '@tabler/icons-vue'
+import Image from '@tiptap/extension-image'
+import { TaskItem, TaskList } from '@tiptap/extension-list'
+import { TableKit } from '@tiptap/extension-table'
+import { Placeholder } from '@tiptap/extensions'
+import { Markdown } from '@tiptap/markdown'
+import StarterKit from '@tiptap/starter-kit'
+import { EditorContent, useEditor } from '@tiptap/vue-3'
+import { BubbleMenu, FloatingMenu } from '@tiptap/vue-3/menus'
+import type { Component } from 'vue'
 
 import { renderMarkdown } from '~/utils/renderMarkdown'
 
@@ -203,88 +193,370 @@ const props = defineProps<{ deps: IssueDescriptionDeps; disabled?: boolean }>()
 
 const { t } = useI18n({
   en: {
-    bold: 'Bold',
-    boldShortcut: 'Bold (Ctrl+B)',
-    boldText: 'bold text',
+    addColumn: 'Add a column',
+    addRow: 'Add a row',
+    blocks: 'Blocks',
+    bold: 'Bold (Ctrl+B)',
     bulletedList: 'Bulleted list',
-    code: 'code',
+    checklist: 'Checklist',
     codeBlock: 'Code block',
     content: 'Content',
-    description: 'description',
-    descriptionPlaceholder: 'Describe the issue. Markdown is supported.',
-    descriptionPreview: 'Description preview',
-    editDescription: 'Edit description',
-    heading: 'Heading',
-    headingLevel: 'Heading level',
-    image: 'Image',
+    deleteColumn: 'Delete the column',
+    deleteRow: 'Delete the row',
+    deleteTable: 'Delete the table',
+    descriptionPlaceholder: 'Add a description… Type / for a heading, list or table',
+    divider: 'Divider',
+    heading1: 'Heading 1',
+    heading2: 'Heading 2',
+    heading3: 'Heading 3',
     improveWithAi: 'Clean up and title with AI',
     improveWithAiHint:
       'Fixes grammar and structure with AI and writes a title. Review it before saving.',
     improvingWithAi: 'Cleaning up…',
     inlineCode: 'Inline code',
-    italic: 'Italic',
-    italicShortcut: 'Italic (Ctrl+I)',
-    italicText: 'italic text',
+    italic: 'Italic (Ctrl+I)',
     link: 'Link',
-    linkShortcut: 'Link (Ctrl+K)',
-    linkText: 'link text',
-    listItem: 'List item',
-    markdownFormatting: 'Markdown formatting',
-    nothing: 'Nothing here yet.',
+    linkAddress: 'Link address',
     numberedList: 'Numbered list',
     quote: 'Quote',
-    returnToVisual: 'Return to visual',
+    slashHint: 'a heading, list, table and more',
     strikethrough: 'Strikethrough',
-    strikethroughText: 'strikethrough text',
-    visual: 'Visual',
+    table: 'Table',
+    text: 'Text',
+    textStyle: 'Text style',
   },
   ru: {
-    bold: 'Жирный',
-    boldShortcut: 'Жирный (Ctrl+B)',
-    boldText: 'жирный текст',
+    addColumn: 'Добавить столбец',
+    addRow: 'Добавить строку',
+    blocks: 'Блоки',
+    bold: 'Жирный (Ctrl+B)',
     bulletedList: 'Маркированный список',
-    code: 'код',
+    checklist: 'Чек-лист',
     codeBlock: 'Блок кода',
     content: 'Содержимое',
-    description: 'описание',
-    descriptionPlaceholder: 'Опишите задачу. Поддерживается Markdown.',
-    descriptionPreview: 'Предпросмотр описания',
-    editDescription: 'Изменить описание',
-    heading: 'Заголовок',
-    headingLevel: 'Уровень заголовка',
-    image: 'Изображение',
+    deleteColumn: 'Удалить столбец',
+    deleteRow: 'Удалить строку',
+    deleteTable: 'Удалить таблицу',
+    descriptionPlaceholder: 'Добавьте описание… / — заголовок, список или таблица',
+    divider: 'Разделитель',
+    heading1: 'Заголовок 1',
+    heading2: 'Заголовок 2',
+    heading3: 'Заголовок 3',
     improveWithAi: 'Привести в порядок и озаглавить с ИИ',
     improveWithAiHint:
       'ИИ исправит грамматику и структуру и придумает заголовок. Проверьте результат перед сохранением.',
     improvingWithAi: 'Приводим в порядок…',
     inlineCode: 'Встроенный код',
-    italic: 'Курсив',
-    italicShortcut: 'Курсив (Ctrl+I)',
-    italicText: 'текст курсивом',
+    italic: 'Курсив (Ctrl+I)',
     link: 'Ссылка',
-    linkShortcut: 'Ссылка (Ctrl+K)',
-    linkText: 'текст ссылки',
-    listItem: 'Элемент списка',
-    markdownFormatting: 'Форматирование Markdown',
-    nothing: 'Здесь пока ничего нет.',
+    linkAddress: 'Адрес ссылки',
     numberedList: 'Нумерованный список',
     quote: 'Цитата',
-    returnToVisual: 'Вернуться к визуальному режиму',
+    slashHint: 'заголовок, список, таблица и другое',
     strikethrough: 'Зачёркивание',
-    strikethroughText: 'зачёркнутый текст',
-    visual: 'Визуальный режим',
+    table: 'Таблица',
+    text: 'Текст',
+    textStyle: 'Стиль текста',
   },
 })
 
 const model = defineModel<string>({ required: true })
 // The AI summary comes with a title; the page owning the title field shares it here.
 const titleModel = defineModel<string>('title', { default: '' })
-const state = reactive({ editing: false })
+
+const fallback = computed(() => renderMarkdown(model.value))
+
+// The markdown the editor holds, to tell its own changes from new content coming in.
+let editorMarkdown = model.value
+
+const editor = useEditor({
+  content: model.value,
+  contentType: 'markdown',
+  editable: !props.disabled,
+  editorProps: {
+    attributes: { 'aria-label': t('content'), 'aria-multiline': 'true', role: 'textbox' },
+    handleKeyDown: (_view, event) => handleSlashKey(event),
+  },
+  extensions: [
+    StarterKit.configure({ link: { openOnClick: false } }),
+    // Inline, as markdown has it: an image is part of a paragraph.
+    Image.configure({ inline: true }),
+    TableKit,
+    TaskList,
+    TaskItem.configure({ nested: true }),
+    Markdown,
+    // Only for an empty description; an empty line in a written one stays blank, as in Linear.
+    Placeholder.configure({ placeholder: () => t('descriptionPlaceholder') }),
+  ],
+  onSelectionUpdate: () => {
+    styleMenuOpen.value = false
+  },
+  onUpdate: ({ editor: current }) => {
+    editorMarkdown = current.getMarkdown().trimEnd()
+    model.value = editorMarkdown
+    message.value = undefined
+  },
+})
+
+// New content from outside: the issue loaded again or the AI rewrote it.
+watch(model, (markdown) => {
+  if (markdown !== editorMarkdown) {
+    editorMarkdown = markdown
+    editor.value?.commands.setContent(markdown, { contentType: 'markdown', emitUpdate: false })
+  }
+})
+
+watch(
+  () => props.disabled,
+  (disabled) => editor.value?.setEditable(!disabled),
+)
+
+type EditorAction = {
+  icon: Component
+  isActive?: () => boolean
+  label: string
+  run: () => void
+  // The editor's own key for it, shown in the slash list.
+  shortcut?: string
+}
+
+// Only called from the menus, which exist once the editor does.
+const chain = () => editor.value!.chain().focus()
+const isActive = (name: string, attributes?: Record<string, unknown>) =>
+  editor.value?.isActive(name, attributes) ?? false
+
+const setLink = () => {
+  const href = window.prompt(
+    t('linkAddress'),
+    editor.value?.getAttributes('link').href ?? 'https://',
+  )
+  if (href === null) {
+    return
+  }
+  const link = chain().extendMarkRange('link')
+  ;(href ? link.setLink({ href }) : link.unsetLink()).run()
+}
+
+const headings: EditorAction[] = ([1, 2, 3] as const).map((level) => ({
+  icon: [IconH1, IconH2, IconH3][level - 1]!,
+  isActive: () => isActive('heading', { level }),
+  label: t(`heading${level}`),
+  run: () => chain().toggleHeading({ level }).run(),
+  shortcut: `Ctrl Alt ${level}`,
+}))
+const lists: EditorAction[] = [
+  {
+    icon: IconList,
+    isActive: () => isActive('bulletList'),
+    label: t('bulletedList'),
+    run: () => chain().toggleBulletList().run(),
+    shortcut: 'Ctrl ⇧ 8',
+  },
+  {
+    icon: IconListNumbers,
+    isActive: () => isActive('orderedList'),
+    label: t('numberedList'),
+    run: () => chain().toggleOrderedList().run(),
+    shortcut: 'Ctrl ⇧ 7',
+  },
+  {
+    icon: IconListCheck,
+    isActive: () => isActive('taskList'),
+    label: t('checklist'),
+    run: () => chain().toggleTaskList().run(),
+    shortcut: 'Ctrl ⇧ 9',
+  },
+]
+const quote: EditorAction = {
+  icon: IconBlockquote,
+  isActive: () => isActive('blockquote'),
+  label: t('quote'),
+  run: () => chain().toggleBlockquote().run(),
+  shortcut: 'Ctrl ⇧ B',
+}
+const codeBlock: EditorAction = {
+  icon: IconSourceCode,
+  isActive: () => isActive('codeBlock'),
+  label: t('codeBlock'),
+  run: () => chain().toggleCodeBlock().run(),
+  shortcut: 'Ctrl Alt C',
+}
+
+// The style of the selected lines, in the menu's dropdown.
+const textStyles: EditorAction[] = [
+  {
+    icon: IconPilcrow,
+    isActive: () => isActive('paragraph'),
+    label: t('text'),
+    run: () => chain().setParagraph().run(),
+  },
+  ...headings,
+]
+const styleMenuOpen = ref(false)
+const applyStyle = (style: EditorAction) => {
+  style.run()
+  styleMenuOpen.value = false
+}
+
+// Over selected text, like Linear: its style (the dropdown), its marks, then blocks and lists.
+const textActions: EditorAction[][] = [
+  [
+    {
+      icon: IconBold,
+      isActive: () => isActive('bold'),
+      label: t('bold'),
+      run: () => chain().toggleBold().run(),
+    },
+    {
+      icon: IconItalic,
+      isActive: () => isActive('italic'),
+      label: t('italic'),
+      run: () => chain().toggleItalic().run(),
+    },
+    {
+      icon: IconStrikethrough,
+      isActive: () => isActive('strike'),
+      label: t('strikethrough'),
+      run: () => chain().toggleStrike().run(),
+    },
+    {
+      icon: IconCode,
+      isActive: () => isActive('code'),
+      label: t('inlineCode'),
+      run: () => chain().toggleCode().run(),
+    },
+    { icon: IconLink, isActive: () => isActive('link'), label: t('link'), run: setLink },
+  ],
+  [quote, codeBlock],
+  lists,
+]
+
+// What "/" offers: every block a line can become, in groups like Linear's.
+const blockActions: EditorAction[][] = [
+  headings,
+  lists,
+  [
+    quote,
+    codeBlock,
+    {
+      icon: IconTable,
+      label: t('table'),
+      run: () => chain().insertTable({ cols: 3, rows: 3, withHeaderRow: true }).run(),
+    },
+    {
+      icon: IconSeparatorHorizontal,
+      label: t('divider'),
+      run: () => chain().setHorizontalRule().run(),
+    },
+  ],
+]
+
+type SlashContext = {
+  state: {
+    selection: {
+      $from: {
+        parent: { textBetween: (from: number, to: number) => string; type: { name: string } }
+        parentOffset: number
+        pos: number
+        start: () => number
+      }
+      empty: boolean
+    }
+  }
+}
+
+// The text after a "/" that starts a paragraph and the option picked in its list. Escape
+// dismisses the list until the slash is gone.
+const slash = reactive({ dismissed: false, from: 0, index: 0, query: null as null | string, to: 0 })
+
+const updateSlash = ({ state: { selection } }: SlashContext) => {
+  const { $from, empty } = selection
+  const text = $from.parent.textBetween(0, $from.parentOffset)
+  const query =
+    empty && $from.parent.type.name === 'paragraph' && /^\/\S*$/.test(text)
+      ? text.slice(1).toLowerCase()
+      : null
+  if (query === null) {
+    slash.dismissed = false
+  }
+  if (query !== slash.query) {
+    slash.index = 0
+  }
+  Object.assign(slash, { from: $from.start(), query, to: $from.pos })
+}
+
+const slashCommands = computed(() =>
+  slash.query === null || slash.dismissed
+    ? []
+    : blockActions.flatMap((group, index) =>
+        group
+          .filter((action) => action.label.toLowerCase().includes(slash.query!))
+          .map((action) => ({ ...action, group: index })),
+      ),
+)
+
+// Called by the menu on every change of the text or the selection, before it decides to show:
+// the slash is read there, so the list is never one keystroke behind.
+const showSlashMenu = ({ editor: current }: { editor: SlashContext }) => {
+  updateSlash(current)
+  return slashCommands.value.length > 0
+}
+
+const runSlashCommand = (command: EditorAction) => {
+  chain().deleteRange({ from: slash.from, to: slash.to }).run()
+  command.run()
+}
+
+const handleSlashKey = (event: KeyboardEvent) => {
+  const commands = slashCommands.value
+  if (!commands.length) {
+    return false
+  }
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    const step = event.key === 'ArrowDown' ? 1 : -1
+    slash.index = (slash.index + step + commands.length) % commands.length
+  } else if (event.key === 'Enter') {
+    runSlashCommand(commands[slash.index]!)
+  } else if (event.key === 'Escape') {
+    slash.dismissed = true
+    // An empty change, so the menu asks again whether to show and hides.
+    editor.value?.view.dispatch(editor.value.state.tr)
+  } else {
+    return false
+  }
+  return true
+}
+
+const tableActions: EditorAction[][] = [
+  [
+    { icon: IconRowInsertBottom, label: t('addRow'), run: () => chain().addRowAfter().run() },
+    {
+      icon: IconColumnInsertRight,
+      label: t('addColumn'),
+      run: () => chain().addColumnAfter().run(),
+    },
+  ],
+  [
+    { icon: IconRowRemove, label: t('deleteRow'), run: () => chain().deleteRow().run() },
+    { icon: IconColumnRemove, label: t('deleteColumn'), run: () => chain().deleteColumn().run() },
+    { icon: IconTableOff, label: t('deleteTable'), run: () => chain().deleteTable().run() },
+  ],
+]
+
+// The text menu needs a selection outside a table; in a table, the table's menu shows instead.
+type MenuContext = {
+  editor: { isActive: (name: string) => boolean; state: { selection: { empty: boolean } } }
+}
+const showTextMenu = ({ editor: current }: MenuContext) =>
+  !current.state.selection.empty && !current.isActive('table')
+const showTableMenu = ({ editor: current }: MenuContext) => current.isActive('table')
+
 const {
   execute: summarize,
   message,
   pending: summarizing,
 } = useApiAction(props.deps.summarizeContent)
+
 const summarizeContent = async (): Promise<void> => {
   const summary = await summarize({ content: model.value })
   if (!summary) {
@@ -295,412 +567,292 @@ const summarizeContent = async (): Promise<void> => {
     titleModel.value = summary.value.title
   }
 }
-const clearMessage = () => {
-  message.value = undefined
-}
-const root = useTemplateRef<HTMLElement>('root')
-const textarea = useTemplateRef<HTMLTextAreaElement>('textarea')
-
-const isWriting = computed(() => state.editing && !props.disabled)
-const preview = computed(() =>
-  model.value.trim()
-    ? renderMarkdown(model.value)
-    : `<p class="issue-description-empty">${t('nothing')}</p>`,
-)
-
-const startEditing = async (event: Event) => {
-  if (props.disabled || (event.target as Element).closest('a')) {
-    return
-  }
-  state.editing = true
-  await nextTick()
-  textarea.value?.focus()
-}
-
-const stopEditingOnOutsideClick = (event: MouseEvent) => {
-  if (
-    state.editing &&
-    event.button === 0 &&
-    root.value &&
-    !event.composedPath().includes(root.value)
-  ) {
-    state.editing = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', stopEditingOnOutsideClick))
-onBeforeUnmount(() => document.removeEventListener('click', stopEditingOnOutsideClick))
-
-// execCommand is deprecated but stays the only insert that keeps the textarea undo stack.
-// Typed locally so the TS6387 deprecation hint does not fire; swap to a standard undoable insert API when one ships.
-const insertText = (value: string) =>
-  (
-    document as unknown as {
-      execCommand: (command: string, showUi: boolean, value: string) => boolean
-    }
-  ).execCommand('insertText', false, value)
-
-const restoreSelection = async (start: number, end: number) => {
-  await nextTick()
-  textarea.value?.focus()
-  textarea.value?.setSelectionRange(start, end)
-}
-
-const replace = async (
-  start: number,
-  end: number,
-  replacement: string,
-  selectionStart: number,
-  selectionEnd: number,
-) => {
-  const element = textarea.value
-  if (!element) {
-    return
-  }
-
-  element.focus()
-  element.setSelectionRange(start, end)
-  let inserted = false
-  try {
-    inserted = insertText(replacement)
-  } catch {
-    inserted = false
-  }
-  if (!inserted) {
-    element.setRangeText(replacement, start, end, 'end')
-  }
-  model.value = element.value
-  await restoreSelection(selectionStart, selectionEnd)
-}
-
-const wrap = async (before: string, after = before, placeholder = 'text') => {
-  const element = textarea.value
-  if (!element) {
-    return
-  }
-
-  const { selectionEnd: end, selectionStart: start } = element
-  const content = model.value.slice(start, end) || placeholder
-  await replace(
-    start,
-    end,
-    `${before}${content}${after}`,
-    start + before.length,
-    start + before.length + content.length,
-  )
-}
-
-const prefixLines = async (prefix: string, placeholder = 'text', ordered = false) => {
-  const element = textarea.value
-  if (!element) {
-    return
-  }
-
-  const lineStart = model.value.lastIndexOf('\n', element.selectionStart - 1) + 1
-  const nextLineBreak = model.value.indexOf('\n', element.selectionEnd)
-  const lineEnd = nextLineBreak === -1 ? model.value.length : nextLineBreak
-  const block = model.value.slice(lineStart, lineEnd) || placeholder
-  const formatted = block
-    .split('\n')
-    .map((line, index) => `${ordered ? `${index + 1}. ` : prefix}${line}`)
-    .join('\n')
-  await replace(lineStart, lineEnd, formatted, lineStart, lineStart + formatted.length)
-}
-
-const insertHeading = (event: Event) => {
-  const select = event.target as HTMLSelectElement
-  void prefixLines(`${select.value} `, t('heading'))
-  select.value = ''
-}
-
-const insertLink = () => wrap('[', '](https://example.com)', t('linkText'))
-
-const handleKeydown = (event: KeyboardEvent) => {
-  if (!event.ctrlKey && !event.metaKey) {
-    return
-  }
-
-  const actions: Record<string, () => void> = {
-    b: () => void wrap('**', '**', t('boldText')),
-    i: () => void wrap('*', '*', t('italicText')),
-    k: () => void insertLink(),
-  }
-  const action = actions[event.key.toLowerCase()]
-  if (action) {
-    event.preventDefault()
-    action()
-  }
-}
 </script>
 
 <style scoped>
 .issue-description {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  gap: var(--space-4);
 }
 
-/* Editor frame */
-
-.issue-description-frame {
-  border: 1px solid transparent;
-  border-radius: var(--radius-card);
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  overflow: hidden;
-  transition:
-    border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
-}
-
-/* Read as plain text: hover only outlines it; writing turns it into a field. */
-.issue-description--writing .issue-description-frame {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-}
-.issue-description-frame:has(.issue-description-preview--editable:hover) {
-  border-color: var(--color-border);
-}
-.issue-description--writing .issue-description-frame:focus-within,
-.issue-description-frame:has(.issue-description-preview:focus-visible) {
-  border-color: var(--color-focus);
-}
-.issue-description-preview:focus-visible {
+.issue-description-content :deep(.tiptap) {
+  min-height: calc(3 * 1.6em);
   outline: none;
 }
 
-.markdown-toolbar {
-  align-items: center;
-  border-bottom: 1px solid var(--color-divider);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  padding: var(--space-1) var(--space-2);
-}
-
-.markdown-toolbar-group {
-  display: flex;
-  gap: var(--space-1);
-}
-
-.markdown-toolbar button,
-.markdown-toolbar select {
-  align-items: center;
-  background-color: transparent;
-  border: 0;
-  border-radius: var(--radius-small);
-  color: var(--color-muted);
-  display: inline-flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  height: var(--control-height-small);
-  justify-content: center;
-  min-width: var(--control-height-small);
-  padding: 0 var(--space-2);
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
-  width: auto;
-}
-
-.markdown-toolbar .tabler-icon {
-  height: 15px;
-  width: 15px;
-}
-
-.markdown-toolbar select {
-  background-position: right var(--space-1) center;
-  padding-right: var(--space-5);
-}
-
-.markdown-toolbar :is(button, select):hover {
-  background-color: var(--color-hover);
-  color: var(--color-text);
-}
-
-.markdown-toolbar button:active {
-  background-color: var(--color-accent-soft);
-  color: var(--color-accent);
-}
-
-.markdown-toolbar-return {
-  gap: var(--space-1);
-}
-
-.markdown-toolbar :is(button, select):focus-visible {
-  box-shadow: var(--shadow-focus);
-  outline: none;
-}
-
-.markdown-toolbar button.markdown-toolbar-ai {
-  --ai-button-fill: var(--color-surface);
-
-  background:
-    linear-gradient(var(--ai-button-fill), var(--ai-button-fill)) padding-box,
-    linear-gradient(90deg, var(--color-accent), #a855f7, #06b6d4) border-box;
-  border: 1px solid transparent;
-  gap: var(--space-1);
-}
-
-.markdown-toolbar button.markdown-toolbar-ai:hover {
-  --ai-button-fill: var(--color-hover);
-}
-
-.markdown-toolbar button.markdown-toolbar-ai:active {
-  --ai-button-fill: var(--color-accent-soft);
-}
-
-.markdown-toolbar-spinner {
-  animation: var(--animation-spin);
-}
-
-.issue-description-frame textarea,
-.issue-description-preview {
-  flex-grow: 1;
-  max-height: none;
-}
-
-/* Read, the description is as tall as its text; written, it leaves room to write. */
-.issue-description-frame textarea {
-  min-height: 200px;
-}
-
-.issue-description-frame textarea {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  line-height: 1.6;
-  padding: var(--space-3);
-  resize: none;
-}
-
-.issue-description-frame textarea:focus {
-  border: 0;
+.issue-description-content :deep(.tiptap:focus-visible) {
   box-shadow: none;
 }
 
-.issue-description-error {
-  margin: 0;
-  padding: 0 var(--space-3) var(--space-3);
+.issue-description-content :deep(p.is-editor-empty:first-child::before) {
+  color: var(--color-muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 
-.issue-description-preview {
+.issue-description-footer {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.issue-description-hint {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  margin-left: var(--space-2);
+}
+
+.issue-description-hint kbd {
+  background: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-caption);
+  padding: 0 var(--space-1);
+}
+
+.issue-description-footer .form-error {
+  margin: 0 0 0 var(--space-2);
+}
+
+/* The menus over a selection, a table and an empty line. */
+.issue-description-menu {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-popover);
+  display: flex;
+  gap: 2px;
+  padding: var(--space-1);
+}
+
+.issue-description-list {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-popover);
+  display: grid;
+  min-width: 220px;
+  padding: var(--space-1);
+}
+
+.issue-description-list-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--control-height-small);
+  padding: 0 var(--space-2);
+  text-align: left;
+}
+
+.issue-description-list-item:is([aria-selected='true'], :hover) {
+  background: var(--color-hover);
+}
+
+.issue-description-list-item[aria-checked='true'] {
+  color: var(--color-accent);
+}
+
+.issue-description-list-item > svg {
+  color: var(--color-muted);
+}
+
+.issue-description-list-item > kbd {
+  color: var(--color-muted);
+  font-family: inherit;
+  font-size: var(--font-size-small);
+  margin-left: auto;
+  padding-left: var(--space-4);
+}
+
+.issue-description-list-divider {
+  background: var(--color-divider);
+  height: 1px;
+  margin: var(--space-1) 0;
+}
+
+.issue-description-style {
+  position: relative;
+}
+
+.issue-description-style-trigger {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: inline-flex;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  gap: 2px;
+  height: var(--icon-btn-size);
+  padding: 0 var(--space-2);
+}
+
+.issue-description-style-trigger:is(:hover, [aria-expanded='true']) {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.issue-description-style-trigger > svg {
+  height: 12px;
+  width: 12px;
+}
+
+.issue-description-style-list {
+  left: 0;
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  z-index: 1;
+}
+
+.issue-description-menu-divider {
+  align-self: stretch;
+  background: var(--color-divider);
+  margin: var(--space-1) 2px;
+  width: 1px;
+}
+
+.issue-description-menu :deep(.active) {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* The text, read or written. Only inside .tiptap: Tiptap appends its menus next to it. */
+.issue-description-content {
   overflow-wrap: anywhere;
-  padding: var(--space-3);
 }
 
-.issue-description-preview :deep(:is(p, li, blockquote)) {
+.issue-description-content :deep(.tiptap :is(p, li, blockquote)) {
   white-space: break-spaces;
 }
 
-.issue-description-preview--editable {
-  cursor: text;
-}
-
-.issue-description-preview :deep(.issue-description-empty) {
-  color: var(--color-muted);
+.issue-description-content :deep(.tiptap > *) {
+  line-height: 1.6;
   margin: 0;
 }
 
-.issue-description-preview :deep(> *) {
-  line-height: 1.6;
-}
-
-.issue-description-preview :deep(> * + *) {
+.issue-description-content :deep(.tiptap > * + *) {
   margin-top: var(--space-3);
 }
 
-.issue-description-preview :deep(h1),
-.issue-description-preview :deep(h2),
-.issue-description-preview :deep(h3),
-.issue-description-preview :deep(h4),
-.issue-description-preview :deep(h5),
-.issue-description-preview :deep(h6) {
+.issue-description-content :deep(.tiptap :is(h1, h2, h3, h4, h5, h6)) {
   font-weight: var(--font-weight-semibold);
   line-height: 1.25;
-  margin-bottom: 0;
 }
 
-.issue-description-preview :deep(h1) {
+.issue-description-content :deep(.tiptap h1) {
   font-size: 20px;
 }
 
-.issue-description-preview :deep(h2) {
+.issue-description-content :deep(.tiptap h2) {
   font-size: 17px;
 }
 
-.issue-description-preview :deep(:is(h3, h4, h5, h6)) {
+.issue-description-content :deep(.tiptap :is(h3, h4, h5, h6)) {
   font-size: var(--font-size-body);
 }
 
-.issue-description-preview :deep(:is(h1, h2, h3, h4, h5, h6) + *) {
+.issue-description-content :deep(.tiptap :is(h1, h2, h3, h4, h5, h6) + *) {
   margin-top: var(--space-2);
 }
 
-.issue-description-preview :deep(:is(ul, ol)) {
+.issue-description-content :deep(.tiptap :is(ul, ol)) {
+  margin: 0;
   padding-left: var(--space-5);
 }
 
-.issue-description-preview :deep(li + li) {
+.issue-description-content :deep(.tiptap li + li) {
   margin-top: var(--space-1);
 }
 
-.issue-description-preview :deep(img) {
+.issue-description-content :deep(.tiptap li > p) {
+  margin: 0;
+}
+
+.issue-description-content :deep(.tiptap ul[data-type='taskList']) {
+  list-style: none;
+  padding-left: 0;
+}
+
+.issue-description-content :deep(.tiptap ul[data-type='taskList'] li) {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.issue-description-content :deep(.tiptap img) {
   border-radius: var(--radius-control);
   max-width: 100%;
 }
 
-.issue-description-preview :deep(hr) {
+.issue-description-content :deep(.tiptap hr) {
   border: 0;
   border-top: 1px solid var(--color-divider);
 }
 
-.issue-description-preview :deep(table) {
+.issue-description-content :deep(.tiptap table) {
   border-collapse: collapse;
   display: block;
   overflow-x: auto;
   width: max-content;
 }
 
-.issue-description-preview :deep(:is(th, td)) {
+.issue-description-content :deep(.tiptap :is(th, td)) {
   border: 1px solid var(--color-border);
+  min-width: 80px;
   padding: var(--space-1) var(--space-3);
   text-align: left;
 }
 
-.issue-description-preview :deep(th) {
+.issue-description-content :deep(.tiptap :is(th, td) > p) {
+  margin: 0;
+}
+
+.issue-description-content :deep(.tiptap th) {
   background: var(--color-soft);
   font-weight: var(--font-weight-semibold);
 }
 
-.issue-description-preview :deep(blockquote) {
+.issue-description-content :deep(.tiptap .selectedCell) {
+  background: var(--color-accent-soft);
+}
+
+.issue-description-content :deep(.tiptap blockquote) {
   border-left: 3px solid var(--color-border);
   color: var(--color-muted);
   margin-left: 0;
   padding-left: var(--space-3);
 }
 
-.issue-description-preview :deep(pre),
-.issue-description-preview :deep(code) {
+.issue-description-content :deep(.tiptap :is(pre, code)) {
   background: var(--color-hover);
   border-radius: var(--radius-small);
   font-family: var(--font-family-mono);
 }
 
-.issue-description-preview :deep(code) {
+.issue-description-content :deep(.tiptap code) {
   padding: 0 var(--space-1);
 }
 
-.issue-description-preview :deep(pre) {
+.issue-description-content :deep(.tiptap pre) {
   overflow-x: auto;
   padding: var(--space-3);
 }
 
-.issue-description-preview :deep(pre code) {
+.issue-description-content :deep(.tiptap pre code) {
   padding: 0;
 }
 
-.issue-description-preview :deep(a) {
+.issue-description-content :deep(.tiptap a) {
   color: var(--color-accent);
 }
 </style>

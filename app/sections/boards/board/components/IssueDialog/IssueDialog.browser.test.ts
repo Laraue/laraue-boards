@@ -146,7 +146,6 @@ it('warns before the back button closes a dirty issue', async () => {
     route: '/organizations/acme-ab12/spaces/product-AB12/12?issue=ISS-1',
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Changed description')
   await page.getByRole('button', { name: 'Back' }).click()
 
@@ -186,7 +185,6 @@ it('notifies the board and stays open after the issue is saved', async () => {
     route: '/organizations/acme-ab12/spaces/product-AB12/12?issue=ISS-1',
   })
 
-  await page.getByRole('button', { name: 'Edit description' }).click()
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await page.getByRole('button', { name: 'Save changes' }).click()
 

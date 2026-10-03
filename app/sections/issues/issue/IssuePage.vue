@@ -78,21 +78,36 @@
             @submit.prevent="save">
             <div class="issue-form-content">
               <div class="issue-form-main">
-                <input
+                <!-- A textarea so a long title wraps; it is still one line of text. -->
+                <textarea
                   id="issue-title"
-                  v-model="state.title"
                   :aria-label="t('title')"
                   class="issue-title-input"
                   :disabled="!issue.canEdit"
                   :maxlength="256"
-                  :placeholder="t('titlePlaceholder')" />
+                  :placeholder="t('titlePlaceholder')"
+                  rows="1"
+                  :value="state.title"
+                  @input="changeTitle"
+                  @keydown.enter.prevent />
                 <IssueDescription
                   v-model="state.content"
                   v-model:title="state.title"
                   :deps="deps.description"
-                  :disabled="!issue.canEdit" />
+                  :disabled="!issue.canEdit">
+                  <template #actions>
+                    <IconButton
+                      :disabled="saving || deleting"
+                      :label="t('attachImages')"
+                      :tooltip="t('attachImagesHint')"
+                      @click="attachments?.pick()">
+                      <IconPaperclip />
+                    </IconButton>
+                  </template>
+                </IssueDescription>
                 <IssueAttachments
                   :key="issue.issueKey"
+                  ref="attachments"
                   :attachments="issue.attachments"
                   :disabled="!issue.canEdit || saving || deleting"
                   :files="state.files"
@@ -241,7 +256,13 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowLeft, IconCheck, IconLink, IconListDetails } from '@tabler/icons-vue'
+import {
+  IconArrowLeft,
+  IconCheck,
+  IconLink,
+  IconListDetails,
+  IconPaperclip,
+} from '@tabler/icons-vue'
 
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'
@@ -273,6 +294,8 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     assignee: 'Assignee',
+    attachImages: 'Attach images',
+    attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
     back: 'Back',
     board: 'Board',
     comments: 'Comments',
@@ -302,6 +325,8 @@ const { t } = useI18n({
   },
   ru: {
     assignee: 'Исполнитель',
+    attachImages: 'Прикрепить изображения',
+    attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',
     back: 'Назад',
     board: 'Доска',
     comments: 'Комментарии',
@@ -352,6 +377,7 @@ const state = reactive({
 })
 
 const history = useTemplateRef<InstanceType<typeof IssueHistory>>('history')
+const attachments = useTemplateRef<InstanceType<typeof IssueAttachments>>('attachments')
 
 // History loads when its tab is first opened and stays after that.
 watch(
@@ -486,6 +512,11 @@ const remove = async () => {
   }
 }
 
+// A pasted line break becomes a space: the title is one line.
+const changeTitle = (event: Event) => {
+  state.title = (event.target as HTMLTextAreaElement).value.replaceAll(/\s*\n\s*/g, ' ')
+}
+
 const changeFiles = (files: File[]) => {
   state.files = files
 }
@@ -572,8 +603,6 @@ watch(dirty, setDirty, { immediate: true })
   overflow: hidden;
 }
 
-/* The editable boxes (title, description) stick out by their padding, so their text lines up with
-   the rest; the column scrolls and clips, so its padding makes room for them. */
 .issue-form-main {
   display: flex;
   flex-direction: column;
@@ -583,40 +612,38 @@ watch(dirty, setDirty, { immediate: true })
   min-width: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0 var(--space-3) var(--space-4);
+  padding: 0 var(--space-3) var(--space-4) 0;
 }
 
 .issue-form-main > * {
   flex-shrink: 0;
 }
 
+/* The description belongs to the title: closer to it than the sections are to each other. */
 .issue-form-main > .issue-title-input + * {
-  margin-top: calc(-1 * var(--space-6));
-}
-
-.issue-form-main > .issue-description {
-  margin-inline: calc(-1 * var(--space-3));
+  margin-top: calc(var(--space-4) - var(--space-8));
 }
 
 .issue-title-input {
   background: transparent;
-  border-color: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-text);
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
-  height: auto;
   letter-spacing: -0.02em;
   line-height: 1.25;
-  margin-inline: calc(-1 * var(--space-3));
-  padding: var(--space-1) var(--space-3);
-  width: calc(100% + var(--space-6));
+  max-height: none;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  resize: none;
 }
 
-.issue-title-input:hover:not(:disabled) {
-  border-color: var(--color-border);
-}
-
-.issue-title-input:focus {
-  border-color: var(--color-focus);
+/* Like a heading being written: only the caret shows that it is edited. */
+.issue-title-input:is(:hover, :focus, :disabled) {
+  border: 0;
+  box-shadow: none;
 }
 
 .issue-form-side {
@@ -683,10 +710,6 @@ watch(dirty, setDirty, { immediate: true })
   color: var(--color-muted);
   font-size: var(--font-size-small);
   margin: 0;
-}
-
-.issue-actions {
-  padding-inline: var(--space-3);
 }
 
 .issue-actions .form-error {
