@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div ref="pageElement">
     <PageHeader
       :icon="IconClipboardList"
       :title="t('allIssues')">
@@ -18,7 +18,7 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default="{ data: view }">
-        <section>
+        <section class="issues-page">
           <div class="toolbar">
             <input
               :aria-label="t('searchIssues')"
@@ -116,6 +116,7 @@ const { t } = useI18n({
 })
 
 const organizationRoutes = useOrganizationRoutes()
+const pageElement = useTemplateRef('pageElement')
 const epicStatusOptions: Array<{ label: string; value: IssueBoardStatus }> = [
   { label: t('new'), value: 'New' },
   { label: t('inProgress'), value: 'Active' },
@@ -201,14 +202,15 @@ const updateFilters = (value: Required<IssueFiltersValue>) => {
   void props.onUpdateQuery(nextQuery)
 }
 
-const updatePage = (value: number) => {
+const updatePage = async (value: number) => {
   const nextQuery: LocationQueryRaw = { ...props.routeQuery }
   if (value > 1) {
     nextQuery.page = String(value)
   } else {
     delete nextQuery.page
   }
-  void props.onUpdateQuery(nextQuery)
+  await props.onUpdateQuery(nextQuery)
+  pageElement.value?.closest('main')?.scrollTo({ top: 0 })
 }
 
 const updateSearch = (value: string) => {
@@ -240,3 +242,26 @@ onScopeDispose(() => {
   scheduleSearch.cancel()
 })
 </script>
+
+<style scoped>
+.issues-page {
+  margin-inline: auto;
+  max-width: var(--workspace-max-width);
+  padding: var(--space-2) var(--space-6) var(--space-8);
+}
+
+.issues-page .toolbar {
+  margin-top: 0;
+}
+
+.issues-page input[type='search'] {
+  max-width: 352px;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .issues-page {
+    padding-inline: 0;
+  }
+}
+</style>

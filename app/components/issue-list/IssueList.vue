@@ -13,18 +13,28 @@
       :key="issue.issueKey"
       :assignee="issue.assignee"
       :assignee-color="issue.assigneeColor"
+      :assignee-id="issue.assigneeId"
       :assignee-initial="issue.assigneeInitial"
       :board-color="issue.boardColor"
+      :board-id="issue.boardId"
       :board-name="issue.boardName"
       :can-move="issue.canMove"
+      :deleting="deleting"
       :issue-key="issue.issueKey"
+      :on-delete="deps.deleteIssue ? () => remove(issue.issueKey) : undefined"
       :on-move="() => openMoveDialog([issue.issueKey])"
       :on-toggle-selection="() => toggleSelection(issue.issueKey)"
+      :on-updated="onMoved"
+      :quick-edit="deps.quickEdit"
       :selected="selected.has(issue.issueKey)"
+      :selection-mode="selected.size > 0"
       :space-color="issue.spaceColor"
+      :space-key="issue.spaceKey"
       :space-name="issue.spaceName"
       :status="issue.status"
+      :status-category="issue.statusCategory"
       :status-color="issue.statusColor"
+      :status-id="issue.statusId"
       :title="issue.title"
       :to="organizationRoutes.issue(issue.issueKey)" />
     <AppEmptyState
@@ -32,6 +42,11 @@
       :hint="emptyHint"
       :title="emptyText" />
   </div>
+  <p
+    v-if="deleteMessage"
+    class="form-error">
+    {{ deleteMessage }}
+  </p>
   <PaginationControl
     :has-next-page="hasNextPage"
     :page="page"
@@ -64,8 +79,8 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n({
-  en: { moveToBoard: 'Move to board' },
-  ru: { moveToBoard: 'Переместить на доску' },
+  en: { deleteConfirm: 'Delete issue {key}?', moveToBoard: 'Move to board' },
+  ru: { deleteConfirm: 'Удалить задачу {key}?', moveToBoard: 'Переместить на доску' },
 })
 
 const organizationRoutes = useOrganizationRoutes()
@@ -74,6 +89,21 @@ const state = reactive({
   selected: new Set<string>(),
 })
 const selected = computed(() => state.selected)
+
+const {
+  execute: deleteIssue,
+  message: deleteMessage,
+  pending: deleting,
+} = useApiAction(async (input: { issueKey: string }) => {
+  await props.deps.deleteIssue?.(input)
+})
+
+const remove = async (issueKey: string) => {
+  if (confirm(t('deleteConfirm', { key: issueKey })) && (await deleteIssue({ issueKey }))) {
+    selected.value.delete(issueKey)
+    await props.onMoved()
+  }
+}
 
 const toggleSelection = (issueKey: string) => {
   if (selected.value.has(issueKey)) {
@@ -96,8 +126,8 @@ const handleMoved = async () => {
 <style scoped>
 .issue-list {
   background: transparent;
+  border-top: 1px solid var(--color-divider);
   display: grid;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
+  margin-top: var(--space-3);
 }
 </style>

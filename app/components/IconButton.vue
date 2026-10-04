@@ -65,15 +65,13 @@ defineOptions({ inheritAttrs: false })
   display: inline-flex;
   flex: none;
   /* For a short text instead of an icon, like the language. */
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   height: var(--icon-btn-size);
   justify-content: center;
   padding: 0;
   text-decoration: none;
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+  transition: border-color var(--duration-fast) var(--ease-standard);
   width: var(--icon-btn-size);
 }
 
@@ -98,13 +96,11 @@ defineOptions({ inheritAttrs: false })
 
 @media (hover: hover) and (pointer: fine) {
   .icon-button:hover:not(:disabled) {
-    background: var(--color-hover);
-    color: var(--color-text);
+    border-color: var(--color-border-hover);
   }
 
   .icon-button.primary:hover:not(:disabled) {
-    background: var(--color-action-hover);
-    color: #fff;
+    border-color: var(--color-action-hover);
   }
 }
 </style>

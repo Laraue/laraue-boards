@@ -25,7 +25,8 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ viewportPadding?: number }>(), {
+const props = withDefaults(defineProps<{ align?: 'end' | 'start'; viewportPadding?: number }>(), {
+  align: 'start',
   viewportPadding: 16,
 })
 const root = useTemplateRef('root')
@@ -58,7 +59,9 @@ const updatePosition = () => {
   const below = triggerRect.bottom + gap
   const above = triggerRect.top - gap - contentRect.height
 
-  const left = Math.min(Math.max(triggerRect.left, props.viewportPadding), maxLeft)
+  const alignedLeft =
+    props.align === 'end' ? triggerRect.right - contentRect.width : triggerRect.left
+  const left = Math.min(Math.max(alignedLeft, props.viewportPadding), maxLeft)
   const top =
     below + contentRect.height <= window.innerHeight - props.viewportPadding
       ? below

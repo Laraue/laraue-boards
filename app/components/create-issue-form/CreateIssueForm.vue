@@ -60,14 +60,16 @@
           <SpaceSelect
             :id="`${idPrefix}-space`"
             v-model="form.spaceKey"
-            :deps="selectDeps.spaceSelect" />
+            :deps="selectDeps.spaceSelect"
+            variant="inline" />
 
           <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
           <BoardSelect
             :id="`${idPrefix}-board`"
             v-model="form.boardId"
             :deps="selectDeps.boardSelect"
-            :space-key="form.spaceKey" />
+            :space-key="form.spaceKey"
+            variant="inline" />
         </template>
 
         <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
@@ -77,7 +79,8 @@
           :board-id="boardId"
           :deps="deps.statusSelect"
           eager
-          select-first />
+          select-first
+          variant="inline" />
 
         <label :for="`${idPrefix}-assignee`">{{ t('assignee') }}</label>
         <AssigneeSelect
@@ -86,10 +89,12 @@
           :deps="deps.assigneeSelect"
           eager
           select-current-user
-          :space-key="spaceKey" />
+          :space-key="spaceKey"
+          variant="inline" />
         <IssueAttributeFields
           v-model="form.attributeValues"
-          :attributes="attributes" />
+          :attributes="attributes"
+          select-variant="inline" />
       </div>
     </aside>
     <div class="issue-actions">
@@ -266,7 +271,7 @@ const submit = async (): Promise<void> => {
 
 .issue-form-side {
   display: grid;
-  font-size: 13px;
+  font-size: var(--font-size-body);
   gap: var(--space-4);
   grid-area: side;
   min-width: 0;
@@ -293,39 +298,6 @@ const submit = async (): Promise<void> => {
   font-weight: normal;
   margin: 0;
   overflow-wrap: anywhere;
-}
-
-.issue-properties :deep(.base-select-root) {
-  justify-items: start;
-}
-
-.issue-properties :deep(.base-select) {
-  width: fit-content;
-}
-
-.issue-properties :deep(:is(input, .base-select)) {
-  background: transparent;
-  border-color: transparent;
-  font-size: inherit;
-}
-
-.issue-properties :deep(.base-select-content) {
-  font-size: inherit;
-}
-
-.issue-properties :deep(:is(input, .base-select):hover:not(:disabled)) {
-  background: var(--color-hover);
-  border-color: var(--color-border);
-}
-
-.issue-properties:has(label:hover)
-  :deep(:is(input, .base-select):not(:focus-visible, [data-state='open'])) {
-  background: transparent;
-  border-color: transparent;
-}
-
-.issue-properties :deep(:is(input, .base-select):is(:focus-visible, [data-state='open'])) {
-  border-color: var(--color-focus);
 }
 
 .selected-entity {

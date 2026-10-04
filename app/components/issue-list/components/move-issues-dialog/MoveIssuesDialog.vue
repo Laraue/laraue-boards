@@ -1,7 +1,10 @@
 <template>
-  <dialog ref="dialog">
+  <dialog
+    ref="dialog"
+    :aria-labelledby="`${idPrefix}-title`"
+    class="move-issues-dialog">
     <form @submit.prevent="move">
-      <h2>{{ t('move') }} {{ tp('issues', state.issueKeys.length) }}</h2>
+      <h2 :id="`${idPrefix}-title`">{{ t('move') }} {{ tp('issues', state.issueKeys.length) }}</h2>
       <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
       <SpaceSelect
         :id="`${idPrefix}-space`"
@@ -18,14 +21,14 @@
         :excluded-value="excludedBoardId"
         required
         :space-key="state.spaceKey" />
-      <label :for="`${idPrefix}-status`">{{ t('column') }}</label>
+      <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
       <StatusSelect
         :id="`${idPrefix}-status`"
         v-model="state.statusId"
         :board-id="state.boardId"
         :deps="deps.statusSelect"
         :disabled="moving"
-        :placeholder="t('selectColumn')"
+        :placeholder="t('selectStatus')"
         required />
       <p
         v-if="message"
@@ -33,18 +36,18 @@
         {{ message }}
       </p>
       <div class="dialog-actions">
-        <button
-          class="secondary"
+        <BaseButton
           :disabled="moving"
-          type="button"
           @click="dialog?.close()">
           {{ t('cancel') }}
-        </button>
-        <button
-          class="primary"
-          :disabled="moving || !state.statusId">
+        </BaseButton>
+        <BaseButton
+          :disabled="!state.statusId"
+          :loading="moving"
+          type="submit"
+          variant="primary">
           {{ moving ? t('moving') : t('move') }}
-        </button>
+        </BaseButton>
       </div>
     </form>
   </dialog>
@@ -67,22 +70,22 @@ const { t, tp } = useI18n({
   en: {
     board: 'Board',
     cancel: 'Cancel',
-    column: 'Column',
     issues: 'issue|issues',
     move: 'Move',
     moving: 'Moving…',
-    selectColumn: 'Select column',
+    selectStatus: 'Select status',
     space: 'Space',
+    status: 'Status',
   },
   ru: {
     board: 'Доска',
     cancel: 'Отмена',
-    column: 'Колонка',
     issues: 'задачу|задачи|задач',
     move: 'Переместить',
     moving: 'Перемещение…',
-    selectColumn: 'Выберите колонку',
+    selectStatus: 'Выберите статус',
     space: 'Раздел',
+    status: 'Статус',
   },
 })
 
@@ -121,3 +124,22 @@ watch(
 
 defineExpose({ open })
 </script>
+
+<style scoped>
+.move-issues-dialog {
+  background: var(--color-background);
+}
+
+.move-issues-dialog h2 {
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-6);
+}
+
+.move-issues-dialog label {
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 400;
+  margin: var(--space-4) 0 var(--space-2);
+}
+</style>

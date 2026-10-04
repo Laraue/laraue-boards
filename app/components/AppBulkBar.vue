@@ -5,19 +5,19 @@
       class="bulk-bar">
       <span>{{ selectedLabel }}</span>
       <div class="bulk-actions">
-        <button
-          class="secondary"
-          type="button"
+        <BaseButton
+          size="small"
+          variant="ghost"
           @click="onClear">
           {{ t('clear') }}
-        </button>
-        <button
-          class="primary"
-          type="button"
+        </BaseButton>
+        <BaseButton
+          size="small"
+          variant="primary"
           @click="onAction">
           <IconArrowsLeftRight />
           {{ actionLabel }}
-        </button>
+        </BaseButton>
       </div>
     </div>
   </Transition>
@@ -42,14 +42,16 @@ const selectedLabel = computed(() => t('selected', { count: props.count }))
 <style scoped>
 .bulk-bar {
   align-items: center;
-  background: var(--color-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  background: var(--color-feed);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-control);
   display: flex;
+  flex-wrap: wrap;
+  font-size: var(--font-size-body);
   gap: var(--space-3);
   justify-content: space-between;
   margin-top: var(--space-2);
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-3);
 }
 
 .bulk-actions {

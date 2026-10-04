@@ -75,6 +75,7 @@ test('maps issue detail', async () => {
           owner: { color: '#333', displayName: 'Grace', initials: 'G' },
           spaceKey: 'product',
           spaceName: 'Product',
+          statusCategory: 'Created',
           statusId: 5,
           statusName: null,
           time: '2026-01-01T00:00:00Z',
@@ -90,6 +91,7 @@ test('maps issue detail', async () => {
   assert.equal(result.assigneeIsCurrentUser, true)
   assert.equal(result.owner, 'Grace')
   assert.equal(result.boardIsBacklog, true)
+  assert.equal(result.statusCategory, 'Created')
   assert.deepEqual(result.attributes, [
     {
       color: '#222',

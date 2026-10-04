@@ -5,7 +5,9 @@
     <label :for="`${idPrefix}-${attribute.id}`">
       {{ attribute.name }}
     </label>
-    <div class="attribute-field">
+    <div
+      class="attribute-field"
+      :class="{ 'attribute-field-inline': selectVariant === 'inline' }">
       <AttributeIcon
         class="attribute-icon"
         :style="{ color: attribute.color }" />
@@ -21,6 +23,7 @@
         :disabled="disabled"
         :model-value="modelValue[attribute.id] ?? ''"
         :options="attribute.options"
+        :variant="selectVariant"
         @update:model-value="update(attribute.id, $event)" />
       <IssueAttributeIntegerField
         v-else-if="attribute.type === 'integer'"
@@ -52,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import type { BaseSelectVariant } from '~/components/BaseSelect.vue'
 import { AttributeIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
 
@@ -68,9 +72,11 @@ const props = withDefaults(
     attributes: IssueAttributeField[]
     disabled?: boolean
     modelValue: Record<string, string>
+    selectVariant?: BaseSelectVariant
   }>(),
   {
     disabled: false,
+    selectVariant: 'default',
   },
 )
 const emit = defineEmits<{
@@ -89,7 +95,26 @@ const update = (id: string, value: string) => {
 /* The icon sits inside the field, where a select shows its own icon. */
 .attribute-field {
   display: grid;
+  min-width: 0;
   position: relative;
+}
+
+.attribute-field-inline :deep(input) {
+  background: transparent;
+  border-color: transparent;
+  field-sizing: content;
+  justify-self: start;
+  max-width: 100%;
+  min-width: calc(var(--space-8) * 2);
+  width: auto;
+}
+
+.attribute-field-inline :deep(input:hover:not(:disabled, :focus)) {
+  border-color: var(--color-border-hover);
+}
+
+.attribute-field-inline :deep(input:focus) {
+  border-color: var(--color-focus);
 }
 
 .attribute-icon {

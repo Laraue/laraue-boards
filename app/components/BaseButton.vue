@@ -7,7 +7,7 @@
       v-bind="$attrs"
       :aria-busy="loading || undefined"
       class="base-button"
-      :class="[variant, size]"
+      :class="[variant, size, { menu }]"
       :disabled="disabled || loading"
       :type="type">
       <IconLoader2
@@ -21,7 +21,7 @@
     v-bind="$attrs"
     :aria-busy="loading || undefined"
     class="base-button"
-    :class="[variant, size]"
+    :class="[variant, size, { menu }]"
     :disabled="disabled || loading"
     :type="type">
     <IconLoader2
@@ -38,6 +38,7 @@ withDefaults(
   defineProps<{
     disabled?: boolean
     loading?: boolean
+    menu?: boolean
     // Small for secondary actions inside content; default for the main actions of a page.
     size?: 'default' | 'small'
     // A hint on hover, in the same tooltip as the icon buttons'.
@@ -48,6 +49,7 @@ withDefaults(
   {
     disabled: false,
     loading: false,
+    menu: false,
     size: 'default',
     tooltip: undefined,
     type: 'button',
@@ -67,20 +69,18 @@ defineOptions({ inheritAttrs: false })
   color: var(--color-text);
   display: inline-flex;
   flex: none;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   gap: var(--space-2);
   height: var(--control-height);
   justify-content: center;
   max-width: 100%;
   padding: 0 var(--space-3);
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+  transition: border-color var(--duration-fast) var(--ease-standard);
   white-space: nowrap;
 }
 
 .base-button.small {
-  font-size: var(--font-size-small);
   height: var(--control-height-small);
   padding: 0 var(--space-2);
 }
@@ -101,6 +101,21 @@ defineOptions({ inheritAttrs: false })
   color: var(--color-danger);
 }
 
+.base-button.menu {
+  background: transparent;
+  border-color: transparent;
+  flex: 1 1 auto;
+  height: var(--control-height);
+  justify-content: flex-start;
+  min-width: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.base-button.menu[data-active='true'] {
+  background: var(--color-accent-soft);
+}
+
 .base-button:focus-visible {
   border-color: var(--color-focus);
   box-shadow: none;
@@ -116,19 +131,24 @@ defineOptions({ inheritAttrs: false })
 
 @media (hover: hover) and (pointer: fine) {
   .base-button:hover:not(:disabled) {
-    background: var(--color-hover);
+    border-color: var(--color-border-hover);
   }
 
   .base-button.primary:hover:not(:disabled) {
-    background: var(--color-action-hover);
-  }
-
-  .base-button.ghost:hover:not(:disabled) {
-    color: var(--color-text);
+    border-color: var(--color-action-hover);
   }
 
   .base-button.danger:hover:not(:disabled) {
-    background: var(--color-danger-soft);
+    border-color: var(--color-danger);
+  }
+
+  .base-button.menu:hover:not(:disabled) {
+    background: var(--color-soft);
+    border-color: transparent;
+  }
+
+  .base-button.menu[data-active='true']:hover:not(:disabled) {
+    background: var(--color-accent-soft);
   }
 }
 </style>

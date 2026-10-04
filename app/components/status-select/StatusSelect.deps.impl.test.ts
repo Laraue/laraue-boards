@@ -15,13 +15,13 @@ test('does not request statuses without a board', async () => {
 test('sorts and maps status options', async () => {
   const { client } = createTestApiClient(() => ({
     statuses: [
-      { color: '#35805e', id: 5, name: 'Done', sortOrder: 2 },
-      { color: null, id: 4, name: 'Todo', sortOrder: 1 },
+      { category: 'Completed', color: '#35805e', id: 5, name: 'Done', sortOrder: 2 },
+      { category: 'Created', color: null, id: 4, name: 'Todo', sortOrder: 1 },
     ],
   }))
 
   assert.deepEqual(await createStatusSelectDeps(client).loadStatuses({ boardId: '3' }), [
-    { color: COLORS.gray, label: 'Todo', value: '4' },
-    { color: '#35805e', label: 'Done', value: '5' },
+    { category: 'Created', color: COLORS.gray, label: 'Todo', value: '4' },
+    { category: 'Completed', color: '#35805e', label: 'Done', value: '5' },
   ])
 })

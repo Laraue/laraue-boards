@@ -1,15 +1,12 @@
 <template>
-  <fieldset>
-    <legend>{{ t('options') }}</legend>
-    <label
+  <fieldset :aria-label="t('options')">
+    <BaseCheckbox
       v-for="option in options"
-      :key="option.value">
-      <input
-        :checked="model.includes(option.value)"
-        type="checkbox"
-        @change="toggle(option.value)" />
-      <span>{{ option.label }}</span>
-    </label>
+      :key="option.value"
+      :model-value="model.includes(option.value)"
+      @update:model-value="toggle(option.value)">
+      {{ option.label }}
+    </BaseCheckbox>
   </fieldset>
 </template>
 
@@ -34,23 +31,10 @@ const toggle = (option: string) => {
 fieldset {
   border: 0;
   display: grid;
-  gap: var(--space-2);
   margin: 0;
   min-height: 0;
+  min-width: 0;
   overflow-y: auto;
   padding: 0 var(--space-1) var(--space-4);
-}
-
-legend {
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-3);
-}
-
-label {
-  align-items: center;
-  cursor: pointer;
-  display: flex;
-  gap: var(--space-2);
-  margin: 0;
 }
 </style>

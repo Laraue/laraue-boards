@@ -93,6 +93,7 @@ const mapIssue = (
   spaceColor: issue.spaceColor,
   spaceId: issue.spaceKey,
   spaceLabel: issue.spaceName,
+  statusCategory: issue.statusCategory,
   statusColor: issue.statusColor ?? COLORS.gray,
   statusId: String(issue.statusId),
   statusLabel: issue.statusName ?? '',

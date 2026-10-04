@@ -1,3 +1,4 @@
+import type { components } from '#infrastructure/api/generated'
 import type { AssigneeSelectDeps } from '~/components/assignee-select/AssigneeSelect.deps'
 import type { BoardSelectDeps } from '~/components/board-select/BoardSelect.deps'
 import type { IssueAttachmentViewModel } from '~/components/issue-attachments/IssueAttachments.types'
@@ -64,6 +65,7 @@ export type IssuePageViewModel = {
   spaceColor: string
   spaceId: string
   spaceLabel: string
+  statusCategory?: components['schemas']['StatusCategory']
   statusColor: string
   statusId: string
   statusLabel: string
