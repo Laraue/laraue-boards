@@ -155,7 +155,8 @@
                       color: issue.spaceColor,
                       label: issue.spaceLabel || t('currentSpace'),
                       value: issue.spaceId,
-                    }" />
+                    }"
+                    variant="inline" />
                   <label for="issue-board">{{ t('board') }}</label>
                   <BoardSelect
                     id="issue-board"
@@ -169,7 +170,8 @@
                       label: issue.boardLabel || t('currentBoard'),
                       value: issue.boardId,
                     }"
-                    :space-key="state.pickedSpaceId" />
+                    :space-key="state.pickedSpaceId"
+                    variant="inline" />
                   <label for="issue-status">{{ t('status') }}</label>
                   <StatusSelect
                     id="issue-status"
@@ -180,9 +182,11 @@
                     :disabled="!issue.canEdit"
                     :initial-option="{
                       color: issue.statusColor,
+                      category: issue.statusCategory,
                       label: issue.statusLabel || t('currentStatus'),
                       value: issue.statusId,
-                    }" />
+                    }"
+                    variant="inline" />
                   <label for="issue-assignee">{{ t('assignee') }}</label>
                   <AssigneeSelect
                     id="issue-assignee"
@@ -197,7 +201,8 @@
                       label: issue.assignee,
                       value: issue.assigneeId,
                     }"
-                    :space-key="state.pickedSpaceId" />
+                    :space-key="state.pickedSpaceId"
+                    variant="inline" />
                   <span class="issue-property-label">{{ t('owner') }}</span>
                   <div class="issue-person">
                     <span
@@ -211,7 +216,8 @@
                     v-if="issue.attributes.length"
                     v-model="state.attributeValues"
                     :attributes="issue.attributes"
-                    :disabled="!issue.canEdit" />
+                    :disabled="!issue.canEdit"
+                    select-variant="inline" />
                 </div>
                 <dl class="issue-dates">
                   <dt>{{ t('created') }}</dt>
@@ -660,7 +666,7 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-form-side {
   display: grid;
-  font-size: 13px;
+  font-size: var(--font-size-body);
   gap: var(--space-4);
   max-height: 100%;
   min-height: 0;
@@ -680,36 +686,23 @@ watch(dirty, setDirty, { immediate: true })
   grid-auto-rows: var(--control-height);
 }
 
-.issue-properties :deep(.base-select-root) {
-  justify-items: start;
-}
-
-.issue-properties :deep(.base-select) {
-  width: fit-content;
-}
-
-.issue-properties :deep(:is(input, .base-select)) {
+.issue-properties :deep(input) {
   background: transparent;
   border-color: transparent;
   font-size: inherit;
 }
 
-.issue-properties :deep(.base-select-content) {
-  font-size: inherit;
-}
-
-.issue-properties :deep(:is(input, .base-select):hover:not(:disabled)) {
+.issue-properties :deep(input:hover:not(:disabled)) {
   background: var(--color-hover);
   border-color: var(--color-border);
 }
 
-.issue-properties:has(label:hover)
-  :deep(:is(input, .base-select):not(:focus-visible, [data-state='open'])) {
+.issue-properties:has(label:hover) :deep(input:not(:focus-visible)) {
   background: transparent;
   border-color: transparent;
 }
 
-.issue-properties :deep(:is(input, .base-select):is(:focus-visible, [data-state='open'])) {
+.issue-properties :deep(input:focus-visible) {
   border-color: var(--color-focus);
 }
 

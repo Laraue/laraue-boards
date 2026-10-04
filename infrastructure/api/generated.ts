@@ -3651,6 +3651,7 @@ export interface components {
             statusId: number | string;
             statusName: null | string;
             statusColor: null | string;
+            statusCategory: components["schemas"]["StatusCategory"];
             spaceKey: string;
             spaceName: string;
             spaceColor: string;
@@ -3669,6 +3670,8 @@ export interface components {
             /** Format: date-time */
             time: string;
             assignee: string;
+            /** Format: uuid */
+            assigneeId: string;
             key: string;
             assigneeInitial?: null | string;
             assigneeColor: string;
@@ -3843,7 +3846,7 @@ export interface components {
         };
         SearchIssueDto: {
             epic: components["schemas"]["NameAndColor"];
-            status: null | components["schemas"]["NameAndColor"];
+            status: null | components["schemas"]["SearchIssueStatusDto"];
             space: components["schemas"]["NameAndColor"];
             canEdit: boolean;
             /** Format: int64 */
@@ -3851,6 +3854,8 @@ export interface components {
             /** Format: date-time */
             time: string;
             assignee: string;
+            /** Format: uuid */
+            assigneeId: string;
             key: string;
             assigneeInitial?: null | string;
             assigneeColor: string;
@@ -3862,6 +3867,11 @@ export interface components {
             statusId: number | string;
             spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
+        };
+        SearchIssueStatusDto: {
+            category: components["schemas"]["StatusCategory"];
+            name: string;
+            color: string;
         };
         SearchRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];

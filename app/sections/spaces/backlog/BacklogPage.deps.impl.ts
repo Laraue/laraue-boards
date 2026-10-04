@@ -14,13 +14,18 @@ const PER_PAGE = 10
 const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem => ({
   assignee: issue.assignee,
   assigneeColor: issue.assigneeColor,
+  assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
   boardColor: issue.epic.color,
+  boardId: String(issue.epicId),
   boardName: issue.epic.name,
   canMove: issue.canEdit,
   issueKey: issue.key,
+  spaceKey: issue.spaceKey,
   status: issue.status?.name ?? null,
+  statusCategory: issue.status?.category,
   statusColor: issue.status?.color ?? COLORS.gray,
+  statusId: String(issue.statusId),
   title: issue.title,
 })
 

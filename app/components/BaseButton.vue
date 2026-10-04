@@ -7,7 +7,7 @@
       v-bind="$attrs"
       :aria-busy="loading || undefined"
       class="base-button"
-      :class="[variant, size]"
+      :class="[variant, size, { menu }]"
       :disabled="disabled || loading"
       :type="type">
       <IconLoader2
@@ -21,7 +21,7 @@
     v-bind="$attrs"
     :aria-busy="loading || undefined"
     class="base-button"
-    :class="[variant, size]"
+    :class="[variant, size, { menu }]"
     :disabled="disabled || loading"
     :type="type">
     <IconLoader2
@@ -38,6 +38,7 @@ withDefaults(
   defineProps<{
     disabled?: boolean
     loading?: boolean
+    menu?: boolean
     // Small for secondary actions inside content; default for the main actions of a page.
     size?: 'default' | 'small'
     // A hint on hover, in the same tooltip as the icon buttons'.
@@ -48,6 +49,7 @@ withDefaults(
   {
     disabled: false,
     loading: false,
+    menu: false,
     size: 'default',
     tooltip: undefined,
     type: 'button',
@@ -67,6 +69,7 @@ defineOptions({ inheritAttrs: false })
   color: var(--color-text);
   display: inline-flex;
   flex: none;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   gap: var(--space-2);
   height: var(--control-height);
@@ -80,7 +83,6 @@ defineOptions({ inheritAttrs: false })
 }
 
 .base-button.small {
-  font-size: var(--font-size-small);
   height: var(--control-height-small);
   padding: 0 var(--space-2);
 }
@@ -99,6 +101,21 @@ defineOptions({ inheritAttrs: false })
 
 .base-button.danger {
   color: var(--color-danger);
+}
+
+.base-button.menu {
+  background: transparent;
+  border-color: transparent;
+  flex: 1 1 auto;
+  height: var(--control-height);
+  justify-content: flex-start;
+  min-width: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.base-button.menu[data-active='true'] {
+  background: var(--color-accent-soft);
 }
 
 .base-button:focus-visible {

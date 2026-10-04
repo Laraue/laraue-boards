@@ -4,28 +4,24 @@
     :aria-label="t('pagination')"
     class="pagination"
     role="navigation">
-    <button
-      :aria-label="t('previousPage')"
-      class="secondary"
+    <IconButton
       :disabled="page === 1"
-      type="button"
+      :label="t('previousPage')"
       @click="$emit('update:page', page - 1)">
       <IconChevronLeft />
-    </button>
+    </IconButton>
     <input
       :aria-label="t('pageNumber')"
       min="1"
       type="number"
       :value="page"
       @change="changePage" />
-    <button
-      :aria-label="t('nextPage')"
-      class="secondary"
+    <IconButton
       :disabled="!hasNextPage"
-      type="button"
+      :label="t('nextPage')"
       @click="$emit('update:page', page + 1)">
       <IconChevronRight />
-    </button>
+    </IconButton>
   </div>
 </template>
 
@@ -66,6 +62,10 @@ const changePage = (event: Event) =>
 
 .pagination input {
   appearance: textfield;
+  background: var(--color-feed);
+  font-size: var(--font-size-small);
+  font-variant-numeric: tabular-nums;
+  height: var(--control-height-small);
   text-align: center;
   width: 64px;
 }

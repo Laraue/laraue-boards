@@ -45,14 +45,14 @@
   --space-8: 32px;
 
   --radius-small: 4px;
-  --radius-control: 6px;
+  --radius-control: 8px;
   --radius-card: 12px;
   --radius-dialog: 16px;
   --radius-pill: 999px;
 
   --control-height: 36px;
   --control-height-small: 32px;
-  --icon-btn-size: 32px;
+  --icon-btn-size: var(--control-height);
   --icon-btn-size-small: 24px;
   --icon-size: 16px;
   --control-icon-padding: calc(var(--icon-size) + var(--space-5));
@@ -74,7 +74,7 @@
      neighbours. */
   --shadow-focus: inset 0 0 0 1px var(--color-focus);
   --shadow-card: 0 1px 2px #1018280d;
-  --shadow-popover: 0 4px 16px #1018281a;
+  --shadow-popover: 0 2px 8px #1018280f;
   --shadow-workspace: 0 0 40px #1018280d;
 
   --duration-fast: 120ms;
@@ -116,6 +116,6 @@
   --color-chart-done: #6bb590;
 
   --shadow-card: 0 1px 2px #00000040;
-  --shadow-popover: 0 4px 16px #00000059;
+  --shadow-popover: 0 2px 8px #00000033;
   --shadow-workspace: 0 0 40px #00000059;
 }

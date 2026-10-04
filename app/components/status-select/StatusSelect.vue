@@ -17,14 +17,16 @@
     :options="visibleOptions"
     :placeholder="placeholder ?? t('select')">
     <template #icon="{ option }">
-      <span
-        class="status-dot"
-        :style="{ background: option?.color }" />
+      <StatusIndicator
+        :category="option?.category"
+        class="status-select-indicator"
+        :color="option?.color ?? 'var(--color-muted)'" />
     </template>
   </BaseSelect>
 </template>
 
 <script setup lang="ts">
+import StatusIndicator from './StatusIndicator.vue'
 import type { StatusSelectDeps, StatusSelectOption } from './StatusSelect.deps'
 
 const props = withDefaults(
@@ -116,13 +118,7 @@ watch(
 </script>
 
 <style scoped>
-/* An 8px dot in an icon's 16px place, so the label lines up with the other selects. */
-.status-dot {
-  background: var(--color-muted);
-  border-radius: 50%;
-  flex: none;
-  height: 8px;
-  margin: 0 var(--space-1);
-  width: 8px;
+.status-select-indicator {
+  display: block;
 }
 </style>

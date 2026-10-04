@@ -1,5 +1,8 @@
+import type { components } from '#infrastructure/api/generated'
+
 export type StatusSelectOption = {
-  // Colors the status's dot; without it the dot is muted.
+  category?: components['schemas']['StatusCategory']
+  // Colors the category indicator; without it the indicator is muted.
   color?: string
   label: string
   value: string

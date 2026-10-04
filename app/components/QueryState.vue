@@ -4,7 +4,7 @@
     name="loading">
     <section class="page-state">
       <span class="icon-badge loading">
-        <IconLoader />
+        <IconLoader2 />
       </span>
       <p>{{ translatedLoadingText }}</p>
     </section>
@@ -18,13 +18,12 @@
     <h2>{{ translatedErrorTitle }}</h2>
     <p class="muted">{{ message }}</p>
     <div class="page-state-actions">
-      <button
+      <BaseButton
         v-if="onRetry"
-        class="primary"
-        type="button"
+        variant="primary"
         @click="onRetry">
         {{ translatedRetryText }}
-      </button>
+      </BaseButton>
       <NuxtLink
         class="secondary"
         to="/organizations">
@@ -38,7 +37,7 @@
 </template>
 
 <script setup lang="ts" generic="Value">
-import { IconAlertTriangle, IconLoader } from '@tabler/icons-vue'
+import { IconAlertTriangle, IconLoader2 } from '@tabler/icons-vue'
 
 const props = defineProps<{
   data?: Value
@@ -81,7 +80,7 @@ defineSlots<{
   justify-items: center;
   margin-inline: auto;
   max-width: 100%;
-  padding: var(--space-6);
+  padding: var(--space-8) var(--space-6);
   text-align: center;
   width: fit-content;
 }
@@ -91,27 +90,30 @@ defineSlots<{
   margin: 0;
 }
 
+.page-state h2 {
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+}
+
 .page-state-actions {
   display: flex;
   gap: var(--space-2);
 }
 
 .icon-badge {
-  border-radius: var(--radius-card);
   display: grid;
-  height: 56px;
+  height: 32px;
   place-items: center;
-  width: 56px;
+  width: 32px;
 }
 
 .icon-badge svg {
-  height: 28px;
-  width: 28px;
+  height: 24px;
+  width: 24px;
 }
 
 .icon-badge.loading {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+  color: var(--color-muted);
 }
 
 .icon-badge.loading svg {
@@ -119,7 +121,6 @@ defineSlots<{
 }
 
 .icon-badge.error {
-  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
   color: var(--color-danger);
 }
 

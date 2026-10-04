@@ -65,7 +65,7 @@ defineOptions({ inheritAttrs: false })
   display: inline-flex;
   flex: none;
   /* For a short text instead of an icon, like the language. */
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   height: var(--icon-btn-size);
   justify-content: center;

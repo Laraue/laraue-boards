@@ -559,21 +559,6 @@ input[type='search'] {
   width: 8px;
 }
 
-.issue-status {
-  align-items: center;
-  background: var(--color-soft);
-  border-radius: var(--radius-pill);
-  color: var(--color-muted);
-  display: inline-flex;
-  flex-shrink: 0;
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  gap: 5px;
-  max-width: 160px;
-  padding: 2px var(--space-2);
-  white-space: nowrap;
-}
-
 /* Shared form primitives */
 
 button:disabled {

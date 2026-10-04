@@ -1,11 +1,11 @@
 <template>
-  <label :for="id">{{ t('value') }}</label>
   <input
     :id="id"
     v-model="model"
+    :aria-label="t('value')"
     autofocus
     :placeholder="t('enterValue')"
-    type="search" />
+    type="text" />
 </template>
 
 <script setup lang="ts">
@@ -20,10 +20,6 @@ const model = defineModel<string>({ required: true })
 </script>
 
 <style scoped>
-label {
-  margin-top: 0;
-}
-
 input {
   max-width: none;
 }

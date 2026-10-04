@@ -16,6 +16,7 @@ export const createStatusSelectDeps = (client: ApiClient): StatusSelectDeps => (
     return (board.statuses ?? [])
       .toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
       .map((status) => ({
+        category: status.category,
         color: status.color ?? COLORS.gray,
         label: status.name,
         value: String(status.id),

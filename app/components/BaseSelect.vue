@@ -1,6 +1,8 @@
 <template>
   <!-- One root: closed, Reka still renders a holder for the options next to the trigger. -->
-  <div class="base-select-root">
+  <div
+    class="base-select-root"
+    :class="{ 'base-select-root-inline': variant === 'inline' }">
     <SelectRoot
       v-model="selected"
       :disabled="disabled"
@@ -9,12 +11,14 @@
         v-bind="$attrs"
         :aria-busy="loading || undefined"
         class="base-select"
-        :class="{ placeholder: !selectedOption }">
+        :class="{ 'base-select-inline': variant === 'inline', placeholder: !selectedOption }">
         <slot
           name="icon"
           :option="selectedOption" />
         <span class="base-select-value">{{ selectedOption?.label ?? placeholder }}</span>
-        <IconChevronDown class="base-select-chevron" />
+        <IconChevronDown
+          v-if="showChevron"
+          class="base-select-chevron" />
       </SelectTrigger>
       <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
       <SelectContent
@@ -50,6 +54,7 @@
 
 <script lang="ts">
 export type BaseSelectOption = { disabled?: boolean; label: string; value: string }
+export type BaseSelectVariant = 'default' | 'inline'
 </script>
 
 <script setup lang="ts" generic="T extends BaseSelectOption">
@@ -73,6 +78,8 @@ const props = withDefaults(
     onOpen?: () => void
     options: T[]
     placeholder?: string
+    showChevron?: boolean
+    variant?: BaseSelectVariant
   }>(),
   {
     disabled: false,
@@ -80,6 +87,8 @@ const props = withDefaults(
     message: undefined,
     onOpen: undefined,
     placeholder: '',
+    showChevron: true,
+    variant: 'default',
   },
 )
 
@@ -157,6 +166,26 @@ const selected = computed({
   .base-select:hover:not(:disabled, [data-state='open'], :focus-visible) {
     border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   }
+}
+
+.base-select-root-inline {
+  justify-items: start;
+}
+
+.base-select-inline {
+  background: transparent;
+  border-color: transparent;
+  height: var(--control-height-small);
+  width: fit-content;
+}
+
+.base-select-inline:hover:not(:disabled, [data-state='open'], :focus-visible) {
+  background: var(--color-hover);
+  border-color: var(--color-border);
+}
+
+.base-select-inline:is(:focus-visible, [data-state='open']) {
+  border-color: var(--color-focus);
 }
 </style>
 

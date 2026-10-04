@@ -8,7 +8,7 @@ import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
 import type { MoveIssuesDialogDeps } from './components/move-issues-dialog/MoveIssuesDialog.deps'
-import type { IssueListDeps } from './IssueList.deps'
+import type { IssueListDeps, IssueListQuickEditDeps } from './IssueList.deps'
 import type { IssueListItem } from './IssueList.types'
 import IssueList from './IssueList.vue'
 
@@ -78,6 +78,48 @@ const mount = async (
 
 const dialog = () => page.getByRole('dialog')
 
+const rowAction = async (index: number, name: string) => {
+  await page.getByRole('button', { name: 'Issue actions' }).nth(index).click()
+  await page.getByRole('button', { exact: true, name }).last().click()
+}
+
+it('loads inline choices on opening and keeps the current status after a failed save', async () => {
+  const deps = createDeps()
+  const loadStatuses = vi.fn<StatusSelectDeps['loadStatuses']>(async () => [
+    { label: 'To do', value: '3' },
+    { label: 'Done', value: '4' },
+  ])
+  deps.quickEdit = {
+    assigneeSelect: {
+      loadAssignees: vi.fn<IssueListQuickEditDeps['assigneeSelect']['loadAssignees']>(async () => [
+        { color: '#111', initials: 'A', isCurrentUser: false, label: 'Ada', value: 'ada' },
+      ]),
+    },
+    saveAssignee: vi.fn<IssueListQuickEditDeps['saveAssignee']>(async () => {}),
+    saveStatus: vi.fn<IssueListQuickEditDeps['saveStatus']>(async () => {
+      throw new ApiError(400, 'Status cannot be changed.')
+    }),
+    statusSelect: { loadStatuses },
+  }
+  const onMoved = vi.fn<() => void>()
+  await mount(deps, onMoved, [
+    { ...issues[0]!, assigneeId: 'ada', boardId: '12', spaceKey: 'product', statusId: '3' },
+  ])
+  expect(loadStatuses).not.toHaveBeenCalled()
+  expect(deps.quickEdit.assigneeSelect.loadAssignees).not.toHaveBeenCalled()
+  await page.getByRole('combobox', { exact: true, name: 'Status' }).click()
+  await page.getByRole('option', { exact: true, name: 'Done' }).click()
+  await expect.element(page.getByRole('alert')).toBeInTheDocument()
+  expect(deps.quickEdit.saveStatus).toHaveBeenCalledWith({ issueKey: 'ISS-1', statusId: '4' })
+  await expect
+    .element(page.getByRole('combobox', { exact: true, name: 'Status' }))
+    .toHaveTextContent('To do')
+  expect(onMoved).not.toHaveBeenCalled()
+  await page.getByRole('combobox', { exact: true, name: 'Assignee' }).click()
+  await expect.element(page.getByRole('option', { exact: true, name: 'Ada' })).toBeInTheDocument()
+  expect(deps.quickEdit.assigneeSelect.loadAssignees).toHaveBeenCalledOnce()
+})
+
 const chooseDestination = async () => {
   await dialog().getByLabelText('Space').click()
   await expect.element(dialog().getByRole('option', { name: 'Product' })).toBeInTheDocument()
@@ -85,7 +127,7 @@ const chooseDestination = async () => {
   await dialog().getByLabelText('Board').click()
   await expect.element(dialog().getByRole('option', { name: 'Sprint board' })).toBeInTheDocument()
   await dialog().getByRole('option', { name: 'Sprint board' }).click()
-  await dialog().getByLabelText('Column').click()
+  await dialog().getByLabelText('Status').click()
   await expect.element(dialog().getByRole('option', { name: 'To do' })).toBeInTheDocument()
   await dialog().getByRole('option', { name: 'To do' }).click()
 }
@@ -107,8 +149,8 @@ it('moves a single issue through its row action without touching the selection',
 
   await mount(createDeps({ moveIssues }), onMoved)
 
-  await page.getByLabelText('Select issue').nth(1).click()
-  await page.getByLabelText('Move to board').nth(0).click()
+  await rowAction(1, 'Select issue')
+  await rowAction(0, 'Move to board')
   await chooseDestination()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
@@ -121,7 +163,7 @@ it('moves every selected issue and clears the selection afterwards', async () =>
 
   await mount(createDeps({ moveIssues }))
 
-  await page.getByLabelText('Select issue').nth(0).click()
+  await rowAction(0, 'Select issue')
   await page.getByLabelText('Select issue').nth(1).click()
   await page.getByRole('button', { name: 'Move to board' }).first().click()
   await chooseDestination()
@@ -139,7 +181,7 @@ it('keeps the dialog open and shows the message when moving fails', async () => 
 
   await mount(createDeps({ moveIssues }), onMoved)
 
-  await page.getByLabelText('Move to board').nth(0).click()
+  await rowAction(0, 'Move to board')
   await chooseDestination()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
@@ -156,14 +198,14 @@ it('drops the failure message as soon as the destination changes', async () => {
 
   await mount(createDeps({ moveIssues }))
 
-  await page.getByLabelText('Move to board').nth(0).click()
+  await rowAction(0, 'Move to board')
   await chooseDestination()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
   await expect
     .element(dialog().getByText('These issues can no longer be moved.'))
     .toBeInTheDocument()
 
-  await dialog().getByLabelText('Column').click()
+  await dialog().getByLabelText('Status').click()
   await dialog().getByRole('option', { name: 'Done' }).click()
 
   await expect

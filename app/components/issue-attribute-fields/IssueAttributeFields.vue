@@ -21,6 +21,7 @@
         :disabled="disabled"
         :model-value="modelValue[attribute.id] ?? ''"
         :options="attribute.options"
+        :variant="selectVariant"
         @update:model-value="update(attribute.id, $event)" />
       <IssueAttributeIntegerField
         v-else-if="attribute.type === 'integer'"
@@ -52,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+import type { BaseSelectVariant } from '~/components/BaseSelect.vue'
 import { AttributeIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
 
@@ -68,9 +70,11 @@ const props = withDefaults(
     attributes: IssueAttributeField[]
     disabled?: boolean
     modelValue: Record<string, string>
+    selectVariant?: BaseSelectVariant
   }>(),
   {
     disabled: false,
+    selectVariant: 'default',
   },
 )
 const emit = defineEmits<{

@@ -1,165 +1,125 @@
 <template>
-  <AppPopover
-    v-if="attributes.length || spaces.length || epicStatuses.length"
-    class="issue-filters">
-    <template #trigger="{ open, toggle: togglePopover }">
-      <button
-        :aria-busy="loading"
+  <AppPopover v-if="attributes.length || spaces.length || epicStatuses.length">
+    <template #trigger="{ open, toggle }">
+      <BaseButton
+        :loading="loading"
         :aria-expanded="open"
         aria-haspopup="dialog"
-        class="secondary"
-        type="button"
-        @click="togglePopover">
-        <IconLoader2
-          v-if="loading"
-          class="issue-filters-loading" />
-        <IconFilter v-else />
+        @click="toggle">
+        <IconFilter v-if="!loading" />
         {{ t('filters') }}
         <span v-if="activeCount">({{ activeCount }})</span>
-      </button>
+      </BaseButton>
     </template>
-    <div class="issue-filters-popover">
-      <nav :aria-label="t('issueFilters')">
-        <button
-          v-if="spaces.length"
-          :class="{ active: activeFilterId === SPACE_FILTER }"
-          type="button"
-          @click="activeFilterId = SPACE_FILTER">
-          <span class="filter-label">{{ t('space') }}</span>
-          <small v-if="selectedSpaces.length">
-            {{ selectedSpaces.length }}
-          </small>
-        </button>
-        <button
-          v-if="epicStatuses.length"
-          :class="{ active: activeFilterId === EPIC_STATUS_FILTER }"
-          type="button"
-          @click="activeFilterId = EPIC_STATUS_FILTER">
-          <span class="filter-label">{{ t('boardStatus') }}</span>
-          <small v-if="selectedEpicStatuses.length">
-            {{ selectedEpicStatuses.length }}
-          </small>
-        </button>
-        <button
-          v-for="attribute in attributes"
-          :key="attribute.id"
-          :class="{ active: attribute.id === activeAttribute?.id }"
-          type="button"
-          @click="activeFilterId = attribute.id">
-          <AttributeIcon
-            class="filter-icon"
-            :style="{ color: attribute.color }" />
-          <span class="filter-label">{{ attribute.name }}</span>
-          <small v-if="valueCount(attribute.id)">
-            {{ valueCount(attribute.id) }}
-          </small>
-        </button>
-        <button
-          class="secondary clear-filter"
+    <div class="filter-menu">
+      <div class="filter-menu-header">
+        <span>{{ t('issueFilters') }}</span>
+        <IconButton
           :disabled="!activeCount"
-          type="button"
+          :label="t('clearAll')"
           @click="clear()">
-          {{ t('clearAll') }}
-        </button>
+          <IconFilterOff />
+        </IconButton>
+      </div>
+      <nav :aria-label="t('issueFilters')">
+        <AppPopover
+          v-for="item in filterItems"
+          :key="item.id"
+          :open="activeFilterId === item.id"
+          hover
+          side="right"
+          class="filter-submenu"
+          @update:open="setOpenFilter(item.id, $event)">
+          <template #trigger="{ open, toggle }">
+            <BaseButton
+              menu
+              :aria-expanded="open"
+              :data-active="open || undefined"
+              aria-haspopup="dialog"
+              @click="toggle">
+              <component
+                :is="item.icon"
+                aria-hidden="true"
+                :style="{ color: item.color }" />
+              <span class="filter-label">{{ item.label }}</span>
+              <small v-if="item.count">{{ item.count }}</small>
+              <IconChevronRight
+                class="submenu-chevron"
+                aria-hidden="true" />
+            </BaseButton>
+          </template>
+          <section
+            class="filter-editor"
+            :aria-label="item.label">
+            <fieldset
+              v-if="item.id === EPIC_STATUS_FILTER"
+              :aria-label="t('boardStatus')"
+              class="filter-options">
+              <BaseCheckbox
+                v-for="option in epicStatuses"
+                :key="option.value"
+                :model-value="selectedEpicStatuses.includes(option.value)"
+                @update:model-value="toggleEpicStatus(option.value)">
+                {{ option.label }}
+              </BaseCheckbox>
+            </fieldset>
+            <fieldset
+              v-else-if="item.id === SPACE_FILTER"
+              :aria-label="t('spaces')"
+              class="filter-options">
+              <BaseCheckbox
+                v-for="option in spaces"
+                :key="option.value"
+                :model-value="selectedSpaces.includes(option.value)"
+                @update:model-value="toggleSpace(option.value)">
+                {{ option.label }}
+              </BaseCheckbox>
+            </fieldset>
+            <template v-else-if="item.attribute">
+              <IssueTextFilter
+                v-if="item.attribute.type === 'text'"
+                :id="`${idPrefix}-${item.id}`"
+                :model-value="String(modelValue.attributes[item.id] ?? '')"
+                @update:model-value="updateValue(item.id, $event)" />
+              <IssueListFilter
+                v-else-if="item.attribute.type === 'list'"
+                :model-value="arrayValue(item.id)"
+                :options="item.attribute.options"
+                @update:model-value="updateValue(item.id, $event)" />
+              <IssueIntegerFilter
+                v-else-if="item.attribute.type === 'integer'"
+                :id="`${idPrefix}-${item.id}`"
+                :model-value="arrayValue(item.id)"
+                @update:model-value="updateValue(item.id, $event)" />
+              <IssueDecimalFilter
+                v-else-if="item.attribute.type === 'decimal'"
+                :id="`${idPrefix}-${item.id}`"
+                :model-value="arrayValue(item.id)"
+                @update:model-value="updateValue(item.id, $event)" />
+              <IssueDateFilter
+                v-else-if="item.attribute.type === 'date'"
+                :id="`${idPrefix}-${item.id}`"
+                :model-value="arrayValue(item.id)"
+                @update:model-value="updateValue(item.id, $event)" />
+              <IssueDateTimeFilter
+                v-else-if="item.attribute.type === 'dateTime'"
+                :id="`${idPrefix}-${item.id}`"
+                :model-value="arrayValue(item.id)"
+                @update:model-value="updateValue(item.id, $event)" />
+              <template v-else>{{ assertNever(item.attribute) }}</template>
+            </template>
+          </section>
+        </AppPopover>
       </nav>
-      <section
-        v-if="activeFilterId === EPIC_STATUS_FILTER"
-        class="filter-editor">
-        <fieldset>
-          <legend>{{ t('boardStatus') }}</legend>
-          <label
-            v-for="option in epicStatuses"
-            :key="option.value">
-            <input
-              :checked="selectedEpicStatuses.includes(option.value)"
-              type="checkbox"
-              @change="toggleEpicStatus(option.value)" />
-            <span>{{ option.label }}</span>
-          </label>
-        </fieldset>
-        <button
-          class="secondary clear-filter"
-          :disabled="!selectedEpicStatuses.length"
-          type="button"
-          @click="setEpicStatuses([])">
-          {{ t('clear') }}
-        </button>
-      </section>
-      <section
-        v-if="activeFilterId === SPACE_FILTER"
-        class="filter-editor">
-        <fieldset>
-          <legend>{{ t('spaces') }}</legend>
-          <label
-            v-for="option in spaces"
-            :key="option.value">
-            <input
-              :checked="selectedSpaces.includes(option.value)"
-              type="checkbox"
-              @change="toggleSpace(option.value)" />
-            <span>{{ option.label }}</span>
-          </label>
-        </fieldset>
-        <button
-          class="secondary clear-filter"
-          :disabled="!selectedSpaces.length"
-          type="button"
-          @click="setSpaces([])">
-          {{ t('clear') }}
-        </button>
-      </section>
-      <section
-        v-else-if="activeAttribute"
-        :key="activeAttribute.id"
-        class="filter-editor">
-        <IssueTextFilter
-          v-if="activeAttribute.type === 'text'"
-          :id="`${idPrefix}-${activeAttribute.id}`"
-          :model-value="String(modelValue.attributes[activeAttribute.id] ?? '')"
-          @update:model-value="updateValue(activeAttribute.id, $event)" />
-        <IssueListFilter
-          v-else-if="activeAttribute.type === 'list'"
-          :model-value="arrayValue(activeAttribute.id)"
-          :options="activeAttribute.options"
-          @update:model-value="updateValue(activeAttribute.id, $event)" />
-        <IssueIntegerFilter
-          v-else-if="activeAttribute.type === 'integer'"
-          :id="`${idPrefix}-${activeAttribute.id}`"
-          :model-value="arrayValue(activeAttribute.id)"
-          @update:model-value="updateValue(activeAttribute.id, $event)" />
-        <IssueDecimalFilter
-          v-else-if="activeAttribute.type === 'decimal'"
-          :id="`${idPrefix}-${activeAttribute.id}`"
-          :model-value="arrayValue(activeAttribute.id)"
-          @update:model-value="updateValue(activeAttribute.id, $event)" />
-        <IssueDateFilter
-          v-else-if="activeAttribute.type === 'date'"
-          :id="`${idPrefix}-${activeAttribute.id}`"
-          :model-value="arrayValue(activeAttribute.id)"
-          @update:model-value="updateValue(activeAttribute.id, $event)" />
-        <IssueDateTimeFilter
-          v-else-if="activeAttribute.type === 'dateTime'"
-          :id="`${idPrefix}-${activeAttribute.id}`"
-          :model-value="arrayValue(activeAttribute.id)"
-          @update:model-value="updateValue(activeAttribute.id, $event)" />
-        <template v-else>{{ assertNever(activeAttribute) }}</template>
-        <button
-          class="secondary clear-filter"
-          :disabled="!valueCount(activeAttribute.id)"
-          type="button"
-          @click="clear(activeAttribute.id)">
-          {{ t('clear') }}
-        </button>
-      </section>
     </div>
   </AppPopover>
 </template>
 
 <script setup lang="ts">
-import { IconFilter, IconLoader2 } from '@tabler/icons-vue'
+import { IconChevronRight, IconFilter, IconFilterOff } from '@tabler/icons-vue'
 
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
-import { AttributeIcon } from '~/constants/icons'
+import { AttributeIcon, BoardIcon, SpaceIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
 
 import IssueDateFilter from './components/IssueDateFilter.vue'
@@ -209,16 +169,11 @@ const { t } = useI18n({
 const idPrefix = useId()
 const SPACE_FILTER = '__space__'
 const EPIC_STATUS_FILTER = '__epic_status__'
-const activeFilterId = ref(
-  props.epicStatuses.length
-    ? EPIC_STATUS_FILTER
-    : props.spaces.length
-      ? SPACE_FILTER
-      : (props.attributes[0]?.id ?? ''),
-)
-const activeAttribute = computed(() =>
-  props.attributes.find((attribute) => attribute.id === activeFilterId.value),
-)
+const activeFilterId = ref<string>()
+const setOpenFilter = (id: string, open: boolean) => {
+  if (open) activeFilterId.value = id
+  else if (activeFilterId.value === id) activeFilterId.value = undefined
+}
 const selectedSpaces = computed(() => props.modelValue.spaceIds ?? [])
 const selectedEpicStatuses = computed(() => props.modelValue.epicStatuses ?? [])
 const activeCount = computed(
@@ -245,17 +200,13 @@ const updateValue = (id: string, value: string | string[]) => {
   emit('update:modelValue', { ...props.modelValue, attributes })
 }
 
-const clear = (id?: string) => {
-  if (!id) {
-    emit(
-      'update:modelValue',
-      props.epicStatuses.length
-        ? { attributes: {}, epicStatuses: [], spaceIds: [] }
-        : { attributes: {}, spaceIds: [] },
-    )
-    return
-  }
-  updateValue(id, '')
+const clear = () => {
+  emit(
+    'update:modelValue',
+    props.epicStatuses.length
+      ? { attributes: {}, epicStatuses: [], spaceIds: [] }
+      : { attributes: {}, spaceIds: [] },
+  )
 }
 
 const setSpaces = (spaceIds: string[]) => {
@@ -284,116 +235,91 @@ const toggleSpace = (spaceId: string) => {
       : [...selectedSpaces.value, spaceId],
   )
 }
+
+type FilterItem = {
+  attribute?: IssueAttributeField
+  color?: string
+  count: number
+  icon: typeof AttributeIcon
+  id: string
+  label: string
+}
+const filterItems = computed<FilterItem[]>(() => [
+  ...(props.spaces.length
+    ? [
+        {
+          count: selectedSpaces.value.length,
+          icon: SpaceIcon,
+          id: SPACE_FILTER,
+          label: t('space'),
+        },
+      ]
+    : []),
+  ...(props.epicStatuses.length
+    ? [
+        {
+          count: selectedEpicStatuses.value.length,
+          icon: BoardIcon,
+          id: EPIC_STATUS_FILTER,
+          label: t('boardStatus'),
+        },
+      ]
+    : []),
+  ...props.attributes.map((attribute) => ({
+    attribute,
+    color: attribute.color,
+    count: valueCount(attribute.id),
+    icon: AttributeIcon,
+    id: attribute.id,
+    label: attribute.name,
+  })),
+])
 </script>
 
 <style scoped>
-.issue-filters {
-  --app-popover-width: min(480px, calc(100vw - var(--space-8)));
+.filter-menu {
+  padding: var(--space-1);
+  width: 240px;
 }
-
-.issue-filters-loading {
-  animation: var(--animation-spin);
+.filter-menu-header {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
 }
-
-.issue-filters-popover {
-  display: grid;
-  grid-template-columns: 190px minmax(260px, 1fr);
-  max-height: 420px;
-  min-height: 280px;
-  overflow: hidden;
-}
-
-.issue-filters-popover nav {
-  border-right: 1px solid var(--color-divider);
+.filter-menu nav {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  margin: 0;
-  max-height: 420px;
-  overflow-y: auto;
-  padding: var(--space-2);
 }
-
-.issue-filters-popover nav button:not(.clear-filter) {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-control);
-  color: var(--color-text);
-  display: flex;
-  gap: var(--space-2);
-  min-height: var(--control-height);
-  padding: 0 var(--space-3);
-  text-align: left;
+.filter-submenu {
+  --app-popover-width: max-content;
   width: 100%;
 }
-
-.issue-filters-popover nav button:not(.clear-filter):hover {
-  background: var(--color-hover);
-}
-
-.issue-filters-popover nav button:not(.clear-filter).active {
-  background: var(--color-accent-soft);
-  color: var(--color-text);
-  font-weight: var(--font-weight-semibold);
-}
-
-.issue-filters-popover .filter-label {
+.filter-label {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
-
-.issue-filters-popover nav small {
-  align-items: center;
-  margin-left: auto;
-}
-
-.issue-filters-popover .clear-filter {
-  margin-top: auto;
-}
-
-.filter-icon {
+.submenu-chevron {
   flex: none;
-  height: 14px;
-  width: 14px;
+  height: 12px;
+  margin-left: auto;
+  width: 12px;
 }
-
 .filter-editor {
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  min-width: 0;
+  max-height: calc(100dvh - var(--space-8));
+  overflow-y: auto;
   padding: var(--space-2);
+  width: 260px;
 }
-
-.filter-editor fieldset {
+.filter-options {
   border: 0;
   display: grid;
-  gap: var(--space-2);
   margin: 0;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 0 var(--space-1) var(--space-4);
-}
-
-.filter-editor legend {
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-3);
-}
-
-.filter-editor fieldset label {
-  align-items: center;
-  cursor: pointer;
-  display: flex;
-  gap: var(--space-2);
-  margin: 0;
-}
-
-@media (max-width: 600px) {
-  .issue-filters-popover {
-    grid-template-columns: minmax(120px, 40%) minmax(0, 1fr);
-  }
+  padding: 0;
 }
 </style>

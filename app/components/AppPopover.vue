@@ -3,6 +3,10 @@
     ref="root"
     class="app-popover"
     @focusout="closeOnFocusOut"
+    @mouseenter="openOnHover"
+    @mouseleave="closeAfterHover"
+    @keydown.right="openSubmenu"
+    @keydown.left="closeSubmenu"
     @keydown.esc="closeOnEscape">
     <slot
       name="trigger"
@@ -12,6 +16,7 @@
       v-if="open"
       ref="content"
       class="app-popover-content"
+      :class="{ 'app-popover-content-side': side === 'right' }"
       :style="{
         left: `${position.left}px`,
         maxHeight: `calc(100dvh - ${viewportPadding * 2}px)`,
@@ -25,12 +30,33 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ viewportPadding?: number }>(), {
-  viewportPadding: 16,
-})
+const props = withDefaults(
+  defineProps<{
+    align?: 'end' | 'start'
+    hover?: boolean
+    open?: boolean
+    side?: 'bottom' | 'right'
+    viewportPadding?: number
+  }>(),
+  {
+    align: 'start',
+    hover: false,
+    open: undefined,
+    side: 'bottom',
+    viewportPadding: 16,
+  },
+)
 const root = useTemplateRef('root')
 const content = useTemplateRef('content')
-const open = ref(false)
+const emit = defineEmits<{ 'update:open': [value: boolean] }>()
+const localOpen = ref(false)
+const open = computed({
+  get: () => props.open ?? localOpen.value,
+  set: (value: boolean) => {
+    localOpen.value = value
+    emit('update:open', value)
+  },
+})
 const positioned = ref(false)
 const position = reactive({ left: 0, top: 0 })
 let positionFrame: number | undefined
@@ -40,7 +66,28 @@ const close = () => {
 }
 
 const toggle = () => {
-  open.value = !open.value
+  open.value = props.hover || !open.value
+}
+
+const openOnHover = () => {
+  if (props.hover) open.value = true
+}
+
+const closeAfterHover = () => {
+  if (props.hover) close()
+}
+
+const openSubmenu = async (event: KeyboardEvent) => {
+  if (props.side !== 'right') return
+  event.preventDefault()
+  event.stopPropagation()
+  open.value = true
+  await nextTick()
+  content.value?.querySelector<HTMLElement>('input, button')?.focus()
+}
+
+const closeSubmenu = (event: KeyboardEvent) => {
+  if (props.side === 'right') closeOnEscape(event)
 }
 
 const updatePosition = () => {
@@ -58,11 +105,30 @@ const updatePosition = () => {
   const below = triggerRect.bottom + gap
   const above = triggerRect.top - gap - contentRect.height
 
-  const left = Math.min(Math.max(triggerRect.left, props.viewportPadding), maxLeft)
-  const top =
+  const alignedLeft =
+    props.align === 'end' ? triggerRect.right - contentRect.width : triggerRect.left
+  const sideLeft =
+    triggerRect.right + gap + contentRect.width <= window.innerWidth - props.viewportPadding
+      ? triggerRect.right + gap
+      : triggerRect.left - gap - contentRect.width
+  const left = Math.min(
+    Math.max(props.side === 'right' ? sideLeft : alignedLeft, props.viewportPadding),
+    maxLeft,
+  )
+  const bottomTop =
     below + contentRect.height <= window.innerHeight - props.viewportPadding
       ? below
       : Math.max(props.viewportPadding, above)
+  const top =
+    props.side === 'right'
+      ? Math.max(
+          props.viewportPadding,
+          Math.min(
+            triggerRect.top,
+            window.innerHeight - props.viewportPadding - contentRect.height,
+          ),
+        )
+      : bottomTop
 
   if (position.left !== left || position.top !== top) {
     position.left = left
@@ -85,10 +151,12 @@ const closeOnFocusOut = (event: FocusEvent) => {
   }
 }
 
-const closeOnEscape = () => {
+const closeOnEscape = (event: KeyboardEvent) => {
   if (!open.value) {
     return
   }
+  event.preventDefault()
+  event.stopPropagation()
   close()
   root.value?.querySelector<HTMLElement>('button, summary')?.focus()
 }
@@ -131,5 +199,19 @@ watch(
   position: fixed;
   width: var(--app-popover-width, max-content);
   z-index: 31;
+}
+
+.app-popover-content-side {
+  overflow: visible;
+}
+
+.app-popover-content-side::before {
+  bottom: 0;
+  content: '';
+  left: calc(-1 * var(--space-2));
+  position: absolute;
+  right: calc(-1 * var(--space-2));
+  top: 0;
+  z-index: -1;
 }
 </style>
