@@ -12,6 +12,7 @@
   --color-text: #242429;
   --color-muted: #686872;
   --color-border: #dddde2;
+  --color-border-hover: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   /* Accent is for text, icons and lines; action fills a control under white text. They differ
      only in the dark theme, where accent text gets lighter to stay readable. */
   --color-accent: #3466d0;
@@ -52,7 +53,7 @@
 
   --control-height: 36px;
   --control-height-small: 32px;
-  --icon-btn-size: var(--control-height);
+  --icon-btn-size: var(--control-height-small);
   --icon-btn-size-small: 24px;
   --icon-size: 16px;
   --control-icon-padding: calc(var(--icon-size) + var(--space-5));

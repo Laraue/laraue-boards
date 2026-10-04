@@ -12,10 +12,16 @@ component; page styles own layout. Extend the existing system before adding a co
 - Use heading sizes for hierarchy, not to distinguish controls.
 - Never change font weight, text size or spacing on hover, focus or selection. Show state through
   color, background, border or a selection marker.
+- Hover on form controls and action buttons changes the border only. Keep fill and text color
+  unchanged; use `--color-border-hover` for neutral controls and semantic border colors for primary
+  and destructive actions. Selected values retain their selection markers.
+- Menu rows use a soft hover background instead of a border. Text size, weight and color stay
+  unchanged. Expanded filters keep their active background.
 
 ## Controls
 
-- Default height: `--control-height` (36px), including icon buttons and menu rows.
+- Default height: `--control-height` (36px), including menu rows. Icon buttons use
+  `--control-height-small` (32px).
 - Compact height: `--control-height-small` (32px), only for intentionally dense layouts such as
   issue Properties and editable table cells. Button `size="small"` changes height and padding, not
   typography.

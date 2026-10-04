@@ -71,9 +71,7 @@ defineOptions({ inheritAttrs: false })
   justify-content: center;
   padding: 0;
   text-decoration: none;
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+  transition: border-color var(--duration-fast) var(--ease-standard);
   width: var(--icon-btn-size);
 }
 
@@ -98,13 +96,11 @@ defineOptions({ inheritAttrs: false })
 
 @media (hover: hover) and (pointer: fine) {
   .icon-button:hover:not(:disabled) {
-    background: var(--color-hover);
-    color: var(--color-text);
+    border-color: var(--color-border-hover);
   }
 
   .icon-button.primary:hover:not(:disabled) {
-    background: var(--color-action-hover);
-    color: #fff;
+    border-color: var(--color-action-hover);
   }
 }
 </style>

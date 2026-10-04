@@ -39,8 +39,8 @@ const model = defineModel<boolean>({ required: true })
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .base-checkbox:hover:not(:has(input:disabled)) {
-    background: var(--color-hover);
+  .base-checkbox:hover:not(:has(input:disabled)) input:not(:checked) {
+    border-color: var(--color-border-hover);
   }
 }
 </style>

@@ -686,26 +686,6 @@ watch(dirty, setDirty, { immediate: true })
   grid-auto-rows: var(--control-height);
 }
 
-.issue-properties :deep(input) {
-  background: transparent;
-  border-color: transparent;
-  font-size: inherit;
-}
-
-.issue-properties :deep(input:hover:not(:disabled)) {
-  background: var(--color-hover);
-  border-color: var(--color-border);
-}
-
-.issue-properties:has(label:hover) :deep(input:not(:focus-visible)) {
-  background: transparent;
-  border-color: transparent;
-}
-
-.issue-properties :deep(input:focus-visible) {
-  border-color: var(--color-focus);
-}
-
 .issue-properties,
 .issue-dates {
   align-items: center;

@@ -11,7 +11,11 @@
         v-bind="$attrs"
         :aria-busy="loading || undefined"
         class="base-select"
-        :class="{ 'base-select-inline': variant === 'inline', placeholder: !selectedOption }">
+        :class="{
+          'base-select-inline': variant === 'inline',
+          'base-select-icon-only-mobile': iconOnlyOnMobile,
+          placeholder: !selectedOption,
+        }">
         <slot
           name="icon"
           :option="selectedOption" />
@@ -72,6 +76,7 @@ import {
 const props = withDefaults(
   defineProps<{
     disabled?: boolean
+    iconOnlyOnMobile?: boolean
     loading?: boolean
     // Shown above the options instead of them: loading, nothing to pick, a load error.
     message?: string
@@ -83,6 +88,7 @@ const props = withDefaults(
   }>(),
   {
     disabled: false,
+    iconOnlyOnMobile: false,
     loading: false,
     message: undefined,
     onOpen: undefined,
@@ -164,7 +170,7 @@ const selected = computed({
 /* Hover strengthens the border, like a text field's. */
 @media (hover: hover) and (pointer: fine) {
   .base-select:hover:not(:disabled, [data-state='open'], :focus-visible) {
-    border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
+    border-color: var(--color-border-hover);
   }
 }
 
@@ -179,13 +185,24 @@ const selected = computed({
   width: fit-content;
 }
 
-.base-select-inline:hover:not(:disabled, [data-state='open'], :focus-visible) {
-  background: var(--color-hover);
-  border-color: var(--color-border);
-}
-
 .base-select-inline:is(:focus-visible, [data-state='open']) {
   border-color: var(--color-focus);
+}
+
+@media (max-width: 600px) {
+  .base-select-icon-only-mobile {
+    justify-content: center;
+    padding: 0;
+    width: var(--control-height-small);
+  }
+
+  .base-select-icon-only-mobile .base-select-value {
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+  }
 }
 </style>
 
@@ -238,6 +255,11 @@ const selected = computed({
 .base-select-check {
   display: flex;
   margin-left: auto;
+}
+
+.base-select-check .tabler-icon {
+  height: 14px;
+  width: 14px;
 }
 
 .base-select-message {

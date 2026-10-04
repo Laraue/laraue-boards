@@ -67,6 +67,7 @@
         :aria-label="t('assignee')"
         :deps="quickEdit.assigneeSelect"
         :disabled="saving"
+        icon-only-on-mobile
         :initial-option="{
           color: assigneeColor,
           initials: assigneeInitial,
@@ -478,27 +479,25 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   .issue-location,
   .issue-list-row:not(:has(.row-select)) .issue-location {
     flex-wrap: wrap;
-    grid-column: 1 / -1;
+    grid-column: 1 / -2;
     grid-row: 3;
-  }
-
-  .issue-list-row:not(:has(.row-select)) .issue-location {
-    grid-column: 1 / -1;
   }
 
   .issue-person,
   .issue-list-row:not(:has(.row-select)) .issue-person {
-    grid-column: 1 / -1;
-    grid-row: 4;
+    grid-column: -2 / -1;
+    grid-row: 3;
+    justify-self: end;
   }
 
-  .issue-list-row:not(:has(.row-select)) .issue-person {
-    grid-column: 1 / -1;
+  .issue-person > .truncate {
+    display: none;
   }
 
   .issue-status,
   .issue-list-row:not(:has(.row-select)) .issue-status {
     grid-column: 3;
+    justify-self: end;
   }
 
   .issue-list-row:not(:has(.row-select)) .issue-status {

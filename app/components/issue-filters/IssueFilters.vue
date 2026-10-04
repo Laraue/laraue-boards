@@ -284,8 +284,8 @@ const filterItems = computed<FilterItem[]>(() => [
 }
 
 .filter-menu {
-  padding: var(--space-1);
   min-width: 0;
+  padding: var(--space-1);
   width: 100%;
 }
 .filter-menu-header {
@@ -320,8 +320,8 @@ const filterItems = computed<FilterItem[]>(() => [
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - var(--space-8));
-  overflow-y: auto;
   min-width: 0;
+  overflow-y: auto;
   padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
   width: 100%;
 }

@@ -76,9 +76,7 @@ defineOptions({ inheritAttrs: false })
   justify-content: center;
   max-width: 100%;
   padding: 0 var(--space-3);
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
+  transition: border-color var(--duration-fast) var(--ease-standard);
   white-space: nowrap;
 }
 
@@ -133,19 +131,24 @@ defineOptions({ inheritAttrs: false })
 
 @media (hover: hover) and (pointer: fine) {
   .base-button:hover:not(:disabled) {
-    background: var(--color-hover);
+    border-color: var(--color-border-hover);
   }
 
   .base-button.primary:hover:not(:disabled) {
-    background: var(--color-action-hover);
-  }
-
-  .base-button.ghost:hover:not(:disabled) {
-    color: var(--color-text);
+    border-color: var(--color-action-hover);
   }
 
   .base-button.danger:hover:not(:disabled) {
-    background: var(--color-danger-soft);
+    border-color: var(--color-danger);
+  }
+
+  .base-button.menu:hover:not(:disabled) {
+    background: var(--color-soft);
+    border-color: transparent;
+  }
+
+  .base-button.menu[data-active='true']:hover:not(:disabled) {
+    background: var(--color-accent-soft);
   }
 }
 </style>

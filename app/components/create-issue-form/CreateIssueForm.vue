@@ -300,26 +300,6 @@ const submit = async (): Promise<void> => {
   overflow-wrap: anywhere;
 }
 
-.issue-properties :deep(input) {
-  background: transparent;
-  border-color: transparent;
-  font-size: inherit;
-}
-
-.issue-properties :deep(input:hover:not(:disabled)) {
-  background: var(--color-hover);
-  border-color: var(--color-border);
-}
-
-.issue-properties:has(label:hover) :deep(input:not(:focus-visible)) {
-  background: transparent;
-  border-color: transparent;
-}
-
-.issue-properties :deep(input:focus-visible) {
-  border-color: var(--color-focus);
-}
-
 .selected-entity {
   align-items: center;
   display: flex;

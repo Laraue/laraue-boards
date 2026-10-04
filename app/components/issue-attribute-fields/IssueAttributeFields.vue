@@ -100,11 +100,21 @@ const update = (id: string, value: string) => {
 }
 
 .attribute-field-inline :deep(input) {
+  background: transparent;
+  border-color: transparent;
   field-sizing: content;
   justify-self: start;
   max-width: 100%;
   min-width: calc(var(--space-8) * 2);
   width: auto;
+}
+
+.attribute-field-inline :deep(input:hover:not(:disabled, :focus)) {
+  border-color: var(--color-border-hover);
+}
+
+.attribute-field-inline :deep(input:focus) {
+  border-color: var(--color-focus);
 }
 
 .attribute-icon {

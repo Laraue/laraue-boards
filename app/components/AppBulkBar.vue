@@ -44,10 +44,10 @@ const selectedLabel = computed(() => t('selected', { count: props.count }))
   align-items: center;
   background: var(--color-feed);
   border: 1px solid var(--color-divider);
-  border-radius: var(--space-2);
+  border-radius: var(--radius-control);
   display: flex;
   flex-wrap: wrap;
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-body);
   gap: var(--space-3);
   justify-content: space-between;
   margin-top: var(--space-2);
