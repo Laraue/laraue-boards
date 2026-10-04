@@ -117,11 +117,6 @@ useSortable({
   text-decoration: none;
 }
 
-.task:hover {
-  border-color: var(--color-accent);
-  box-shadow: 0 4px 12px #10182814;
-}
-
 .task:active {
   translate: 0 var(--press-offset);
 }
@@ -181,13 +176,8 @@ useSortable({
   width: 20px;
 }
 
-.task:hover .task-backlog-btn,
 .task-backlog-btn:focus-visible {
   opacity: 1;
-}
-
-.task-backlog-btn:hover {
-  color: var(--color-accent);
 }
 
 .task-backlog-btn:active {
@@ -213,5 +203,26 @@ useSortable({
   line-height: 1.4;
   margin: var(--space-2) 0 var(--space-3);
   overflow: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .task:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 12px #10182814;
+  }
+
+  .task:hover .task-backlog-btn {
+    opacity: 1;
+  }
+
+  .task-backlog-btn:hover {
+    color: var(--color-accent);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .task-backlog-btn {
+    opacity: 1;
+  }
 }
 </style>

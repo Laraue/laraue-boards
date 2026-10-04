@@ -9,14 +9,13 @@
     open
     tabindex="-1"
     @cancel.self="handleCancel">
-    <button
-      :aria-label="t('closeDialog')"
-      class="icon-btn issue-close"
-      :title="t('closeDialog')"
-      type="button"
-      @click="close()">
-      <IconX />
-    </button>
+    <div class="issue-close">
+      <IconButton
+        :label="t('closeDialog')"
+        @click="close()">
+        <IconX />
+      </IconButton>
+    </div>
     <div class="issue-dialog-content">
       <ClientOnly>
         <IssuePage
@@ -171,15 +170,16 @@ watch(
 @media (max-width: 767px) {
   .issue-dialog {
     border: 0;
+    border-radius: 0;
     box-shadow: none;
-    height: calc(100dvh - var(--space-2) - var(--space-2));
-    inset: var(--space-2);
+    height: 100dvh;
+    inset: 0;
     margin: 0;
     max-height: none;
     max-width: none;
     min-height: 0;
     padding: var(--space-4);
-    width: calc(100% - var(--space-2) - var(--space-2));
+    width: 100%;
   }
   .issue-close {
     right: var(--space-4);

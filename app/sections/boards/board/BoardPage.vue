@@ -210,7 +210,7 @@ const sensors = [
   PointerSensor.configure({
     activationConstraints: (event) =>
       event.pointerType === 'touch'
-        ? [new PointerActivationConstraints.Delay({ tolerance: 5, value: 250 })]
+        ? [new PointerActivationConstraints.Delay({ tolerance: 10, value: 450 })]
         : [new PointerActivationConstraints.Distance({ value: 6 })],
     preventActivation: () => false,
   }),
