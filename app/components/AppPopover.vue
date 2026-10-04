@@ -3,11 +3,11 @@
     ref="root"
     class="app-popover"
     @focusout="closeOnFocusOut"
-    @mouseenter="openOnHover"
-    @mouseleave="closeAfterHover"
-    @keydown.right="openSubmenu"
+    @keydown.esc="closeOnEscape"
     @keydown.left="closeSubmenu"
-    @keydown.esc="closeOnEscape">
+    @keydown.right="openSubmenu"
+    @mouseenter="openOnHover"
+    @mouseleave="closeAfterHover">
     <slot
       name="trigger"
       :open="open"
@@ -46,9 +46,9 @@ const props = withDefaults(
     viewportPadding: 16,
   },
 )
+const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const root = useTemplateRef('root')
 const content = useTemplateRef('content')
-const emit = defineEmits<{ 'update:open': [value: boolean] }>()
 const localOpen = ref(false)
 const open = computed({
   get: () => props.open ?? localOpen.value,
@@ -70,15 +70,21 @@ const toggle = () => {
 }
 
 const openOnHover = () => {
-  if (props.hover) open.value = true
+  if (props.hover) {
+    open.value = true
+  }
 }
 
 const closeAfterHover = () => {
-  if (props.hover) close()
+  if (props.hover) {
+    close()
+  }
 }
 
 const openSubmenu = async (event: KeyboardEvent) => {
-  if (props.side !== 'right') return
+  if (props.side !== 'right') {
+    return
+  }
   event.preventDefault()
   event.stopPropagation()
   open.value = true
@@ -87,7 +93,9 @@ const openSubmenu = async (event: KeyboardEvent) => {
 }
 
 const closeSubmenu = (event: KeyboardEvent) => {
-  if (props.side === 'right') closeOnEscape(event)
+  if (props.side === 'right') {
+    closeOnEscape(event)
+  }
 }
 
 const updatePosition = () => {

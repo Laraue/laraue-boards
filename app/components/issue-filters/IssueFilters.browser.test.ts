@@ -36,7 +36,7 @@ it('updates the filters when the user selects a space', async () => {
   await mount()
 
   await page.getByRole('button', { name: 'Filters' }).click()
-  await page.getByRole('button', { name: 'Space', exact: true }).click()
+  await page.getByRole('button', { exact: true, name: 'Space' }).click()
   await page.getByLabelText('Product').click()
 
   expect(currentWrapper!.emitted('update:modelValue')).toEqual([

@@ -128,8 +128,8 @@
           </BaseButton>
           <BaseButton
             v-if="onDelete"
-            menu
             :disabled="deleting"
+            menu
             variant="danger"
             @click.stop.prevent="
               () => {

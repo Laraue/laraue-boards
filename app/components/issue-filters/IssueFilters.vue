@@ -2,9 +2,9 @@
   <AppPopover v-if="attributes.length || spaces.length || epicStatuses.length">
     <template #trigger="{ open, toggle }">
       <BaseButton
-        :loading="loading"
         :aria-expanded="open"
         aria-haspopup="dialog"
+        :loading="loading"
         @click="toggle">
         <IconFilter v-if="!loading" />
         {{ t('filters') }}
@@ -25,17 +25,17 @@
         <AppPopover
           v-for="item in filterItems"
           :key="item.id"
-          :open="activeFilterId === item.id"
-          hover
-          side="right"
           class="filter-submenu"
+          hover
+          :open="activeFilterId === item.id"
+          side="right"
           @update:open="setOpenFilter(item.id, $event)">
           <template #trigger="{ open, toggle }">
             <BaseButton
-              menu
               :aria-expanded="open"
-              :data-active="open || undefined"
               aria-haspopup="dialog"
+              :data-active="open || undefined"
+              menu
               @click="toggle">
               <component
                 :is="item.icon"
@@ -44,13 +44,13 @@
               <span class="filter-label">{{ item.label }}</span>
               <small v-if="item.count">{{ item.count }}</small>
               <IconChevronRight
-                class="submenu-chevron"
-                aria-hidden="true" />
+                aria-hidden="true"
+                class="submenu-chevron" />
             </BaseButton>
           </template>
           <section
-            class="filter-editor"
-            :aria-label="item.label">
+            :aria-label="item.label"
+            class="filter-editor">
             <fieldset
               v-if="item.id === EPIC_STATUS_FILTER"
               :aria-label="t('boardStatus')"
@@ -171,8 +171,11 @@ const SPACE_FILTER = '__space__'
 const EPIC_STATUS_FILTER = '__epic_status__'
 const activeFilterId = ref<string>()
 const setOpenFilter = (id: string, open: boolean) => {
-  if (open) activeFilterId.value = id
-  else if (activeFilterId.value === id) activeFilterId.value = undefined
+  if (open) {
+    activeFilterId.value = id
+  } else if (activeFilterId.value === id) {
+    activeFilterId.value = undefined
+  }
 }
 const selectedSpaces = computed(() => props.modelValue.spaceIds ?? [])
 const selectedEpicStatuses = computed(() => props.modelValue.epicStatuses ?? [])
@@ -286,7 +289,7 @@ const filterItems = computed<FilterItem[]>(() => [
   color: var(--color-muted);
   display: flex;
   justify-content: space-between;
-  padding: 0 var(--space-3);
+  padding-left: var(--space-3);
 }
 .filter-menu nav {
   display: flex;
