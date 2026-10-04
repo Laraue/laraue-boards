@@ -1,5 +1,7 @@
 <template>
-  <AppPopover v-if="attributes.length || spaces.length || epicStatuses.length">
+  <AppPopover
+    v-if="attributes.length || spaces.length || epicStatuses.length"
+    class="issue-filters">
     <template #trigger="{ open, toggle }">
       <BaseButton
         :aria-expanded="open"
@@ -22,33 +24,30 @@
         </IconButton>
       </div>
       <nav :aria-label="t('issueFilters')">
-        <AppPopover
+        <div
           v-for="item in filterItems"
           :key="item.id"
-          class="filter-submenu"
-          hover
-          :open="activeFilterId === item.id"
-          side="right"
-          @update:open="setOpenFilter(item.id, $event)">
-          <template #trigger="{ open, toggle }">
-            <BaseButton
-              :aria-expanded="open"
-              aria-haspopup="dialog"
-              :data-active="open || undefined"
-              menu
-              @click="toggle">
-              <component
-                :is="item.icon"
-                aria-hidden="true"
-                :style="{ color: item.color }" />
-              <span class="filter-label">{{ item.label }}</span>
-              <small v-if="item.count">{{ item.count }}</small>
-              <IconChevronRight
-                aria-hidden="true"
-                class="submenu-chevron" />
-            </BaseButton>
-          </template>
+          class="filter-item">
+          <BaseButton
+            :aria-controls="`${idPrefix}-${item.id}-panel`"
+            :aria-expanded="activeFilterId === item.id"
+            :data-active="activeFilterId === item.id || undefined"
+            menu
+            @click="setOpenFilter(item.id, activeFilterId !== item.id)">
+            <component
+              :is="item.icon"
+              aria-hidden="true"
+              :style="{ color: item.color }" />
+            <span class="filter-label">{{ item.label }}</span>
+            <small v-if="item.count">{{ item.count }}</small>
+            <IconChevronRight
+              aria-hidden="true"
+              class="submenu-chevron"
+              :class="{ expanded: activeFilterId === item.id }" />
+          </BaseButton>
           <section
+            v-if="activeFilterId === item.id"
+            :id="`${idPrefix}-${item.id}-panel`"
             :aria-label="item.label"
             class="filter-editor">
             <fieldset
@@ -109,7 +108,7 @@
               <template v-else>{{ assertNever(item.attribute) }}</template>
             </template>
           </section>
-        </AppPopover>
+        </div>
       </nav>
     </div>
   </AppPopover>
@@ -280,25 +279,27 @@ const filterItems = computed<FilterItem[]>(() => [
 </script>
 
 <style scoped>
+.issue-filters {
+  --app-popover-width: min(320px, calc(100vw - var(--space-8)));
+}
+
 .filter-menu {
   padding: var(--space-1);
-  width: 240px;
+  min-width: 0;
+  width: 100%;
 }
 .filter-menu-header {
   align-items: center;
   color: var(--color-muted);
   display: flex;
   justify-content: space-between;
+  margin-bottom: var(--space-1);
   padding-left: var(--space-3);
 }
 .filter-menu nav {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-}
-.filter-submenu {
-  --app-popover-width: max-content;
-  width: 100%;
 }
 .filter-label {
   min-width: 0;
@@ -311,18 +312,24 @@ const filterItems = computed<FilterItem[]>(() => [
   margin-left: auto;
   width: 12px;
 }
+
+.submenu-chevron.expanded {
+  rotate: 90deg;
+}
 .filter-editor {
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - var(--space-8));
   overflow-y: auto;
-  padding: var(--space-2);
-  width: 260px;
+  min-width: 0;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  width: 100%;
 }
 .filter-options {
   border: 0;
   display: grid;
   margin: 0;
+  min-width: 0;
   padding: 0;
 }
 </style>

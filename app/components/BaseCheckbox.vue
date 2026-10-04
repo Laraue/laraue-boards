@@ -33,6 +33,11 @@ const model = defineModel<boolean>({ required: true })
   cursor: not-allowed;
 }
 
+.base-checkbox > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .base-checkbox:hover:not(:has(input:disabled)) {
     background: var(--color-hover);

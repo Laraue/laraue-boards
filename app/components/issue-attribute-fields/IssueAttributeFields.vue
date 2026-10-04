@@ -5,7 +5,9 @@
     <label :for="`${idPrefix}-${attribute.id}`">
       {{ attribute.name }}
     </label>
-    <div class="attribute-field">
+    <div
+      class="attribute-field"
+      :class="{ 'attribute-field-inline': selectVariant === 'inline' }">
       <AttributeIcon
         class="attribute-icon"
         :style="{ color: attribute.color }" />
@@ -93,7 +95,16 @@ const update = (id: string, value: string) => {
 /* The icon sits inside the field, where a select shows its own icon. */
 .attribute-field {
   display: grid;
+  min-width: 0;
   position: relative;
+}
+
+.attribute-field-inline :deep(input) {
+  field-sizing: content;
+  justify-self: start;
+  max-width: 100%;
+  min-width: calc(var(--space-8) * 2);
+  width: auto;
 }
 
 .attribute-icon {

@@ -447,16 +447,16 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 @media (max-width: 600px) {
   .issue-list-row {
     gap: var(--space-2);
-    grid-template-columns: 20px minmax(0, 1fr) 88px var(--icon-btn-size);
+    grid-template-columns: 20px minmax(0, 1fr) minmax(0, 144px) var(--icon-btn-size);
     padding: var(--space-3) var(--space-2);
   }
 
   .issue-list-row:not(:has(.row-select)) {
-    grid-template-columns: minmax(0, 1fr) 88px var(--icon-btn-size);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 144px) var(--icon-btn-size);
   }
 
   .issue-list-row:not(.has-actions) {
-    grid-template-columns: minmax(0, 1fr) 88px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 144px);
   }
 
   .issue-key {
@@ -472,26 +472,28 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   .issue-list-row:not(:has(.row-select)) .issue-content {
     grid-column: 1 / -1;
     grid-row: 2;
+    -webkit-line-clamp: 2;
   }
 
   .issue-location,
   .issue-list-row:not(:has(.row-select)) .issue-location {
-    grid-column: 1 / 3;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
     grid-row: 3;
   }
 
   .issue-list-row:not(:has(.row-select)) .issue-location {
-    grid-column: 1;
+    grid-column: 1 / -1;
   }
 
   .issue-person,
   .issue-list-row:not(:has(.row-select)) .issue-person {
-    grid-column: 3 / -1;
-    grid-row: 3;
+    grid-column: 1 / -1;
+    grid-row: 4;
   }
 
   .issue-list-row:not(:has(.row-select)) .issue-person {
-    grid-column: 2;
+    grid-column: 1 / -1;
   }
 
   .issue-status,

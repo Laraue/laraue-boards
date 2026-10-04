@@ -33,6 +33,7 @@ fieldset {
   display: grid;
   margin: 0;
   min-height: 0;
+  min-width: 0;
   overflow-y: auto;
   padding: 0 var(--space-1) var(--space-4);
 }

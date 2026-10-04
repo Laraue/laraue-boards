@@ -31,8 +31,10 @@ component; page styles own layout. Extend the existing system before adding a co
 
 - `AppPopover` owns surface color, border, radius and shadow. Consumers specify content layout and
   width; do not override its surface styles.
-- Filters use a single open side submenu. Hover switches immediately; the pointer can cross to the
-  submenu without a timeout. Click and keyboard remain available.
+- Filters expand one section inside the panel on click or tap, on both desktop and mobile. Use
+  native buttons for keyboard access; do not open sections on hover.
+- Set panel width through `--app-popover-width`. Its content occupies 100% of the available inner
+  width, including the panel's border in the sizing calculation.
 - Keep one reset-all icon in the filter menu header. No per-filter reset buttons. Individual
   checkbox options can be deselected normally.
 - Keep option text in `--color-text`; use muted text for secondary context only.
