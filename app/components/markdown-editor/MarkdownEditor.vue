@@ -29,11 +29,12 @@
         <BubbleMenu
           class="markdown-editor-popup"
           :editor="editor"
+          :options="selectionMenuOptions"
           plugin-key="textMenu"
           :should-show="showTextMenu">
           <!-- mousedown.prevent: a click in the menu keeps the text selected. -->
           <div
-            class="markdown-editor-menu"
+            class="markdown-editor-menu markdown-editor-text-menu"
             @mousedown.prevent>
             <div class="markdown-editor-style">
               <BaseTooltip :text="t('textStyle')">
@@ -83,10 +84,11 @@
         <BubbleMenu
           class="markdown-editor-popup"
           :editor="editor"
+          :options="selectionMenuOptions"
           plugin-key="tableMenu"
           :should-show="showTableMenu">
           <div
-            class="markdown-editor-menu"
+            class="markdown-editor-menu markdown-editor-table-menu"
             @mousedown.prevent>
             <template
               v-for="(group, index) in tableActions"
@@ -108,7 +110,7 @@
         <FloatingMenu
           class="markdown-editor-popup"
           :editor="editor"
-          :options="{ offset: 4, placement: 'bottom-start' }"
+          :options="{ ...selectionMenuOptions, offset: 4, placement: 'bottom-start' }"
           plugin-key="slashMenu"
           :should-show="showSlashMenu">
           <div
@@ -245,6 +247,14 @@ const model = defineModel<string>({ required: true })
 
 const fallback = computed(() => renderMarkdown(model.value))
 
+const selectionMenuOptions = {
+  flip: { padding: 8 },
+  offset: 8,
+  placement: 'top' as const,
+  shift: { padding: 8 },
+  strategy: 'fixed' as const,
+}
+
 // The markdown the editor holds, to tell its own changes from new content coming in.
 let editorMarkdown = model.value
 
@@ -293,6 +303,23 @@ watch(
   () => props.disabled,
   (disabled) => editor.value?.setEditable(!disabled),
 )
+
+// Safari's keyboard changes the visual viewport without resizing the page layout.
+const updateMenuPositions = () => {
+  for (const pluginKey of ['textMenu', 'tableMenu', 'slashMenu']) {
+    editor.value?.commands.setMeta(pluginKey, 'updatePosition')
+  }
+}
+onMounted(() => {
+  document.addEventListener('scroll', updateMenuPositions, true)
+  window.visualViewport?.addEventListener('resize', updateMenuPositions)
+  window.visualViewport?.addEventListener('scroll', updateMenuPositions)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('scroll', updateMenuPositions, true)
+  window.visualViewport?.removeEventListener('resize', updateMenuPositions)
+  window.visualViewport?.removeEventListener('scroll', updateMenuPositions)
+})
 
 type EditorAction = {
   icon: Component
@@ -597,6 +624,7 @@ defineExpose({ insertSlash })
   box-shadow: var(--shadow-popover);
   display: flex;
   gap: 2px;
+  max-width: calc(100vw - var(--space-8));
   padding: var(--space-1);
 }
 
@@ -606,7 +634,10 @@ defineExpose({ insertSlash })
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
   display: grid;
+  max-height: 40dvh;
+  max-width: calc(100vw - var(--space-8));
   min-width: 220px;
+  overflow-y: auto;
   padding: var(--space-1);
 }
 
@@ -694,5 +725,23 @@ defineExpose({ insertSlash })
 .markdown-editor-menu :deep(.active) {
   background: var(--color-accent-soft);
   color: var(--color-accent);
+}
+
+@media (max-width: 600px) {
+  .markdown-editor-menu {
+    display: grid;
+  }
+
+  .markdown-editor-text-menu {
+    grid-template-columns: repeat(6, auto);
+  }
+
+  .markdown-editor-table-menu {
+    grid-template-columns: repeat(4, auto);
+  }
+
+  .markdown-editor-menu-divider {
+    display: none;
+  }
 }
 </style>

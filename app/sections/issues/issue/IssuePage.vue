@@ -586,7 +586,7 @@ watch(dirty, setDirty, { immediate: true })
   align-items: center;
   display: flex;
   gap: var(--space-2);
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-3);
   min-width: 0;
 }
 
