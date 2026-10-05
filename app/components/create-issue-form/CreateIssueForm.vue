@@ -104,7 +104,7 @@
         {{ message }}
       </p>
       <BaseButton
-        :disabled="pending || !form.content.trim() || !form.statusId || !form.assigneeId"
+        :disabled="pending || !hasText || !form.statusId || !form.assigneeId"
         :loading="pending"
         type="submit"
         variant="primary">
@@ -194,6 +194,8 @@ const selectDeps = {
 }
 const boardId = computed(() => props.board?.id ?? form.boardId)
 const spaceKey = computed(() => props.board?.spaceKey ?? form.spaceKey)
+// An issue needs a title or content: a missing title is generated from the content.
+const hasText = computed(() => !!form.title.trim() || !!form.content.trim())
 const { execute: create, message, pending } = useApiAction(props.deps.create)
 
 const changeFiles = (files: File[]) => {
