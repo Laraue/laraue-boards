@@ -50,8 +50,10 @@ const mapChange = (
     case 'status':
       return {
         kind: 'status',
+        newCategory: change.newStatusCategory,
         newColor: change.newStatusColor,
         newValue: change.newStatusName,
+        oldCategory: change.oldStatusCategory,
         oldColor: change.oldStatusColor,
         oldValue: change.oldStatusName,
       }

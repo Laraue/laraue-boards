@@ -1,16 +1,18 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="IconPlus"
-      :parents="[
-        {
-          color: data?.spaceColor,
-          icon: SpaceIcon,
-          label: data?.spaceName ?? spaceKey,
-          to: organizationRoutes.space(spaceKey),
-        },
-      ]"
-      :title="t('createBoard')" />
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconLayoutGridAdd"
+        :parents="[
+          {
+            color: data?.spaceColor,
+            icon: SpaceIcon,
+            label: data?.spaceName ?? spaceKey,
+            to: organizationRoutes.space(spaceKey),
+          },
+        ]"
+        :title="t('createBoard')" />
+    </template>
     <section class="form-page">
       <form @submit.prevent="create">
         <label for="create-board-name">{{ t('name') }}</label>
@@ -73,11 +75,11 @@
         </div>
       </form>
     </section>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconPlus, IconTrash } from '@tabler/icons-vue'
+import { IconLayoutGridAdd, IconPlus, IconTrash } from '@tabler/icons-vue'
 
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 import StatusCategorySelect from '~/components/status-category-select/StatusCategorySelect.vue'

@@ -1,16 +1,33 @@
 <template>
-  <AppPopover class="color-picker">
+  <AppPopover
+    class="color-picker"
+    :class="{ 'color-picker-compact': compact }">
     <template #trigger="{ open, toggle }">
-      <button
+      <IconButton
+        v-if="compact"
+        v-bind="$attrs"
+        :aria-expanded="open"
+        aria-haspopup="listbox"
+        :disabled="disabled"
+        :label="label ?? colorName"
+        @click="toggle">
+        <span
+          class="color-trigger-swatch"
+          :style="{ background: model }" />
+      </IconButton>
+      <BaseButton
+        v-else
+        v-bind="$attrs"
         :aria-expanded="open"
         aria-haspopup="listbox"
         class="color-trigger"
         :disabled="disabled"
-        type="button"
         @click="toggle">
-        <span :style="{ background: model }" />
+        <span
+          class="color-trigger-swatch"
+          :style="{ background: model }" />
         {{ colorName }}
-      </button>
+      </BaseButton>
     </template>
     <template #default="{ close }">
       <div
@@ -35,7 +52,8 @@
 <script setup lang="ts">
 import { COLOR_PALETTE } from '~/constants/colors'
 
-defineProps<{ disabled?: boolean }>()
+defineProps<{ compact?: boolean; disabled?: boolean; label?: string }>()
+defineOptions({ inheritAttrs: false })
 const model = defineModel<string>({ required: true })
 const { t } = useI18n({
   en: {
@@ -86,42 +104,30 @@ const select = (value: string, close: () => void) => {
 </script>
 
 <style scoped>
-.color-trigger {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  color: var(--color-text);
-  display: flex;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  transition: var(--transition-press);
+.color-picker {
   width: 100%;
 }
 
-.color-trigger:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
+.color-picker-compact {
+  width: fit-content;
 }
 
-.color-trigger:not(:disabled):active {
-  translate: 0 var(--press-offset);
+.color-trigger {
+  justify-content: flex-start;
+  width: 100%;
 }
 
-.color-trigger:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.color-trigger > span {
+.color-trigger-swatch {
   border: 1px solid #0002;
   border-radius: var(--radius-pill);
-  height: 16px;
-  width: 16px;
+  flex: none;
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .color-grid {
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
   grid-template-columns: repeat(5, 1fr);
   padding: var(--space-3);
 }

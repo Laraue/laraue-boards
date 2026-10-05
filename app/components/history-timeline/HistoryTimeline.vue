@@ -80,7 +80,7 @@
                 </div>
               </div>
             </div>
-            <!-- Who, how and when, on the right, so they take no line of their own. -->
+            <!-- Metadata sits above the changes. -->
             <div class="history-aside">
               <span
                 :aria-label="ownerHint(item.owner)"
@@ -266,7 +266,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   gap: var(--space-2);
 }
 
-/* One row: the changes, then who, how and when; no line of its own for the author. */
+/* Metadata first, then changes across the full width. */
 .history-item {
   align-items: start;
   background: var(--color-feed);
@@ -274,7 +274,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   border-radius: 8px;
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   padding: var(--space-3) var(--space-4);
 }
 
@@ -283,13 +283,22 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   font-weight: var(--font-weight-medium);
 }
 
+.history-owner,
+.history-key {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .history-aside {
   align-items: center;
   color: var(--color-muted);
   display: flex;
+  flex-wrap: wrap;
   font-size: var(--font-size-small);
   gap: var(--space-2);
+  grid-row: 1;
   min-height: 20px;
+  min-width: 0;
 }
 
 /* Changed through an API key: its name, so a change by an agent is not taken for the person's. */
@@ -305,6 +314,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 }
 
 .history-time {
+  margin-left: auto;
   white-space: nowrap;
 }
 
@@ -384,6 +394,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 .history-issue {
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
+  overflow-wrap: anywhere;
 }
 
 .history-issue-link {
@@ -403,6 +414,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   align-items: center;
   color: var(--color-muted);
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
   min-width: 0;
 }
@@ -415,6 +427,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   align-items: center;
   display: flex;
   flex: 1;
+  flex-wrap: wrap;
   gap: var(--space-2);
   min-width: 0;
 }
@@ -423,12 +436,13 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   align-items: center;
   display: flex;
   gap: var(--space-1);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
-:deep(.history-value-change svg) {
+:deep(.history-value-change svg:not(.issue-status-indicator)) {
   flex: 0 0 auto;
   height: 14px;
   width: 14px;

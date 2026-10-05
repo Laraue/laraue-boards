@@ -2,7 +2,7 @@
   <!-- One root: closed, Reka still renders a holder for the options next to the trigger. -->
   <div
     class="base-select-root"
-    :class="{ 'base-select-root-inline': variant === 'inline' }">
+    :class="{ 'base-select-root-inline': variant === 'inline' && !fullWidth }">
     <SelectRoot
       v-model="selected"
       :disabled="disabled"
@@ -13,6 +13,7 @@
         class="base-select"
         :class="{
           'base-select-inline': variant === 'inline',
+          'base-select-full-width': fullWidth,
           'base-select-icon-only-mobile': iconOnlyOnMobile,
           placeholder: !selectedOption,
         }">
@@ -76,6 +77,7 @@ import {
 const props = withDefaults(
   defineProps<{
     disabled?: boolean
+    fullWidth?: boolean
     iconOnlyOnMobile?: boolean
     loading?: boolean
     // Shown above the options instead of them: loading, nothing to pick, a load error.
@@ -88,6 +90,7 @@ const props = withDefaults(
   }>(),
   {
     disabled: false,
+    fullWidth: false,
     iconOnlyOnMobile: false,
     loading: false,
     message: undefined,
@@ -187,6 +190,10 @@ const selected = computed({
 
 .base-select-inline:is(:focus-visible, [data-state='open']) {
   border-color: var(--color-focus);
+}
+
+.base-select-full-width {
+  width: 100%;
 }
 
 @media (max-width: 600px) {

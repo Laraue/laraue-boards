@@ -146,6 +146,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       columns: sortByOrder(board.statuses ?? []).map((status) => {
         const column = issuesByStatus.get(String(status.id))
         return {
+          category: status.category,
           color: status.color ?? null,
           hasNext: column?.hasNext ?? false,
           id: String(status.id),

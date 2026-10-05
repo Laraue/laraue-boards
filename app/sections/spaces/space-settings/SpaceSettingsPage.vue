@@ -1,16 +1,41 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="IconSettings"
-      :parents="[
-        {
-          color: data?.color,
-          icon: SpaceIcon,
-          label: data?.name ?? spaceKey,
-          to: organizationRoutes.space(spaceKey),
-        },
-      ]"
-      :title="t('settings')" />
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconSettings"
+        :parents="[
+          {
+            color: data?.color,
+            icon: SpaceIcon,
+            label: data?.name ?? spaceKey,
+            to: organizationRoutes.space(spaceKey),
+          },
+        ]"
+        :title="t('settings')">
+        <template
+          v-if="data"
+          #actions>
+          <DeleteActionMenu
+            v-if="data.canDelete"
+            :disabled="submitting"
+            :label="t('deleteSpace')"
+            :loading="removing"
+            :on-delete="remove" />
+          <BaseButton
+            v-if="data.canUpdate"
+            :aria-label="t('saveChanges')"
+            :disabled="removing"
+            :form="formId"
+            icon-on-mobile
+            :loading="updating"
+            type="submit"
+            variant="primary">
+            <IconCheck />
+            <template #label>{{ t('saveChanges') }}</template>
+          </BaseButton>
+        </template>
+      </PageHeader>
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -19,55 +44,43 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default="{ data: page }">
-        <section class="form-page">
-          <form @submit.prevent="update">
-            <label for="space-settings-name">{{ t('name') }}</label>
-            <input
-              id="space-settings-name"
-              v-model="form.name"
-              :disabled="!page.canUpdate"
-              required />
-            <label for="space-settings-key">{{ t('key') }}</label>
-            <input
-              id="space-settings-key"
-              v-model="form.key"
-              :disabled="!page.canUpdate"
-              required />
-            <label>{{ t('color') }}</label>
-            <AppColorPicker
-              v-model="form.color"
-              :disabled="!page.canUpdate" />
+        <section class="space-settings-page">
+          <form
+            :id="formId"
+            @submit.prevent="update">
+            <div class="settings-fields">
+              <label for="space-settings-name">{{ t('name') }}</label>
+              <BaseInput
+                id="space-settings-name"
+                v-model="form.name"
+                :disabled="!page.canUpdate || submitting"
+                required />
+              <label for="space-settings-key">{{ t('key') }}</label>
+              <BaseInput
+                id="space-settings-key"
+                v-model="form.key"
+                :disabled="!page.canUpdate || submitting"
+                required />
+              <span :id="`${formId}-color`">{{ t('color') }}</span>
+              <AppColorPicker
+                v-model="form.color"
+                :aria-labelledby="`${formId}-color`"
+                :disabled="!page.canUpdate || submitting" />
+            </div>
             <p
               v-if="updateMessage || removeMessage"
               class="form-error">
               {{ updateMessage || removeMessage }}
             </p>
-            <div class="form-actions">
-              <button
-                v-if="page.canUpdate"
-                class="primary"
-                :disabled="submitting"
-                type="submit">
-                {{ updating ? t('saving') : t('saveChanges') }}
-              </button>
-              <button
-                v-if="page.canDelete"
-                class="secondary danger"
-                :disabled="submitting"
-                type="button"
-                @click="remove">
-                {{ t('deleteSpace') }}
-              </button>
-            </div>
           </form>
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconSettings } from '@tabler/icons-vue'
+import { IconCheck, IconSettings } from '@tabler/icons-vue'
 
 import { SpaceIcon } from '~/constants/icons'
 import type { SpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
@@ -89,8 +102,7 @@ const { t } = useI18n({
     loading: 'Loading space…',
     name: 'Name',
     saveChanges: 'Save changes',
-    saving: 'Saving…',
-    settings: 'Settings',
+    settings: 'Space settings',
   },
   ru: {
     color: 'Цвет',
@@ -101,8 +113,7 @@ const { t } = useI18n({
     loading: 'Загрузка раздела…',
     name: 'Название',
     saveChanges: 'Сохранить изменения',
-    saving: 'Сохранение…',
-    settings: 'Настройки',
+    settings: 'Настройки раздела',
   },
 })
 
@@ -113,6 +124,7 @@ const form = reactive({
 })
 
 const organizationRoutes = useOrganizationRoutes()
+const formId = `space-settings-${useId()}`
 
 const { data, message, pending, refresh } = await useApiQuery(
   () => `space-settings:${props.spaceKey}`,
@@ -158,3 +170,25 @@ const remove = async (): Promise<void> => {
   }
 }
 </script>
+
+<style scoped>
+.space-settings-page {
+  margin-inline: auto;
+  max-width: 768px;
+  width: 100%;
+}
+
+.settings-fields {
+  align-items: center;
+  column-gap: var(--space-4);
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  row-gap: var(--space-3);
+}
+
+@media (max-width: 600px) {
+  .settings-fields {
+    column-gap: var(--space-2);
+  }
+}
+</style>

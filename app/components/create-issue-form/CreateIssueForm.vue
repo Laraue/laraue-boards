@@ -104,7 +104,8 @@
         {{ message }}
       </p>
       <BaseButton
-        :disabled="pending || !hasText || !form.statusId || !form.assigneeId"
+        v-if="!hideSubmit"
+        :disabled="!canSubmit"
         :loading="pending"
         type="submit"
         variant="primary">
@@ -143,6 +144,7 @@ const props = defineProps<{
     spaceName?: string
   }
   deps: CreateIssueFormDeps
+  hideSubmit?: boolean
   initialStatusId?: string
   onCreated: (issueKey: string) => Promise<void> | void
 }>()
@@ -197,6 +199,9 @@ const spaceKey = computed(() => props.board?.spaceKey ?? form.spaceKey)
 // An issue needs a title or content: a missing title is generated from the content.
 const hasText = computed(() => !!form.title.trim() || !!form.content.trim())
 const { execute: create, message, pending } = useApiAction(props.deps.create)
+const canSubmit = computed(
+  () => !pending.value && hasText.value && !!form.statusId && !!form.assigneeId,
+)
 
 const changeFiles = (files: File[]) => {
   form.files = files
@@ -219,6 +224,7 @@ const submit = async (): Promise<void> => {
     await props.onCreated(created.value)
   }
 }
+defineExpose({ canSubmit, pending })
 </script>
 
 <style scoped>
@@ -230,8 +236,6 @@ const submit = async (): Promise<void> => {
     'main side'
     'actions actions';
   grid-template-columns: minmax(0, 1fr) 304px;
-  margin-inline: auto;
-  max-width: 1240px;
   row-gap: var(--space-4);
   width: 100%;
 }
@@ -285,8 +289,6 @@ const submit = async (): Promise<void> => {
 }
 
 .issue-properties {
-  --control-height: var(--control-height-small);
-
   align-items: center;
   display: grid;
   gap: var(--space-2) var(--space-3);

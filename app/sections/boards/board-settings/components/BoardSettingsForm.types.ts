@@ -15,7 +15,6 @@ export type BoardSettingsFormColumnDraft = BoardSettingsColumnDraft & { key: str
 
 export type BoardSettingsFormProps = {
   error: null | string
-  onDelete: () => void
   onUpdate: (input: BoardSettingsFormInput) => void
   submitting: boolean
   viewModel: BoardSettingsPageData

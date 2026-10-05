@@ -1,19 +1,37 @@
 <template>
   <!-- Without a tooltip the button is the root, so a parent's scoped class still styles it. -->
+  <NuxtLink
+    v-if="to"
+    v-bind="$attrs"
+    class="base-button"
+    :class="[variant, size, { menu, 'icon-on-mobile': iconOnMobile }]"
+    :to="to">
+    <slot />
+    <span
+      v-if="$slots.label"
+      class="base-button-label">
+      <slot name="label" />
+    </span>
+  </NuxtLink>
   <BaseTooltip
-    v-if="tooltip"
+    v-else-if="tooltip"
     :text="tooltip">
     <button
       v-bind="$attrs"
       :aria-busy="loading || undefined"
       class="base-button"
-      :class="[variant, size, { menu }]"
+      :class="[variant, size, { menu, 'icon-on-mobile': iconOnMobile }]"
       :disabled="disabled || loading"
       :type="type">
       <IconLoader2
         v-if="loading"
         class="base-button-spinner" />
       <slot />
+      <span
+        v-if="$slots.label"
+        class="base-button-label">
+        <slot name="label" />
+      </span>
     </button>
   </BaseTooltip>
   <button
@@ -21,26 +39,35 @@
     v-bind="$attrs"
     :aria-busy="loading || undefined"
     class="base-button"
-    :class="[variant, size, { menu }]"
+    :class="[variant, size, { menu, 'icon-on-mobile': iconOnMobile }]"
     :disabled="disabled || loading"
     :type="type">
     <IconLoader2
       v-if="loading"
       class="base-button-spinner" />
     <slot />
+    <span
+      v-if="$slots.label"
+      class="base-button-label">
+      <slot name="label" />
+    </span>
   </button>
 </template>
 
 <script setup lang="ts">
 import { IconLoader2 } from '@tabler/icons-vue'
+import type { RouteLocationRaw } from 'vue-router'
 
 withDefaults(
   defineProps<{
     disabled?: boolean
+    iconOnMobile?: boolean
     loading?: boolean
     menu?: boolean
     // Small for secondary actions inside content; default for the main actions of a page.
     size?: 'default' | 'small'
+    // Makes the control a navigation link.
+    to?: RouteLocationRaw
     // A hint on hover, in the same tooltip as the icon buttons'.
     tooltip?: string
     type?: 'button' | 'submit'
@@ -48,9 +75,11 @@ withDefaults(
   }>(),
   {
     disabled: false,
+    iconOnMobile: false,
     loading: false,
     menu: false,
     size: 'default',
+    to: undefined,
     tooltip: undefined,
     type: 'button',
     variant: 'neutral',
@@ -76,6 +105,7 @@ defineOptions({ inheritAttrs: false })
   justify-content: center;
   max-width: 100%;
   padding: 0 var(--space-3);
+  text-decoration: none;
   transition: border-color var(--duration-fast) var(--ease-standard);
   white-space: nowrap;
 }
@@ -127,6 +157,17 @@ defineOptions({ inheritAttrs: false })
 
 .base-button-spinner {
   animation: var(--animation-spin);
+}
+
+@media (max-width: 767px) {
+  .base-button.icon-on-mobile {
+    padding: 0;
+    width: var(--control-height);
+  }
+
+  .base-button.icon-on-mobile .base-button-label {
+    display: none;
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {

@@ -59,10 +59,6 @@
           </div>
         </div>
       </div>
-      <div class="skeleton-actions">
-        <span class="primary skeleton skeleton-control">{{ t('saveChanges') }}</span>
-        <span class="secondary danger skeleton skeleton-control">{{ t('deleteIssue') }}</span>
-      </div>
     </div>
   </div>
 </template>
@@ -76,12 +72,10 @@ const { t } = useI18n({
     board: 'Board',
     comments: 'Comments',
     created: 'Created',
-    deleteIssue: 'Delete issue',
     history: 'History',
     loadingIssue: 'Loading issue',
     owner: 'Owner',
     properties: 'Properties',
-    saveChanges: 'Save changes',
     space: 'Space',
     status: 'Status',
     updated: 'Updated',
@@ -91,12 +85,10 @@ const { t } = useI18n({
     board: 'Доска',
     comments: 'Комментарии',
     created: 'Создана',
-    deleteIssue: 'Удалить задачу',
     history: 'История',
     loadingIssue: 'Загрузка задачи',
     owner: 'Владелец',
     properties: 'Свойства',
-    saveChanges: 'Сохранить изменения',
     space: 'Раздел',
     status: 'Статус',
     updated: 'Изменена',
@@ -109,9 +101,7 @@ const { t } = useI18n({
   align-self: start;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  margin-inline: auto;
   max-height: 100%;
-  max-width: 1240px;
   min-height: 0;
   width: 100%;
 }
@@ -129,8 +119,7 @@ const { t } = useI18n({
   display: block;
 }
 
-.skeleton-copy,
-.skeleton-control {
+.skeleton-copy {
   color: transparent;
   user-select: none;
 }
@@ -138,12 +127,6 @@ const { t } = useI18n({
 .skeleton-copy {
   justify-self: start;
   width: max-content;
-}
-
-.skeleton-control {
-  border-color: transparent;
-  display: inline-flex;
-  pointer-events: none;
 }
 
 .skeleton-header {
@@ -168,7 +151,7 @@ const { t } = useI18n({
 
 .skeleton-form {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   row-gap: var(--space-4);
 }
@@ -177,7 +160,7 @@ const { t } = useI18n({
   align-items: start;
   column-gap: var(--space-8);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 304px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   grid-template-rows: fit-content(100%);
   min-height: 0;
   overflow: hidden;
@@ -327,11 +310,6 @@ const { t } = useI18n({
   max-width: 100%;
   overflow: hidden;
   white-space: nowrap;
-}
-
-.skeleton-actions {
-  display: flex;
-  gap: var(--space-2);
 }
 
 @keyframes issue-skeleton-shimmer {

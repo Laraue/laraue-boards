@@ -2,18 +2,20 @@
   <span>{{ t('status') }}:</span>
   <div class="history-value-change">
     <span :title="change.oldValue ?? t('none')">
-      <i
+      <StatusIndicator
         v-if="change.oldColor"
-        :style="{ background: change.oldColor }" />
+        :category="change.oldCategory ?? undefined"
+        :color="change.oldColor" />
       {{ change.oldValue ?? t('none') }}
     </span>
     <IconArrowRight />
     <span
       class="history-new-value"
       :title="change.newValue ?? t('none')">
-      <i
+      <StatusIndicator
         v-if="change.newColor"
-        :style="{ background: change.newColor }" />
+        :category="change.newCategory ?? undefined"
+        :color="change.newColor" />
       {{ change.newValue ?? t('none') }}
     </span>
   </div>
@@ -21,6 +23,8 @@
 
 <script setup lang="ts">
 import { IconArrowRight } from '@tabler/icons-vue'
+
+import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 
 import type { HistoryStatusChangeViewModel } from '../HistoryTimeline.types'
 

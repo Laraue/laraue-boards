@@ -71,6 +71,7 @@ test('maps board columns in status order with their issues', async () => {
       color: '#111',
       columns: [
         {
+          category: 'Created',
           color: '#333',
           hasNext: true,
           id: '1',
@@ -87,7 +88,15 @@ test('maps board columns in status order with their issues', async () => {
           ],
           title: 'To do',
         },
-        { color: '#222', hasNext: false, id: '2', issueCount: 0, issues: [], title: 'Done' },
+        {
+          category: 'Completed',
+          color: '#222',
+          hasNext: false,
+          id: '2',
+          issueCount: 0,
+          issues: [],
+          title: 'Done',
+        },
       ],
       id: '7',
       issueCount: 2,

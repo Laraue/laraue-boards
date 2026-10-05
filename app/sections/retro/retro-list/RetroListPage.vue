@@ -1,18 +1,21 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="RetroIcon"
-      :title="t('retro')">
-      <button
-        v-if="data?.canCreate"
-        :aria-label="t('start')"
-        :disabled="starting"
-        type="button"
-        @click="start(null)">
-        <IconPlus />
-        <span class="btn-label">{{ t('start') }}</span>
-      </button>
-    </PageHeader>
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="RetroIcon"
+        :title="t('retro')">
+        <template
+          v-if="data?.canCreate"
+          #actions>
+          <IconButton
+            :label="t('start')"
+            :loading="starting"
+            @click="start(null)">
+            <IconPlus />
+          </IconButton>
+        </template>
+      </PageHeader>
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -82,7 +85,7 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">

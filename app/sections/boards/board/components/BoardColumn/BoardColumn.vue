@@ -1,22 +1,21 @@
 <template>
   <section class="column">
     <div class="column-head">
-      <span>
-        <i :style="{ background: viewModel.color || COLORS.gray }" />
-        {{ viewModel.title }}
-      </span>
-      <span class="column-head-actions">
-        <button
+      <div class="column-heading">
+        <StatusIndicator
+          :category="viewModel.category"
+          :color="viewModel.color || COLORS.gray" />
+        <h2>{{ viewModel.title }}</h2>
+        <span class="column-count">{{ viewModel.issueCount }}</span>
+      </div>
+      <div class="column-head-actions">
+        <IconButton
           v-if="canCreateIssues"
-          :aria-label="`${t('addIssueTo')} ${viewModel.title}`"
-          class="icon-btn small"
-          :title="t('addIssue')"
-          type="button"
+          :label="`${t('addIssueTo')} ${viewModel.title}`"
           @click="onCreateIssue(viewModel.id)">
           <IconPlus />
-        </button>
-        <span>{{ viewModel.issueCount }}</span>
-      </span>
+        </IconButton>
+      </div>
     </div>
     <div
       ref="element"
@@ -25,7 +24,7 @@
       <p
         v-if="viewModel.issues.length === 0"
         class="empty">
-        {{ canMoveIssues ? t('dropIssues') : t('noIssues') }}
+        {{ t('noIssues') }}
       </p>
       <IssueCard
         v-for="(issue, index) in viewModel.issues"
@@ -34,7 +33,6 @@
         :disabled="!canMoveIssues || movingIssueKeys.has(issue.issueKey)"
         :index="index"
         :moving="movingIssueKeys.has(issue.issueKey)"
-        :on-move-to-backlog="onMoveToBacklog"
         :on-open-issue="onOpenIssue"
         :view-model="issue" />
       <div
@@ -44,13 +42,12 @@
         <IconLoader
           v-if="loadingMore"
           class="column-sentinel-loader" />
-        <button
+        <IconButton
           v-else-if="loadMoreFailed"
-          class="column-sentinel-retry"
-          type="button"
+          :label="t('loadMoreRetry')"
           @click="onLoadMore(viewModel.id)">
-          {{ t('loadMoreRetry') }}
-        </button>
+          <IconRefresh />
+        </IconButton>
       </div>
     </div>
   </section>
@@ -59,8 +56,9 @@
 <script setup lang="ts">
 import { CollisionPriority } from '@dnd-kit/abstract'
 import { useDroppable } from '@dnd-kit/vue'
-import { IconLoader, IconPlus } from '@tabler/icons-vue'
+import { IconLoader, IconPlus, IconRefresh } from '@tabler/icons-vue'
 
+import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import { COLORS } from '~/constants/colors'
 import IssueCard from '~/sections/boards/board/components/BoardColumn/components/IssueCard.vue'
 
@@ -74,7 +72,6 @@ const props = defineProps<{
   movingIssueKeys: Set<string>
   onCreateIssue: (statusId: string) => void
   onLoadMore: (statusId: string) => void
-  onMoveToBacklog: (issueKey: string) => void
   onOpenIssue: (issueKey: string) => void
   viewModel: BoardColumnViewModel
 }>()
@@ -83,14 +80,12 @@ const { t } = useI18n({
   en: {
     addIssue: 'Add issue',
     addIssueTo: 'Add issue to',
-    dropIssues: 'Drop issues here',
     loadMoreRetry: 'Could not load more issues. Try again',
     noIssues: 'No issues',
   },
   ru: {
     addIssue: 'Добавить задачу',
     addIssueTo: 'Добавить задачу в',
-    dropIssues: 'Перетащите задачи сюда',
     loadMoreRetry: 'Не удалось загрузить задачи. Повторить',
     noIssues: 'Задач нет',
   },
@@ -132,14 +127,12 @@ onBeforeUnmount(() => observer?.disconnect())
 
 <style scoped>
 .column {
-  background: var(--color-soft);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-control);
   display: flex;
   flex-direction: column;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
-  padding: var(--space-3);
   width: 100%;
 }
 
@@ -167,41 +160,31 @@ onBeforeUnmount(() => observer?.disconnect())
   width: 16px;
 }
 
-.column-sentinel-retry {
-  background: none;
-  border: none;
-  color: var(--color-danger, #d1242f);
-  cursor: pointer;
-  font-size: var(--font-size-small);
-  opacity: 1;
-  text-decoration: underline;
-  transition: opacity var(--duration-fast) var(--ease-standard);
-}
-
-.column-sentinel-retry:active {
-  opacity: 0.6;
-}
-
 .column-head {
   align-items: center;
+  border-bottom: 1px solid var(--color-divider);
   display: flex;
   flex: none;
-  font-weight: var(--font-weight-bold);
   justify-content: space-between;
-  padding: 0 var(--space-1) var(--space-3);
+  margin-bottom: var(--space-2);
+  min-height: var(--control-height-small);
+  padding-bottom: var(--space-2);
 }
 
-.column-head > span:first-child {
+.column-heading {
   align-items: center;
   display: flex;
   gap: var(--space-2);
+  min-width: 0;
 }
 
-.column-head i {
-  border-radius: var(--radius-pill);
-  flex: none;
-  height: 8px;
-  width: 8px;
+.column-heading h2 {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .column-head-actions {
@@ -210,16 +193,10 @@ onBeforeUnmount(() => observer?.disconnect())
   gap: var(--space-2);
 }
 
-.column-head-actions > span {
-  background: var(--color-surface);
-  border-radius: var(--radius-pill);
+.column-count {
   color: var(--color-muted);
-  font-size: var(--font-size-small);
-  padding: 2px var(--space-2);
-}
-
-.column-head-actions > .icon-btn {
-  color: var(--color-accent);
+  font-size: var(--font-size-body);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 767px) {

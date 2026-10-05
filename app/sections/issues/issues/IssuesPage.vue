@@ -1,15 +1,47 @@
 <template>
-  <div ref="pageElement">
-    <PageHeader
-      :icon="IconClipboardList"
-      :title="t('allIssues')">
-      <NuxtLink
-        v-if="data?.spaces.length"
-        :to="organizationRoutes.newIssue()">
-        <IconPlus />
-        {{ t('addIssue') }}
-      </NuxtLink>
-    </PageHeader>
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconClipboardList"
+        :title="t('allIssues')">
+        <template
+          v-if="data"
+          #tools>
+          <input
+            :aria-label="t('searchIssues')"
+            :placeholder="t('searchIssues')"
+            type="search"
+            :value="request.search"
+            @input="updateSearch(($event.target as HTMLInputElement).value)" />
+          <IssueFilters
+            :attributes="data.attributes"
+            :epic-statuses="epicStatusOptions"
+            :loading="filtering"
+            :model-value="filterValue"
+            :spaces="data.spaces"
+            @update:model-value="
+              updateFilters({
+                attributes: $event.attributes,
+                epicStatuses: $event.epicStatuses ?? [],
+                spaceIds: $event.spaceIds ?? [],
+              })
+            " />
+        </template>
+        <template
+          v-if="data"
+          #actions>
+          <BaseButton
+            v-if="data.spaces.length"
+            :aria-label="t('addIssue')"
+            icon-on-mobile
+            :to="organizationRoutes.newIssue()"
+            variant="primary">
+            <IconClipboardPlus />
+            <template #label>{{ t('addIssue') }}</template>
+          </BaseButton>
+        </template>
+      </PageHeader>
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -17,29 +49,10 @@
       :message="message"
       :on-retry="refresh"
       :pending="pending">
-      <template #default="{ data: view }">
-        <section class="issues-page">
-          <div class="toolbar">
-            <input
-              :aria-label="t('searchIssues')"
-              :placeholder="t('searchIssues')"
-              type="search"
-              :value="request.search"
-              @input="updateSearch(($event.target as HTMLInputElement).value)" />
-            <IssueFilters
-              :attributes="view.attributes"
-              :epic-statuses="epicStatusOptions"
-              :loading="filtering"
-              :model-value="filterValue"
-              :spaces="view.spaces"
-              @update:model-value="
-                updateFilters({
-                  attributes: $event.attributes,
-                  epicStatuses: $event.epicStatuses ?? [],
-                  spaceIds: $event.spaceIds ?? [],
-                })
-              " />
-          </div>
+      <template #default>
+        <section
+          ref="pageElement"
+          class="issues-page">
           <p
             v-if="searchMessage"
             class="form-error">
@@ -58,11 +71,11 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconClipboardList, IconPlus } from '@tabler/icons-vue'
+import { IconClipboardList, IconClipboardPlus } from '@tabler/icons-vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
@@ -242,26 +255,3 @@ onScopeDispose(() => {
   scheduleSearch.cancel()
 })
 </script>
-
-<style scoped>
-.issues-page {
-  margin-inline: auto;
-  max-width: var(--workspace-max-width);
-  padding: var(--space-2) var(--space-6) var(--space-8);
-}
-
-.issues-page .toolbar {
-  margin-top: 0;
-}
-
-.issues-page input[type='search'] {
-  max-width: 352px;
-  width: 100%;
-}
-
-@media (max-width: 767px) {
-  .issues-page {
-    padding-inline: 0;
-  }
-}
-</style>

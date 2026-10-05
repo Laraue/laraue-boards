@@ -1,22 +1,24 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="IconPlus"
-      :parents="[
-        {
-          color: data?.spaceColor,
-          icon: SpaceIcon,
-          label: data?.spaceName ?? spaceKey,
-          to: organizationRoutes.space(spaceKey),
-        },
-        {
-          color: data?.boardColor,
-          icon: BoardIcon,
-          label: data?.boardName ?? t('board'),
-          to: organizationRoutes.board(spaceKey, boardId),
-        },
-      ]"
-      :title="t('addIssue')" />
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconClipboardPlus"
+        :parents="[
+          {
+            color: data?.spaceColor,
+            icon: SpaceIcon,
+            label: data?.spaceName ?? spaceKey,
+            to: organizationRoutes.space(spaceKey),
+          },
+          {
+            color: data?.boardColor,
+            icon: BoardIcon,
+            label: data?.boardName ?? t('board'),
+            to: organizationRoutes.board(spaceKey, boardId),
+          },
+        ]"
+        :title="t('addIssue')" />
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -42,11 +44,11 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconPlus } from '@tabler/icons-vue'
+import { IconClipboardPlus } from '@tabler/icons-vue'
 
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'

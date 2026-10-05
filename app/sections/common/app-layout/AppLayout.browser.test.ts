@@ -31,6 +31,7 @@ const createTourDeps = () => ({
 })
 
 const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
+  logout: vi.fn<AppLayoutDeps['logout']>(async () => undefined),
   tour: createTourDeps(),
   view: vi.fn<AppLayoutDeps['view']>(async () => ({ data, status: 'success' })),
   ...overrides,
@@ -79,8 +80,9 @@ it('links the member to the account in the organization', async () => {
   await page.viewport(1280, 800)
   await mount(createDeps())
 
+  await page.getByRole('button', { name: 'User menu' }).click()
   await expect
-    .element(page.getByRole('link', { name: /Ada Lovelace Free/ }))
+    .element(page.getByRole('link', { name: 'Organization profile' }))
     .toHaveAttribute('href', '/organizations/acme-ab12/account')
 })
 

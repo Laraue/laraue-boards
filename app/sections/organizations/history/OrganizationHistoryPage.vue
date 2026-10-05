@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="IconHistory"
-      :title="t('history')" />
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconHistory"
+        :title="t('history')" />
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -63,7 +65,7 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">

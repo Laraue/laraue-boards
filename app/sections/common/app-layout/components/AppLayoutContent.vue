@@ -104,32 +104,77 @@
         </div>
       </nav>
       <div class="sidebar-footer">
-        <!-- A phone's page header has no room for them, so they come with the menu. -->
-        <div class="sidebar-preferences">
-          <AppHeaderPreferences />
-          <IconButton
-            :label="t('yourAccount')"
-            to="/account">
-            <IconUserCircle />
-          </IconButton>
-        </div>
-        <NuxtLink
-          class="sidebar-user"
-          :class="{ active: within('organizations-organizationKey-account') }"
-          :to="organizationRoutes.account()"
-          @click="sidebarOpen = false">
-          <span
-            class="avatar"
-            :style="{ background: viewModel.user.color }">
-            {{ viewModel.user.initials }}
-          </span>
-          <span class="sidebar-user-info">
-            <strong>{{ viewModel.user.name }}</strong>
-            <small class="muted">
-              {{ viewModel.user.tariffName || t('tariffUnavailable') }}
-            </small>
-          </span>
-        </NuxtLink>
+        <AppPopover
+          align="end"
+          class="sidebar-account"
+          side="right">
+          <template #trigger="{ open, toggle }">
+            <button
+              :aria-expanded="open"
+              aria-haspopup="dialog"
+              :aria-label="t('userMenu')"
+              class="sidebar-user"
+              :class="{ active: open }"
+              type="button"
+              @click="toggle">
+              <span
+                class="avatar"
+                :style="{ background: viewModel.user.color }">
+                {{ viewModel.user.initials }}
+              </span>
+              <span class="sidebar-user-info">
+                <strong>{{ viewModel.user.name }}</strong>
+                <small class="muted">
+                  {{ viewModel.user.tariffName || t('tariffUnavailable') }}
+                </small>
+              </span>
+            </button>
+          </template>
+          <template #default="{ close }">
+            <div
+              :aria-label="t('userMenu')"
+              class="user-menu"
+              role="dialog">
+              <BaseButton
+                menu
+                to="/account"
+                @click="closeUserMenu(close)">
+                <IconUserCircle />
+                {{ t('yourAccount') }}
+              </BaseButton>
+              <BaseButton
+                menu
+                :to="organizationRoutes.account()"
+                @click="closeUserMenu(close)">
+                <IconBuilding />
+                {{ t('organizationProfile') }}
+              </BaseButton>
+              <div class="user-menu-divider" />
+              <BaseButton
+                menu
+                @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
+                <IconSun v-if="theme === 'dark'" />
+                <IconMoon v-else />
+                {{ theme === 'dark' ? t('lightTheme') : t('darkTheme') }}
+              </BaseButton>
+              <BaseButton
+                menu
+                @click="setLocale(locale === 'ru' ? 'en' : 'ru')">
+                <IconLanguage />
+                {{ locale === 'ru' ? 'English' : 'Русский' }}
+              </BaseButton>
+              <div class="user-menu-divider" />
+              <BaseButton
+                :loading="loggingOut"
+                menu
+                variant="danger"
+                @click="onLogout">
+                <IconLogout />
+                {{ t('logOut') }}
+              </BaseButton>
+            </div>
+          </template>
+        </AppPopover>
       </div>
     </aside>
     <Transition name="fade">
@@ -140,7 +185,9 @@
         @click="sidebarOpen = false" />
     </Transition>
     <main>
-      <slot />
+      <div class="app-layout-page">
+        <slot />
+      </div>
     </main>
   </div>
 </template>
@@ -148,11 +195,16 @@
 <script setup lang="ts">
 import {
   IconBook,
+  IconBuilding,
   IconClipboardList,
   IconHistory,
+  IconLanguage,
+  IconLogout,
+  IconMoon,
   IconPlus,
   IconSelector,
   IconSettings,
+  IconSun,
   IconUserCircle,
 } from '@tabler/icons-vue'
 
@@ -161,11 +213,18 @@ import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
 import { docsPath } from '~/sections/docs/docsPaths'
 
 const props = defineProps<{
+  loggingOut: boolean
+  onLogout: () => Promise<void>
   viewModel: AppLayoutData
 }>()
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const sidebarOpen = useSidebarOpen()
+const { setLocale, setTheme, theme } = useAppPreferences()
+const closeUserMenu = (close: () => void) => {
+  close()
+  sidebarOpen.value = false
+}
 const { locale, t } = useI18n({
   en: {
     admin: 'Admin',
@@ -174,16 +233,21 @@ const { locale, t } = useI18n({
     closeMenu: 'Close menu',
     createSpace: 'Create space',
     currentOrganization: 'Current organization',
+    darkTheme: 'Dark theme',
     documentation: 'Documentation',
     documentationNewTab: 'Documentation (opens in a new tab)',
     history: 'History',
+    lightTheme: 'Light theme',
+    logOut: 'Log out',
     mainNavigation: 'Main navigation',
+    organizationProfile: 'Organization profile',
     retro: 'Retro',
     spaceHint: 'A space groups the boards and issues of one project.',
     spaces: 'Spaces',
     switchOrganization: 'Switch organization',
     tariffUnavailable: 'Tariff unavailable',
-    yourAccount: 'Your Laraue account',
+    userMenu: 'User menu',
+    yourAccount: 'Personal profile',
   },
   ru: {
     admin: 'Админка',
@@ -192,16 +256,21 @@ const { locale, t } = useI18n({
     closeMenu: 'Закрыть меню',
     createSpace: 'Создать раздел',
     currentOrganization: 'Текущая организация',
+    darkTheme: 'Тёмная тема',
     documentation: 'Документация',
     documentationNewTab: 'Документация (откроется в новой вкладке)',
     history: 'История',
+    lightTheme: 'Светлая тема',
+    logOut: 'Выйти',
     mainNavigation: 'Главная навигация',
+    organizationProfile: 'Профиль в организации',
     retro: 'Ретро',
     spaceHint: 'В разделе собраны доски и задачи проекта.',
     spaces: 'Разделы',
     switchOrganization: 'Сменить организацию',
     tariffUnavailable: 'Тариф недоступен',
-    yourAccount: 'Ваш аккаунт Laraue',
+    userMenu: 'Меню пользователя',
+    yourAccount: 'Личный профиль',
   },
 })
 const active = (name: OrganizationRouteName) => route.name === name
@@ -336,13 +405,23 @@ main {
   height: 100dvh;
   min-width: 0;
   overflow: auto;
-  padding: var(--layout-content-padding);
   position: relative;
   scrollbar-gutter: stable;
 }
 
 main > :deep(*) {
   min-width: 0;
+}
+
+.app-layout-page {
+  display: grid;
+  min-height: 0;
+  min-width: 0;
+  padding: var(--layout-content-padding);
+}
+
+.app-layout-page:has(> .app-page) {
+  padding: 0;
 }
 
 main :deep(.page-load-state) {
@@ -366,8 +445,19 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
-.sidebar-preferences {
-  display: none;
+.sidebar-account {
+  width: 100%;
+}
+
+.user-menu {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-1);
+}
+
+.user-menu-divider {
+  border-top: 1px solid var(--color-divider);
+  margin: var(--space-1);
 }
 
 .sidebar-user {
@@ -410,6 +500,10 @@ main :deep(.page-load-state) {
   display: grid;
   flex: 1;
   min-width: 0;
+}
+
+.sidebar-user small {
+  font-size: var(--font-size-caption);
 }
 
 .sidebar-user strong,
@@ -499,10 +593,6 @@ main :deep(.page-load-state) {
 
   main {
     grid-column: auto;
-  }
-
-  .sidebar-preferences {
-    display: flex;
   }
 }
 </style>
