@@ -188,7 +188,31 @@ it('adds an issue without a title so the server generates it', async () => {
   expect(onCreated).toHaveBeenCalledWith('ISS-1')
 })
 
-it('does not let an issue be added without a description', async () => {
+it('adds an issue with a title and no content', async () => {
+  const onCreated = vi.fn<(issueKey: string) => void>()
+  const deps = createDeps()
+  currentWrapper = await mountSuspended(CreateIssueForm, {
+    attachTo: document.body,
+    props: {
+      attributes: [],
+      board: { id: '12', name: 'Sprint board', spaceKey: 'product' },
+      deps,
+      onCreated,
+    },
+  })
+
+  await page.getByLabelText('Title', { exact: true }).fill('Bug title')
+  await chooseOption('Status', 'To do')
+  await chooseOption('Assignee', 'Ann Lee')
+  await page.getByRole('button', { name: 'Add issue' }).click()
+
+  expect(deps.create).toHaveBeenCalledWith(
+    expect.objectContaining({ content: '', title: 'Bug title' }),
+  )
+  expect(onCreated).toHaveBeenCalledWith('ISS-1')
+})
+
+it('does not let an issue be added without a title and content', async () => {
   const deps = createDeps()
   currentWrapper = await mountSuspended(CreateIssueForm, {
     attachTo: document.body,
@@ -200,7 +224,6 @@ it('does not let an issue be added without a description', async () => {
     },
   })
 
-  await page.getByLabelText('Title', { exact: true }).fill('Bug title')
   await chooseOption('Status', 'To do')
   await chooseOption('Assignee', 'Ann Lee')
 
