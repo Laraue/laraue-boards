@@ -81,47 +81,149 @@
             </div>
           </article>
         </div>
+
+        <section
+          v-if="plans(page).length"
+          class="plans">
+          <h2>{{ t('plans') }}</h2>
+          <div class="plan-list">
+            <article
+              v-for="plan in plans(page)"
+              :key="plan.id"
+              class="plan-offer">
+              <div>
+                <strong class="plan-name">{{ plan.title }}</strong>
+                <p class="plan-price">
+                  {{ plan.formattedPrice }}
+                  <span class="muted">/ {{ t('perMonth') }}</span>
+                </p>
+              </div>
+              <ul class="plan-features muted">
+                <li>{{ t('tokensPerMonth', { count: formatNumber(plan.tokens) }) }}</li>
+                <li v-if="plan.issuesPerMonth">
+                  {{ t('issuesPerMonthLimit', { count: formatNumber(plan.issuesPerMonth) }) }}
+                </li>
+              </ul>
+              <BaseButton
+                :disabled="!page.canPay || !state.accepted"
+                :loading="checkout.pending.value && state.planId === plan.id"
+                variant="primary"
+                @click="buy(plan)">
+                {{ plan.title === page.subscriptionCode ? t('extend') : t('buy') }}
+              </BaseButton>
+            </article>
+          </div>
+
+          <BaseCheckbox
+            v-model="state.accepted"
+            :disabled="!page.canPay">
+            {{ t('accept') }}
+            <NuxtLink
+              target="_blank"
+              :to="termsPath">
+              {{ t('offer') }}
+            </NuxtLink>
+          </BaseCheckbox>
+          <p
+            v-if="!page.canPay"
+            class="muted">
+            {{ t('ownerOnly') }}
+          </p>
+          <p
+            v-else-if="checkout.message.value"
+            class="error">
+            {{ checkout.message.value }}
+          </p>
+        </section>
       </section>
     </template>
   </QueryState>
 </template>
 
 <script setup lang="ts">
-import type { BillingPageDeps, BillingUsageViewModel } from '~/sections/billing/BillingPage.deps'
+import type {
+  BillingPageData,
+  BillingPageDeps,
+  BillingPlanViewModel,
+  BillingUsageViewModel,
+} from '~/sections/billing/BillingPage.deps'
 
-const props = defineProps<{ deps: BillingPageDeps }>()
+// `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
+// is the page's navigation.
+const props = defineProps<{ deps: BillingPageDeps; onPay: (url: string) => void }>()
 
 const { t } = useI18n({
   en: {
+    accept: 'I accept the',
+    buy: 'Buy',
     currentPlan: 'Current plan',
+    extend: 'Extend',
     freeTeamOrganizations: 'Free team organizations',
     issuesPerMonth: 'Issues this month',
+    issuesPerMonthLimit: '{count} issues per month',
     loadError: 'Could not load billing summary',
     loading: 'Loading billing summary…',
+    offer: 'public offer',
+    ownerOnly: 'Only the organization owner can pay for the plan.',
+    perMonth: 'month',
     personalPlan: 'Personal plan',
+    plans: 'Plans',
     remaining: 'remaining',
     teamPlan: 'Team plan',
     tokens: 'Tokens',
+    tokensPerMonth: '{count} tokens per month',
     usedOfLimit: '{used} used of {limit}',
   },
   ru: {
+    accept: 'Я принимаю условия',
+    buy: 'Купить',
     currentPlan: 'Текущий тариф',
+    extend: 'Продлить',
     freeTeamOrganizations: 'Бесплатные командные организации',
     issuesPerMonth: 'Задачи за месяц',
+    issuesPerMonthLimit: '{count} задач в месяц',
     loadError: 'Не удалось загрузить информацию о биллинге',
     loading: 'Загрузка информации о биллинге…',
+    offer: 'публичной оферты',
+    ownerOnly: 'Оплатить тариф может только владелец организации.',
+    perMonth: 'месяц',
     personalPlan: 'Персональный тариф',
+    plans: 'Тарифы',
     remaining: 'осталось',
     teamPlan: 'Командный тариф',
     tokens: 'Токены',
+    tokensPerMonth: '{count} токенов в месяц',
     usedOfLimit: 'использовано {used} из {limit}',
   },
 })
 
 const { formatNumber } = useFormatters()
+const locale = useLocale()
+const state = reactive({ accepted: false, planId: undefined as string | undefined })
+
 const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
   props.deps.view({ signal }),
 )
+
+// The plans are a bonus on the page: when they cannot be loaded the usage is still shown.
+const { data: planOptions } = await useApiQuery('billing-plans', (signal) =>
+  props.deps.getPlans({ signal }),
+)
+
+const checkout = useApiAction(props.deps.startCheckout)
+
+const termsPath = computed(() => (locale.value === 'ru' ? '/ru/terms' : '/terms'))
+
+const plans = (page: BillingPageData) =>
+  (page.kind === 'personal' ? planOptions.value?.personal : planOptions.value?.team) ?? []
+
+const buy = async (plan: BillingPlanViewModel) => {
+  state.planId = plan.id
+  const result = await checkout.execute({ currencyCode: plan.currencyCode, planId: plan.id })
+  if (result) {
+    props.onPay(result.value.url)
+  }
+}
 
 const usagePercent = (usage: BillingUsageViewModel) =>
   `${usage.limit > 0 ? Math.min(100, Math.max(0, (usage.used / usage.limit) * 100)) : 0}%`
@@ -210,7 +312,56 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   font-size: var(--font-size-small);
 }
 
+.plans {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.plans h2 {
+  font-size: var(--font-size-heading);
+  margin: 0;
+}
+
+.plan-list {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.plan-offer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+.plan-price {
+  font-size: var(--font-size-heading);
+  margin: var(--space-1) 0 0;
+}
+
+.plan-features {
+  display: grid;
+  font-size: var(--font-size-small);
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.error {
+  color: var(--color-danger);
+  margin: 0;
+}
+
 @media (max-width: 767px) {
+  .plan-list {
+    grid-template-columns: 1fr;
+  }
+
   .plan-card {
     align-items: stretch;
     flex-direction: column;

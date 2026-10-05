@@ -98,6 +98,7 @@ export default defineNuxtConfig({
     '/join/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/landing/tariffs': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/login': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/payment/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/organizations': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/organizations/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
