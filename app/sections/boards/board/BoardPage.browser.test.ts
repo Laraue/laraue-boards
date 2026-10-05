@@ -100,7 +100,7 @@ it('requests issue creation in the selected column', async () => {
   expect(onCreateIssue).toHaveBeenCalledWith('3')
 })
 
-it('moves an issue to backlog and removes it from the board', async () => {
+it('does not show a backlog action on issue cards', async () => {
   const moveIssueToBacklog = vi.fn<BoardPageDeps['moveIssueToBacklog']>(async () => {})
 
   await mount({
@@ -131,12 +131,9 @@ it('moves an issue to backlog and removes it from the board', async () => {
     moveIssueToBacklog,
   })
 
-  await page.getByRole('button', { exact: true, name: 'Move to backlog' }).click()
-
-  await expect.element(page.getByText('ISS-1')).not.toBeInTheDocument()
-  expect(moveIssueToBacklog).toHaveBeenCalledWith({
-    boardId: '12',
-    issueKey: 'ISS-1',
-    spaceKey: 'product-AB12',
-  })
+  await expect.element(page.getByText('ISS-1')).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { exact: true, name: 'Move to backlog' }))
+    .not.toBeInTheDocument()
+  expect(moveIssueToBacklog).not.toHaveBeenCalled()
 })

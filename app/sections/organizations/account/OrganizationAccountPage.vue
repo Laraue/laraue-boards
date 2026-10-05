@@ -1,8 +1,10 @@
 <template>
-  <section class="account-page">
-    <PageHeader
-      :icon="IconBuilding"
-      :title="t('youIn', { organization: organizationName })" />
+  <AppPage class="account-page">
+    <template #header>
+      <PageHeader
+        :icon="IconBuilding"
+        :title="t('youIn', { organization: organizationName })" />
+    </template>
     <p class="muted">
       {{ t('scope', { organization: organizationName }) }}
       <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
@@ -42,7 +44,7 @@
     </nav>
 
     <slot />
-  </section>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
@@ -81,18 +83,13 @@ const { t } = useI18n({
 </script>
 
 <style scoped>
-.account-page {
+.account-page :deep(.app-page-content) {
   align-content: start;
   display: grid;
   gap: var(--space-6);
 }
 
-/* The header keeps its own spacing below it. */
-.account-page > .page-header {
-  margin-bottom: calc(-1 * var(--space-6) + var(--layout-content-padding, 0px));
-}
-
-.account-page > p {
+.account-page p {
   margin: 0;
 }
 </style>

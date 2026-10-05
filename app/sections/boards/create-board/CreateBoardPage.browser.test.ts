@@ -52,7 +52,8 @@ it('copies statuses into the editor before creating', async () => {
   await page.getByLabelText('Name').fill('Roadmap')
   await page.getByLabelText('Copy statuses from').selectOptions('7')
   await page.getByLabelText('Status name').fill('Ready')
-  await page.getByLabelText('Status category').selectOptions('InProgress')
+  await page.getByRole('combobox', { name: 'Status category' }).click()
+  await page.getByRole('option', { exact: true, name: 'In progress' }).click()
   await page.getByRole('button', { name: 'Create board' }).click()
 
   expect(create).toHaveBeenCalledWith({

@@ -25,10 +25,14 @@
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ align?: 'end' | 'start'; viewportPadding?: number }>(), {
-  align: 'start',
-  viewportPadding: 16,
-})
+const props = withDefaults(
+  defineProps<{
+    align?: 'end' | 'start'
+    side?: 'bottom' | 'right'
+    viewportPadding?: number
+  }>(),
+  { align: 'start', side: 'bottom', viewportPadding: 16 },
+)
 const root = useTemplateRef('root')
 const content = useTemplateRef('content')
 const open = ref(false)
@@ -58,14 +62,24 @@ const updatePosition = () => {
   )
   const below = triggerRect.bottom + gap
   const above = triggerRect.top - gap - contentRect.height
+  const right = triggerRect.right + gap
+  const opensRight = props.side === 'right' && right <= maxLeft
 
   const alignedLeft =
     props.align === 'end' ? triggerRect.right - contentRect.width : triggerRect.left
-  const left = Math.min(Math.max(alignedLeft, props.viewportPadding), maxLeft)
-  const top =
+  const left = opensRight ? right : Math.min(Math.max(alignedLeft, props.viewportPadding), maxLeft)
+  const verticalTop =
     below + contentRect.height <= window.innerHeight - props.viewportPadding
       ? below
       : Math.max(props.viewportPadding, above)
+  const alignedTop =
+    props.align === 'end' ? triggerRect.bottom - contentRect.height : triggerRect.top
+  const top = opensRight
+    ? Math.max(
+        props.viewportPadding,
+        Math.min(alignedTop, window.innerHeight - props.viewportPadding - contentRect.height),
+      )
+    : verticalTop
 
   if (position.left !== left || position.top !== top) {
     position.left = left

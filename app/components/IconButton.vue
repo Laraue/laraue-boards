@@ -40,7 +40,7 @@ withDefaults(
     // A longer hint than the accessible name, e.g. with a shortcut.
     tooltip?: string
     type?: 'button' | 'submit'
-    variant?: 'ghost' | 'primary'
+    variant?: 'danger' | 'ghost' | 'primary'
   }>(),
   {
     disabled: false,
@@ -81,6 +81,11 @@ defineOptions({ inheritAttrs: false })
   color: #fff;
 }
 
+/* Muted at rest, so a list of rows isn't a column of red; red once aimed at. */
+.icon-button.danger:focus-visible {
+  color: var(--color-danger);
+}
+
 .icon-button:focus-visible {
   border-color: var(--color-focus);
   box-shadow: none;
@@ -101,6 +106,11 @@ defineOptions({ inheritAttrs: false })
 
   .icon-button.primary:hover:not(:disabled) {
     border-color: var(--color-action-hover);
+  }
+
+  .icon-button.danger:hover:not(:disabled) {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
   }
 }
 </style>

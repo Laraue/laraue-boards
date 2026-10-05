@@ -52,7 +52,7 @@ it('saves the board name edited by the user', async () => {
     },
     onSaved,
   )
-  await page.getByLabelText('Name').fill('Planning')
+  await page.getByLabelText('Name', { exact: true }).fill('Planning')
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   expect(save).toHaveBeenCalledWith({
@@ -78,7 +78,8 @@ it('saves a column category picked by the user', async () => {
     },
     vi.fn<() => void>(),
   )
-  await page.getByLabelText('Status category').first().selectOptions('InProgress')
+  await page.getByRole('combobox', { name: 'Status category' }).first().click()
+  await page.getByRole('option', { exact: true, name: 'In progress' }).click()
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   expect(save).toHaveBeenCalledWith(

@@ -65,6 +65,7 @@ it('deletes the space after confirmation', async () => {
   vi.spyOn(window, 'confirm').mockReturnValue(true)
 
   await mount(createDeps({ remove }), onDeleted)
+  await page.getByRole('button', { exact: true, name: 'Actions' }).click()
   await page.getByRole('button', { name: 'Delete space' }).click()
 
   expect(remove).toHaveBeenCalledWith({ spaceKey: 'product' })

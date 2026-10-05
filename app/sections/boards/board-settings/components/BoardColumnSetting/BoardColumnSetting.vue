@@ -3,40 +3,56 @@
     ref="element"
     class="setting-row"
     :class="{ 'setting-row--dragging': isDragging }">
-    <button
+    <div
       v-if="canUpdate"
       ref="handle"
-      :aria-label="t('reorder')"
-      class="icon-btn drag-handle"
-      :disabled="disabled"
-      type="button">
-      <IconGripVertical />
-    </button>
+      class="column-drag">
+      <IconButton
+        :disabled="disabled"
+        :label="t('reorder')"
+        style="cursor: grab; touch-action: none">
+        <IconGripVertical />
+      </IconButton>
+    </div>
     <span
       v-else
       aria-hidden="true" />
-    <AppColorPicker
-      :disabled="!canUpdate"
-      :model-value="color"
-      @update:model-value="props.onUpdateColor" />
-    <input
-      :disabled="!canUpdate"
+    <div class="column-color">
+      <AppColorPicker
+        compact
+        :disabled="!canUpdate || disabled"
+        :label="t('color')"
+        :model-value="color"
+        @update:model-value="props.onUpdateColor" />
+    </div>
+    <BaseInput
+      :aria-label="t('name')"
+      class="column-name"
+      :disabled="!canUpdate || disabled"
+      :model-value="name"
       required
-      :value="name"
-      @input="props.onUpdateName(($event.target as HTMLInputElement).value)" />
-    <StatusCategorySelect
-      :disabled="!canUpdate"
-      :model-value="category"
-      @update:model-value="props.onUpdateCategory" />
-    <button
+      variant="inline"
+      @update:model-value="props.onUpdateName" />
+    <div class="column-category">
+      <StatusCategorySelect
+        :color="color"
+        :disabled="!canUpdate || disabled"
+        full-width
+        :model-value="category"
+        variant="inline"
+        @update:model-value="props.onUpdateCategory" />
+    </div>
+    <div
       v-if="canUpdate"
-      :aria-label="t('delete')"
-      class="icon-btn danger"
-      :disabled="disabled"
-      type="button"
-      @click="props.onDelete">
-      <IconTrash />
-    </button>
+      class="column-delete">
+      <IconButton
+        :disabled="disabled"
+        :label="t('delete')"
+        variant="danger"
+        @click="props.onDelete">
+        <IconTrash />
+      </IconButton>
+    </div>
   </div>
 </template>
 
@@ -62,12 +78,23 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n({
-  en: { delete: 'Delete column', reorder: 'Reorder column' },
-  ru: { delete: 'Удалить колонку', reorder: 'Изменить порядок колонок' },
+  en: {
+    color: 'Column color',
+    delete: 'Delete column',
+    name: 'Column name',
+    reorder: 'Reorder column',
+  },
+  ru: {
+    color: 'Цвет колонки',
+    delete: 'Удалить колонку',
+    name: 'Название колонки',
+    reorder: 'Изменить порядок колонок',
+  },
 })
 
 const element = useTemplateRef('element')
-const handle = useTemplateRef('handle')
+const handleRoot = useTemplateRef('handle')
+const handle = computed(() => handleRoot.value?.querySelector<HTMLButtonElement>('button') ?? null)
 const { isDragging } = useSortable({
   disabled: computed(() => !props.canUpdate || props.disabled),
   element,
@@ -80,28 +107,55 @@ const { isDragging } = useSortable({
 <style scoped>
 .setting-row {
   align-items: center;
+  border-bottom: 1px solid var(--color-divider);
   display: grid;
   gap: var(--space-2);
-  grid-template-columns:
-    auto minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(min-content, 0.3fr)
-    auto;
+  grid-template-columns: var(--board-column-grid);
+  min-width: 0;
+  padding: var(--space-2) 0;
 }
 
 .setting-row--dragging {
   opacity: 0.45;
 }
 
-.setting-row :deep(.color-picker) {
-  width: 100%;
+.column-color,
+.column-category {
+  min-width: 0;
 }
 
-.drag-handle {
-  color: var(--color-muted);
-  cursor: grab;
-  touch-action: none;
-}
+@media (max-width: 600px) {
+  .setting-row {
+    border-bottom: 1px solid var(--color-divider);
+    grid-template-columns: var(--icon-btn-size) var(--icon-btn-size) minmax(0, 1fr) var(
+        --icon-btn-size
+      );
+    padding-bottom: var(--space-3);
+  }
 
-.drag-handle:active {
-  cursor: grabbing;
+  .column-drag {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .column-name {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .column-delete {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .column-color {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .column-category {
+    grid-column: 3 / 5;
+    grid-row: 2;
+  }
 }
 </style>

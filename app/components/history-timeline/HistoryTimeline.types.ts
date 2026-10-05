@@ -45,7 +45,10 @@ export type HistoryPropertyChangeViewModel = HistoryValueChange<'property'> & {
 
 export type HistorySpaceChangeViewModel = HistoryValueChange<'space'>
 
-export type HistoryStatusChangeViewModel = HistoryValueChange<'status'>
+export type HistoryStatusChangeViewModel = HistoryValueChange<'status'> & {
+  newCategory?: components['schemas']['StatusCategory'] | null
+  oldCategory?: components['schemas']['StatusCategory'] | null
+}
 
 export type HistoryTitleChangeViewModel = HistoryValueChange<'title'>
 

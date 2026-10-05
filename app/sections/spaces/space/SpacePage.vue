@@ -1,26 +1,33 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="SpaceIcon"
-      :icon-color="data?.color"
-      :title="data?.name ?? t('space')">
-      <NuxtLink
-        v-if="data?.canCreateBoards"
-        :aria-label="t('createBoard')"
-        :to="organizationRoutes.newBoard(spaceKey)">
-        <IconPlus />
-        <span class="btn-label">{{ t('createBoard') }}</span>
-      </NuxtLink>
-      <template
-        v-if="data?.canManage"
-        #actions>
-        <IconButton
-          :label="t('spaceSettings')"
-          :to="organizationRoutes.spaceSettings(spaceKey)">
-          <IconSettings />
-        </IconButton>
-      </template>
-    </PageHeader>
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="SpaceIcon"
+        :icon-color="data?.color"
+        :title="data?.name ?? t('space')">
+        <template
+          v-if="data"
+          #actions>
+          <BaseButton
+            v-if="data.canManage"
+            :aria-label="t('spaceSettings')"
+            icon-on-mobile
+            :to="organizationRoutes.spaceSettings(spaceKey)">
+            <IconSettings />
+            <template #label>{{ t('settings') }}</template>
+          </BaseButton>
+          <BaseButton
+            v-if="data.canCreateBoards"
+            :aria-label="t('createBoard')"
+            icon-on-mobile
+            :to="organizationRoutes.newBoard(spaceKey)"
+            variant="primary">
+            <IconLayoutGridAdd />
+            <template #label>{{ t('createBoard') }}</template>
+          </BaseButton>
+        </template>
+      </PageHeader>
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -50,6 +57,7 @@
               {{ t('boards') }}
               <span class="muted">{{ regularBoards.length }}</span>
             </h2>
+
             <div
               v-if="regularBoards.length"
               class="board-grid">
@@ -100,11 +108,11 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconListDetails, IconPlus, IconSettings } from '@tabler/icons-vue'
+import { IconLayoutGridAdd, IconListDetails, IconSettings } from '@tabler/icons-vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'

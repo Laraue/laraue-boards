@@ -20,16 +20,21 @@ component; page styles own layout. Extend the existing system before adding a co
 
 ## Controls
 
-- Default height: `--control-height` (36px), including menu rows. Icon buttons use
+- Default height: `--control-height` (32px), including menu rows. Icon buttons use
   `--control-height-small` (32px).
-- Compact height: `--control-height-small` (32px), only for intentionally dense layouts such as
-  issue Properties and editable table cells. Button `size="small"` changes height and padding, not
-  typography.
+- Compact controls also use 32px. Button `size="small"` changes padding, not height or typography.
 - `BaseSelect` default is the framed form field. `variant="inline"` is the transparent,
-  content-width control for Properties and tables. Both share the same 14px text and option styling.
+  content-width control for Properties and tables. Both share the same 32px height, 14px text and
+  option styling.
 - `BaseButton` variants express intent: neutral, primary, danger, ghost. The `menu` prop changes
   alignment and framing, not text size. Combine it with danger for destructive menu actions.
 - Use `BaseCheckbox` for labeled checkbox options and `IconButton` for icon actions.
+- `IconButton variant="danger"` marks destructive actions with the danger color and a danger border
+  on hover. `BaseSelect full-width` stretches an inline select to its layout column while keeping
+  the shared inline appearance.
+- `BaseInput` owns text field variants. Its default is framed; `variant="inline"` is transparent for
+  editable rows, with a border on hover and focus. `AppColorPicker compact` uses an icon button with
+  a color sample for dense rows; the default shows the color name.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Control radius: `--radius-control` (8px). Space follows the existing 4px scale.
 
