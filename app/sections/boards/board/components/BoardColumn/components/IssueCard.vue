@@ -139,14 +139,13 @@ useSortable({
   align-items: center;
   color: var(--color-muted);
   display: flex;
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-small);
   gap: var(--space-2);
   min-width: 0;
 }
 
 .task-source time {
   flex: none;
-  font-size: var(--font-size-small);
   margin-left: auto;
 }
 
@@ -162,9 +161,9 @@ useSortable({
 
 .task-source .avatar {
   flex: none;
-  font-size: var(--font-size-caption);
-  height: 24px;
-  width: 24px;
+  font-size: 10px;
+  height: 20px;
+  width: 20px;
 }
 
 .task-title {

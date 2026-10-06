@@ -2,9 +2,10 @@
   <div
     :aria-label="t('loadingIssue')"
     class="issue-skeleton"
+    :class="{ 'has-header': inDialog && !hideHeader }"
     role="status">
     <div
-      v-if="inDialog"
+      v-if="inDialog && !hideHeader"
       aria-hidden="true"
       class="skeleton-header">
       <span class="skeleton skeleton-copy skeleton-title">DEF-00</span>
@@ -12,7 +13,8 @@
     </div>
     <div
       aria-hidden="true"
-      class="skeleton-form">
+      class="skeleton-form"
+      :class="{ 'has-footer': inDialog }">
       <div class="skeleton-content">
         <div class="skeleton-main">
           <div class="skeleton-description">
@@ -59,12 +61,22 @@
           </div>
         </div>
       </div>
+      <div
+        v-if="inDialog"
+        class="skeleton-footer">
+        <span class="skeleton skeleton-footer-menu" />
+        <span class="skeleton skeleton-footer-save">
+          <span class="skeleton-footer-icon" />
+          <span class="skeleton-save-label">{{ t('saveChanges') }}</span>
+          <span class="skeleton-save-label-mobile">{{ t('save') }}</span>
+        </span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{ inDialog?: boolean }>()
+defineProps<{ hideHeader?: boolean; inDialog?: boolean }>()
 
 const { t } = useI18n({
   en: {
@@ -76,6 +88,8 @@ const { t } = useI18n({
     loadingIssue: 'Loading issue',
     owner: 'Owner',
     properties: 'Properties',
+    save: 'Save',
+    saveChanges: 'Save changes',
     space: 'Space',
     status: 'Status',
     updated: 'Updated',
@@ -89,6 +103,8 @@ const { t } = useI18n({
     loadingIssue: 'Загрузка задачи',
     owner: 'Владелец',
     properties: 'Свойства',
+    save: 'Сохранить',
+    saveChanges: 'Сохранить изменения',
     space: 'Раздел',
     status: 'Статус',
     updated: 'Изменена',
@@ -98,12 +114,16 @@ const { t } = useI18n({
 
 <style scoped>
 .issue-skeleton {
-  align-self: start;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1;
+  grid-template-rows: minmax(0, 1fr);
   max-height: 100%;
   min-height: 0;
   width: 100%;
+}
+
+.issue-skeleton.has-header {
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .skeleton {
@@ -121,11 +141,8 @@ const { t } = useI18n({
 
 .skeleton-copy {
   color: transparent;
-  user-select: none;
-}
-
-.skeleton-copy {
   justify-self: start;
+  user-select: none;
   width: max-content;
 }
 
@@ -153,7 +170,41 @@ const { t } = useI18n({
   display: grid;
   grid-template-rows: minmax(0, 1fr);
   min-height: 0;
-  row-gap: var(--space-4);
+  row-gap: var(--space-2);
+}
+
+.skeleton-form.has-footer {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.skeleton-footer {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.skeleton-footer-menu {
+  height: var(--control-height);
+  width: var(--control-height);
+}
+
+.skeleton-footer-save {
+  align-items: center;
+  border: 1px solid transparent;
+  color: transparent;
+  display: flex;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding-inline: var(--space-3);
+}
+
+.skeleton-footer-icon {
+  width: var(--icon-size);
+}
+
+.skeleton-save-label-mobile {
+  display: none;
 }
 
 .skeleton-content {
@@ -251,7 +302,7 @@ const { t } = useI18n({
 
 .skeleton-side {
   display: grid;
-  font-size: 13px;
+  font-size: var(--font-size-body);
   gap: var(--space-4);
   max-height: 100%;
   min-height: 0;
@@ -273,6 +324,10 @@ const { t } = useI18n({
   font-weight: var(--font-weight-semibold);
 }
 
+.skeleton-properties {
+  grid-auto-rows: var(--control-height);
+}
+
 .skeleton-label {
   border-radius: var(--radius-small);
 }
@@ -287,7 +342,7 @@ const { t } = useI18n({
   align-items: center;
   display: flex;
   gap: var(--space-2);
-  min-height: var(--control-height-small);
+  min-height: var(--control-height);
   padding: 0 var(--space-3);
 }
 
@@ -325,6 +380,14 @@ const { t } = useI18n({
 }
 
 @media (max-width: 767px) {
+  .skeleton-save-label {
+    display: none;
+  }
+
+  .skeleton-save-label-mobile {
+    display: inline;
+  }
+
   .skeleton-content {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;

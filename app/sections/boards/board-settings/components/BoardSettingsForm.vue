@@ -8,7 +8,11 @@
       <h2 :id="`${idPrefix}-general`">{{ t('general') }}</h2>
       <div class="settings-fields">
         <div class="settings-field">
-          <label for="board-settings-name">{{ t('name') }}</label>
+          <label
+            class="field-label"
+            for="board-settings-name">
+            {{ t('name') }}
+          </label>
           <BaseInput
             id="board-settings-name"
             v-model="state.name"
@@ -27,7 +31,11 @@
             :disabled="!viewModel.canUpdate || submitting" />
         </div>
         <div class="settings-field">
-          <label for="board-settings-status">{{ t('boardStatus') }}</label>
+          <label
+            class="field-label"
+            for="board-settings-status">
+            {{ t('boardStatus') }}
+          </label>
           <div class="settings-status">
             <BaseSelect
               id="board-settings-status"
@@ -284,13 +292,6 @@ watch(
   grid-column: 1 / -1;
   grid-template-columns: subgrid;
   min-width: 0;
-}
-
-.settings-field label,
-.field-label {
-  color: var(--color-muted);
-  font-weight: 400;
-  margin: 0;
 }
 
 .column-settings {
