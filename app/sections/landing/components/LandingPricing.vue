@@ -69,7 +69,7 @@
             <a
               class="pricing-card-cta"
               :href="appUrl">
-              {{ t('price_cta') }}
+              {{ isFreeTariff(tariff) ? t('price_cta') : t('price_cta_buy') }}
             </a>
           </div>
         </div>
@@ -122,6 +122,7 @@ const { t } = useI18n(
       per_seat: 'per seat',
       personal_label: 'For individuals',
       price_cta: 'Get started',
+      price_cta_buy: 'Buy',
       pricing_label: 'Pricing',
       pricing_sub:
         'Free to start, both for individuals and teams. Upgrade only when you need more.',
@@ -156,6 +157,7 @@ const { t } = useI18n(
       per_seat: 'за место',
       personal_label: 'Для себя',
       price_cta: 'Начать',
+      price_cta_buy: 'Купить',
       pricing_label: 'Цены',
       pricing_sub:
         'Бесплатно для старта — как для себя, так и для команды. Платите только когда нужно больше.',
