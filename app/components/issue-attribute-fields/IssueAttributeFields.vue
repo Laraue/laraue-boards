@@ -16,6 +16,7 @@
         :id="`${idPrefix}-${attribute.id}`"
         :disabled="disabled"
         :model-value="modelValue[attribute.id] ?? ''"
+        :placeholder="placeholder"
         @update:model-value="update(attribute.id, $event)" />
       <IssueAttributeListField
         v-else-if="attribute.type === 'list'"
@@ -30,12 +31,14 @@
         :id="`${idPrefix}-${attribute.id}`"
         :disabled="disabled"
         :model-value="modelValue[attribute.id] ?? ''"
+        :placeholder="placeholder"
         @update:model-value="update(attribute.id, $event)" />
       <IssueAttributeDecimalField
         v-else-if="attribute.type === 'decimal'"
         :id="`${idPrefix}-${attribute.id}`"
         :disabled="disabled"
         :model-value="modelValue[attribute.id] ?? ''"
+        :placeholder="placeholder"
         @update:model-value="update(attribute.id, $event)" />
       <IssueAttributeDateField
         v-else-if="attribute.type === 'date'"
@@ -83,6 +86,13 @@ const emit = defineEmits<{
   'update:modelValue': [value: Record<string, string>]
 }>()
 const idPrefix = useId()
+
+const { t } = useI18n({
+  en: { empty: 'Empty' },
+  ru: { empty: 'Пусто' },
+})
+// Inline, an empty field has no border, so the hint shows that there is a value to set.
+const placeholder = computed(() => (props.selectVariant === 'inline' ? t('empty') : undefined))
 
 const update = (id: string, value: string) => {
   const next = { ...props.modelValue }

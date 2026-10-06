@@ -1,22 +1,47 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="IconSettings"
-      :parents="[
-        {
-          color: data?.spaceColor,
-          icon: SpaceIcon,
-          label: data?.spaceName ?? spaceKey,
-          to: organizationRoutes.space(spaceKey),
-        },
-        {
-          color: data?.color,
-          icon: BoardIcon,
-          label: data?.name ?? t('board'),
-          to: organizationRoutes.board(spaceKey, boardId),
-        },
-      ]"
-      :title="t('settings')" />
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconSettings"
+        :parents="[
+          {
+            color: data?.spaceColor,
+            icon: SpaceIcon,
+            label: data?.spaceName ?? spaceKey,
+            to: organizationRoutes.space(spaceKey),
+          },
+          {
+            color: data?.color,
+            icon: BoardIcon,
+            label: data?.name ?? t('board'),
+            to: organizationRoutes.board(spaceKey, boardId),
+          },
+        ]"
+        :title="t('settings')">
+        <template
+          v-if="data"
+          #actions>
+          <DeleteActionMenu
+            v-if="data.canDelete"
+            :disabled="saving || removing"
+            :label="t('deleteBoard')"
+            :loading="removing"
+            :on-delete="remove" />
+          <BaseButton
+            v-if="data.canUpdate"
+            :aria-label="t('saveChanges')"
+            :disabled="removing"
+            :form="formId"
+            icon-on-mobile
+            :loading="saving"
+            type="submit"
+            variant="primary">
+            <IconCheck />
+            <template #label>{{ t('saveChanges') }}</template>
+          </BaseButton>
+        </template>
+      </PageHeader>
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -25,21 +50,21 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default="{ data: page }">
-        <section class="form-page">
+        <section class="board-settings-page">
           <BoardSettingsForm
+            :id="formId"
             :error="saveMessage || removeMessage || null"
-            :on-delete="remove"
             :on-update="(input) => save(page, input)"
             :submitting="saving || removing"
             :view-model="page" />
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconSettings } from '@tabler/icons-vue'
+import { IconCheck, IconSettings } from '@tabler/icons-vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type {
@@ -60,21 +85,26 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     board: 'Board',
+    deleteBoard: 'Delete board',
     deleteConfirm: 'Delete this board?',
     loadError: 'Could not load board',
     loading: 'Loading board…',
-    settings: 'Settings',
+    saveChanges: 'Save changes',
+    settings: 'Board settings',
   },
   ru: {
     board: 'Доска',
+    deleteBoard: 'Удалить доску',
     deleteConfirm: 'Удалить эту доску?',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
-    settings: 'Настройки',
+    saveChanges: 'Сохранить изменения',
+    settings: 'Настройки доски',
   },
 })
 
 const organizationRoutes = useOrganizationRoutes()
+const formId = `board-settings-${useId()}`
 
 const { data, message, pending, refresh } = await useApiQuery(
   () => `board-settings:${props.boardId}`,
@@ -113,3 +143,11 @@ const remove = async (): Promise<void> => {
   }
 }
 </script>
+
+<style scoped>
+.board-settings-page {
+  margin-inline: auto;
+  max-width: 768px;
+  width: 100%;
+}
+</style>

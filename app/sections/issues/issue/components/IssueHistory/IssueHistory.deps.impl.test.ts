@@ -22,8 +22,10 @@ test('maps issue history and sends pagination', async () => {
           },
           {
             $type: 'status',
+            newStatusCategory: null,
             newStatusColor: '#222',
             newStatusName: null,
+            oldStatusCategory: 'Created',
             oldStatusColor: '#333',
             oldStatusName: 'To do',
           },
@@ -130,8 +132,10 @@ test('maps issue history and sends pagination', async () => {
           },
           {
             kind: 'status',
+            newCategory: null,
             newColor: '#222',
             newValue: null,
+            oldCategory: 'Created',
             oldColor: '#333',
             oldValue: 'To do',
           },

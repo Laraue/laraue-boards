@@ -44,6 +44,7 @@ export type ViewAppLayout = (input: {
 }) => Promise<AppLayoutResult>
 
 export type AppLayoutDeps = {
+  logout: () => Promise<void>
   tour: TourStateDeps
   view: ViewAppLayout
 }

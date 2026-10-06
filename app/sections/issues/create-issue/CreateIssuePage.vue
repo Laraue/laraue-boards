@@ -1,11 +1,13 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="IconPlus"
-      :parents="[
-        { icon: IconClipboardList, label: t('allIssues'), to: organizationRoutes.issues() },
-      ]"
-      :title="t('addIssue')" />
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconClipboardPlus"
+        :parents="[
+          { icon: IconClipboardList, label: t('allIssues'), to: organizationRoutes.issues() },
+        ]"
+        :title="t('addIssue')" />
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -22,11 +24,11 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconClipboardList, IconPlus } from '@tabler/icons-vue'
+import { IconClipboardList, IconClipboardPlus } from '@tabler/icons-vue'
 
 import CreateIssueForm from '~/components/create-issue-form/CreateIssueForm.vue'
 import type { CreateIssuePageDeps } from '~/sections/issues/create-issue/CreateIssuePage.deps'

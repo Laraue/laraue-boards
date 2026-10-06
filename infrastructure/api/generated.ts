@@ -3655,8 +3655,10 @@ export interface components {
             $type?: "status";
             oldStatusName: null | string;
             oldStatusColor: null | string;
+            oldStatusCategory: null | components["schemas"]["StatusCategory"];
             newStatusName: null | string;
             newStatusColor: null | string;
+            newStatusCategory: null | components["schemas"]["StatusCategory"];
         };
         HistoryItemChangeIssueHistoryTitleChange: {
             /** @enum {string} */

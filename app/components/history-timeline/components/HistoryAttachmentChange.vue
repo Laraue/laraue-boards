@@ -57,9 +57,8 @@ const fileName = props.change.fileName ?? t('untitledFile')
 
 .history-new-value {
   color: var(--color-text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .history-attachment {

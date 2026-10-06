@@ -115,7 +115,7 @@ it('shows the loaded issue', async () => {
     }),
   )
 
-  await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
+  await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
 })
 
 it('previews markdown content', async () => {
@@ -291,7 +291,7 @@ it('links the dialog heading to the issue page without a back button', async () 
     .element(page.getByRole('link', { name: 'ISS-1' }))
     .toHaveAttribute('href', '/organizations/acme-ab12/issues/ISS-1')
   await expect.element(page.getByRole('button', { name: 'Back' })).not.toBeInTheDocument()
-  await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
+  await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
 })
 
 it('stays on the page after the issue is saved', async () => {
@@ -327,7 +327,7 @@ it('stays on the page after the issue is saved', async () => {
 
   expect(onBack).not.toHaveBeenCalled()
   expect(onDirtyChange).toHaveBeenLastCalledWith(false)
-  await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
+  await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
 })
 
 it('hides the actions when the issue cannot be edited', async () => {
@@ -351,5 +351,5 @@ it('reloads the issue when the failed request is retried', async () => {
 
   await page.getByRole('button', { name: 'Try again' }).click()
 
-  await expect.element(page.getByRole('heading', { name: 'ISS-1' })).toBeInTheDocument()
+  await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
 })

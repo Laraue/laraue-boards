@@ -1,34 +1,56 @@
 <template>
-  <div class="board-page">
-    <PageHeader
-      :icon="BoardIcon"
-      :icon-color="viewModel?.color ?? undefined"
-      :parents="[
-        {
-          color: viewModel?.spaceColor,
-          icon: SpaceIcon,
-          label: viewModel?.spaceName ?? spaceKey,
-          to: organizationRoutes.space(spaceKey),
-        },
-      ]"
-      :title="viewModel?.title ?? t('board')">
-      <NuxtLink
-        v-if="viewModel?.canCreateIssues"
-        :aria-label="t('addIssue')"
-        :to="organizationRoutes.newBoardIssue(spaceKey, viewModel.id)">
-        <IconPlus />
-        <span class="btn-label">{{ t('addIssue') }}</span>
-      </NuxtLink>
-      <template
-        v-if="viewModel && (viewModel.canUpdate || viewModel.canDelete)"
-        #actions>
-        <IconButton
-          :label="t('boardSettings')"
-          :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)">
-          <IconSettings />
-        </IconButton>
-      </template>
-    </PageHeader>
+  <AppPage class="board-page">
+    <template #header>
+      <PageHeader
+        :icon="BoardIcon"
+        :icon-color="viewModel?.color ?? undefined"
+        :parents="[
+          {
+            color: viewModel?.spaceColor,
+            icon: SpaceIcon,
+            label: viewModel?.spaceName ?? spaceKey,
+            to: organizationRoutes.space(spaceKey),
+          },
+        ]"
+        :title="viewModel?.title ?? t('board')">
+        <template
+          v-if="viewModel"
+          #tools>
+          <input
+            :aria-label="t('searchIssues')"
+            :placeholder="t('searchIssues')"
+            type="search"
+            :value="search"
+            @input="updateSearch(($event.target as HTMLInputElement).value)" />
+          <IssueFilters
+            :attributes="viewModel.attributes"
+            :loading="state.filtering"
+            :model-value="filterValue"
+            @update:model-value="updateFilters" />
+        </template>
+        <template
+          v-if="viewModel"
+          #actions>
+          <BaseButton
+            v-if="viewModel.canUpdate || viewModel.canDelete"
+            :aria-label="t('boardSettings')"
+            icon-on-mobile
+            :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)">
+            <IconSettings />
+            <template #label>{{ t('boardSettings') }}</template>
+          </BaseButton>
+          <BaseButton
+            v-if="viewModel.canCreateIssues"
+            :aria-label="t('addIssue')"
+            icon-on-mobile
+            :to="organizationRoutes.newBoardIssue(spaceKey, viewModel.id)"
+            variant="primary">
+            <IconClipboardPlus />
+            <template #label>{{ t('addIssue') }}</template>
+          </BaseButton>
+        </template>
+      </PageHeader>
+    </template>
     <QueryState
       :data="viewModel"
       :error-title="t('loadError')"
@@ -38,25 +60,11 @@
       :pending="pending">
       <template #default="{ data: page }">
         <section class="board-content">
-          <div class="toolbar">
-            <input
-              :aria-label="t('searchIssues')"
-              :placeholder="t('searchIssues')"
-              type="search"
-              :value="search"
-              @input="updateSearch(($event.target as HTMLInputElement).value)" />
-            <IssueFilters
-              :attributes="page.attributes"
-              :loading="state.filtering"
-              :model-value="filterValue"
-              @update:model-value="updateFilters" />
-          </div>
-
           <p
-            v-if="moveMessage"
+            v-if="moveBoardIssueMessage"
             class="form-error"
             role="alert">
-            {{ moveMessage }}
+            {{ moveBoardIssueMessage }}
           </p>
 
           <DragDropProvider
@@ -84,7 +92,6 @@
                 :moving-issue-keys="state.movingIssueKeys"
                 :on-create-issue="onCreateIssue"
                 :on-load-more="loadMoreIssues"
-                :on-move-to-backlog="moveToBacklog"
                 :on-open-issue="openIssue"
                 :view-model="column" />
             </div>
@@ -103,7 +110,7 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script lang="ts">
@@ -145,7 +152,7 @@ import { defaultPreset, Feedback, PointerActivationConstraints } from '@dnd-kit/
 import { move } from '@dnd-kit/helpers'
 import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
 import type { DragEndEvent, DragOverEvent } from '@dnd-kit/vue'
-import { IconPlus, IconSettings } from '@tabler/icons-vue'
+import { IconClipboardPlus, IconSettings } from '@tabler/icons-vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
@@ -258,10 +265,6 @@ watch(
 const { execute: executeMoveBoardIssue, message: moveBoardIssueMessage } = useApiAction(
   props.deps.moveBoardIssue,
 )
-const { execute: executeMoveIssueToBacklog, message: moveIssueToBacklogMessage } = useApiAction(
-  props.deps.moveIssueToBacklog,
-)
-const moveMessage = computed(() => moveBoardIssueMessage.value ?? moveIssueToBacklogMessage.value)
 const { execute: searchBoardIssues } = useApiAction(props.deps.searchBoardIssues)
 const { execute: loadMoreBoardIssues } = useApiAction(props.deps.loadMoreBoardIssues)
 const issueAttributes = computed(() => viewModel.value?.attributes ?? [])
@@ -480,24 +483,6 @@ const moveIssue = async (input: {
     viewModel.value = input.revert
   }
   state.movingIssueKeys.delete(input.issueKey)
-}
-
-const moveToBacklog = async (issueKey: string) => {
-  const current = viewModel.value
-  if (!current || state.movingIssueKeys.has(issueKey)) {
-    return
-  }
-
-  state.movingIssueKeys.add(issueKey)
-  const result = await executeMoveIssueToBacklog({
-    boardId: props.boardId,
-    issueKey,
-    spaceKey: props.spaceKey,
-  })
-  if (result) {
-    viewModel.value = removeIssueFromBoard(current, issueKey)
-  }
-  state.movingIssueKeys.delete(issueKey)
 }
 
 const loadMoreIssues = async (statusId: string) => {
@@ -785,15 +770,13 @@ const resolveIssueDialogCloseTarget = (input: {
 .board {
   display: grid;
   flex: 1;
-  gap: var(--space-3);
-  grid-auto-columns: 300px;
+  gap: var(--space-4);
+  grid-auto-columns: 320px;
   grid-auto-flow: column;
   grid-template-columns: none;
   grid-template-rows: 1fr;
-  margin-top: var(--space-5);
   min-height: 0;
   overflow-x: auto;
-  padding-bottom: var(--space-4);
 }
 
 @media (max-width: 767px) {
@@ -802,8 +785,8 @@ const resolveIssueDialogCloseTarget = (input: {
     grid-auto-columns: 100%;
     grid-auto-flow: column;
     grid-template-columns: none;
-    margin-top: var(--space-3);
     overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
   }
 }
 </style>

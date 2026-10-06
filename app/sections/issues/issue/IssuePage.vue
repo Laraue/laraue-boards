@@ -1,45 +1,73 @@
 <template>
-  <div class="issue-page-root">
-    <PageHeader
-      v-if="!inDialog"
-      :parents="
-        data
-          ? [
-              {
-                color: data.spaceColor,
-                icon: SpaceIcon,
-                label: data.spaceLabel,
-                to: organizationRoutes.space(data.spaceId),
-              },
-              {
-                color: data.boardColor,
-                icon: data.boardIsBacklog ? IconListDetails : BoardIcon,
-                label: data.boardLabel || t('currentBoard'),
-                to: data.boardIsBacklog
-                  ? organizationRoutes.backlog(data.spaceId)
-                  : organizationRoutes.board(data.spaceId, data.boardId),
-              },
-            ]
-          : []
-      "
-      :title="data?.issueKey ?? issueKey">
-      <template #actions>
+  <AppPage
+    class="issue-page-root"
+    :padded="!inDialog">
+    <template #header>
+      <PageHeader
+        v-if="!inDialog"
+        context-only
+        :parents="
+          data
+            ? [
+                {
+                  color: data.spaceColor,
+                  icon: SpaceIcon,
+                  label: data.spaceLabel,
+                  to: organizationRoutes.space(data.spaceId),
+                },
+                {
+                  color: data.boardColor,
+                  icon: data.boardIsBacklog ? IconListDetails : BoardIcon,
+                  label: data.boardLabel || t('currentBoard'),
+                  to: data.boardIsBacklog
+                    ? organizationRoutes.backlog(data.spaceId)
+                    : organizationRoutes.board(data.spaceId, data.boardId),
+                },
+              ]
+            : []
+        "
+        :title="data?.issueKey ?? issueKey">
+        <template #title-actions>
+          <IconButton
+            :label="state.copied ? t('copied') : t('copyIssueLink')"
+            @click="copyIssueLink">
+            <Transition
+              mode="out-in"
+              name="icon-pop">
+              <IconCheck
+                v-if="state.copied"
+                key="check" />
+              <IconLink
+                v-else
+                key="link" />
+            </Transition>
+          </IconButton>
+        </template>
+        <template
+          v-if="data?.canEdit"
+          #actions>
+          <IssuePageActions
+            :can-save="canSave"
+            :deleting="deleting"
+            :form-id="formId"
+            :on-delete="remove"
+            :saving="saving" />
+        </template>
+      </PageHeader>
+      <div
+        v-else
+        class="issue-dialog-heading">
+        <h1>
+          <NuxtLink :to="issueRoute">{{ data?.issueKey ?? issueKey }}</NuxtLink>
+        </h1>
         <IconButton
           :label="state.copied ? t('copied') : t('copyIssueLink')"
           @click="copyIssueLink">
-          <Transition
-            mode="out-in"
-            name="icon-pop">
-            <IconCheck
-              v-if="state.copied"
-              key="check" />
-            <IconLink
-              v-else
-              key="link" />
-          </Transition>
+          <IconCheck v-if="state.copied" />
+          <IconLink v-else />
         </IconButton>
-      </template>
-    </PageHeader>
+      </div>
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -48,27 +76,12 @@
       :on-retry="refresh"
       :pending="pending && !data">
       <template #loading>
-        <IssueSkeleton :in-dialog="inDialog" />
+        <IssueSkeleton />
       </template>
       <template #default="{ data: issue }">
         <section class="issue-page">
-          <!-- The board's dialog has no page header of its own. -->
-          <div
-            v-if="inDialog"
-            class="issue-dialog-heading">
-            <h1>
-              <NuxtLink :to="issueRoute">
-                {{ issue.issueKey }}
-              </NuxtLink>
-            </h1>
-            <IconButton
-              :label="state.copied ? t('copied') : t('copyIssueLink')"
-              @click="copyIssueLink">
-              <IconCheck v-if="state.copied" />
-              <IconLink v-else />
-            </IconButton>
-          </div>
           <form
+            :id="formId"
             class="issue-page-form"
             @submit.prevent="save">
             <div class="issue-form-content">
@@ -231,36 +244,29 @@
                 </dl>
               </aside>
             </div>
-            <div
-              v-if="issue.canEdit"
-              class="issue-actions">
+            <div v-if="saveMessage || deleteMessage || (inDialog && issue.canEdit)">
               <p
                 v-if="saveMessage || deleteMessage"
-                class="form-error">
+                class="form-error"
+                role="alert">
                 {{ saveMessage || deleteMessage }}
               </p>
-              <div class="issue-actions-buttons">
-                <BaseButton
-                  :disabled="!canSave || deleting"
-                  :loading="saving"
-                  type="submit"
-                  variant="primary">
-                  {{ saving ? t('saving') : t('saveChanges') }}
-                </BaseButton>
-                <BaseButton
-                  :disabled="saving"
-                  :loading="deleting"
-                  variant="danger"
-                  @click="remove">
-                  {{ t('deleteIssue') }}
-                </BaseButton>
-              </div>
+              <footer
+                v-if="inDialog && issue.canEdit"
+                class="issue-dialog-footer">
+                <IssuePageActions
+                  :can-save="canSave"
+                  :deleting="deleting"
+                  :form-id="formId"
+                  :on-delete="remove"
+                  :saving="saving" />
+              </footer>
             </div>
           </form>
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
@@ -285,6 +291,7 @@ import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueDescription from './components/IssueDescription/IssueDescription.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
+import IssuePageActions from './components/IssuePageActions.vue'
 import IssueSkeleton from './components/IssueSkeleton.vue'
 import type { IssuePageDeps, IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.deps'
 
@@ -299,6 +306,7 @@ const props = defineProps<{
   onDirtyChange: (dirty: boolean) => void
   onSaved?: (issue: IssuePageSavedIssue) => Promise<void> | void
 }>()
+const formId = `issue-form-${useId()}`
 
 const { t } = useI18n({
   en: {
@@ -314,7 +322,6 @@ const { t } = useI18n({
     currentSpace: 'Current space',
     currentStatus: 'Current status',
     deleteConfirm: 'Delete this issue?',
-    deleteIssue: 'Delete issue',
     history: 'History',
     issue: 'Issue',
     issueActivity: 'Issue activity',
@@ -322,9 +329,7 @@ const { t } = useI18n({
     loading: 'Loading issue…',
     owner: 'Owner',
     properties: 'Properties',
-    saveChanges: 'Save changes',
     saveWarning: 'Changes were saved, but the issue could not be moved. Try again.',
-    saving: 'Saving…',
     space: 'Space',
     status: 'Status',
     title: 'Title',
@@ -344,7 +349,6 @@ const { t } = useI18n({
     currentSpace: 'Текущий раздел',
     currentStatus: 'Текущий статус',
     deleteConfirm: 'Удалить эту задачу?',
-    deleteIssue: 'Удалить задачу',
     history: 'История',
     issue: 'Задача',
     issueActivity: 'Активность задачи',
@@ -352,9 +356,7 @@ const { t } = useI18n({
     loading: 'Загрузка задачи…',
     owner: 'Владелец',
     properties: 'Свойства',
-    saveChanges: 'Сохранить изменения',
     saveWarning: 'Изменения сохранены, но задачу не удалось переместить. Повторите попытку.',
-    saving: 'Сохранение…',
     space: 'Раздел',
     status: 'Статус',
     title: 'Заголовок',
@@ -575,9 +577,7 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-page {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  margin-inline: auto;
-  max-width: 1240px;
+  grid-template-rows: minmax(0, 1fr);
   min-height: 0;
   width: 100%;
 }
@@ -585,9 +585,16 @@ watch(dirty, setDirty, { immediate: true })
 .issue-dialog-heading {
   align-items: center;
   display: flex;
+  flex: none;
   gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-5);
   min-width: 0;
+}
+
+.issue-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .issue-dialog-heading h1 {
@@ -608,14 +615,14 @@ watch(dirty, setDirty, { immediate: true })
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
   min-height: 0;
-  row-gap: var(--space-4);
+  row-gap: var(--space-2);
 }
 
 .issue-form-content {
   align-items: start;
   column-gap: var(--space-8);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 304px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   grid-template-rows: fit-content(100%);
   min-height: 0;
   overflow: hidden;
@@ -679,10 +686,7 @@ watch(dirty, setDirty, { immediate: true })
   margin: 0;
 }
 
-/* A dense panel: its fields take the small control size through the tokens, at the text's size. */
 .issue-properties {
-  --control-height: var(--control-height-small);
-
   grid-auto-rows: var(--control-height);
 }
 
@@ -727,15 +731,6 @@ watch(dirty, setDirty, { immediate: true })
 .issue-dates dd {
   color: var(--color-muted);
   margin: 0;
-}
-
-.issue-actions .form-error {
-  margin: 0 0 var(--space-3);
-}
-
-.issue-actions-buttons {
-  display: flex;
-  gap: var(--space-2);
 }
 
 @media (max-width: 767px) {

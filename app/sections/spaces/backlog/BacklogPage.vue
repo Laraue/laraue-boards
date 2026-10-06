@@ -1,21 +1,44 @@
 <template>
-  <div>
-    <PageHeader
-      :icon="IconListDetails"
-      :parents="[
-        {
-          color: data?.spaceColor,
-          icon: SpaceIcon,
-          label: data?.spaceName ?? spaceKey,
-          to: organizationRoutes.space(spaceKey),
-        },
-      ]"
-      :title="data?.title ?? t('backlog')">
-      <NuxtLink :to="organizationRoutes.newBacklogIssue(spaceKey)">
-        <IconPlus />
-        {{ t('addIssue') }}
-      </NuxtLink>
-    </PageHeader>
+  <AppPage>
+    <template #header>
+      <PageHeader
+        :icon="IconListDetails"
+        :parents="[
+          {
+            color: data?.spaceColor,
+            icon: SpaceIcon,
+            label: data?.spaceName ?? spaceKey,
+            to: organizationRoutes.space(spaceKey),
+          },
+        ]"
+        :title="data?.title ?? t('backlog')">
+        <template
+          v-if="data"
+          #tools>
+          <input
+            :aria-label="t('searchIssues')"
+            :placeholder="t('searchIssues')"
+            type="search"
+            :value="request.search"
+            @input="updateSearch(($event.target as HTMLInputElement).value)" />
+          <IssueFilters
+            :attributes="data.attributes"
+            :loading="filtering"
+            :model-value="filterValue"
+            @update:model-value="updateFilters({ attributes: $event.attributes })" />
+        </template>
+        <template #actions>
+          <BaseButton
+            :aria-label="t('addIssue')"
+            icon-on-mobile
+            :to="organizationRoutes.newBacklogIssue(spaceKey)"
+            variant="primary">
+            <IconClipboardPlus />
+            <template #label>{{ t('addIssue') }}</template>
+          </BaseButton>
+        </template>
+      </PageHeader>
+    </template>
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -25,19 +48,6 @@
       :pending="pending">
       <template #default="{ data: page }">
         <section>
-          <div class="toolbar">
-            <input
-              :aria-label="t('searchIssues')"
-              :placeholder="t('searchIssues')"
-              type="search"
-              :value="request.search"
-              @input="updateSearch(($event.target as HTMLInputElement).value)" />
-            <IssueFilters
-              :attributes="page.attributes"
-              :loading="filtering"
-              :model-value="filterValue"
-              @update:model-value="updateFilters({ attributes: $event.attributes })" />
-          </div>
           <p
             v-if="searchMessage"
             class="form-error">
@@ -57,11 +67,11 @@
         </section>
       </template>
     </QueryState>
-  </div>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
-import { IconListDetails, IconPlus } from '@tabler/icons-vue'
+import { IconClipboardPlus, IconListDetails } from '@tabler/icons-vue'
 import { debounce } from 'es-toolkit'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 

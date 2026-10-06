@@ -126,8 +126,6 @@ const handleMoved = async () => {
 <style scoped>
 .issue-list {
   background: transparent;
-  border-top: 1px solid var(--color-divider);
   display: grid;
-  margin-top: var(--space-3);
 }
 </style>

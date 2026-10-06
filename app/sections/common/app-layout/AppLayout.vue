@@ -1,6 +1,8 @@
 <template>
   <AppLayoutContent
     v-if="data"
+    :logging-out="loggingOut"
+    :on-logout="logout"
     :view-model="data">
     <slot />
   </AppLayoutContent>
@@ -27,6 +29,13 @@ const props = defineProps<{
   onViewProblem: (problem: RoutableProblem) => Promise<void> | void
   organizationKey: string
 }>()
+const { execute: executeLogout, pending: loggingOut } = useApiAction(props.deps.logout)
+const logout = async () => {
+  if (!loggingOut.value && (await executeLogout())) {
+    clearNuxtData()
+    await navigateTo('/login')
+  }
+}
 const { t } = useI18n({
   en: {
     loadingOrganizations: 'Loading organizations…',
