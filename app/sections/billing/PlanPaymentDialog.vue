@@ -4,16 +4,20 @@
       <h2>{{ t('title', { plan: plan?.title ?? '' }) }}</h2>
       <template v-if="plan">
         <p class="plan-price">
-          {{ plan.formattedPrice }}
+          <strong>{{ plan.formattedPrice }}</strong>
           <span class="muted">/ {{ t('perMonth') }}</span>
         </p>
         <ul class="plan-conditions">
-          <li>{{ t('period') }}</li>
-          <li>{{ t('tokensPerMonth', { count: formatNumber(plan.tokens) }) }}</li>
+          <li>
+            <IconCheck />
+            {{ t('tokensPerMonth', { count: formatNumber(plan.tokens) }) }}
+          </li>
           <li v-if="plan.issuesPerMonth">
+            <IconCheck />
             {{ t('issuesPerMonthLimit', { count: formatNumber(plan.issuesPerMonth) }) }}
           </li>
         </ul>
+        <p class="plan-period muted">{{ t('period') }}</p>
       </template>
       <BaseCheckbox v-model="accepted">
         {{ t('accept') }}
@@ -47,6 +51,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconCheck } from '@tabler/icons-vue'
+
 import type { BillingPlanViewModel } from '~/sections/billing/BillingPage.deps'
 
 // The dialog only collects the consent: the payment itself is started by the page in `onConfirm`.
@@ -102,16 +108,43 @@ defineExpose({ close, open })
 
 <style scoped>
 .plan-price {
-  font-size: var(--font-size-heading);
-  margin: var(--space-2) 0 var(--space-3);
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.plan-price strong {
+  font-size: 32px;
+  letter-spacing: -0.02em;
 }
 
 .plan-conditions {
+  background: var(--color-soft);
+  border-radius: var(--radius-card);
   display: grid;
-  gap: var(--space-1);
+  gap: var(--space-2);
   list-style: none;
-  margin: 0 0 var(--space-4);
-  padding: 0;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+}
+
+.plan-conditions li {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.plan-conditions svg {
+  color: var(--color-accent);
+  flex-shrink: 0;
+  height: 16px;
+  width: 16px;
+}
+
+.plan-period {
+  font-size: var(--font-size-small);
+  margin: var(--space-2) 0 var(--space-4);
 }
 
 .form-error {
