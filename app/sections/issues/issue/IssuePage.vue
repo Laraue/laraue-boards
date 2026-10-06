@@ -1,6 +1,7 @@
 <template>
   <AppPage
     class="issue-page-root"
+    contained
     :padded="!inDialog">
     <template #header>
       <PageHeader
@@ -76,7 +77,9 @@
       :on-retry="refresh"
       :pending="pending && !data">
       <template #loading>
-        <IssueSkeleton />
+        <IssueSkeleton
+          hide-header
+          :in-dialog="inDialog" />
       </template>
       <template #default="{ data: issue }">
         <section class="issue-page">
