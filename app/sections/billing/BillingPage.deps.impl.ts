@@ -38,8 +38,11 @@ const mapPlans = (
     id: tariff.id,
     isFree: tariff.price === 0,
     issuesPerMonth: tariff.issuesPerMonth,
-    referencePrice: referenceTariffs.find((reference) => reference.id === tariff.id)
-      ?.formattedPrice,
+    // A free plan needs no hint.
+    referencePrice:
+      tariff.price === 0
+        ? undefined
+        : referenceTariffs.find((reference) => reference.id === tariff.id)?.formattedPrice,
     title: tariff.title,
     tokens: tariff.tokens,
   }))

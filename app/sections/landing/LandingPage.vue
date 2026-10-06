@@ -13,8 +13,8 @@
     <LandingPlatforms :locale="locale" />
     <LandingPricing
       id="pricing"
-      v-model:currency="currency"
       :locale="locale"
+      :reference-tariffs="referenceTariffs"
       :tariffs="tariffs" />
     <LandingOpenSource :locale="locale" />
     <LandingFaq :locale="locale" />
@@ -39,7 +39,7 @@ import LandingPlatforms from './components/LandingPlatforms.vue'
 import LandingPricing from './components/LandingPricing.vue'
 import LandingStructure from './components/LandingStructure.vue'
 import LandingUseCases from './components/LandingUseCases.vue'
-import type { LandingCurrency, LandingPageDeps } from './LandingPage.deps'
+import type { LandingPageDeps } from './LandingPage.deps'
 import { useLandingSeo } from './useLandingSeo'
 
 const props = defineProps<{ deps: LandingPageDeps; locale: Locale }>()
@@ -60,12 +60,13 @@ const { t } = useI18n(
   props.locale,
 )
 
-// Prices are loaded on the server for the first render (so they are in the HTML search engines see)
-// and again in the browser when the visitor switches the currency.
-const currency = ref<LandingCurrency>('USD')
-const { data: tariffs } = await useApiQuery(
-  () => `landing-tariffs-${currency.value}`,
-  () => props.deps.getTariffs(currency.value),
+// Prices are loaded on the server for the first render, so they are in the HTML search engines see.
+// Payments are charged in rubles; the dollar prices are only shown next to them for orientation.
+const { data: tariffs } = await useApiQuery('landing-tariffs-RUB', () =>
+  props.deps.getTariffs('RUB'),
+)
+const { data: referenceTariffs } = await useApiQuery('landing-tariffs-USD', () =>
+  props.deps.getTariffs('USD'),
 )
 
 useLandingSeo(props.locale, { description: t('seoDescription'), title: t('seoTitle') })
