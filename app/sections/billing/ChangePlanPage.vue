@@ -193,6 +193,7 @@ const buy = async (plan: BillingPlanViewModel) => {
 }
 
 .plan-offer {
+  align-content: start;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
@@ -230,6 +231,7 @@ const buy = async (plan: BillingPlanViewModel) => {
 }
 
 .plan-features {
+  align-content: start;
   display: grid;
   font-size: var(--font-size-small);
   gap: var(--space-1);
