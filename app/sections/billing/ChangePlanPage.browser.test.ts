@@ -95,7 +95,7 @@ it('shows every plan and marks the current one', async () => {
 
   await expect.element(page.getByText('Free', { exact: true })).toBeVisible()
   await expect.element(page.getByText('Plus', { exact: true })).toBeVisible()
-  await expect.element(page.getByText('Current plan', { exact: true })).toBeVisible()
+  await expect.element(page.getByRole('button', { name: 'This plan is active' })).toBeDisabled()
 })
 
 it('goes back to the plan', async () => {

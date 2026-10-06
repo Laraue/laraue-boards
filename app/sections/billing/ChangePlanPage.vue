@@ -32,11 +32,6 @@
               class="plan-offer"
               :data-current="isCurrent(page, plan) ? 'true' : null">
               <div>
-                <span
-                  v-if="isCurrent(page, plan)"
-                  class="current-badge">
-                  {{ t('current') }}
-                </span>
                 <strong class="plan-name">{{ plan.title }}</strong>
                 <p class="plan-price">
                   {{ plan.formattedPrice }}
@@ -50,7 +45,12 @@
                 </li>
               </ul>
               <BaseButton
-                v-if="!plan.isFree"
+                v-if="isCurrent(page, plan)"
+                disabled>
+                {{ t('active') }}
+              </BaseButton>
+              <BaseButton
+                v-else-if="!plan.isFree"
                 :disabled="!page.canPay"
                 variant="primary"
                 @click="select(plan)">
@@ -94,8 +94,8 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
+    active: 'This plan is active',
     back: '← Back to the plan',
-    current: 'Current plan',
     currentPlan: 'Current plan: {plan}',
     issuesPerMonthLimit: '{count} issues per month',
     loadError: 'Could not load the plans',
@@ -108,8 +108,8 @@ const { t } = useI18n({
     tokensPerMonth: '{count} tokens per month',
   },
   ru: {
+    active: 'Этот тариф активен',
     back: '← Назад к тарифу',
-    current: 'Текущий тариф',
     currentPlan: 'Текущий тариф: {plan}',
     issuesPerMonthLimit: '{count} задач в месяц',
     loadError: 'Не удалось загрузить тарифы',
@@ -193,24 +193,11 @@ const pay = async () => {
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);
-  position: relative;
 }
 
 .plan-offer[data-current='true'] {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 1px var(--color-accent);
-}
-
-.current-badge {
-  background: var(--color-accent-soft);
-  border-radius: var(--radius-pill);
-  color: var(--color-accent);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  padding: 2px var(--space-2);
-  position: absolute;
-  right: var(--space-3);
-  top: var(--space-3);
 }
 
 .plan-name {
