@@ -111,10 +111,6 @@ const summarizeContent = async (): Promise<void> => {
   margin-top: var(--space-4);
 }
 
-.issue-description :deep(.markdown li + li) {
-  margin-top: var(--space-2);
-}
-
 .issue-description-footer {
   align-items: center;
   display: flex;
