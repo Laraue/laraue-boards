@@ -17,6 +17,12 @@
                 {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
               </p>
             </div>
+            <BaseButton
+              v-if="plans(page).length"
+              variant="neutral"
+              @click="plansSection?.scrollIntoView({ behavior: 'smooth' })">
+              {{ t('changePlan') }}
+            </BaseButton>
           </article>
 
           <article class="usage-card">
@@ -84,6 +90,7 @@
 
         <section
           v-if="plans(page).length"
+          ref="plansSection"
           class="plans">
           <h2>{{ t('plans') }}</h2>
           <div class="plan-list">
@@ -156,6 +163,7 @@ const { t } = useI18n({
   en: {
     accept: 'I accept the',
     buy: 'Buy',
+    changePlan: 'Change plan',
     currentPlan: 'Current plan',
     extend: 'Extend',
     freeTeamOrganizations: 'Free team organizations',
@@ -177,6 +185,7 @@ const { t } = useI18n({
   ru: {
     accept: 'Я принимаю условия',
     buy: 'Купить',
+    changePlan: 'Сменить тариф',
     currentPlan: 'Текущий тариф',
     extend: 'Продлить',
     freeTeamOrganizations: 'Бесплатные командные организации',
@@ -209,6 +218,8 @@ const { data, message, pending, refresh } = await useApiQuery('billing-summary',
 const { data: planOptions } = await useApiQuery('billing-plans', (signal) =>
   props.deps.getPlans({ signal }),
 )
+
+const plansSection = useTemplateRef<HTMLElement>('plansSection')
 
 const checkout = useApiAction(props.deps.startCheckout)
 

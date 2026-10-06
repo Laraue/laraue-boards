@@ -57,6 +57,12 @@ it('shows the current plan and available usage limits', async () => {
   await expect.element(page.getByText('850')).toBeVisible()
 })
 
+it('offers to change the plan next to the current one', async () => {
+  await mountPage(createDeps())
+
+  await expect.element(page.getByRole('button', { name: 'Change plan' })).toBeVisible()
+})
+
 it('starts the checkout of a plan only after the offer is accepted', async () => {
   const deps = createDeps()
   const onPay = vi.fn<(url: string) => void>()
