@@ -14,7 +14,6 @@
             :to="backTo" />
           <h2>{{ t('plans') }}</h2>
         </div>
-        <p class="current-plan muted">{{ t('currentPlan', { plan: page.subscriptionCode }) }}</p>
 
         <p
           v-if="!plans(page).length"
@@ -95,7 +94,6 @@ const { t } = useI18n({
   en: {
     active: 'This plan is active',
     back: 'Back to the plan',
-    currentPlan: 'Current plan: {plan}',
     issuesPerMonthLimit: '{count} issues per month',
     loadError: 'Could not load the plans',
     loading: 'Loading the plans…',
@@ -109,7 +107,6 @@ const { t } = useI18n({
   ru: {
     active: 'Этот тариф активен',
     back: 'Назад к тарифу',
-    currentPlan: 'Текущий тариф: {plan}',
     issuesPerMonthLimit: '{count} задач в месяц',
     loadError: 'Не удалось загрузить тарифы',
     loading: 'Загрузка тарифов…',
@@ -170,10 +167,6 @@ const pay = async () => {
 
 .change-plan-page h2 {
   line-height: var(--icon-btn-size);
-  margin: 0;
-}
-
-.current-plan {
   margin: 0;
 }
 
