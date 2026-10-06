@@ -697,7 +697,7 @@ watch(dirty, setDirty, { immediate: true })
 .issue-dates {
   align-items: center;
   display: grid;
-  gap: var(--space-2) var(--space-3);
+  gap: var(--space-1) var(--space-3);
   grid-template-columns: 88px minmax(0, 1fr);
   margin: 0;
 }

@@ -42,7 +42,6 @@
 }
 
 .markdown :is(ul, ol) {
-  margin: 0;
   padding-left: var(--space-5);
 }
 

@@ -100,15 +100,7 @@ const summarizeContent = async (): Promise<void> => {
 }
 
 .issue-description :deep(.markdown) {
-  min-height: calc(3 * 1.7em);
-}
-
-.issue-description :deep(.markdown :is(p, li, ul, ol, blockquote)) {
-  line-height: 1.7;
-}
-
-.issue-description :deep(.markdown > * + *) {
-  margin-top: var(--space-4);
+  min-height: calc(3 * 1.6em);
 }
 
 .issue-description-footer {
