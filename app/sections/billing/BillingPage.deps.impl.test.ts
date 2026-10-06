@@ -56,7 +56,7 @@ test('maps a team billing summary without personal usage', async () => {
   })
 })
 
-test('offers only paid plans, priced in rubles', async () => {
+test('offers all plans, priced in rubles', async () => {
   const { client } = createTestApiClient()
   let requestedCurrency: string | undefined
   const deps = createBillingPageDeps(client, async (_url, options) => {
@@ -73,16 +73,22 @@ test('offers only paid plans, priced in rubles', async () => {
   const plans = await deps.getPlans({})
 
   assert.equal(requestedCurrency, 'RUB')
-  assert.deepEqual(plans.personal, [
-    {
-      currencyCode: 'RUB',
-      formattedPrice: '334₽',
-      id: 'plus-id',
-      issuesPerMonth: 500,
-      title: 'Plus',
-      tokens: 300_000,
-    },
-  ])
+  assert.deepEqual(
+    plans.personal.map((plan) => [plan.id, plan.isFree]),
+    [
+      ['free-id', true],
+      ['plus-id', false],
+    ],
+  )
+  assert.deepEqual(plans.personal[1], {
+    currencyCode: 'RUB',
+    formattedPrice: '334₽',
+    id: 'plus-id',
+    isFree: false,
+    issuesPerMonth: 500,
+    title: 'Plus',
+    tokens: 300_000,
+  })
   assert.deepEqual(
     plans.team.map((plan) => plan.id),
     ['team-id'],

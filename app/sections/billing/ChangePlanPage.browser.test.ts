@@ -17,8 +17,17 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     personal: [
       {
         currencyCode: 'RUB',
+        formattedPrice: '0₽',
+        id: 'free-id',
+        isFree: true,
+        title: 'Free',
+        tokens: 10_000,
+      },
+      {
+        currencyCode: 'RUB',
         formattedPrice: '334₽',
         id: 'plus-id',
+        isFree: false,
         title: 'Plus',
         tokens: 300_000,
       },
@@ -33,7 +42,7 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
     kind: 'personal',
-    subscriptionCode: 'Pro',
+    subscriptionCode: 'Free',
     tokens: { limit: 1000, remaining: 850, used: 150 },
   })),
   ...overrides,
@@ -75,6 +84,14 @@ it('does not let a member who is not the owner pay', async () => {
     .element(page.getByText('Only the organization owner can pay for the plan.'))
     .toBeVisible()
   await expect.element(page.getByRole('button', { name: 'Buy' })).toBeDisabled()
+})
+
+it('shows every plan and marks the current one', async () => {
+  await mountPage(createDeps())
+
+  await expect.element(page.getByText('Free', { exact: true })).toBeVisible()
+  await expect.element(page.getByText('Plus', { exact: true })).toBeVisible()
+  await expect.element(page.getByText('Current plan', { exact: true })).toBeVisible()
 })
 
 it('goes back to the plan', async () => {

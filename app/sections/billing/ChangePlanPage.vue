@@ -29,8 +29,14 @@
             <article
               v-for="plan in plans(page)"
               :key="plan.id"
-              class="plan-offer">
+              class="plan-offer"
+              :data-current="isCurrent(page, plan) ? 'true' : null">
               <div>
+                <span
+                  v-if="isCurrent(page, plan)"
+                  class="current-badge">
+                  {{ t('current') }}
+                </span>
                 <strong class="plan-name">{{ plan.title }}</strong>
                 <p class="plan-price">
                   {{ plan.formattedPrice }}
@@ -44,11 +50,12 @@
                 </li>
               </ul>
               <BaseButton
+                v-if="!plan.isFree"
                 :disabled="!page.canPay || !state.accepted"
                 :loading="checkout.pending.value && state.planId === plan.id"
                 variant="primary"
                 @click="buy(plan)">
-                {{ plan.title === page.subscriptionCode ? t('extend') : t('buy') }}
+                {{ isCurrent(page, plan) ? t('extend') : t('buy') }}
               </BaseButton>
             </article>
           </div>
@@ -99,6 +106,7 @@ const { t } = useI18n({
     accept: 'I accept the',
     back: '← Back to the plan',
     buy: 'Buy',
+    current: 'Current plan',
     currentPlan: 'Current plan: {plan}',
     extend: 'Extend',
     issuesPerMonthLimit: '{count} issues per month',
@@ -115,6 +123,7 @@ const { t } = useI18n({
     accept: 'Я принимаю условия',
     back: '← Назад к тарифу',
     buy: 'Купить',
+    current: 'Текущий тариф',
     currentPlan: 'Текущий тариф: {plan}',
     extend: 'Продлить',
     issuesPerMonthLimit: '{count} задач в месяц',
@@ -148,6 +157,9 @@ const termsPath = computed(() => (locale.value === 'ru' ? '/ru/terms' : '/terms'
 
 const plans = (page: BillingPageData) =>
   (page.kind === 'personal' ? planOptions.value?.personal : planOptions.value?.team) ?? []
+
+const isCurrent = (page: BillingPageData, plan: BillingPlanViewModel) =>
+  plan.title === page.subscriptionCode
 
 const buy = async (plan: BillingPlanViewModel) => {
   state.planId = plan.id
@@ -188,6 +200,21 @@ const buy = async (plan: BillingPlanViewModel) => {
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);
+}
+
+.plan-offer[data-current='true'] {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+.current-badge {
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-pill);
+  color: var(--color-accent);
+  display: inline-block;
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-bold);
+  padding: 2px var(--space-2);
 }
 
 .plan-name {

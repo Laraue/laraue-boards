@@ -25,18 +25,16 @@ const mapUsage = (usage: null | Schemas['LimitUsage'] | undefined): BillingUsage
       }
     : null
 
-// Only paid plans can be bought.
 const mapPlans = (tariffs: LandingTariff[]): BillingPlanViewModel[] =>
-  tariffs
-    .filter((tariff) => tariff.price > 0)
-    .map((tariff) => ({
-      currencyCode: tariff.currencyCode,
-      formattedPrice: tariff.formattedPrice,
-      id: tariff.id,
-      issuesPerMonth: tariff.issuesPerMonth,
-      title: tariff.title,
-      tokens: tariff.tokens,
-    }))
+  tariffs.map((tariff) => ({
+    currencyCode: tariff.currencyCode,
+    formattedPrice: tariff.formattedPrice,
+    id: tariff.id,
+    isFree: tariff.price === 0,
+    issuesPerMonth: tariff.issuesPerMonth,
+    title: tariff.title,
+    tokens: tariff.tokens,
+  }))
 
 export const createBillingPageDeps = (
   client: ApiClient,

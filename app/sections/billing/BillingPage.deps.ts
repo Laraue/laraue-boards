@@ -21,11 +21,12 @@ export type BillingPageData =
       kind: 'team'
     })
 
-// A paid plan that can be bought.
+// A plan of the plan list; only a paid one can be bought.
 export type BillingPlanViewModel = {
   currencyCode: string
   formattedPrice: string
   id: string
+  isFree: boolean
   issuesPerMonth?: number
   title: string
   tokens: number

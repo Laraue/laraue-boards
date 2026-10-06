@@ -19,6 +19,7 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
         currencyCode: 'RUB',
         formattedPrice: '334₽',
         id: 'plus-id',
+        isFree: false,
         title: 'Plus',
         tokens: 300_000,
       },
