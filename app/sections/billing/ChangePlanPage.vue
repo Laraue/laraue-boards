@@ -8,15 +8,14 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="change-plan-page">
-        <div>
-          <BaseButton
-            size="small"
-            variant="ghost"
-            @click="onBack">
-            {{ t('back') }}
-          </BaseButton>
-          <h2>{{ t('plans') }}</h2>
-          <p class="muted">{{ t('currentPlan', { plan: page.subscriptionCode }) }}</p>
+        <div class="page-heading">
+          <AppBackLink
+            :label="t('back')"
+            :to="backTo" />
+          <div class="page-heading-text">
+            <h2>{{ t('plans') }}</h2>
+            <p class="muted">{{ t('currentPlan', { plan: page.subscriptionCode }) }}</p>
+          </div>
         </div>
 
         <p
@@ -77,6 +76,8 @@
 </template>
 
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
+
 import type {
   BillingPageData,
   BillingPageDeps,
@@ -87,15 +88,15 @@ import PlanPaymentDialog from '~/sections/billing/PlanPaymentDialog.vue'
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.
 const props = defineProps<{
+  backTo: RouteLocationRaw
   deps: BillingPageDeps
-  onBack: () => void
   onPay: (url: string) => void
 }>()
 
 const { t } = useI18n({
   en: {
     active: 'This plan is active',
-    back: '← Back to the plan',
+    back: 'Back to the plan',
     currentPlan: 'Current plan: {plan}',
     issuesPerMonthLimit: '{count} issues per month',
     loadError: 'Could not load the plans',
@@ -109,7 +110,7 @@ const { t } = useI18n({
   },
   ru: {
     active: 'Этот тариф активен',
-    back: '← Назад к тарифу',
+    back: 'Назад к тарифу',
     currentPlan: 'Текущий тариф: {plan}',
     issuesPerMonthLimit: '{count} задач в месяц',
     loadError: 'Не удалось загрузить тарифы',
@@ -167,15 +168,6 @@ const pay = async () => {
   align-content: start;
   display: grid;
   gap: var(--space-4);
-}
-
-.change-plan-page h2 {
-  font-size: var(--font-size-heading);
-  margin: var(--space-2) 0 0;
-}
-
-.change-plan-page p {
-  margin: var(--space-1) 0 0;
 }
 
 .plan-list {

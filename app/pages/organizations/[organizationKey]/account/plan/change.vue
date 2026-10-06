@@ -1,7 +1,7 @@
 <template>
   <ChangePlanPage
+    :back-to="organizationRoutes.accountPlan()"
     :deps="deps"
-    :on-back="() => navigateTo(organizationRoutes.accountPlan())"
     :on-pay="(url) => navigateTo(url, { external: true })" />
 </template>
 

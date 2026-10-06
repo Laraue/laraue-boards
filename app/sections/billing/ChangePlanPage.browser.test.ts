@@ -51,11 +51,10 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
 const mountPage = async (
   deps: BillingPageDeps,
   onPay: (url: string) => void = vi.fn<(url: string) => void>(),
-  onBack: () => void = vi.fn<() => void>(),
 ) => {
   currentWrapper = await mountSuspended(ChangePlanPage, {
     attachTo: document.body,
-    props: { deps, onBack, onPay },
+    props: { backTo: '/organizations/acme-ab12/account/plan', deps, onPay },
     route: '/organizations/acme-ab12/account/plan/change',
   })
 }
@@ -98,11 +97,10 @@ it('shows every plan and marks the current one', async () => {
   await expect.element(page.getByRole('button', { name: 'This plan is active' })).toBeDisabled()
 })
 
-it('goes back to the plan', async () => {
-  const onBack = vi.fn<() => void>()
-  await mountPage(createDeps(), undefined, onBack)
+it('links back to the plan', async () => {
+  await mountPage(createDeps())
 
-  await page.getByRole('button', { name: /Back to the plan/ }).click()
-
-  expect(onBack).toHaveBeenCalled()
+  await expect
+    .element(page.getByRole('link', { name: 'Back to the plan' }))
+    .toHaveAttribute('href', '/organizations/acme-ab12/account/plan')
 })
