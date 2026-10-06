@@ -170,6 +170,12 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
+.change-plan-page .page-heading-text {
+  align-items: stretch;
+  flex-direction: column;
+  gap: 0;
+}
+
 .plan-list {
   display: grid;
   gap: var(--space-3);
