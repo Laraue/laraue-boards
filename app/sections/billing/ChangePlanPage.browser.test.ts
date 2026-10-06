@@ -60,16 +60,20 @@ const mountPage = async (
   })
 }
 
-it('starts the checkout of a plan only after the offer is accepted', async () => {
+it('asks to accept the offer in a dialog before paying for the selected plan', async () => {
   const deps = createDeps()
   const onPay = vi.fn<(url: string) => void>()
   await mountPage(deps, onPay)
 
-  const buy = page.getByRole('button', { name: 'Buy' })
-  await expect.element(buy).toBeDisabled()
+  await page.getByRole('button', { name: 'Select this plan' }).click()
+
+  await expect.element(page.getByRole('dialog')).toBeVisible()
+  const pay = page.getByRole('button', { name: 'Pay 334₽' })
+  await expect.element(pay).toBeDisabled()
+  expect(deps.startCheckout).not.toHaveBeenCalled()
 
   await page.getByRole('checkbox').click()
-  await buy.click()
+  await pay.click()
 
   await vi.waitFor(() =>
     expect(deps.startCheckout).toHaveBeenCalledWith({ currencyCode: 'RUB', planId: 'plus-id' }),
@@ -83,7 +87,7 @@ it('does not let a member who is not the owner pay', async () => {
   await expect
     .element(page.getByText('Only the organization owner can pay for the plan.'))
     .toBeVisible()
-  await expect.element(page.getByRole('button', { name: 'Buy' })).toBeDisabled()
+  await expect.element(page.getByRole('button', { name: 'Select this plan' })).toBeDisabled()
 })
 
 it('shows every plan and marks the current one', async () => {

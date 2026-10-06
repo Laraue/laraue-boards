@@ -51,36 +51,26 @@
               </ul>
               <BaseButton
                 v-if="!plan.isFree"
-                :disabled="!page.canPay || !state.accepted"
-                :loading="checkout.pending.value && state.planId === plan.id"
+                :disabled="!page.canPay"
                 variant="primary"
-                @click="buy(plan)">
-                {{ isCurrent(page, plan) ? t('extend') : t('buy') }}
+                @click="select(plan)">
+                {{ t('select') }}
               </BaseButton>
             </article>
           </div>
 
-          <BaseCheckbox
-            v-model="state.accepted"
-            :disabled="!page.canPay">
-            {{ t('accept') }}
-            <NuxtLink
-              target="_blank"
-              :to="termsPath">
-              {{ t('offer') }}
-            </NuxtLink>
-          </BaseCheckbox>
           <p
             v-if="!page.canPay"
             class="muted">
             {{ t('ownerOnly') }}
           </p>
-          <p
-            v-else-if="checkout.message.value"
-            class="error">
-            {{ checkout.message.value }}
-          </p>
         </template>
+        <PlanPaymentDialog
+          ref="paymentDialog"
+          :message="checkout.message.value"
+          :on-confirm="pay"
+          :pending="checkout.pending.value"
+          :plan="state.plan" />
       </section>
     </template>
   </QueryState>
@@ -92,6 +82,7 @@ import type {
   BillingPageDeps,
   BillingPlanViewModel,
 } from '~/sections/billing/BillingPage.deps'
+import PlanPaymentDialog from '~/sections/billing/PlanPaymentDialog.vue'
 
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.
@@ -103,44 +94,38 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
-    accept: 'I accept the',
     back: '← Back to the plan',
-    buy: 'Buy',
     current: 'Current plan',
     currentPlan: 'Current plan: {plan}',
-    extend: 'Extend',
     issuesPerMonthLimit: '{count} issues per month',
     loadError: 'Could not load the plans',
     loading: 'Loading the plans…',
     noPlans: 'There are no plans to buy yet.',
-    offer: 'public offer',
     ownerOnly: 'Only the organization owner can pay for the plan.',
     perMonth: 'month',
     plans: 'Change plan',
+    select: 'Select this plan',
     tokensPerMonth: '{count} tokens per month',
   },
   ru: {
-    accept: 'Я принимаю условия',
     back: '← Назад к тарифу',
-    buy: 'Купить',
     current: 'Текущий тариф',
     currentPlan: 'Текущий тариф: {plan}',
-    extend: 'Продлить',
     issuesPerMonthLimit: '{count} задач в месяц',
     loadError: 'Не удалось загрузить тарифы',
     loading: 'Загрузка тарифов…',
     noPlans: 'Пока нет тарифов для покупки.',
-    offer: 'публичной оферты',
     ownerOnly: 'Оплатить тариф может только владелец организации.',
     perMonth: 'месяц',
     plans: 'Сменить тариф',
+    select: 'Выбрать тариф',
     tokensPerMonth: '{count} токенов в месяц',
   },
 })
 
 const { formatNumber } = useFormatters()
-const locale = useLocale()
-const state = reactive({ accepted: false, planId: undefined as string | undefined })
+const paymentDialog = useTemplateRef('paymentDialog')
+const state = reactive({ plan: undefined as BillingPlanViewModel | undefined })
 
 const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
   props.deps.view({ signal }),
@@ -153,16 +138,23 @@ const { data: planOptions } = await useApiQuery('billing-plans', (signal) =>
 
 const checkout = useApiAction(props.deps.startCheckout)
 
-const termsPath = computed(() => (locale.value === 'ru' ? '/ru/terms' : '/terms'))
-
 const plans = (page: BillingPageData) =>
   (page.kind === 'personal' ? planOptions.value?.personal : planOptions.value?.team) ?? []
 
 const isCurrent = (page: BillingPageData, plan: BillingPlanViewModel) =>
   plan.title === page.subscriptionCode
 
-const buy = async (plan: BillingPlanViewModel) => {
-  state.planId = plan.id
+const select = (plan: BillingPlanViewModel) => {
+  state.plan = plan
+  checkout.message.value = undefined
+  paymentDialog.value?.open()
+}
+
+const pay = async () => {
+  const { plan } = state
+  if (!plan) {
+    return
+  }
   const result = await checkout.execute({ currencyCode: plan.currencyCode, planId: plan.id })
   if (result) {
     props.onPay(result.value.url)
@@ -238,10 +230,6 @@ const buy = async (plan: BillingPlanViewModel) => {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.error {
-  color: var(--color-danger);
 }
 
 @media (max-width: 767px) {
