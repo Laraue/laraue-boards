@@ -170,6 +170,15 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
+.change-plan-page .page-heading {
+  align-items: flex-start;
+}
+
+.change-plan-page .page-heading-text h2 {
+  line-height: var(--icon-btn-size);
+  margin: 0;
+}
+
 .change-plan-page .page-heading-text {
   align-items: stretch;
   flex-direction: column;
