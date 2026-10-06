@@ -17,17 +17,17 @@ const personal = {
   type: 'LaraueBoardsPersonal',
 }
 
-test('requests the Boards tariffs in the chosen currency', async () => {
+test('requests the Boards tariffs without choosing a currency', async () => {
   const { client, requests } = createTestBillingApiClient(() => ({
     personalSubscriptions: [],
     teamSubscriptions: [],
   }))
 
-  await loadLandingTariffs(client, 'RUB')
+  await loadLandingTariffs(client)
 
   const url = new URL(requests[0]!.url)
   assert.equal(url.pathname, '/api/tariffs')
-  assert.equal(url.searchParams.get('CurrencyCode'), 'RUB')
+  assert.equal(url.searchParams.has('CurrencyCode'), false)
   assert.equal(url.searchParams.get('ServiceId'), 'LaraueBoards')
 })
 
@@ -48,7 +48,7 @@ test('maps billing tariffs to the landing view model', async () => {
     ],
   }))
 
-  assert.deepEqual(await loadLandingTariffs(client, 'USD'), {
+  assert.deepEqual(await loadLandingTariffs(client'USD'), {
     personal: [
       {
         billing: { duration: 1, period: 'forever' },
@@ -87,7 +87,7 @@ test('treats a personal tariff without an organization limit as unlimited', asyn
     teamSubscriptions: [],
   }))
 
-  const result = await loadLandingTariffs(client, 'USD')
+  const result = await loadLandingTariffs(client'USD')
 
   assert.deepEqual(
     result.personal.map((tariff) => tariff.freeOrganizations),
@@ -101,11 +101,11 @@ test('skips tariffs of other services', async () => {
     teamSubscriptions: [],
   }))
 
-  assert.deepEqual(await loadLandingTariffs(client, 'USD'), { personal: [], team: [] })
+  assert.deepEqual(await loadLandingTariffs(client'USD'), { personal: [], team: [] })
 })
 
 test('reports the status code of a failed response', async () => {
   const { client } = createTestBillingApiClient(() => new Response(null, { status: 503 }))
 
-  await expect(loadLandingTariffs(client, 'USD')).rejects.toMatchObject({ status: 503 })
+  await expect(loadLandingTariffs(client'USD')).rejects.toMatchObject({ status: 503 })
 })

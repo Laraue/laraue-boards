@@ -14,7 +14,6 @@
     <LandingPricing
       id="pricing"
       :locale="locale"
-      :reference-tariffs="referenceTariffs"
       :tariffs="tariffs" />
     <LandingOpenSource :locale="locale" />
     <LandingFaq :locale="locale" />
@@ -61,13 +60,7 @@ const { t } = useI18n(
 )
 
 // Prices are loaded on the server for the first render, so they are in the HTML search engines see.
-// Payments are charged in rubles; the dollar prices are only shown next to them for orientation.
-const { data: tariffs } = await useApiQuery('landing-tariffs-RUB', () =>
-  props.deps.getTariffs('RUB'),
-)
-const { data: referenceTariffs } = await useApiQuery('landing-tariffs-USD', () =>
-  props.deps.getTariffs('USD'),
-)
+const { data: tariffs } = await useApiQuery('landing-tariffs', () => props.deps.getTariffs())
 
 useLandingSeo(props.locale, { description: t('seoDescription'), title: t('seoTitle') })
 </script>

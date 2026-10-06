@@ -5,15 +5,15 @@ import { createLandingPageDeps } from './LandingPage.deps.impl'
 
 const tariffs: LandingTariffs = { personal: [], team: [] }
 
-test('requests the tariffs of the chosen currency from the app', async () => {
-  const requests: { options: unknown; url: string }[] = []
-  const { getTariffs } = createLandingPageDeps(async (url, options) => {
-    requests.push({ options, url })
+test('requests the tariffs from the app', async () => {
+  const requests: string[] = []
+  const { getTariffs } = createLandingPageDeps(async (url) => {
+    requests.push(url)
     return tariffs
   })
 
-  assert.deepEqual(await getTariffs('RUB'), tariffs)
-  assert.deepEqual(requests, [{ options: { query: { currency: 'RUB' } }, url: '/landing/tariffs' }])
+  assert.deepEqual(await getTariffs(), tariffs)
+  assert.deepEqual(requests, ['/landing/tariffs'])
 })
 
 test('reports the status code of a failed request', async () => {
@@ -21,7 +21,7 @@ test('reports the status code of a failed request', async () => {
     throw Object.assign(new Error('Bad Gateway'), { statusCode: 502 })
   })
 
-  await expect(getTariffs('USD')).rejects.toMatchObject({ status: 502 })
+  await expect(getTariffs()).rejects.toMatchObject({ status: 502 })
 })
 
 test('reports a network failure', async () => {
@@ -29,5 +29,5 @@ test('reports a network failure', async () => {
     throw new Error('offline')
   })
 
-  await expect(getTariffs('USD')).rejects.toMatchObject({ status: 0 })
+  await expect(getTariffs()).rejects.toMatchObject({ status: 0 })
 })

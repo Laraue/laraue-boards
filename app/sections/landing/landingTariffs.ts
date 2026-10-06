@@ -2,7 +2,7 @@ import type { components } from '#infrastructure/api/billing.generated'
 import type { BillingApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
 
-import type { LandingCurrency, LandingTariff, LandingTariffs } from './LandingPage.deps'
+import type { LandingTariff, LandingTariffs } from './LandingPage.deps'
 
 type Schemas = components['schemas']
 type PersonalTariff = Schemas['PersonalSubscriptionLaraueBoardsPersonalSubscription']
@@ -45,14 +45,12 @@ const mapTariff = (
   tokens: toNumber(tariff.includedTokensCount),
 })
 
-// Billing's tariffs for the landing page, read on the server by `server/routes/landing`.
-export const loadLandingTariffs = async (
-  client: BillingApiClient,
-  currency: LandingCurrency,
-): Promise<LandingTariffs> => {
+// Billing's tariffs for the landing page, read on the server by `server/routes/landing`. Billing
+// prices them in the currency its payment provider charges in.
+export const loadLandingTariffs = async (client: BillingApiClient): Promise<LandingTariffs> => {
   const data = await request(
     client.GET('/api/tariffs', {
-      params: { query: { CurrencyCode: currency, ServiceId: 'LaraueBoards' } },
+      params: { query: { ServiceId: 'LaraueBoards' } },
     }),
   )
   return {

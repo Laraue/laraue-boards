@@ -7,16 +7,11 @@ import { loadLandingTariffs } from '../../../app/sections/landing/landingTariffs
 // server setting and the browser never calls another origin (no CORS on Billing needed).
 export default defineCachedEventHandler(
   async (event) => {
-    const { currency } = getQuery(event)
-    if (currency !== 'USD' && currency !== 'RUB') {
-      throw createError({ statusCode: 400, statusMessage: 'Unknown currency' })
-    }
-
     const client = createBillingApiClient({
       baseUrl: useRuntimeConfig(event).billingApiBaseUrl,
     })
     try {
-      return await loadLandingTariffs(client, currency)
+      return await loadLandingTariffs(client)
     } catch (error) {
       if (isApiError(error)) {
         throw createError({ statusCode: 502, statusMessage: 'Billing is unavailable' })
@@ -25,7 +20,7 @@ export default defineCachedEventHandler(
     }
   },
   {
-    getKey: (event) => `landing-tariffs-${String(getQuery(event).currency)}`,
+    getKey: () => 'landing-tariffs',
     maxAge: 60,
   },
 )

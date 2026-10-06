@@ -56,11 +56,11 @@ test('maps a team billing summary without personal usage', async () => {
   })
 })
 
-test('offers all plans, priced in rubles', async () => {
+test('offers all plans, priced as Billing returns them', async () => {
   const { client } = createTestApiClient()
-  let requestedCurrency: string | undefined
-  const deps = createBillingPageDeps(client, async (_url, options) => {
-    requestedCurrency = options.query.currency
+  const requestedUrls: string[] = []
+  const deps = createBillingPageDeps(client, async (url) => {
+    requestedUrls.push(url)
     return {
       personal: [
         tariff({ id: 'free-id', price: 0, title: 'Free' }),
@@ -72,7 +72,7 @@ test('offers all plans, priced in rubles', async () => {
 
   const plans = await deps.getPlans({})
 
-  assert.equal(requestedCurrency, 'RUB')
+  assert.deepEqual(requestedUrls, ['/landing/tariffs'])
   assert.deepEqual(
     plans.personal.map((plan) => [plan.id, plan.isFree]),
     [

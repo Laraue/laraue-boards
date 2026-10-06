@@ -35,11 +35,6 @@
             <div class="pricing-card-title">{{ tariff.title }}</div>
             <div class="pricing-card-price-row">
               <span class="pricing-card-price">{{ tariff.formattedPrice }}</span>
-              <span
-                v-if="referencePrice(tariff)"
-                class="pricing-card-billing">
-                (~{{ referencePrice(tariff) }})
-              </span>
               <span class="pricing-card-billing">
                 / {{ billingLabel(tariff) }}
                 <template v-if="group.perSeat && !isFreeTariff(tariff)">
@@ -80,8 +75,6 @@ import LandingSection from './LandingSection.vue'
 
 const props = defineProps<{
   locale: Locale
-  // The same plans priced in dollars, shown next to the price charged.
-  referenceTariffs?: LandingTariffs | undefined
   tariffs: LandingTariffs | undefined
 }>()
 
@@ -160,13 +153,6 @@ const { t } = useI18n(
   },
   props.locale,
 )
-const referencePrice = (tariff: LandingTariff): string | undefined =>
-  isFreeTariff(tariff)
-    ? undefined
-    : [...(props.referenceTariffs?.personal ?? []), ...(props.referenceTariffs?.team ?? [])].find(
-        (reference) => reference.id === tariff.id,
-      )?.formattedPrice
-
 const groups = computed(() => {
   if (!props.tariffs) {
     return []
