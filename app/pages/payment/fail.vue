@@ -1,6 +1,6 @@
 <template>
   <PaymentResultPage
-    :on-continue="() => navigateTo('/')"
+    :on-continue="() => navigateTo('/organizations')"
     status="fail" />
 </template>
 
