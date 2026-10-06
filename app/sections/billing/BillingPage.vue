@@ -17,7 +17,9 @@
                 {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
               </p>
             </div>
-            <BaseButton @click="onChangePlan">
+            <BaseButton
+              class="card-action"
+              @click="onChangePlan">
               {{ t('changePlan') }}
             </BaseButton>
           </article>
@@ -37,8 +39,7 @@
               </span>
             </div>
             <BaseButton
-              class="buy-tokens"
-              size="small"
+              class="card-action"
               @click="onBuyTokens">
               {{ t('buyTokens') }}
             </BaseButton>
@@ -165,11 +166,10 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 }
 
 .plan-card {
-  align-items: center;
   display: flex;
+  flex-direction: column;
   gap: var(--space-4);
-  justify-content: space-between;
-  padding: var(--space-5);
+  padding: var(--space-4);
 }
 
 .plan-card p {
@@ -197,16 +197,19 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 }
 
 .usage-card {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
 }
 
-.usage-heading,
-.buy-tokens {
-  justify-self: start;
+/* The action of a card sits at its bottom edge, so the buttons of neighbouring cards line up. */
+.card-action {
+  align-self: flex-start;
+  margin-top: auto;
 }
 
+.usage-heading,
 .usage-details {
   align-items: baseline;
   display: flex;
@@ -237,11 +240,6 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 }
 
 @media (max-width: 767px) {
-  .plan-card {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .usage-grid {
     grid-template-columns: 1fr;
   }
