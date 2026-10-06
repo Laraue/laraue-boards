@@ -12,11 +12,9 @@
           <AppBackLink
             :label="t('back')"
             :to="backTo" />
-          <div class="page-heading-text">
-            <h2>{{ t('plans') }}</h2>
-            <p class="muted">{{ t('currentPlan', { plan: page.subscriptionCode }) }}</p>
-          </div>
+          <h2>{{ t('plans') }}</h2>
         </div>
+        <p class="current-plan muted">{{ t('currentPlan', { plan: page.subscriptionCode }) }}</p>
 
         <p
           v-if="!plans(page).length"
@@ -170,19 +168,13 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
-.change-plan-page .page-heading {
-  align-items: flex-start;
-}
-
-.change-plan-page .page-heading-text h2 {
+.change-plan-page h2 {
   line-height: var(--icon-btn-size);
   margin: 0;
 }
 
-.change-plan-page .page-heading-text {
-  align-items: stretch;
-  flex-direction: column;
-  gap: 0;
+.current-plan {
+  margin: 0;
 }
 
 .plan-list {
