@@ -5,6 +5,11 @@
       <template v-if="plan">
         <p class="plan-price">
           <strong>{{ plan.formattedPrice }}</strong>
+          <span
+            v-if="plan.referencePrice"
+            class="muted">
+            (~{{ plan.referencePrice }})
+          </span>
           <span class="muted">/ {{ t('perMonth') }}</span>
         </p>
         <ul class="plan-conditions">

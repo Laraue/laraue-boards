@@ -28,6 +28,7 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
         formattedPrice: '334₽',
         id: 'plus-id',
         isFree: false,
+        referencePrice: '$4',
         title: 'Plus',
         tokens: 300_000,
       },
@@ -42,6 +43,7 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
     kind: 'personal',
+    paymentCurrencyCode: 'RUB',
     subscriptionCode: 'Free',
     tokens: { limit: 1000, remaining: 850, used: 150 },
   })),
@@ -74,9 +76,7 @@ it('asks to accept the offer in a dialog before paying for the selected plan', a
   await page.getByRole('checkbox').click()
   await pay.click()
 
-  await vi.waitFor(() =>
-    expect(deps.startCheckout).toHaveBeenCalledWith({ currencyCode: 'RUB', planId: 'plus-id' }),
-  )
+  await vi.waitFor(() => expect(deps.startCheckout).toHaveBeenCalledWith({ planId: 'plus-id' }))
   await vi.waitFor(() => expect(onPay).toHaveBeenCalledWith('about:blank#checkout'))
 })
 
@@ -95,6 +95,12 @@ it('shows every plan and marks the current one', async () => {
   await expect.element(page.getByText('Free', { exact: true })).toBeVisible()
   await expect.element(page.getByText('Plus', { exact: true })).toBeVisible()
   await expect.element(page.getByRole('button', { name: 'This plan is active' })).toBeDisabled()
+})
+
+it('shows the price with an approximate dollar amount', async () => {
+  await mountPage(createDeps())
+
+  await expect.element(page.getByText('334₽ (~$4)')).toBeVisible()
 })
 
 it('links back to the plan', async () => {

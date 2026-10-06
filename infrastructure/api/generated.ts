@@ -3301,6 +3301,7 @@ export interface components {
             freeTeamOrganizations?: null | components["schemas"]["LimitUsage"];
             subscriptionCode: string;
             canPay: boolean;
+            paymentCurrencyCode: string;
             issuesPerMonth?: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
         };
@@ -3309,6 +3310,7 @@ export interface components {
             $type?: "team";
             subscriptionCode: string;
             canPay: boolean;
+            paymentCurrencyCode: string;
             issuesPerMonth?: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
         };
@@ -3394,7 +3396,6 @@ export interface components {
             kind: components["schemas"]["BillingItemKind"];
             /** Format: uuid */
             itemId: string;
-            currencyCode: string;
         };
         CreateEpicRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
