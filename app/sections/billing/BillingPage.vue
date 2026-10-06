@@ -203,9 +203,9 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   padding: var(--space-4);
 }
 
-/* The action of a card sits at its bottom edge, so the buttons of neighbouring cards line up. */
+/* The action of a card sits in its bottom right corner, so the buttons of neighbouring cards line up. */
 .card-action {
-  align-self: flex-start;
+  align-self: flex-end;
   margin-top: auto;
 }
 
