@@ -39,13 +39,10 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
   ...overrides,
 })
 
-const mountPage = async (
-  deps: BillingPageDeps,
-  onPay: (url: string) => void = vi.fn<(url: string) => void>(),
-) => {
+const mountPage = async (deps: BillingPageDeps, onChangePlan: () => void = vi.fn<() => void>()) => {
   currentWrapper = await mountSuspended(BillingPage, {
     attachTo: document.body,
-    props: { deps, onPay },
+    props: { deps, onChangePlan },
     route: '/organizations/acme-ab12/account/plan',
   })
 }
@@ -57,34 +54,11 @@ it('shows the current plan and available usage limits', async () => {
   await expect.element(page.getByText('850')).toBeVisible()
 })
 
-it('offers to change the plan next to the current one', async () => {
-  await mountPage(createDeps())
+it('opens the plan change from the current plan', async () => {
+  const onChangePlan = vi.fn<() => void>()
+  await mountPage(createDeps(), onChangePlan)
 
-  await expect.element(page.getByRole('button', { name: 'Change plan' })).toBeVisible()
-})
+  await page.getByRole('button', { name: 'Change plan' }).click()
 
-it('starts the checkout of a plan only after the offer is accepted', async () => {
-  const deps = createDeps()
-  const onPay = vi.fn<(url: string) => void>()
-  await mountPage(deps, onPay)
-
-  const buy = page.getByRole('button', { name: 'Buy' })
-  await expect.element(buy).toBeDisabled()
-
-  await page.getByRole('checkbox').click()
-  await buy.click()
-
-  await vi.waitFor(() =>
-    expect(deps.startCheckout).toHaveBeenCalledWith({ currencyCode: 'RUB', planId: 'plus-id' }),
-  )
-  await vi.waitFor(() => expect(onPay).toHaveBeenCalledWith('about:blank#checkout'))
-})
-
-it('does not let a member who is not the owner pay', async () => {
-  await mountPage(createDeps({}, false))
-
-  await expect
-    .element(page.getByText('Only the organization owner can pay for the plan.'))
-    .toBeVisible()
-  await expect.element(page.getByRole('button', { name: 'Buy' })).toBeDisabled()
+  expect(onChangePlan).toHaveBeenCalled()
 })
