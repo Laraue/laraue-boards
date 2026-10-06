@@ -200,6 +200,7 @@ const buy = async (plan: BillingPlanViewModel) => {
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);
+  position: relative;
 }
 
 .plan-offer[data-current='true'] {
@@ -211,10 +212,12 @@ const buy = async (plan: BillingPlanViewModel) => {
   background: var(--color-accent-soft);
   border-radius: var(--radius-pill);
   color: var(--color-accent);
-  display: inline-block;
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-bold);
   padding: 2px var(--space-2);
+  position: absolute;
+  right: var(--space-3);
+  top: var(--space-3);
 }
 
 .plan-name {
