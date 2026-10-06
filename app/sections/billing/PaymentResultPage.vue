@@ -21,14 +21,16 @@ const { t } = useI18n({
     continue: 'Back to Laraue Boards',
     failHint: 'No money was taken. You can try again from the Plan page.',
     failTitle: 'The payment was not completed',
-    successHint: 'The plan is activated as soon as the payment is confirmed, usually within a minute.',
+    successHint:
+      'The plan is activated as soon as the payment is confirmed, usually within a minute.',
     successTitle: 'Thank you for your payment',
   },
   ru: {
     continue: 'Вернуться в Laraue Boards',
     failHint: 'Деньги не списаны. Вы можете повторить оплату на странице тарифа.',
     failTitle: 'Оплата не завершена',
-    successHint: 'Тариф будет активирован, как только оплата подтвердится, обычно в течение минуты.',
+    successHint:
+      'Тариф будет активирован, как только оплата подтвердится, обычно в течение минуты.',
     successTitle: 'Спасибо за оплату',
   },
 })

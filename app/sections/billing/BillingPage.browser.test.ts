@@ -39,7 +39,10 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
   ...overrides,
 })
 
-const mountPage = async (deps: BillingPageDeps, onPay: (url: string) => void = vi.fn()) => {
+const mountPage = async (
+  deps: BillingPageDeps,
+  onPay: (url: string) => void = vi.fn<(url: string) => void>(),
+) => {
   currentWrapper = await mountSuspended(BillingPage, {
     attachTo: document.body,
     props: { deps, onPay },
@@ -56,7 +59,7 @@ it('shows the current plan and available usage limits', async () => {
 
 it('starts the checkout of a plan only after the offer is accepted', async () => {
   const deps = createDeps()
-  const onPay = vi.fn()
+  const onPay = vi.fn<(url: string) => void>()
   await mountPage(deps, onPay)
 
   const buy = page.getByRole('button', { name: 'Buy' })
