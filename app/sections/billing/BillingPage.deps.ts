@@ -37,9 +37,28 @@ export type BillingPlansViewModel = {
   team: BillingPlanViewModel[]
 }
 
+// A one-off pack of tokens that can be bought on top of the plan.
+export type BillingTokenPackViewModel = {
+  currencyCode: string
+  // How many months the tokens last, `null` when they never expire.
+  expirationMonths: null | number
+  formattedPrice: string
+  id: string
+  title: string
+  tokens: number
+}
+
+// What a payment buys: a plan (a subscription) or a token pack.
+export type BillingItemKind = 'Subscription' | 'TokenPack'
+
 export type BillingPageDeps = {
   getPlans: (input: { signal?: AbortSignal }) => Promise<BillingPlansViewModel>
+  getTokenPacks: (input: { signal?: AbortSignal }) => Promise<BillingTokenPackViewModel[]>
   // Creates a payment and returns the address to send the customer to.
-  startCheckout: (input: { currencyCode: string; planId: string }) => Promise<{ url: string }>
+  startCheckout: (input: {
+    currencyCode: string
+    itemId: string
+    kind: BillingItemKind
+  }) => Promise<{ url: string }>
   view: (input: { signal?: AbortSignal }) => Promise<BillingPageData>
 }

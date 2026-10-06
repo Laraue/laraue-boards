@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
-import { request } from '#infrastructure/api/request'
+import { ApiError, request } from '#infrastructure/api/request'
 
 import type { LandingTariff } from '../landing/LandingPage.deps'
 import type { TariffsFetcher } from '../landing/LandingPage.deps.impl'
@@ -8,6 +8,7 @@ import { createLandingPageDeps } from '../landing/LandingPage.deps.impl'
 import type {
   BillingPageDeps,
   BillingPlanViewModel,
+  BillingTokenPackViewModel,
   BillingUsageViewModel,
 } from './BillingPage.deps'
 
@@ -44,10 +45,18 @@ export const createBillingPageDeps = (
 
     return { personal: mapPlans(tariffs.personal), team: mapPlans(tariffs.team) }
   },
-  startCheckout: async ({ currencyCode, planId }) => {
+  // The packs come from this app's own route too (see `server/routes/landing`).
+  getTokenPacks: async () => {
+    try {
+      return (await tariffsFetcher('/landing/token-packs')) as BillingTokenPackViewModel[]
+    } catch (cause) {
+      throw new ApiError((cause as { statusCode?: number }).statusCode ?? 0)
+    }
+  },
+  startCheckout: async ({ currencyCode, itemId, kind }) => {
     const checkout = await request(
       client.POST('/api/billing/checkout', {
-        body: { currencyCode, itemId: planId, kind: 'Subscription' },
+        body: { currencyCode, itemId, kind },
       }),
     )
 

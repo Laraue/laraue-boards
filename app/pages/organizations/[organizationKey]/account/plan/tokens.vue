@@ -1,18 +1,18 @@
 <template>
-  <BillingPage
+  <TokenPacksPage
+    :back-to="organizationRoutes.accountPlan()"
     :deps="deps"
-    :on-buy-tokens="() => navigateTo(organizationRoutes.accountPlanTokens())"
-    :on-change-plan="() => navigateTo(organizationRoutes.accountPlanChange())" />
+    :on-pay="(url) => navigateTo(url, { external: true })" />
 </template>
 
 <script setup lang="ts">
 import { createBillingPageDeps } from '~/sections/billing/BillingPage.deps.impl'
-import BillingPage from '~/sections/billing/BillingPage.vue'
+import TokenPacksPage from '~/sections/billing/TokenPacksPage.vue'
 import type { TariffsFetcher } from '~/sections/landing/LandingPage.deps.impl'
 
 const { t } = useI18n({
-  en: { plan: 'Plan and usage' },
-  ru: { plan: 'Тариф и лимиты' },
+  en: { plan: 'Buy tokens' },
+  ru: { plan: 'Купить токены' },
 })
 
 // `useRequestFetch()` is typed with every route of the app, which TypeScript cannot compare with a

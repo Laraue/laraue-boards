@@ -36,6 +36,12 @@
                 {{ t('usedOfLimit', { limit: page.tokens.limit, used: page.tokens.used }) }}
               </span>
             </div>
+            <BaseButton
+              class="buy-tokens"
+              size="small"
+              @click="onBuyTokens">
+              {{ t('buyTokens') }}
+            </BaseButton>
           </article>
 
           <article
@@ -96,10 +102,15 @@ import type {
   BillingUsageViewModel,
 } from '~/sections/billing/BillingPage.deps'
 
-const props = defineProps<{ deps: BillingPageDeps; onChangePlan: () => void }>()
+const props = defineProps<{
+  deps: BillingPageDeps
+  onBuyTokens: () => void
+  onChangePlan: () => void
+}>()
 
 const { t } = useI18n({
   en: {
+    buyTokens: 'Buy tokens',
     changePlan: 'Change plan',
     currentPlan: 'Current plan',
     freeTeamOrganizations: 'Free team organizations',
@@ -113,6 +124,7 @@ const { t } = useI18n({
     usedOfLimit: '{used} used of {limit}',
   },
   ru: {
+    buyTokens: 'Купить токены',
     changePlan: 'Сменить тариф',
     currentPlan: 'Текущий тариф',
     freeTeamOrganizations: 'Бесплатные командные организации',
@@ -191,6 +203,10 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 }
 
 .usage-heading,
+.buy-tokens {
+  justify-self: start;
+}
+
 .usage-details {
   align-items: baseline;
   display: flex;

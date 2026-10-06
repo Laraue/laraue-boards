@@ -61,12 +61,16 @@
             {{ t('ownerOnly') }}
           </p>
         </template>
-        <PlanPaymentDialog
+        <PaymentDialog
           ref="paymentDialog"
+          :conditions="dialogConditions"
           :message="checkout.message.value"
+          :note="t('period')"
           :on-confirm="pay"
           :pending="checkout.pending.value"
-          :plan="state.plan" />
+          :price="state.plan?.formattedPrice"
+          :price-note="`/ ${t('perMonth')}`"
+          :title="t('dialogTitle', { plan: state.plan?.title ?? '' })" />
       </section>
     </template>
   </QueryState>
@@ -80,7 +84,7 @@ import type {
   BillingPageDeps,
   BillingPlanViewModel,
 } from '~/sections/billing/BillingPage.deps'
-import PlanPaymentDialog from '~/sections/billing/PlanPaymentDialog.vue'
+import PaymentDialog from '~/sections/billing/PaymentDialog.vue'
 
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.
@@ -94,11 +98,13 @@ const { t } = useI18n({
   en: {
     active: 'This plan is active',
     back: 'Back to the plan',
+    dialogTitle: 'Plan “{plan}”',
     issuesPerMonthLimit: '{count} issues per month',
     loadError: 'Could not load the plans',
     loading: 'Loading the plans…',
     noPlans: 'There are no plans to buy yet.',
     ownerOnly: 'Only the organization owner can pay for the plan.',
+    period: 'Paid for one month, then the plan ends unless you extend it',
     perMonth: 'month',
     plans: 'Change plan',
     select: 'Select this plan',
@@ -107,11 +113,13 @@ const { t } = useI18n({
   ru: {
     active: 'Этот тариф активен',
     back: 'Назад к тарифу',
+    dialogTitle: 'Тариф «{plan}»',
     issuesPerMonthLimit: '{count} задач в месяц',
     loadError: 'Не удалось загрузить тарифы',
     loading: 'Загрузка тарифов…',
     noPlans: 'Пока нет тарифов для покупки.',
     ownerOnly: 'Оплатить тариф может только владелец организации.',
+    period: 'Оплата за один месяц, затем тариф закончится, если его не продлить',
     perMonth: 'месяц',
     plans: 'Сменить тариф',
     select: 'Выбрать тариф',
@@ -134,6 +142,19 @@ const { data: planOptions } = await useApiQuery('billing-plans', (signal) =>
 
 const checkout = useApiAction(props.deps.startCheckout)
 
+const dialogConditions = computed(() => {
+  const { plan } = state
+  if (!plan) {
+    return []
+  }
+  return [
+    t('tokensPerMonth', { count: formatNumber(plan.tokens) }),
+    ...(plan.issuesPerMonth
+      ? [t('issuesPerMonthLimit', { count: formatNumber(plan.issuesPerMonth) })]
+      : []),
+  ]
+})
+
 const plans = (page: BillingPageData) =>
   (page.kind === 'personal' ? planOptions.value?.personal : planOptions.value?.team) ?? []
 
@@ -151,7 +172,11 @@ const pay = async () => {
   if (!plan) {
     return
   }
-  const result = await checkout.execute({ currencyCode: plan.currencyCode, planId: plan.id })
+  const result = await checkout.execute({
+    currencyCode: plan.currencyCode,
+    itemId: plan.id,
+    kind: 'Subscription',
+  })
   if (result) {
     props.onPay(result.value.url)
   }

@@ -26,6 +26,24 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     ],
     team: [],
   })),
+  getTokenPacks: vi.fn<BillingPageDeps['getTokenPacks']>(async () => [
+    {
+      currencyCode: 'RUB',
+      expirationMonths: 6,
+      formattedPrice: '250₽',
+      id: 'small-id',
+      title: 'Small',
+      tokens: 100_000,
+    },
+    {
+      currencyCode: 'RUB',
+      expirationMonths: null,
+      formattedPrice: '1000₽',
+      id: 'medium-id',
+      title: 'Medium',
+      tokens: 600_000,
+    },
+  ]),
   startCheckout: vi.fn<BillingPageDeps['startCheckout']>(async () => ({
     url: 'about:blank#checkout',
   })),
@@ -40,10 +58,14 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
   ...overrides,
 })
 
-const mountPage = async (deps: BillingPageDeps, onChangePlan: () => void = vi.fn<() => void>()) => {
+const mountPage = async (
+  deps: BillingPageDeps,
+  onChangePlan: () => void = vi.fn<() => void>(),
+  onBuyTokens: () => void = vi.fn<() => void>(),
+) => {
   currentWrapper = await mountSuspended(BillingPage, {
     attachTo: document.body,
-    props: { deps, onChangePlan },
+    props: { deps, onBuyTokens, onChangePlan },
     route: '/organizations/acme-ab12/account/plan',
   })
 }
@@ -62,4 +84,13 @@ it('opens the plan change from the current plan', async () => {
   await page.getByRole('button', { name: 'Change plan' }).click()
 
   expect(onChangePlan).toHaveBeenCalled()
+})
+
+it('opens the token packs from the tokens balance', async () => {
+  const onBuyTokens = vi.fn<() => void>()
+  await mountPage(createDeps(), undefined, onBuyTokens)
+
+  await page.getByRole('button', { name: 'Buy tokens' }).click()
+
+  expect(onBuyTokens).toHaveBeenCalled()
 })

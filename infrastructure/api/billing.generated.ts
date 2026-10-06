@@ -13,7 +13,9 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
                 header?: never;
                 path: {
                     provider: string;
@@ -34,7 +36,9 @@ export interface paths {
         put?: never;
         post: {
             parameters: {
-                query?: never;
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
                 header?: never;
                 path: {
                     provider: string;
@@ -67,7 +71,9 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
                 header?: never;
                 path: {
                     provider: string;
@@ -88,7 +94,9 @@ export interface paths {
         put?: never;
         post: {
             parameters: {
-                query?: never;
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
                 header?: never;
                 path: {
                     provider: string;
@@ -121,7 +129,9 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
                 header?: never;
                 path: {
                     provider: string;
@@ -142,7 +152,9 @@ export interface paths {
         put?: never;
         post: {
             parameters: {
-                query?: never;
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
                 header?: never;
                 path: {
                     provider: string;
@@ -206,6 +218,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/token-packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    CurrencyCode?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GetTokenPacksResponse"];
+                        "application/json": components["schemas"]["GetTokenPacksResponse"];
+                        "text/json": components["schemas"]["GetTokenPacksResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -215,6 +266,19 @@ export interface components {
         GetServiceTariffsResponse: {
             personalSubscriptions: components["schemas"]["PersonalSubscription"][];
             teamSubscriptions: components["schemas"]["TeamSubscription"][];
+        };
+        GetTokenPacksResponse: {
+            tokenPacks: components["schemas"]["TokenPack"][];
+        };
+        PaymentCallback: {
+            provider: string;
+            parameters: {
+                [key: string]: string;
+            };
+            headers: {
+                [key: string]: string;
+            };
+            body?: null | string;
         };
         PersonalSubscription: components["schemas"]["PersonalSubscriptionLaraueBoardsPersonalSubscription"] | components["schemas"]["PersonalSubscriptionMarkdownTranslatorPersonalSubscription"];
         PersonalSubscriptionLaraueBoardsPersonalSubscription: {
@@ -275,6 +339,21 @@ export interface components {
             /** Format: int32 */
             billingDuration?: null | number | string;
             billingPeriod?: components["schemas"]["BillingPeriod"];
+        };
+        TokenPack: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            title: string;
+            /** Format: int64 */
+            tokensCount: number | string;
+            /** Format: double */
+            price?: number | string;
+            currencyCode: string;
+            formattedPrice: string;
+            /** Format: int32 */
+            expirationDuration?: number | string;
+            expirationPeriod?: components["schemas"]["BillingPeriod"];
         };
     };
     responses: never;

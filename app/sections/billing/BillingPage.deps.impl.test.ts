@@ -1,4 +1,4 @@
-import { assert, test } from 'vitest'
+import { assert, expect, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
@@ -103,7 +103,8 @@ test('starts a subscription checkout and returns the payment address', async () 
 
   const checkout = await createBillingPageDeps(client, noTariffs).startCheckout({
     currencyCode: 'RUB',
-    planId: 'plus-id',
+    itemId: 'plus-id',
+    kind: 'Subscription',
   })
 
   assert.equal(checkout.url, 'https://pay.example/checkout')
@@ -113,4 +114,55 @@ test('starts a subscription checkout and returns the payment address', async () 
     itemId: 'plus-id',
     kind: 'Subscription',
   })
+})
+
+test('starts a token pack checkout and returns the payment address', async () => {
+  const { client, requests } = createTestApiClient(() => ({
+    paymentId: 'payment-id',
+    url: 'https://pay.example/checkout',
+  }))
+
+  const checkout = await createBillingPageDeps(client, noTariffs).startCheckout({
+    currencyCode: 'RUB',
+    itemId: 'small-id',
+    kind: 'TokenPack',
+  })
+
+  assert.equal(checkout.url, 'https://pay.example/checkout')
+  assert.deepEqual(await requests[0]!.json(), {
+    currencyCode: 'RUB',
+    itemId: 'small-id',
+    kind: 'TokenPack',
+  })
+})
+
+test('reads the token packs from the app route', async () => {
+  const { client } = createTestApiClient()
+  const packs = [
+    {
+      currencyCode: 'RUB',
+      expirationMonths: 6,
+      formattedPrice: '250₽',
+      id: 'small-id',
+      title: 'Small',
+      tokens: 100_000,
+    },
+  ]
+  const requestedUrls: string[] = []
+  const deps = createBillingPageDeps(client, async (url) => {
+    requestedUrls.push(url)
+    return packs
+  })
+
+  assert.deepEqual(await deps.getTokenPacks({}), packs)
+  assert.deepEqual(requestedUrls, ['/landing/token-packs'])
+})
+
+test('reports the status code of a failed token packs request', async () => {
+  const { client } = createTestApiClient()
+  const deps = createBillingPageDeps(client, async () => {
+    throw { statusCode: 502 }
+  })
+
+  await expect(deps.getTokenPacks({})).rejects.toMatchObject({ status: 502 })
 })
