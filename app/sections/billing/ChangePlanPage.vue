@@ -30,7 +30,7 @@
               <div>
                 <strong class="plan-name">{{ plan.title }}</strong>
                 <p class="plan-price">
-                  {{ formatPlanPrice(plan) }}
+                  {{ plan.formattedPrice }}
                   <span class="muted">/ {{ t('perMonth') }}</span>
                 </p>
               </div>
@@ -81,7 +81,6 @@ import type {
   BillingPlanViewModel,
 } from '~/sections/billing/BillingPage.deps'
 import PlanPaymentDialog from '~/sections/billing/PlanPaymentDialog.vue'
-import { formatPlanPrice } from '~/sections/billing/planPrice'
 
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.
@@ -130,9 +129,7 @@ const { data, message, pending, refresh } = await useApiQuery('billing-summary',
 
 // The plans are a bonus on the page: when they cannot be loaded the page just says there are none.
 const { data: planOptions } = await useApiQuery('billing-plans', (signal) =>
-  data.value
-    ? props.deps.getPlans({ currencyCode: data.value.paymentCurrencyCode, signal })
-    : Promise.resolve({ personal: [], team: [] }),
+  props.deps.getPlans({ signal }),
 )
 
 const checkout = useApiAction(props.deps.startCheckout)
@@ -154,7 +151,7 @@ const pay = async () => {
   if (!plan) {
     return
   }
-  const result = await checkout.execute({ planId: plan.id })
+  const result = await checkout.execute({ currencyCode: plan.currencyCode, planId: plan.id })
   if (result) {
     props.onPay(result.value.url)
   }

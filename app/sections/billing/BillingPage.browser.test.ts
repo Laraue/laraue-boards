@@ -34,7 +34,6 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
     kind: 'personal',
-    paymentCurrencyCode: 'RUB',
     subscriptionCode: 'Pro',
     tokens: { limit: 1000, remaining: 850, used: 150 },
   })),
