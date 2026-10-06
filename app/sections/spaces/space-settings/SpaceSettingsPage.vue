@@ -49,19 +49,31 @@
             :id="formId"
             @submit.prevent="update">
             <div class="settings-fields">
-              <label for="space-settings-name">{{ t('name') }}</label>
+              <label
+                class="field-label"
+                for="space-settings-name">
+                {{ t('name') }}
+              </label>
               <BaseInput
                 id="space-settings-name"
                 v-model="form.name"
                 :disabled="!page.canUpdate || submitting"
                 required />
-              <label for="space-settings-key">{{ t('key') }}</label>
+              <label
+                class="field-label"
+                for="space-settings-key">
+                {{ t('key') }}
+              </label>
               <BaseInput
                 id="space-settings-key"
                 v-model="form.key"
                 :disabled="!page.canUpdate || submitting"
                 required />
-              <span :id="`${formId}-color`">{{ t('color') }}</span>
+              <span
+                :id="`${formId}-color`"
+                class="field-label">
+                {{ t('color') }}
+              </span>
               <AppColorPicker
                 v-model="form.color"
                 :aria-labelledby="`${formId}-color`"

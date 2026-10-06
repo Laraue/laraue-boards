@@ -143,6 +143,11 @@ form > label:first-of-type,
 label:first-child {
   margin-top: 0;
 }
+.field-label {
+  color: var(--color-muted);
+  font-weight: 400;
+  margin: 0;
+}
 :where(input:not([type='checkbox']):not([type='radio'])),
 select {
   background: var(--color-surface);
