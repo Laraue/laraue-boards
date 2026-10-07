@@ -10,90 +10,103 @@
       <section class="billing-page">
         <div class="usage-grid">
           <article class="plan-card">
-            <div>
+            <div class="card-header">
               <span class="eyebrow">{{ t('currentPlan') }}</span>
-              <strong class="plan-name">{{ page.subscriptionCode }}</strong>
-              <p class="muted">
-                {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
-              </p>
-              <p
+              <span
                 v-if="page.periodEndsAt"
                 class="muted">
                 {{ periodText(page) }}
-              </p>
+              </span>
             </div>
-            <BaseButton
-              class="card-action"
-              @click="onChangePlan">
-              {{ t('changePlan') }}
-            </BaseButton>
+            <div class="card-main">
+              <div>
+                <strong class="plan-name">{{ page.subscriptionCode }}</strong>
+                <p class="muted">
+                  {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
+                </p>
+              </div>
+              <BaseButton @click="onChangePlan">
+                {{ t('changePlan') }}
+              </BaseButton>
+            </div>
           </article>
 
           <article class="usage-card">
-            <div class="usage-heading">
-              <span>{{ t('tokens') }}</span>
-              <strong>{{ formatNumber(page.tokens.remaining) }}</strong>
+            <div class="card-header">
+              <div class="usage-heading">
+                <span>{{ t('tokens') }}</span>
+                <strong>{{ formatNumber(page.tokens.remaining) }}</strong>
+              </div>
+              <span
+                v-if="page.periodEndsAt"
+                class="muted">
+                {{ periodText(page) }}
+              </span>
             </div>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
-            <div class="usage-details muted">
-              <span>{{ t('tokensLeft') }}</span>
-              <span>
-                {{
-                  t('usedOfLimit', {
-                    limit: formatNumber(page.tokens.limit),
-                    used: formatNumber(page.tokens.used),
-                  })
-                }}
-              </span>
+            <div class="card-main">
+              <div class="usage-details muted">
+                <span>{{ t('tokensLeft') }}</span>
+                <span>
+                  {{
+                    t('usedOfLimit', {
+                      limit: formatNumber(page.tokens.limit),
+                      used: formatNumber(page.tokens.used),
+                    })
+                  }}
+                </span>
+              </div>
+              <BaseButton @click="onBuyTokens">
+                {{ t('buyTokens') }}
+              </BaseButton>
             </div>
             <p
               v-if="page.purchasedTokens.count > 0"
               class="muted">
               {{ purchasedText(page) }}
             </p>
-            <p
-              v-if="page.periodEndsAt"
-              class="muted">
-              {{ periodText(page) }}
-            </p>
-            <BaseButton
-              class="card-action"
-              @click="onBuyTokens">
-              {{ t('buyTokens') }}
-            </BaseButton>
           </article>
 
           <article
             v-if="page.issuesPerMonth"
             class="usage-card">
-            <div class="usage-heading">
-              <span>{{ t('issuesPerMonth') }}</span>
-              <strong>{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
+            <div class="card-header">
+              <div class="usage-heading">
+                <span>{{ t('issuesPerMonth') }}</span>
+                <strong>{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
+              </div>
             </div>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
             </div>
-            <div class="usage-details muted">
-              <span>{{ t('remaining') }}</span>
-              <span>
-                {{
-                  t('usedOfLimit', {
-                    limit: formatNumber(page.issuesPerMonth.limit),
-                    used: formatNumber(page.issuesPerMonth.used),
-                  })
-                }}
-              </span>
+            <div class="card-main">
+              <div class="usage-details muted">
+                <span>{{ t('remaining') }}</span>
+                <span>
+                  {{
+                    t('usedOfLimit', {
+                      limit: formatNumber(page.issuesPerMonth.limit),
+                      used: formatNumber(page.issuesPerMonth.used),
+                    })
+                  }}
+                </span>
+              </div>
+              <BaseButton @click="onChangePlan">
+                {{ t('changePlan') }}
+              </BaseButton>
             </div>
           </article>
 
           <article
             v-if="page.kind === 'personal' && page.freeTeamOrganizations"
             class="usage-card">
-            <div class="usage-heading">
-              <span>{{ t('freeTeamOrganizations') }}</span>
-              <strong>{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
+            <div class="card-header">
+              <div class="usage-heading">
+                <span>{{ t('freeTeamOrganizations') }}</span>
+                <strong>{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
+              </div>
             </div>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
@@ -258,18 +271,33 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   padding: var(--space-4);
 }
 
-/* The action of a card sits in its bottom right corner, so the buttons of neighbouring cards line up. */
-.card-action {
-  align-self: flex-end;
-  margin-top: auto;
+/* A card has a header (its title on the left, a note such as the reset date on the right), and a main row
+   with its content on the left and its action on the right. */
+.card-header,
+.card-main {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
+.card-header {
+  align-items: baseline;
+}
+
+.plan-card .card-main {
+  align-items: flex-start;
+}
+
+.usage-card p {
+  margin: 0;
 }
 
 .usage-heading,
 .usage-details {
   align-items: baseline;
   display: flex;
-  gap: var(--space-2);
-  justify-content: space-between;
+  gap: var(--space-3);
 }
 
 .usage-heading strong {

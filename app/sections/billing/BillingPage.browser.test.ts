@@ -148,3 +148,27 @@ it('shows no purchased tokens line when there are none', async () => {
 
   await expect.element(page.getByText('purchased tokens')).not.toBeInTheDocument()
 })
+
+it('offers to change the plan from the issues limit too', async () => {
+  const onChangePlan = vi.fn<() => void>()
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: { limit: 500, remaining: 498, used: 2 },
+        kind: 'team',
+        periodEndsAt: null,
+        periodResets: false,
+        purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+    onChangePlan,
+  )
+
+  // The first button is the plan card's, the second one belongs to the issues limit.
+  await page.getByRole('button', { name: 'Change plan' }).nth(1).click()
+
+  expect(onChangePlan).toHaveBeenCalled()
+})
