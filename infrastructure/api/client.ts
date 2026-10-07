@@ -32,7 +32,7 @@ export const createApiClient = (options: CreateApiClientOptions) => createClient
 export const createRetroApiClient = (options: CreateApiClientOptions) =>
   createClient<RetroPaths>(options)
 
-// Public Billing endpoints (tariffs): no cookies, since the browser calls another origin.
+// Public Billing endpoints do not need session cookies.
 export const createBillingApiClient = (options: CreateApiClientOptions) =>
   createClient<BillingPaths>({ credentials: 'omit', ...options })
 

@@ -96,17 +96,15 @@ export default defineNuxtConfig({
     '/docs-content/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/docs-sitemap-urls': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/join/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/landing/tariffs': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/login': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/organizations': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/organizations/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/payment/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
 
   runtimeConfig: {
-    // Billing API root, where `/api/tariffs` is reachable (NUXT_BILLING_API_BASE_URL). Server-only:
-    // the landing page's prices are requested from this app's own `/landing/tariffs` route.
-    billingApiBaseUrl: '',
     public: {
+      billingApiBaseUrl: '',
       boardsApiBaseUrl: '',
       googleClientId: '',
       retroApiBaseUrl: '',

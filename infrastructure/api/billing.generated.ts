@@ -4,124 +4,363 @@
  */
 
 export interface paths {
-  '/api/tariffs': {
-    delete?: never
-    get: {
-      parameters: {
-        query?: {
-          ServiceId?: components['schemas']['ServiceId']
-          CurrencyCode?: string
-        }
-        header?: never
-        path?: never
-        cookie?: never
-      }
-      requestBody?: never
-      responses: {
-        /** @description OK */
-        200: {
-          headers: {
-            [name: string]: unknown
-          }
-          content: {
-            'text/plain': components['schemas']['GetServiceTariffsResponse']
-            'application/json': components['schemas']['GetServiceTariffsResponse']
-            'text/json': components['schemas']['GetServiceTariffsResponse']
-          }
-        }
-      }
-    }
-    head?: never
-    options?: never
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    patch?: never
-    post?: never
-    put?: never
-    trace?: never
-  }
+    "/api/payments/{provider}/notify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
+                header?: never;
+                path: {
+                    provider: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
+                header?: never;
+                path: {
+                    provider: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{provider}/success": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
+                header?: never;
+                path: {
+                    provider: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
+                header?: never;
+                path: {
+                    provider: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{provider}/fail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
+                header?: never;
+                path: {
+                    provider: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: {
+                    callback?: components["schemas"]["PaymentCallback"];
+                };
+                header?: never;
+                path: {
+                    provider: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tariffs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    ServiceId?: components["schemas"]["ServiceId"];
+                    CurrencyCode?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GetServiceTariffsResponse"];
+                        "application/json": components["schemas"]["GetServiceTariffsResponse"];
+                        "text/json": components["schemas"]["GetServiceTariffsResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/token-packs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    CurrencyCode?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["GetTokenPacksResponse"];
+                        "application/json": components["schemas"]["GetTokenPacksResponse"];
+                        "text/json": components["schemas"]["GetTokenPacksResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
-  headers: never
-  parameters: never
-  pathItems: never
-  requestBodies: never
-  responses: never
-  schemas: {
-    /** @enum {unknown} */
-    BillingPeriod: 'Month' | 'Forever'
-    GetServiceTariffsResponse: {
-      personalSubscriptions: components['schemas']['PersonalSubscription'][]
-      teamSubscriptions: components['schemas']['TeamSubscription'][]
-    }
-    PersonalSubscription:
-      | components['schemas']['PersonalSubscriptionLaraueBoardsPersonalSubscription']
-      | components['schemas']['PersonalSubscriptionMarkdownTranslatorPersonalSubscription']
-    PersonalSubscriptionLaraueBoardsPersonalSubscription: {
-      /** @enum {string} */
-      type?: 'LaraueBoardsPersonal'
-      /** Format: int64 */
-      includedTokensCount: number | string
-      /** Format: int32 */
-      limitIssuesPerMonth?: null | number | string
-      /** Format: int32 */
-      limitFreeTeamOrganizationsCount?: null | number | string
-      /** Format: uuid */
-      id: string
-      title: string
-      /** Format: double */
-      price?: number | string
-      currencyCode: string
-      formattedPrice: string
-      /** Format: int32 */
-      billingDuration?: null | number | string
-      billingPeriod?: components['schemas']['BillingPeriod']
-    }
-    PersonalSubscriptionMarkdownTranslatorPersonalSubscription: {
-      /** @enum {string} */
-      type?: 'MarkdownTranslatorPersonal'
-      /** Format: int64 */
-      includedTokensCount: number | string
-      /** Format: int64 */
-      includedDailyFreeTokensCount: number | string
-      /** Format: uuid */
-      id: string
-      title: string
-      /** Format: double */
-      price?: number | string
-      currencyCode: string
-      formattedPrice: string
-      /** Format: int32 */
-      billingDuration?: null | number | string
-      billingPeriod?: components['schemas']['BillingPeriod']
-    }
-    /** @enum {unknown} */
-    ServiceId: 'LaraueBoards' | 'MarkdownTranslator'
-    TeamSubscription: components['schemas']['TeamSubscriptionLaraueBoardsTeamSubscription']
-    TeamSubscriptionLaraueBoardsTeamSubscription: {
-      /** @enum {string} */
-      type?: 'LaraueBoardsTeam'
-      /** Format: int64 */
-      includedTokensCount: number | string
-      /** Format: int32 */
-      limitIssuesPerMonth?: null | number | string
-      /** Format: uuid */
-      id: string
-      title: string
-      /** Format: double */
-      price?: number | string
-      currencyCode: string
-      formattedPrice: string
-      /** Format: int32 */
-      billingDuration?: null | number | string
-      billingPeriod?: components['schemas']['BillingPeriod']
-    }
-  }
+    schemas: {
+        /** @enum {unknown} */
+        BillingPeriod: "Month" | "Forever";
+        GetServiceTariffsResponse: {
+            personalSubscriptions: components["schemas"]["PersonalSubscription"][];
+            teamSubscriptions: components["schemas"]["TeamSubscription"][];
+        };
+        GetTokenPacksResponse: {
+            tokenPacks: components["schemas"]["TokenPack"][];
+        };
+        PaymentCallback: {
+            provider: string;
+            parameters: {
+                [key: string]: string;
+            };
+            headers: {
+                [key: string]: string;
+            };
+            body?: null | string;
+        };
+        PersonalSubscription: components["schemas"]["PersonalSubscriptionLaraueBoardsPersonalSubscription"] | components["schemas"]["PersonalSubscriptionMarkdownTranslatorPersonalSubscription"];
+        PersonalSubscriptionLaraueBoardsPersonalSubscription: {
+            /** @enum {string} */
+            type?: "LaraueBoardsPersonal";
+            /** Format: int64 */
+            includedTokensCount: number | string;
+            /** Format: int32 */
+            limitIssuesPerMonth?: null | number | string;
+            /** Format: int32 */
+            limitFreeTeamOrganizationsCount?: null | number | string;
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: double */
+            price?: number | string;
+            currencyCode: string;
+            formattedPrice: string;
+            /** Format: int32 */
+            billingDuration?: null | number | string;
+            billingPeriod?: components["schemas"]["BillingPeriod"];
+        };
+        PersonalSubscriptionMarkdownTranslatorPersonalSubscription: {
+            /** @enum {string} */
+            type?: "MarkdownTranslatorPersonal";
+            /** Format: int64 */
+            includedTokensCount: number | string;
+            /** Format: int64 */
+            includedDailyFreeTokensCount: number | string;
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: double */
+            price?: number | string;
+            currencyCode: string;
+            formattedPrice: string;
+            /** Format: int32 */
+            billingDuration?: null | number | string;
+            billingPeriod?: components["schemas"]["BillingPeriod"];
+        };
+        /** @enum {unknown} */
+        ServiceId: "LaraueBoards" | "MarkdownTranslator";
+        TeamSubscription: components["schemas"]["TeamSubscriptionLaraueBoardsTeamSubscription"];
+        TeamSubscriptionLaraueBoardsTeamSubscription: {
+            /** @enum {string} */
+            type?: "LaraueBoardsTeam";
+            /** Format: int64 */
+            includedTokensCount: number | string;
+            /** Format: int32 */
+            limitIssuesPerMonth?: null | number | string;
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: double */
+            price?: number | string;
+            currencyCode: string;
+            formattedPrice: string;
+            /** Format: int32 */
+            billingDuration?: null | number | string;
+            billingPeriod?: components["schemas"]["BillingPeriod"];
+        };
+        TokenPack: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            title: string;
+            /** Format: int64 */
+            tokensCount: number | string;
+            /** Format: double */
+            price?: number | string;
+            currencyCode: string;
+            formattedPrice: string;
+            /** Format: int32 */
+            expirationDuration?: number | string;
+            expirationPeriod?: components["schemas"]["BillingPeriod"];
+        };
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-export type $defs = Record<string, never>
-export type operations = Record<string, never>
+export type $defs = Record<string, never>;
+export type operations = Record<string, never>;

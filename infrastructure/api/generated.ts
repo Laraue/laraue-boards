@@ -652,6 +652,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/billing/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateCheckoutRequest"];
+                    "text/json": components["schemas"]["CreateCheckoutRequest"];
+                    "application/*+json": components["schemas"]["CreateCheckoutRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["CheckoutDto"];
+                        "application/json": components["schemas"]["CheckoutDto"];
+                        "text/json": components["schemas"]["CheckoutDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/billing/transactions": {
         parameters: {
             query?: never;
@@ -3249,21 +3292,47 @@ export interface components {
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
+        /** @enum {unknown} */
+        BillingItemKind: "Subscription" | "TokenPack";
         BillingSummary: components["schemas"]["BillingSummaryPersonalBillingSummary"] | components["schemas"]["BillingSummaryTeamBillingSummary"];
         BillingSummaryPersonalBillingSummary: {
             /** @enum {string} */
             $type?: "personal";
             freeTeamOrganizations?: null | components["schemas"]["LimitUsage"];
             subscriptionCode: string;
+            canPay: boolean;
             issuesPerMonth?: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
+            /** Format: int64 */
+            purchasedTokensCount?: number | string;
+            /** Format: date-time */
+            purchasedTokensExpireAt?: null | string;
+            /** Format: int64 */
+            purchasedTokensExpiringCount?: number | string;
+            /** Format: date-time */
+            periodEndsAt?: null | string;
+            periodResets?: boolean;
+            /** Format: date-time */
+            issuesResetAt?: null | string;
         };
         BillingSummaryTeamBillingSummary: {
             /** @enum {string} */
             $type?: "team";
             subscriptionCode: string;
+            canPay: boolean;
             issuesPerMonth?: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
+            /** Format: int64 */
+            purchasedTokensCount?: number | string;
+            /** Format: date-time */
+            purchasedTokensExpireAt?: null | string;
+            /** Format: int64 */
+            purchasedTokensExpiringCount?: number | string;
+            /** Format: date-time */
+            periodEndsAt?: null | string;
+            periodResets?: boolean;
+            /** Format: date-time */
+            issuesResetAt?: null | string;
         };
         BillingTransaction: {
             /** Format: uuid */
@@ -3289,6 +3358,11 @@ export interface components {
             issueKeys: string[];
             targetKey: string;
             targetType: components["schemas"]["OrderTargetType"];
+        };
+        CheckoutDto: {
+            /** Format: uuid */
+            paymentId: string;
+            url: string;
         };
         ColumnIssues: {
             /** Format: int64 */
@@ -3337,6 +3411,12 @@ export interface components {
             color: string;
             type: components["schemas"]["AttributeType"];
             listValues?: null | components["schemas"]["NewAttributeListValueDto"][];
+        };
+        CreateCheckoutRequest: {
+            kind: components["schemas"]["BillingItemKind"];
+            /** Format: uuid */
+            itemId: string;
+            currencyCode: string;
         };
         CreateEpicRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];

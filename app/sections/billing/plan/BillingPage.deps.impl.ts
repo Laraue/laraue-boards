@@ -19,7 +19,16 @@ export const createBillingPageDeps = (client: ApiClient): BillingPageDeps => ({
   view: async ({ signal }) => {
     const summary = await request(client.GET('/api/billing/summary', { signal }))
     const common = {
+      canPay: summary.canPay,
       issuesPerMonth: mapUsage(summary.issuesPerMonth),
+      issuesResetAt: summary.issuesResetAt ?? null,
+      periodEndsAt: summary.periodEndsAt ?? null,
+      periodResets: summary.periodResets ?? false,
+      purchasedTokens: {
+        count: Number(summary.purchasedTokensCount ?? 0),
+        expireAt: summary.purchasedTokensExpireAt ?? null,
+        expiringCount: Number(summary.purchasedTokensExpiringCount ?? 0),
+      },
       subscriptionCode: summary.subscriptionCode,
       tokens: mapUsage(summary.tokens)!,
     }

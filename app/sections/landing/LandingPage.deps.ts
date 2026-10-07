@@ -1,5 +1,3 @@
-export type LandingCurrency = 'RUB' | 'USD'
-
 export type LandingTariff = {
   billing: { duration: number; period: 'forever' | 'month' }
   currencyCode: string
@@ -20,5 +18,5 @@ export type LandingTariffs = {
 }
 
 export type LandingPageDeps = {
-  getTariffs: (currency: LandingCurrency) => Promise<LandingTariffs>
+  getTariffs: () => Promise<LandingTariffs>
 }

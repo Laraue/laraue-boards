@@ -13,7 +13,6 @@
     <LandingPlatforms :locale="locale" />
     <LandingPricing
       id="pricing"
-      v-model:currency="currency"
       :locale="locale"
       :tariffs="tariffs" />
     <LandingOpenSource :locale="locale" />
@@ -39,7 +38,7 @@ import LandingPlatforms from './components/LandingPlatforms.vue'
 import LandingPricing from './components/LandingPricing.vue'
 import LandingStructure from './components/LandingStructure.vue'
 import LandingUseCases from './components/LandingUseCases.vue'
-import type { LandingCurrency, LandingPageDeps } from './LandingPage.deps'
+import type { LandingPageDeps } from './LandingPage.deps'
 import { useLandingSeo } from './useLandingSeo'
 
 const props = defineProps<{ deps: LandingPageDeps; locale: Locale }>()
@@ -60,13 +59,8 @@ const { t } = useI18n(
   props.locale,
 )
 
-// Prices are loaded on the server for the first render (so they are in the HTML search engines see)
-// and again in the browser when the visitor switches the currency.
-const currency = ref<LandingCurrency>('USD')
-const { data: tariffs } = await useApiQuery(
-  () => `landing-tariffs-${currency.value}`,
-  () => props.deps.getTariffs(currency.value),
-)
+// Prices are loaded on the server for the first render, so they are in the HTML search engines see.
+const { data: tariffs } = await useApiQuery('landing-tariffs', () => props.deps.getTariffs())
 
 useLandingSeo(props.locale, { description: t('seoDescription'), title: t('seoTitle') })
 </script>

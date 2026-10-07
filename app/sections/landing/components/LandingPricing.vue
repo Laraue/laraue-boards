@@ -11,20 +11,6 @@
       {{ t('load_error') }}
     </div>
     <template v-else>
-      <div
-        :aria-label="t('currency_switch_label')"
-        class="currency-switch"
-        role="group">
-        <button
-          v-for="code in currencies"
-          :key="code"
-          class="currency-switch-btn"
-          :data-active="code === currency ? 'true' : null"
-          type="button"
-          @click="currency = code">
-          {{ code }}
-        </button>
-      </div>
       <p class="pricing-note">
         {{ t('terms_note') }}
         <NuxtLink :to="locale === 'ru' ? '/ru/terms' : '/terms'">{{ t('terms_link') }}</NuxtLink>
@@ -38,10 +24,8 @@
           <LandingIcon :name="group.icon" />
           {{ t(group.label) }}
         </div>
-        <p
-          v-if="group.perSeat"
-          class="pricing-group-note">
-          {{ t('team_pricing_note') }}
+        <p class="pricing-group-note">
+          {{ t(group.note) }}
         </p>
         <div class="pricing-cards">
           <div
@@ -84,7 +68,7 @@ import { IconCheck } from '@tabler/icons-vue'
 import type { Locale } from '~/composables/useI18n'
 
 import { appUrl } from '../landingLinks'
-import type { LandingCurrency, LandingTariff, LandingTariffs } from '../LandingPage.deps'
+import type { LandingTariff, LandingTariffs } from '../LandingPage.deps'
 import { useLandingOffers } from '../useLandingSeo'
 import LandingIcon from './LandingIcon.vue'
 import LandingSection from './LandingSection.vue'
@@ -94,15 +78,12 @@ const props = defineProps<{
   tariffs: LandingTariffs | undefined
 }>()
 
-const currency = defineModel<LandingCurrency>('currency', { required: true })
-
 const { t } = useI18n(
   {
     en: {
       billing_label_forever: 'forever',
       billing_label_month: 'month',
       billing_label_n_months: 'every {count} months',
-      currency_switch_label: 'Currency',
       feature_free_orgs: '{count} free team organization(s)',
       feature_issues: 'Up to {count} issues / month',
       feature_tokens: '{count} tokens included',
@@ -121,6 +102,8 @@ const { t } = useI18n(
       offer_unlimited_orgs: 'unlimited team organizations',
       per_seat: 'per seat',
       personal_label: 'For individuals',
+      personal_pricing_note:
+        'Personal plans belong to your account: the included tokens and limits are yours, not shared with a team.',
       price_cta: 'Get started',
       pricing_label: 'Pricing',
       pricing_sub:
@@ -136,7 +119,6 @@ const { t } = useI18n(
       billing_label_forever: 'навсегда',
       billing_label_month: 'месяц',
       billing_label_n_months: 'раз в {count} мес.',
-      currency_switch_label: 'Валюта',
       feature_free_orgs: '{count} бесплатных организаций',
       feature_issues: 'До {count} issues в месяц',
       feature_tokens: '{count} токенов включено',
@@ -155,6 +137,8 @@ const { t } = useI18n(
       offer_unlimited_orgs: 'неограниченное число организаций',
       per_seat: 'за место',
       personal_label: 'Для себя',
+      personal_pricing_note:
+        'Личные тарифы привязаны к вашему аккаунту: включённые токены и лимиты принадлежат вам, а не команде.',
       price_cta: 'Начать',
       pricing_label: 'Цены',
       pricing_sub:
@@ -169,8 +153,6 @@ const { t } = useI18n(
   },
   props.locale,
 )
-const currencies: LandingCurrency[] = ['USD', 'RUB']
-
 const groups = computed(() => {
   if (!props.tariffs) {
     return []
@@ -181,6 +163,7 @@ const groups = computed(() => {
       icon: 'brain',
       key: 'personal',
       label: 'personal_label',
+      note: 'personal_pricing_note',
       perSeat: false,
       tariffs: props.tariffs.personal,
     },
@@ -188,6 +171,7 @@ const groups = computed(() => {
       icon: 'partners',
       key: 'team',
       label: 'team_label',
+      note: 'team_pricing_note',
       perSeat: true,
       tariffs: props.tariffs.team,
     },
@@ -290,40 +274,6 @@ watch(
   padding: 16px 20px;
 }
 
-.currency-switch {
-  background: var(--color-soft);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  display: inline-flex;
-  gap: 2px;
-  margin-top: 24px;
-  padding: 3px;
-}
-
-.currency-switch-btn {
-  background: none;
-  border: none;
-  border-radius: var(--radius-small);
-  color: var(--color-muted);
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
-  padding: 7px 18px;
-  transition:
-    background var(--duration-base),
-    color var(--duration-base);
-}
-
-.currency-switch-btn:hover {
-  color: var(--color-text);
-}
-
-.currency-switch-btn[data-active='true'] {
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
-  color: var(--color-text);
-}
-
 .pricing-note {
   background: var(--color-accent-soft);
   border-radius: var(--radius-card);
@@ -355,7 +305,6 @@ watch(
   font-size: 13px;
   line-height: 1.5;
   margin: -8px 0 20px;
-  max-width: 620px;
 }
 
 .pricing-cards {

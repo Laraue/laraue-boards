@@ -1,0 +1,218 @@
+import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { afterEach, expect, it, vi } from 'vitest'
+import { page } from 'vitest/browser'
+
+import type { BillingPageDeps } from './BillingPage.deps'
+import BillingPage from './BillingPage.vue'
+
+let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
+
+afterEach(async () => {
+  await currentWrapper?.unmount()
+  currentWrapper = undefined
+})
+
+const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): BillingPageDeps => ({
+  view: vi.fn<BillingPageDeps['view']>(async () => ({
+    canPay,
+    freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
+    issuesPerMonth: null,
+    issuesResetAt: null,
+    kind: 'personal',
+    periodEndsAt: null,
+    periodResets: false,
+    purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+    subscriptionCode: 'Pro',
+    tokens: { limit: 1000, remaining: 850, used: 150 },
+  })),
+  ...overrides,
+})
+
+const mountPage = async (
+  deps: BillingPageDeps,
+  onChangePlan: () => void = vi.fn<() => void>(),
+  onBuyTokens: () => void = vi.fn<() => void>(),
+) => {
+  currentWrapper = await mountSuspended(BillingPage, {
+    attachTo: document.body,
+    props: { deps, onBuyTokens, onChangePlan },
+    route: '/organizations/acme-ab12/account/plan',
+  })
+}
+
+it('shows the current plan and available usage limits', async () => {
+  await mountPage(createDeps())
+
+  await expect.element(page.getByText('Pro')).toBeVisible()
+  await expect.element(page.getByText('850', { exact: true })).toBeVisible()
+  await expect.element(page.getByText('150 used of 1,000 in the plan')).toBeVisible()
+})
+
+it('opens the plan change from the current plan', async () => {
+  const onChangePlan = vi.fn<() => void>()
+  await mountPage(createDeps(), onChangePlan)
+
+  await page.getByRole('button', { name: 'Change plan' }).first().click()
+
+  expect(onChangePlan).toHaveBeenCalled()
+})
+
+it('opens the token packs from the tokens balance', async () => {
+  const onBuyTokens = vi.fn<() => void>()
+  await mountPage(createDeps(), undefined, onBuyTokens)
+
+  await page.getByRole('button', { name: 'Buy tokens' }).click()
+
+  expect(onBuyTokens).toHaveBeenCalled()
+})
+
+it('shows when the allowance of a Free plan resets and the purchased tokens with their nearest expiry', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
+        issuesPerMonth: null,
+        issuesResetAt: null,
+        kind: 'personal',
+        periodEndsAt: '2026-11-06T12:00:00Z',
+        periodResets: true,
+        purchasedTokens: {
+          count: 125_000,
+          expireAt: '2027-04-06T12:00:00Z',
+          expiringCount: 25_000,
+        },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+  )
+
+  // Once, on the plan card: the date is not repeated on the tokens card.
+  await expect.element(page.getByText('Resets on Nov 6, 2026')).toBeVisible()
+  // The number at the top is everything that can be spent: the plan's 25,000 and the 125,000 purchased.
+  await expect.element(page.getByText('150,000', { exact: true })).toBeVisible()
+  await expect
+    .element(
+      page.getByText(
+        '0 used of 25,000 in the plan + 125,000 purchased tokens, 25,000 of them expire on Apr 6, 2027',
+      ),
+    )
+    .toBeVisible()
+})
+
+it('says when a paid plan ends and that all the purchased tokens expire together', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: null,
+        issuesResetAt: null,
+        kind: 'team',
+        periodEndsAt: '2026-11-06T12:00:00Z',
+        periodResets: false,
+        purchasedTokens: {
+          count: 100_000,
+          expireAt: '2027-04-06T12:00:00Z',
+          expiringCount: 100_000,
+        },
+        subscriptionCode: 'Team',
+        tokens: { limit: 750_000, remaining: 700_000, used: 50_000 },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Active until Nov 6, 2026')).toBeVisible()
+  await expect
+    .element(
+      page.getByText(
+        '50,000 used of 750,000 in the plan + 100,000 purchased tokens that expire on Apr 6, 2027',
+      ),
+    )
+    .toBeVisible()
+})
+
+it('shows no purchased tokens line when there are none', async () => {
+  await mountPage(createDeps())
+
+  await expect.element(page.getByText('purchased tokens')).not.toBeInTheDocument()
+})
+
+it('offers to change the plan from the issues limit too', async () => {
+  const onChangePlan = vi.fn<() => void>()
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: { limit: 500, remaining: 498, used: 2 },
+        issuesResetAt: null,
+        kind: 'team',
+        periodEndsAt: null,
+        periodResets: false,
+        purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+    onChangePlan,
+  )
+
+  // The first button is the plan card's, the second one belongs to the issues limit.
+  await page.getByRole('button', { name: 'Change plan' }).nth(1).click()
+
+  expect(onChangePlan).toHaveBeenCalled()
+})
+
+it('says in one line how many issues are used and when the count starts over', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: { limit: 500, remaining: 498, used: 2 },
+        issuesResetAt: '2026-11-06T12:00:00Z',
+        kind: 'team',
+        periodEndsAt: '2026-11-06T12:00:00Z',
+        periodResets: true,
+        purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+  )
+
+  await expect
+    .element(page.getByText('2 used of 500 in the plan, resets on Nov 6, 2026'))
+    .toBeVisible()
+})
+
+it('says only how many issues are used when no reset is known', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: { limit: 500, remaining: 498, used: 2 },
+        issuesResetAt: null,
+        kind: 'team',
+        periodEndsAt: null,
+        periodResets: false,
+        purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('2 used of 500 in the plan', { exact: true })).toBeVisible()
+})
+
+it('shows how many free team organizations are used, with a way to lift the limit', async () => {
+  const onChangePlan = vi.fn<() => void>()
+  await mountPage(createDeps(), onChangePlan)
+
+  await expect.element(page.getByText('1 used of 2 in the plan', { exact: true })).toBeVisible()
+
+  // The first button is the plan card's, the second one belongs to the free team organizations limit.
+  await page.getByRole('button', { name: 'Change plan' }).nth(1).click()
+
+  expect(onChangePlan).toHaveBeenCalled()
+})

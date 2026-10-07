@@ -21,8 +21,8 @@
         {{ t('profile') }}
       </NuxtLink>
       <NuxtLink
+        active-class="active"
         class="page-tab"
-        exact-active-class="active"
         :to="planTo">
         <IconCreditCard />
         {{ t('plan') }}
