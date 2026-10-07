@@ -16,6 +16,11 @@
               <p class="muted">
                 {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
               </p>
+              <p
+                v-if="page.periodEndsAt"
+                class="muted">
+                {{ periodText(page) }}
+              </p>
             </div>
             <BaseButton
               class="card-action"
@@ -33,11 +38,26 @@
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
             <div class="usage-details muted">
-              <span>{{ t('remaining') }}</span>
+              <span>{{ t('tokensLeft') }}</span>
               <span>
-                {{ t('usedOfLimit', { limit: page.tokens.limit, used: page.tokens.used }) }}
+                {{
+                  t('usedOfLimit', {
+                    limit: formatNumber(page.tokens.limit),
+                    used: formatNumber(page.tokens.used),
+                  })
+                }}
               </span>
             </div>
+            <p
+              v-if="page.purchasedTokens.count > 0"
+              class="muted">
+              {{ purchasedText(page) }}
+            </p>
+            <p
+              v-if="page.periodEndsAt"
+              class="muted">
+              {{ periodText(page) }}
+            </p>
             <BaseButton
               class="card-action"
               @click="onBuyTokens">
@@ -60,8 +80,8 @@
               <span>
                 {{
                   t('usedOfLimit', {
-                    limit: page.issuesPerMonth.limit,
-                    used: page.issuesPerMonth.used,
+                    limit: formatNumber(page.issuesPerMonth.limit),
+                    used: formatNumber(page.issuesPerMonth.used),
                   })
                 }}
               </span>
@@ -83,8 +103,8 @@
               <span>
                 {{
                   t('usedOfLimit', {
-                    limit: page.freeTeamOrganizations.limit,
-                    used: page.freeTeamOrganizations.used,
+                    limit: formatNumber(page.freeTeamOrganizations.limit),
+                    used: formatNumber(page.freeTeamOrganizations.used),
                   })
                 }}
               </span>
@@ -111,6 +131,7 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
+    activeUntil: 'Active until {date}',
     buyTokens: 'Buy tokens',
     changePlan: 'Change plan',
     currentPlan: 'Current plan',
@@ -119,12 +140,18 @@ const { t } = useI18n({
     loadError: 'Could not load billing summary',
     loading: 'Loading billing summary…',
     personalPlan: 'Personal plan',
+    purchasedExpire: '{count} expire on {date}',
+    purchasedExpireAll: 'expire on {date}',
+    purchasedTokens: '+ {count} purchased tokens',
     remaining: 'remaining',
+    resetsOn: 'Resets on {date}',
+    tokensLeft: 'left in the plan',
     teamPlan: 'Team plan',
     tokens: 'Tokens',
     usedOfLimit: '{used} used of {limit}',
   },
   ru: {
+    activeUntil: 'Действует до {date}',
     buyTokens: 'Купить токены',
     changePlan: 'Сменить тариф',
     currentPlan: 'Текущий тариф',
@@ -133,18 +160,46 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить информацию о биллинге',
     loading: 'Загрузка информации о биллинге…',
     personalPlan: 'Персональный тариф',
+    purchasedExpire: '{count} сгорят {date}',
+    purchasedExpireAll: 'сгорят {date}',
+    purchasedTokens: '+ {count} купленных токенов',
     remaining: 'осталось',
+    resetsOn: 'Обновится {date}',
+    tokensLeft: 'осталось в тарифе',
     teamPlan: 'Командный тариф',
     tokens: 'Токены',
     usedOfLimit: 'использовано {used} из {limit}',
   },
 })
 
-const { formatNumber } = useFormatters()
+const { formatDate, formatNumber } = useFormatters()
 
 const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
   props.deps.view({ signal }),
 )
+
+// "Resets on 6 Nov" for a Free plan, whose allowance starts over, "Active until 6 Nov" for a paid one.
+const periodText = (page: BillingPageData) =>
+  page.periodEndsAt
+    ? t(page.periodResets ? 'resetsOn' : 'activeUntil', { date: formatDate(page.periodEndsAt) })
+    : ''
+
+// "+ 125,000 purchased tokens · 25,000 expire on 6 Apr 2027": the date is the nearest one, so it says how
+// many tokens it concerns unless they all expire then.
+const purchasedText = (page: BillingPageData) => {
+  const { count, expireAt, expiringCount } = page.purchasedTokens
+  const parts = [t('purchasedTokens', { count: formatNumber(count) })]
+  if (expireAt) {
+    const date = formatDate(expireAt)
+    parts.push(
+      expiringCount === count
+        ? t('purchasedExpireAll', { date })
+        : t('purchasedExpire', { count: formatNumber(expiringCount), date }),
+    )
+  }
+
+  return parts.join(' · ')
+}
 
 const usagePercent = (usage: BillingUsageViewModel) =>
   `${usage.limit > 0 ? Math.min(100, Math.max(0, (usage.used / usage.limit) * 100)) : 0}%`

@@ -51,6 +51,9 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     canPay,
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
+    periodEndsAt: null,
+    periodResets: false,
+    purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
     kind: 'personal',
     subscriptionCode: 'Pro',
     tokens: { limit: 1000, remaining: 850, used: 150 },
@@ -93,4 +96,55 @@ it('opens the token packs from the tokens balance', async () => {
   await page.getByRole('button', { name: 'Buy tokens' }).click()
 
   expect(onBuyTokens).toHaveBeenCalled()
+})
+
+it('shows when the allowance of a Free plan resets and the purchased tokens with their nearest expiry', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
+        issuesPerMonth: null,
+        kind: 'personal',
+        periodEndsAt: '2026-11-06T12:00:00Z',
+        periodResets: true,
+        purchasedTokens: { count: 125_000, expireAt: '2027-04-06T12:00:00Z', expiringCount: 25_000 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Resets on Nov 6, 2026').first()).toBeVisible()
+  await expect
+    .element(page.getByText('+ 125,000 purchased tokens · 25,000 expire on Apr 6, 2027'))
+    .toBeVisible()
+})
+
+it('says when a paid plan ends and that all the purchased tokens expire together', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: null,
+        kind: 'team',
+        periodEndsAt: '2026-11-06T12:00:00Z',
+        periodResets: false,
+        purchasedTokens: { count: 100_000, expireAt: '2027-04-06T12:00:00Z', expiringCount: 100_000 },
+        subscriptionCode: 'Team',
+        tokens: { limit: 750_000, remaining: 700_000, used: 50_000 },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Active until Nov 6, 2026').first()).toBeVisible()
+  await expect
+    .element(page.getByText('+ 100,000 purchased tokens · expire on Apr 6, 2027'))
+    .toBeVisible()
+})
+
+it('shows no purchased tokens line when there are none', async () => {
+  await mountPage(createDeps())
+
+  await expect.element(page.getByText('purchased tokens')).not.toBeInTheDocument()
 })

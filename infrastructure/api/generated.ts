@@ -3303,6 +3303,15 @@ export interface components {
             canPay: boolean;
             issuesPerMonth?: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
+            /** Format: int64 */
+            purchasedTokensCount?: number | string;
+            /** Format: date-time */
+            purchasedTokensExpireAt?: null | string;
+            /** Format: int64 */
+            purchasedTokensExpiringCount?: number | string;
+            /** Format: date-time */
+            periodEndsAt?: null | string;
+            periodResets?: boolean;
         };
         BillingSummaryTeamBillingSummary: {
             /** @enum {string} */
@@ -3311,6 +3320,15 @@ export interface components {
             canPay: boolean;
             issuesPerMonth?: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
+            /** Format: int64 */
+            purchasedTokensCount?: number | string;
+            /** Format: date-time */
+            purchasedTokensExpireAt?: null | string;
+            /** Format: int64 */
+            purchasedTokensExpiringCount?: number | string;
+            /** Format: date-time */
+            periodEndsAt?: null | string;
+            periodResets?: boolean;
         };
         BillingTransaction: {
             /** Format: uuid */
