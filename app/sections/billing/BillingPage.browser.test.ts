@@ -116,7 +116,8 @@ it('shows when the allowance of a Free plan resets and the purchased tokens with
     }),
   )
 
-  await expect.element(page.getByText('Resets on Nov 6, 2026').first()).toBeVisible()
+  // Once, on the plan card: the date is not repeated on the tokens card.
+  await expect.element(page.getByText('Resets on Nov 6, 2026')).toBeVisible()
   // The number at the top is everything that can be spent: the plan's 25,000 and the 125,000 purchased.
   await expect.element(page.getByText('150,000', { exact: true })).toBeVisible()
   await expect.element(page.getByText('0 used of 25,000 in the plan')).toBeVisible()
@@ -140,7 +141,7 @@ it('says when a paid plan ends and that all the purchased tokens expire together
     }),
   )
 
-  await expect.element(page.getByText('Active until Nov 6, 2026').first()).toBeVisible()
+  await expect.element(page.getByText('Active until Nov 6, 2026')).toBeVisible()
   await expect.element(page.getByText('+ 100,000 purchased tokens')).toBeVisible()
   await expect.element(page.getByText('all expire on Apr 6, 2027')).toBeVisible()
 })

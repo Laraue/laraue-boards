@@ -42,7 +42,7 @@
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
             <div class="usage-notes">
-              <div class="usage-details usage-details-spread muted">
+              <div class="usage-details muted">
                 <span>
                   {{
                     t('usedOfLimitInPlan', {
@@ -51,7 +51,6 @@
                     })
                   }}
                 </span>
-                <span v-if="page.periodEndsAt">{{ periodText(page) }}</span>
               </div>
               <div
                 v-if="page.purchasedTokens.count > 0"
