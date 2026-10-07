@@ -133,9 +133,9 @@ const { t } = useI18n({
     loadError: 'Could not load billing summary',
     loading: 'Loading billing summary…',
     personalPlan: 'Personal plan',
-    purchasedExpire: '{count} of them expire on {date}',
-    purchasedExpireAll: 'all expire on {date}',
-    purchasedTokens: '+ {count} purchased tokens',
+    purchasedAll: '+ {count} purchased tokens that expire on {date}',
+    purchasedNoDate: '+ {count} purchased tokens',
+    purchasedPart: '+ {count} purchased tokens, {expiring} of them expire on {date}',
     remaining: 'remaining',
     resetsOn: 'Resets on {date}',
     teamPlan: 'Team plan',
@@ -153,9 +153,9 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить информацию о биллинге',
     loading: 'Загрузка информации о биллинге…',
     personalPlan: 'Персональный тариф',
-    purchasedExpire: '{count} из них сгорят {date}',
-    purchasedExpireAll: 'все сгорят {date}',
-    purchasedTokens: '+ {count} купленных токенов',
+    purchasedAll: '+ {count} купленных токенов, которые сгорят {date}',
+    purchasedNoDate: '+ {count} купленных токенов',
+    purchasedPart: '+ {count} купленных токенов, {expiring} из них сгорят {date}',
     remaining: 'осталось',
     resetsOn: 'Обновится {date}',
     teamPlan: 'Командный тариф',
@@ -177,35 +177,30 @@ const periodText = (page: BillingPageData) =>
     ? t(page.periodResets ? 'resetsOn' : 'activeUntil', { date: formatDate(page.periodEndsAt) })
     : ''
 
-// The expiry of the purchased tokens: the date is the nearest one, so it says how many tokens it concerns
-// ("25,000 of them expire on 6 Apr 2027") unless they all expire then ("all expire on 6 Apr 2027").
-const purchasedExpiryText = (page: BillingPageData) => {
+// The purchased tokens and when they expire. The date is the nearest one, so unless all the tokens expire
+// then, it says how many it concerns: "+ 125,000 purchased tokens, 25,000 of them expire on 6 Apr 2027".
+const purchasedText = (page: BillingPageData) => {
   const { count, expireAt, expiringCount } = page.purchasedTokens
+  const formattedCount = formatNumber(count)
   if (!expireAt) {
-    return ''
+    return t('purchasedNoDate', { count: formattedCount })
   }
 
   const date = formatDate(expireAt)
 
   return expiringCount === count
-    ? t('purchasedExpireAll', { date })
-    : t('purchasedExpire', { count: formatNumber(expiringCount), date })
+    ? t('purchasedAll', { count: formattedCount, date })
+    : t('purchasedPart', { count: formattedCount, date, expiring: formatNumber(expiringCount) })
 }
 
-// One readable line: "0 used of 25,000 in the plan · + 100,000 purchased tokens (all expire on 6 Apr 2027)".
+// One readable line: "0 used of 25,000 in the plan + 100,000 purchased tokens that expire on 6 Apr 2027".
 const tokensUsageText = (page: BillingPageData) => {
   const inPlan = t('usedOfLimitInPlan', {
     limit: formatNumber(page.tokens.limit),
     used: formatNumber(page.tokens.used),
   })
-  if (page.purchasedTokens.count <= 0) {
-    return inPlan
-  }
 
-  const purchased = t('purchasedTokens', { count: formatNumber(page.purchasedTokens.count) })
-  const expiry = purchasedExpiryText(page)
-
-  return `${inPlan} · ${expiry ? `${purchased} (${expiry})` : purchased}`
+  return page.purchasedTokens.count > 0 ? `${inPlan} ${purchasedText(page)}` : inPlan
 }
 
 const usagePercent = (usage: BillingUsageViewModel) =>
