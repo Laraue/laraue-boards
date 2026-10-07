@@ -46,22 +46,24 @@
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
-            <div class="usage-details muted">
-              <span>{{ t('tokensLeft') }}</span>
-              <span>
-                {{
-                  t('usedOfLimit', {
-                    limit: formatNumber(page.tokens.limit),
-                    used: formatNumber(page.tokens.used),
-                  })
-                }}
-              </span>
+            <div class="usage-notes">
+              <div class="usage-details muted">
+                <span>{{ t('tokensLeft') }}</span>
+                <span>
+                  {{
+                    t('usedOfLimit', {
+                      limit: formatNumber(page.tokens.limit),
+                      used: formatNumber(page.tokens.used),
+                    })
+                  }}
+                </span>
+              </div>
+              <p
+                v-if="page.purchasedTokens.count > 0"
+                class="usage-note muted">
+                {{ purchasedText(page) }}
+              </p>
             </div>
-            <p
-              v-if="page.purchasedTokens.count > 0"
-              class="usage-note muted">
-              {{ purchasedText(page) }}
-            </p>
             <BaseButton
               class="card-action"
               @click="onBuyTokens">
@@ -290,7 +292,12 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   margin: 0;
 }
 
-/* A line under the usage numbers, in the same size as they are. */
+/* The lines under the usage bar: close to each other, in the same size. */
+.usage-notes {
+  display: grid;
+  gap: var(--space-1);
+}
+
 .usage-note {
   font-size: var(--font-size-small);
 }
