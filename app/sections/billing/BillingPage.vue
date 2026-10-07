@@ -35,7 +35,7 @@
             <div class="card-header">
               <div class="usage-heading">
                 <span>{{ t('tokens') }}</span>
-                <strong>{{ formatNumber(page.tokens.remaining) }}</strong>
+                <strong>{{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}</strong>
               </div>
               <span
                 v-if="page.periodEndsAt"
@@ -48,7 +48,7 @@
             </div>
             <div class="usage-notes">
               <div class="usage-details muted">
-                <span>{{ t('tokensLeft') }}</span>
+                <span>{{ t('tokensLeft', { count: formatNumber(page.tokens.remaining) }) }}</span>
                 <span>
                   {{
                     t('usedOfLimit', {
@@ -160,7 +160,7 @@ const { t } = useI18n({
     purchasedTokens: '+ {count} purchased tokens',
     remaining: 'remaining',
     resetsOn: 'Resets on {date}',
-    tokensLeft: 'left in the plan',
+    tokensLeft: '{count} left in the plan',
     teamPlan: 'Team plan',
     tokens: 'Tokens',
     usedOfLimit: '{used} used of {limit}',
@@ -180,7 +180,7 @@ const { t } = useI18n({
     purchasedTokens: '+ {count} купленных токенов',
     remaining: 'осталось',
     resetsOn: 'Обновится {date}',
-    tokensLeft: 'осталось в тарифе',
+    tokensLeft: '{count} осталось в тарифе',
     teamPlan: 'Командный тариф',
     tokens: 'Токены',
     usedOfLimit: 'использовано {used} из {limit}',
