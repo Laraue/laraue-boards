@@ -18,17 +18,17 @@
                 {{ periodText(page) }}
               </span>
             </div>
-            <div class="card-main">
-              <div>
-                <strong class="plan-name">{{ page.subscriptionCode }}</strong>
-                <p class="muted">
-                  {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
-                </p>
-              </div>
-              <BaseButton @click="onChangePlan">
-                {{ t('changePlan') }}
-              </BaseButton>
+            <div>
+              <strong class="plan-name">{{ page.subscriptionCode }}</strong>
+              <p class="muted">
+                {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
+              </p>
             </div>
+            <BaseButton
+              class="card-action"
+              @click="onChangePlan">
+              {{ t('changePlan') }}
+            </BaseButton>
           </article>
 
           <article class="usage-card">
@@ -46,27 +46,27 @@
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
-            <div class="card-main">
-              <div class="usage-details muted">
-                <span>{{ t('tokensLeft') }}</span>
-                <span>
-                  {{
-                    t('usedOfLimit', {
-                      limit: formatNumber(page.tokens.limit),
-                      used: formatNumber(page.tokens.used),
-                    })
-                  }}
-                </span>
-              </div>
-              <BaseButton @click="onBuyTokens">
-                {{ t('buyTokens') }}
-              </BaseButton>
+            <div class="usage-details muted">
+              <span>{{ t('tokensLeft') }}</span>
+              <span>
+                {{
+                  t('usedOfLimit', {
+                    limit: formatNumber(page.tokens.limit),
+                    used: formatNumber(page.tokens.used),
+                  })
+                }}
+              </span>
             </div>
             <p
               v-if="page.purchasedTokens.count > 0"
               class="muted">
               {{ purchasedText(page) }}
             </p>
+            <BaseButton
+              class="card-action"
+              @click="onBuyTokens">
+              {{ t('buyTokens') }}
+            </BaseButton>
           </article>
 
           <article
@@ -81,22 +81,22 @@
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
             </div>
-            <div class="card-main">
-              <div class="usage-details muted">
-                <span>{{ t('remaining') }}</span>
-                <span>
-                  {{
-                    t('usedOfLimit', {
-                      limit: formatNumber(page.issuesPerMonth.limit),
-                      used: formatNumber(page.issuesPerMonth.used),
-                    })
-                  }}
-                </span>
-              </div>
-              <BaseButton @click="onChangePlan">
-                {{ t('changePlan') }}
-              </BaseButton>
+            <div class="usage-details muted">
+              <span>{{ t('remaining') }}</span>
+              <span>
+                {{
+                  t('usedOfLimit', {
+                    limit: formatNumber(page.issuesPerMonth.limit),
+                    used: formatNumber(page.issuesPerMonth.used),
+                  })
+                }}
+              </span>
             </div>
+            <BaseButton
+              class="card-action"
+              @click="onChangePlan">
+              {{ t('changePlan') }}
+            </BaseButton>
           </article>
 
           <article
@@ -271,22 +271,19 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   padding: var(--space-4);
 }
 
-/* A card has a header (its title on the left, a note such as the reset date on the right), and a main row
-   with its content on the left and its action on the right. */
-.card-header,
-.card-main {
-  align-items: center;
+/* A card has a header (its title on the left, a note such as the reset date on the right), its content and
+   its action, which always sits in the bottom right corner: the cards of a row are as tall as the tallest,
+   so the actions line up. */
+.card-header {
+  align-items: baseline;
   display: flex;
   gap: var(--space-3);
   justify-content: space-between;
 }
 
-.card-header {
-  align-items: baseline;
-}
-
-.plan-card .card-main {
-  align-items: flex-start;
+.card-action {
+  align-self: flex-end;
+  margin-top: auto;
 }
 
 .usage-card p {
