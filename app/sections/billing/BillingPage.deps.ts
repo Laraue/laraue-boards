@@ -16,6 +16,8 @@ type BillingPageCommonData = {
   // Only the organization's owner pays for it.
   canPay: boolean
   issuesPerMonth: BillingUsageViewModel | null
+  // When the count of the issues starts over, `null` when there is no issue limit.
+  issuesResetAt: null | string
   // When the current period of the plan ends, `null` when it has no end.
   periodEndsAt: null | string
   // Whether the allowance starts over then (a Free plan) or the plan ends (a paid one).

@@ -32,6 +32,7 @@ test('maps the billing summary and its nullable limits', async () => {
     canPay: true,
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
+    issuesResetAt: null,
     kind: 'personal',
     periodEndsAt: null,
     periodResets: false,
@@ -46,6 +47,7 @@ test('maps the period and the purchased tokens of the summary', async () => {
     $type: 'personal',
     canPay: true,
     issuesPerMonth: null,
+    issuesResetAt: '2026-11-06T12:00:00Z',
     periodEndsAt: '2026-11-06T12:00:00Z',
     periodResets: true,
     purchasedTokensCount: '125000',
@@ -57,6 +59,7 @@ test('maps the period and the purchased tokens of the summary', async () => {
 
   const view = await createBillingPageDeps(client, noTariffs).view({})
 
+  assert.equal(view.issuesResetAt, '2026-11-06T12:00:00Z')
   assert.equal(view.periodEndsAt, '2026-11-06T12:00:00Z')
   assert.isTrue(view.periodResets)
   assert.deepEqual(view.purchasedTokens, {
@@ -78,6 +81,7 @@ test('maps a team billing summary without personal usage', async () => {
   assert.deepEqual(await createBillingPageDeps(client, noTariffs).view({}), {
     canPay: false,
     issuesPerMonth: { limit: 100, remaining: 75, used: 25 },
+    issuesResetAt: null,
     kind: 'team',
     periodEndsAt: null,
     periodResets: false,

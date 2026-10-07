@@ -61,17 +61,7 @@
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
             </div>
-            <div class="usage-details muted">
-              <span>{{ t('remaining') }}</span>
-              <span>
-                {{
-                  t('usedOfLimit', {
-                    limit: formatNumber(page.issuesPerMonth.limit),
-                    used: formatNumber(page.issuesPerMonth.used),
-                  })
-                }}
-              </span>
-            </div>
+            <p class="usage-note muted">{{ issuesUsageText(page, page.issuesPerMonth) }}</p>
             <BaseButton
               class="card-action"
               @click="onChangePlan">
@@ -142,6 +132,7 @@ const { t } = useI18n({
     tokens: 'Tokens',
     usedOfLimit: '{used} used of {limit}',
     usedOfLimitInPlan: '{used} used of {limit} in the plan',
+    usedOfLimitInPlanResets: '{used} used of {limit} in the plan, resets on {date}',
   },
   ru: {
     activeUntil: 'Действует до {date}',
@@ -162,6 +153,7 @@ const { t } = useI18n({
     tokens: 'Токены',
     usedOfLimit: 'использовано {used} из {limit}',
     usedOfLimitInPlan: 'использовано {used} из {limit} в тарифе',
+    usedOfLimitInPlanResets: 'использовано {used} из {limit} в тарифе, обновится {date}',
   },
 })
 
@@ -201,6 +193,15 @@ const tokensUsageText = (page: BillingPageData) => {
   })
 
   return page.purchasedTokens.count > 0 ? `${inPlan} ${purchasedText(page)}` : inPlan
+}
+
+// One readable line: "0 used of 500 in the plan, resets on 6 Nov 2026".
+const issuesUsageText = (page: BillingPageData, usage: BillingUsageViewModel) => {
+  const values = { limit: formatNumber(usage.limit), used: formatNumber(usage.used) }
+
+  return page.issuesResetAt
+    ? t('usedOfLimitInPlanResets', { ...values, date: formatDate(page.issuesResetAt) })
+    : t('usedOfLimitInPlan', values)
 }
 
 const usagePercent = (usage: BillingUsageViewModel) =>

@@ -3312,6 +3312,8 @@ export interface components {
             /** Format: date-time */
             periodEndsAt?: null | string;
             periodResets?: boolean;
+            /** Format: date-time */
+            issuesResetAt?: null | string;
         };
         BillingSummaryTeamBillingSummary: {
             /** @enum {string} */
@@ -3329,6 +3331,8 @@ export interface components {
             /** Format: date-time */
             periodEndsAt?: null | string;
             periodResets?: boolean;
+            /** Format: date-time */
+            issuesResetAt?: null | string;
         };
         BillingTransaction: {
             /** Format: uuid */

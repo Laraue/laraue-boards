@@ -67,6 +67,7 @@ export const createBillingPageDeps = (
     const common = {
       canPay: summary.canPay,
       issuesPerMonth: mapUsage(summary.issuesPerMonth),
+      issuesResetAt: summary.issuesResetAt ?? null,
       periodEndsAt: summary.periodEndsAt ?? null,
       periodResets: summary.periodResets ?? false,
       purchasedTokens: {

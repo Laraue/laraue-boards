@@ -31,6 +31,7 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     canPay,
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
+    issuesResetAt: null,
     periodEndsAt: null,
     periodResets: false,
     purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },

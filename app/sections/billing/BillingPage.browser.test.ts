@@ -51,6 +51,7 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     canPay,
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
+    issuesResetAt: null,
     periodEndsAt: null,
     periodResets: false,
     purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
@@ -106,6 +107,7 @@ it('shows when the allowance of a Free plan resets and the purchased tokens with
         canPay: true,
         freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
         issuesPerMonth: null,
+        issuesResetAt: null,
         kind: 'personal',
         periodEndsAt: '2026-11-06T12:00:00Z',
         periodResets: true,
@@ -135,6 +137,7 @@ it('says when a paid plan ends and that all the purchased tokens expire together
       view: vi.fn<BillingPageDeps['view']>(async () => ({
         canPay: true,
         issuesPerMonth: null,
+        issuesResetAt: null,
         kind: 'team',
         periodEndsAt: '2026-11-06T12:00:00Z',
         periodResets: false,
@@ -168,6 +171,7 @@ it('offers to change the plan from the issues limit too', async () => {
       view: vi.fn<BillingPageDeps['view']>(async () => ({
         canPay: true,
         issuesPerMonth: { limit: 500, remaining: 498, used: 2 },
+        issuesResetAt: null,
         kind: 'team',
         periodEndsAt: null,
         periodResets: false,
@@ -183,4 +187,44 @@ it('offers to change the plan from the issues limit too', async () => {
   await page.getByRole('button', { name: 'Change plan' }).nth(1).click()
 
   expect(onChangePlan).toHaveBeenCalled()
+})
+
+it('says in one line how many issues are used and when the count starts over', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: { limit: 500, remaining: 498, used: 2 },
+        issuesResetAt: '2026-11-06T12:00:00Z',
+        kind: 'team',
+        periodEndsAt: '2026-11-06T12:00:00Z',
+        periodResets: true,
+        purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('2 used of 500 in the plan, resets on Nov 6, 2026')).toBeVisible()
+})
+
+it('says only how many issues are used when no reset is known', async () => {
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: { limit: 500, remaining: 498, used: 2 },
+        issuesResetAt: null,
+        kind: 'team',
+        periodEndsAt: null,
+        periodResets: false,
+        purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('2 used of 500 in the plan', { exact: true })).toBeVisible()
 })
