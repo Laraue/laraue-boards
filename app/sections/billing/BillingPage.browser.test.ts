@@ -13,40 +13,6 @@ afterEach(async () => {
 })
 
 const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): BillingPageDeps => ({
-  getPlans: vi.fn<BillingPageDeps['getPlans']>(async () => ({
-    personal: [
-      {
-        currencyCode: 'RUB',
-        formattedPrice: '334₽',
-        id: 'plus-id',
-        isFree: false,
-        title: 'Plus',
-        tokens: 300_000,
-      },
-    ],
-    team: [],
-  })),
-  getTokenPacks: vi.fn<BillingPageDeps['getTokenPacks']>(async () => [
-    {
-      currencyCode: 'RUB',
-      expirationMonths: 6,
-      formattedPrice: '250₽',
-      id: 'small-id',
-      title: 'Small',
-      tokens: 100_000,
-    },
-    {
-      currencyCode: 'RUB',
-      expirationMonths: null,
-      formattedPrice: '1000₽',
-      id: 'medium-id',
-      title: 'Medium',
-      tokens: 600_000,
-    },
-  ]),
-  startCheckout: vi.fn<BillingPageDeps['startCheckout']>(async () => ({
-    url: 'about:blank#checkout',
-  })),
   view: vi.fn<BillingPageDeps['view']>(async () => ({
     canPay,
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },

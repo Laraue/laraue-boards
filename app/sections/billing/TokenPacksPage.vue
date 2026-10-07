@@ -68,16 +68,16 @@
 import type { RouteLocationRaw } from 'vue-router'
 
 import type {
-  BillingPageDeps,
   BillingTokenPackViewModel,
-} from '~/sections/billing/BillingPage.deps'
+  TokenPacksPageDeps,
+} from '~/sections/billing/TokenPacksPage.deps'
 import PaymentDialog from '~/sections/billing/PaymentDialog.vue'
 
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.
 const props = defineProps<{
   backTo: RouteLocationRaw
-  deps: BillingPageDeps
+  deps: TokenPacksPageDeps
   onPay: (url: string) => void
 }>()
 
@@ -120,7 +120,7 @@ const { formatNumber } = useFormatters()
 const paymentDialog = useTemplateRef('paymentDialog')
 const state = reactive({ pack: undefined as BillingTokenPackViewModel | undefined })
 
-const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
+const { data, message, pending, refresh } = await useApiQuery('token-packs-summary', (signal) =>
   props.deps.view({ signal }),
 )
 

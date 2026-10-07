@@ -80,17 +80,17 @@
 import type { RouteLocationRaw } from 'vue-router'
 
 import type {
-  BillingPageData,
-  BillingPageDeps,
   BillingPlanViewModel,
-} from '~/sections/billing/BillingPage.deps'
+  ChangePlanPageData,
+  ChangePlanPageDeps,
+} from '~/sections/billing/ChangePlanPage.deps'
 import PaymentDialog from '~/sections/billing/PaymentDialog.vue'
 
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.
 const props = defineProps<{
   backTo: RouteLocationRaw
-  deps: BillingPageDeps
+  deps: ChangePlanPageDeps
   onPay: (url: string) => void
 }>()
 
@@ -131,7 +131,7 @@ const { formatNumber } = useFormatters()
 const paymentDialog = useTemplateRef('paymentDialog')
 const state = reactive({ plan: undefined as BillingPlanViewModel | undefined })
 
-const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
+const { data, message, pending, refresh } = await useApiQuery('change-plan-summary', (signal) =>
   props.deps.view({ signal }),
 )
 
@@ -155,10 +155,10 @@ const dialogConditions = computed(() => {
   ]
 })
 
-const plans = (page: BillingPageData) =>
+const plans = (page: ChangePlanPageData) =>
   (page.kind === 'personal' ? planOptions.value?.personal : planOptions.value?.team) ?? []
 
-const isCurrent = (page: BillingPageData, plan: BillingPlanViewModel) =>
+const isCurrent = (page: ChangePlanPageData, plan: BillingPlanViewModel) =>
   plan.title === page.subscriptionCode
 
 const select = (plan: BillingPlanViewModel) => {

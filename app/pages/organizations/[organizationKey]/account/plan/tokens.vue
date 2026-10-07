@@ -6,18 +6,15 @@
 </template>
 
 <script setup lang="ts">
-import { createBillingPageDeps } from '~/sections/billing/BillingPage.deps.impl'
+import { createTokenPacksPageDeps } from '~/sections/billing/TokenPacksPage.deps.impl'
 import TokenPacksPage from '~/sections/billing/TokenPacksPage.vue'
-import type { TariffsFetcher } from '~/sections/landing/LandingPage.deps.impl'
 
 const { t } = useI18n({
   en: { plan: 'Buy tokens' },
   ru: { plan: 'Купить токены' },
 })
 
-// `useRequestFetch()` is typed with every route of the app, which TypeScript cannot compare with a
-// plain function type (excessive stack depth), so it is narrowed to what the plans use.
-const deps = createBillingPageDeps(useApiClient(), useRequestFetch() as unknown as TariffsFetcher)
+const deps = createTokenPacksPageDeps(useApiClient(), useBillingApiClient())
 
 const organizationRoutes = useOrganizationRoutes()
 

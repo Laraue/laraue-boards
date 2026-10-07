@@ -2,7 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { BillingPageDeps } from './BillingPage.deps'
+import type { ChangePlanPageDeps } from './ChangePlanPage.deps'
 import ChangePlanPage from './ChangePlanPage.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
@@ -12,8 +12,11 @@ afterEach(async () => {
   currentWrapper = undefined
 })
 
-const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): BillingPageDeps => ({
-  getPlans: vi.fn<BillingPageDeps['getPlans']>(async () => ({
+const createDeps = (
+  overrides: Partial<ChangePlanPageDeps> = {},
+  canPay = true,
+): ChangePlanPageDeps => ({
+  getPlans: vi.fn<ChangePlanPageDeps['getPlans']>(async () => ({
     personal: [
       {
         currencyCode: 'RUB',
@@ -34,44 +37,19 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     ],
     team: [],
   })),
-  getTokenPacks: vi.fn<BillingPageDeps['getTokenPacks']>(async () => [
-    {
-      currencyCode: 'RUB',
-      expirationMonths: 6,
-      formattedPrice: '250₽',
-      id: 'small-id',
-      title: 'Small',
-      tokens: 100_000,
-    },
-    {
-      currencyCode: 'RUB',
-      expirationMonths: null,
-      formattedPrice: '1000₽',
-      id: 'medium-id',
-      title: 'Medium',
-      tokens: 600_000,
-    },
-  ]),
-  startCheckout: vi.fn<BillingPageDeps['startCheckout']>(async () => ({
+  startCheckout: vi.fn<ChangePlanPageDeps['startCheckout']>(async () => ({
     url: 'about:blank#checkout',
   })),
-  view: vi.fn<BillingPageDeps['view']>(async () => ({
+  view: vi.fn<ChangePlanPageDeps['view']>(async () => ({
     canPay,
-    freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
-    issuesPerMonth: null,
-    issuesResetAt: null,
     kind: 'personal',
-    periodEndsAt: null,
-    periodResets: false,
-    purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
     subscriptionCode: 'Free',
-    tokens: { limit: 1000, remaining: 850, used: 150 },
   })),
   ...overrides,
 })
 
 const mountPage = async (
-  deps: BillingPageDeps,
+  deps: ChangePlanPageDeps,
   onPay: (url: string) => void = vi.fn<(url: string) => void>(),
 ) => {
   currentWrapper = await mountSuspended(ChangePlanPage, {

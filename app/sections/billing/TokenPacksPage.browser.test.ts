@@ -2,7 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
-import type { BillingPageDeps } from './BillingPage.deps'
+import type { TokenPacksPageDeps } from './TokenPacksPage.deps'
 import TokenPacksPage from './TokenPacksPage.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
@@ -12,9 +12,11 @@ afterEach(async () => {
   currentWrapper = undefined
 })
 
-const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): BillingPageDeps => ({
-  getPlans: vi.fn<BillingPageDeps['getPlans']>(async () => ({ personal: [], team: [] })),
-  getTokenPacks: vi.fn<BillingPageDeps['getTokenPacks']>(async () => [
+const createDeps = (
+  overrides: Partial<TokenPacksPageDeps> = {},
+  canPay = true,
+): TokenPacksPageDeps => ({
+  getTokenPacks: vi.fn<TokenPacksPageDeps['getTokenPacks']>(async () => [
     {
       currencyCode: 'RUB',
       expirationMonths: 6,
@@ -24,26 +26,17 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
       tokens: 100_000,
     },
   ]),
-  startCheckout: vi.fn<BillingPageDeps['startCheckout']>(async () => ({
+  startCheckout: vi.fn<TokenPacksPageDeps['startCheckout']>(async () => ({
     url: 'about:blank#checkout',
   })),
-  view: vi.fn<BillingPageDeps['view']>(async () => ({
+  view: vi.fn<TokenPacksPageDeps['view']>(async () => ({
     canPay,
-    freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
-    issuesPerMonth: null,
-    issuesResetAt: null,
-    kind: 'personal',
-    periodEndsAt: null,
-    periodResets: false,
-    purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
-    subscriptionCode: 'Pro',
-    tokens: { limit: 1000, remaining: 850, used: 150 },
   })),
   ...overrides,
 })
 
 const mountPage = async (
-  deps: BillingPageDeps,
+  deps: TokenPacksPageDeps,
   onPay: (url: string) => void = vi.fn<(url: string) => void>(),
 ) => {
   currentWrapper = await mountSuspended(TokenPacksPage, {
@@ -98,7 +91,7 @@ it('does not let a member who is not the owner pay', async () => {
 
 it('says there are no packs when none can be loaded', async () => {
   await mountPage(
-    createDeps({ getTokenPacks: vi.fn<BillingPageDeps['getTokenPacks']>(async () => []) }),
+    createDeps({ getTokenPacks: vi.fn<TokenPacksPageDeps['getTokenPacks']>(async () => []) }),
   )
 
   await expect.element(page.getByText('There are no token packs to buy yet.')).toBeVisible()
