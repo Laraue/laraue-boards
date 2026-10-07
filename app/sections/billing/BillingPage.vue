@@ -37,26 +37,21 @@
                 <span>{{ t('tokens') }}</span>
                 <strong>{{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}</strong>
               </div>
-              <span
-                v-if="page.periodEndsAt"
-                class="muted">
-                {{ periodText(page) }}
-              </span>
             </div>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
             <div class="usage-notes">
-              <div class="usage-details muted">
-                <span>{{ t('tokensLeft', { count: formatNumber(page.tokens.remaining) }) }}</span>
+              <div class="usage-details usage-details-spread muted">
                 <span>
                   {{
-                    t('usedOfLimit', {
+                    t('usedOfLimitInPlan', {
                       limit: formatNumber(page.tokens.limit),
                       used: formatNumber(page.tokens.used),
                     })
                   }}
                 </span>
+                <span v-if="page.periodEndsAt">{{ periodText(page) }}</span>
               </div>
               <p
                 v-if="page.purchasedTokens.count > 0"
@@ -160,10 +155,10 @@ const { t } = useI18n({
     purchasedTokens: '+ {count} purchased tokens',
     remaining: 'remaining',
     resetsOn: 'Resets on {date}',
-    tokensLeft: '{count} left in the plan',
     teamPlan: 'Team plan',
     tokens: 'Tokens',
     usedOfLimit: '{used} used of {limit}',
+    usedOfLimitInPlan: '{used} used of {limit} in the plan',
   },
   ru: {
     activeUntil: 'Действует до {date}',
@@ -180,10 +175,10 @@ const { t } = useI18n({
     purchasedTokens: '+ {count} купленных токенов',
     remaining: 'осталось',
     resetsOn: 'Обновится {date}',
-    tokensLeft: '{count} осталось в тарифе',
     teamPlan: 'Командный тариф',
     tokens: 'Токены',
     usedOfLimit: 'использовано {used} из {limit}',
+    usedOfLimitInPlan: 'использовано {used} из {limit} в тарифе',
   },
 })
 
@@ -329,6 +324,11 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 
 .usage-details {
   font-size: var(--font-size-small);
+}
+
+/* The note on the right, e.g. when the plan's allowance resets. */
+.usage-details-spread {
+  justify-content: space-between;
 }
 
 @media (max-width: 767px) {

@@ -78,7 +78,7 @@ it('shows the current plan and available usage limits', async () => {
 
   await expect.element(page.getByText('Pro')).toBeVisible()
   await expect.element(page.getByText('850', { exact: true })).toBeVisible()
-  await expect.element(page.getByText('850 left in the plan')).toBeVisible()
+  await expect.element(page.getByText('150 used of 1,000 in the plan')).toBeVisible()
 })
 
 it('opens the plan change from the current plan', async () => {
@@ -119,7 +119,7 @@ it('shows when the allowance of a Free plan resets and the purchased tokens with
   await expect.element(page.getByText('Resets on Nov 6, 2026').first()).toBeVisible()
   // The number at the top is everything that can be spent: the plan's 25,000 and the 125,000 purchased.
   await expect.element(page.getByText('150,000', { exact: true })).toBeVisible()
-  await expect.element(page.getByText('25,000 left in the plan')).toBeVisible()
+  await expect.element(page.getByText('0 used of 25,000 in the plan')).toBeVisible()
   await expect
     .element(page.getByText('+ 125,000 purchased tokens · 25,000 of them expire on Apr 6, 2027'))
     .toBeVisible()
