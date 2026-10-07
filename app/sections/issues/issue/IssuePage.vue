@@ -1,6 +1,7 @@
 <template>
   <AppPage
     class="issue-page-root"
+    contained
     :padded="!inDialog">
     <template #header>
       <PageHeader
@@ -76,7 +77,9 @@
       :on-retry="refresh"
       :pending="pending && !data">
       <template #loading>
-        <IssueSkeleton />
+        <IssueSkeleton
+          hide-header
+          :in-dialog="inDialog" />
       </template>
       <template #default="{ data: issue }">
         <section class="issue-page">
@@ -694,7 +697,7 @@ watch(dirty, setDirty, { immediate: true })
 .issue-dates {
   align-items: center;
   display: grid;
-  gap: var(--space-2) var(--space-3);
+  gap: var(--space-1) var(--space-3);
   grid-template-columns: 88px minmax(0, 1fr);
   margin: 0;
 }

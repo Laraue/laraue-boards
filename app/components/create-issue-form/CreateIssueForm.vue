@@ -291,7 +291,7 @@ defineExpose({ canSubmit, pending })
 .issue-properties {
   align-items: center;
   display: grid;
-  gap: var(--space-2) var(--space-3);
+  gap: var(--space-1) var(--space-3);
   grid-auto-rows: var(--control-height);
   grid-template-columns: 88px minmax(0, 1fr);
 }

@@ -1,5 +1,7 @@
 <template>
-  <AppPage class="board-page">
+  <AppPage
+    class="board-page"
+    contained>
     <template #header>
       <PageHeader
         :icon="BoardIcon"

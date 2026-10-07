@@ -42,11 +42,11 @@
 }
 
 .markdown :is(ul, ol) {
-  margin: 0;
   padding-left: var(--space-5);
 }
 
-.markdown li + li {
+/* A nested list sits as far from its item as the items from each other. */
+.markdown :is(li + li, li > :is(ul, ol)) {
   margin-top: var(--space-1);
 }
 
@@ -54,15 +54,30 @@
   margin: 0;
 }
 
-.markdown ul[data-type='taskList'] {
+/* The editor's checklist, and marked's one (comments, the editor's fallback). */
+.markdown :is(ul[data-type='taskList'], ul:has(> li > input[type='checkbox'])) {
   list-style: none;
   padding-left: 0;
 }
 
+.markdown li > input[type='checkbox'] {
+  margin: 0 var(--space-1) 0 0;
+  vertical-align: middle;
+}
+
 .markdown ul[data-type='taskList'] li {
-  align-items: baseline;
+  align-items: flex-start;
   display: flex;
   gap: var(--space-2);
+}
+
+/* Undoes the form label style; one line tall, so the box centers on the first line. */
+.markdown ul[data-type='taskList'] label {
+  align-items: center;
+  display: flex;
+  font-weight: inherit;
+  height: 1lh;
+  margin: 0;
 }
 
 .markdown img {

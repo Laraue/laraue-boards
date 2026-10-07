@@ -24,19 +24,31 @@
         :id="formId"
         @submit.prevent="submit">
         <div class="settings-fields">
-          <label for="create-space-name">{{ t('name') }}</label>
+          <label
+            class="field-label"
+            for="create-space-name">
+            {{ t('name') }}
+          </label>
           <BaseInput
             id="create-space-name"
             v-model="form.name"
             :disabled="pending"
             required />
-          <label for="create-space-key">{{ t('key') }}</label>
+          <label
+            class="field-label"
+            for="create-space-key">
+            {{ t('key') }}
+          </label>
           <BaseInput
             id="create-space-key"
             v-model="form.key"
             :disabled="pending"
             required />
-          <span :id="`${formId}-color`">{{ t('color') }}</span>
+          <span
+            :id="`${formId}-color`"
+            class="field-label">
+            {{ t('color') }}
+          </span>
           <AppColorPicker
             v-model="form.color"
             :aria-labelledby="`${formId}-color`"
