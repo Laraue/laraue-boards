@@ -83,8 +83,8 @@ import type {
   BillingPlanViewModel,
   ChangePlanPageData,
   ChangePlanPageDeps,
-} from '~/sections/billing/ChangePlanPage.deps'
-import PaymentDialog from '~/sections/billing/PaymentDialog.vue'
+} from '~/sections/billing/change-plan/ChangePlanPage.deps'
+import PaymentDialog from '~/sections/billing/components/PaymentDialog/PaymentDialog.vue'
 
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.

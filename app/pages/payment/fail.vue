@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import PaymentResultPage from '~/sections/billing/PaymentResultPage.vue'
+import PaymentResultPage from '~/sections/billing/payment-result/PaymentResultPage.vue'
 
 const { t } = useI18n({
   en: { title: 'Payment' },

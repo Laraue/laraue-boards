@@ -6,8 +6,8 @@
 </template>
 
 <script setup lang="ts">
-import { createTokenPacksPageDeps } from '~/sections/billing/TokenPacksPage.deps.impl'
-import TokenPacksPage from '~/sections/billing/TokenPacksPage.vue'
+import { createTokenPacksPageDeps } from '~/sections/billing/token-packs/TokenPacksPage.deps.impl'
+import TokenPacksPage from '~/sections/billing/token-packs/TokenPacksPage.vue'
 
 const { t } = useI18n({
   en: { plan: 'Buy tokens' },

@@ -108,7 +108,7 @@ import type {
   BillingPageData,
   BillingPageDeps,
   BillingUsageViewModel,
-} from '~/sections/billing/BillingPage.deps'
+} from '~/sections/billing/plan/BillingPage.deps'
 
 const props = defineProps<{
   deps: BillingPageDeps

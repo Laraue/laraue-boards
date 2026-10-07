@@ -70,8 +70,8 @@ import type { RouteLocationRaw } from 'vue-router'
 import type {
   BillingTokenPackViewModel,
   TokenPacksPageDeps,
-} from '~/sections/billing/TokenPacksPage.deps'
-import PaymentDialog from '~/sections/billing/PaymentDialog.vue'
+} from '~/sections/billing/token-packs/TokenPacksPage.deps'
+import PaymentDialog from '~/sections/billing/components/PaymentDialog/PaymentDialog.vue'
 
 // `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
 // is the page's navigation.

@@ -6,8 +6,8 @@
 </template>
 
 <script setup lang="ts">
-import { createChangePlanPageDeps } from '~/sections/billing/ChangePlanPage.deps.impl'
-import ChangePlanPage from '~/sections/billing/ChangePlanPage.vue'
+import { createChangePlanPageDeps } from '~/sections/billing/change-plan/ChangePlanPage.deps.impl'
+import ChangePlanPage from '~/sections/billing/change-plan/ChangePlanPage.vue'
 
 const { t } = useI18n({
   en: { plan: 'Change plan' },
