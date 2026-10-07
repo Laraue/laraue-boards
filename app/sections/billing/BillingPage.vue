@@ -83,17 +83,19 @@
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
             </div>
-            <div class="usage-details muted">
-              <span>{{ t('remaining') }}</span>
-              <span>
-                {{
-                  t('usedOfLimit', {
-                    limit: formatNumber(page.freeTeamOrganizations.limit),
-                    used: formatNumber(page.freeTeamOrganizations.used),
-                  })
-                }}
-              </span>
-            </div>
+            <p class="usage-note muted">
+              {{
+                t('usedOfLimitInPlan', {
+                  limit: formatNumber(page.freeTeamOrganizations.limit),
+                  used: formatNumber(page.freeTeamOrganizations.used),
+                })
+              }}
+            </p>
+            <BaseButton
+              class="card-action"
+              @click="onChangePlan">
+              {{ t('changePlan') }}
+            </BaseButton>
           </article>
         </div>
       </section>
@@ -128,11 +130,9 @@ const { t } = useI18n({
     purchasedAll: '+ {count} purchased tokens that expire on {date}',
     purchasedNoDate: '+ {count} purchased tokens',
     purchasedPart: '+ {count} purchased tokens, {expiring} of them expire on {date}',
-    remaining: 'remaining',
     resetsOn: 'Resets on {date}',
     teamPlan: 'Team plan',
     tokens: 'Tokens',
-    usedOfLimit: '{used} used of {limit}',
     usedOfLimitInPlan: '{used} used of {limit} in the plan',
     usedOfLimitInPlanResets: '{used} used of {limit} in the plan, resets on {date}',
   },
@@ -149,11 +149,9 @@ const { t } = useI18n({
     purchasedAll: '+ {count} купленных токенов, которые сгорят {date}',
     purchasedNoDate: '+ {count} купленных токенов',
     purchasedPart: '+ {count} купленных токенов, {expiring} из них сгорят {date}',
-    remaining: 'осталось',
     resetsOn: 'Обновится {date}',
     teamPlan: 'Командный тариф',
     tokens: 'Токены',
-    usedOfLimit: 'использовано {used} из {limit}',
     usedOfLimitInPlan: 'использовано {used} из {limit} в тарифе',
     usedOfLimitInPlanResets: 'использовано {used} из {limit} в тарифе, обновится {date}',
   },
@@ -287,8 +285,7 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   font-size: var(--font-size-small);
 }
 
-.usage-heading,
-.usage-details {
+.usage-heading {
   align-items: baseline;
   display: flex;
   gap: var(--space-3);
@@ -310,10 +307,6 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   border-radius: inherit;
   display: block;
   height: 100%;
-}
-
-.usage-details {
-  font-size: var(--font-size-small);
 }
 
 @media (max-width: 767px) {

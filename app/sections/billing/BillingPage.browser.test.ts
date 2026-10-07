@@ -86,7 +86,7 @@ it('opens the plan change from the current plan', async () => {
   const onChangePlan = vi.fn<() => void>()
   await mountPage(createDeps(), onChangePlan)
 
-  await page.getByRole('button', { name: 'Change plan' }).click()
+  await page.getByRole('button', { name: 'Change plan' }).first().click()
 
   expect(onChangePlan).toHaveBeenCalled()
 })
@@ -237,4 +237,16 @@ it('says only how many issues are used when no reset is known', async () => {
   )
 
   await expect.element(page.getByText('2 used of 500 in the plan', { exact: true })).toBeVisible()
+})
+
+it('shows how many free team organizations are used, with a way to lift the limit', async () => {
+  const onChangePlan = vi.fn<() => void>()
+  await mountPage(createDeps(), onChangePlan)
+
+  await expect.element(page.getByText('1 used of 2 in the plan', { exact: true })).toBeVisible()
+
+  // The first button is the plan card's, the second one belongs to the free team organizations limit.
+  await page.getByRole('button', { name: 'Change plan' }).nth(1).click()
+
+  expect(onChangePlan).toHaveBeenCalled()
 })
