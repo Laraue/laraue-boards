@@ -35,7 +35,9 @@
             <div class="card-header">
               <div class="usage-heading">
                 <span>{{ t('tokens') }}</span>
-                <strong>{{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}</strong>
+                <strong>
+                  {{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}
+                </strong>
               </div>
             </div>
             <div class="usage-bar">

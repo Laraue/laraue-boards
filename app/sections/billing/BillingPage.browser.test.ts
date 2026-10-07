@@ -52,10 +52,10 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     freeTeamOrganizations: { limit: 2, remaining: 1, used: 1 },
     issuesPerMonth: null,
     issuesResetAt: null,
+    kind: 'personal',
     periodEndsAt: null,
     periodResets: false,
     purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
-    kind: 'personal',
     subscriptionCode: 'Pro',
     tokens: { limit: 1000, remaining: 850, used: 150 },
   })),
@@ -111,7 +111,11 @@ it('shows when the allowance of a Free plan resets and the purchased tokens with
         kind: 'personal',
         periodEndsAt: '2026-11-06T12:00:00Z',
         periodResets: true,
-        purchasedTokens: { count: 125_000, expireAt: '2027-04-06T12:00:00Z', expiringCount: 25_000 },
+        purchasedTokens: {
+          count: 125_000,
+          expireAt: '2027-04-06T12:00:00Z',
+          expiringCount: 25_000,
+        },
         subscriptionCode: 'Free',
         tokens: { limit: 25_000, remaining: 25_000, used: 0 },
       })),
@@ -141,7 +145,11 @@ it('says when a paid plan ends and that all the purchased tokens expire together
         kind: 'team',
         periodEndsAt: '2026-11-06T12:00:00Z',
         periodResets: false,
-        purchasedTokens: { count: 100_000, expireAt: '2027-04-06T12:00:00Z', expiringCount: 100_000 },
+        purchasedTokens: {
+          count: 100_000,
+          expireAt: '2027-04-06T12:00:00Z',
+          expiringCount: 100_000,
+        },
         subscriptionCode: 'Team',
         tokens: { limit: 750_000, remaining: 700_000, used: 50_000 },
       })),
@@ -206,7 +214,9 @@ it('says in one line how many issues are used and when the count starts over', a
     }),
   )
 
-  await expect.element(page.getByText('2 used of 500 in the plan, resets on Nov 6, 2026')).toBeVisible()
+  await expect
+    .element(page.getByText('2 used of 500 in the plan, resets on Nov 6, 2026'))
+    .toBeVisible()
 })
 
 it('says only how many issues are used when no reset is known', async () => {

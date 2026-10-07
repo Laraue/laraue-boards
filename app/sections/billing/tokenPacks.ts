@@ -20,7 +20,9 @@ const mapTokenPack = (pack: TokenPack): BillingTokenPackViewModel => ({
 
 // Billing's token packs for sale, read on the server by `server/routes/landing`. Billing prices them
 // in the currency its payment provider charges in.
-export const loadTokenPacks = async (client: BillingApiClient): Promise<BillingTokenPackViewModel[]> => {
+export const loadTokenPacks = async (
+  client: BillingApiClient,
+): Promise<BillingTokenPackViewModel[]> => {
   const data = await request(client.GET('/api/token-packs'))
 
   return data.tokenPacks.map(mapTokenPack)

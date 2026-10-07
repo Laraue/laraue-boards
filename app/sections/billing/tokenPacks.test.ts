@@ -28,7 +28,10 @@ test('requests the token packs without choosing a currency', async () => {
 
 test('maps the packs to the view model', async () => {
   const { client } = createTestBillingApiClient(() => ({
-    tokenPacks: [small, { ...small, expirationPeriod: 'Forever', id: 'forever-id', title: 'Forever' }],
+    tokenPacks: [
+      small,
+      { ...small, expirationPeriod: 'Forever', id: 'forever-id', title: 'Forever' },
+    ],
   }))
 
   assert.deepEqual(await loadTokenPacks(client), [
