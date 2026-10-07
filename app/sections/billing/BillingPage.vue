@@ -59,7 +59,7 @@
             </div>
             <p
               v-if="page.purchasedTokens.count > 0"
-              class="muted">
+              class="usage-note muted">
               {{ purchasedText(page) }}
             </p>
             <BaseButton
@@ -288,6 +288,11 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 
 .usage-card p {
   margin: 0;
+}
+
+/* A line under the usage numbers, in the same size as they are. */
+.usage-note {
+  font-size: var(--font-size-small);
 }
 
 .usage-heading,
