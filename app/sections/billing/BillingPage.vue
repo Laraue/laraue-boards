@@ -53,11 +53,12 @@
                 </span>
                 <span v-if="page.periodEndsAt">{{ periodText(page) }}</span>
               </div>
-              <p
+              <div
                 v-if="page.purchasedTokens.count > 0"
-                class="usage-note muted">
-                {{ purchasedText(page) }}
-              </p>
+                class="usage-details usage-details-spread muted">
+                <span>{{ t('purchasedTokens', { count: formatNumber(page.purchasedTokens.count) }) }}</span>
+                <span v-if="page.purchasedTokens.expireAt">{{ purchasedExpiryText(page) }}</span>
+              </div>
             </div>
             <BaseButton
               class="card-action"
@@ -194,21 +195,19 @@ const periodText = (page: BillingPageData) =>
     ? t(page.periodResets ? 'resetsOn' : 'activeUntil', { date: formatDate(page.periodEndsAt) })
     : ''
 
-// "+ 125,000 purchased tokens · 25,000 expire on 6 Apr 2027": the date is the nearest one, so it says how
-// many tokens it concerns unless they all expire then.
-const purchasedText = (page: BillingPageData) => {
+// "25,000 of them expire on 6 Apr 2027": the date is the nearest one, so it says how many tokens it
+// concerns unless they all expire then.
+const purchasedExpiryText = (page: BillingPageData) => {
   const { count, expireAt, expiringCount } = page.purchasedTokens
-  const parts = [t('purchasedTokens', { count: formatNumber(count) })]
-  if (expireAt) {
-    const date = formatDate(expireAt)
-    parts.push(
-      expiringCount === count
-        ? t('purchasedExpireAll', { date })
-        : t('purchasedExpire', { count: formatNumber(expiringCount), date }),
-    )
+  if (!expireAt) {
+    return ''
   }
 
-  return parts.join(' · ')
+  const date = formatDate(expireAt)
+
+  return expiringCount === count
+    ? t('purchasedExpireAll', { date })
+    : t('purchasedExpire', { count: formatNumber(expiringCount), date })
 }
 
 const usagePercent = (usage: BillingUsageViewModel) =>
@@ -293,9 +292,6 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   gap: var(--space-1);
 }
 
-.usage-note {
-  font-size: var(--font-size-small);
-}
 
 .usage-heading,
 .usage-details {
