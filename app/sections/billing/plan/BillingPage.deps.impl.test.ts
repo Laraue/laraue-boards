@@ -75,4 +75,3 @@ test('maps a team billing summary without personal usage', async () => {
     tokens: { limit: 5000, remaining: 4200, used: 800 },
   })
 })
-
