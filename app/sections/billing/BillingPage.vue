@@ -41,24 +41,7 @@
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
-            <div class="usage-notes">
-              <div class="usage-details muted">
-                <span>
-                  {{
-                    t('usedOfLimitInPlan', {
-                      limit: formatNumber(page.tokens.limit),
-                      used: formatNumber(page.tokens.used),
-                    })
-                  }}
-                </span>
-              </div>
-              <div
-                v-if="page.purchasedTokens.count > 0"
-                class="usage-details usage-details-spread muted">
-                <span>{{ t('purchasedTokens', { count: formatNumber(page.purchasedTokens.count) }) }}</span>
-                <span v-if="page.purchasedTokens.expireAt">{{ purchasedExpiryText(page) }}</span>
-              </div>
-            </div>
+            <p class="usage-note muted">{{ tokensUsageText(page) }}</p>
             <BaseButton
               class="card-action"
               @click="onBuyTokens">
@@ -194,8 +177,8 @@ const periodText = (page: BillingPageData) =>
     ? t(page.periodResets ? 'resetsOn' : 'activeUntil', { date: formatDate(page.periodEndsAt) })
     : ''
 
-// "25,000 of them expire on 6 Apr 2027": the date is the nearest one, so it says how many tokens it
-// concerns unless they all expire then.
+// The expiry of the purchased tokens: the date is the nearest one, so it says how many tokens it concerns
+// ("25,000 of them expire on 6 Apr 2027") unless they all expire then ("all expire on 6 Apr 2027").
 const purchasedExpiryText = (page: BillingPageData) => {
   const { count, expireAt, expiringCount } = page.purchasedTokens
   if (!expireAt) {
@@ -207,6 +190,22 @@ const purchasedExpiryText = (page: BillingPageData) => {
   return expiringCount === count
     ? t('purchasedExpireAll', { date })
     : t('purchasedExpire', { count: formatNumber(expiringCount), date })
+}
+
+// One readable line: "0 used of 25,000 in the plan · + 100,000 purchased tokens (all expire on 6 Apr 2027)".
+const tokensUsageText = (page: BillingPageData) => {
+  const inPlan = t('usedOfLimitInPlan', {
+    limit: formatNumber(page.tokens.limit),
+    used: formatNumber(page.tokens.used),
+  })
+  if (page.purchasedTokens.count <= 0) {
+    return inPlan
+  }
+
+  const purchased = t('purchasedTokens', { count: formatNumber(page.purchasedTokens.count) })
+  const expiry = purchasedExpiryText(page)
+
+  return `${inPlan} · ${expiry ? `${purchased} (${expiry})` : purchased}`
 }
 
 const usagePercent = (usage: BillingUsageViewModel) =>
@@ -285,12 +284,10 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   margin: 0;
 }
 
-/* The lines under the usage bar: close to each other, in the same size. */
-.usage-notes {
-  display: grid;
-  gap: var(--space-1);
+/* The line under the usage bar, in the size of the usage lines. */
+.usage-note {
+  font-size: var(--font-size-small);
 }
-
 
 .usage-heading,
 .usage-details {
@@ -319,11 +316,6 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 
 .usage-details {
   font-size: var(--font-size-small);
-}
-
-/* The note on the right, e.g. when the plan's allowance resets. */
-.usage-details-spread {
-  justify-content: space-between;
 }
 
 @media (max-width: 767px) {
