@@ -353,7 +353,6 @@ aside > nav button {
   padding: 0 var(--space-3);
   text-align: left;
   text-decoration: none;
-  transition: var(--transition-press);
   width: 100%;
 }
 
@@ -369,11 +368,6 @@ aside > nav a:hover,
 aside > nav button:hover {
   background: var(--color-soft);
   color: var(--color-text);
-}
-
-aside > nav a:active,
-aside > nav button:active {
-  translate: 0 var(--press-offset);
 }
 
 aside > nav a.active,
@@ -470,7 +464,6 @@ main :deep(.page-load-state) {
   padding: var(--space-2);
   text-align: left;
   text-decoration: none;
-  transition: var(--transition-press);
   width: 100%;
 }
 
@@ -480,10 +473,6 @@ main :deep(.page-load-state) {
 
 .sidebar-user:hover {
   background: var(--color-soft);
-}
-
-.sidebar-user:active {
-  translate: 0 var(--press-offset);
 }
 
 /* Retro and the docs live together at the bottom, away from the settings block. */
@@ -536,16 +525,11 @@ main :deep(.page-load-state) {
   min-width: 0;
   padding: var(--space-2) var(--space-3);
   text-decoration: none;
-  transition: var(--transition-press);
   width: 100%;
 }
 
 .organization-select:hover {
   background: var(--color-hover);
-}
-
-.organization-select:active {
-  translate: 0 var(--press-offset);
 }
 
 .organization-name {

@@ -272,15 +272,10 @@ const regenerate = async (): Promise<void> => {
   grid-template-columns: auto 1fr auto;
   padding: var(--space-3) var(--space-4);
   text-decoration: none;
-  transition: var(--transition-press);
 }
 
 .member-list a:hover {
   background: var(--color-hover);
-}
-
-.member-list a:active {
-  translate: 0 var(--press-offset);
 }
 
 .member-list a > .tabler-icon:last-child {

@@ -213,12 +213,6 @@ const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   min-width: 0;
   padding: var(--space-4);
   text-decoration: none;
-  transition: var(--transition-press);
-}
-
-.board-summary:active,
-.backlog-summary:active {
-  translate: 0 var(--press-offset);
 }
 
 .backlog-summary:hover,

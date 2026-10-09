@@ -41,6 +41,11 @@ body {
 html:has(.landing-root, .standalone-shell) {
   scrollbar-gutter: stable;
 }
+/* The gutter already holds the scrollbar's place, so the padding Reka adds to the body while a
+   select or menu locks the scroll would shift the page left. */
+html:has(.landing-root, .standalone-shell) body {
+  padding-right: 0 !important;
+}
 body:has(dialog[open]) {
   overflow: hidden;
 }
@@ -172,11 +177,7 @@ input[type='checkbox'] {
   flex: none;
   height: 16px;
   margin: 0;
-  transition: var(--transition-press);
   width: 16px;
-}
-input[type='checkbox']:not(:disabled):active {
-  translate: 0 var(--press-offset);
 }
 input[type='checkbox']:hover {
   border-color: var(--color-border-hover);
@@ -262,14 +263,7 @@ textarea::placeholder {
   height: var(--control-height);
   justify-content: center;
   text-decoration: none;
-  transition: var(--transition-press);
   white-space: nowrap;
-}
-
-.primary:not(:disabled):active,
-.secondary:not(:disabled):active,
-.icon-btn:not(:disabled):active {
-  translate: 0 var(--press-offset);
 }
 
 .primary {
@@ -306,17 +300,12 @@ textarea::placeholder {
   height: 44px;
   justify-content: center;
   padding: 0 var(--space-4);
-  transition: var(--transition-press);
   white-space: nowrap;
   width: 100%;
 }
 
 .sign-in-button:hover:not(:disabled) {
   border-color: var(--color-border-hover);
-}
-
-.sign-in-button:not(:disabled):active {
-  translate: 0 var(--press-offset);
 }
 
 .sign-in-button > svg {
@@ -372,11 +361,6 @@ textarea::placeholder {
   /* Whole pixels, and not inherited: the landing page and the app have different line heights. */
   line-height: 20px;
   text-decoration: none;
-  transition: var(--transition-press);
-}
-
-.logo:active {
-  translate: 0 var(--press-offset);
 }
 
 .logo-mark {

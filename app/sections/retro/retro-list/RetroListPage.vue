@@ -207,7 +207,6 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
   border-radius: var(--radius-card);
   display: flex;
   padding-right: var(--space-3);
-  transition: var(--transition-press);
 }
 
 .retro-row-item:hover {
@@ -237,15 +236,10 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   text-decoration: none;
-  transition: var(--transition-press);
 }
 
 .retro-row:hover {
   border-color: var(--color-accent);
-}
-
-.retro-row:active {
-  translate: 0 var(--press-offset);
 }
 
 .retro-name {

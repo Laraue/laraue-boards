@@ -127,15 +127,10 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
   grid-template-columns: auto 1fr auto;
   padding: var(--space-3) var(--space-4);
   text-decoration: none;
-  transition: var(--transition-press);
 }
 
 .attribute-list a:hover {
   background: var(--color-hover);
-}
-
-.attribute-list a:active {
-  translate: 0 var(--press-offset);
 }
 
 .attribute-list a > .tabler-icon:last-child {

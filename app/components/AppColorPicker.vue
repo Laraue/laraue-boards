@@ -137,16 +137,11 @@ const select = (value: string, close: () => void) => {
   border-radius: var(--radius-pill);
   height: 24px;
   padding: 0;
-  transition: var(--transition-press);
   width: 24px;
 }
 
 .color-swatch:hover {
   border-color: var(--color-muted);
-}
-
-.color-swatch:active {
-  translate: 0 var(--press-offset);
 }
 
 .color-swatch.selected {

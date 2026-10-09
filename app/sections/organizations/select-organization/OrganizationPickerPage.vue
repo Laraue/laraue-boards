@@ -168,7 +168,6 @@ const leave = async (id: string, name: string): Promise<void> => {
   min-width: 0;
   padding: var(--space-4);
   text-align: left;
-  transition: var(--transition-press);
 }
 
 .org-row {
@@ -177,7 +176,6 @@ const leave = async (id: string, name: string): Promise<void> => {
   border-radius: var(--radius-card);
   display: flex;
   overflow: hidden;
-  transition: var(--transition-press);
 }
 
 .org-row > .icon-btn {
@@ -196,10 +194,6 @@ const leave = async (id: string, name: string): Promise<void> => {
 
 .org-row:has(.org-choice:hover) > .icon-btn {
   border-left-color: var(--color-accent);
-}
-
-.org-choice:not(:disabled):active {
-  translate: 0 var(--press-offset);
 }
 
 .org-choice > span:nth-child(2) {

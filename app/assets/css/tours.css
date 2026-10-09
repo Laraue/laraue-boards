@@ -55,9 +55,7 @@
   place-items: center;
   right: var(--space-6);
   top: calc(var(--space-6) + 2px);
-  transition:
-    background var(--duration-fast) var(--ease-standard),
-    var(--transition-press);
+  transition: background var(--duration-fast) var(--ease-standard);
   width: var(--icon-btn-size-small);
 }
 
@@ -69,10 +67,6 @@
 .product-tour .driver-popover-close-btn:hover {
   background: var(--color-hover);
   color: var(--color-text);
-}
-
-.product-tour .driver-popover-close-btn:active {
-  translate: 0 var(--press-offset);
 }
 
 .product-tour .driver-popover-close-btn:focus-visible {
@@ -107,11 +101,6 @@
   justify-content: center;
   padding: 0 var(--space-4);
   text-shadow: none;
-  transition: var(--transition-press);
-}
-
-.product-tour :where(.driver-popover-next-btn, .driver-popover-prev-btn):not(:disabled):active {
-  translate: 0 var(--press-offset);
 }
 
 .product-tour :where(.driver-popover-next-btn, .driver-popover-prev-btn):focus-visible {
