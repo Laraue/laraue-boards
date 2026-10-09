@@ -16,7 +16,8 @@ there and add new components and variants to it.
   in through props or slots (e.g. `BaseToasts dismiss-label`). Auto-imported app composables such as
   `useI18n` are off limits too, though lint cannot see them.
 - Everything that knows about issues, boards, spaces, users or this app's copy is an app component
-  outside `ui/` (`App*` or a domain name). A generic need found in an app component moves into the kit.
+  outside `ui/` (`App*` or a domain name). A generic need found in an app component moves into the
+  kit.
 
 ## Units
 
@@ -67,11 +68,12 @@ there and add new components and variants to it.
   option styling.
 - `BaseButton` variants express intent: neutral, primary, danger, ghost. The `menu` prop changes
   alignment and framing, not text size. Combine it with danger for destructive menu actions.
-- Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions. `BaseIconButton` is
-  `BaseButton icon` with a required accessible name and tooltip; style both in `BaseButton`.
-- `BaseIconButton variant="danger"` is muted at rest and shows the danger color on a danger-soft fill on
-  hover. `BaseSelect full-width` stretches an inline select to its layout column while keeping the
-  shared inline appearance.
+- Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
+  `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in
+  `BaseButton`.
+- `BaseIconButton variant="danger"` is muted at rest and shows the danger color on a danger-soft
+  fill on hover. `BaseSelect full-width` stretches an inline select to its layout column while
+  keeping the shared inline appearance.
 - Framed fields and bordered buttons carry `--shadow-control`; borderless (inline) ones drop it.
   Disabled fields use the soft fill and muted text.
 - `BaseInput` owns text field variants. Its default is framed; `variant="inline"` is transparent for
@@ -98,9 +100,9 @@ there and add new components and variants to it.
 - `BasePopover` is built on Reka `Popover`: Reka places it, flips it at the viewport edge and closes
   it on Escape or an outside press. It owns surface color, border, radius and shadow. Consumers
   specify content layout and width; do not override its surface styles.
-- Menus of actions use `BaseMenu` with `BaseMenuItem` rows and `BaseMenuSeparator` (Reka DropdownMenu:
-  arrow keys, Enter, typeahead). Call `preventDefault()` in an item's `select` to keep the menu open
-  (theme and language switches). Panels with fields or sections use `BasePopover`.
+- Menus of actions use `BaseMenu` with `BaseMenuItem` rows and `BaseMenuSeparator` (Reka
+  DropdownMenu: arrow keys, Enter, typeahead). Call `preventDefault()` in an item's `select` to keep
+  the menu open (theme and language switches). Panels with fields or sections use `BasePopover`.
 - Filters expand one section inside the panel on click or tap, on both desktop and mobile. Use
   native buttons for keyboard access; do not open sections on hover.
 - Set panel width through `--base-popover-width`. Its content occupies 100% of the available inner

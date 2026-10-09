@@ -1,8 +1,8 @@
 import { assert, test, vi } from 'vitest'
 
 import { ApiError } from '#infrastructure/api/request'
+import { useToast } from '~/components/ui/composables/useToast'
 import { useApiAction } from '~/composables/useApiAction'
-import { useToast } from '~/composables/useToast'
 
 test('resolves the value of a successful action', async () => {
   const action = vi.fn<(value: string) => Promise<string>>(async (value) => `${value}!`)

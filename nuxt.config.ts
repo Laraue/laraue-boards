@@ -42,9 +42,6 @@ export default defineNuxtConfig({
   experimental: {
     typedPages: true,
   },
-  imports: {
-    dirs: ['components/ui/composables'],
-  },
   gtag: {
     enabled: process.env.NODE_ENV === 'production',
     id: 'G-RGM3JHLBGL',
@@ -53,6 +50,9 @@ export default defineNuxtConfig({
     // Google Analytics can't be used (see utils/consent.ts).
     initCommands: [['consent', 'default', { analytics_storage: 'denied' }]],
     initMode: 'manual',
+  },
+  imports: {
+    dirs: ['components/ui/composables'],
   },
 
   modules: ['nuxt-gtag', '@nuxtjs/sitemap'],
