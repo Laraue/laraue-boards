@@ -620,7 +620,7 @@ defineExpose({ insertSlash })
   align-items: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   display: flex;
   gap: 2px;
@@ -631,7 +631,7 @@ defineExpose({ insertSlash })
 .markdown-editor-list {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   display: grid;
   max-height: 40dvh;
@@ -645,7 +645,7 @@ defineExpose({ insertSlash })
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-sm);
   color: var(--color-text);
   display: flex;
   gap: var(--space-2);

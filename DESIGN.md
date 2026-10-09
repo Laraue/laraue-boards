@@ -62,9 +62,11 @@ there and add new components and variants to it.
   active tab raised on a surface with the control shadow. Tabs are 14px, weight 500 in every state,
   with an icon and a count pill. Don't add other tab styles.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
-- Radius scale: `--radius-xs` (4) `sm` (6) `md` (8) `lg` (10) `xl` (14) `2xl` (16) `full`. Roles:
-  `--radius-control` (md), `--radius-card` (xl), `--radius-dialog` (2xl), `--radius-small` (xs),
-  `--radius-pill` (full). Circles use `--radius-full`. Space follows the existing 4px scale.
+- Radius follows one knob, `--radius` (10px), as in shadcn/ui: `--radius-sm` (×0.6) `md` (×0.8) `lg`
+  (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: controls and every floating
+  surface (popovers, menus, select lists, toasts, tooltips) use `--radius-control` /
+  `--radius-popover` (md); cards `--radius-card` (xl); dialogs `--radius-dialog` (2xl); checkboxes
+  `--radius-small` (xs); pills and circles `--radius-pill` / `--radius-full`. Space follows the existing 4px scale.
 
 ## Surfaces
 

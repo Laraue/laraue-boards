@@ -52,7 +52,7 @@ const open = ref(false)
 .app-menu {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
   display: grid;

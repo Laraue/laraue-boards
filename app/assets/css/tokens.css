@@ -89,16 +89,20 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  /* Radius scale, then the roles most components need. */
+  /* One knob, as in shadcn/ui: the scale follows --radius. xs stays put for checkboxes. */
+  --radius: 10px;
   --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
-  --radius-2xl: 16px;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.6);
   --radius-full: 999px;
+  /* Roles. Controls and everything that floats over the page share one radius; only cards and
+     dialogs are rounder. */
   --radius-small: var(--radius-xs);
   --radius-control: var(--radius-md);
+  --radius-popover: var(--radius-md);
   --radius-card: var(--radius-xl);
   --radius-dialog: var(--radius-2xl);
   --radius-pill: var(--radius-full);

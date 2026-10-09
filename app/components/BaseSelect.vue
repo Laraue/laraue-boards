@@ -231,7 +231,7 @@ const selected = computed({
 .base-select-content {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
   font-size: var(--font-size-body);
@@ -248,7 +248,7 @@ const selected = computed({
 
 .base-select-item {
   align-items: center;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   display: flex;
   gap: var(--space-2);

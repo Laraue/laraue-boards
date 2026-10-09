@@ -199,32 +199,33 @@
     <section>
       <h2>Popover, menu, tooltip and toast</h2>
       <div class="row">
+        <AppMenu>
+          <template #trigger>
+            <BaseButton>Open menu</BaseButton>
+          </template>
+          <AppMenuItem>
+            <IconCheck />
+            Menu row
+          </AppMenuItem>
+          <AppMenuItem>
+            <IconArrowsLeftRight />
+            Another row
+          </AppMenuItem>
+          <AppMenuSeparator />
+          <AppMenuItem variant="danger">
+            <IconTrash />
+            Danger row
+          </AppMenuItem>
+        </AppMenu>
         <AppPopover>
           <template #trigger="{ open, toggle }">
             <BaseButton
               :aria-expanded="open"
               @click="toggle">
-              Open menu
+              Open popover
             </BaseButton>
           </template>
-          <div class="showcase-menu">
-            <BaseButton
-              data-active="true"
-              menu>
-              <IconCheck />
-              Active row
-            </BaseButton>
-            <BaseButton menu>
-              <IconArrowsLeftRight />
-              Menu row
-            </BaseButton>
-            <BaseButton
-              menu
-              variant="danger">
-              <IconTrash />
-              Danger row
-            </BaseButton>
-          </div>
+          <p class="showcase-popover">A panel with any content.</p>
         </AppPopover>
         <BaseTooltip text="Tooltip text">
           <BaseButton>Hover for tooltip</BaseButton>
@@ -443,10 +444,7 @@ code {
   height: 16px;
 }
 
-.showcase-menu {
-  display: grid;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  width: 220px;
+.showcase-popover {
+  padding: var(--space-3) var(--space-4);
 }
 </style>

@@ -56,7 +56,7 @@ const { t } = useI18n({
   align-items: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   display: flex;
   gap: var(--space-3);

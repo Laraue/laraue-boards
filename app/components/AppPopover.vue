@@ -83,7 +83,7 @@ const focusTrigger = (event: Event) => {
 .app-popover-content {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
   max-height: var(--reka-popover-content-available-height);
