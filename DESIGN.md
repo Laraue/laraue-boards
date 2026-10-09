@@ -45,6 +45,8 @@ there and add new components and variants to it.
 - `BaseInput` owns text field variants. Its default is framed; `variant="inline"` is transparent for
   editable rows, with a border on hover and focus. `AppColorPicker compact` uses an icon button with
   a color sample for dense rows; the default shows the color name.
+- `BaseTabs`: a divider under the list; tabs are 14px, weight 400, muted, with an icon and a count
+  pill; the active tab is accent-colored with an accent underline. Don't add other tab styles.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Control radius: `--radius-control` (6px). Space follows the existing 4px scale.
 
