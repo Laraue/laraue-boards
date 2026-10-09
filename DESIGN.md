@@ -2,6 +2,8 @@
 
 The shared tokens live in `app/assets/css/tokens.css`. Component appearance belongs to the base
 component; page styles own layout. Extend the existing system before adding a component or variant.
+Every shared component and its states are on `/dev/ui` (development only); check a design change
+there and add new components and variants to it.
 
 ## Typography
 
