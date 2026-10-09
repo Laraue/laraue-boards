@@ -133,7 +133,7 @@ const changeLocale = (value: string): void => {
 .theme-switch button {
   background: transparent;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
   color: var(--color-muted);
   font-weight: var(--font-weight-semibold);
   height: 34px;

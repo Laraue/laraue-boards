@@ -127,7 +127,7 @@ defineProps<{
 
 .status-pill {
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   display: inline-block;
   font-size: var(--font-size-caption);
   padding: 2px 8px;

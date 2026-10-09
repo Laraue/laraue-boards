@@ -123,7 +123,7 @@ const termsHref = props.locale === 'ru' ? '/ru/terms' : '/terms'
 }
 
 .footer-logo img {
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-control);
 }
 
 .footer-links {

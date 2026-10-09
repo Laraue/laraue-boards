@@ -252,7 +252,7 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
 
 .retro-status {
   background: color-mix(in srgb, var(--color-chart-done) 14%, transparent);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-chart-done);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);

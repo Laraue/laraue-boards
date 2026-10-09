@@ -281,7 +281,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 
 .phone-island {
   background: #1a1a1d;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   height: 18px;
   width: 64px;
 }
@@ -365,7 +365,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 .phone-input-field {
   align-items: center;
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-muted);
   display: flex;
   flex: 1;
@@ -505,7 +505,7 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
 .issue-card-status {
   align-items: center;
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-muted);
   display: flex;
   font-size: 10px;

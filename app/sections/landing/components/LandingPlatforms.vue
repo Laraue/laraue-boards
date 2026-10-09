@@ -197,7 +197,7 @@ const { t } = useI18n(
 .platform-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-dialog);
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;

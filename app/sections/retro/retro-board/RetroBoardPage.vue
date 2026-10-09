@@ -3508,7 +3508,7 @@ const finish = async () => {
 
 .retro-finished {
   background: color-mix(in srgb, var(--color-chart-done) 14%, transparent);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-chart-done);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
@@ -3519,7 +3519,7 @@ const finish = async () => {
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
   box-shadow: none;
   display: flex;
   max-width: 220px;
@@ -4008,7 +4008,7 @@ textarea.card-text:focus {
 }
 
 .remote-cursor-name {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: #fff;
   font-size: var(--font-size-caption);
   left: 14px;

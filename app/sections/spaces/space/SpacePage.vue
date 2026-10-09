@@ -244,7 +244,7 @@ const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   --board-status-color: var(--color-chart-neutral);
 
   background: color-mix(in srgb, var(--board-status-color) 14%, transparent);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--board-status-color);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
@@ -261,7 +261,7 @@ const statusLabel = (status: 'Active' | 'Done' | 'New') =>
 
 .meter {
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   display: flex;
   gap: 1px;
   height: 2px;

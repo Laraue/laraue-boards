@@ -349,7 +349,7 @@ aside > nav button {
 /* Retro is still finding its shape, so the sidebar says so out loud. */
 .nav-badge {
   border: 1px solid currentcolor;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-caption);
   padding: 0 var(--space-2);
 }

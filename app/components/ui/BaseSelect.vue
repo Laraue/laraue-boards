@@ -231,7 +231,7 @@ const selected = computed({
 .base-select-content {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-popover);
+  border-radius: var(--radius-control);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
   font-size: var(--font-size-body);

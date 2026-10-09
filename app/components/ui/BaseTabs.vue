@@ -87,7 +87,7 @@ const model = defineModel<T>({ required: true })
 
 .base-tabs-count {
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-muted);
   font-size: var(--font-size-small);
   line-height: 18px;

@@ -12,7 +12,7 @@
 }
 *::-webkit-scrollbar-thumb {
   background: var(--color-scrollbar);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
 }
 *::-webkit-scrollbar-thumb:hover {
   background: var(--color-scrollbar-hover);
@@ -42,7 +42,7 @@ body:has(dialog[open]) {
 dialog {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-dialog);
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
   opacity: 1;

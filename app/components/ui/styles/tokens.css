@@ -91,23 +91,13 @@
   --space-6: 1.5rem; /* 24px */
   --space-8: 2rem; /* 32px */
 
-  /* One knob, as in shadcn/ui: the scale follows --radius. xs stays put for checkboxes. */
-  --radius: 0.625rem; /* 10px */
-  --radius-xs: 0.25rem; /* 4px */
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.6);
+  /* Four radii, one knob. --radius sets everything interactive or floating (controls, tabs, menu
+     rows, popovers, menus, toasts, tooltips); cards and dialogs are rounder; checkboxes smaller. */
+  --radius: 0.5rem; /* 8px */
+  --radius-small: 0.25rem; /* 4px */
+  --radius-control: var(--radius);
+  --radius-card: calc(var(--radius) * 1.75); /* 14px */
   --radius-full: 999px;
-  /* Roles. Everything interactive or floating (controls, tabs, menu rows, popovers, menus, toasts,
-     tooltips) shares one radius; containers (cards, dialogs) share one rounder radius. */
-  --radius-small: var(--radius-xs);
-  --radius-control: var(--radius-md);
-  --radius-popover: var(--radius-md);
-  --radius-card: var(--radius-xl);
-  --radius-dialog: var(--radius-card);
-  --radius-pill: var(--radius-full);
 
   --control-height: 2rem; /* 32px */
   --control-height-small: 2rem; /* 32px */

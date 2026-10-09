@@ -87,14 +87,11 @@ check a design change there and add new components and variants to it.
   rows, `md` 32px in menus and lists, `lg` 56px in a profile heading; `shape="square"` for
   organizations. Initials scale with the size; never set their font size.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
-- Radius follows one knob, `--radius` (10px), as in shadcn/ui: `--radius-sm` (×0.6) `md` (×0.8) `lg`
-  (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: everything interactive or
-  floating (controls, tabs and their track, menu rows and options, popovers, menus, select lists,
-  toasts, tooltips) uses one radius, `--radius-control` / `--radius-popover` (md); containers
-  (cards and dialogs) use `--radius-card` / `--radius-dialog` (xl); checkboxes `--radius-small`
-  (xs); pills and circles `--radius-pill` / `--radius-full`. Nested rows are not made smaller: one
-  radius reads as one system. Space
-  follows the existing 4px scale.
+- Four radii, one knob (`--radius`, 8px): `--radius-control` (= `--radius`) for everything
+  interactive or floating (controls, tabs and their track, menu rows and options, popovers, menus,
+  select lists, toasts, tooltips); `--radius-card` (`--radius` × 1.75, 14px) for cards and dialogs;
+  `--radius-small` (4px) for checkboxes; `--radius-full` for pills and circles. No other radius:
+  nested rows are not made smaller, one radius reads as one system. Space follows the 4px scale.
 
 ## Surfaces
 

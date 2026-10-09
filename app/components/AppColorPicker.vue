@@ -119,7 +119,7 @@ const select = (value: string, close: () => void) => {
 
 .color-trigger-swatch {
   border: 1px solid #0002;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   flex: none;
   height: var(--icon-size);
   width: var(--icon-size);
@@ -134,7 +134,7 @@ const select = (value: string, close: () => void) => {
 
 .color-swatch {
   border: 2px solid transparent;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   height: 24px;
   padding: 0;
   width: 24px;

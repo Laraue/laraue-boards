@@ -297,7 +297,7 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 
 .usage-bar {
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   height: 8px;
   overflow: hidden;
 }

@@ -176,7 +176,7 @@ const loginGoogle = async (code: string): Promise<void> => {
 .join-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-dialog);
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
   display: grid;
   gap: var(--space-5);

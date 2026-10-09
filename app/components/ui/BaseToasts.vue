@@ -55,7 +55,7 @@ const { dismiss, toasts } = useToast()
   align-items: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-popover);
+  border-radius: var(--radius-control);
   box-shadow: var(--shadow-popover);
   display: flex;
   gap: var(--space-3);
@@ -86,7 +86,7 @@ const { dismiss, toasts } = useToast()
 
 .toast-count {
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-muted);
   flex: none;
   font-size: var(--font-size-small);

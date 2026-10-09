@@ -152,7 +152,7 @@ html:has(.landing-root, .standalone-shell) body {
 }
 
 .avatar {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
 }
 
 .entity-avatar {
@@ -313,7 +313,7 @@ h1 {
 }
 
 .dot {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   flex: none;
   height: 8px;
   width: 8px;

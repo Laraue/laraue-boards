@@ -270,7 +270,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   align-items: start;
   background: var(--color-feed);
   border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-control);
   display: grid;
   gap: var(--space-3);
   grid-template-columns: minmax(0, 1fr);
@@ -329,7 +329,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 .history-avatar-key {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   bottom: -4px;
   color: var(--color-muted);
   display: grid;
