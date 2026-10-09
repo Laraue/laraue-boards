@@ -346,7 +346,6 @@ aside > nav button {
   width: 100%;
 }
 
-
 aside > nav a:hover,
 aside > nav button:hover {
   background: var(--color-soft);

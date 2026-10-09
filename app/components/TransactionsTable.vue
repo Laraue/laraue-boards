@@ -124,8 +124,4 @@ const statusVariant: Partial<Record<string, 'danger' | 'success' | 'warning'>> =
 .negative {
   color: var(--color-danger);
 }
-
-
-
-
 </style>

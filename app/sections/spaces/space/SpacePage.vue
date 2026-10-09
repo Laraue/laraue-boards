@@ -237,9 +237,6 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   white-space: nowrap;
 }
 
-
-
-
 .meter {
   background: var(--color-soft);
   border-radius: var(--radius-full);

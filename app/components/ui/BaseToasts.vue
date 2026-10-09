@@ -80,7 +80,6 @@ const { dismiss, toasts } = useToast()
   color: var(--color-success);
 }
 
-
 @media (max-width: 600px) {
   .toasts {
     width: calc(100% - var(--space-3) * 2);

@@ -89,8 +89,8 @@ check a design change there and add new components and variants to it.
 - `BaseBadge` is the one pill for counts, states and marks: neutral (counts, plain states), outline
   (a quiet mark like "alpha"), accent, success, warning, danger. One size; don't build local pills.
 - `BaseAvatar` shows initials on a color: `sm` 20px next to a name in a row, `md` 32px in menus,
-  lists and headings; `shape="square"` for
-  organizations. Initials scale with the size; never set their font size.
+  lists and headings; `shape="square"` for organizations. Initials scale with the size; never set
+  their font size.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Four radii, one knob (`--radius`, 8px): `--radius-control` (= `--radius`) for everything
   interactive or floating (controls, tabs and their track, menu rows and options, popovers, menus,

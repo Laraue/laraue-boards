@@ -81,7 +81,6 @@ const model = defineModel<T>({ required: true })
   width: var(--icon-size);
 }
 
-
 .base-tabs-tab[data-state='active'] {
   background: var(--color-surface);
   box-shadow: var(--shadow-control);
