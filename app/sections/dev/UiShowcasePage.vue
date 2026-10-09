@@ -81,6 +81,19 @@
     </section>
 
     <section>
+      <h2>Shadows</h2>
+      <div class="row">
+        <div
+          v-for="shadow in shadows"
+          :key="shadow"
+          class="shadow-sample"
+          :style="{ boxShadow: `var(${shadow})` }">
+          <code>{{ shadow }}</code>
+        </div>
+      </div>
+    </section>
+
+    <section>
       <h2>BaseButton</h2>
       <div
         v-for="variant in buttonVariants"
@@ -106,6 +119,10 @@
           :variant="variant">
           Disabled
         </BaseButton>
+      </div>
+      <div class="row">
+        <BaseButton to="/dev/ui">Link button</BaseButton>
+        <BaseButton tooltip="A hint in the shared tooltip">With tooltip</BaseButton>
       </div>
     </section>
 
@@ -152,6 +169,21 @@
           v-model="text"
           disabled />
       </div>
+    </section>
+
+    <section>
+      <h2>Textarea, search and form feedback</h2>
+      <div class="grid">
+        <textarea
+          v-model="longText"
+          rows="3" />
+        <input
+          v-model="query"
+          placeholder="Search"
+          type="search" />
+      </div>
+      <p class="form-error">Something went wrong. Try again.</p>
+      <p class="form-success">Saved.</p>
     </section>
 
     <section>
@@ -233,6 +265,27 @@
         <BaseButton @click="showToast('Saved', 'success')">Success toast</BaseButton>
         <BaseButton @click="showToast('Something went wrong')">Error toast</BaseButton>
       </div>
+    </section>
+
+    <section>
+      <h2>Dialog</h2>
+      <div class="row">
+        <BaseButton @click="dialog?.showModal()">Open dialog</BaseButton>
+      </div>
+      <dialog
+        ref="dialog"
+        aria-labelledby="showcase-dialog-title">
+        <h2 id="showcase-dialog-title">Dialog title</h2>
+        <p class="muted">Native dialog with the kit's surface, radius and shadow.</p>
+        <div class="dialog-actions">
+          <BaseButton @click="dialog?.close()">Cancel</BaseButton>
+          <BaseButton
+            variant="primary"
+            @click="dialog?.close()">
+            Confirm
+          </BaseButton>
+        </div>
+      </dialog>
     </section>
 
     <section>
@@ -322,7 +375,11 @@ const tabs = [
   { label: 'History', value: 'history' },
 ]
 
+const shadows = ['--shadow-control', '--shadow-card', '--shadow-popover']
 const { show: showToast } = useToast()
+const dialog = useTemplateRef('dialog')
+const longText = ref('A longer text that grows with its content.')
+const query = ref('')
 
 const text = ref('Text value')
 const empty = ref('')
@@ -347,7 +404,7 @@ section {
   gap: var(--space-3);
 }
 
-h2 {
+section > h2 {
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   margin: 0;
@@ -431,6 +488,16 @@ code {
   height: 64px;
   padding: var(--space-2);
   width: 140px;
+}
+
+.shadow-sample {
+  align-items: flex-end;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  display: flex;
+  height: 72px;
+  padding: var(--space-2) var(--space-3);
+  width: 180px;
 }
 
 .space-sample {
