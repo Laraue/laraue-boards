@@ -118,9 +118,11 @@ const classes = computed(() => [
   box-shadow: var(--shadow-control);
 }
 
+/* Sized by --icon-btn-size, which a parent may set to fit a dense spot. */
 .base-button.icon {
+  height: var(--icon-btn-size);
   padding: 0;
-  width: var(--control-height);
+  width: var(--icon-btn-size);
 }
 
 /* Muted at rest, so a list of rows isn't a column of red; red once aimed at. */

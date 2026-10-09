@@ -20,10 +20,16 @@ const model = defineModel<string>({ required: true })
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
+/* Content-width like the inline select, so a short value isn't a long empty field. */
 .base-input-inline {
   background: transparent;
   border-color: transparent;
   box-shadow: none;
+  field-sizing: content;
+  justify-self: start;
+  max-width: 100%;
+  min-width: calc(var(--space-8) * 2);
+  width: auto;
 }
 
 /* Borderless reads as plain text; the border on hover shows it can be edited. */

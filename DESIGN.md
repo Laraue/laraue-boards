@@ -22,8 +22,8 @@ there and add new components and variants to it.
   primary and destructive actions. Borderless (ghost and icon) buttons show hover as a soft fill,
   like menu rows. Selected values retain their selection markers.
 - Menu rows (BaseButton `menu`, select options, editor menus) use `--color-soft` as the hover
-  background instead of a border, and 12px side padding. Text size, weight and color stay
-  unchanged. Expanded filters keep their active background.
+  background instead of a border, and 12px side padding. Text size, weight and color stay unchanged.
+  Expanded filters keep their active background.
 
 ## Controls
 
@@ -35,11 +35,11 @@ there and add new components and variants to it.
   option styling.
 - `BaseButton` variants express intent: neutral, primary, danger, ghost. The `menu` prop changes
   alignment and framing, not text size. Combine it with danger for destructive menu actions.
-- Use `BaseCheckbox` for labeled checkbox options and `IconButton` for icon actions. `IconButton`
-  is `BaseButton icon` with a required accessible name and tooltip; style both in `BaseButton`.
-- `IconButton variant="danger"` marks destructive actions with the danger color and a danger border
-  on hover. `BaseSelect full-width` stretches an inline select to its layout column while keeping
-  the shared inline appearance.
+- Use `BaseCheckbox` for labeled checkbox options and `IconButton` for icon actions. `IconButton` is
+  `BaseButton icon` with a required accessible name and tooltip; style both in `BaseButton`.
+- `IconButton variant="danger"` is muted at rest and shows the danger color on a danger-soft fill on
+  hover. `BaseSelect full-width` stretches an inline select to its layout column while keeping the
+  shared inline appearance.
 - Framed fields and bordered buttons carry `--shadow-control`; borderless (inline) ones drop it.
   Disabled fields use the soft fill and muted text.
 - `BaseInput` owns text field variants. Its default is framed; `variant="inline"` is transparent for
