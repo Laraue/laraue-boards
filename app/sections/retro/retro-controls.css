@@ -1,5 +1,5 @@
 /* The retro board's own controls: the app's former button and avatar classes, kept here because
-   the retro lives apart from the UI kit for now. Do not use outside app/sections/retro. */
+   the retro board page lives apart from the UI kit for now. Do not use outside retro-board/. */
 
 .primary,
 .secondary,

@@ -52,25 +52,22 @@
               <div
                 v-if="(listing.canCreate && retro.openActionCount > 0) || retro.canManage"
                 class="retro-row-actions">
-                <button
+                <BaseButton
                   v-if="listing.canCreate && retro.openActionCount > 0"
-                  class="secondary small"
                   :disabled="starting"
-                  :title="t('continueTitle', { name: retro.name })"
-                  type="button"
+                  size="small"
+                  :tooltip="t('continueTitle', { name: retro.name })"
                   @click="start(retro)">
                   {{ t('continue') }}
-                </button>
-                <button
+                </BaseButton>
+                <BaseIconButton
                   v-if="retro.canManage"
-                  :aria-label="t('delete')"
-                  class="icon-btn small"
                   :disabled="removing"
-                  :title="t('delete')"
-                  type="button"
+                  :label="t('delete')"
+                  variant="danger"
                   @click="remove(retro)">
                   <IconTrash />
-                </button>
+                </BaseIconButton>
               </div>
             </div>
           </div>
@@ -294,4 +291,3 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
 }
 </style>
 
-<style scoped src="../retro-controls.css"></style>
