@@ -1,41 +1,6 @@
-/* Base */
+/* App-wide styles: layout, page chrome and legacy classes. The UI kit's tokens and element defaults
+   are in components/ui/styles. */
 
-* {
-  box-sizing: border-box;
-  scrollbar-color: var(--color-scrollbar) transparent;
-  scrollbar-width: thin;
-}
-*::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
-}
-*::-webkit-scrollbar-thumb {
-  background: var(--color-scrollbar);
-  border-radius: var(--radius-pill);
-}
-*::-webkit-scrollbar-thumb:hover {
-  background: var(--color-scrollbar-hover);
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-body {
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family:
-    'Geist',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
-  font-size: var(--font-size-body);
-  font-weight: 400;
-  line-height: var(--line-height-body);
-  margin: 0;
-  min-height: 100dvh;
-}
 /* Pages that scroll as a whole keep the scrollbar's place, so a short page and a long one center
    their header the same way. The workspace scrolls inside and needs no gutter. */
 html:has(.landing-root, .standalone-shell) {
@@ -46,202 +11,6 @@ html:has(.landing-root, .standalone-shell) {
 html:has(.landing-root, .standalone-shell) body {
   padding-right: 0 !important;
 }
-body:has(dialog[open]) {
-  overflow: hidden;
-}
-
-/* Dialogs */
-
-dialog {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-dialog);
-  box-shadow: var(--shadow-popover);
-  color: var(--color-text);
-  opacity: 1;
-  overflow: auto;
-  padding: var(--space-6);
-  /* none, not 1: any scale makes the dialog the containing block of fixed popups and clips them. */
-  scale: none;
-  transition:
-    opacity var(--duration-base) var(--ease-standard),
-    scale var(--duration-base) var(--ease-standard),
-    display var(--duration-base) allow-discrete,
-    overlay var(--duration-base) allow-discrete;
-  width: min(440px, calc(100% - var(--space-8)));
-}
-dialog:not([open]) {
-  opacity: 0;
-  scale: 0.96;
-}
-@starting-style {
-  dialog[open] {
-    opacity: 0;
-    scale: 0.96;
-  }
-}
-dialog::backdrop {
-  backdrop-filter: blur(1px);
-  background: #00000082;
-  transition: background-color var(--duration-base) var(--ease-standard);
-}
-
-@starting-style {
-  dialog[open]::backdrop {
-    background-color: transparent;
-  }
-}
-dialog h2 {
-  margin: 0;
-}
-
-.dialog-actions {
-  display: flex;
-  gap: var(--space-2);
-  justify-content: flex-end;
-  margin-top: var(--space-6);
-}
-
-/* Typography and form controls */
-
-p {
-  margin: 0;
-}
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-button {
-  cursor: pointer;
-}
-a,
-button {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-:where(a, button):focus-visible {
-  box-shadow: var(--shadow-focus);
-  outline: none;
-}
-
-.tabler-icon {
-  flex: none;
-  height: var(--icon-size);
-  vertical-align: middle;
-  width: var(--icon-size);
-}
-
-.muted {
-  color: var(--color-muted);
-}
-strong {
-  font-weight: var(--font-weight-semibold);
-}
-label {
-  display: block;
-  font-weight: var(--font-weight-semibold);
-  margin: var(--space-5) 0 var(--space-2);
-}
-form > label:first-of-type,
-label:first-child {
-  margin-top: 0;
-}
-.field-label {
-  color: var(--color-muted);
-  font-weight: 400;
-  margin: 0;
-}
-:where(input:not([type='checkbox']):not([type='radio'])),
-select {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  box-shadow: var(--shadow-control);
-  color: var(--color-text);
-  font-size: var(--font-size-body);
-  height: var(--control-height);
-  outline: none;
-  padding: 0 var(--space-3);
-  transition: box-shadow var(--duration-fast) var(--ease-standard);
-  width: 100%;
-}
-input[type='checkbox'] {
-  appearance: none;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-small);
-  box-shadow: var(--shadow-control);
-  cursor: pointer;
-  flex: none;
-  height: 16px;
-  margin: 0;
-  width: 16px;
-}
-input[type='checkbox']:hover {
-  border-color: var(--color-border-hover);
-}
-input[type='checkbox']:checked {
-  background: var(--color-action)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E")
-    center/10px no-repeat;
-  border-color: var(--color-action);
-}
-input[type='checkbox']:focus-visible {
-  box-shadow: var(--shadow-focus);
-}
-input[type='checkbox']:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-textarea {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  box-shadow: var(--shadow-control);
-  color: var(--color-text);
-  /* grows with content where supported; rows="" stays the fallback */
-  field-sizing: content;
-  font-size: var(--font-size-body);
-  max-height: 400px;
-  min-height: var(--control-height);
-  outline: none;
-  padding: var(--space-2) var(--space-3);
-  resize: vertical;
-  transition: box-shadow var(--duration-fast) var(--ease-standard);
-  width: 100%;
-}
-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-position: right var(--space-3) center;
-  background-repeat: no-repeat;
-  padding-right: var(--control-icon-padding);
-}
-:root[data-theme='dark'] select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-}
-:where(input:not([type='checkbox']):not([type='radio']), select, textarea):hover:not(:disabled) {
-  border-color: var(--color-border-hover);
-}
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--color-focus);
-}
-/* Zero specificity: a field styled locally (an inline title) keeps its own look. */
-:where(input:not([type='checkbox']):not([type='radio']), select, textarea):where(:disabled) {
-  background: var(--color-soft);
-  color: var(--color-muted);
-  cursor: not-allowed;
-}
-input::placeholder,
-textarea::placeholder {
-  color: var(--color-muted);
-  opacity: 1;
-}
-
 .section-label {
   color: var(--color-muted);
   font-size: var(--font-size-small);
@@ -536,13 +305,6 @@ h1 {
 .toolbar:first-child {
   margin-top: 0;
 }
-input[type='search'] {
-  background: var(--color-surface)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E")
-    var(--space-3) center no-repeat;
-  max-width: 220px;
-  padding-left: var(--control-icon-padding);
-}
 
 .empty {
   color: var(--color-muted);
@@ -559,32 +321,12 @@ input[type='search'] {
 
 /* Shared form primitives */
 
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
 .form-actions,
 .page-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
   margin-top: var(--space-6);
-}
-
-.form-error,
-.form-success {
-  animation: feedback-enter var(--duration-base) var(--ease-standard);
-  margin-top: var(--space-4);
-}
-
-.form-error {
-  color: var(--color-danger);
-  white-space: pre-line;
-}
-
-.form-success {
-  color: var(--color-success);
 }
 
 .danger {
@@ -629,79 +371,5 @@ button:disabled {
   input[type='search'] {
     max-width: none;
     min-width: 0;
-  }
-}
-
-/* Transitions and motion preferences */
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity var(--duration-base) var(--ease-standard);
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.pop-enter-active,
-.pop-leave-active {
-  transition:
-    opacity var(--duration-fast) var(--ease-standard),
-    scale var(--duration-fast) var(--ease-standard);
-}
-
-.pop-enter-from,
-.pop-leave-to {
-  opacity: 0;
-  scale: 0.95;
-}
-
-.icon-pop-enter-active,
-.icon-pop-leave-active {
-  transition:
-    opacity var(--duration-fast) var(--ease-standard),
-    rotate var(--duration-fast) var(--ease-standard),
-    scale var(--duration-fast) var(--ease-standard);
-}
-
-.icon-pop-enter-from,
-.icon-pop-leave-to {
-  opacity: 0;
-  rotate: -30deg;
-  scale: 0.6;
-}
-
-.slide-fade-enter-active,
-.slide-fade-leave-active,
-.list-enter-active,
-.list-leave-active,
-.list-move {
-  transition:
-    opacity var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to,
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateY(calc(-1 * var(--space-1)));
-}
-@keyframes feedback-enter {
-  from {
-    opacity: 0;
-    transform: translateY(calc(-1 * var(--space-1)));
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.001ms !important;
   }
 }

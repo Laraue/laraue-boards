@@ -32,7 +32,8 @@ export default defineNuxtConfig({
     { ignore: ['ui/**'], path: '~/components' },
   ],
   css: [
-    '~/assets/css/tokens.css',
+    '~/components/ui/styles/tokens.css',
+    '~/components/ui/styles/base.css',
     '~/assets/css/main.css',
     '~/assets/css/markdown.css',
     '~/assets/css/tours.css',

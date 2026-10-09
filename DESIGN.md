@@ -1,6 +1,7 @@
 # Interface design system
 
-The shared tokens live in `app/assets/css/tokens.css`. Component appearance belongs to the base
+The shared tokens live in `app/components/ui/styles/tokens.css`, the kit's element defaults in
+`ui/styles/base.css`; app-wide styles stay in `app/assets/css/main.css`. Component appearance belongs to the base
 component; page styles own layout. Extend the existing system before adding a component or variant.
 Every shared component and its states are on `/dev/ui` (development only); check a design change
 there and add new components and variants to it.

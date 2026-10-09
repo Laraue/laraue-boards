@@ -1,6 +1,6 @@
 @import 'driver.js/dist/driver.css';
 
-/* The popover mirrors the native <dialog> styles from main.css. */
+/* The popover mirrors the native <dialog> styles from the kit (components/ui/styles/base.css). */
 .driver-popover.product-tour {
   animation: product-tour-in var(--duration-base) var(--ease-standard);
   background: var(--color-surface);
