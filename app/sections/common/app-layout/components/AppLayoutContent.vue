@@ -391,11 +391,9 @@ aside > nav button.active {
 
 .nav-title {
   color: var(--color-muted);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.09em;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
   padding: var(--space-5) var(--space-3) var(--space-2);
-  text-transform: uppercase;
 }
 
 /* The page's own header (PageHeader) scrolls with it, so the page shows through it while it scrolls. */

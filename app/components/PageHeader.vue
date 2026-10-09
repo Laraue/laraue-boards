@@ -187,7 +187,7 @@ const { t } = useI18n({
 .page-header-title {
   color: var(--color-text);
   font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: normal;
   margin: 0;
 }

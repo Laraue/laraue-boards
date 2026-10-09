@@ -311,7 +311,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   -webkit-box-orient: vertical;
   display: -webkit-box;
   flex: 1;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   -webkit-line-clamp: 1;
   line-height: 1.4;
   margin: 0;

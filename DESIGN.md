@@ -10,6 +10,9 @@ component; page styles own layout. Extend the existing system before adding a co
 - Use `--font-size-small` (12px) for secondary metadata, not interactive options.
 - Reserve `--font-size-caption` (11px) for small annotations and avatar initials.
 - Use heading sizes for hierarchy, not to distinguish controls.
+- Weights: 400 for body text, controls inside menus and options; 500 for buttons, row and card
+  titles, page header titles and group labels; 600 and above only for page headings (h1, dialog
+  titles). Group labels are sentence case, not uppercase.
 - Never change font weight, text size or spacing on hover, focus or selection. Show state through
   color, background, border or a selection marker.
 - Hover on form controls and action buttons changes the border only. Keep fill and text color

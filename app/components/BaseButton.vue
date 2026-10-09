@@ -135,6 +135,7 @@ defineOptions({ inheritAttrs: false })
   background: transparent;
   border-color: transparent;
   flex: 1 1 auto;
+  font-weight: 400;
   height: var(--control-height);
   justify-content: flex-start;
   min-width: 0;
