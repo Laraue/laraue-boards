@@ -81,17 +81,19 @@
   --color-chart-3: #826fac;
   --color-chart-done: #47906b;
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
+  /* Sizes are in rem, so text, spacing and controls grow together when the user raises the
+     browser's font size. The px values are at the default 16px. Borders and shadows stay in px. */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
 
   /* One knob, as in shadcn/ui: the scale follows --radius. xs stays put for checkboxes. */
-  --radius: 10px;
-  --radius-xs: 4px;
+  --radius: 0.625rem; /* 10px */
+  --radius-xs: 0.25rem; /* 4px */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -107,22 +109,22 @@
   --radius-dialog: var(--radius-2xl);
   --radius-pill: var(--radius-full);
 
-  --control-height: 32px;
-  --control-height-small: 32px;
+  --control-height: 2rem; /* 32px */
+  --control-height-small: 2rem; /* 32px */
   --icon-btn-size: var(--control-height-small);
-  --icon-btn-size-small: 24px;
-  --icon-size: 16px;
+  --icon-btn-size-small: 1.5rem; /* 24px */
+  --icon-size: 1rem; /* 16px */
   --control-icon-padding: calc(var(--icon-size) + var(--space-5));
 
   /* Type scale, then the roles most text needs. Headings pick from the scale directly. */
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
-  --font-size-2xl: 20px;
-  --font-size-3xl: 24px;
-  --font-size-4xl: 30px;
+  --font-size-xs: 0.6875rem; /* 11px */
+  --font-size-sm: 0.75rem; /* 12px */
+  --font-size-md: 0.875rem; /* 14px */
+  --font-size-lg: 1rem; /* 16px */
+  --font-size-xl: 1.125rem; /* 18px */
+  --font-size-2xl: 1.25rem; /* 20px */
+  --font-size-3xl: 1.5rem; /* 24px */
+  --font-size-4xl: 1.875rem; /* 30px */
   --font-size-caption: var(--font-size-xs);
   --font-size-small: var(--font-size-sm);
   --font-size-body: var(--font-size-md);
@@ -135,8 +137,8 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
 
-  --form-page-max-width: 620px;
-  --workspace-max-width: 1440px;
+  --form-page-max-width: 38.75rem; /* 620px */
+  --workspace-max-width: 90rem; /* 1440px */
 
   /* Focus stays inside the element: an outer ring gets clipped by scrolling parents and overlaps
      neighbours. */

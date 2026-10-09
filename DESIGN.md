@@ -5,6 +5,12 @@ component; page styles own layout. Extend the existing system before adding a co
 Every shared component and its states are on `/dev/ui` (development only); check a design change
 there and add new components and variants to it.
 
+## Units
+
+- Size tokens (spacing, type, radius, control and icon sizes, page widths) are in rem, so the whole
+  interface grows with the browser's font size. Write new sizes through tokens; a raw length in a
+  component is rem too. Borders, shadows and focus rings stay in px.
+
 ## Colors
 
 - Two layers in `tokens.css`. Primitives (`--gray-1..12`, `--blue-1..12`, `--red/green/amber-3` and
