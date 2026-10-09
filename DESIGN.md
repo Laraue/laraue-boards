@@ -66,7 +66,8 @@ there and add new components and variants to it.
   (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: controls and every floating
   surface (popovers, menus, select lists, toasts, tooltips) use `--radius-control` /
   `--radius-popover` (md); cards `--radius-card` (xl); dialogs `--radius-dialog` (2xl); checkboxes
-  `--radius-small` (xs); pills and circles `--radius-pill` / `--radius-full`. Space follows the existing 4px scale.
+  `--radius-small` (xs); pills and circles `--radius-pill` / `--radius-full`. Space follows the
+  existing 4px scale.
 
 ## Surfaces
 
