@@ -104,6 +104,7 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     color: 'Color',
@@ -177,7 +178,10 @@ const update = async (): Promise<void> => {
 }
 
 const remove = async (): Promise<void> => {
-  if (confirm(t('deleteConfirm')) && (await removeSpace({ spaceKey: props.spaceKey }))) {
+  if (
+    (await confirm({ danger: true, title: t('deleteConfirm') })) &&
+    (await removeSpace({ spaceKey: props.spaceKey }))
+  ) {
     await props.onDeleted()
   }
 }

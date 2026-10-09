@@ -323,6 +323,18 @@
     </section>
 
     <section>
+      <h2>Confirmation (useConfirm)</h2>
+      <div class="row">
+        <BaseButton
+          variant="danger"
+          @click="askDelete">
+          Delete something
+        </BaseButton>
+        <BaseButton @click="askFinish">Finish something</BaseButton>
+      </div>
+    </section>
+
+    <section>
       <h2>AppColorPicker</h2>
       <div class="row">
         <AppColorPicker v-model="color" />
@@ -404,6 +416,18 @@ const tabs = [
 
 const badgeVariants = ['neutral', 'accent', 'success', 'warning', 'danger', 'outline'] as const
 const avatarSizes = ['sm', 'md'] as const
+const confirm = useConfirm()
+const askDelete = async () => {
+  const confirmed = await confirm({
+    danger: true,
+    description: 'It goes away with everything in it.',
+    title: 'Delete this thing?',
+  })
+  showToast(confirmed ? 'Deleted' : 'Kept', confirmed ? 'success' : 'error')
+}
+const askFinish = async () => {
+  showToast((await confirm({ title: 'Finish this?' })) ? 'Finished' : 'Not finished', 'success')
+}
 const shadows = ['--shadow-control', '--shadow-card', '--shadow-popover']
 const { show: showToast } = useToast()
 const dialog = useTemplateRef('dialog')

@@ -155,6 +155,7 @@ const props = defineProps<{
   issueKey: string
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     addComment: 'Add comment',
@@ -291,7 +292,7 @@ const improveWithAi = async (id: string) => {
 }
 
 const remove = async (id: string) => {
-  if (confirm(t('deleteConfirm'))) {
+  if (await confirm({ danger: true, title: t('deleteConfirm') })) {
     await run(id, () => props.deps.delete({ id }))
   }
 }

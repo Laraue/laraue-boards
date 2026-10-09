@@ -76,6 +76,7 @@ const props = defineProps<{
   onSelected: (organizationKey: string) => Promise<void> | void
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     chooseOrganization: 'Choose an organization',
@@ -133,7 +134,10 @@ const select = async (organizationId: string, organizationKey: string): Promise<
 }
 
 const leave = async (id: string, name: string): Promise<void> => {
-  if (confirm(`${t('leave')} ${name}?`) && (await leaveOrganization({ id }))) {
+  if (
+    (await confirm({ action: t('leave'), danger: true, title: `${t('leave')} ${name}?` })) &&
+    (await leaveOrganization({ id }))
+  ) {
     await refresh()
   }
 }

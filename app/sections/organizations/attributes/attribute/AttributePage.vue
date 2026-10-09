@@ -108,6 +108,7 @@ const props = defineProps<{
   onFinished: () => Promise<void> | void
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     addOption: 'Add option',
@@ -254,7 +255,7 @@ const submit = async () => {
 
 const remove = async (attribute: Attribute) => {
   if (
-    confirm(`${t('deleteAttribute')} "${attribute.name}"?`) &&
+    (await confirm({ danger: true, title: `${t('deleteAttribute')} "${attribute.name}"?` })) &&
     (await deleteAttribute({ id: attribute.id }))
   ) {
     await props.onFinished()

@@ -766,6 +766,7 @@ import type {
 
 const props = defineProps<{ deps: RetroBoardPageDeps; retroId: string }>()
 
+const confirm = useConfirm()
 const { t, tp } = useI18n({
   en: {
     actions: 'Actions',
@@ -3020,7 +3021,11 @@ const canResetVotes = (board: RetroBoardViewModel) =>
 const resetVotes = async () => {
   const board = data.value
 
-  if (!board || !canResetVotes(board) || !confirm(t('clearVotesConfirm'))) {
+  if (
+    !board ||
+    !canResetVotes(board) ||
+    !(await confirm({ action: t('resetVotes'), danger: true, title: t('clearVotesConfirm') }))
+  ) {
     return
   }
   await executeResetVotes({ retroId: props.retroId })
@@ -3100,7 +3105,7 @@ const finish = async () => {
   }
   // Finishing cannot be undone, so the click is worth one question - but the board itself is the
   // summary, and nobody reads a listing pasted into a browser dialog.
-  if (!confirm(t('finishConfirm'))) {
+  if (!(await confirm({ title: t('finishConfirm') }))) {
     return
   }
   await executeFinish({ retroId: props.retroId })

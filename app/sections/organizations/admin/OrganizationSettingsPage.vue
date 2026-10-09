@@ -71,6 +71,7 @@ const props = defineProps<{
   onUpdated: () => Promise<void> | void
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     changesSaved: 'Changes saved.',
@@ -142,7 +143,10 @@ const {
 } = useApiAction(props.deps.remove)
 const busy = computed(() => submitting.value || removing.value)
 const remove = async (id: string): Promise<void> => {
-  if (confirm(t('deleteConfirm')) && (await removeOrganization({ id }))) {
+  if (
+    (await confirm({ danger: true, title: t('deleteConfirm') })) &&
+    (await removeOrganization({ id }))
+  ) {
     await props.onDeleted()
   }
 }

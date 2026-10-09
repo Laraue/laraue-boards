@@ -310,6 +310,7 @@ const props = defineProps<{
 }>()
 const formId = `issue-form-${useId()}`
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     assignee: 'Assignee',
@@ -517,7 +518,10 @@ const save = async () => {
 }
 
 const remove = async () => {
-  if (confirm(t('deleteConfirm')) && (await deleteIssue({ issueKey: props.issueKey }))) {
+  if (
+    (await confirm({ danger: true, title: t('deleteConfirm') })) &&
+    (await deleteIssue({ issueKey: props.issueKey }))
+  ) {
     await props.onDeleted?.(props.issueKey)
     await leaveAfterIssueChanged()
   }

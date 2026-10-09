@@ -105,6 +105,7 @@ const props = defineProps<{
   routeQuery: LocationQuery
 }>()
 
+const confirm = useConfirm()
 const { t, tp } = useI18n({
   en: {
     active: 'Active',
@@ -158,7 +159,7 @@ const { formatLocalDate } = useFormatters()
 // Nothing is carried over unless the team says so by continuing from a specific retro.
 // Deleting a retro takes its whole board with it and cannot be undone.
 const remove = async (retro: RetroListItemViewModel) => {
-  if (!confirm(t('deleteConfirm', { name: retro.name }))) {
+  if (!(await confirm({ danger: true, title: t('deleteConfirm', { name: retro.name }) }))) {
     return
   }
   if (await removeRetro({ retroId: retro.id })) {

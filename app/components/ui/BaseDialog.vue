@@ -108,61 +108,7 @@ defineExpose({
 </script>
 
 <style>
-/* Unscoped: Reka renders these in a portal, outside this component's root. */
-.base-dialog-overlay {
-  animation: base-dialog-fade var(--duration-base) var(--ease-standard);
-  backdrop-filter: blur(1px);
-  background: #00000082;
-  inset: 0;
-  position: fixed;
-  z-index: 45;
-}
-
-/* Centred with margins, not a transform: a transformed parent would misplace the fixed popups
-   (selects, menus, tooltips) that open inside the dialog. */
-.base-dialog {
-  animation: base-dialog-enter var(--duration-base) var(--ease-standard);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-popover);
-  color: var(--color-text);
-  height: fit-content;
-  inset: 0;
-  margin: auto;
-  max-height: calc(100dvh - var(--space-8));
-  overflow: auto;
-  padding: var(--space-6);
-  position: fixed;
-  width: min(27.5rem, calc(100% - var(--space-8)));
-  z-index: 46;
-}
-
-.base-dialog:focus-visible {
-  outline: none;
-}
-
-.base-dialog-overlay[data-state='closed'] {
-  animation: base-dialog-fade var(--duration-fast) var(--ease-standard) reverse;
-}
-
-.base-dialog[data-state='closed'] {
-  animation: base-dialog-enter var(--duration-fast) var(--ease-standard) reverse;
-}
-
-@keyframes base-dialog-fade {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes base-dialog-enter {
-  from {
-    opacity: 0;
-    scale: 0.96;
-  }
-}
-
+/* Unscoped: Reka renders the content in a portal. The surface itself is in ui/styles/base.css. */
 .base-dialog-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

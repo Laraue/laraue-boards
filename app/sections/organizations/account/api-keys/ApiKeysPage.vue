@@ -108,6 +108,7 @@ import type { ApiKeysPageDeps } from './ApiKeysPage.deps'
 
 const props = defineProps<{ deps: ApiKeysPageDeps }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     copied: 'Copied',
@@ -189,7 +190,10 @@ const createKey = async () => {
   }
 }
 const revokeKey = async (id: string) => {
-  if (confirm(t('revokeConfirm')) && (await revoke({ id }))) {
+  if (
+    (await confirm({ action: t('revoke'), danger: true, title: t('revokeConfirm') })) &&
+    (await revoke({ id }))
+  ) {
     await refresh()
   }
 }

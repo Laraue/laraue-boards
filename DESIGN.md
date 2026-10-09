@@ -89,6 +89,11 @@ check a design change there and add new components and variants to it.
   close button in the top corner (pass `close-label` with the app's word for "Close"). Opening
   focuses an `autofocus` element, else the first field, else the first action. Don't hand-build
   dialog headers, labels or action rows.
+- Confirmations go through `useConfirm()`: `if (await confirm({ danger: true, title }))`. It shows a
+  `BaseAlertDialog` (Reka AlertDialog) through the `BaseConfirmHost` in app.vue, focused on Cancel;
+  the backdrop does not close it. Pass `action` when the default "Confirm" or, for `danger`,
+  "Delete" does not name the action. Never call `window.confirm`; without a host (component tests)
+  `useConfirm` falls back to it with the same text.
 - `BaseBadge` is the one pill for counts, states and marks: neutral (counts, plain states), outline
   (a quiet mark like "alpha"), accent, success, warning, danger. One size; don't build local pills.
 - `BaseAvatar` shows initials on a color: `sm` 20px next to a name in a row, `md` 32px in menus,

@@ -80,6 +80,7 @@ import type { PermissionsPageDeps } from '~/sections/organizations/permissions/l
 
 const props = defineProps<{ deps: PermissionsPageDeps }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     admin: 'Admin',
@@ -164,7 +165,7 @@ const {
   pending: regenerating,
 } = useApiAction(props.deps.regenerateJoinCode)
 const regenerate = async (): Promise<void> => {
-  if (!confirm(t('regenerateConfirm'))) {
+  if (!(await confirm({ title: t('regenerateConfirm') }))) {
     return
   }
   const regenerated = await regenerateJoinCode()

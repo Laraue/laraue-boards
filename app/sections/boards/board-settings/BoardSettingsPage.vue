@@ -82,6 +82,7 @@ const props = defineProps<{
   spaceKey: string
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     board: 'Board',
@@ -138,7 +139,10 @@ const save = async (page: BoardSettingsPageData, input: BoardSettingsFormInput):
 }
 
 const remove = async (): Promise<void> => {
-  if (confirm(t('deleteConfirm')) && (await removeBoard({ boardId: props.boardId }))) {
+  if (
+    (await confirm({ danger: true, title: t('deleteConfirm') })) &&
+    (await removeBoard({ boardId: props.boardId }))
+  ) {
     await props.onDeleted()
   }
 }
