@@ -41,6 +41,11 @@ component; page styles own layout. Extend the existing system before adding a co
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Control radius: `--radius-control` (6px). Space follows the existing 4px scale.
 
+## Surfaces
+
+- Group page content (lists, settings sections, summaries) in `BaseCard`: surface fill, border,
+  `--radius-card` and `--shadow-card` on the page background. Do not rebuild these styles locally.
+
 ## Popovers and filters
 
 - `AppPopover` owns surface color, border, radius and shadow. Consumers specify content layout and

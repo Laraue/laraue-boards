@@ -251,9 +251,13 @@ const save = async (field: 'assignee' | 'status', value: string) => {
     );
   min-height: 48px;
   min-width: 0;
-  padding: var(--space-2);
+  padding: var(--space-2) var(--space-4);
   text-decoration: none;
   transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.issue-list-row:last-child {
+  border-bottom: none;
 }
 
 .issue-list-row:hover {
@@ -447,7 +451,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   .issue-list-row {
     gap: var(--space-2);
     grid-template-columns: 20px minmax(0, 1fr) minmax(0, 144px) var(--icon-btn-size);
-    padding: var(--space-3) var(--space-2);
+    padding: var(--space-3) var(--space-4);
   }
 
   .issue-list-row:not(:has(.row-select)) {

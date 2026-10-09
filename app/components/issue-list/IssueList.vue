@@ -4,7 +4,7 @@
     :count="selected.size"
     :on-action="() => openMoveDialog([...selected])"
     :on-clear="() => selected.clear()" />
-  <div
+  <BaseCard
     :aria-busy="filtering"
     class="issue-list"
     :class="{ 'results-stale': filtering }">
@@ -39,7 +39,7 @@
       v-if="issues.length === 0"
       :hint="emptyHint"
       :title="emptyText" />
-  </div>
+  </BaseCard>
   <p
     v-if="deleteMessage"
     class="form-error">
@@ -123,7 +123,6 @@ const handleMoved = async () => {
 
 <style scoped>
 .issue-list {
-  background: transparent;
   display: grid;
 }
 </style>
