@@ -66,7 +66,7 @@ it('deletes the space after confirmation', async () => {
 
   await mount(createDeps({ remove }), onDeleted)
   await page.getByRole('button', { exact: true, name: 'Actions' }).click()
-  await page.getByRole('button', { name: 'Delete space' }).click()
+  await page.getByRole('menuitem', { name: 'Delete space' }).click()
 
   expect(remove).toHaveBeenCalledWith({ spaceKey: 'product' })
   expect(onDeleted).toHaveBeenCalledTimes(1)

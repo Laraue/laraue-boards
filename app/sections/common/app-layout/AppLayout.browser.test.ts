@@ -82,7 +82,7 @@ it('links the member to the account in the organization', async () => {
 
   await page.getByRole('button', { name: 'User menu' }).click()
   await expect
-    .element(page.getByRole('link', { name: 'Organization profile' }))
+    .element(page.getByRole('menuitem', { name: 'Organization profile' }))
     .toHaveAttribute('href', '/organizations/acme-ab12/account')
 })
 

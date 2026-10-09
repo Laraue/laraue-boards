@@ -170,6 +170,11 @@ const classes = computed(() => [
   width: 100%;
 }
 
+/* The row an AppMenu highlights from the keyboard. */
+.base-button.menu[data-highlighted] {
+  background: var(--color-soft);
+}
+
 .base-button.menu[data-active='true'] {
   background: var(--color-accent-soft);
 }

@@ -76,6 +76,9 @@ there and add new components and variants to it.
 - `AppPopover` is built on Reka `Popover`: Reka places it, flips it at the viewport edge and closes
   it on Escape or an outside press. It owns surface color, border, radius and shadow. Consumers
   specify content layout and width; do not override its surface styles.
+- Menus of actions use `AppMenu` with `AppMenuItem` rows and `AppMenuSeparator` (Reka DropdownMenu:
+  arrow keys, Enter, typeahead). Call `preventDefault()` in an item's `select` to keep the menu open
+  (theme and language switches). Panels with fields or sections use `AppPopover`.
 - Filters expand one section inside the panel on click or tap, on both desktop and mobile. Use
   native buttons for keyboard access; do not open sections on hover.
 - Set panel width through `--app-popover-width`. Its content occupies 100% of the available inner

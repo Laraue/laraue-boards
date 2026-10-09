@@ -89,61 +89,34 @@
         <span class="truncate">{{ assignee }}</span>
       </template>
     </div>
-    <AppPopover
+    <!-- The row is a link: the menu's clicks must neither bubble to it nor follow it. -->
+    <AppMenu
       v-if="canMove"
       align="end"
       class="row-actions"
-      @click.stop>
-      <template #trigger="{ open, toggle }">
-        <IconButton
-          :aria-expanded="open"
-          aria-haspopup="dialog"
-          :label="t('actions')"
-          @click.stop.prevent="toggle">
+      @click.stop.prevent>
+      <template #trigger>
+        <IconButton :label="t('actions')">
           <IconDots />
         </IconButton>
       </template>
-      <template #default="{ close }">
-        <div class="row-menu">
-          <BaseButton
-            menu
-            @click.stop.prevent="
-              () => {
-                close()
-                props.onToggleSelection()
-              }
-            ">
-            <IconSquareCheck />
-            {{ selected ? t('deselectIssue') : t('selectIssue') }}
-          </BaseButton>
-          <BaseButton
-            menu
-            @click.stop.prevent="
-              () => {
-                close()
-                props.onMove()
-              }
-            ">
-            <IconArrowsLeftRight />
-            {{ t('moveToBoard') }}
-          </BaseButton>
-          <BaseButton
-            v-if="onDelete"
-            :disabled="deleting"
-            menu
-            variant="danger"
-            @click.stop.prevent="
-              () => {
-                close()
-                props.onDelete?.()
-              }
-            ">
-            <IconTrash />
-            {{ t('deleteIssue') }}
-          </BaseButton>
-        </div>
-      </template>
-    </AppPopover>
+      <AppMenuItem @select="props.onToggleSelection()">
+        <IconSquareCheck />
+        {{ selected ? t('deselectIssue') : t('selectIssue') }}
+      </AppMenuItem>
+      <AppMenuItem @select="props.onMove()">
+        <IconArrowsLeftRight />
+        {{ t('moveToBoard') }}
+      </AppMenuItem>
+      <AppMenuItem
+        v-if="onDelete"
+        :disabled="deleting"
+        variant="danger"
+        @select="props.onDelete?.()">
+        <IconTrash />
+        {{ t('deleteIssue') }}
+      </AppMenuItem>
+    </AppMenu>
     <p
       v-if="saveMessage"
       class="form-error row-error"
@@ -297,12 +270,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 
 .selection-mode .row-select-target {
   visibility: visible;
-}
-
-.row-menu {
-  display: grid;
-  gap: var(--space-1);
-  padding: var(--space-1);
 }
 
 .issue-key {

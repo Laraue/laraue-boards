@@ -104,19 +104,17 @@
         </div>
       </nav>
       <div class="sidebar-footer">
-        <AppPopover
+        <AppMenu
           align="end"
           class="sidebar-account"
+          :label="t('userMenu')"
           side="right">
-          <template #trigger="{ open, toggle }">
+          <template #trigger="{ open }">
             <button
-              :aria-expanded="open"
-              aria-haspopup="dialog"
               :aria-label="t('userMenu')"
               class="sidebar-user"
               :class="{ active: open }"
-              type="button"
-              @click="toggle">
+              type="button">
               <span
                 class="avatar"
                 :style="{ background: viewModel.user.color }">
@@ -130,51 +128,50 @@
               </span>
             </button>
           </template>
-          <template #default="{ close }">
-            <div
-              :aria-label="t('userMenu')"
-              class="user-menu"
-              role="dialog">
-              <BaseButton
-                menu
-                to="/account"
-                @click="closeUserMenu(close)">
-                <IconUserCircle />
-                {{ t('yourAccount') }}
-              </BaseButton>
-              <BaseButton
-                menu
-                :to="organizationRoutes.account()"
-                @click="closeUserMenu(close)">
-                <IconBuilding />
-                {{ t('organizationProfile') }}
-              </BaseButton>
-              <div class="user-menu-divider" />
-              <BaseButton
-                menu
-                @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
-                <IconSun v-if="theme === 'dark'" />
-                <IconMoon v-else />
-                {{ theme === 'dark' ? t('lightTheme') : t('darkTheme') }}
-              </BaseButton>
-              <BaseButton
-                menu
-                @click="setLocale(locale === 'ru' ? 'en' : 'ru')">
-                <IconLanguage />
-                {{ locale === 'ru' ? 'English' : 'Русский' }}
-              </BaseButton>
-              <div class="user-menu-divider" />
-              <BaseButton
-                :loading="loggingOut"
-                menu
-                variant="danger"
-                @click="onLogout">
-                <IconLogout />
-                {{ t('logOut') }}
-              </BaseButton>
-            </div>
-          </template>
-        </AppPopover>
+          <AppMenuItem
+            to="/account"
+            @select="sidebarOpen = false">
+            <IconUserCircle />
+            {{ t('yourAccount') }}
+          </AppMenuItem>
+          <AppMenuItem
+            :to="organizationRoutes.account()"
+            @select="sidebarOpen = false">
+            <IconBuilding />
+            {{ t('organizationProfile') }}
+          </AppMenuItem>
+          <AppMenuSeparator />
+          <!-- Theme and language switch in place, so the menu stays open. -->
+          <AppMenuItem
+            @select="
+              (event) => {
+                event.preventDefault()
+                setTheme(theme === 'dark' ? 'light' : 'dark')
+              }
+            ">
+            <IconSun v-if="theme === 'dark'" />
+            <IconMoon v-else />
+            {{ theme === 'dark' ? t('lightTheme') : t('darkTheme') }}
+          </AppMenuItem>
+          <AppMenuItem
+            @select="
+              (event) => {
+                event.preventDefault()
+                setLocale(locale === 'ru' ? 'en' : 'ru')
+              }
+            ">
+            <IconLanguage />
+            {{ locale === 'ru' ? 'English' : 'Русский' }}
+          </AppMenuItem>
+          <AppMenuSeparator />
+          <AppMenuItem
+            :loading="loggingOut"
+            variant="danger"
+            @select="onLogout">
+            <IconLogout />
+            {{ t('logOut') }}
+          </AppMenuItem>
+        </AppMenu>
       </div>
     </aside>
     <Transition name="fade">
@@ -221,10 +218,6 @@ const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const sidebarOpen = useSidebarOpen()
 const { setLocale, setTheme, theme } = useAppPreferences()
-const closeUserMenu = (close: () => void) => {
-  close()
-  sidebarOpen.value = false
-}
 const { locale, t } = useI18n({
   en: {
     admin: 'Admin',
@@ -439,17 +432,6 @@ main :deep(.page-load-state) {
 
 .sidebar-account {
   width: 100%;
-}
-
-.user-menu {
-  display: grid;
-  gap: var(--space-1);
-  padding: var(--space-1);
-}
-
-.user-menu-divider {
-  border-top: 1px solid var(--color-divider);
-  margin: var(--space-1);
 }
 
 .sidebar-user {
