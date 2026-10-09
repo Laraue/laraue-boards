@@ -1,10 +1,9 @@
 <template>
-  <NuxtLink
-    :aria-label="label"
-    class="icon-btn"
+  <BaseIconButton
+    :label="label"
     :to="to">
     <IconArrowLeft />
-  </NuxtLink>
+  </BaseIconButton>
 </template>
 
 <script setup lang="ts">

@@ -21,14 +21,12 @@
           @change="toggle(space.key)" />
         <SpaceIcon :style="{ color: space.color }" />
         <strong>{{ space.name }}</strong>
-        <button
-          :aria-label="`${t('move')} ${space.name}`"
-          class="icon-btn"
-          :title="t('moveSpace')"
-          type="button"
+        <BaseIconButton
+          :label="`${t('move')} ${space.name}`"
+          :tooltip="t('moveSpace')"
           @click="openDialog([space.key])">
           <IconArrowsLeftRight />
-        </button>
+        </BaseIconButton>
       </div>
       <p
         v-if="!movableSpaces.length"

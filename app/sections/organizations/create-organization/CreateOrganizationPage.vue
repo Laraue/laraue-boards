@@ -31,16 +31,15 @@
           {{ message }}
         </p>
         <div class="form-actions">
-          <button
-            class="primary"
-            :disabled="pending">
+          <BaseButton
+            :disabled="pending"
+            type="submit"
+            variant="primary">
             {{ pending ? t('creating') : t('createOrganization') }}
-          </button>
-          <NuxtLink
-            class="secondary"
-            to="/organizations">
+          </BaseButton>
+          <BaseButton to="/organizations">
             {{ t('cancel') }}
-          </NuxtLink>
+          </BaseButton>
         </div>
       </form>
     </div>

@@ -31,14 +31,12 @@
               @change="toggle(board.id)" />
             <BoardIcon :style="{ color: board.color }" />
             <strong>{{ board.name }}</strong>
-            <button
-              :aria-label="`${t('move')} ${board.name}`"
-              class="icon-btn"
-              :title="t('moveBoard')"
-              type="button"
+            <BaseIconButton
+              :label="`${t('move')} ${board.name}`"
+              :tooltip="t('moveBoard')"
               @click="openDialog([board.id])">
               <IconArrowsLeftRight />
-            </button>
+            </BaseIconButton>
           </div>
         </div>
       </section>

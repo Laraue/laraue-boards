@@ -33,15 +33,13 @@
               readonly
               :value="invitationUrl"
               @focus="($event.target as HTMLInputElement).select()" />
-            <button
-              class="secondary"
+            <BaseButton
               :class="{ copied: state.copied }"
-              type="button"
               @click="copyInvitation">
               <IconCheck v-if="state.copied" />
               <IconCopy v-else />
               {{ state.copied ? t('copied') : t('copyLink') }}
-            </button>
+            </BaseButton>
           </div>
           <p
             v-if="state.copyError || regenerateMessage"

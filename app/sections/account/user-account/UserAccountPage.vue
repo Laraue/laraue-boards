@@ -1,12 +1,12 @@
 <template>
   <div class="user-account">
-    <NuxtLink
+    <BaseButton
       v-if="data"
-      class="secondary back"
+      class="back"
       :to="backPath || '/organizations'">
       <IconArrowLeft />
       {{ backPath ? t('back') : t('backToOrganizations') }}
-    </NuxtLink>
+    </BaseButton>
 
     <QueryState
       :data="data"
@@ -32,14 +32,14 @@
                 {{ t('scope') }}
               </p>
             </div>
-            <button
-              class="secondary danger log-out"
+            <BaseButton
+              class="log-out"
               :disabled="loggingOut"
-              type="button"
+              variant="danger"
               @click="logout">
               <IconLogout />
               {{ t('logOut') }}
-            </button>
+            </BaseButton>
           </div>
 
           <ProfileSection

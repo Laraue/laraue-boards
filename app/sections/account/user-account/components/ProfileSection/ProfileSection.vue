@@ -55,11 +55,12 @@
             {{ saveMessage }}
           </p>
           <div class="form-actions">
-            <button
-              class="primary"
-              :disabled="saving || !state.displayName.trim()">
+            <BaseButton
+              :disabled="saving || !state.displayName.trim()"
+              type="submit"
+              variant="primary">
               {{ saving ? t('saving') : t('saveChanges') }}
-            </button>
+            </BaseButton>
           </div>
         </form>
       </template>

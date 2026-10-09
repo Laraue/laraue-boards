@@ -16,6 +16,9 @@ check a design change there and add new components and variants to it.
   `#infrastructure` and imports out of `ui/`. It has no translations and no domain words: text comes
   in through props or slots (e.g. `BaseToasts dismiss-label`). Auto-imported app composables such as
   `useI18n` are off limits too, though lint cannot see them.
+- Buttons are `BaseButton` / `BaseIconButton` everywhere; the old `.primary`, `.secondary` and
+  `.icon-btn` classes are gone from the app. The retro board lives apart and keeps them in
+  `sections/retro/retro-controls.css`, which nothing else may use.
 - Everything that knows about issues, boards, spaces, users or this app's copy is an app component
   outside `ui/` (`App*` or a domain name). A generic need found in an app component moves into the
   kit.

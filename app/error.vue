@@ -3,20 +3,16 @@
     :code="`${t('error')} ${statusCode}`"
     :message="message"
     :title="title">
-    <button
-      class="primary"
-      type="button"
+    <BaseButton
+      variant="primary"
       @click="retry">
       <IconRefresh />
       {{ t('tryAgain') }}
-    </button>
-    <button
-      class="secondary"
-      type="button"
-      @click="goHome">
+    </BaseButton>
+    <BaseButton @click="goHome">
       <IconHome />
       {{ t('goHome') }}
-    </button>
+    </BaseButton>
   </AppErrorState>
 </template>
 

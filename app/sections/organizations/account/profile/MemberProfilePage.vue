@@ -31,11 +31,12 @@
             {{ saveMessage }}
           </p>
           <div class="form-actions">
-            <button
-              class="primary"
-              :disabled="saving">
+            <BaseButton
+              :disabled="saving"
+              type="submit"
+              variant="primary">
               {{ saving ? t('saving') : t('saveChanges') }}
-            </button>
+            </BaseButton>
           </div>
         </form>
       </section>

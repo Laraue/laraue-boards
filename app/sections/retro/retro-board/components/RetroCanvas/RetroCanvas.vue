@@ -527,3 +527,5 @@ defineExpose({ reset })
   }
 }
 </style>
+
+<style scoped src="../../../retro-controls.css"></style>

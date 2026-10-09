@@ -144,11 +144,12 @@
     <div
       v-if="!viewModel.member.isOwner"
       class="form-actions">
-      <button
-        class="primary"
-        :disabled="submitting">
+      <BaseButton
+        :disabled="submitting"
+        type="submit"
+        variant="primary">
         {{ submitting ? t('saving') : t('savePermissions') }}
-      </button>
+      </BaseButton>
     </div>
   </form>
 </template>

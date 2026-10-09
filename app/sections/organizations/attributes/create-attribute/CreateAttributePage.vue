@@ -51,23 +51,21 @@
                 :aria-label="`${t('option')} ${index + 1}`"
                 maxlength="64"
                 required />
-              <button
-                :aria-label="`${t('removeOption')} ${index + 1}`"
-                class="icon-btn danger"
+              <BaseIconButton
                 :disabled="draft.data.listValues.length === 1"
-                type="button"
+                :label="`${t('removeOption')} ${index + 1}`"
+                variant="danger"
                 @click="draft.data.listValues.splice(index, 1)">
                 <IconTrash />
-              </button>
+              </BaseIconButton>
             </div>
           </TransitionGroup>
-          <button
-            class="secondary add-option"
-            type="button"
+          <BaseButton
+            class="add-option"
             @click="addOption">
             <IconPlus />
             {{ t('addOption') }}
-          </button>
+          </BaseButton>
         </fieldset>
       </Transition>
 
@@ -77,11 +75,12 @@
         {{ message }}
       </p>
       <div class="form-actions">
-        <button
-          class="primary"
-          :disabled="pending">
+        <BaseButton
+          :disabled="pending"
+          type="submit"
+          variant="primary">
           {{ pending ? t('creating') : t('createAttribute') }}
-        </button>
+        </BaseButton>
       </div>
     </form>
   </section>

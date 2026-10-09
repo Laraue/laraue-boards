@@ -78,13 +78,12 @@
         class="issue-attachment-lightbox"
         @click="closeLightboxFromBackdrop"
         @close="closeLightboxPreview">
-        <button
-          :aria-label="t('closePreview')"
-          class="icon-btn issue-attachment-lightbox-close"
-          type="button"
+        <BaseIconButton
+          class="issue-attachment-lightbox-close"
+          :label="t('closePreview')"
           @click="closeLightbox">
           <IconX />
-        </button>
+        </BaseIconButton>
         <img
           v-if="activeAttachment"
           :alt="activeAttachment.alt"
@@ -404,7 +403,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
   width: 24px;
 }
 
-.issue-attachment-lightbox-close {
+.issue-attachment-lightbox :deep(.issue-attachment-lightbox-close) {
   position: fixed;
   right: var(--space-4);
   top: var(--space-4);

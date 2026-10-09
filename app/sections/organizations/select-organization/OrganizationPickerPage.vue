@@ -31,29 +31,27 @@
                   <small class="muted">{{ organization.description }}</small>
                 </span>
               </button>
-              <button
+              <BaseIconButton
                 v-if="organization.canLeave"
-                :aria-label="`${t('leave')} ${organization.name}`"
-                class="icon-btn danger"
                 :disabled="selecting || leaving"
-                :title="t('leaveOrganization')"
-                type="button"
+                :label="`${t('leave')} ${organization.name}`"
+                :tooltip="t('leaveOrganization')"
+                variant="danger"
                 @click="leave(organization.id, organization.name)">
                 <IconLogout />
-              </button>
+              </BaseIconButton>
             </div>
             <BaseEmptyState
               v-if="organizations.length === 0"
               :hint="t('emptyHint')"
               :title="t('emptyTitle')" />
           </div>
-          <NuxtLink
-            class="secondary"
+          <BaseButton
             data-tour="create-organization"
             to="/organizations/new">
             <IconPlus />
             {{ t('createOrganization') }}
-          </NuxtLink>
+          </BaseButton>
           <p
             v-if="selectMessage || leaveMessage"
             class="form-error">

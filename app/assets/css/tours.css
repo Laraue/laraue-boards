@@ -37,7 +37,7 @@
   margin-bottom: var(--space-6);
 }
 
-/* Same control as .icon-btn.small in main.css. */
+/* A small square icon control, like BaseIconButton at --icon-btn-size-small. */
 .product-tour .driver-popover-close-btn {
   background: var(--color-surface);
   border: 1px solid var(--color-border);

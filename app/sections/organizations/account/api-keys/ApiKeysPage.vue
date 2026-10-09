@@ -13,12 +13,12 @@
           required
           type="text" />
       </label>
-      <button
-        class="primary"
+      <BaseButton
         :disabled="busy"
-        type="submit">
+        type="submit"
+        variant="primary">
         {{ creating ? t('creating') : t('create') }}
-      </button>
+      </BaseButton>
     </form>
 
     <div
@@ -29,14 +29,11 @@
       <p class="muted">{{ t('copyWarning') }}</p>
       <div class="created-key-value">
         <code>{{ rawKey }}</code>
-        <button
-          class="secondary"
-          type="button"
-          @click="copyKey">
+        <BaseButton @click="copyKey">
           <IconCheck v-if="copied" />
           <IconCopy v-else />
           {{ copied ? t('copied') : t('copy') }}
-        </button>
+        </BaseButton>
       </div>
       <p
         v-if="copyError"
@@ -76,14 +73,13 @@
                 class="muted">
                 {{ t('revoked') }}
               </span>
-              <button
+              <BaseButton
                 v-else
-                class="secondary danger"
                 :disabled="busy"
-                type="button"
+                variant="danger"
                 @click="revokeKey(key.id)">
                 {{ t('revoke') }}
-              </button>
+              </BaseButton>
             </div>
           </article>
         </div>

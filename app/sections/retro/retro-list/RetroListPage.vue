@@ -293,3 +293,5 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
   }
 }
 </style>
+
+<style scoped src="../retro-controls.css"></style>

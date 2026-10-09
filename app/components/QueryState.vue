@@ -24,11 +24,9 @@
         @click="onRetry">
         {{ translatedRetryText }}
       </BaseButton>
-      <NuxtLink
-        class="secondary"
-        to="/organizations">
+      <BaseButton to="/organizations">
         {{ t('goHome') }}
-      </NuxtLink>
+      </BaseButton>
     </div>
   </section>
   <slot

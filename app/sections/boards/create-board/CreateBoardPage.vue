@@ -46,32 +46,31 @@
             :aria-label="t('statusName')"
             required />
           <StatusCategorySelect v-model="status.category" />
-          <button
-            :aria-label="t('deleteStatus')"
-            class="icon-btn danger"
-            type="button"
+          <BaseIconButton
+            :label="t('deleteStatus')"
+            variant="danger"
             @click="form.statuses.splice(index, 1)">
             <IconTrash />
-          </button>
+          </BaseIconButton>
         </div>
-        <button
-          class="secondary add-status"
-          type="button"
+        <BaseButton
+          class="add-status"
           @click="addStatus">
           <IconPlus />
           {{ t('addStatus') }}
-        </button>
+        </BaseButton>
         <p
           v-if="message"
           class="form-error">
           {{ message }}
         </p>
         <div class="form-actions">
-          <button
-            class="primary"
-            :disabled="pending">
+          <BaseButton
+            :disabled="pending"
+            type="submit"
+            variant="primary">
             {{ pending ? t('creating') : t('createBoard') }}
-          </button>
+          </BaseButton>
         </div>
       </form>
     </section>

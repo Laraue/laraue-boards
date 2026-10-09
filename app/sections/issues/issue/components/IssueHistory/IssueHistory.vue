@@ -11,13 +11,13 @@
       <IconLoader2 class="spin" />
       <span>{{ t('loading') }}</span>
     </div>
-    <button
+    <BaseButton
       v-else-if="state.failed || state.hasNextPage"
-      class="secondary small history-more"
-      type="button"
+      class="history-more"
+      size="small"
       @click="load()">
       {{ state.failed ? t('tryAgain') : t('loadMore') }}
-    </button>
+    </BaseButton>
   </div>
 </template>
 

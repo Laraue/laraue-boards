@@ -15,12 +15,9 @@
         <IconAlertTriangle />
       </span>
       <p class="muted">{{ errorText }}</p>
-      <button
-        class="secondary"
-        type="button"
-        @click="props.onRetry?.()">
+      <BaseButton @click="props.onRetry?.()">
         {{ retryLabel }}
-      </button>
+      </BaseButton>
     </div>
   </section>
 </template>

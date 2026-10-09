@@ -9,13 +9,13 @@
     <template #default="{ data: attributes }">
       <section class="attributes-page">
         <div class="title-row">
-          <NuxtLink
+          <BaseButton
             :aria-label="t('newAttribute')"
-            class="primary"
-            :to="organizationRoutes.newAttribute()">
+            :to="organizationRoutes.newAttribute()"
+            variant="primary">
             <IconPlus />
             <span class="btn-label">{{ t('newAttribute') }}</span>
-          </NuxtLink>
+          </BaseButton>
         </div>
         <div
           v-if="attributes.length"

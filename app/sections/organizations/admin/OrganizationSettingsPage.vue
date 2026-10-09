@@ -38,20 +38,20 @@
             {{ submitMessage || removeMessage }}
           </p>
           <div class="form-actions">
-            <button
+            <BaseButton
               v-if="page.canUpdate"
-              class="primary"
-              :disabled="busy">
-              {{ submitting ? t('saving') : t('saveChanges') }}
-            </button>
-            <button
-              v-if="page.canDelete"
-              class="secondary danger"
               :disabled="busy"
-              type="button"
+              type="submit"
+              variant="primary">
+              {{ submitting ? t('saving') : t('saveChanges') }}
+            </BaseButton>
+            <BaseButton
+              v-if="page.canDelete"
+              :disabled="busy"
+              variant="danger"
               @click="remove(page.id)">
               {{ removing ? t('deleting') : t('deleteOrganization') }}
-            </button>
+            </BaseButton>
           </div>
         </form>
       </section>

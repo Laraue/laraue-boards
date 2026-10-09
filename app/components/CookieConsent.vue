@@ -6,18 +6,14 @@
     role="dialog">
     <p class="text">{{ t('text') }}</p>
     <div class="actions">
-      <button
-        class="secondary"
-        type="button"
-        @click="decline">
+      <BaseButton @click="decline">
         {{ t('decline') }}
-      </button>
-      <button
-        class="primary"
-        type="button"
+      </BaseButton>
+      <BaseButton
+        variant="primary"
         @click="accept">
         {{ t('accept') }}
-      </button>
+      </BaseButton>
     </div>
   </div>
 </template>

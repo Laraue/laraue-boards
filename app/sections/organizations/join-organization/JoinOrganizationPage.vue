@@ -6,17 +6,17 @@
         <h1>{{ t('joinOrganization') }}</h1>
         <p class="muted">{{ t('invitationDescription') }}</p>
       </div>
-      <button
+      <BaseButton
         v-if="!state.loginRequired"
-        class="primary join-action"
+        class="join-action"
         :disabled="busy"
-        type="button"
+        variant="primary"
         @click="accept">
         <IconLoader
           v-if="busy"
           class="spinning" />
         {{ busy ? t('pleaseWait') : message ? t('tryAgain') : t('acceptInvitation') }}
-      </button>
+      </BaseButton>
       <div
         v-else
         aria-live="polite"
