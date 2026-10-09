@@ -656,6 +656,7 @@ watch(dirty, setDirty, { immediate: true })
   background: transparent;
   border: 0;
   border-radius: 0;
+  box-shadow: none;
   color: var(--color-text);
   font-size: 26px;
   font-weight: var(--font-weight-semibold);

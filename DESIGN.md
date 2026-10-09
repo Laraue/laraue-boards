@@ -39,6 +39,8 @@ there and add new components and variants to it.
 - `IconButton variant="danger"` marks destructive actions with the danger color and a danger border
   on hover. `BaseSelect full-width` stretches an inline select to its layout column while keeping
   the shared inline appearance.
+- Framed fields and bordered buttons carry `--shadow-control`; borderless (inline) ones drop it.
+  Disabled fields use the soft fill and muted text.
 - `BaseInput` owns text field variants. Its default is framed; `variant="inline"` is transparent for
   editable rows, with a border on hover and focus. `AppColorPicker compact` uses an icon button with
   a color sample for dense rows; the default shows the color name.

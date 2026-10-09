@@ -3930,6 +3930,7 @@ const finish = async () => {
 }
 
 textarea.card-text {
+  box-shadow: none;
   caret-color: var(--color-accent);
   cursor: text;
   height: 100%;

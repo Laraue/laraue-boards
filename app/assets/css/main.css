@@ -153,6 +153,7 @@ select {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
+  box-shadow: var(--shadow-control);
   color: var(--color-text);
   font-size: var(--font-size-body);
   height: var(--control-height);
@@ -196,6 +197,7 @@ textarea {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
+  box-shadow: var(--shadow-control);
   color: var(--color-text);
   /* grows with content where supported; rows="" stays the fallback */
   field-sizing: content;
@@ -225,6 +227,12 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--color-focus);
+}
+/* Zero specificity: a field styled locally (an inline title) keeps its own look. */
+:where(input:not([type='checkbox']):not([type='radio']), select, textarea):where(:disabled) {
+  background: var(--color-soft);
+  color: var(--color-muted);
+  cursor: not-allowed;
 }
 input::placeholder,
 textarea::placeholder {

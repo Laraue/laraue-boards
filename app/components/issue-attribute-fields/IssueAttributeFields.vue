@@ -112,6 +112,7 @@ const update = (id: string, value: string) => {
 .attribute-field-inline :deep(input) {
   background: transparent;
   border-color: transparent;
+  box-shadow: none;
   field-sizing: content;
   justify-self: start;
   max-width: 100%;

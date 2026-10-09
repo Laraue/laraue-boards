@@ -23,6 +23,7 @@ const model = defineModel<string>({ required: true })
 .base-input-inline {
   background: transparent;
   border-color: transparent;
+  box-shadow: none;
 }
 
 /* Borderless reads as plain text; the border on hover shows it can be edited. */
