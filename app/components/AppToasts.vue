@@ -17,13 +17,11 @@
             class="toast-count">
             {{ toast.count }}
           </span>
-          <button
-            :aria-label="t('dismiss')"
-            class="icon-btn small"
-            type="button"
+          <IconButton
+            :label="t('dismiss')"
             @click="dismiss(toast.id)">
             <IconX />
-          </button>
+          </IconButton>
         </div>
       </TransitionGroup>
     </div>
@@ -62,7 +60,8 @@ const { t } = useI18n({
   box-shadow: var(--shadow-popover);
   display: flex;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  /* Less on the right: the dismiss button brings its own space. */
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
   pointer-events: auto;
   width: 100%;
 }
@@ -92,15 +91,8 @@ const { t } = useI18n({
   color: var(--color-muted);
   flex: none;
   font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   padding: 0 var(--space-2);
-}
-
-.toast .icon-btn {
-  background: none;
-  border: 0;
-  color: var(--color-muted);
-  flex: none;
 }
 
 @media (max-width: 600px) {

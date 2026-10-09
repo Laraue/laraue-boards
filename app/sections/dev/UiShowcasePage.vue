@@ -171,7 +171,7 @@
     </section>
 
     <section>
-      <h2>Popover, menu and tooltip</h2>
+      <h2>Popover, menu, tooltip and toast</h2>
       <div class="row">
         <AppPopover>
           <template #trigger="{ open, toggle }">
@@ -181,7 +181,7 @@
               Open menu
             </BaseButton>
           </template>
-          <div class="menu">
+          <div class="showcase-menu">
             <BaseButton
               data-active="true"
               menu>
@@ -203,6 +203,8 @@
         <BaseTooltip text="Tooltip text">
           <BaseButton>Hover for tooltip</BaseButton>
         </BaseTooltip>
+        <BaseButton @click="showToast('Saved', 'success')">Success toast</BaseButton>
+        <BaseButton @click="showToast('Something went wrong')">Error toast</BaseButton>
       </div>
     </section>
 
@@ -265,6 +267,8 @@ const tabs = [
   { count: 3, label: 'Comments', value: 'comments' },
   { label: 'History', value: 'history' },
 ]
+
+const { show: showToast } = useToast()
 
 const text = ref('Text value')
 const empty = ref('')
@@ -368,7 +372,7 @@ code {
   height: 16px;
 }
 
-.menu {
+.showcase-menu {
   display: grid;
   gap: var(--space-1);
   padding: var(--space-1);
