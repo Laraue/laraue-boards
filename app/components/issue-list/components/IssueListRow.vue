@@ -348,7 +348,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   min-width: 0;
 }
 
-
 @media (max-width: 1100px) {
   .issue-list-row {
     grid-template-columns: 20px 64px minmax(0, 1fr) 88px var(--icon-btn-size);

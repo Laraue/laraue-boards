@@ -158,7 +158,6 @@ useSortable({
   width: 16px;
 }
 
-
 .task-title {
   -webkit-box-orient: vertical;
   display: -webkit-box;

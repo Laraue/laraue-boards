@@ -719,7 +719,6 @@ watch(dirty, setDirty, { immediate: true })
   padding: 0 var(--space-3);
 }
 
-
 .issue-dates {
   border-top: 1px solid var(--color-divider);
   grid-auto-rows: var(--control-height-small);

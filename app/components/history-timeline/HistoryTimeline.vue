@@ -324,7 +324,6 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   width: 20px;
 }
 
-
 /* A change made through an API key: a small key on the avatar's corner. */
 .history-avatar-key {
   background: var(--color-surface);
@@ -448,7 +447,6 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   height: 8px;
   width: 8px;
 }
-
 
 :deep(.history-new-value) {
   color: var(--color-text);

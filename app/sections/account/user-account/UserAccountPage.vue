@@ -147,7 +147,6 @@ const logout = async (): Promise<void> => {
   margin: 0 0 var(--space-1);
 }
 
-
 .user-account-icon {
   color: var(--color-muted);
   flex: none;

@@ -339,7 +339,6 @@ const remove = async (id: string) => {
   padding: var(--space-2) var(--space-3);
 }
 
-
 .issue-comment-head {
   align-items: center;
   color: var(--color-muted);
