@@ -328,7 +328,7 @@ const remove = async (id: string) => {
 .issue-comment-composer {
   background: var(--color-feed);
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 

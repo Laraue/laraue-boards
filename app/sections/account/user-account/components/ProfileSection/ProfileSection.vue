@@ -152,7 +152,7 @@ const save = async (): Promise<void> => {
 }
 
 .section-heading h2 {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   margin: 0;
 }
 

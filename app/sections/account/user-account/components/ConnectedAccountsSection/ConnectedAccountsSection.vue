@@ -227,7 +227,7 @@ const connectGoogleAccount = async (code: string): Promise<void> => {
 }
 
 .section-heading h2 {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   margin: 0;
 }
 

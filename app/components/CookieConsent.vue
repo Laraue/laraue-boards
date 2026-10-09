@@ -99,7 +99,7 @@ const decline = (): void => {
 
 .text {
   color: var(--color-text);
-  font-size: 13px;
+  font-size: var(--font-size-body);
   line-height: 1.5;
 }
 

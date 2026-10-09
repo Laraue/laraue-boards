@@ -51,7 +51,7 @@ const model = defineModel<T>({ required: true })
 .base-tabs-list {
   background: var(--color-hover);
   /* One step rounder than the tabs, which sit 3px inside it. */
-  border-radius: calc(var(--radius-control) + 2px);
+  border-radius: var(--radius-lg);
   display: flex;
   gap: 2px;
   height: var(--control-height);

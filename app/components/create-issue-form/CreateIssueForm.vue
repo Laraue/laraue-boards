@@ -246,10 +246,10 @@ defineExpose({ canSubmit, pending })
   border-radius: 0;
   box-shadow: none;
   color: var(--color-text);
-  font-size: 26px;
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: var(--line-height-heading);
   max-height: none;
   min-height: 0;
   overflow: hidden;

@@ -3257,7 +3257,7 @@ const finish = async () => {
 .facilitator-phase-index {
   align-items: center;
   border: 1px solid var(--color-border);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   display: flex;
   font-size: var(--font-size-caption);
   height: 22px;
@@ -3519,7 +3519,7 @@ const finish = async () => {
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
+  border-radius: var(--radius-sm);
   box-shadow: none;
   display: flex;
   max-width: 220px;
@@ -3726,7 +3726,7 @@ const finish = async () => {
 .zone-title {
   align-items: center;
   display: flex;
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   gap: var(--space-2);
 }
 
@@ -3957,7 +3957,7 @@ textarea.card-text:focus {
 }
 
 .card-author {
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   color: #fff;
   display: grid;
   font-size: 10px;

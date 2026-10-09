@@ -251,7 +251,7 @@ const loginGoogle = async (code: string): Promise<void> => {
 }
 
 .auth-card h2 {
-  font-size: 28px;
+  font-size: var(--font-size-4xl);
   letter-spacing: -0.02em;
   margin-bottom: var(--space-2);
 }

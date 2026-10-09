@@ -40,6 +40,14 @@
     <section>
       <h2>Typography</h2>
       <BaseCard class="stack">
+        <p
+          v-for="size in fontSizes"
+          :key="size"
+          :style="{ fontSize: `var(--font-size-${size})` }">
+          {{ size }} — The quick brown fox
+        </p>
+      </BaseCard>
+      <BaseCard class="stack">
         <p :style="{ fontSize: 'var(--font-size-title)', fontWeight: 600 }">Title 24 / 600</p>
         <p :style="{ fontWeight: 500 }">Body 14 / 500 — buttons, row and card titles</p>
         <p>Body 14 / 400 — text, menu rows, options</p>
@@ -284,7 +292,15 @@ const ramps = [
   { name: 'green', steps: [3, 11] },
   { name: 'amber', steps: [3, 11] },
 ]
-const radii = ['--radius-small', '--radius-control', '--radius-card', '--radius-dialog']
+const fontSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl']
+const radii = [
+  '--radius-xs',
+  '--radius-sm',
+  '--radius-md',
+  '--radius-lg',
+  '--radius-xl',
+  '--radius-2xl',
+]
 const spaces = [
   '--space-1',
   '--space-2',

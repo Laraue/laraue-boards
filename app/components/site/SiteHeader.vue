@@ -144,7 +144,7 @@ const otherLocalePath = computed(
   border-radius: var(--radius-control);
   color: #fff;
   display: inline-flex;
-  font-size: 13px;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
   height: 32px;
   margin-left: var(--space-2);

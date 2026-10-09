@@ -155,7 +155,7 @@ const { t } = useI18n({
 }
 
 .skeleton-title {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
 }
@@ -296,7 +296,7 @@ const { t } = useI18n({
 
 .skeleton-comment-field {
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   height: 88px;
 }
 

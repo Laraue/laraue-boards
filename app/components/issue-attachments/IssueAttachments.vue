@@ -267,7 +267,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
 .issue-attachment-preview {
   background: var(--color-feed);
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
 }

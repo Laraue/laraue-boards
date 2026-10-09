@@ -131,14 +131,14 @@ defineExpose({ open })
 }
 
 .move-issues-dialog h2 {
-  font-size: 18px;
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--space-6);
 }
 
 .move-issues-dialog label {
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: var(--font-size-body);
   font-weight: 400;
   margin: var(--space-4) 0 var(--space-2);
 }

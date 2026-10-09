@@ -91,7 +91,7 @@ defineSlots<{
 }
 
 .page-state h2 {
-  font-size: 18px;
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
 }
 

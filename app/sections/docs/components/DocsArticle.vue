@@ -123,7 +123,7 @@ const openInternalLink = async (event: MouseEvent): Promise<void> => {
   color: var(--color-muted);
   display: flex;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: var(--font-size-small);
   gap: 4px 8px;
   line-height: 1.4;
   margin-bottom: 16px;
@@ -156,17 +156,17 @@ const openInternalLink = async (event: MouseEvent): Promise<void> => {
 
 .updated {
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: var(--font-size-small);
   margin: 10px 0 28px;
 }
 
 .content {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   line-height: 1.75;
 }
 
 .content :deep(h2) {
-  font-size: 24px;
+  font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
   line-height: 1.3;
@@ -175,7 +175,7 @@ const openInternalLink = async (event: MouseEvent): Promise<void> => {
 }
 
 .content :deep(h3) {
-  font-size: 19px;
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   line-height: 1.35;
   margin: 32px 0 10px;
@@ -249,7 +249,7 @@ const openInternalLink = async (event: MouseEvent): Promise<void> => {
 .content :deep(table) {
   border-collapse: collapse;
   display: block;
-  font-size: 14px;
+  font-size: var(--font-size-body);
   overflow-x: auto;
 }
 

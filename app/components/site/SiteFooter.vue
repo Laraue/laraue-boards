@@ -117,13 +117,13 @@ const termsHref = props.locale === 'ru' ? '/ru/terms' : '/terms'
   align-items: center;
   color: var(--color-text);
   display: flex;
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   gap: 10px;
 }
 
 .footer-logo img {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
 }
 
 .footer-links {

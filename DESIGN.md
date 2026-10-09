@@ -17,6 +17,9 @@ there and add new components and variants to it.
 
 ## Typography
 
+- The type scale is `--font-size-xs` (11) `sm` (12) `md` (14) `lg` (16) `xl` (18) `2xl` (20) `3xl` (24)
+  `4xl` (30), with `--line-height-body` (1.5) and `--line-height-heading` (1.25). Headings pick from
+  the scale; body text uses the roles below. No sizes outside the scale.
 - Use `--font-size-body` (14px) for controls: buttons, text fields, selects, menu options and
   checkbox labels. Compact controls use the same text size.
 - Use `--font-size-small` (12px) for secondary metadata, not interactive options.
@@ -59,7 +62,9 @@ there and add new components and variants to it.
   active tab raised on a surface with the control shadow. Tabs are 14px, weight 500 in every state,
   with an icon and a count pill. Don't add other tab styles.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
-- Control radius: `--radius-control` (6px). Space follows the existing 4px scale.
+- Radius scale: `--radius-xs` (4) `sm` (6) `md` (8) `lg` (10) `xl` (14) `2xl` (16) `full`. Roles:
+  `--radius-control` (md), `--radius-card` (xl), `--radius-dialog` (2xl), `--radius-small` (xs),
+  `--radius-pill` (full). Circles use `--radius-full`. Space follows the existing 4px scale.
 
 ## Surfaces
 

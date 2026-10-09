@@ -117,7 +117,7 @@ defineExpose({ close, open })
 }
 
 .plan-price strong {
-  font-size: 32px;
+  font-size: var(--font-size-4xl);
   letter-spacing: -0.02em;
 }
 

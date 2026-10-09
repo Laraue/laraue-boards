@@ -271,7 +271,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   align-items: start;
   background: var(--color-feed);
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   display: grid;
   gap: var(--space-3);
   grid-template-columns: minmax(0, 1fr);
@@ -449,7 +449,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 }
 
 :deep(.history-value-change i) {
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   flex: 0 0 auto;
   height: 8px;
   width: 8px;

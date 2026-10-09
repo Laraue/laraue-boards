@@ -88,7 +88,7 @@ const changeLocale = (value: string): void => {
 }
 
 .interface-section h2 {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   margin: 0;
 }
 
@@ -133,7 +133,7 @@ const changeLocale = (value: string): void => {
 .theme-switch button {
   background: transparent;
   border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
+  border-radius: var(--radius-sm);
   color: var(--color-muted);
   font-weight: var(--font-weight-semibold);
   height: 34px;
