@@ -19,13 +19,13 @@
           v-model:title="form.title"
           :deps="deps.description">
           <template #actions>
-            <IconButton
+            <BaseIconButton
               :disabled="pending"
               :label="t('attachImages')"
               :tooltip="t('attachImagesHint')"
               @click="attachments?.pick()">
               <IconPaperclip />
-            </IconButton>
+            </BaseIconButton>
           </template>
         </IssueDescription>
       </div>

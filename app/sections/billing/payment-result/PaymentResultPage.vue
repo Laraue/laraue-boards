@@ -1,6 +1,6 @@
 <template>
   <section class="payment-result">
-    <AppEmptyState
+    <BaseEmptyState
       :hint="t(`${status}Hint`)"
       :title="t(`${status}Title`)" />
     <BaseButton

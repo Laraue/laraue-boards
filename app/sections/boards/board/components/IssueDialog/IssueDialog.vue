@@ -10,11 +10,11 @@
     tabindex="-1"
     @cancel.self="handleCancel">
     <div class="issue-close">
-      <IconButton
+      <BaseIconButton
         :label="t('closeDialog')"
         @click="close()">
         <IconX />
-      </IconButton>
+      </BaseIconButton>
     </div>
     <div class="issue-dialog-content">
       <ClientOnly>

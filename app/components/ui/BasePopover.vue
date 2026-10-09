@@ -1,9 +1,9 @@
 <template>
-  <!-- The wrapper takes the consumer's class, so a width set on it (--app-popover-width) reaches
+  <!-- The wrapper takes the consumer's class, so a width set on it (--base-popover-width) reaches
        the content, which is not portaled: outside an open <dialog> it would be under it and inert. -->
   <div
     ref="root"
-    class="app-popover">
+    class="base-popover">
     <PopoverRoot v-model:open="open">
       <PopoverAnchor>
         <slot
@@ -13,7 +13,7 @@
       </PopoverAnchor>
       <PopoverContent
         :align="align"
-        class="app-popover-content"
+        class="base-popover-content"
         :collision-padding="viewportPadding"
         :side="side"
         :side-offset="8"
@@ -72,7 +72,7 @@ const focusTrigger = (event: Event) => {
 </script>
 
 <style scoped>
-.app-popover {
+.base-popover {
   position: relative;
   width: fit-content;
 }
@@ -80,7 +80,7 @@ const focusTrigger = (event: Event) => {
 
 <style>
 /* Unscoped: Reka puts the class on its inner element and the scope id on its own wrapper. */
-.app-popover-content {
+.base-popover-content {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-popover);
@@ -89,7 +89,7 @@ const focusTrigger = (event: Event) => {
   max-height: var(--reka-popover-content-available-height);
   max-width: calc(100vw - var(--space-8));
   overflow: auto;
-  width: var(--app-popover-width, max-content);
+  width: var(--base-popover-width, max-content);
   z-index: 31;
 }
 </style>

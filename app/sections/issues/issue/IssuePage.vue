@@ -29,7 +29,7 @@
         "
         :title="data?.issueKey ?? issueKey">
         <template #title-actions>
-          <IconButton
+          <BaseIconButton
             :label="state.copied ? t('copied') : t('copyIssueLink')"
             @click="copyIssueLink">
             <Transition
@@ -42,7 +42,7 @@
                 v-else
                 key="link" />
             </Transition>
-          </IconButton>
+          </BaseIconButton>
         </template>
         <template
           v-if="data?.canEdit"
@@ -61,12 +61,12 @@
         <h1>
           <NuxtLink :to="issueRoute">{{ data?.issueKey ?? issueKey }}</NuxtLink>
         </h1>
-        <IconButton
+        <BaseIconButton
           :label="state.copied ? t('copied') : t('copyIssueLink')"
           @click="copyIssueLink">
           <IconCheck v-if="state.copied" />
           <IconLink v-else />
-        </IconButton>
+        </BaseIconButton>
       </div>
     </template>
     <QueryState
@@ -109,13 +109,13 @@
                     :deps="deps.description"
                     :disabled="!issue.canEdit">
                     <template #actions>
-                      <IconButton
+                      <BaseIconButton
                         :disabled="saving || deleting"
                         :label="t('attachImages')"
                         :tooltip="t('attachImagesHint')"
                         @click="attachments?.pick()">
                         <IconPaperclip />
-                      </IconButton>
+                      </BaseIconButton>
                     </template>
                   </IssueDescription>
                 </div>

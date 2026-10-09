@@ -5,6 +5,19 @@ component; page styles own layout. Extend the existing system before adding a co
 Every shared component and its states are on `/dev/ui` (development only); check a design change
 there and add new components and variants to it.
 
+## UI kit and app components
+
+- `app/components/ui/` is the UI kit that will move to its own library: generic `Base*` components
+  (Button, IconButton, Input, Select, Checkbox, Tabs, Tooltip, Card, Popover, Menu, Toasts,
+  EmptyState) and their composables (`ui/composables`, e.g. `useToast`). Nuxt registers them under
+  their own names.
+- The kit imports only from itself, Vue, Nuxt and third-party packages; ESLint blocks `~/`,
+  `#infrastructure` and imports out of `ui/`. It has no translations and no domain words: text comes
+  in through props or slots (e.g. `BaseToasts dismiss-label`). Auto-imported app composables such as
+  `useI18n` are off limits too, though lint cannot see them.
+- Everything that knows about issues, boards, spaces, users or this app's copy is an app component
+  outside `ui/` (`App*` or a domain name). A generic need found in an app component moves into the kit.
+
 ## Units
 
 - Size tokens (spacing, type, radius, control and icon sizes, page widths) are in rem, so the whole
@@ -54,9 +67,9 @@ there and add new components and variants to it.
   option styling.
 - `BaseButton` variants express intent: neutral, primary, danger, ghost. The `menu` prop changes
   alignment and framing, not text size. Combine it with danger for destructive menu actions.
-- Use `BaseCheckbox` for labeled checkbox options and `IconButton` for icon actions. `IconButton` is
+- Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions. `BaseIconButton` is
   `BaseButton icon` with a required accessible name and tooltip; style both in `BaseButton`.
-- `IconButton variant="danger"` is muted at rest and shows the danger color on a danger-soft fill on
+- `BaseIconButton variant="danger"` is muted at rest and shows the danger color on a danger-soft fill on
   hover. `BaseSelect full-width` stretches an inline select to its layout column while keeping the
   shared inline appearance.
 - Framed fields and bordered buttons carry `--shadow-control`; borderless (inline) ones drop it.
@@ -82,15 +95,15 @@ there and add new components and variants to it.
 
 ## Popovers and filters
 
-- `AppPopover` is built on Reka `Popover`: Reka places it, flips it at the viewport edge and closes
+- `BasePopover` is built on Reka `Popover`: Reka places it, flips it at the viewport edge and closes
   it on Escape or an outside press. It owns surface color, border, radius and shadow. Consumers
   specify content layout and width; do not override its surface styles.
-- Menus of actions use `AppMenu` with `AppMenuItem` rows and `AppMenuSeparator` (Reka DropdownMenu:
+- Menus of actions use `BaseMenu` with `BaseMenuItem` rows and `BaseMenuSeparator` (Reka DropdownMenu:
   arrow keys, Enter, typeahead). Call `preventDefault()` in an item's `select` to keep the menu open
-  (theme and language switches). Panels with fields or sections use `AppPopover`.
+  (theme and language switches). Panels with fields or sections use `BasePopover`.
 - Filters expand one section inside the panel on click or tap, on both desktop and mobile. Use
   native buttons for keyboard access; do not open sections on hover.
-- Set panel width through `--app-popover-width`. Its content occupies 100% of the available inner
+- Set panel width through `--base-popover-width`. Its content occupies 100% of the available inner
   width, including the panel's border in the sizing calculation.
 - Keep one reset-all icon in the filter menu header. No per-filter reset buttons. Individual
   checkbox options can be deselected normally.

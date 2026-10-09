@@ -1,5 +1,5 @@
 <template>
-  <AppPopover
+  <BasePopover
     v-if="attributes.length || spaces.length || epicStatuses.length"
     class="issue-filters">
     <template #trigger="{ open, toggle }">
@@ -16,12 +16,12 @@
     <div class="filter-menu">
       <div class="filter-menu-header">
         <span>{{ t('issueFilters') }}</span>
-        <IconButton
+        <BaseIconButton
           :disabled="!activeCount"
           :label="t('clearAll')"
           @click="clear()">
           <IconFilterOff />
-        </IconButton>
+        </BaseIconButton>
       </div>
       <nav :aria-label="t('issueFilters')">
         <div
@@ -111,7 +111,7 @@
         </div>
       </nav>
     </div>
-  </AppPopover>
+  </BasePopover>
 </template>
 
 <script setup lang="ts">
@@ -280,7 +280,7 @@ const filterItems = computed<FilterItem[]>(() => [
 
 <style scoped>
 .issue-filters {
-  --app-popover-width: min(320px, calc(100vw - var(--space-8)));
+  --base-popover-width: min(320px, calc(100vw - var(--space-8)));
 }
 
 .filter-menu {

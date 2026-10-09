@@ -104,7 +104,7 @@
         </div>
       </nav>
       <div class="sidebar-footer">
-        <AppMenu
+        <BaseMenu
           align="end"
           class="sidebar-account"
           :label="t('userMenu')"
@@ -128,21 +128,21 @@
               </span>
             </button>
           </template>
-          <AppMenuItem
+          <BaseMenuItem
             to="/account"
             @select="sidebarOpen = false">
             <IconUserCircle />
             {{ t('yourAccount') }}
-          </AppMenuItem>
-          <AppMenuItem
+          </BaseMenuItem>
+          <BaseMenuItem
             :to="organizationRoutes.account()"
             @select="sidebarOpen = false">
             <IconBuilding />
             {{ t('organizationProfile') }}
-          </AppMenuItem>
-          <AppMenuSeparator />
+          </BaseMenuItem>
+          <BaseMenuSeparator />
           <!-- Theme and language switch in place, so the menu stays open. -->
-          <AppMenuItem
+          <BaseMenuItem
             @select="
               (event) => {
                 event.preventDefault()
@@ -152,8 +152,8 @@
             <IconSun v-if="theme === 'dark'" />
             <IconMoon v-else />
             {{ theme === 'dark' ? t('lightTheme') : t('darkTheme') }}
-          </AppMenuItem>
-          <AppMenuItem
+          </BaseMenuItem>
+          <BaseMenuItem
             @select="
               (event) => {
                 event.preventDefault()
@@ -162,16 +162,16 @@
             ">
             <IconLanguage />
             {{ locale === 'ru' ? 'English' : 'Русский' }}
-          </AppMenuItem>
-          <AppMenuSeparator />
-          <AppMenuItem
+          </BaseMenuItem>
+          <BaseMenuSeparator />
+          <BaseMenuItem
             :loading="loggingOut"
             variant="danger"
             @select="onLogout">
             <IconLogout />
             {{ t('logOut') }}
-          </AppMenuItem>
-        </AppMenu>
+          </BaseMenuItem>
+        </BaseMenu>
       </div>
     </aside>
     <Transition name="fade">

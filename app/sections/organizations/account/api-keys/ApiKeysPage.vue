@@ -87,7 +87,7 @@
             </div>
           </article>
         </div>
-        <AppEmptyState
+        <BaseEmptyState
           v-else
           :hint="t('emptyHint')"
           :title="t('empty')" />

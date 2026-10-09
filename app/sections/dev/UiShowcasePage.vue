@@ -110,29 +110,29 @@
     </section>
 
     <section>
-      <h2>IconButton</h2>
+      <h2>BaseIconButton</h2>
       <div class="row">
-        <IconButton label="Ghost"><IconDots /></IconButton>
-        <IconButton
+        <BaseIconButton label="Ghost"><IconDots /></BaseIconButton>
+        <BaseIconButton
           label="Primary"
           variant="primary">
           <IconPlus />
-        </IconButton>
-        <IconButton
+        </BaseIconButton>
+        <BaseIconButton
           label="Danger"
           variant="danger">
           <IconTrash />
-        </IconButton>
-        <IconButton
+        </BaseIconButton>
+        <BaseIconButton
           label="Loading"
           loading>
           <IconDots />
-        </IconButton>
-        <IconButton
+        </BaseIconButton>
+        <BaseIconButton
           disabled
           label="Disabled">
           <IconDots />
-        </IconButton>
+        </BaseIconButton>
       </div>
     </section>
 
@@ -199,25 +199,25 @@
     <section>
       <h2>Popover, menu, tooltip and toast</h2>
       <div class="row">
-        <AppMenu>
+        <BaseMenu>
           <template #trigger>
             <BaseButton>Open menu</BaseButton>
           </template>
-          <AppMenuItem>
+          <BaseMenuItem>
             <IconCheck />
             Menu row
-          </AppMenuItem>
-          <AppMenuItem>
+          </BaseMenuItem>
+          <BaseMenuItem>
             <IconArrowsLeftRight />
             Another row
-          </AppMenuItem>
-          <AppMenuSeparator />
-          <AppMenuItem variant="danger">
+          </BaseMenuItem>
+          <BaseMenuSeparator />
+          <BaseMenuItem variant="danger">
             <IconTrash />
             Danger row
-          </AppMenuItem>
-        </AppMenu>
-        <AppPopover>
+          </BaseMenuItem>
+        </BaseMenu>
+        <BasePopover>
           <template #trigger="{ open, toggle }">
             <BaseButton
               :aria-expanded="open"
@@ -226,7 +226,7 @@
             </BaseButton>
           </template>
           <p class="showcase-popover">A panel with any content.</p>
-        </AppPopover>
+        </BasePopover>
         <BaseTooltip text="Tooltip text">
           <BaseButton>Hover for tooltip</BaseButton>
         </BaseTooltip>
@@ -246,9 +246,9 @@
     </section>
 
     <section>
-      <h2>BaseCard and AppEmptyState</h2>
+      <h2>BaseCard and BaseEmptyState</h2>
       <BaseCard>
-        <AppEmptyState
+        <BaseEmptyState
           hint="A hint below the title."
           title="Nothing here yet" />
       </BaseCard>

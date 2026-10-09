@@ -70,14 +70,14 @@
               v-for="group in textActions"
               :key="group[0]!.label">
               <span class="markdown-editor-menu-divider" />
-              <IconButton
+              <BaseIconButton
                 v-for="action in group"
                 :key="action.label"
                 :class="{ active: action.isActive?.() }"
                 :label="action.label"
                 @click="action.run">
                 <component :is="action.icon" />
-              </IconButton>
+              </BaseIconButton>
             </template>
           </div>
         </BubbleMenu>
@@ -96,13 +96,13 @@
               <span
                 v-if="index"
                 class="markdown-editor-menu-divider" />
-              <IconButton
+              <BaseIconButton
                 v-for="action in group"
                 :key="action.label"
                 :label="action.label"
                 @click="action.run">
                 <component :is="action.icon" />
-              </IconButton>
+              </BaseIconButton>
             </template>
           </div>
         </BubbleMenu>

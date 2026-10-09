@@ -6,12 +6,13 @@
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <AppToasts />
+  <BaseToasts :dismiss-label="t('dismiss')" />
   <CookieConsent />
 </template>
 
 <script setup lang="ts">
 const { locale, theme } = useAppPreferences()
+const { t } = useI18n({ en: { dismiss: 'Dismiss' }, ru: { dismiss: 'Закрыть' } })
 const route = useRoute()
 
 useHead(() => ({

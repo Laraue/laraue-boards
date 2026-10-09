@@ -1,9 +1,9 @@
 <!-- A menu of actions on Reka DropdownMenu: arrow keys move between items, Enter picks one, typing a
-     letter jumps to it. Items are AppMenuItem; AppMenuSeparator splits groups. For a panel with
-     fields or sections instead of actions, use AppPopover. -->
+     letter jumps to it. Items are BaseMenuItem; BaseMenuSeparator splits groups. For a panel with
+     fields or sections instead of actions, use BasePopover. -->
 <template>
   <!-- The wrapper takes the consumer's class and listeners. -->
-  <div class="app-menu-root">
+  <div class="base-menu-root">
     <DropdownMenuRoot
       v-model:open="open"
       :modal="false">
@@ -16,7 +16,7 @@
       <DropdownMenuContent
         :align="align"
         :aria-label="label"
-        class="app-menu"
+        class="base-menu"
         :collision-padding="16"
         :side="side"
         :side-offset="8">
@@ -42,14 +42,14 @@ const open = ref(false)
 </script>
 
 <style scoped>
-.app-menu-root {
+.base-menu-root {
   width: fit-content;
 }
 </style>
 
 <style>
-/* Unscoped: Reka puts the class on its inner element. The same surface as AppPopover. */
-.app-menu {
+/* Unscoped: Reka puts the class on its inner element. The same surface as BasePopover. */
+.base-menu {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-popover);
@@ -64,7 +64,7 @@ const open = ref(false)
   z-index: 31;
 }
 
-.app-menu-separator {
+.base-menu-separator {
   border-top: 1px solid var(--color-divider);
   margin: 0 var(--space-1);
 }

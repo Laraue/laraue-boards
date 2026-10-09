@@ -1,9 +1,9 @@
 <template>
-  <AppPopover
+  <BasePopover
     class="color-picker"
     :class="{ 'color-picker-compact': compact }">
     <template #trigger="{ open, toggle }">
-      <IconButton
+      <BaseIconButton
         v-if="compact"
         v-bind="$attrs"
         :aria-expanded="open"
@@ -14,7 +14,7 @@
         <span
           class="color-trigger-swatch"
           :style="{ background: model }" />
-      </IconButton>
+      </BaseIconButton>
       <BaseButton
         v-else
         v-bind="$attrs"
@@ -46,7 +46,7 @@
           @click="select(color.value, close)" />
       </div>
     </template>
-  </AppPopover>
+  </BasePopover>
 </template>
 
 <script setup lang="ts">

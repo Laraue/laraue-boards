@@ -1,19 +1,19 @@
 <template>
-  <AppMenu align="end">
+  <BaseMenu align="end">
     <template #trigger>
-      <IconButton :label="t('actions')">
+      <BaseIconButton :label="t('actions')">
         <IconDots />
-      </IconButton>
+      </BaseIconButton>
     </template>
-    <AppMenuItem
+    <BaseMenuItem
       :disabled="disabled"
       :loading="loading"
       variant="danger"
       @select="onDelete">
       <IconTrash />
       {{ label }}
-    </AppMenuItem>
-  </AppMenu>
+    </BaseMenuItem>
+  </BaseMenu>
 </template>
 
 <script setup lang="ts">

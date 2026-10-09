@@ -35,7 +35,7 @@
       :status-id="issue.statusId"
       :title="issue.title"
       :to="organizationRoutes.issue(issue.issueKey)" />
-    <AppEmptyState
+    <BaseEmptyState
       v-if="issues.length === 0"
       :hint="emptyHint"
       :title="emptyText" />

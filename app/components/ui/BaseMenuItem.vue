@@ -1,4 +1,4 @@
-<!-- A row of AppMenu: a BaseButton menu row that Reka moves to with the arrow keys. `select` fires on
+<!-- A row of BaseMenu: a BaseButton menu row that Reka moves to with the arrow keys. `select` fires on
      a click or Enter; call preventDefault() on it to keep the menu open. -->
 <template>
   <DropdownMenuItem

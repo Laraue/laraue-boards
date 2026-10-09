@@ -4,24 +4,24 @@
     :aria-label="t('pagination')"
     class="pagination"
     role="navigation">
-    <IconButton
+    <BaseIconButton
       :disabled="page === 1"
       :label="t('previousPage')"
       @click="$emit('update:page', page - 1)">
       <IconChevronLeft />
-    </IconButton>
+    </BaseIconButton>
     <input
       :aria-label="t('pageNumber')"
       min="1"
       type="number"
       :value="page"
       @change="changePage" />
-    <IconButton
+    <BaseIconButton
       :disabled="!hasNextPage"
       :label="t('nextPage')"
       @click="$emit('update:page', page + 1)">
       <IconChevronRight />
-    </IconButton>
+    </BaseIconButton>
   </div>
 </template>
 

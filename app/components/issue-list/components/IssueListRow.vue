@@ -90,33 +90,33 @@
       </template>
     </div>
     <!-- The row is a link: the menu's clicks must neither bubble to it nor follow it. -->
-    <AppMenu
+    <BaseMenu
       v-if="canMove"
       align="end"
       class="row-actions"
       @click.stop.prevent>
       <template #trigger>
-        <IconButton :label="t('actions')">
+        <BaseIconButton :label="t('actions')">
           <IconDots />
-        </IconButton>
+        </BaseIconButton>
       </template>
-      <AppMenuItem @select="props.onToggleSelection()">
+      <BaseMenuItem @select="props.onToggleSelection()">
         <IconSquareCheck />
         {{ selected ? t('deselectIssue') : t('selectIssue') }}
-      </AppMenuItem>
-      <AppMenuItem @select="props.onMove()">
+      </BaseMenuItem>
+      <BaseMenuItem @select="props.onMove()">
         <IconArrowsLeftRight />
         {{ t('moveToBoard') }}
-      </AppMenuItem>
-      <AppMenuItem
+      </BaseMenuItem>
+      <BaseMenuItem
         v-if="onDelete"
         :disabled="deleting"
         variant="danger"
         @select="props.onDelete?.()">
         <IconTrash />
         {{ t('deleteIssue') }}
-      </AppMenuItem>
-    </AppMenu>
+      </BaseMenuItem>
+    </BaseMenu>
     <p
       v-if="saveMessage"
       class="form-error row-error"

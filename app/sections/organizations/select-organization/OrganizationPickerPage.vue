@@ -43,7 +43,7 @@
                 <IconLogout />
               </button>
             </div>
-            <AppEmptyState
+            <BaseEmptyState
               v-if="organizations.length === 0"
               :hint="t('emptyHint')"
               :title="t('emptyTitle')" />

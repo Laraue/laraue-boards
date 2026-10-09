@@ -2,11 +2,11 @@
 <template>
   <AppStandaloneShell home-path="/organizations">
     <template #actions>
-      <IconButton
+      <BaseIconButton
         :label="t('yourAccount')"
         to="/account">
         <IconUserCircle />
-      </IconButton>
+      </BaseIconButton>
     </template>
     <slot />
   </AppStandaloneShell>

@@ -34,21 +34,21 @@
             <div
               v-if="comment.canModify && state.editingId !== comment.id"
               class="issue-comment-actions">
-              <IconButton
+              <BaseIconButton
                 :disabled="!!state.pendingId || summarizing"
                 :label="`${t('editCommentBy')} ${comment.owner.name}`"
                 :tooltip="t('edit')"
                 @click="startEdit(comment)">
                 <IconPencil />
-              </IconButton>
-              <IconButton
+              </BaseIconButton>
+              <BaseIconButton
                 :disabled="!!state.pendingId || summarizing"
                 :label="`${t('deleteCommentBy')} ${comment.owner.name}`"
                 :loading="state.pendingId === comment.id"
                 :tooltip="t('delete')"
                 @click="remove(comment.id)">
                 <IconTrash />
-              </IconButton>
+              </BaseIconButton>
             </div>
           </div>
           <div
@@ -72,13 +72,13 @@
                 <IconSparkles v-if="state.summarizingId !== comment.id" />
                 {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
               </BaseButton>
-              <IconButton
+              <BaseIconButton
                 :disabled="!!state.pendingId || summarizing"
                 :label="t('cancel')"
                 @click="cancelEdit">
                 <IconX />
-              </IconButton>
-              <IconButton
+              </BaseIconButton>
+              <BaseIconButton
                 :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
                 :label="t('save')"
                 :loading="state.pendingId === comment.id"
@@ -86,7 +86,7 @@
                 :variant="state.editText.trim() ? 'primary' : 'ghost'"
                 @click="update(comment.id)">
                 <IconCheck />
-              </IconButton>
+              </BaseIconButton>
             </div>
           </div>
           <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
@@ -121,7 +121,7 @@
           <IconSparkles v-if="state.summarizingId !== 'new'" />
           {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
         </BaseButton>
-        <IconButton
+        <BaseIconButton
           :disabled="!state.newText.trim() || !!state.pendingId || summarizing"
           :label="t('addComment')"
           :loading="state.pendingId === 'new'"
@@ -129,7 +129,7 @@
           :variant="state.newText.trim() ? 'primary' : 'ghost'"
           @click="create">
           <IconArrowUp />
-        </IconButton>
+        </BaseIconButton>
       </div>
     </div>
   </section>

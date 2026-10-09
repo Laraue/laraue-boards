@@ -26,6 +26,11 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-07-15',
+  // The UI kit (components/ui) keeps its own names, BaseButton not UiBaseButton.
+  components: [
+    { path: '~/components/ui', pathPrefix: false },
+    { ignore: ['ui/**'], path: '~/components' },
+  ],
   css: [
     '~/assets/css/tokens.css',
     '~/assets/css/main.css',
@@ -36,6 +41,9 @@ export default defineNuxtConfig({
 
   experimental: {
     typedPages: true,
+  },
+  imports: {
+    dirs: ['components/ui/composables'],
   },
   gtag: {
     enabled: process.env.NODE_ENV === 'production',

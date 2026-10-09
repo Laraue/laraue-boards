@@ -42,7 +42,7 @@ import type { RouteLocationRaw } from 'vue-router'
 const props = withDefaults(
   defineProps<{
     disabled?: boolean
-    // A square button for an icon; IconButton gives it an accessible name.
+    // A square button for an icon; BaseIconButton gives it an accessible name.
     icon?: boolean
     iconOnMobile?: boolean
     loading?: boolean
@@ -172,7 +172,7 @@ const classes = computed(() => [
   width: 100%;
 }
 
-/* The row an AppMenu highlights from the keyboard. */
+/* The row an BaseMenu highlights from the keyboard. */
 .base-button.menu[data-highlighted] {
   background: var(--color-soft);
 }

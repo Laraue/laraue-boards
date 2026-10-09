@@ -17,11 +17,11 @@
             class="toast-count">
             {{ toast.count }}
           </span>
-          <IconButton
-            :label="t('dismiss')"
+          <BaseIconButton
+            :label="dismissLabel"
             @click="dismiss(toast.id)">
             <IconX />
-          </IconButton>
+          </BaseIconButton>
         </div>
       </TransitionGroup>
     </div>
@@ -31,11 +31,10 @@
 <script setup lang="ts">
 import { IconAlertTriangle, IconCheck, IconX } from '@tabler/icons-vue'
 
+// The kit has no translations of its own: the app passes its words in.
+withDefaults(defineProps<{ dismissLabel?: string }>(), { dismissLabel: 'Dismiss' })
+
 const { dismiss, toasts } = useToast()
-const { t } = useI18n({
-  en: { dismiss: 'Dismiss' },
-  ru: { dismiss: 'Закрыть' },
-})
 </script>
 
 <style scoped>

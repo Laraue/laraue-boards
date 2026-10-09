@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseSelectVariant } from '~/components/BaseSelect.vue'
+import type { BaseSelectVariant } from '~/components/ui/BaseSelect.vue'
 import { AttributeIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
 

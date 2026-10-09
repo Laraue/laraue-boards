@@ -12,7 +12,7 @@
           v-if="pageData.transactions.length"
           :labels="tableLabels"
           :rows="toTableRows(pageData.transactions)" />
-        <AppEmptyState
+        <BaseEmptyState
           v-else
           :hint="t('emptyHint')"
           :title="t('empty')" />

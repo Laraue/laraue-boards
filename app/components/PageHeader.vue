@@ -4,20 +4,20 @@
     class="app-header page-header"
     :class="{ 'has-tools': $slots.tools }">
     <div class="page-header-start">
-      <IconButton
+      <BaseIconButton
         class="page-header-menu"
         :label="t('openMenu')"
         @click="sidebarOpen = true">
         <IconMenu2 />
-      </IconButton>
+      </BaseIconButton>
       <!-- A phone has no room for the path, so it keeps the way back up it. -->
-      <IconButton
+      <BaseIconButton
         v-if="back"
         class="page-header-back"
         :label="t('backTo', { page: back.label })"
         :to="back.to">
         <IconArrowLeft />
-      </IconButton>
+      </BaseIconButton>
       <div class="page-header-context">
         <nav
           v-if="parents?.length"

@@ -7,12 +7,12 @@
         <template
           v-if="data?.canCreate"
           #actions>
-          <IconButton
+          <BaseIconButton
             :label="t('start')"
             :loading="starting"
             @click="start(null)">
             <IconPlus />
-          </IconButton>
+          </BaseIconButton>
         </template>
       </PageHeader>
     </template>
@@ -74,7 +74,7 @@
               </div>
             </div>
           </div>
-          <AppEmptyState
+          <BaseEmptyState
             v-else
             :hint="t('emptyHint')"
             :title="t('empty')" />

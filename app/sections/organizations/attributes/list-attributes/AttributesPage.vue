@@ -34,7 +34,7 @@
             <IconChevronRight />
           </NuxtLink>
         </div>
-        <AppEmptyState
+        <BaseEmptyState
           v-else
           :hint="t('emptyHint')"
           :title="t('emptyTitle')" />

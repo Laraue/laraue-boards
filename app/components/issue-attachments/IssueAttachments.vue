@@ -32,13 +32,13 @@
             :alt="`${t('attachment')} ${index + 1}`"
             :src="attachment.previewUrl" />
         </button>
-        <IconButton
+        <BaseIconButton
           v-if="onRemoveAttachment && !disabled"
           class="issue-attachment-remove"
           :label="`${t('removeAttachment')} ${index + 1}`"
           @click="onRemoveAttachment(attachment.id)">
           <IconX />
-        </IconButton>
+        </BaseIconButton>
       </div>
       <div
         v-for="(preview, index) in pendingPreviews"
@@ -55,13 +55,13 @@
             :src="preview.url" />
           <span>{{ preview.file.name }}</span>
         </button>
-        <IconButton
+        <BaseIconButton
           v-if="!disabled"
           class="issue-attachment-remove"
           :label="`${t('remove')} ${preview.file.name}`"
           @click="removeFile(index)">
           <IconX />
-        </IconButton>
+        </BaseIconButton>
         <div
           v-if="disabled"
           :aria-label="t('uploading')"

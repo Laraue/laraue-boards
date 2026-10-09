@@ -1,5 +1,5 @@
 <template>
-  <DropdownMenuSeparator class="app-menu-separator" />
+  <DropdownMenuSeparator class="base-menu-separator" />
 </template>
 
 <script setup lang="ts">
