@@ -87,12 +87,11 @@
                 class="history-avatar"
                 role="img"
                 :title="ownerHint(item.owner)">
-                <span
+                <BaseAvatar
                   aria-hidden="true"
-                  class="avatar"
-                  :style="{ background: item.owner.color }">
-                  {{ item.owner.initials }}
-                </span>
+                  :color="item.owner.color"
+                  :initials="item.owner.initials"
+                  size="sm" />
                 <span
                   v-if="item.owner.apiKeyName"
                   aria-hidden="true"
@@ -325,11 +324,6 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   width: 20px;
 }
 
-.history-avatar > .avatar {
-  font-size: 9px;
-  height: 20px;
-  width: 20px;
-}
 
 /* A change made through an API key: a small key on the avatar's corner. */
 .history-avatar-key {
@@ -455,11 +449,6 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   width: 8px;
 }
 
-:deep(.history-value-change .avatar) {
-  font-size: 8px;
-  height: 16px;
-  width: 16px;
-}
 
 :deep(.history-new-value) {
   color: var(--color-text);

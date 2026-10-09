@@ -221,11 +221,10 @@
                     variant="inline" />
                   <span class="issue-property-label">{{ t('owner') }}</span>
                   <div class="issue-person">
-                    <span
-                      class="avatar"
-                      :style="{ background: issue.ownerColor }">
-                      {{ issue.ownerInitial }}
-                    </span>
+                    <BaseAvatar
+                      :color="issue.ownerColor"
+                      :initials="issue.ownerInitial"
+                      size="sm" />
                     <span>{{ issue.owner }}</span>
                   </div>
                   <IssueAttributeFields
@@ -720,11 +719,6 @@ watch(dirty, setDirty, { immediate: true })
   padding: 0 var(--space-3);
 }
 
-.issue-person .avatar {
-  font-size: var(--font-size-caption);
-  height: 20px;
-  width: 20px;
-}
 
 .issue-dates {
   border-top: 1px solid var(--color-divider);

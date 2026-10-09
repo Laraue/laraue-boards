@@ -22,11 +22,10 @@
                 :disabled="selecting || leaving"
                 type="button"
                 @click="select(organization.id, organization.key)">
-                <span
-                  class="entity-avatar"
-                  :style="{ background: organization.color }">
-                  {{ organization.initial }}
-                </span>
+                <BaseAvatar
+                  :color="organization.color"
+                  :initials="organization.initial"
+                  shape="square" />
                 <span>
                   <strong>{{ organization.name }}</strong>
                   <small class="muted">{{ organization.description }}</small>

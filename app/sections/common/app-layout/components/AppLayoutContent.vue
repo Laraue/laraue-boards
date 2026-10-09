@@ -19,11 +19,10 @@
           data-tour="organization-switcher"
           :title="t('switchOrganization')"
           to="/organizations">
-          <span
-            class="entity-avatar"
-            :style="{ background: viewModel.organization.color }">
-            {{ viewModel.organization.initial }}
-          </span>
+          <BaseAvatar
+            :color="viewModel.organization.color"
+            :initials="viewModel.organization.initial"
+            shape="square" />
           <span class="organization-name">
             {{ viewModel.organization.name }}
           </span>
@@ -115,11 +114,9 @@
               class="sidebar-user"
               :class="{ active: open }"
               type="button">
-              <span
-                class="avatar"
-                :style="{ background: viewModel.user.color }">
-                {{ viewModel.user.initials }}
-              </span>
+              <BaseAvatar
+                :color="viewModel.user.color"
+                :initials="viewModel.user.initials" />
               <span class="sidebar-user-info">
                 <strong>{{ viewModel.user.name }}</strong>
                 <small class="muted">

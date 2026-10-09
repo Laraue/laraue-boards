@@ -81,11 +81,10 @@
         variant="inline"
         @update:model-value="save('assignee', $event)" />
       <template v-else>
-        <span
-          class="avatar"
-          :style="{ background: assigneeColor }">
-          {{ assigneeInitial }}
-        </span>
+        <BaseAvatar
+          :color="assigneeColor"
+          :initials="assigneeInitial"
+          size="sm" />
         <span class="truncate">{{ assignee }}</span>
       </template>
     </div>
@@ -349,11 +348,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   min-width: 0;
 }
 
-.issue-person > .avatar {
-  font-size: 10px;
-  height: 20px;
-  width: 20px;
-}
 
 @media (max-width: 1100px) {
   .issue-list-row {

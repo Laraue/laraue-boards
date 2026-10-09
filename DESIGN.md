@@ -83,6 +83,9 @@ check a design change there and add new components and variants to it.
 - `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
   active tab raised on a surface with the control shadow. Tabs are 14px, weight 500 in every state,
   with an icon and a count pill. Don't add other tab styles.
+- `BaseAvatar` shows initials on a color: `xs` 16px in inline changes, `sm` 20px next to names in
+  rows, `md` 32px in menus and lists, `lg` 56px in a profile heading; `shape="square"` for
+  organizations. Initials scale with the size; never set their font size.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Radius follows one knob, `--radius` (10px), as in shadcn/ui: `--radius-sm` (×0.6) `md` (×0.8) `lg`
   (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: everything interactive or

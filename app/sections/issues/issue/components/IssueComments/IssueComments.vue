@@ -24,11 +24,10 @@
         class="issue-comment">
         <div class="issue-comment-body">
           <div class="issue-comment-head">
-            <span
-              class="avatar"
-              :style="{ background: comment.owner.color }">
-              {{ comment.owner.initials }}
-            </span>
+            <BaseAvatar
+              :color="comment.owner.color"
+              :initials="comment.owner.initials"
+              size="sm" />
             <span class="issue-comment-name">{{ comment.owner.name }}</span>
             <time :datetime="comment.createdAt">{{ formatDateTime(comment.createdAt) }}</time>
             <div
@@ -340,11 +339,6 @@ const remove = async (id: string) => {
   padding: var(--space-2) var(--space-3);
 }
 
-.issue-comment-head .avatar {
-  font-size: 9px;
-  height: 20px;
-  width: 20px;
-}
 
 .issue-comment-head {
   align-items: center;

@@ -17,11 +17,10 @@
     :options="visibleOptions"
     :placeholder="placeholder ?? t('select')">
     <template #icon="{ option }">
-      <span
-        class="avatar"
-        :style="{ background: option?.color ?? 'var(--color-muted)' }">
-        {{ option?.initials ?? '?' }}
-      </span>
+      <BaseAvatar
+        :color="option?.color ?? 'var(--color-muted)'"
+        :initials="option?.initials ?? '?'"
+        size="sm" />
     </template>
   </BaseSelect>
 </template>
@@ -114,9 +113,4 @@ watch(
 </script>
 
 <style scoped>
-.avatar {
-  font-size: var(--font-size-caption);
-  height: 20px;
-  width: 20px;
-}
 </style>

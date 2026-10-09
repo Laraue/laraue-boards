@@ -221,6 +221,23 @@
     </section>
 
     <section>
+      <h2>BaseAvatar</h2>
+      <div class="row">
+        <BaseAvatar
+          v-for="size in avatarSizes"
+          :key="size"
+          color="var(--color-accent)"
+          initials="NC"
+          :size="size" />
+        <BaseAvatar
+          color="var(--color-success)"
+          initials="T"
+          shape="square" />
+        <BaseAvatar initials="?" />
+      </div>
+    </section>
+
+    <section>
       <h2>BaseTabs</h2>
       <BaseTabs
         v-model="tab"
@@ -375,6 +392,7 @@ const tabs = [
   { label: 'History', value: 'history' },
 ]
 
+const avatarSizes = ['xs', 'sm', 'md', 'lg'] as const
 const shadows = ['--shadow-control', '--shadow-card', '--shadow-popover']
 const { show: showToast } = useToast()
 const dialog = useTemplateRef('dialog')

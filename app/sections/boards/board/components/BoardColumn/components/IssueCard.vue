@@ -18,11 +18,10 @@
           {{ viewModel.title }}
         </p>
         <div class="task-source">
-          <span
-            class="avatar"
-            :style="{ background: viewModel.assigneeColor }">
-            {{ viewModel.assigneeInitial }}
-          </span>
+          <BaseAvatar
+            :color="viewModel.assigneeColor"
+            :initials="viewModel.assigneeInitial"
+            size="sm" />
           <span class="task-assignee">{{ viewModel.assigneeName }}</span>
           <!-- A native title: a board renders hundreds of cards, too many for tooltip components. -->
           <time
@@ -159,12 +158,6 @@ useSortable({
   width: 16px;
 }
 
-.task-source .avatar {
-  flex: none;
-  font-size: 10px;
-  height: 20px;
-  width: 20px;
-}
 
 .task-title {
   -webkit-box-orient: vertical;

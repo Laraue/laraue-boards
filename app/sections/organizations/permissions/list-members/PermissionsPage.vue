@@ -56,11 +56,9 @@
             v-for="member in page.members"
             :key="member.id"
             :to="organizationRoutes.memberPermissions(member.id)">
-            <span
-              class="avatar"
-              :style="{ background: member.color }">
-              {{ member.initials }}
-            </span>
+            <BaseAvatar
+              :color="member.color"
+              :initials="member.initials" />
             <span class="member-name">
               <strong>{{ member.name }}</strong>
               <small class="muted">

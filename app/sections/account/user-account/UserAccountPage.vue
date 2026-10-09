@@ -18,12 +18,11 @@
       <template #default="{ data: page }">
         <div class="user-account-main">
           <div class="user-account-title">
-            <span
+            <BaseAvatar
               v-if="page.initials"
-              class="avatar user-account-avatar"
-              :style="{ background: DEFAULT_COLOR }">
-              {{ page.initials }}
-            </span>
+              :color="DEFAULT_COLOR"
+              :initials="page.initials"
+              size="lg" />
             <IconUserCircle
               v-else
               class="user-account-icon" />
@@ -148,12 +147,6 @@ const logout = async (): Promise<void> => {
   margin: 0 0 var(--space-1);
 }
 
-.user-account-avatar {
-  flex: none;
-  font-size: 22px;
-  height: 56px;
-  width: 56px;
-}
 
 .user-account-icon {
   color: var(--color-muted);
