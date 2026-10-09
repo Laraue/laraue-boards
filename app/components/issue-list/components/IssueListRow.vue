@@ -22,12 +22,12 @@
       <span
         v-if="spaceName"
         class="issue-location-part">
-        <SpaceIcon :style="{ color: spaceColor }" />
+        <SpaceIcon />
         <span class="truncate">{{ spaceName }}</span>
       </span>
       <span v-if="spaceName">/</span>
       <span class="issue-location-part">
-        <BoardIcon :style="{ color: boardColor }" />
+        <BoardIcon />
         <span class="truncate">{{ boardName }}</span>
       </span>
     </span>
@@ -169,7 +169,6 @@ const props = defineProps<{
   assigneeColor: string
   assigneeId?: string
   assigneeInitial: string
-  boardColor: string
   boardId?: string
   boardName: string
   canMove: boolean
@@ -182,7 +181,6 @@ const props = defineProps<{
   quickEdit?: IssueListQuickEditDeps
   selected: boolean
   selectionMode?: boolean
-  spaceColor?: string
   spaceKey?: string
   spaceName?: string
   status: null | string

@@ -6,7 +6,7 @@
   --color-workspace: #f8f8fa;
   /* Comment and history cards: a light lift off the page. */
   --color-feed: #fafafc;
-  --color-divider: #e7e7eb;
+  --color-divider: #eaeaee;
   --color-soft: #efeff2;
   --color-hover: #e8e8ec;
   --color-text: #242429;
@@ -92,7 +92,7 @@
   --color-surface: #22252a;
   --color-workspace: #1c1f23;
   --color-feed: #1c1f23;
-  --color-divider: #31343a;
+  --color-divider: #2c2f34;
   --color-soft: #292c31;
   --color-hover: #30343a;
   --color-text: #edf0f4;
