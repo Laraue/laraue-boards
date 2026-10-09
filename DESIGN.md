@@ -17,9 +17,9 @@ there and add new components and variants to it.
 
 ## Typography
 
-- The type scale is `--font-size-xs` (11) `sm` (12) `md` (14) `lg` (16) `xl` (18) `2xl` (20) `3xl` (24)
-  `4xl` (30), with `--line-height-body` (1.5) and `--line-height-heading` (1.25). Headings pick from
-  the scale; body text uses the roles below. No sizes outside the scale.
+- The type scale is `--font-size-xs` (11) `sm` (12) `md` (14) `lg` (16) `xl` (18) `2xl` (20) `3xl`
+  (24) `4xl` (30), with `--line-height-body` (1.5) and `--line-height-heading` (1.25). Headings pick
+  from the scale; body text uses the roles below. No sizes outside the scale.
 - Use `--font-size-body` (14px) for controls: buttons, text fields, selects, menu options and
   checkbox labels. Compact controls use the same text size.
 - Use `--font-size-small` (12px) for secondary metadata, not interactive options.
