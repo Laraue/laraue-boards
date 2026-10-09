@@ -167,12 +167,13 @@ input[type='checkbox'] {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-small);
+  box-shadow: var(--shadow-control);
   cursor: pointer;
   flex: none;
-  height: 18px;
+  height: 16px;
   margin: 0;
   transition: var(--transition-press);
-  width: 18px;
+  width: 16px;
 }
 input[type='checkbox']:not(:disabled):active {
   translate: 0 var(--press-offset);
@@ -183,7 +184,7 @@ input[type='checkbox']:hover {
 input[type='checkbox']:checked {
   background: var(--color-action)
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E")
-    center/12px no-repeat;
+    center/10px no-repeat;
   border-color: var(--color-action);
 }
 input[type='checkbox']:focus-visible {
