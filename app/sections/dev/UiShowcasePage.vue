@@ -5,7 +5,25 @@
     <h1>UI</h1>
 
     <section>
-      <h2>Colors</h2>
+      <h2>Palette</h2>
+      <div
+        v-for="ramp in ramps"
+        :key="ramp.name"
+        class="ramp">
+        <code>{{ ramp.name }}</code>
+        <span
+          v-for="step in ramp.steps"
+          :key="step"
+          class="ramp-step"
+          :style="{ background: `var(--${ramp.name}-${step})` }"
+          :title="`--${ramp.name}-${step}`">
+          {{ step }}
+        </span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Semantic colors</h2>
       <div class="swatches">
         <div
           v-for="color in colors"
@@ -242,11 +260,14 @@ const colors = [
   '--color-hover',
   '--color-divider',
   '--color-border',
+  '--color-text-subtle',
   '--color-muted',
   '--color-text',
+  '--color-border-strong',
   '--color-accent',
   '--color-accent-soft',
   '--color-action',
+  '--color-on-action',
   '--color-focus',
   '--color-danger',
   '--color-danger-soft',
@@ -255,8 +276,24 @@ const colors = [
   '--color-warning',
   '--color-warning-soft',
 ]
+const twelve = Array.from({ length: 12 }, (_, index) => index + 1)
+const ramps = [
+  { name: 'gray', steps: twelve },
+  { name: 'blue', steps: twelve },
+  { name: 'red', steps: [3, 11] },
+  { name: 'green', steps: [3, 11] },
+  { name: 'amber', steps: [3, 11] },
+]
 const radii = ['--radius-small', '--radius-control', '--radius-card', '--radius-dialog']
-const spaces = ['--space-1', '--space-2', '--space-3', '--space-4', '--space-6', '--space-8']
+const spaces = [
+  '--space-1',
+  '--space-2',
+  '--space-3',
+  '--space-4',
+  '--space-5',
+  '--space-6',
+  '--space-8',
+]
 const buttonVariants = ['neutral', 'primary', 'danger', 'ghost'] as const
 const options = [
   { label: 'To Do', value: 'todo' },
@@ -324,6 +361,24 @@ p {
   display: grid;
   gap: var(--space-3);
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.ramp {
+  align-items: center;
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 56px repeat(12, minmax(0, 1fr));
+}
+
+.ramp-step {
+  align-items: flex-end;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-caption);
+  height: 40px;
+  padding: 2px var(--space-1);
 }
 
 .swatches {

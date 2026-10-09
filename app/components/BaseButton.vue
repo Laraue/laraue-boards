@@ -145,7 +145,7 @@ const classes = computed(() => [
 .base-button.primary {
   background: var(--color-action);
   border-color: var(--color-action);
-  color: #fff;
+  color: var(--color-on-action);
 }
 
 .base-button.ghost {

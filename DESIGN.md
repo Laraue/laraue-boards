@@ -5,6 +5,16 @@ component; page styles own layout. Extend the existing system before adding a co
 Every shared component and its states are on `/dev/ui` (development only); check a design change
 there and add new components and variants to it.
 
+## Colors
+
+- Two layers in `tokens.css`. Primitives (`--gray-1..12`, `--blue-1..12`, `--red/green/amber-3` and
+  `-11`) are raw ramps, redefined per theme from the background end (1) to the text end (12).
+  Semantic roles (`--color-*`) point at primitives and are the only colors components use.
+- Never reference a primitive or a hex value in a component; add or remap a semantic role instead.
+- Text: `--color-text`, `--color-muted` for secondary context, `--color-text-subtle` for hints.
+  Text and icons on an action fill use `--color-on-action`.
+- Chart colors are a separate data palette.
+
 ## Typography
 
 - Use `--font-size-body` (14px) for controls: buttons, text fields, selects, menu options and
