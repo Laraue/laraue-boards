@@ -15,9 +15,8 @@ withDefaults(
     color?: string
     initials: string
     shape?: 'circle' | 'square'
-    // xs 16px for inline changes, sm 20px next to names in rows, md 32px for people and
-    // organizations in menus and lists, lg 56px for a profile heading.
-    size?: 'lg' | 'md' | 'sm' | 'xs'
+    // sm 20px next to a name in a row, md 32px for people and organizations in menus and lists.
+    size?: 'md' | 'sm'
   }>(),
   { color: 'var(--color-muted)', shape: 'circle', size: 'md' },
 )
@@ -41,16 +40,8 @@ withDefaults(
   width: var(--avatar-size);
 }
 
-.base-avatar.xs {
-  --avatar-size: 1rem;
-}
-
 .base-avatar.sm {
   --avatar-size: 1.25rem;
-}
-
-.base-avatar.lg {
-  --avatar-size: 3.5rem;
 }
 
 .base-avatar.square {

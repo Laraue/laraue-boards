@@ -399,7 +399,7 @@ const tabs = [
 ]
 
 const badgeVariants = ['neutral', 'accent', 'success', 'warning', 'danger', 'outline'] as const
-const avatarSizes = ['xs', 'sm', 'md', 'lg'] as const
+const avatarSizes = ['sm', 'md'] as const
 const shadows = ['--shadow-control', '--shadow-card', '--shadow-popover']
 const { show: showToast } = useToast()
 const dialog = useTemplateRef('dialog')

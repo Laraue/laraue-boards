@@ -21,8 +21,7 @@
             <BaseAvatar
               v-if="page.initials"
               :color="DEFAULT_COLOR"
-              :initials="page.initials"
-              size="lg" />
+              :initials="page.initials" />
             <IconUserCircle
               v-else
               class="user-account-icon" />
@@ -150,8 +149,8 @@ const logout = async (): Promise<void> => {
 .user-account-icon {
   color: var(--color-muted);
   flex: none;
-  height: 56px;
-  width: 56px;
+  height: var(--control-height);
+  width: var(--control-height);
 }
 
 .scope {

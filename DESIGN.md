@@ -85,8 +85,8 @@ check a design change there and add new components and variants to it.
   with an icon and a count pill. Don't add other tab styles.
 - `BaseBadge` is the one pill for counts, states and marks: neutral (counts, plain states), outline
   (a quiet mark like "alpha"), accent, success, warning, danger. One size; don't build local pills.
-- `BaseAvatar` shows initials on a color: `xs` 16px in inline changes, `sm` 20px next to names in
-  rows, `md` 32px in menus and lists, `lg` 56px in a profile heading; `shape="square"` for
+- `BaseAvatar` shows initials on a color: `sm` 20px next to a name in a row, `md` 32px in menus,
+  lists and headings; `shape="square"` for
   organizations. Initials scale with the size; never set their font size.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Four radii, one knob (`--radius`, 8px): `--radius-control` (= `--radius`) for everything

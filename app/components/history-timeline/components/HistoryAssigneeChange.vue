@@ -6,7 +6,7 @@
         v-if="change.oldValue !== null"
         :color="change.oldColor ?? 'var(--color-border)'"
         :initials="initials(change.oldValue)"
-        size="xs" />
+        size="sm" />
       <i
         v-else-if="change.oldColor"
         :style="{ background: change.oldColor }" />
@@ -20,7 +20,7 @@
         v-if="change.newValue !== null"
         :color="change.newColor ?? 'var(--color-border)'"
         :initials="initials(change.newValue)"
-        size="xs" />
+        size="sm" />
       <i
         v-else-if="change.newColor"
         :style="{ background: change.newColor }" />
