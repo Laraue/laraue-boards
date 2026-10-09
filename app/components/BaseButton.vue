@@ -1,66 +1,49 @@
 <template>
-  <!-- Without a tooltip the button is the root, so a parent's scoped class still styles it. -->
-  <NuxtLink
-    v-if="to"
-    v-bind="$attrs"
-    class="base-button"
-    :class="[variant, size, { menu, 'icon-on-mobile': iconOnMobile }]"
-    :to="to">
-    <slot />
-    <span
-      v-if="$slots.label"
-      class="base-button-label">
-      <slot name="label" />
-    </span>
-  </NuxtLink>
   <BaseTooltip
-    v-else-if="tooltip"
+    v-if="tooltip"
     :text="tooltip">
-    <button
-      v-bind="$attrs"
-      :aria-busy="loading || undefined"
-      class="base-button"
-      :class="[variant, size, { menu, 'icon-on-mobile': iconOnMobile }]"
-      :disabled="disabled || loading"
-      :type="type">
+    <component
+      :is="tag"
+      v-bind="{ ...$attrs, ...tagAttrs }"
+      :class="classes">
       <IconLoader2
         v-if="loading"
         class="base-button-spinner" />
-      <slot />
+      <slot v-if="!loading || !icon" />
       <span
         v-if="$slots.label"
         class="base-button-label">
         <slot name="label" />
       </span>
-    </button>
+    </component>
   </BaseTooltip>
-  <button
+  <!-- Without a tooltip the button is the root, so a parent's scoped class still styles it. -->
+  <component
+    :is="tag"
     v-else
-    v-bind="$attrs"
-    :aria-busy="loading || undefined"
-    class="base-button"
-    :class="[variant, size, { menu, 'icon-on-mobile': iconOnMobile }]"
-    :disabled="disabled || loading"
-    :type="type">
+    v-bind="{ ...$attrs, ...tagAttrs }"
+    :class="classes">
     <IconLoader2
       v-if="loading"
       class="base-button-spinner" />
-    <slot />
+    <slot v-if="!loading || !icon" />
     <span
       v-if="$slots.label"
       class="base-button-label">
       <slot name="label" />
     </span>
-  </button>
+  </component>
 </template>
 
 <script setup lang="ts">
 import { IconLoader2 } from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     disabled?: boolean
+    // A square button for an icon; IconButton gives it an accessible name.
+    icon?: boolean
     iconOnMobile?: boolean
     loading?: boolean
     menu?: boolean
@@ -75,6 +58,7 @@ withDefaults(
   }>(),
   {
     disabled: false,
+    icon: false,
     iconOnMobile: false,
     loading: false,
     menu: false,
@@ -87,6 +71,24 @@ withDefaults(
 )
 
 defineOptions({ inheritAttrs: false })
+
+const NuxtLink = resolveComponent('NuxtLink')
+const tag = computed(() => (props.to ? NuxtLink : 'button'))
+const tagAttrs = computed(() =>
+  props.to
+    ? { to: props.to }
+    : {
+        'aria-busy': props.loading || undefined,
+        disabled: props.disabled || props.loading,
+        type: props.type,
+      },
+)
+const classes = computed(() => [
+  'base-button',
+  props.variant,
+  props.size,
+  { icon: props.icon, 'icon-on-mobile': props.iconOnMobile, menu: props.menu },
+])
 </script>
 
 <style scoped>
@@ -108,6 +110,29 @@ defineOptions({ inheritAttrs: false })
   text-decoration: none;
   transition: border-color var(--duration-fast) var(--ease-standard);
   white-space: nowrap;
+}
+
+/* Bordered buttons sit slightly above the surface. */
+.base-button.neutral:not(.menu),
+.base-button.danger:not(.menu, .icon) {
+  box-shadow: var(--shadow-control);
+}
+
+.base-button.icon {
+  padding: 0;
+  width: var(--control-height);
+}
+
+/* Muted at rest, so a list of rows isn't a column of red; red once aimed at. */
+.base-button.icon.danger {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-muted);
+}
+
+.base-button.icon.danger:focus-visible {
+  border-color: var(--color-focus);
+  color: var(--color-danger);
 }
 
 .base-button.small {
@@ -182,6 +207,18 @@ defineOptions({ inheritAttrs: false })
 
   .base-button.danger:hover:not(:disabled) {
     border-color: var(--color-danger);
+  }
+
+  /* Borderless buttons show hover as a soft fill, like menu rows. */
+  .base-button.ghost:hover:not(:disabled) {
+    background: var(--color-soft);
+    border-color: transparent;
+  }
+
+  .base-button.icon.danger:hover:not(:disabled) {
+    background: var(--color-danger-soft);
+    border-color: transparent;
+    color: var(--color-danger);
   }
 
   .base-button.menu:hover:not(:disabled) {

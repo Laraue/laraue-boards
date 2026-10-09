@@ -17,9 +17,10 @@ there and add new components and variants to it.
   titles). Group labels are sentence case, not uppercase.
 - Never change font weight, text size or spacing on hover, focus or selection. Show state through
   color, background, border or a selection marker.
-- Hover on form controls and action buttons changes the border only. Keep fill and text color
-  unchanged; use `--color-border-hover` for neutral controls and semantic border colors for primary
-  and destructive actions. Selected values retain their selection markers.
+- Hover on bordered form controls and action buttons changes the border only. Keep fill and text
+  color unchanged; use `--color-border-hover` for neutral controls and semantic border colors for
+  primary and destructive actions. Borderless (ghost and icon) buttons show hover as a soft fill,
+  like menu rows. Selected values retain their selection markers.
 - Menu rows use a soft hover background instead of a border. Text size, weight and color stay
   unchanged. Expanded filters keep their active background.
 
@@ -33,7 +34,8 @@ there and add new components and variants to it.
   option styling.
 - `BaseButton` variants express intent: neutral, primary, danger, ghost. The `menu` prop changes
   alignment and framing, not text size. Combine it with danger for destructive menu actions.
-- Use `BaseCheckbox` for labeled checkbox options and `IconButton` for icon actions.
+- Use `BaseCheckbox` for labeled checkbox options and `IconButton` for icon actions. `IconButton`
+  is `BaseButton icon` with a required accessible name and tooltip; style both in `BaseButton`.
 - `IconButton variant="danger"` marks destructive actions with the danger color and a danger border
   on hover. `BaseSelect full-width` stretches an inline select to its layout column while keeping
   the shared inline appearance.

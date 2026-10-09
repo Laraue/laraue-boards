@@ -1,33 +1,20 @@
+<!-- A square BaseButton for an icon (or a short text, like the language), with a required name. -->
 <template>
-  <BaseTooltip :text="tooltip ?? label">
-    <NuxtLink
-      v-if="to"
-      v-bind="$attrs"
-      :aria-label="label"
-      class="icon-button"
-      :class="variant"
-      :to="to">
-      <slot />
-    </NuxtLink>
-    <button
-      v-else
-      v-bind="$attrs"
-      :aria-busy="loading || undefined"
-      :aria-label="label"
-      class="icon-button"
-      :class="variant"
-      :disabled="disabled || loading"
-      :type="type">
-      <IconLoader2
-        v-if="loading"
-        class="icon-button-spinner" />
-      <slot v-else />
-    </button>
-  </BaseTooltip>
+  <BaseButton
+    v-bind="$attrs"
+    :aria-label="label"
+    :disabled="disabled"
+    icon
+    :loading="loading"
+    :to="to"
+    :tooltip="tooltip ?? label"
+    :type="type"
+    :variant="variant">
+    <slot />
+  </BaseButton>
 </template>
 
 <script setup lang="ts">
-import { IconLoader2 } from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 withDefaults(
@@ -54,63 +41,3 @@ withDefaults(
 
 defineOptions({ inheritAttrs: false })
 </script>
-
-<style scoped>
-.icon-button {
-  align-items: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  color: var(--color-muted);
-  display: inline-flex;
-  flex: none;
-  /* For a short text instead of an icon, like the language. */
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
-  height: var(--icon-btn-size);
-  justify-content: center;
-  padding: 0;
-  text-decoration: none;
-  transition: border-color var(--duration-fast) var(--ease-standard);
-  width: var(--icon-btn-size);
-}
-
-.icon-button.primary {
-  background: var(--color-action);
-  border-color: var(--color-action);
-  color: #fff;
-}
-
-/* Muted at rest, so a list of rows isn't a column of red; red once aimed at. */
-.icon-button.danger:focus-visible {
-  color: var(--color-danger);
-}
-
-.icon-button:focus-visible {
-  border-color: var(--color-focus);
-  box-shadow: none;
-}
-
-.icon-button.primary:focus-visible {
-  box-shadow: inset 0 0 0 1px var(--color-surface);
-}
-
-.icon-button-spinner {
-  animation: var(--animation-spin);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .icon-button:hover:not(:disabled) {
-    border-color: var(--color-border-hover);
-  }
-
-  .icon-button.primary:hover:not(:disabled) {
-    border-color: var(--color-action-hover);
-  }
-
-  .icon-button.danger:hover:not(:disabled) {
-    border-color: var(--color-danger);
-    color: var(--color-danger);
-  }
-}
-</style>

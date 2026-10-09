@@ -75,6 +75,7 @@
      neighbours. */
   --shadow-focus: inset 0 0 0 1px var(--color-focus);
   --shadow-card: 0 1px 2px #1018280d;
+  --shadow-control: 0 1px 2px #1018280d;
   --shadow-popover: 0 2px 8px #1018280f;
   --shadow-workspace: 0 0 40px #1018280d;
 
@@ -117,6 +118,7 @@
   --color-chart-done: #6bb590;
 
   --shadow-card: 0 1px 2px #00000040;
+  --shadow-control: 0 1px 2px #00000040;
   --shadow-popover: 0 2px 8px #00000033;
   --shadow-workspace: 0 0 40px #00000059;
 }
