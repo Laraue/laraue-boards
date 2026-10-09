@@ -84,9 +84,10 @@ there and add new components and variants to it.
   with an icon and a count pill. Don't add other tab styles.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Radius follows one knob, `--radius` (10px), as in shadcn/ui: `--radius-sm` (×0.6) `md` (×0.8) `lg`
-  (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: controls and every floating
-  surface (popovers, menus, select lists, toasts, tooltips) use `--radius-control` /
-  `--radius-popover` (md); cards `--radius-card` (xl); dialogs `--radius-dialog` (2xl); checkboxes
+  (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: everything interactive or floating (controls,
+  tab tracks, popovers, menus, select lists, toasts, tooltips) uses `--radius-control` /
+  `--radius-popover` (md); rows nested inside them (tabs, menu rows, options) use `--radius-sm`;
+  containers (cards and dialogs) use `--radius-card` / `--radius-dialog` (xl); checkboxes
   `--radius-small` (xs); pills and circles `--radius-pill` / `--radius-full`. Space follows the
   existing 4px scale.
 

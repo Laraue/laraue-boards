@@ -50,8 +50,7 @@ const model = defineModel<T>({ required: true })
 /* A segmented control: a soft track, as wide as its tabs, with the active tab raised on it. */
 .base-tabs-list {
   background: var(--color-hover);
-  /* One step rounder than the tabs, which sit 3px inside it. */
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-control);
   display: flex;
   gap: 2px;
   height: var(--control-height);
@@ -67,7 +66,8 @@ const model = defineModel<T>({ required: true })
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--radius-control);
+  /* One step below the track, so the corners nest. */
+  border-radius: var(--radius-sm);
   color: var(--color-muted);
   display: inline-flex;
   flex: none;

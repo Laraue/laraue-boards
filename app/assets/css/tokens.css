@@ -100,13 +100,14 @@
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.6);
   --radius-full: 999px;
-  /* Roles. Controls and everything that floats over the page share one radius; only cards and
-     dialogs are rounder. */
+  /* Roles. Everything interactive or floating (controls, tabs, popovers, menus, toasts, tooltips)
+     shares one radius; rows nested inside them are one step smaller; containers (cards, dialogs)
+     share one rounder radius. */
   --radius-small: var(--radius-xs);
   --radius-control: var(--radius-md);
   --radius-popover: var(--radius-md);
   --radius-card: var(--radius-xl);
-  --radius-dialog: var(--radius-2xl);
+  --radius-dialog: var(--radius-card);
   --radius-pill: var(--radius-full);
 
   --control-height: 2rem; /* 32px */
