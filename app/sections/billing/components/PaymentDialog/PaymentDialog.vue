@@ -1,6 +1,7 @@
 <template>
   <BaseDialog
     ref="dialog"
+    :close-label="t('close')"
     :title="title"
     @submit="onConfirm">
     <template v-if="price">
@@ -80,12 +81,14 @@ const { t } = useI18n({
   en: {
     accept: 'I accept the',
     cancel: 'Cancel',
+    close: 'Close',
     offer: 'public offer',
     pay: 'Pay {price}',
   },
   ru: {
     accept: 'Я принимаю условия',
     cancel: 'Отмена',
+    close: 'Закрыть',
     offer: 'публичной оферты',
     pay: 'Оплатить {price}',
   },

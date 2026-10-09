@@ -85,7 +85,8 @@ check a design change there and add new components and variants to it.
   with an icon and a count pill. Don't add other tab styles.
 - Modal forms use `BaseDialog` (native `<dialog>`): `title`, optional `description`, fields in the
   default slot, buttons in `#actions`; it emits `submit` and `close` and exposes `open()` and
-  `close()`. Don't hand-build dialog headers, labels or action rows.
+  `close()`. It has a close button in the top corner (pass `close-label` with the app's word for
+  "Close"). Don't hand-build dialog headers, labels or action rows.
 - `BaseBadge` is the one pill for counts, states and marks: neutral (counts, plain states), outline
   (a quiet mark like "alpha"), accent, success, warning, danger. One size; don't build local pills.
 - `BaseAvatar` shows initials on a color: `sm` 20px next to a name in a row, `md` 32px in menus,

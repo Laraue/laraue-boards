@@ -1,6 +1,7 @@
 <template>
   <BaseDialog
     ref="dialog"
+    :close-label="t('close')"
     :title="ids.length === 1 ? t('moveBoard') : t('moveBoards')"
     @submit="confirmMove">
     <label for="movement-board-organization">{{ t('organization') }}</label>
@@ -56,6 +57,7 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     cancel: 'Cancel',
+    close: 'Close',
     move: 'Move',
     moveBoard: 'Move board',
     moveBoards: 'Move boards',
@@ -65,6 +67,7 @@ const { t } = useI18n({
   },
   ru: {
     cancel: 'Отмена',
+    close: 'Закрыть',
     move: 'Переместить',
     moveBoard: 'Переместить доску',
     moveBoards: 'Переместить доски',

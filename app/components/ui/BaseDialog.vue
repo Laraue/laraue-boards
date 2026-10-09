@@ -30,12 +30,25 @@
         class="dialog-actions">
         <slot name="actions" />
       </div>
+      <!-- The quickest way out on a phone, where there is no Escape key. -->
+      <BaseIconButton
+        class="base-dialog-close"
+        :label="closeLabel"
+        @click="dialog?.close()">
+        <IconX />
+      </BaseIconButton>
     </form>
   </dialog>
 </template>
 
 <script setup lang="ts">
-defineProps<{ description?: string; title: string }>()
+import { IconX } from '@tabler/icons-vue'
+
+// The kit has no translations of its own: the app passes the close button's name.
+withDefaults(defineProps<{ closeLabel?: string; description?: string; title: string }>(), {
+  closeLabel: 'Close',
+  description: undefined,
+})
 
 const emit = defineEmits<{ close: []; submit: [] }>()
 
@@ -49,10 +62,29 @@ defineExpose({
 </script>
 
 <style scoped>
-.base-dialog-header {
+.base-dialog-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* Everything spans the dialog, except the header and the close button that share the first row:
+   the button comes last in the markup, so the dialog focuses the first field on opening. */
+.base-dialog-form > * {
+  grid-column: 1 / -1;
+}
+
+.base-dialog-form > .base-dialog-header {
   display: grid;
   gap: var(--space-1);
+  grid-column: 1;
+  grid-row: 1;
   margin-bottom: var(--space-4);
+}
+
+.base-dialog-form > .base-dialog-close {
+  grid-column: 2;
+  grid-row: 1;
+  margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2)) 0 var(--space-2);
 }
 
 .base-dialog-title {

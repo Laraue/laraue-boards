@@ -106,7 +106,7 @@ it('refreshes the page without notifying the layout after boards moved', async (
 
   await mount(createDeps(view), onSpacesMoved)
 
-  await page.getByLabelText('Move Board').click()
+  await page.getByRole('button', { name: 'Move Board' }).click()
   await dialog().getByLabelText('Space').click()
   await expect.element(dialog().getByRole('option', { name: 'Development' })).toBeInTheDocument()
   await dialog().getByRole('option', { name: 'Development' }).click()

@@ -1,6 +1,7 @@
 <template>
   <BaseDialog
     ref="dialog"
+    :close-label="t('close')"
     :title="`${t('move')} ${tp('issues', state.issueKeys.length)}`"
     @submit="move">
     <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
@@ -67,6 +68,7 @@ const { t, tp } = useI18n({
   en: {
     board: 'Board',
     cancel: 'Cancel',
+    close: 'Close',
     issues: 'issue|issues',
     move: 'Move',
     moving: 'Moving…',
@@ -77,6 +79,7 @@ const { t, tp } = useI18n({
   ru: {
     board: 'Доска',
     cancel: 'Отмена',
+    close: 'Закрыть',
     issues: 'задачу|задачи|задач',
     move: 'Переместить',
     moving: 'Перемещение…',
