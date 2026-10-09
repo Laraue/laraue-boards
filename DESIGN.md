@@ -1,10 +1,10 @@
 # Interface design system
 
 The shared tokens live in `app/components/ui/styles/tokens.css`, the kit's element defaults in
-`ui/styles/base.css`; app-wide styles stay in `app/assets/css/main.css`. Component appearance belongs to the base
-component; page styles own layout. Extend the existing system before adding a component or variant.
-Every shared component and its states are on `/dev/ui` (development only); check a design change
-there and add new components and variants to it.
+`ui/styles/base.css`; app-wide styles stay in `app/assets/css/main.css`. Component appearance
+belongs to the base component; page styles own layout. Extend the existing system before adding a
+component or variant. Every shared component and its states are on `/dev/ui` (development only);
+check a design change there and add new components and variants to it.
 
 ## UI kit and app components
 
@@ -85,12 +85,12 @@ there and add new components and variants to it.
   with an icon and a count pill. Don't add other tab styles.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Radius follows one knob, `--radius` (10px), as in shadcn/ui: `--radius-sm` (×0.6) `md` (×0.8) `lg`
-  (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: everything interactive or floating (controls,
-  tab tracks, popovers, menus, select lists, toasts, tooltips) uses `--radius-control` /
-  `--radius-popover` (md); rows nested inside them (tabs, menu rows, options) use `--radius-sm`;
-  containers (cards and dialogs) use `--radius-card` / `--radius-dialog` (xl); checkboxes
-  `--radius-small` (xs); pills and circles `--radius-pill` / `--radius-full`. Space follows the
-  existing 4px scale.
+  (×1) `xl` (×1.4) `2xl` (×1.6), plus fixed `xs` (4) and `full`. Roles: everything interactive or
+  floating (controls, tab tracks, popovers, menus, select lists, toasts, tooltips) uses
+  `--radius-control` / `--radius-popover` (md); rows nested inside them (tabs, menu rows, options)
+  use `--radius-sm`; containers (cards and dialogs) use `--radius-card` / `--radius-dialog` (xl);
+  checkboxes `--radius-small` (xs); pills and circles `--radius-pill` / `--radius-full`. Space
+  follows the existing 4px scale.
 
 ## Surfaces
 
