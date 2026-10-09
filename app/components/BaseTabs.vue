@@ -47,14 +47,16 @@ const model = defineModel<T>({ required: true })
 </script>
 
 <style scoped>
-/* A segmented control: a soft track with the active tab raised on it. */
+/* A segmented control: a soft track, as wide as its tabs, with the active tab raised on it. */
 .base-tabs-list {
   background: var(--color-hover);
   /* One step rounder than the tabs, which sit 3px inside it. */
   border-radius: calc(var(--radius-control) + 2px);
   display: flex;
   gap: 2px;
+  width: fit-content;
   height: var(--control-height);
+  max-width: 100%;
   overflow-x: auto;
   padding: 3px;
   scrollbar-width: none;
@@ -68,7 +70,7 @@ const model = defineModel<T>({ required: true })
   border-radius: var(--radius-control);
   color: var(--color-muted);
   display: inline-flex;
-  flex: 1 0 0;
+  flex: none;
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   gap: var(--space-2);
