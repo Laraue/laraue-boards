@@ -349,7 +349,7 @@ aside > nav button {
   color: var(--color-muted);
   display: flex;
   gap: var(--space-2);
-  height: 36px;
+  height: var(--control-height);
   padding: 0 var(--space-3);
   text-align: left;
   text-decoration: none;
