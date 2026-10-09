@@ -248,7 +248,7 @@ const selected = computed({
 
 .base-select-item {
   align-items: center;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
   cursor: pointer;
   display: flex;
   gap: var(--space-2);

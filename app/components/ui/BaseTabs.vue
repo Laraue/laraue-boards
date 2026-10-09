@@ -66,8 +66,7 @@ const model = defineModel<T>({ required: true })
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
-  /* One step below the track, so the corners nest. */
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
   color: var(--color-muted);
   display: inline-flex;
   flex: none;

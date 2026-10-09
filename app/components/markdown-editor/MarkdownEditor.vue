@@ -645,7 +645,7 @@ defineExpose({ insertSlash })
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
   color: var(--color-text);
   display: flex;
   gap: var(--space-2);

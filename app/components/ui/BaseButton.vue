@@ -161,8 +161,7 @@ const classes = computed(() => [
 .base-button.menu {
   background: transparent;
   border-color: transparent;
-  /* One step below the menu's radius, so the corners nest. */
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-control);
   flex: 1 1 auto;
   font-weight: 400;
   height: var(--control-height);
