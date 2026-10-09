@@ -83,6 +83,8 @@ check a design change there and add new components and variants to it.
 - `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
   active tab raised on a surface with the control shadow. Tabs are 14px, weight 500 in every state,
   with an icon and a count pill. Don't add other tab styles.
+- `BaseBadge` is the one pill for counts, states and marks: neutral (counts, plain states), outline
+  (a quiet mark like "alpha"), accent, success, warning, danger. One size; don't build local pills.
 - `BaseAvatar` shows initials on a color: `xs` 16px in inline changes, `sm` 20px next to names in
   rows, `md` 32px in menus and lists, `lg` 56px in a profile heading; `shape="square"` for
   organizations. Initials scale with the size; never set their font size.

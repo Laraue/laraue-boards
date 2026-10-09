@@ -89,7 +89,7 @@
             :to="organizationRoutes.retros()">
             <RetroIcon />
             {{ t('retro') }}
-            <span class="muted nav-badge">{{ t('alpha') }}</span>
+            <BaseBadge variant="outline">{{ t('alpha') }}</BaseBadge>
           </NuxtLink>
           <a
             :aria-label="t('documentationNewTab')"
@@ -346,13 +346,6 @@ aside > nav button {
   width: 100%;
 }
 
-/* Retro is still finding its shape, so the sidebar says so out loud. */
-.nav-badge {
-  border: 1px solid currentcolor;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-caption);
-  padding: 0 var(--space-2);
-}
 
 aside > nav a:hover,
 aside > nav button:hover {

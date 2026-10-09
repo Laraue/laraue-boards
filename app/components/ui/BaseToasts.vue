@@ -12,11 +12,7 @@
           <IconAlertTriangle v-if="toast.tone === 'error'" />
           <IconCheck v-else />
           <p>{{ toast.message }}</p>
-          <span
-            v-if="toast.count > 1"
-            class="toast-count">
-            {{ toast.count }}
-          </span>
+          <BaseBadge v-if="toast.count > 1">{{ toast.count }}</BaseBadge>
           <BaseIconButton
             :label="dismissLabel"
             @click="dismiss(toast.id)">
@@ -84,15 +80,6 @@ const { dismiss, toasts } = useToast()
   color: var(--color-success);
 }
 
-.toast-count {
-  background: var(--color-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-muted);
-  flex: none;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  padding: 0 var(--space-2);
-}
 
 @media (max-width: 600px) {
   .toasts {

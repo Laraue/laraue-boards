@@ -238,6 +238,19 @@
     </section>
 
     <section>
+      <h2>BaseBadge</h2>
+      <div class="row">
+        <BaseBadge
+          v-for="variant in badgeVariants"
+          :key="variant"
+          :variant="variant">
+          {{ variant }}
+        </BaseBadge>
+        <BaseBadge>3</BaseBadge>
+      </div>
+    </section>
+
+    <section>
       <h2>BaseTabs</h2>
       <BaseTabs
         v-model="tab"
@@ -385,6 +398,7 @@ const tabs = [
   { label: 'History', value: 'history' },
 ]
 
+const badgeVariants = ['neutral', 'accent', 'success', 'warning', 'danger', 'outline'] as const
 const avatarSizes = ['xs', 'sm', 'md', 'lg'] as const
 const shadows = ['--shadow-control', '--shadow-card', '--shadow-popover']
 const { show: showToast } = useToast()

@@ -32,15 +32,9 @@
           <td v-if="showOwner">{{ transaction.ownerName }}</td>
           <td>{{ transaction.reason }}</td>
           <td>
-            <span
-              class="status-pill"
-              :class="{
-                'status-canceled': transaction.statusClass === 'canceled',
-                'status-confirmed': transaction.statusClass === 'confirmed',
-                'status-started': transaction.statusClass === 'started',
-              }">
+            <BaseBadge :variant="statusVariant[transaction.statusClass] ?? 'neutral'">
               {{ transaction.status }}
-            </span>
+            </BaseBadge>
           </td>
           <td
             class="number-cell"
@@ -64,6 +58,12 @@ defineProps<{
   rows: TransactionsTableRow[]
   showOwner?: boolean
 }>()
+
+const statusVariant: Partial<Record<string, 'danger' | 'success' | 'warning'>> = {
+  canceled: 'danger',
+  confirmed: 'success',
+  started: 'warning',
+}
 </script>
 
 <style scoped>
@@ -125,27 +125,7 @@ defineProps<{
   color: var(--color-danger);
 }
 
-.status-pill {
-  background: var(--color-soft);
-  border-radius: var(--radius-full);
-  display: inline-block;
-  font-size: var(--font-size-caption);
-  padding: 2px 8px;
-  white-space: nowrap;
-}
 
-.status-confirmed {
-  background: color-mix(in srgb, var(--color-success) 14%, transparent);
-  color: var(--color-success);
-}
 
-.status-canceled {
-  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
-  color: var(--color-danger);
-}
 
-.status-started {
-  background: color-mix(in srgb, var(--color-chart-2) 14%, transparent);
-  color: var(--color-chart-2);
-}
 </style>

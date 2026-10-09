@@ -16,11 +16,7 @@
           :is="item.icon"
           v-if="item.icon" />
         {{ item.label }}
-        <span
-          v-if="item.count"
-          class="base-tabs-count">
-          {{ item.count }}
-        </span>
+        <BaseBadge v-if="item.count">{{ item.count }}</BaseBadge>
       </TabsTrigger>
     </TabsList>
     <TabsContent
@@ -85,16 +81,6 @@ const model = defineModel<T>({ required: true })
   width: var(--icon-size);
 }
 
-.base-tabs-count {
-  background: var(--color-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-muted);
-  font-size: var(--font-size-small);
-  line-height: 18px;
-  min-width: 18px;
-  padding: 0 var(--space-1);
-  text-align: center;
-}
 
 .base-tabs-tab[data-state='active'] {
   background: var(--color-surface);
