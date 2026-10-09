@@ -3911,7 +3911,7 @@ const finish = async () => {
   border-radius: 0;
   color: inherit;
   cursor: inherit;
-  font-family: 'Caveat', 'Inter', cursive;
+  font-family: 'Caveat', 'Geist', cursive;
   font-size: 34px;
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.15px;

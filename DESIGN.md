@@ -36,7 +36,7 @@ component; page styles own layout. Extend the existing system before adding a co
   editable rows, with a border on hover and focus. `AppColorPicker compact` uses an icon button with
   a color sample for dense rows; the default shows the color name.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
-- Control radius: `--radius-control` (8px). Space follows the existing 4px scale.
+- Control radius: `--radius-control` (6px). Space follows the existing 4px scale.
 
 ## Popovers and filters
 

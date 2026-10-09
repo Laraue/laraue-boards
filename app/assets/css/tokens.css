@@ -46,9 +46,9 @@
   --space-8: 32px;
 
   --radius-small: 4px;
-  --radius-control: 8px;
-  --radius-card: 12px;
-  --radius-dialog: 16px;
+  --radius-control: 6px;
+  --radius-card: 10px;
+  --radius-dialog: 12px;
   --radius-pill: 999px;
 
   --control-height: 32px;
@@ -62,7 +62,7 @@
   --font-size-caption: 11px;
   --font-size-body: 14px;
   --font-size-title: 24px;
-  --font-family-mono: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  --font-family-mono: 'Geist Mono', Consolas, 'Courier New', monospace;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
