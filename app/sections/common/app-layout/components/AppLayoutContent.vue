@@ -106,7 +106,6 @@
         <BaseMenu
           align="end"
           class="sidebar-account"
-          :label="t('userMenu')"
           side="right">
           <template #trigger="{ open }">
             <button

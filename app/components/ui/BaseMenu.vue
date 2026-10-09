@@ -1,4 +1,4 @@
-<!-- A menu of actions on Reka DropdownMenu: arrow keys move between items, Enter picks one, typing a
+<!-- A menu of actions on Reka DropdownMenu, named by its trigger: arrow keys move between items, Enter picks one, typing a
      letter jumps to it. Items are BaseMenuItem; BaseMenuSeparator splits groups. For a panel with
      fields or sections instead of actions, use BasePopover. -->
 <template>
@@ -15,7 +15,6 @@
       <!-- Not portaled: outside an open <dialog> it would be under it and inert. -->
       <DropdownMenuContent
         :align="align"
-        :aria-label="label"
         class="base-menu"
         :collision-padding="16"
         :side="side"
@@ -32,10 +31,9 @@ import { DropdownMenuContent, DropdownMenuRoot, DropdownMenuTrigger } from 'reka
 withDefaults(
   defineProps<{
     align?: 'end' | 'start'
-    label?: string
     side?: 'bottom' | 'right'
   }>(),
-  { align: 'start', label: undefined, side: 'bottom' },
+  { align: 'start', side: 'bottom' },
 )
 
 const open = ref(false)
