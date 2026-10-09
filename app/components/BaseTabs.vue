@@ -54,12 +54,12 @@ const model = defineModel<T>({ required: true })
   border-radius: calc(var(--radius-control) + 2px);
   display: flex;
   gap: 2px;
-  width: fit-content;
   height: var(--control-height);
   max-width: 100%;
   overflow-x: auto;
   padding: 3px;
   scrollbar-width: none;
+  width: fit-content;
 }
 
 /* A tab: icon, name and count. */

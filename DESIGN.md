@@ -11,8 +11,8 @@ there and add new components and variants to it.
   `-11`) are raw ramps, redefined per theme from the background end (1) to the text end (12).
   Semantic roles (`--color-*`) point at primitives and are the only colors components use.
 - Never reference a primitive or a hex value in a component; add or remap a semantic role instead.
-- Text: `--color-text`, `--color-muted` for secondary context, `--color-text-subtle` for hints.
-  Text and icons on an action fill use `--color-on-action`.
+- Text: `--color-text`, `--color-muted` for secondary context, `--color-text-subtle` for hints. Text
+  and icons on an action fill use `--color-on-action`.
 - Chart colors are a separate data palette.
 
 ## Typography
@@ -69,8 +69,8 @@ there and add new components and variants to it.
 ## Popovers and filters
 
 - `AppPopover` is built on Reka `Popover`: Reka places it, flips it at the viewport edge and closes
-  it on Escape or an outside press. It owns surface color, border, radius and shadow. Consumers specify content layout and
-  width; do not override its surface styles.
+  it on Escape or an outside press. It owns surface color, border, radius and shadow. Consumers
+  specify content layout and width; do not override its surface styles.
 - Filters expand one section inside the panel on click or tap, on both desktop and mobile. Use
   native buttons for keyboard access; do not open sections on hover.
 - Set panel width through `--app-popover-width`. Its content occupies 100% of the available inner
