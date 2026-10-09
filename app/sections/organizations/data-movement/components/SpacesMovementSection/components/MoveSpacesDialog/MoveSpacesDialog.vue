@@ -1,34 +1,34 @@
 <template>
-  <dialog ref="dialog">
-    <form @submit.prevent="confirmMove">
-      <h2>{{ ids.length === 1 ? t('moveSpace') : t('moveSpaces') }}</h2>
-      <label for="movement-space-organization">{{ t('organization') }}</label>
-      <OrganizationSelect
-        id="movement-space-organization"
-        v-model="state.organizationId"
-        :deps="deps.organizationSelect"
-        required />
-      <p
-        v-if="message"
-        class="form-error">
-        {{ message }}
-      </p>
-      <div class="dialog-actions">
-        <button
-          class="secondary"
-          :disabled="moving"
-          type="button"
-          @click="dialog?.close()">
-          {{ t('cancel') }}
-        </button>
-        <button
-          class="primary"
-          :disabled="moving || !state.organizationId">
-          {{ moving ? t('moving') : t('move') }}
-        </button>
-      </div>
-    </form>
-  </dialog>
+  <BaseDialog
+    ref="dialog"
+    :title="ids.length === 1 ? t('moveSpace') : t('moveSpaces')"
+    @submit="confirmMove">
+    <label for="movement-space-organization">{{ t('organization') }}</label>
+    <OrganizationSelect
+      id="movement-space-organization"
+      v-model="state.organizationId"
+      :deps="deps.organizationSelect"
+      required />
+    <p
+      v-if="message"
+      class="form-error">
+      {{ message }}
+    </p>
+    <template #actions>
+      <BaseButton
+        :disabled="moving"
+        @click="dialog?.close()">
+        {{ t('cancel') }}
+      </BaseButton>
+      <BaseButton
+        :disabled="moving || !state.organizationId"
+        :loading="moving"
+        type="submit"
+        variant="primary">
+        {{ moving ? t(\'moving\') : t(\'move\') }}
+      </BaseButton>
+    </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
@@ -72,7 +72,7 @@ const { execute: moveSpaces, message, pending: moving } = useApiAction(props.dep
 const open = () => {
   message.value = undefined
   state.organizationId = ''
-  dialog.value?.showModal()
+  dialog.value?.open()
 }
 
 const confirmMove = async () => {

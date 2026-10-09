@@ -1,59 +1,59 @@
 <template>
-  <dialog ref="dialog">
-    <form @submit.prevent="onConfirm">
-      <h2>{{ title }}</h2>
-      <template v-if="price">
-        <p class="plan-price">
-          <strong>{{ price }}</strong>
-          <span
-            v-if="priceNote"
-            class="muted">
-            {{ priceNote }}
-          </span>
-        </p>
-        <ul class="plan-conditions">
-          <li
-            v-for="condition in conditions"
-            :key="condition">
-            <IconCheck />
-            {{ condition }}
-          </li>
-        </ul>
-        <p
-          v-if="note"
-          class="plan-period muted">
-          {{ note }}
-        </p>
-      </template>
-      <BaseCheckbox v-model="accepted">
-        {{ t('accept') }}
-        <NuxtLink
-          target="_blank"
-          :to="termsPath">
-          {{ t('offer') }}
-        </NuxtLink>
-      </BaseCheckbox>
-      <p
-        v-if="message"
-        class="form-error">
-        {{ message }}
+  <BaseDialog
+    ref="dialog"
+    :title="title"
+    @submit="onConfirm">
+    <template v-if="price">
+      <p class="plan-price">
+        <strong>{{ price }}</strong>
+        <span
+          v-if="priceNote"
+          class="muted">
+          {{ priceNote }}
+        </span>
       </p>
-      <div class="dialog-actions">
-        <BaseButton
-          :disabled="pending"
-          @click="dialog?.close()">
-          {{ t('cancel') }}
-        </BaseButton>
-        <BaseButton
-          :disabled="!accepted"
-          :loading="pending"
-          type="submit"
-          variant="primary">
-          {{ t('pay', { price: price ?? '' }) }}
-        </BaseButton>
-      </div>
-    </form>
-  </dialog>
+      <ul class="plan-conditions">
+        <li
+          v-for="condition in conditions"
+          :key="condition">
+          <IconCheck />
+          {{ condition }}
+        </li>
+      </ul>
+      <p
+        v-if="note"
+        class="plan-period muted">
+        {{ note }}
+      </p>
+    </template>
+    <BaseCheckbox v-model="accepted">
+      {{ t('accept') }}
+      <NuxtLink
+        target="_blank"
+        :to="termsPath">
+        {{ t('offer') }}
+      </NuxtLink>
+    </BaseCheckbox>
+    <p
+      v-if="message"
+      class="form-error">
+      {{ message }}
+    </p>
+    <template #actions>
+      <BaseButton
+        :disabled="pending"
+        @click="dialog?.close()">
+        {{ t('cancel') }}
+      </BaseButton>
+      <BaseButton
+        :disabled="!accepted"
+        :loading="pending"
+        type="submit"
+        variant="primary">
+        {{ t('pay', { price: price ?? '' }) }}
+      </BaseButton>
+    </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
@@ -100,7 +100,7 @@ const termsPath = computed(() => (locale.value === 'ru' ? '/ru/terms' : '/terms'
 
 const open = () => {
   accepted.value = false
-  dialog.value?.showModal()
+  dialog.value?.open()
 }
 
 const close = () => dialog.value?.close()

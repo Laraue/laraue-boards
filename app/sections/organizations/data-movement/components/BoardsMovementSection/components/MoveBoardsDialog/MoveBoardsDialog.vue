@@ -1,42 +1,42 @@
 <template>
-  <dialog ref="dialog">
-    <form @submit.prevent="confirmMove">
-      <h2>{{ ids.length === 1 ? t('moveBoard') : t('moveBoards') }}</h2>
-      <label for="movement-board-organization">{{ t('organization') }}</label>
-      <OrganizationSelect
-        id="movement-board-organization"
-        v-model="state.organizationId"
-        :deps="deps.organizationSelect"
-        :initial-option="{ label: currentOrganizationName, value: currentOrganizationId }"
-        required />
-      <label for="movement-board-space">{{ t('space') }}</label>
-      <SpaceSelect
-        id="movement-board-space"
-        v-model="state.spaceKey"
-        :deps="deps.spaceSelect"
-        :organization-id="state.organizationId"
-        required />
-      <p
-        v-if="message"
-        class="form-error">
-        {{ message }}
-      </p>
-      <div class="dialog-actions">
-        <button
-          class="secondary"
-          :disabled="moving"
-          type="button"
-          @click="dialog?.close()">
-          {{ t('cancel') }}
-        </button>
-        <button
-          class="primary"
-          :disabled="moving || !state.spaceKey">
-          {{ moving ? t('moving') : t('move') }}
-        </button>
-      </div>
-    </form>
-  </dialog>
+  <BaseDialog
+    ref="dialog"
+    :title="ids.length === 1 ? t('moveBoard') : t('moveBoards')"
+    @submit="confirmMove">
+    <label for="movement-board-organization">{{ t('organization') }}</label>
+    <OrganizationSelect
+      id="movement-board-organization"
+      v-model="state.organizationId"
+      :deps="deps.organizationSelect"
+      :initial-option="{ label: currentOrganizationName, value: currentOrganizationId }"
+      required />
+    <label for="movement-board-space">{{ t('space') }}</label>
+    <SpaceSelect
+      id="movement-board-space"
+      v-model="state.spaceKey"
+      :deps="deps.spaceSelect"
+      :organization-id="state.organizationId"
+      required />
+    <p
+      v-if="message"
+      class="form-error">
+      {{ message }}
+    </p>
+    <template #actions>
+      <BaseButton
+        :disabled="moving"
+        @click="dialog?.close()">
+        {{ t('cancel') }}
+      </BaseButton>
+      <BaseButton
+        :disabled="moving || !state.spaceKey"
+        :loading="moving"
+        type="submit"
+        variant="primary">
+        {{ moving ? t(\'moving\') : t(\'move\') }}
+      </BaseButton>
+    </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
@@ -87,7 +87,7 @@ const open = () => {
   message.value = undefined
   state.organizationId = props.currentOrganizationId
   state.spaceKey = ''
-  dialog.value?.showModal()
+  dialog.value?.open()
 }
 
 const confirmMove = async () => {

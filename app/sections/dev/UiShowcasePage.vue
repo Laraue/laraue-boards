@@ -300,22 +300,26 @@
     <section>
       <h2>Dialog</h2>
       <div class="row">
-        <BaseButton @click="dialog?.showModal()">Open dialog</BaseButton>
+        <BaseButton @click="dialog?.open()">Open dialog</BaseButton>
       </div>
-      <dialog
+      <BaseDialog
         ref="dialog"
-        aria-labelledby="showcase-dialog-title">
-        <h2 id="showcase-dialog-title">Dialog title</h2>
-        <p class="muted">Native dialog with the kit's surface, radius and shadow.</p>
-        <div class="dialog-actions">
+        description="A form on the native dialog: title, fields and actions."
+        title="Dialog title"
+        @submit="dialog?.close()">
+        <label for="showcase-dialog-name">Name</label>
+        <BaseInput
+          id="showcase-dialog-name"
+          v-model="text" />
+        <template #actions>
           <BaseButton @click="dialog?.close()">Cancel</BaseButton>
           <BaseButton
-            variant="primary"
-            @click="dialog?.close()">
+            type="submit"
+            variant="primary">
             Confirm
           </BaseButton>
-        </div>
-      </dialog>
+        </template>
+      </BaseDialog>
     </section>
 
     <section>

@@ -1,56 +1,53 @@
 <template>
-  <dialog
+  <BaseDialog
     ref="dialog"
-    :aria-labelledby="`${idPrefix}-title`"
-    class="move-issues-dialog">
-    <form @submit.prevent="move">
-      <h2 :id="`${idPrefix}-title`">{{ t('move') }} {{ tp('issues', state.issueKeys.length) }}</h2>
-      <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
-      <SpaceSelect
-        :id="`${idPrefix}-space`"
-        v-model="state.spaceKey"
-        :deps="deps.spaceSelect"
+    :title="`${t('move')} ${tp('issues', state.issueKeys.length)}`"
+    @submit="move">
+    <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
+    <SpaceSelect
+      :id="`${idPrefix}-space`"
+      v-model="state.spaceKey"
+      :deps="deps.spaceSelect"
+      :disabled="moving"
+      required />
+    <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
+    <BoardSelect
+      :id="`${idPrefix}-board`"
+      v-model="state.boardId"
+      :deps="deps.boardSelect"
+      :disabled="moving"
+      :excluded-value="excludedBoardId"
+      required
+      :space-key="state.spaceKey" />
+    <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
+    <StatusSelect
+      :id="`${idPrefix}-status`"
+      v-model="state.statusId"
+      :board-id="state.boardId"
+      :deps="deps.statusSelect"
+      :disabled="moving"
+      :placeholder="t('selectStatus')"
+      required />
+    <p
+      v-if="message"
+      class="form-error">
+      {{ message }}
+    </p>
+    <template #actions>
+      <BaseButton
         :disabled="moving"
-        required />
-      <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
-      <BoardSelect
-        :id="`${idPrefix}-board`"
-        v-model="state.boardId"
-        :deps="deps.boardSelect"
-        :disabled="moving"
-        :excluded-value="excludedBoardId"
-        required
-        :space-key="state.spaceKey" />
-      <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
-      <StatusSelect
-        :id="`${idPrefix}-status`"
-        v-model="state.statusId"
-        :board-id="state.boardId"
-        :deps="deps.statusSelect"
-        :disabled="moving"
-        :placeholder="t('selectStatus')"
-        required />
-      <p
-        v-if="message"
-        class="form-error">
-        {{ message }}
-      </p>
-      <div class="dialog-actions">
-        <BaseButton
-          :disabled="moving"
-          @click="dialog?.close()">
-          {{ t('cancel') }}
-        </BaseButton>
-        <BaseButton
-          :disabled="!state.statusId"
-          :loading="moving"
-          type="submit"
-          variant="primary">
-          {{ moving ? t('moving') : t('move') }}
-        </BaseButton>
-      </div>
-    </form>
-  </dialog>
+        @click="dialog?.close()">
+        {{ t('cancel') }}
+      </BaseButton>
+      <BaseButton
+        :disabled="!state.statusId"
+        :loading="moving"
+        type="submit"
+        variant="primary">
+        {{ moving ? t('moving') : t('move') }}
+      </BaseButton>
+    </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
@@ -105,7 +102,7 @@ const { execute: moveIssues, message, pending: moving } = useApiAction(props.dep
 const open = (issueKeys: string[]) => {
   message.value = undefined
   Object.assign(state, { boardId: '', issueKeys, spaceKey: '', statusId: '' })
-  dialog.value?.showModal()
+  dialog.value?.open()
 }
 
 const move = async (): Promise<void> => {
@@ -124,22 +121,3 @@ watch(
 
 defineExpose({ open })
 </script>
-
-<style scoped>
-.move-issues-dialog {
-  background: var(--color-background);
-}
-
-.move-issues-dialog h2 {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-6);
-}
-
-.move-issues-dialog label {
-  color: var(--color-muted);
-  font-size: var(--font-size-body);
-  font-weight: 400;
-  margin: var(--space-4) 0 var(--space-2);
-}
-</style>
