@@ -67,7 +67,9 @@ check a design change there and add new components and variants to it.
 - `BaseSelect` default is the framed form field. `variant="inline"` is the transparent,
   content-width control for Properties and tables. Both share the same 32px height, 14px text and
   option styling.
-- `BaseButton` variants express intent: neutral, primary, danger, ghost. The `menu` prop changes
+- `BaseButton` variants express intent: neutral, primary, danger, ghost. Primary and a standalone
+  danger button are filled (`--color-action`, `--color-danger-action`) under white text; danger in
+  a menu is a red label and on an icon button a muted icon that turns red. The `menu` prop changes
   alignment and framing, not text size. Combine it with danger for destructive menu actions.
 - Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
   `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in

@@ -113,8 +113,7 @@ const classes = computed(() => [
 }
 
 /* Bordered buttons sit slightly above the surface. */
-.base-button.neutral:not(.menu),
-.base-button.danger:not(.menu, .icon) {
+.base-button.neutral:not(.menu) {
   box-shadow: var(--shadow-control);
 }
 
@@ -158,6 +157,14 @@ const classes = computed(() => [
   color: var(--color-danger);
 }
 
+/* A standalone destructive button is filled, like primary; in a menu or as an icon it stays a
+   red label or a muted icon. */
+.base-button.danger:not(.menu, .icon) {
+  background: var(--color-danger-action);
+  border-color: var(--color-danger-action);
+  color: var(--color-on-action);
+}
+
 .base-button.menu {
   background: transparent;
   border-color: transparent;
@@ -185,7 +192,8 @@ const classes = computed(() => [
   box-shadow: none;
 }
 
-.base-button.primary:focus-visible {
+.base-button.primary:focus-visible,
+.base-button.danger:not(.menu, .icon):focus-visible {
   box-shadow: inset 0 0 0 1px var(--color-surface);
 }
 
@@ -213,8 +221,8 @@ const classes = computed(() => [
     border-color: var(--color-action-hover);
   }
 
-  .base-button.danger:hover:not(:disabled) {
-    border-color: var(--color-danger);
+  .base-button.danger:not(.menu, .icon):hover:not(:disabled) {
+    border-color: var(--color-danger-action-hover);
   }
 
   /* Borderless buttons show hover as a soft fill, like menu rows. */

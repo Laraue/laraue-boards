@@ -3,7 +3,8 @@
 
   /* Primitives: raw ramps, never used by components directly. Each theme defines its own ramps,
      ordered from the background end (1) to the text end (12); step 9 of a hue is its solid fill.
-     Status hues define only 3 (soft fill) and 11 (text, icons, lines). */
+     Status hues define only 3 (soft fill) and 11 (text, icons, lines); red adds 9 and 10 for a
+     destructive button's fill. */
   --gray-1: #fdfdfe;
   --gray-2: #f8f8fa;
   --gray-3: #f2f2f4;
@@ -29,6 +30,8 @@
   --blue-11: #2a54ae;
   --blue-12: #1b356b;
   --red-3: #fff0ee;
+  --red-9: #c7443e;
+  --red-10: #b13a35;
   --red-11: #c7443e;
   --green-3: #e8f4ec;
   --green-11: #35805e;
@@ -65,6 +68,9 @@
   --color-focus: var(--blue-7);
   --color-danger: var(--red-11);
   --color-danger-soft: var(--red-3);
+  /* Fills a destructive button under white text, like action does for the primary one. */
+  --color-danger-action: var(--red-9);
+  --color-danger-action-hover: var(--red-10);
   --color-success: var(--green-11);
   --color-success-soft: var(--green-3);
   --color-warning: var(--amber-11);
@@ -173,6 +179,8 @@
   --blue-11: #91aff2;
   --blue-12: #acc2f7;
   --red-3: #442c2c;
+  --red-9: #c7443e;
+  --red-10: #d2534d;
   --red-11: #e37b75;
   --green-3: #20392e;
   --green-11: #6bb590;
