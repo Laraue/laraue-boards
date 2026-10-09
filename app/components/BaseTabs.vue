@@ -47,11 +47,15 @@ const model = defineModel<T>({ required: true })
 </script>
 
 <style scoped>
+/* A segmented control: a soft track with the active tab raised on it. */
 .base-tabs-list {
-  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-hover);
+  border-radius: var(--radius-control);
   display: flex;
-  gap: var(--space-5);
+  gap: 2px;
+  height: var(--control-height);
   overflow-x: auto;
+  padding: 3px;
   scrollbar-width: none;
 }
 
@@ -59,18 +63,19 @@ const model = defineModel<T>({ required: true })
 .base-tabs-tab {
   align-items: center;
   background: transparent;
-  border: 0;
-  border-bottom: 1px solid transparent;
-  border-radius: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
   color: var(--color-muted);
   display: inline-flex;
-  flex: none;
+  flex: 1 0 0;
   font-size: var(--font-size-body);
-  font-weight: 400;
+  font-weight: var(--font-weight-medium);
   gap: var(--space-2);
-  height: 40px;
-  padding: 0 var(--space-2);
-  transition: color var(--duration-fast) var(--ease-standard);
+  justify-content: center;
+  padding: 0 var(--space-3);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
 }
 
 .base-tabs-tab > svg {
@@ -79,30 +84,31 @@ const model = defineModel<T>({ required: true })
 }
 
 .base-tabs-count {
-  background: var(--color-hover);
+  background: var(--color-soft);
   border-radius: var(--radius-pill);
   color: var(--color-muted);
   font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  line-height: 20px;
-  min-width: 20px;
+  line-height: 18px;
+  min-width: 18px;
   padding: 0 var(--space-1);
   text-align: center;
 }
 
 .base-tabs-tab[data-state='active'] {
-  border-bottom-color: var(--color-accent);
-  color: var(--color-accent);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-control);
+  color: var(--color-text);
 }
 
-.base-tabs-tab[data-state='active'] .base-tabs-count {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+/* On the dark track the surface would sink; the active tab lightens instead. */
+:root[data-theme='dark'] .base-tabs-tab[data-state='active'] {
+  background: color-mix(in srgb, var(--color-text) 10%, var(--color-hover));
+  border-color: var(--color-border);
 }
 
 .base-tabs-tab:focus-visible {
-  box-shadow: var(--shadow-focus);
-  color: var(--color-text);
+  border-color: var(--color-focus);
+  box-shadow: none;
 }
 
 .base-tabs-panel {
