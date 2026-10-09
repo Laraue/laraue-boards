@@ -650,12 +650,12 @@ defineExpose({ insertSlash })
   display: flex;
   gap: var(--space-2);
   min-height: var(--control-height-small);
-  padding: 0 var(--space-2);
+  padding: 0 var(--space-3);
   text-align: left;
 }
 
 .markdown-editor-list-item:is([aria-selected='true'], :hover) {
-  background: var(--color-hover);
+  background: var(--color-soft);
 }
 
 .markdown-editor-list-item[aria-checked='true'] {

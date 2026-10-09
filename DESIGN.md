@@ -21,7 +21,8 @@ there and add new components and variants to it.
   color unchanged; use `--color-border-hover` for neutral controls and semantic border colors for
   primary and destructive actions. Borderless (ghost and icon) buttons show hover as a soft fill,
   like menu rows. Selected values retain their selection markers.
-- Menu rows use a soft hover background instead of a border. Text size, weight and color stay
+- Menu rows (BaseButton `menu`, select options, editor menus) use `--color-soft` as the hover
+  background instead of a border, and 12px side padding. Text size, weight and color stay
   unchanged. Expanded filters keep their active background.
 
 ## Controls

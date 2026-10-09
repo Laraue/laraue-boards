@@ -133,6 +133,7 @@ const selected = computed({
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
+  box-shadow: var(--shadow-control);
   color: var(--color-text);
   display: flex;
   font-size: var(--font-size-body);
@@ -153,7 +154,13 @@ const selected = computed({
 .base-select:focus-visible,
 .base-select[data-state='open'] {
   border-color: var(--color-focus);
-  box-shadow: none;
+  box-shadow: var(--shadow-control);
+}
+
+.base-select:disabled {
+  background: var(--color-soft);
+  color: var(--color-muted);
+  cursor: not-allowed;
 }
 
 .base-select-value {
@@ -184,12 +191,18 @@ const selected = computed({
 .base-select-inline {
   background: transparent;
   border-color: transparent;
+  box-shadow: none;
   height: var(--control-height-small);
   width: fit-content;
 }
 
 .base-select-inline:is(:focus-visible, [data-state='open']) {
   border-color: var(--color-focus);
+  box-shadow: none;
+}
+
+.base-select-inline:disabled {
+  background: transparent;
 }
 
 .base-select-full-width {
@@ -242,12 +255,13 @@ const selected = computed({
   min-height: var(--control-height-small);
   outline: none;
   overflow-wrap: anywhere;
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
   user-select: none;
 }
 
+/* The same soft fill as menu rows (BaseButton menu). */
 .base-select-item[data-highlighted] {
-  background: var(--color-hover);
+  background: var(--color-soft);
 }
 
 .base-select-item[data-state='checked'] {
@@ -274,6 +288,6 @@ const selected = computed({
   color: var(--color-muted);
   display: flex;
   min-height: var(--control-height-small);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
 }
 </style>
