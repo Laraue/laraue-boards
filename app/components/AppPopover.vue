@@ -1,31 +1,34 @@
 <template>
+  <!-- The wrapper takes the consumer's class, so a width set on it (--app-popover-width) reaches
+       the content, which is not portaled: outside an open <dialog> it would be under it and inert. -->
   <div
     ref="root"
-    class="app-popover"
-    @focusout="closeOnFocusOut"
-    @keydown.esc="closeOnEscape">
-    <slot
-      name="trigger"
-      :open="open"
-      :toggle="toggle" />
-    <div
-      v-if="open"
-      ref="content"
-      class="app-popover-content"
-      :style="{
-        left: `${position.left}px`,
-        maxHeight: `calc(100dvh - ${viewportPadding * 2}px)`,
-        maxWidth: `calc(100vw - ${viewportPadding * 2}px)`,
-        top: `${position.top}px`,
-        visibility: positioned ? 'visible' : 'hidden',
-      }">
-      <slot :close="close" />
-    </div>
+    class="app-popover">
+    <PopoverRoot v-model:open="open">
+      <PopoverAnchor>
+        <slot
+          name="trigger"
+          :open="open"
+          :toggle="toggle" />
+      </PopoverAnchor>
+      <PopoverContent
+        :align="align"
+        class="app-popover-content"
+        :collision-padding="viewportPadding"
+        :side="side"
+        :side-offset="8"
+        @close-auto-focus="focusTrigger"
+        @interact-outside="keepOpenForTrigger">
+        <slot :close="close" />
+      </PopoverContent>
+    </PopoverRoot>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(
+import { PopoverAnchor, PopoverContent, PopoverRoot } from 'reka-ui'
+
+withDefaults(
   defineProps<{
     align?: 'end' | 'start'
     side?: 'bottom' | 'right'
@@ -33,12 +36,10 @@ const props = withDefaults(
   }>(),
   { align: 'start', side: 'bottom', viewportPadding: 16 },
 )
+
 const root = useTemplateRef('root')
-const content = useTemplateRef('content')
 const open = ref(false)
-const positioned = ref(false)
-const position = reactive({ left: 0, top: 0 })
-let positionFrame: number | undefined
+let leftByOutside = false
 
 const close = () => {
   open.value = false
@@ -46,90 +47,28 @@ const close = () => {
 
 const toggle = () => {
   open.value = !open.value
+  leftByOutside = false
 }
 
-const updatePosition = () => {
-  if (!open.value || !root.value || !content.value) {
-    return
-  }
-
-  const triggerRect = root.value.getBoundingClientRect()
-  const contentRect = content.value.getBoundingClientRect()
-  const gap = Number.parseFloat(getComputedStyle(root.value).getPropertyValue('--space-2')) || 8
-  const maxLeft = Math.max(
-    props.viewportPadding,
-    window.innerWidth - props.viewportPadding - contentRect.width,
-  )
-  const below = triggerRect.bottom + gap
-  const above = triggerRect.top - gap - contentRect.height
-  const right = triggerRect.right + gap
-  const opensRight = props.side === 'right' && right <= maxLeft
-
-  const alignedLeft =
-    props.align === 'end' ? triggerRect.right - contentRect.width : triggerRect.left
-  const left = opensRight ? right : Math.min(Math.max(alignedLeft, props.viewportPadding), maxLeft)
-  const verticalTop =
-    below + contentRect.height <= window.innerHeight - props.viewportPadding
-      ? below
-      : Math.max(props.viewportPadding, above)
-  const alignedTop =
-    props.align === 'end' ? triggerRect.bottom - contentRect.height : triggerRect.top
-  const top = opensRight
-    ? Math.max(
-        props.viewportPadding,
-        Math.min(alignedTop, window.innerHeight - props.viewportPadding - contentRect.height),
-      )
-    : verticalTop
-
-  if (position.left !== left || position.top !== top) {
-    position.left = left
-    position.top = top
-  }
-  positioned.value = true
-  positionFrame = requestAnimationFrame(updatePosition)
-}
-
-const closeOnOutsideClick = (event: MouseEvent) => {
-  if (event.button === 0 && root.value && !root.value.contains(event.target as Node)) {
-    close()
+// The trigger is the consumer's own button, not a Reka trigger: a press on it is "outside" for
+// Reka, which would close the popover just before the button's click toggles it open again.
+// The content lives inside the wrapper too, but Reka reports only presses outside the content.
+const keepOpenForTrigger = (event: Event) => {
+  if (root.value?.contains(event.target as Node)) {
+    event.preventDefault()
+  } else {
+    leftByOutside = true
   }
 }
 
-const closeOnFocusOut = (event: FocusEvent) => {
-  const next = event.relatedTarget as Node | null
-  if (next && !root.value?.contains(next)) {
-    close()
+// Back to the trigger on close, as a Reka trigger would, unless the user went elsewhere. Reka may
+// call this more than once per close, so the flag is reset only when the popover opens.
+const focusTrigger = (event: Event) => {
+  event.preventDefault()
+  if (!leftByOutside) {
+    root.value?.querySelector<HTMLElement>('button, summary, a')?.focus()
   }
 }
-
-const closeOnEscape = () => {
-  if (!open.value) {
-    return
-  }
-  close()
-  root.value?.querySelector<HTMLElement>('button, summary')?.focus()
-}
-
-onMounted(() => {
-  document.addEventListener('click', closeOnOutsideClick)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('click', closeOnOutsideClick)
-  cancelAnimationFrame(positionFrame ?? 0)
-})
-
-watch(
-  open,
-  async (isOpen) => {
-    cancelAnimationFrame(positionFrame ?? 0)
-    positioned.value = false
-    if (isOpen) {
-      await nextTick()
-      updatePosition()
-    }
-  },
-  { flush: 'post' },
-)
 </script>
 
 <style scoped>
@@ -137,15 +76,19 @@ watch(
   position: relative;
   width: fit-content;
 }
+</style>
 
+<style>
+/* Unscoped: Reka puts the class on its inner element and the scope id on its own wrapper. */
 .app-popover-content {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
+  max-height: var(--reka-popover-content-available-height);
+  max-width: calc(100vw - var(--space-8));
   overflow: auto;
-  position: fixed;
   width: var(--app-popover-width, max-content);
   z-index: 31;
 }

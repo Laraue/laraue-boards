@@ -55,9 +55,9 @@ there and add new components and variants to it.
 - `BaseInput` owns text field variants. Its default is framed; `variant="inline"` is transparent for
   editable rows, with a border on hover and focus. `AppColorPicker compact` uses an icon button with
   a color sample for dense rows; the default shows the color name.
-- `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track, tabs share its width, the
-  active tab is raised on a surface with the control shadow. Tabs are 14px, weight 500 in every
-  state, with an icon and a count pill. Don't add other tab styles.
+- `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
+  active tab raised on a surface with the control shadow. Tabs are 14px, weight 500 in every state,
+  with an icon and a count pill. Don't add other tab styles.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
 - Control radius: `--radius-control` (6px). Space follows the existing 4px scale.
 
@@ -68,7 +68,8 @@ there and add new components and variants to it.
 
 ## Popovers and filters
 
-- `AppPopover` owns surface color, border, radius and shadow. Consumers specify content layout and
+- `AppPopover` is built on Reka `Popover`: Reka places it, flips it at the viewport edge and closes
+  it on Escape or an outside press. It owns surface color, border, radius and shadow. Consumers specify content layout and
   width; do not override its surface styles.
 - Filters expand one section inside the panel on click or tap, on both desktop and mobile. Use
   native buttons for keyboard access; do not open sections on hover.
