@@ -76,7 +76,7 @@ const emit = defineEmits<{ action: []; 'update:open': [value: boolean] }>()
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .base-alert-dialog .dialog-actions .base-button.danger:hover:not(:disabled) {
+  .base-alert-dialog .dialog-actions .base-button.danger:hover:not(:disabled, :focus-visible) {
     border-color: var(--color-danger-action-hover);
   }
 }

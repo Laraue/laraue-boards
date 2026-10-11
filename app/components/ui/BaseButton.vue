@@ -201,32 +201,33 @@ const classes = computed(() => [
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .base-button:hover:not(:disabled) {
+  /* Hover leaves a focused button alone, so its focus border stays. */
+  .base-button:hover:not(:disabled, :focus-visible) {
     border-color: var(--color-border-hover);
   }
 
-  .base-button.primary:hover:not(:disabled) {
+  .base-button.primary:hover:not(:disabled, :focus-visible) {
     border-color: var(--color-action-hover);
   }
 
   /* Borderless buttons show hover as a soft fill, like menu rows. */
-  .base-button.ghost:hover:not(:disabled) {
+  .base-button.ghost:hover:not(:disabled, :focus-visible) {
     background: var(--color-soft);
     border-color: transparent;
   }
 
-  .base-button.icon.danger:hover:not(:disabled) {
+  .base-button.icon.danger:hover:not(:disabled, :focus-visible) {
     background: var(--color-danger-soft);
     border-color: transparent;
     color: var(--color-danger);
   }
 
-  .base-button.menu:hover:not(:disabled) {
+  .base-button.menu:hover:not(:disabled, :focus-visible) {
     background: var(--color-soft);
     border-color: transparent;
   }
 
-  .base-button.menu[data-active='true']:hover:not(:disabled) {
+  .base-button.menu[data-active='true']:hover:not(:disabled, :focus-visible) {
     background: var(--color-accent-soft);
   }
 }
