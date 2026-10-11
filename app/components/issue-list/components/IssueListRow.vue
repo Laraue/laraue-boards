@@ -317,19 +317,6 @@ a.issue-location-board:hover {
   grid-template-columns: 4.5rem minmax(0, 1fr) minmax(10rem, 18rem) 7rem 8rem;
 }
 
-/* With a mouse the row menu shows where the pointer or focus is, not as a column of dots down the
-   list; a touch screen keeps it in view. */
-@media (hover: hover) and (pointer: fine) {
-  .row-actions {
-    opacity: 0;
-  }
-
-  .issue-list-row:is(:hover, :focus-within) .row-actions,
-  .row-actions:has([data-state='open']) {
-    opacity: 1;
-  }
-}
-
 .issue-key {
   color: var(--color-muted);
   font-size: var(--font-size-body);
