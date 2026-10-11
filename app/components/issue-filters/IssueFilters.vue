@@ -1,6 +1,7 @@
 <template>
   <BasePopover
     v-if="attributes.length || spaces.length || epicStatuses.length"
+    align="end"
     class="issue-filters">
     <template #trigger="{ open, toggle }">
       <BaseButton
