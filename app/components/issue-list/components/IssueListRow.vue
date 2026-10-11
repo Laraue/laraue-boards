@@ -150,9 +150,6 @@ import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 
-const NuxtLink = resolveComponent('NuxtLink')
-const organizationRoutes = useOrganizationRoutes()
-
 const props = defineProps<{
   assignee: string
   assigneeColor: string
@@ -181,6 +178,8 @@ const props = defineProps<{
   title: string
   to: RouteLocationRaw
 }>()
+const NuxtLink = resolveComponent('NuxtLink')
+const organizationRoutes = useOrganizationRoutes()
 
 const { t } = useI18n({
   en: {
@@ -231,7 +230,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 <style scoped>
 .issue-list-row {
   align-items: center;
-  position: relative;
   background: transparent;
   border-bottom: 1px solid var(--color-divider);
   color: var(--color-text);
@@ -246,6 +244,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   min-height: 2.75rem;
   min-width: 0;
   padding: var(--space-2) var(--space-4);
+  position: relative;
   text-decoration: none;
   transition: background-color var(--duration-fast) var(--ease-standard);
 }

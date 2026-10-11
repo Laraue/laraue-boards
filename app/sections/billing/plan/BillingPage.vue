@@ -37,7 +37,9 @@
         <div class="usage-grid">
           <article class="usage-card">
             <span class="usage-label">{{ t('tokens') }}</span>
-            <strong class="usage-value">{{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}</strong>
+            <strong class="usage-value">
+              {{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}
+            </strong>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
@@ -69,7 +71,9 @@
             v-if="page.kind === 'personal' && page.freeTeamOrganizations"
             class="usage-card">
             <span class="usage-label">{{ t('freeTeamOrganizations') }}</span>
-            <strong class="usage-value">{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
+            <strong class="usage-value">
+              {{ formatNumber(page.freeTeamOrganizations.remaining) }}
+            </strong>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
             </div>

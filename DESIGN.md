@@ -79,10 +79,10 @@ check a design change there and add new components and variants to it.
   or a muted icon that turns red; it is filled (`--color-danger-action`) only on the action of
   `BaseAlertDialog`, the step that actually deletes. The `menu` prop changes alignment and framing,
   not text size. Combine it with danger for destructive menu actions.
-- A button carries an icon when it is an action in a page or section header (Add issue, New attribute,
-  Create key, Invite, Change plan), a bulk action, or adds a row to a list (Add status, Add option):
-  those are entry points people look for. Buttons inside the content (a form's Save, dialog
-  buttons, a card's action, a danger zone) are text only.
+- A button carries an icon when it is an action in a page or section header (Add issue, New
+  attribute, Create key, Invite, Change plan), a bulk action, or adds a row to a list (Add status,
+  Add option): those are entry points people look for. Buttons inside the content (a form's Save,
+  dialog buttons, a card's action, a danger zone) are text only.
 - Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
   `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in
   `BaseButton`.
