@@ -3,7 +3,7 @@
 <template>
   <header class="base-section-header">
     <div class="base-section-header-text">
-      <h2>{{ title }}</h2>
+      <h2 :id="id">{{ title }}</h2>
       <p v-if="description">{{ description }}</p>
     </div>
     <div
@@ -15,7 +15,8 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ description?: string; title: string }>()
+// id: for a section that names itself after this heading through aria-labelledby.
+defineProps<{ description?: string; id?: string; title: string }>()
 </script>
 
 <style scoped>

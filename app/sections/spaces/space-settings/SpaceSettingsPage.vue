@@ -45,6 +45,7 @@
       :pending="pending">
       <template #default="{ data: page }">
         <section class="space-settings-page">
+          <BaseSectionHeader :title="t('general')" />
           <form
             :id="formId"
             @submit.prevent="update">
@@ -107,6 +108,7 @@ const { t } = useI18n({
     color: 'Color',
     deleteConfirm: 'Delete this space?',
     deleteSpace: 'Delete space',
+    general: 'General',
     key: 'Key',
     loadError: 'Could not load space',
     loading: 'Loading space…',
@@ -118,6 +120,7 @@ const { t } = useI18n({
     color: 'Цвет',
     deleteConfirm: 'Удалить этот раздел?',
     deleteSpace: 'Удалить раздел',
+    general: 'Общие',
     key: 'Ключ',
     loadError: 'Не удалось загрузить раздел',
     loading: 'Загрузка раздела…',
@@ -186,6 +189,8 @@ const remove = async (): Promise<void> => {
 
 <style scoped>
 .space-settings-page {
+  display: grid;
+  gap: var(--space-4);
   margin-inline: auto;
   max-width: 768px;
   width: 100%;

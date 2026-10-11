@@ -5,7 +5,9 @@
     <section
       :aria-labelledby="`${idPrefix}-general`"
       class="settings-section">
-      <h2 :id="`${idPrefix}-general`">{{ t('general') }}</h2>
+      <BaseSectionHeader
+        :id="`${idPrefix}-general`"
+        :title="t('general')" />
       <BaseFieldGroup horizontal>
         <BaseField
           id="board-settings-name"
@@ -41,19 +43,21 @@
     <section
       :aria-labelledby="`${idPrefix}-columns`"
       class="settings-section">
-      <div class="settings-section-heading">
-        <div>
-          <h2 :id="`${idPrefix}-columns`">{{ t('columns') }}</h2>
-          <p class="settings-hint">{{ t('columnsHint') }}</p>
-        </div>
-        <BaseButton
+      <BaseSectionHeader
+        :id="`${idPrefix}-columns`"
+        :description="t('columnsHint')"
+        :title="t('columns')">
+        <template
           v-if="viewModel.canUpdate"
-          :disabled="submitting"
-          @click="addColumn">
-          <IconPlus />
-          {{ t('addColumn') }}
-        </BaseButton>
-      </div>
+          #actions>
+          <BaseButton
+            :disabled="submitting"
+            @click="addColumn">
+            <IconPlus />
+            {{ t('addColumn') }}
+          </BaseButton>
+        </template>
+      </BaseSectionHeader>
       <DragDropProvider
         :plugins="defaultPreset.plugins"
         :sensors="sensors"
@@ -250,25 +254,6 @@ watch(
   padding-top: var(--space-5);
 }
 
-.settings-section h2 {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-  margin: 0;
-}
-
-.settings-section-heading {
-  align-items: center;
-  display: flex;
-  gap: var(--space-4);
-  justify-content: space-between;
-}
-
-.settings-hint {
-  color: var(--color-muted);
-  line-height: 1.5;
-  margin-top: var(--space-1);
-}
-
 .column-settings {
   display: flex;
   flex-direction: column;
@@ -295,10 +280,6 @@ watch(
 @media (max-width: 600px) {
   .column-settings-header {
     display: none;
-  }
-  .settings-section-heading {
-    align-items: flex-start;
-    gap: var(--space-3);
   }
 }
 </style>
