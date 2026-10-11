@@ -16,12 +16,25 @@
     </label>
     <span class="issue-key">{{ issueKey }}</span>
     <p class="issue-content">{{ title }}</p>
-    <!-- The key already names the space, so the row shows the board; the full path is on hover. -->
+    <!-- Space and board; the space gives up room first, the full path is on hover. -->
     <span
       class="issue-location"
       :title="spaceName ? `${spaceName} / ${boardName}` : boardName">
-      <BoardIcon />
-      <span class="truncate">{{ boardName }}</span>
+      <span
+        v-if="spaceName"
+        class="issue-location-space">
+        <SpaceIcon />
+        <span class="truncate">{{ spaceName }}</span>
+      </span>
+      <span
+        v-if="spaceName"
+        aria-hidden="true">
+        /
+      </span>
+      <span class="issue-location-board">
+        <BoardIcon />
+        <span class="truncate">{{ boardName }}</span>
+      </span>
     </span>
     <div
       class="issue-status"
@@ -126,7 +139,7 @@ import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import type { IssueListQuickEditDeps } from '~/components/issue-list/IssueList.deps'
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
-import { BoardIcon } from '~/constants/icons'
+import { BoardIcon, SpaceIcon } from '~/constants/icons'
 
 const props = defineProps<{
   assignee: string
@@ -213,7 +226,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   /* Select, key, title, where it lives, status, assignee, actions. The location gets room for both
      names before the title gives any up. */
   grid-template-columns:
-    1.25rem 4.5rem minmax(0, 1fr) minmax(8rem, 14rem) 7rem 8rem
+    1.25rem 4.5rem minmax(0, 1fr) minmax(10rem, 18rem) 7rem 8rem
     var(--icon-btn-size);
   min-height: 2.75rem;
   min-width: 0;
@@ -235,11 +248,11 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 }
 
 .issue-list-row:not(:has(.row-select)) {
-  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(8rem, 14rem) 7rem 8rem var(--icon-btn-size);
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(10rem, 18rem) 7rem 8rem var(--icon-btn-size);
 }
 
 .issue-list-row:not(.has-actions) {
-  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(8rem, 14rem) 7rem 8rem;
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(10rem, 18rem) 7rem 8rem;
 }
 
 /* With a mouse the row menu shows where the pointer or focus is, not as a column of dots down the
@@ -306,8 +319,26 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   color: var(--color-muted);
   display: inline-flex;
   font-size: var(--font-size-body);
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.issue-location-space,
+.issue-location-board {
+  align-items: center;
+  display: inline-flex;
   gap: var(--space-2);
   min-width: 0;
+}
+
+/* The space is shorter and shared by many rows; it never takes more than half. */
+.issue-location-space {
+  flex: 0 1 auto;
+  max-width: 50%;
+}
+
+.issue-location-board {
+  flex: 1 1 auto;
 }
 
 .issue-location .tabler-icon {
