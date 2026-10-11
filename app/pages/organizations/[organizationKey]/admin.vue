@@ -5,13 +5,11 @@
         :icon="IconSettings"
         :title="t('admin')" />
     </template>
-    <section class="settings-page">
-      <BaseNavTabs
-        :items="tabs"
-        :label="t('admin')" />
-
+    <BaseSettingsLayout
+      :items="tabs"
+      :label="t('admin')">
       <NuxtPage />
-    </section>
+    </BaseSettingsLayout>
   </AppPage>
 </template>
 
@@ -84,10 +82,3 @@ const { t } = useI18n({
 })
 </script>
 
-<style scoped>
-.settings-page {
-  align-content: start;
-  display: grid;
-  gap: var(--space-6);
-}
-</style>

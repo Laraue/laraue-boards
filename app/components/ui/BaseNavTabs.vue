@@ -1,10 +1,10 @@
 <!-- Tabs that switch pages: links in the BaseTabs track, the current one marked aria-current. A tab is
      current while the route is inside its link; `exact` limits that to the link itself, and `active`
-     overrides it when the routes are not nested. -->
+     overrides it when the routes are not nested. `vertical` lists them as rows, for a settings menu. -->
 <template>
   <nav
     :aria-label="label"
-    class="base-tabs-list">
+    :class="vertical ? 'base-nav-list' : 'base-tabs-list'">
     <NuxtLink
       v-for="item in items"
       :key="item.label"
@@ -13,7 +13,7 @@
       :to="item.to">
       <a
         :aria-current="(item.active ?? (item.exact ? isExactActive : isActive)) ? 'page' : undefined"
-        class="base-tabs-tab"
+        :class="vertical ? 'base-nav-row' : 'base-tabs-tab'"
         :href="href"
         @click="navigate">
         <component
@@ -26,17 +26,58 @@
 </template>
 
 <script setup lang="ts">
-import type { Component } from 'vue'
-import type { RouteLocationRaw } from 'vue-router'
+import type { NavTab } from './BaseNavTabs.types'
 
-defineProps<{
-  items: Array<{
-    active?: boolean
-    exact?: boolean
-    icon?: Component
+withDefaults(
+  defineProps<{
+    items: NavTab[]
     label: string
-    to: RouteLocationRaw
-  }>
-  label: string
-}>()
+    vertical?: boolean
+  }>(),
+  { vertical: false },
+)
 </script>
+
+<style scoped>
+/* Rows like the app sidebar's; the current one takes a neutral fill, so it doesn't compete with the
+   sidebar's accent. */
+.base-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.base-nav-row {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: flex;
+  flex: none;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.base-nav-row > svg {
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.base-nav-row:hover {
+  background: var(--color-soft);
+  color: var(--color-text);
+}
+
+.base-nav-row[aria-current='page'] {
+  background: var(--color-hover);
+  color: var(--color-text);
+}
+
+.base-nav-row:focus-visible {
+  border-color: var(--color-focus);
+  box-shadow: none;
+}
+</style>

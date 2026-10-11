@@ -89,6 +89,9 @@ check a design change there and add new components and variants to it.
   active tab on a surface fill, no shadow. Tabs are 14px, weight 500 in every state, with an icon
   and a count pill. Tabs that switch pages are `BaseNavTabs`: the same look, links marked
   `aria-current`. Don't add other tab styles.
+- Settings pages with several sections (administration, your account in an organization) use
+  `BaseSettingsLayout`: the sections as a vertical menu on the left (`BaseNavTabs vertical`), the
+  current one beside it, at most 48rem wide. On narrow screens the menu runs across the top.
 - Modal forms use `BaseDialog` (Reka Dialog: focus trap, Escape and backdrop press close it, scroll
   lock, focus returns on close): `title`, optional `description`, fields in the default slot,
   buttons in `#actions`; it emits `submit` and `close` and exposes `open()` and `close()`. It has a

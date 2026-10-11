@@ -9,6 +9,7 @@
     <template #default="{ data: attributes }">
       <section class="attributes-page">
         <div class="title-row">
+          <h2>{{ t('attributes') }}</h2>
           <BaseButton
             :aria-label="t('newAttribute')"
             :to="organizationRoutes.newAttribute()"
@@ -107,8 +108,12 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
 
 <style scoped>
 .attributes-page > .title-row {
-  justify-content: flex-end;
   margin-bottom: var(--space-4);
+}
+
+.attributes-page h2 {
+  font-size: var(--font-size-lg);
+  margin: 0;
 }
 
 .attribute-list {

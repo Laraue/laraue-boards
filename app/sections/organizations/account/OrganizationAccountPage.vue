@@ -5,21 +5,20 @@
         :icon="IconBuilding"
         :title="t('youIn', { organization: organizationName })" />
     </template>
-    <p class="muted">
-      {{ t('scope', { organization: organizationName }) }}
-      <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
-    </p>
-
-    <BaseNavTabs
+    <BaseSettingsLayout
       :items="[
         { exact: true, icon: IconUser, label: t('profile'), to: profileTo },
         { icon: IconCreditCard, label: t('plan'), to: planTo },
         { exact: true, icon: IconHistory, label: t('transactions'), to: transactionsTo },
         { exact: true, icon: IconKey, label: t('apiKeys'), to: apiKeysTo },
       ]"
-      :label="t('youIn', { organization: organizationName })" />
-
-    <slot />
+      :label="t('youIn', { organization: organizationName })">
+      <p class="muted">
+        {{ t('scope', { organization: organizationName }) }}
+        <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
+      </p>
+      <slot />
+    </BaseSettingsLayout>
   </AppPage>
 </template>
 
