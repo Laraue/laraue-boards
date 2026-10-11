@@ -53,7 +53,7 @@ it('submits the color picked from the palette', async () => {
 
   await mount(create)
 
-  await page.getByRole('button', { name: 'Blue' }).click()
+  await page.getByRole('button', { name: 'Color' }).click()
   await page.getByRole('option', { name: 'Teal' }).click()
   await fillAndSubmit()
 

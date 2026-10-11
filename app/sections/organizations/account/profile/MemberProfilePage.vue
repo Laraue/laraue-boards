@@ -11,8 +11,8 @@
         <form @submit.prevent="save">
           <BaseFieldGroup>
             <BaseField
-              v-slot="{ describedby }"
               id="member-profile-name"
+              v-slot="{ describedby }"
               :hint="t('nameHint')"
               :label="t('name')">
               <input

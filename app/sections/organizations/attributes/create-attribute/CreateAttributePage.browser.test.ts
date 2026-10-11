@@ -33,7 +33,7 @@ it('starts as a text attribute without an options editor', async () => {
   await mount(succeeds())
 
   await expect.element(page.getByLabelText('Type')).toHaveValue('text')
-  await expect.element(page.getByRole('button', { name: 'Blue' })).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Color' })).toHaveTextContent('Blue')
   await expect.element(page.getByRole('group', { name: 'Options' })).not.toBeInTheDocument()
 })
 
@@ -60,7 +60,7 @@ it('submits the color picked from the palette', async () => {
   await mount(create)
 
   await page.getByLabelText('Name').fill('Priority')
-  await page.getByRole('button', { name: 'Blue' }).click()
+  await page.getByRole('button', { name: 'Color' }).click()
   await page.getByRole('option', { name: 'Teal' }).click()
   await page.getByRole('button', { name: 'Create attribute' }).click()
 

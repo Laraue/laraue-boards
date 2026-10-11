@@ -112,7 +112,6 @@ const classes = computed(() => [
   white-space: nowrap;
 }
 
-
 /* Sized by --icon-btn-size, which a parent may set to fit a dense spot. */
 .base-button.icon {
   height: var(--icon-btn-size);

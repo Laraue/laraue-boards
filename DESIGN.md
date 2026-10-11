@@ -86,8 +86,8 @@ check a design change there and add new components and variants to it.
   editable rows, with a border on hover and focus. `AppColorPicker compact` uses an icon button with
   a color sample for dense rows; the default shows the color name.
 - `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
-  active tab on a surface fill, no shadow. Tabs are 14px, weight 500 in every state,
-  with an icon and a count pill. Don't add other tab styles.
+  active tab on a surface fill, no shadow. Tabs are 14px, weight 500 in every state, with an icon
+  and a count pill. Don't add other tab styles.
 - Modal forms use `BaseDialog` (Reka Dialog: focus trap, Escape and backdrop press close it, scroll
   lock, focus returns on close): `title`, optional `description`, fields in the default slot,
   buttons in `#actions`; it emits `submit` and `close` and exposes `open()` and `close()`. It has a
@@ -110,25 +110,26 @@ check a design change there and add new components and variants to it.
   padding, so its corner runs parallel to theirs: `--radius-popover` (`--radius` + 4px, 12px) for
   popovers, menus, select lists and toasts, and the tabs track is `--radius-control` + 3px;
   `--radius-card` (`--radius` × 1.75, 14px) for cards and dialogs; `--radius-small` (4px) for
-  checkboxes; `--radius-full` for pills and circles. Nested rows are not made smaller. Space follows the 4px scale.
+  checkboxes; `--radius-full` for pills and circles. Nested rows are not made smaller. Space follows
+  the 4px scale.
 
 ## Forms
 
 - A labelled control is a `BaseField`: label (weight 500), the control, then an optional `hint`
   (muted, small) and `error` (danger, small). The control takes `id` and `describedby` from the slot
-  props, or keeps its own id passed as `id`; a control that is not a single input (a color picker,
-  a list of rows) takes `labelId` for `aria-labelledby`.
+  props, or keeps its own id passed as `id`; a control that is not a single input (a color picker, a
+  list of rows) takes `labelId` for `aria-labelledby`.
 - Fields go in a `BaseFieldGroup`, which owns the space between them. `horizontal` is for settings
-  pages: labels in one column beside their controls, on every screen width. Do not space fields
-  with label margins or local wrappers.
+  pages: labels in one column beside their controls, on every screen width. Do not space fields with
+  label margins or local wrappers.
 - Form-wide messages after a submit stay `.form-error` / `.form-success` under the fields.
 
 ## Surfaces
 
 - Group page content (lists, settings sections, summaries) in `BaseCard`: surface fill, border,
-  `--radius-card` on the page background, no shadow. Cards, dialogs and floating surfaces
-  (menus, popovers, select lists, toasts) are edged with `--color-border-surface`, a faint ring of the
-  text color; controls keep the solid `--color-border`. Do not rebuild these styles locally.
+  `--radius-card` on the page background, no shadow. Cards, dialogs and floating surfaces (menus,
+  popovers, select lists, toasts) are edged with `--color-border-surface`, a faint ring of the text
+  color; controls keep the solid `--color-border`. Do not rebuild these styles locally.
 
 ## Popovers and filters
 
