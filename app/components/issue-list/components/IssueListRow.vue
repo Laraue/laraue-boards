@@ -1,8 +1,9 @@
 <template>
-  <NuxtLink
+  <!-- The title is the link to the issue and its hit area covers the row, so the space and board
+       can be links of their own: a link may not sit inside another. -->
+  <div
     class="issue-list-row"
-    :class="{ 'has-actions': canMove, 'selection-mode': selectionMode }"
-    :to="to">
+    :class="{ 'has-actions': canMove, 'selection-mode': selectionMode }">
     <label
       v-if="canMove && selectionMode"
       class="row-select-target"
@@ -15,26 +16,34 @@
         @change="props.onToggleSelection" />
     </label>
     <span class="issue-key">{{ issueKey }}</span>
-    <p class="issue-content">{{ title }}</p>
+    <NuxtLink
+      class="issue-content"
+      :to="to">
+      {{ title }}
+    </NuxtLink>
     <!-- Space and board; the space gives up room first, the full path is on hover. -->
     <span
       class="issue-location"
       :title="spaceName ? `${spaceName} / ${boardName}` : boardName">
-      <span
-        v-if="spaceName"
-        class="issue-location-space">
+      <NuxtLink
+        v-if="spaceName && spaceKey"
+        class="issue-location-space"
+        :to="organizationRoutes.space(spaceKey)">
         <SpaceIcon :style="{ color: spaceColor }" />
         <span class="truncate">{{ spaceName }}</span>
-      </span>
+      </NuxtLink>
       <span
-        v-if="spaceName"
+        v-if="spaceName && spaceKey"
         aria-hidden="true">
         /
       </span>
-      <span class="issue-location-board">
+      <component
+        :is="spaceKey && boardId ? NuxtLink : 'span'"
+        class="issue-location-board"
+        :to="spaceKey && boardId ? organizationRoutes.board(spaceKey, boardId) : undefined">
         <BoardIcon :style="{ color: boardColor }" />
         <span class="truncate">{{ boardName }}</span>
-      </span>
+      </component>
     </span>
     <div
       class="issue-status"
@@ -127,7 +136,7 @@
       role="alert">
       {{ saveMessage }}
     </p>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -140,6 +149,9 @@ import type { IssueListQuickEditDeps } from '~/components/issue-list/IssueList.d
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
+
+const NuxtLink = resolveComponent('NuxtLink')
+const organizationRoutes = useOrganizationRoutes()
 
 const props = defineProps<{
   assignee: string
@@ -219,6 +231,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 <style scoped>
 .issue-list-row {
   align-items: center;
+  position: relative;
   background: transparent;
   border-bottom: 1px solid var(--color-divider);
   color: var(--color-text);
@@ -235,6 +248,54 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   padding: var(--space-2) var(--space-4);
   text-decoration: none;
   transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.issue-content {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The title's hit area covers the whole row; the controls and links in it sit above. */
+.issue-content::after {
+  content: '';
+  inset: 0;
+  position: absolute;
+}
+
+.issue-content:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+
+.issue-list-row:has(.issue-content:focus-visible) {
+  box-shadow: var(--shadow-focus);
+}
+
+.row-select-target,
+.issue-location-space,
+.issue-location-board,
+.issue-status,
+.issue-person,
+.row-actions {
+  position: relative;
+  z-index: 1;
+}
+
+/* Those layers tie across rows; a row with an open menu or select rises so its popup is on top. */
+.issue-list-row:has([data-state='open']) {
+  z-index: 2;
+}
+
+a.issue-location-space,
+a.issue-location-board {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.issue-location-space:hover,
+a.issue-location-board:hover {
+  color: var(--color-text);
+  text-decoration: underline;
 }
 
 .issue-list-row:last-child {
