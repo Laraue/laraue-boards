@@ -71,10 +71,10 @@ check a design change there and add new components and variants to it.
   content-width control for Properties and tables. Both share the same 32px height, 14px text and
   option styling.
 - `BaseButton` variants express intent: neutral, primary, danger, ghost. Primary is filled
-  (`--color-action`) under white text. Danger is a red label on a bordered button, a red menu row, or
-  a muted icon that turns red; it is filled (`--color-danger-action`) only on the action of
-  `BaseAlertDialog`, the step that actually deletes. The `menu` prop changes
-  alignment and framing, not text size. Combine it with danger for destructive menu actions.
+  (`--color-action`) under white text. Danger is a red label on a bordered button, a red menu row,
+  or a muted icon that turns red; it is filled (`--color-danger-action`) only on the action of
+  `BaseAlertDialog`, the step that actually deletes. The `menu` prop changes alignment and framing,
+  not text size. Combine it with danger for destructive menu actions.
 - Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
   `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in
   `BaseButton`.
