@@ -12,9 +12,11 @@
       custom
       :to="item.to">
       <a
-        :aria-current="(item.active ?? (item.exact ? isExactActive : isActive)) ? 'page' : undefined"
+        :aria-current="
+          (item.active ?? (item.exact ? isExactActive : isActive)) ? 'page' : undefined
+        "
         :class="vertical ? 'base-nav-row' : 'base-tabs-tab'"
-        :href="href"
+        :href="href ?? undefined"
         @click="navigate">
         <component
           :is="item.icon"
