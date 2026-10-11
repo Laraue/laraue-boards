@@ -1,7 +1,7 @@
 <template>
   <section class="movement-section">
     <div>
-      <h2>{{ t('boards') }}</h2>
+      <h3>{{ t('boards') }}</h3>
       <p class="muted">{{ t('description') }}</p>
     </div>
     <AppBulkBar
@@ -129,9 +129,14 @@ const openDialog = (ids: string[]) => {
   gap: var(--space-2);
 }
 
-.movement-section h2,
+.movement-section h3,
 .movement-section p {
   margin: 0;
+}
+
+.movement-section h3 {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
 }
 
 .entity-row {

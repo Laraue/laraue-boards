@@ -92,6 +92,9 @@ check a design change there and add new components and variants to it.
 - Settings pages with several sections (administration, your account in an organization) use
   `BaseSettingsLayout`: the sections as a vertical menu on the left (`BaseNavTabs vertical`), the
   current one beside it, at most 48rem wide. On narrow screens the menu runs across the top.
+  Each section opens with `BaseSectionHeader` (its name and its actions on the right); a note that
+  applies to every section goes under the menu (`aside` slot), not above the content. Groups inside
+  a section are h3 at body size, weight 500, sentence case.
 - Modal forms use `BaseDialog` (Reka Dialog: focus trap, Escape and backdrop press close it, scroll
   lock, focus returns on close): `title`, optional `description`, fields in the default slot,
   buttons in `#actions`; it emits `submit` and `close` and exposes `open()` and `close()`. It has a

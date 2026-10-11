@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="form-page">
+        <BaseSectionHeader :title="t('general')" />
         <form
           @submit.prevent="
             submitForm({
@@ -88,6 +89,7 @@ const { t } = useI18n({
     deleteConfirm: 'Delete this organization?',
     deleteOrganization: 'Delete organization',
     deleting: 'Deleting…',
+    general: 'General',
     generalSettings: 'General settings',
     loadError: 'Could not load settings',
     loading: 'Loading settings…',
@@ -102,6 +104,7 @@ const { t } = useI18n({
     deleteConfirm: 'Удалить эту организацию?',
     deleteOrganization: 'Удалить организацию',
     deleting: 'Удаление…',
+    general: 'Общие',
     generalSettings: 'Общие настройки',
     loadError: 'Не удалось загрузить настройки',
     loading: 'Загрузка настроек…',
@@ -160,3 +163,11 @@ const remove = async (id: string): Promise<void> => {
   }
 }
 </script>
+
+<style scoped>
+.form-page {
+  align-content: start;
+  display: grid;
+  gap: var(--space-5);
+}
+</style>

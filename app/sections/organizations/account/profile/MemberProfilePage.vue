@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default>
       <section class="form-page">
+        <BaseSectionHeader :title="t('profile')" />
         <form @submit.prevent="save">
           <BaseFieldGroup>
             <BaseField
@@ -73,6 +74,7 @@ const { t } = useI18n({
     nameHint:
       'How other members see you in this organization. Leave it empty to use your profile name.',
     namePlaceholder: 'Your name from your profile',
+    profile: 'Profile',
     saveChanges: 'Save changes',
     saving: 'Saving…',
   },
@@ -85,6 +87,7 @@ const { t } = useI18n({
     nameHint:
       'Так вас видят другие участники этой организации. Оставьте пустым, чтобы взять имя из профиля.',
     namePlaceholder: 'Имя из вашего профиля',
+    profile: 'Профиль',
     saveChanges: 'Сохранить изменения',
     saving: 'Сохранение…',
   },
@@ -117,3 +120,11 @@ const save = async (): Promise<void> => {
   }
 }
 </script>
+
+<style scoped>
+.form-page {
+  align-content: start;
+  display: grid;
+  gap: var(--space-5);
+}
+</style>

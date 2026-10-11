@@ -13,10 +13,10 @@
         { exact: true, icon: IconKey, label: t('apiKeys'), to: apiKeysTo },
       ]"
       :label="t('youIn', { organization: organizationName })">
-      <p class="muted">
+      <template #aside>
         {{ t('scope', { organization: organizationName }) }}
         <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
-      </p>
+      </template>
       <slot />
     </BaseSettingsLayout>
   </AppPage>

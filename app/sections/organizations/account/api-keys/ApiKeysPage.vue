@@ -1,5 +1,6 @@
 <template>
   <section class="api-keys-section">
+    <BaseSectionHeader :title="t('apiKeys')" />
     <form
       class="api-key-form"
       @submit.prevent="createKey">
@@ -79,7 +80,6 @@
               <BaseButton
                 v-else
                 :disabled="busy"
-                variant="danger"
                 @click="revokeKey(key.id)">
                 {{ t('revoke') }}
               </BaseButton>
@@ -110,6 +110,7 @@ const props = defineProps<{ deps: ApiKeysPageDeps }>()
 const confirm = useConfirm()
 const { t } = useI18n({
   en: {
+    apiKeys: 'API keys',
     copied: 'Copied',
     copy: 'Copy',
     copyError: 'Could not copy the key. Select and copy it manually.',
@@ -130,6 +131,7 @@ const { t } = useI18n({
     revoked: 'Revoked',
   },
   ru: {
+    apiKeys: 'API-ключи',
     copied: 'Скопировано',
     copy: 'Копировать',
     copyError: 'Не удалось скопировать ключ. Выделите и скопируйте его вручную.',

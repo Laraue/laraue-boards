@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="movement-page">
+        <BaseSectionHeader :title="t('dataMovement')" />
         <div class="movement-sections">
           <SpacesMovementSection
             :deps="deps.spacesMovementSection"
@@ -42,7 +43,7 @@ const { t } = useI18n({
     loading: 'Loading data movement…',
   },
   ru: {
-    dataMovement: 'Перемещение данных',
+    dataMovement: 'Перенос данных',
     loadError: 'Не удалось загрузить перемещение данных',
     loading: 'Загрузка перемещения данных…',
   },
@@ -63,6 +64,10 @@ const onSpacesMoved = async () => {
 <style scoped>
 .movement-page {
   --movement-tree-line-width: 2px;
+
+  align-content: start;
+  display: grid;
+  gap: var(--space-5);
 }
 
 .movement-sections {

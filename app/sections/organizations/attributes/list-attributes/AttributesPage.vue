@@ -8,16 +8,16 @@
     :pending="pending">
     <template #default="{ data: attributes }">
       <section class="attributes-page">
-        <div class="title-row">
-          <h2>{{ t('attributes') }}</h2>
-          <BaseButton
-            :aria-label="t('newAttribute')"
-            :to="organizationRoutes.newAttribute()"
-            variant="primary">
-            <IconPlus />
-            <span class="btn-label">{{ t('newAttribute') }}</span>
-          </BaseButton>
-        </div>
+        <BaseSectionHeader :title="t('attributes')">
+          <template #actions>
+            <BaseButton
+              :to="organizationRoutes.newAttribute()"
+              variant="primary">
+              <IconPlus />
+              {{ t('newAttribute') }}
+            </BaseButton>
+          </template>
+        </BaseSectionHeader>
         <div
           v-if="attributes.length"
           class="attribute-list">
@@ -107,13 +107,8 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
 </script>
 
 <style scoped>
-.attributes-page > .title-row {
+.attributes-page > .base-section-header {
   margin-bottom: var(--space-4);
-}
-
-.attributes-page h2 {
-  font-size: var(--font-size-lg);
-  margin: 0;
 }
 
 .attribute-list {

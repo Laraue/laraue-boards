@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="billing-page">
+        <BaseSectionHeader :title="t('plan')" />
         <div class="usage-grid">
           <article class="plan-card">
             <div class="card-header">
@@ -127,6 +128,7 @@ const { t } = useI18n({
     loadError: 'Could not load billing summary',
     loading: 'Loading billing summary…',
     personalPlan: 'Personal plan',
+    plan: 'Plan and usage',
     purchasedAll: '+ {count} purchased tokens that expire on {date}',
     purchasedNoDate: '+ {count} purchased tokens',
     purchasedPart: '+ {count} purchased tokens, {expiring} of them expire on {date}',
@@ -146,6 +148,7 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить информацию о биллинге',
     loading: 'Загрузка информации о биллинге…',
     personalPlan: 'Персональный тариф',
+    plan: 'Тариф и лимиты',
     purchasedAll: '+ {count} купленных токенов, которые сгорят {date}',
     purchasedNoDate: '+ {count} купленных токенов',
     purchasedPart: '+ {count} купленных токенов, {expiring} из них сгорят {date}',

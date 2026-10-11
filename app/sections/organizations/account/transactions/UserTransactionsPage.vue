@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default="{ data: pageData }">
       <section class="transactions-section">
+        <BaseSectionHeader :title="t('transactions')" />
         <TransactionsTable
           v-if="pageData.transactions.length"
           :labels="tableLabels"
@@ -55,6 +56,7 @@ const { t } = useI18n({
     statusCanceled: 'Canceled',
     statusConfirmed: 'Confirmed',
     statusStarted: 'Started',
+    transactions: 'Transactions',
   },
   ru: {
     date: 'Дата',
@@ -74,6 +76,7 @@ const { t } = useI18n({
     statusCanceled: 'Отменена',
     statusConfirmed: 'Подтверждена',
     statusStarted: 'Начата',
+    transactions: 'Транзакции',
   },
 })
 

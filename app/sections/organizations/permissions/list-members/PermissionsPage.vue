@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="permissions-page">
+        <BaseSectionHeader :title="t('permissions')" />
         <div class="invitation-card">
           <div class="invitation-heading">
             <span class="invitation-icon"><IconTicket /></span>
@@ -48,7 +49,7 @@
             {{ regenerateMessage || state.copyError }}
           </p>
         </div>
-        <p class="section-label members-label">{{ t('members') }}</p>
+        <h3 class="members-label">{{ t('members') }}</h3>
         <div class="member-list">
           <NuxtLink
             v-for="member in page.members"
@@ -176,6 +177,12 @@ const regenerate = async (): Promise<void> => {
 </script>
 
 <style scoped>
+.permissions-page {
+  align-content: start;
+  display: grid;
+  gap: var(--space-5);
+}
+
 .invitation-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -249,7 +256,10 @@ const regenerate = async (): Promise<void> => {
 }
 
 .members-label {
-  margin: var(--space-6) 0 var(--space-3);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  /* Closer to its list than the page gap. */
+  margin: 0 0 calc(var(--space-3) * -1);
 }
 
 .member-list {

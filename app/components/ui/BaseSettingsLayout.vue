@@ -1,12 +1,20 @@
 <!-- A settings page: a menu of its sections on the left and the current section beside it, no wider
-     than a form reads well. On narrow screens the menu runs across the top. -->
+     than a form reads well. The `aside` slot is a short note under the menu. On narrow screens the
+     menu runs across the top. -->
 <template>
   <div class="base-settings-layout">
-    <BaseNavTabs
-      class="base-settings-nav"
-      :items="items"
-      :label="label"
-      vertical />
+    <div class="base-settings-aside">
+      <BaseNavTabs
+        class="base-settings-nav"
+        :items="items"
+        :label="label"
+        vertical />
+      <p
+        v-if="$slots.aside"
+        class="base-settings-note">
+        <slot name="aside" />
+      </p>
+    </div>
     <div class="base-settings-content">
       <slot />
     </div>
@@ -25,6 +33,19 @@ defineProps<{ items: NavTab[]; label: string }>()
   display: grid;
   gap: var(--space-8);
   grid-template-columns: 12rem minmax(0, 48rem);
+}
+
+.base-settings-aside {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.base-settings-note {
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+  margin: 0;
+  padding: 0 var(--space-3);
 }
 
 .base-settings-content {

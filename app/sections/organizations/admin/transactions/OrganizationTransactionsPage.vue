@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default="{ data: pageData }">
       <section class="transactions-section">
+        <BaseSectionHeader :title="t('transactions')" />
         <label class="member-filter">
           {{ t('member') }}
           <select
@@ -73,6 +74,7 @@ const { t } = useI18n({
     statusCanceled: 'Canceled',
     statusConfirmed: 'Confirmed',
     statusStarted: 'Started',
+    transactions: 'Transactions',
   },
   ru: {
     allMembers: 'Все участники',
@@ -94,6 +96,7 @@ const { t } = useI18n({
     statusCanceled: 'Отменена',
     statusConfirmed: 'Подтверждена',
     statusStarted: 'Начата',
+    transactions: 'Транзакции',
   },
 })
 
