@@ -63,7 +63,7 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="🚀 Deploy started: Boards Frontend (${{ github.sha }})"
+            -d text="🚀 Deploy started: Laraue Boards (${{ github.sha }})"
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -78,9 +78,9 @@ jobs:
           user: ${{ secrets.SSH_USER }} # "user"
           password: ${{ secrets.SSH_PASSWORD }} # "password"
           local: laraue.tar.gz
-          remote: '/home/laraue/frontend/boards'
+          remote: '/home/laraue/laraue-boards'
           post_upload: |-
-            cd /home/laraue/frontend/boards && find . -mindepth 1 ! -name laraue.tar.gz -delete &&
+            cd /home/laraue/laraue-boards && find . -mindepth 1 ! -name laraue.tar.gz -delete &&
             tar -xzf laraue.tar.gz && rm laraue.tar.gz
 
       - name: Build container
@@ -92,19 +92,19 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            cd /home/laraue && docker compose build boardsssrhost
-            docker compose up -d --force-recreate boardsssrhost
+            cd /home/laraue && docker compose build laraue-boards
+            docker compose up -d --force-recreate laraue-boards
 
       - name: Notify deploy finished
         if: success()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="✅ Deploy finished: Boards Frontend (${{ github.sha }})"
+            -d text="✅ Deploy finished: Laraue Boards (${{ github.sha }})"
 
       - name: Notify deploy failed
         if: failure()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="❌ Deploy failed: Boards Frontend (${{ github.sha }})"
+            -d text="❌ Deploy failed: Laraue Boards (${{ github.sha }})"
