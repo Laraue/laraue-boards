@@ -3884,7 +3884,7 @@ const finish = async () => {
   border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
   border-radius: var(--radius-card);
   bottom: calc(var(--space-4) + var(--icon-btn-size) + var(--space-2));
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 1px 2px #1018280d;
   display: flex;
   gap: var(--space-2);
   left: 50%;

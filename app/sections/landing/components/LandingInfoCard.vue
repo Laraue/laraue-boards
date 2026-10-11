@@ -50,7 +50,6 @@ defineProps<{
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
   padding: 36px 36px 32px;
   transition:
     box-shadow var(--duration-base),

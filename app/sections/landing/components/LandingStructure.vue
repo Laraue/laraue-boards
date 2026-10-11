@@ -76,7 +76,6 @@ const { t } = useI18n(
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
   flex: 1;
   min-width: 140px;
   padding: 16px 20px;

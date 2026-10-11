@@ -220,7 +220,6 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
 }
 
 .plan-card {

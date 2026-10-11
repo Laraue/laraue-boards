@@ -195,7 +195,6 @@ const pay = async () => {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);

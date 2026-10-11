@@ -428,7 +428,7 @@ const askDelete = async () => {
 const askFinish = async () => {
   showToast((await confirm({ title: 'Finish this?' })) ? 'Finished' : 'Not finished', 'success')
 }
-const shadows = ['--shadow-control', '--shadow-card', '--shadow-popover']
+const shadows = ['--shadow-popover']
 const { show: showToast } = useToast()
 const dialog = useTemplateRef('dialog')
 const longText = ref('A longer text that grows with its content.')

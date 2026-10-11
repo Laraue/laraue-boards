@@ -154,7 +154,6 @@ useHead({
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
   padding: 20px 24px;
 }
 

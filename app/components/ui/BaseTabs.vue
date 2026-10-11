@@ -83,7 +83,6 @@ const model = defineModel<T>({ required: true })
 
 .base-tabs-tab[data-state='active'] {
   background: var(--color-surface);
-  box-shadow: var(--shadow-control);
   color: var(--color-text);
 }
 

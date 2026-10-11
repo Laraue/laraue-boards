@@ -112,10 +112,6 @@ const classes = computed(() => [
   white-space: nowrap;
 }
 
-/* Bordered buttons sit slightly above the surface. */
-.base-button.neutral:not(.menu) {
-  box-shadow: var(--shadow-control);
-}
 
 /* Sized by --icon-btn-size, which a parent may set to fit a dense spot. */
 .base-button.icon {

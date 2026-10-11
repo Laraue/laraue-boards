@@ -80,13 +80,13 @@ check a design change there and add new components and variants to it.
 - `BaseIconButton variant="danger"` is muted at rest and shows the danger color on a danger-soft
   fill on hover. `BaseSelect full-width` stretches an inline select to its layout column while
   keeping the shared inline appearance.
-- Framed fields and bordered buttons carry `--shadow-control`; borderless (inline) ones drop it.
-  Disabled fields use the soft fill and muted text.
+- Controls and cards are flat: a border, no shadow. Only floating surfaces (popovers, menus,
+  dialogs, toasts) carry `--shadow-popover`. Disabled fields use the soft fill and muted text.
 - `BaseInput` owns text field variants. Its default is framed; `variant="inline"` is transparent for
   editable rows, with a border on hover and focus. `AppColorPicker compact` uses an icon button with
   a color sample for dense rows; the default shows the color name.
 - `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
-  active tab raised on a surface with the control shadow. Tabs are 14px, weight 500 in every state,
+  active tab on a surface fill, no shadow. Tabs are 14px, weight 500 in every state,
   with an icon and a count pill. Don't add other tab styles.
 - Modal forms use `BaseDialog` (Reka Dialog: focus trap, Escape and backdrop press close it, scroll
   lock, focus returns on close): `title`, optional `description`, fields in the default slot,
@@ -114,7 +114,7 @@ check a design change there and add new components and variants to it.
 ## Surfaces
 
 - Group page content (lists, settings sections, summaries) in `BaseCard`: surface fill, border,
-  `--radius-card` and `--shadow-card` on the page background. Do not rebuild these styles locally.
+  `--radius-card` on the page background, no shadow. Do not rebuild these styles locally.
 
 ## Popovers and filters
 

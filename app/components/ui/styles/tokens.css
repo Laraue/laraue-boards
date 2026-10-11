@@ -140,8 +140,6 @@
   /* Focus stays inside the element: an outer ring gets clipped by scrolling parents and overlaps
      neighbours. */
   --shadow-focus: inset 0 0 0 1px var(--color-focus);
-  --shadow-card: 0 1px 2px #1018280d;
-  --shadow-control: 0 1px 2px #1018280d;
   /* Floating surfaces (popovers, menus, toasts) lift clearly off the page. */
   --shadow-popover: 0 4px 12px #1018281a, 0 1px 2px #1018280d;
   --shadow-workspace: 0 0 40px #1018280d;
@@ -201,8 +199,6 @@
   --color-chart-3: #aa98cf;
   --color-chart-done: var(--green-11);
 
-  --shadow-card: 0 1px 2px #00000040;
-  --shadow-control: 0 1px 2px #00000040;
   --shadow-popover: 0 4px 12px #00000059, 0 1px 2px #00000033;
   --shadow-workspace: 0 0 40px #00000059;
 }

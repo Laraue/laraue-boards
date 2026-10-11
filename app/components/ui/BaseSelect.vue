@@ -133,7 +133,6 @@ const selected = computed({
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
-  box-shadow: var(--shadow-control);
   color: var(--color-text);
   display: flex;
   font-size: var(--font-size-body);
@@ -154,7 +153,6 @@ const selected = computed({
 .base-select:focus-visible,
 .base-select[data-state='open'] {
   border-color: var(--color-focus);
-  box-shadow: var(--shadow-control);
 }
 
 .base-select:disabled {

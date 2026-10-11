@@ -142,7 +142,6 @@ const changeLocale = (value: string): void => {
 
 .theme-switch button[aria-pressed='true'] {
   background: var(--color-surface);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
   color: var(--color-text);
 }
 
