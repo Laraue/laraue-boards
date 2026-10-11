@@ -18,19 +18,17 @@
             <time :datetime="transaction.createdAt">
               {{ transaction.createdAtLabel }}
             </time>
-            <small
-              v-if="transaction.finishedAt"
-              class="transaction-finished muted">
-              {{ labels.finishedAt }}: {{ transaction.finishedAtLabel }}
-            </small>
+          </td>
+          <td v-if="showOwner">{{ transaction.ownerName }}</td>
+          <td>
+            {{ transaction.reason }}
+            <!-- Why it failed belongs to what was attempted. -->
             <small
               v-if="transaction.error"
               class="transaction-error">
               {{ transaction.error }}
             </small>
           </td>
-          <td v-if="showOwner">{{ transaction.ownerName }}</td>
-          <td>{{ transaction.reason }}</td>
           <td>
             <BaseBadge :variant="statusVariant[transaction.statusClass] ?? 'neutral'">
               {{ transaction.status }}
@@ -69,7 +67,7 @@ const statusVariant: Partial<Record<string, 'danger' | 'success' | 'warning'>> =
 <style scoped>
 .transaction-table-wrap {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   overflow-x: auto;
 }
@@ -88,6 +86,10 @@ const statusVariant: Partial<Record<string, 'danger' | 'success' | 'warning'>> =
   vertical-align: top;
 }
 
+.transaction-table td {
+  font-variant-numeric: tabular-nums;
+}
+
 .transaction-table th {
   color: var(--color-muted);
   font-size: var(--font-size-sm);
@@ -98,15 +100,13 @@ const statusVariant: Partial<Record<string, 'danger' | 'success' | 'warning'>> =
   border-bottom: 0;
 }
 
-.transaction-table time,
-.transaction-finished,
 .transaction-error {
   display: block;
 }
 
 .transaction-error {
   color: var(--color-danger);
-  font-size: var(--font-size-caption);
+  font-size: var(--font-size-sm);
   margin-top: var(--space-1);
 }
 

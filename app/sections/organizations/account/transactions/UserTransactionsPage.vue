@@ -43,7 +43,6 @@ const { t } = useI18n({
     delta: 'Token change',
     empty: 'No transactions yet',
     emptyHint: 'Token grants and spending will appear here.',
-    finishedAt: 'Finished',
     loadError: 'Could not load transactions',
     loading: 'Loading transactions…',
     reason: 'Reason',
@@ -63,7 +62,6 @@ const { t } = useI18n({
     delta: 'Изменение токенов',
     empty: 'Операций пока нет',
     emptyHint: 'Здесь появятся начисления и списания токенов.',
-    finishedAt: 'Завершена',
     loadError: 'Не удалось загрузить операции',
     loading: 'Загрузка операций…',
     reason: 'Причина',
@@ -90,7 +88,6 @@ const { data, message, pending, refresh } = await useApiQuery(
 const tableLabels = computed(() => ({
   date: t('date'),
   delta: t('delta'),
-  finishedAt: t('finishedAt'),
   reason: t('reason'),
   status: t('status'),
 }))
@@ -122,8 +119,6 @@ const toTableRows = (transactions: TransactionViewModel[]) =>
     delta: transaction.delta,
     deltaLabel: `${transaction.delta > 0 ? '+' : ''}${formatNumber(transaction.delta)}`,
     error: transaction.error,
-    finishedAt: transaction.finishedAt,
-    finishedAtLabel: transaction.finishedAt ? formatDateTime(transaction.finishedAt) : null,
     id: transaction.id,
     ownerName: transaction.ownerName,
     reason: reasonLabel(transaction.reason),

@@ -1,15 +1,12 @@
 <template>
   <section class="form-page">
-    <div class="title-row">
-      <div class="page-heading">
+    <BaseSectionHeader :title="t('createAttribute')">
+      <template #leading>
         <AppBackLink
           :label="t('backToAttributes')"
           :to="organizationRoutes.attributes()" />
-        <div class="page-heading-text">
-          <h2>{{ t('createAttribute') }}</h2>
-        </div>
-      </div>
-    </div>
+      </template>
+    </BaseSectionHeader>
     <form
       class="attribute-editor"
       @submit.prevent="submit">
@@ -224,6 +221,11 @@ const submit = async () => {
 </script>
 
 <style scoped>
+.form-page {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .attribute-editor fieldset {
   border: 0;
   margin: var(--space-5) 0 0;
@@ -231,7 +233,7 @@ const submit = async () => {
 }
 
 .attribute-editor legend {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-2);
 }
 

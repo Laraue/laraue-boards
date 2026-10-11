@@ -398,6 +398,14 @@
     </section>
 
     <section>
+      <h2>TransactionsTable</h2>
+      <TransactionsTable
+        :labels="transactionLabels"
+        :rows="transactions"
+        show-owner />
+    </section>
+
+    <section>
       <h2>BaseCard and BaseEmptyState</h2>
       <BaseCard>
         <BaseEmptyState
@@ -500,6 +508,40 @@ const checked = ref(true)
 const unchecked = ref(false)
 const tab = ref('comments')
 const color = ref(COLOR_PALETTE[0]?.value ?? '')
+
+const transactionLabels = {
+  date: 'Date',
+  delta: 'Token change',
+  member: 'Member',
+  reason: 'Reason',
+  status: 'Status',
+}
+const transaction = (
+  id: string,
+  ownerName: string,
+  reason: string,
+  status: string,
+  delta: number,
+  error: null | string = null,
+) => ({
+  createdAt: '2026-10-09T10:15:00Z',
+  createdAtLabel: 'Oct 9, 2026, 10:15 AM',
+  delta,
+  deltaLabel: `${delta > 0 ? '+' : ''}${delta.toLocaleString('en')}`,
+  error,
+  id,
+  ownerName,
+  reason,
+  status,
+  statusClass: status.toLowerCase(),
+})
+const transactions = [
+  transaction('1', 'Ada Lovelace', 'Daily grant', 'Confirmed', 50000),
+  transaction('2', 'Grace Hopper', 'Purchase', 'Confirmed', 1000000),
+  transaction('3', 'Alan Turing', 'Spend', 'Started', -1840),
+  transaction('4', 'Ada Lovelace', 'Spend', 'Canceled', -2210, 'The model did not answer in time.'),
+  transaction('5', 'Grace Hopper', 'Expiry', 'Confirmed', -12000),
+]
 </script>
 
 <style scoped>
