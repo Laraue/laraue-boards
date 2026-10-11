@@ -170,6 +170,7 @@ const classes = computed(() => [
   height: var(--control-height);
   justify-content: flex-start;
   min-width: 0;
+  padding: 0 var(--space-2);
   text-align: left;
   width: 100%;
 }

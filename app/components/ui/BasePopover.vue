@@ -82,7 +82,7 @@ const focusTrigger = (event: Event) => {
 /* Unscoped: Reka puts the class on its inner element and the scope id on its own wrapper. */
 .base-popover-content {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);

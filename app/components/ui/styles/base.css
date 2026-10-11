@@ -49,7 +49,7 @@ body {
 .base-dialog {
   animation: base-dialog-enter var(--duration-base) var(--ease-standard);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
@@ -97,7 +97,7 @@ body:has(dialog[open]) {
 
 dialog {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);

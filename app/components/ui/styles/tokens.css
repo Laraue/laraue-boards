@@ -56,6 +56,8 @@
   --color-border-hover: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   /* Separates parts inside a surface that already has a border. */
   --color-border-strong: var(--gray-7);
+  /* Edge of cards and floating surfaces: a faint ring of the text color, softer than a gray line. */
+  --color-border-surface: color-mix(in srgb, var(--color-text) 10%, transparent);
   /* Accent is for text, icons and lines; action fills a control under white text. They differ
      only in the dark theme, where accent text gets lighter to stay readable. */
   --color-accent: var(--blue-9);

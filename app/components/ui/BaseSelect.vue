@@ -228,7 +228,7 @@ const selected = computed({
 /* Unscoped: the content is rendered by Reka, outside this component's root. */
 .base-select-content {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
@@ -253,7 +253,7 @@ const selected = computed({
   min-height: var(--control-height-small);
   outline: none;
   overflow-wrap: anywhere;
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-2);
   user-select: none;
 }
 
@@ -286,6 +286,6 @@ const selected = computed({
   color: var(--color-muted);
   display: flex;
   min-height: var(--control-height-small);
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-2);
 }
 </style>

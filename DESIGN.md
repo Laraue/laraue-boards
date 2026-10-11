@@ -115,7 +115,9 @@ check a design change there and add new components and variants to it.
 ## Surfaces
 
 - Group page content (lists, settings sections, summaries) in `BaseCard`: surface fill, border,
-  `--radius-card` on the page background, no shadow. Do not rebuild these styles locally.
+  `--radius-card` on the page background, no shadow. Cards, dialogs and floating surfaces
+  (menus, popovers, select lists, toasts) are edged with `--color-border-surface`, a faint ring of the
+  text color; controls keep the solid `--color-border`. Do not rebuild these styles locally.
 
 ## Popovers and filters
 
