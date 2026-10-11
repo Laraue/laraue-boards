@@ -89,7 +89,6 @@
             :disabled="submitting"
             variant="danger"
             @click="remove(attribute)">
-            <IconTrash />
             {{ t('deleteAttribute') }}
           </BaseButton>
         </BaseDangerZone>

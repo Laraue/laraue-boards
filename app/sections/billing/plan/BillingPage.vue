@@ -15,6 +15,7 @@
             <BaseButton
               variant="primary"
               @click="onChangePlan">
+              <IconArrowsExchange />
               {{ t('changePlan') }}
             </BaseButton>
           </template>
@@ -93,6 +94,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowsExchange } from '@tabler/icons-vue'
+
 import type {
   BillingPageData,
   BillingPageDeps,
