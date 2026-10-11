@@ -8,19 +8,19 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="token-packs-page">
-        <div class="page-heading">
-          <AppBackLink
-            :label="t('back')"
-            :to="backTo" />
-          <h2>{{ t('title') }}</h2>
-        </div>
-        <p class="muted">{{ t('description') }}</p>
+        <BaseSectionHeader
+          :description="t('description')"
+          :title="t('title')">
+          <template #leading>
+            <AppBackLink
+              :label="t('back')"
+              :to="backTo" />
+          </template>
+        </BaseSectionHeader>
 
-        <p
+        <BaseEmptyState
           v-if="!packs.length"
-          class="muted">
-          {{ t('noPacks') }}
-        </p>
+          :title="t('noPacks')" />
         <template v-else>
           <div class="pack-list">
             <article
@@ -175,10 +175,6 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
-.token-packs-page h2 {
-  line-height: var(--icon-btn-size);
-  margin: 0;
-}
 
 .token-packs-page p {
   margin: 0;

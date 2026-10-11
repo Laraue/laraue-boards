@@ -1,12 +1,22 @@
 <template>
   <section class="api-keys-section">
-    <BaseSectionHeader :title="t('apiKeys')" />
-    <form
-      class="api-key-form"
-      @submit.prevent="createKey">
+    <BaseSectionHeader :title="t('apiKeys')">
+      <template #actions>
+        <BaseButton
+          variant="primary"
+          @click="dialog?.open()">
+          <IconPlus />
+          {{ t('create') }}
+        </BaseButton>
+      </template>
+    </BaseSectionHeader>
+    <BaseDialog
+      ref="dialog"
+      :close-label="t('close')"
+      :title="t('create')"
+      @submit="createKey">
       <BaseField
         v-slot="{ id }"
-        class="api-key-name"
         :label="t('name')">
         <input
           :id="id"
@@ -17,13 +27,21 @@
           required
           type="text" />
       </BaseField>
-      <BaseButton
-        :disabled="busy"
-        type="submit"
-        variant="primary">
-        {{ creating ? t('creating') : t('create') }}
-      </BaseButton>
-    </form>
+      <p
+        v-if="createMessage"
+        class="form-error">
+        {{ createMessage }}
+      </p>
+      <template #actions>
+        <BaseButton @click="dialog?.close()">{{ t('cancel') }}</BaseButton>
+        <BaseButton
+          :loading="creating"
+          type="submit"
+          variant="primary">
+          {{ t('create') }}
+        </BaseButton>
+      </template>
+    </BaseDialog>
 
     <div
       v-if="rawKey"
@@ -33,11 +51,13 @@
       <p class="muted">{{ t('copyWarning') }}</p>
       <div class="created-key-value">
         <code>{{ rawKey }}</code>
-        <BaseButton @click="copyKey">
+        <BaseIconButton
+          :label="copied ? t('copied') : t('copy')"
+          :tooltip="copied ? t('copied') : t('copy')"
+          @click="copyKey">
           <IconCheck v-if="copied" />
           <IconCopy v-else />
-          {{ copied ? t('copied') : t('copy') }}
-        </BaseButton>
+        </BaseIconButton>
       </div>
       <p
         v-if="copyError"
@@ -96,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconCopy } from '@tabler/icons-vue'
+import { IconCheck, IconCopy, IconPlus } from '@tabler/icons-vue'
 
 import type { ApiKeysPageDeps } from './ApiKeysPage.deps'
 
@@ -106,6 +126,8 @@ const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     apiKeys: 'API keys',
+    cancel: 'Cancel',
+    close: 'Close',
     copied: 'Copied',
     copy: 'Copy',
     copyError: 'Could not copy the key. Select and copy it manually.',
@@ -113,7 +135,6 @@ const { t } = useI18n({
     create: 'Create key',
     created: 'API key created',
     createdAt: 'Created {date}',
-    creating: 'Creating…',
     empty: 'No API keys yet',
     emptyHint: 'Create a key to access the API from an external tool.',
     lastUsedAt: 'last used {date}',
@@ -127,6 +148,8 @@ const { t } = useI18n({
   },
   ru: {
     apiKeys: 'API-ключи',
+    cancel: 'Отмена',
+    close: 'Закрыть',
     copied: 'Скопировано',
     copy: 'Копировать',
     copyError: 'Не удалось скопировать ключ. Выделите и скопируйте его вручную.',
@@ -134,7 +157,6 @@ const { t } = useI18n({
     create: 'Создать ключ',
     created: 'API-ключ создан',
     createdAt: 'Создан {date}',
-    creating: 'Создание…',
     empty: 'API-ключей пока нет',
     emptyHint: 'Создайте ключ для доступа к API из внешнего инструмента.',
     lastUsedAt: 'последнее использование {date}',
@@ -148,6 +170,7 @@ const { t } = useI18n({
   },
 })
 
+const dialog = useTemplateRef('dialog')
 const page = ref(1)
 const name = ref('')
 const rawKey = ref('')
@@ -179,6 +202,7 @@ const busy = computed(() => pending.value || creating.value || revoking.value)
 const createKey = async () => {
   const created = await create({ name: name.value.trim() })
   if (created) {
+    dialog.value?.close()
     name.value = ''
     rawKey.value = created.value.rawKey
     copied.value = false
@@ -203,9 +227,8 @@ const copyKey = async () => {
   }
 }
 
-const sectionMessage = computed(
-  () => createMessage.value || revokeMessage.value || queryMessage.value,
-)
+// A failed create shows in its dialog.
+const sectionMessage = computed(() => revokeMessage.value || queryMessage.value)
 </script>
 
 <style scoped>
@@ -213,17 +236,6 @@ const sectionMessage = computed(
   align-content: start;
   display: grid;
   gap: var(--space-5);
-}
-
-.api-key-form {
-  align-items: end;
-  display: flex;
-  gap: var(--space-3);
-}
-
-.api-key-name {
-  max-width: 360px;
-  width: 100%;
 }
 
 .created-key {
@@ -247,6 +259,7 @@ const sectionMessage = computed(
 
 .created-key-value code {
   background: var(--color-soft);
+  flex: 1;
   border-radius: var(--radius-control);
   overflow-wrap: anywhere;
   padding: var(--space-2);
@@ -255,13 +268,5 @@ const sectionMessage = computed(
 .base-list-row code,
 .created-key-value code {
   font-family: var(--font-family-mono);
-}
-
-@media (max-width: 767px) {
-  .api-key-form,
-  .created-key-value {
-    align-items: stretch;
-    flex-direction: column;
-  }
 }
 </style>

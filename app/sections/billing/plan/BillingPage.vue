@@ -284,10 +284,15 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   font-size: var(--font-size-small);
 }
 
+/* Like the plan card: the label on its own line, the value under it. */
 .usage-heading {
-  align-items: baseline;
-  display: flex;
-  gap: var(--space-3);
+  display: grid;
+  gap: var(--space-1);
+}
+
+.usage-heading span {
+  color: var(--color-muted);
+  font-weight: var(--font-weight-medium);
 }
 
 .usage-heading strong {

@@ -8,18 +8,17 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="change-plan-page">
-        <div class="page-heading">
-          <AppBackLink
-            :label="t('back')"
-            :to="backTo" />
-          <h2>{{ t('plans') }}</h2>
-        </div>
+        <BaseSectionHeader :title="t('plans')">
+          <template #leading>
+            <AppBackLink
+              :label="t('back')"
+              :to="backTo" />
+          </template>
+        </BaseSectionHeader>
 
-        <p
+        <BaseEmptyState
           v-if="!plans(page).length"
-          class="muted">
-          {{ t('noPlans') }}
-        </p>
+          :title="t('noPlans')" />
         <template v-else>
           <div class="plan-list">
             <article
@@ -190,10 +189,6 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
-.change-plan-page h2 {
-  line-height: var(--icon-btn-size);
-  margin: 0;
-}
 
 .plan-list {
   display: grid;
