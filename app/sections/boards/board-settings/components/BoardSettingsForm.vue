@@ -8,7 +8,7 @@
       <BaseSectionHeader
         :id="`${idPrefix}-general`"
         :title="t('general')" />
-      <BaseFieldGroup horizontal>
+      <BaseFieldGroup>
         <BaseField
           id="board-settings-name"
           :label="t('name')">

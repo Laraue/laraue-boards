@@ -23,7 +23,7 @@
       <form
         :id="formId"
         @submit.prevent="submit">
-        <BaseFieldGroup horizontal>
+        <BaseFieldGroup>
           <BaseField
             id="create-space-name"
             :label="t('name')">

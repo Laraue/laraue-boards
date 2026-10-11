@@ -127,9 +127,9 @@ check a design change there and add new components and variants to it.
   (muted, small) and `error` (danger, small). The control takes `id` and `describedby` from the slot
   props, or keeps its own id passed as `id`; a control that is not a single input (a color picker, a
   list of rows) takes `labelId` for `aria-labelledby`.
-- Fields go in a `BaseFieldGroup`, which owns the space between them. `horizontal` is for settings
-  pages: labels in one column beside their controls, on every screen width. Do not space fields with
-  label margins or local wrappers.
+- Fields go in a `BaseFieldGroup`, which owns the space between them. Labels are always above their
+  controls, never beside them: long or translated labels and narrow screens need no other layout. Do
+  not space fields with label margins or local wrappers.
 - Form-wide messages after a submit stay `.form-error` / `.form-success` under the fields.
 
 ## Surfaces

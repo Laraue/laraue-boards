@@ -210,7 +210,7 @@
               aria-invalid="true" />
           </BaseField>
         </BaseFieldGroup>
-        <BaseFieldGroup horizontal>
+        <BaseFieldGroup>
           <BaseField
             v-slot="{ id }"
             label="Name">

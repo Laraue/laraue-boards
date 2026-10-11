@@ -49,7 +49,7 @@
           <form
             :id="formId"
             @submit.prevent="update">
-            <BaseFieldGroup horizontal>
+            <BaseFieldGroup>
               <BaseField
                 id="space-settings-name"
                 :label="t('name')">
