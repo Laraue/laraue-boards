@@ -63,7 +63,7 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="🚀 Deploy started: Boards Frontend (${{ github.sha }})"
+            -d text="🚀 Deploy started: Laraue Boards (${{ github.sha }})"
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -100,11 +100,11 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="✅ Deploy finished: Boards Frontend (${{ github.sha }})"
+            -d text="✅ Deploy finished: Laraue Boards (${{ github.sha }})"
 
       - name: Notify deploy failed
         if: failure()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="❌ Deploy failed: Boards Frontend (${{ github.sha }})"
+            -d text="❌ Deploy failed: Laraue Boards (${{ github.sha }})"
