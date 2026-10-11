@@ -56,7 +56,7 @@ const open = ref(false)
   display: grid;
   gap: var(--space-1);
   max-height: var(--reka-dropdown-menu-content-available-height);
-  min-width: 200px;
+  min-width: 8rem; /* 128px, as in shadcn; wider rows stretch it */
   overflow: auto;
   padding: var(--space-1);
   z-index: 31;
