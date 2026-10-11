@@ -12,7 +12,11 @@
              its own way to lift that limit. -->
         <BaseSectionHeader :title="t('plan')">
           <template #actions>
-            <BaseButton @click="onChangePlan">{{ t('changePlan') }}</BaseButton>
+            <BaseButton
+              variant="primary"
+              @click="onChangePlan">
+              {{ t('changePlan') }}
+            </BaseButton>
           </template>
         </BaseSectionHeader>
         <div class="plan-summary">
