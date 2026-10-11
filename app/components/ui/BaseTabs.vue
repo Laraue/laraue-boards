@@ -46,7 +46,8 @@ const model = defineModel<T>({ required: true })
 /* A segmented control: a soft track, as wide as its tabs, with the active tab raised on it. */
 .base-tabs-list {
   background: var(--color-hover);
-  border-radius: var(--radius-control);
+  /* The tab radius plus the track padding, so the corners run parallel. */
+  border-radius: calc(var(--radius-control) + 3px);
   display: flex;
   gap: 2px;
   height: var(--control-height);

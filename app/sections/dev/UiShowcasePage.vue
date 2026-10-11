@@ -393,7 +393,7 @@ const ramps = [
   { name: 'amber', steps: [3, 11] },
 ]
 const fontSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl']
-const radii = ['--radius-small', '--radius-control', '--radius-card', '--radius-full']
+const radii = ['--radius-small', '--radius-control', '--radius-popover', '--radius-card', '--radius-full']
 const spaces = [
   '--space-1',
   '--space-2',

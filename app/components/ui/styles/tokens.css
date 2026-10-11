@@ -97,11 +97,13 @@
   --space-6: 1.5rem; /* 24px */
   --space-8: 2rem; /* 32px */
 
-  /* Four radii, one knob. --radius sets everything interactive or floating (controls, tabs, menu
-     rows, popovers, menus, toasts, tooltips); cards and dialogs are rounder; checkboxes smaller. */
+  /* Radii, one knob. --radius sets everything interactive (controls, tabs, menu rows, tooltips).
+     A surface that holds rows adds its padding, so its corner runs parallel to the rows' corners;
+     cards and dialogs are rounder; checkboxes smaller. */
   --radius: 0.5rem; /* 8px */
   --radius-small: 0.25rem; /* 4px */
   --radius-control: var(--radius);
+  --radius-popover: calc(var(--radius) + var(--space-1)); /* 12px: menus, popovers, toasts */
   --radius-card: calc(var(--radius) * 1.75); /* 14px */
   --radius-full: 999px;
 

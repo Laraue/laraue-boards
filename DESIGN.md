@@ -105,11 +105,12 @@ check a design change there and add new components and variants to it.
   lists and headings; `shape="square"` for organizations. Initials scale with the size; never set
   their font size.
 - Main icons use `--icon-size` (16px). Direction chevrons use 12px.
-- Four radii, one knob (`--radius`, 8px): `--radius-control` (= `--radius`) for everything
-  interactive or floating (controls, tabs and their track, menu rows and options, popovers, menus,
-  select lists, toasts, tooltips); `--radius-card` (`--radius` × 1.75, 14px) for cards and dialogs;
-  `--radius-small` (4px) for checkboxes; `--radius-full` for pills and circles. No other radius:
-  nested rows are not made smaller, one radius reads as one system. Space follows the 4px scale.
+- Radii come from one knob (`--radius`, 8px): `--radius-control` (= `--radius`) for everything
+  interactive (controls, tabs, menu rows and options, tooltips); a surface that holds rows adds its
+  padding, so its corner runs parallel to theirs: `--radius-popover` (`--radius` + 4px, 12px) for
+  popovers, menus, select lists and toasts, and the tabs track is `--radius-control` + 3px;
+  `--radius-card` (`--radius` × 1.75, 14px) for cards and dialogs; `--radius-small` (4px) for
+  checkboxes; `--radius-full` for pills and circles. Nested rows are not made smaller. Space follows the 4px scale.
 
 ## Surfaces
 
