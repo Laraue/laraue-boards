@@ -8,72 +8,81 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="billing-page">
-        <BaseSectionHeader :title="t('plan')" />
-        <!-- One row per figure: what it is, how much is left with its bar, and what to do about it. -->
-        <BaseList>
-          <div class="usage-row">
-            <span class="usage-label">{{ t('currentPlan') }}</span>
-            <div class="usage-value">
-              <strong>{{ page.subscriptionCode }}</strong>
-              <p class="muted">
-                {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
-              </p>
-              <p
-                v-if="page.periodEndsAt"
-                class="muted">
-                {{ periodText(page) }}
-              </p>
-            </div>
+        <!-- The plan is the context of the figures under it, so it heads the section; a limit card keeps
+             its own way to lift that limit. -->
+        <BaseSectionHeader :title="t('plan')">
+          <template #actions>
             <BaseButton @click="onChangePlan">{{ t('changePlan') }}</BaseButton>
-          </div>
+          </template>
+        </BaseSectionHeader>
+        <div class="plan-summary">
+          <p>
+            <strong>{{ page.subscriptionCode }}</strong>
+            <span class="muted">
+              {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
+            </span>
+          </p>
+          <p
+            v-if="page.periodEndsAt"
+            class="muted">
+            {{ periodText(page) }}
+          </p>
+        </div>
 
-          <div class="usage-row">
+        <div class="usage-grid">
+          <article class="usage-card">
             <span class="usage-label">{{ t('tokens') }}</span>
-            <div class="usage-value">
-              <strong>{{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}</strong>
-              <div class="usage-bar">
-                <span :style="{ width: usagePercent(page.tokens) }" />
-              </div>
-              <p class="usage-note muted">{{ tokensUsageText(page) }}</p>
+            <strong class="usage-value">{{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}</strong>
+            <div class="usage-bar">
+              <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
-            <BaseButton @click="onBuyTokens">{{ t('buyTokens') }}</BaseButton>
-          </div>
+            <p class="usage-note muted">{{ tokensUsageText(page) }}</p>
+            <BaseButton
+              class="usage-action"
+              @click="onBuyTokens">
+              {{ t('buyTokens') }}
+            </BaseButton>
+          </article>
 
-          <div
+          <article
             v-if="page.issuesPerMonth"
-            class="usage-row">
+            class="usage-card">
             <span class="usage-label">{{ t('issuesPerMonth') }}</span>
-            <div class="usage-value">
-              <strong>{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
-              <div class="usage-bar">
-                <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
-              </div>
-              <p class="usage-note muted">{{ issuesUsageText(page, page.issuesPerMonth) }}</p>
+            <strong class="usage-value">{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
+            <div class="usage-bar">
+              <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
             </div>
-            <BaseButton @click="onChangePlan">{{ t('changePlan') }}</BaseButton>
-          </div>
+            <p class="usage-note muted">{{ issuesUsageText(page, page.issuesPerMonth) }}</p>
+            <BaseButton
+              class="usage-action"
+              @click="onChangePlan">
+              {{ t('changePlan') }}
+            </BaseButton>
+          </article>
 
-          <div
+          <article
             v-if="page.kind === 'personal' && page.freeTeamOrganizations"
-            class="usage-row">
+            class="usage-card">
             <span class="usage-label">{{ t('freeTeamOrganizations') }}</span>
-            <div class="usage-value">
-              <strong>{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
-              <div class="usage-bar">
-                <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
-              </div>
-              <p class="usage-note muted">
-                {{
-                  t('usedOfLimitInPlan', {
-                    limit: formatNumber(page.freeTeamOrganizations.limit),
-                    used: formatNumber(page.freeTeamOrganizations.used),
-                  })
-                }}
-              </p>
+            <strong class="usage-value">{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
+            <div class="usage-bar">
+              <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
             </div>
-            <BaseButton @click="onChangePlan">{{ t('changePlan') }}</BaseButton>
-          </div>
-        </BaseList>
+            <p class="usage-note muted">
+              {{
+                t('usedOfLimitInPlan', {
+                  limit: formatNumber(page.freeTeamOrganizations.limit),
+                  used: formatNumber(page.freeTeamOrganizations.used),
+                })
+              }}
+            </p>
+            <BaseButton
+              class="usage-action"
+              @click="onChangePlan">
+              {{ t('changePlan') }}
+            </BaseButton>
+          </article>
+        </div>
       </section>
     </template>
   </QueryState>
@@ -193,46 +202,55 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   gap: var(--space-5);
 }
 
-.usage-row {
-  align-items: center;
+.plan-summary {
   display: grid;
-  gap: var(--space-2) var(--space-4);
-  /* One action width for every row, so the bars end on one line. */
-  grid-template-columns: 11rem minmax(0, 1fr) 8rem;
+  gap: var(--space-1);
+}
+
+.plan-summary p {
+  margin: 0;
+}
+
+.plan-summary strong {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-right: var(--space-2);
+}
+
+.usage-grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.usage-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
   padding: var(--space-4);
 }
 
-.usage-row > .base-button {
-  justify-self: end;
-}
-
-.usage-row + .usage-row {
-  border-top: 1px solid var(--color-divider);
-}
-
 .usage-label {
-  align-self: start;
   color: var(--color-muted);
   font-weight: var(--font-weight-medium);
 }
 
 .usage-value {
-  display: grid;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
-.usage-value strong {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
 }
 
-.usage-value p {
+.usage-note {
+  font-size: var(--font-size-sm);
   margin: 0;
 }
 
-.usage-note {
-  font-size: var(--font-size-sm);
+.usage-action {
+  align-self: flex-end;
+  margin-top: auto;
 }
 
 .usage-bar {
@@ -247,16 +265,5 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   border-radius: inherit;
   display: block;
   height: 100%;
-}
-
-/* On a phone the label heads the row; the figure and its action share the line under it. */
-@media (max-width: 767px) {
-  .usage-row {
-    grid-template-columns: minmax(0, 1fr) 8rem;
-  }
-
-  .usage-label {
-    grid-column: 1 / -1;
-  }
 }
 </style>
