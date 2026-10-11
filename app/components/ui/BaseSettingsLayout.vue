@@ -33,6 +33,8 @@ defineProps<{ items: NavTab[]; label: string }>()
   display: grid;
   gap: var(--space-8);
   grid-template-columns: 12rem minmax(0, 48rem);
+  /* Menu and section sit together in the middle of a wide page. */
+  justify-content: center;
 }
 
 .base-settings-aside {
