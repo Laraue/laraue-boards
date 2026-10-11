@@ -93,7 +93,9 @@ const classes = computed(() => [
 </script>
 
 <style scoped>
-.base-button {
+/* :where() keeps the root rule lighter than a class the consumer passes, whichever stylesheet
+   loads last (they arrive in a different order on the server and after hydration). */
+:where(.base-button) {
   align-items: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border);

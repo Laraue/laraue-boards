@@ -23,6 +23,11 @@ check a design change there and add new components and variants to it.
   outside `ui/` (`App*` or a domain name). A generic need found in an app component moves into the
   kit.
 
+- A kit component's root rule is written `:where(.base-x) { ... }` when consumers set its layout
+  through their own class (width, flex, alignment): the consumer's class then always wins. With
+  equal weight the result would depend on stylesheet order, which differs between the server render
+  and hydration.
+
 ## Units
 
 - Size tokens (spacing, type, radius, control and icon sizes, page widths) are in rem, so the whole

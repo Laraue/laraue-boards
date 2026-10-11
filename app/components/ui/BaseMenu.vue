@@ -40,7 +40,9 @@ const open = ref(false)
 </script>
 
 <style scoped>
-.base-menu-root {
+/* :where() keeps the root rule lighter than a class the consumer passes, whichever stylesheet
+   loads last (they arrive in a different order on the server and after hydration). */
+:where(.base-menu-root) {
   width: fit-content;
 }
 </style>
