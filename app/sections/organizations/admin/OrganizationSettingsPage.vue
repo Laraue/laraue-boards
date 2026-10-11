@@ -55,15 +55,19 @@
               variant="primary">
               {{ submitting ? t('saving') : t('saveChanges') }}
             </BaseButton>
-            <BaseButton
-              v-if="page.canDelete"
-              :disabled="busy"
-              variant="danger"
-              @click="remove(page.id)">
-              {{ removing ? t('deleting') : t('deleteOrganization') }}
-            </BaseButton>
           </div>
         </form>
+        <BaseDangerZone
+          v-if="page.canDelete"
+          :description="t('deleteDescription')"
+          :title="t('deleteOrganization')">
+          <BaseButton
+            :disabled="busy"
+            variant="danger"
+            @click="remove(page.id)">
+            {{ removing ? t('deleting') : t('deleteOrganization') }}
+          </BaseButton>
+        </BaseDangerZone>
       </section>
     </template>
   </QueryState>
@@ -87,6 +91,7 @@ const { t } = useI18n({
     changesSaved: 'Changes saved.',
     color: 'Color',
     deleteConfirm: 'Delete this organization?',
+    deleteDescription: 'Removes the organization with its spaces, boards and issues for every member.',
     deleteOrganization: 'Delete organization',
     deleting: 'Deleting…',
     general: 'General',
@@ -102,6 +107,7 @@ const { t } = useI18n({
     changesSaved: 'Изменения сохранены.',
     color: 'Цвет',
     deleteConfirm: 'Удалить эту организацию?',
+    deleteDescription: 'Удаляет организацию со всеми пространствами, досками и задачами для всех участников.',
     deleteOrganization: 'Удалить организацию',
     deleting: 'Удаление…',
     general: 'Общие',

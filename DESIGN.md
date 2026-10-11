@@ -144,6 +144,10 @@ check a design change there and add new components and variants to it.
   chevron at the end. Do not make each row its own card. Use a table only when rows have several
   columns to compare, like issues.
 
+- A destructive action of a settings page (delete the organization, the attribute) is not placed next
+  to Save: it goes under the form in `BaseDangerZone`, with a line above it and one sentence on what
+  it removes.
+
 ## Popovers and filters
 
 - `BasePopover` is built on Reka `Popover`: Reka places it, flips it at the viewport edge and closes

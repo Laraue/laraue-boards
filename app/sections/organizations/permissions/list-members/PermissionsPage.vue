@@ -8,48 +8,56 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="permissions-page">
-        <BaseSectionHeader :title="t('permissions')" />
-        <div class="invitation-card">
-          <div class="invitation-heading">
-            <span class="invitation-icon"><IconTicket /></span>
-            <div>
-              <strong>{{ t('invitePeople') }}</strong>
-              <p class="muted">{{ t('inviteDescription') }}</p>
-            </div>
-            <button
-              :aria-label="regenerating ? t('creatingLink') : t('createLink')"
-              class="regenerate-link"
-              :disabled="regenerating"
-              type="button"
-              @click="regenerate">
-              <IconRefresh />
-              <span class="btn-label">
-                {{ regenerating ? t('creatingLinkProgress') : t('createLink') }}
-              </span>
-            </button>
-          </div>
-          <div class="invitation-link">
-            <input
-              :aria-label="t('invitationLink')"
-              readonly
-              :value="invitationUrl"
-              @focus="($event.target as HTMLInputElement).select()" />
-            <BaseButton
-              :class="{ copied: state.copied }"
-              @click="copyInvitation">
-              <IconCheck v-if="state.copied" />
-              <IconCopy v-else />
-              {{ state.copied ? t('copied') : t('copyLink') }}
-            </BaseButton>
-          </div>
-          <p
-            v-if="state.copyError || regenerateMessage"
-            aria-live="polite"
-            class="form-error">
-            {{ regenerateMessage || state.copyError }}
-          </p>
-        </div>
-        <h3 class="members-label">{{ t('members') }}</h3>
+        <BaseSectionHeader :title="t('permissions')">
+          <template #actions>
+            <!-- Invitations are rare next to reading the list, so the link waits behind a button. -->
+            <BasePopover
+              align="end"
+              class="invitation">
+              <template #trigger="{ toggle }">
+                <BaseButton
+                  variant="primary"
+                  @click="toggle">
+                  <IconUserPlus />
+                  {{ t('invite') }}
+                </BaseButton>
+              </template>
+              <div class="invitation-panel">
+                <div>
+                  <strong>{{ t('invitePeople') }}</strong>
+                  <p class="muted">{{ t('inviteDescription') }}</p>
+                </div>
+                <div class="invitation-link">
+                  <input
+                    :aria-label="t('invitationLink')"
+                    readonly
+                    :value="invitationUrl"
+                    @focus="($event.target as HTMLInputElement).select()" />
+                  <BaseIconButton
+                    :label="state.copied ? t('copied') : t('copyLink')"
+                    :tooltip="state.copied ? t('copied') : t('copyLink')"
+                    @click="copyInvitation">
+                    <IconCheck v-if="state.copied" />
+                    <IconCopy v-else />
+                  </BaseIconButton>
+                  <BaseIconButton
+                    :disabled="regenerating"
+                    :label="t('createLink')"
+                    :tooltip="t('createLink')"
+                    @click="regenerate">
+                    <IconRefresh />
+                  </BaseIconButton>
+                </div>
+                <p
+                  v-if="state.copyError || regenerateMessage"
+                  aria-live="polite"
+                  class="form-error">
+                  {{ regenerateMessage || state.copyError }}
+                </p>
+              </div>
+            </BasePopover>
+          </template>
+        </BaseSectionHeader>
         <BaseList>
           <BaseListRow
             v-for="member in page.members"
@@ -77,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconCopy, IconRefresh, IconTicket } from '@tabler/icons-vue'
+import { IconCheck, IconCopy, IconRefresh, IconUserPlus } from '@tabler/icons-vue'
 
 import type { PermissionsPageDeps } from '~/sections/organizations/permissions/list-members/PermissionsPage.deps'
 
@@ -91,14 +99,12 @@ const { t } = useI18n({
     copyError: 'Could not copy the link. Select and copy it manually.',
     copyLink: 'Copy link',
     createLink: 'Create a new link',
-    creatingLink: 'Creating new link',
-    creatingLinkProgress: 'Creating new link…',
     invitationLink: 'Invitation link',
+    invite: 'Invite',
     inviteDescription: 'Anyone with this link can join the organization.',
     invitePeople: 'Invite people',
     loadError: 'Could not load permissions',
     loading: 'Loading permissions…',
-    members: 'Members',
     owner: 'Owner',
     permissions: 'Permissions',
     regenerateConfirm: 'Create a new invitation link? The current link will stop working.',
@@ -109,14 +115,12 @@ const { t } = useI18n({
     copyError: 'Не удалось скопировать ссылку. Выделите и скопируйте её вручную.',
     copyLink: 'Копировать ссылку',
     createLink: 'Создать новую ссылку',
-    creatingLink: 'Создание новой ссылки',
-    creatingLinkProgress: 'Создание новой ссылки…',
     invitationLink: 'Ссылка-приглашение',
+    invite: 'Пригласить',
     inviteDescription: 'Любой пользователь с этой ссылкой сможет присоединиться к организации.',
     invitePeople: 'Пригласить участников',
     loadError: 'Не удалось загрузить права доступа',
     loading: 'Загрузка прав доступа…',
-    members: 'Участники',
     owner: 'Владелец',
     permissions: 'Права доступа',
     regenerateConfirm: 'Создать новую ссылку-приглашение? Текущая ссылка перестанет работать.',
@@ -185,97 +189,33 @@ const regenerate = async (): Promise<void> => {
   gap: var(--space-5);
 }
 
-.invitation-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-surface);
-  border-radius: var(--radius-card);
+.invitation {
+  --base-popover-width: 24rem;
+}
+
+.invitation-panel {
+  display: grid;
+  gap: var(--space-3);
   padding: var(--space-4);
 }
 
-.invitation-heading,
-.invitation-link,
-.regenerate-link {
-  align-items: center;
-  display: flex;
-}
-
-.invitation-heading {
-  gap: var(--space-3);
-}
-
-.invitation-heading > div {
-  flex: 1;
-  min-width: 0;
-}
-
-.invitation-icon {
-  background: var(--color-accent-soft);
-  border-radius: var(--radius-control);
-  color: var(--color-accent);
-  display: grid;
-  height: 40px;
-  place-items: center;
-  width: 40px;
+.invitation-panel p {
+  margin: var(--space-1) 0 0;
 }
 
 .invitation-link {
+  align-items: center;
+  display: flex;
   gap: var(--space-2);
-  margin-top: var(--space-4);
 }
 
 .invitation-link input {
   font-family: var(--font-family-mono);
+  min-width: 0;
   text-overflow: ellipsis;
-}
-
-.invitation-link .secondary {
-  flex: none;
-}
-
-.invitation-link .copied {
-  border-color: var(--color-success);
-  color: var(--color-success);
-}
-
-.regenerate-link {
-  background: none;
-  border: 0;
-  color: var(--color-muted);
-  flex: none;
-  font-size: var(--font-size-small);
-  gap: var(--space-1);
-  margin-left: auto;
-  padding: 0;
-}
-
-.regenerate-link:hover:not(:disabled) {
-  color: var(--color-text);
-}
-
-.regenerate-link .tabler-icon {
-  height: 14px;
-  width: 14px;
 }
 
 .member-role {
   margin-left: var(--space-2);
-}
-
-.members-label {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
-  /* Closer to its list than the page gap. */
-  margin: 0 0 calc(var(--space-3) * -1);
-}
-
-@media (max-width: 600px) {
-  .regenerate-link .btn-label {
-    display: none;
-  }
-
-  .invitation-link {
-    align-items: stretch;
-    flex-direction: column;
-  }
 }
 </style>

@@ -80,15 +80,19 @@
               variant="primary">
               {{ submitting ? t('saving') : t('saveChanges') }}
             </BaseButton>
-            <BaseButton
-              :disabled="submitting"
-              variant="danger"
-              @click="remove(attribute)">
-              <IconTrash />
-              {{ t('deleteAttribute') }}
-            </BaseButton>
           </div>
         </form>
+        <BaseDangerZone
+          :description="t('deleteDescription')"
+          :title="t('deleteAttribute')">
+          <BaseButton
+            :disabled="submitting"
+            variant="danger"
+            @click="remove(attribute)">
+            <IconTrash />
+            {{ t('deleteAttribute') }}
+          </BaseButton>
+        </BaseDangerZone>
       </section>
     </template>
   </QueryState>
@@ -119,6 +123,7 @@ const { t } = useI18n({
     backToAttributes: 'Back to attributes',
     color: 'Color',
     deleteAttribute: 'Delete attribute',
+    deleteDescription: 'Removes the field and its values from every issue.',
     editAttribute: 'Edit attribute',
     loadError: 'Could not load attribute',
     loading: 'Loading attribute…',
@@ -135,6 +140,7 @@ const { t } = useI18n({
     backToAttributes: 'Назад к атрибутам',
     color: 'Цвет',
     deleteAttribute: 'Удалить атрибут',
+    deleteDescription: 'Удаляет поле и его значения из всех задач.',
     editAttribute: 'Изменить атрибут',
     loadError: 'Не удалось загрузить атрибут',
     loading: 'Загрузка атрибута…',
