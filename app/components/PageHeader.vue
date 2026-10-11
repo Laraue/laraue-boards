@@ -180,8 +180,8 @@ const { t } = useI18n({
 
 .page-header-crumb > svg {
   flex: none;
-  height: 14px;
-  width: 14px;
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .page-header-title {
@@ -194,8 +194,8 @@ const { t } = useI18n({
 
 .page-header-title > svg {
   flex: none;
-  height: 14px;
-  width: 14px;
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .page-header-title-row,
