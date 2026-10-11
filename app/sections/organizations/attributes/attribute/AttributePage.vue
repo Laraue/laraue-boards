@@ -22,16 +22,24 @@
           v-if="draft"
           class="attribute-editor"
           @submit.prevent="submit">
-          <label for="edit-attribute-name">{{ t('name') }}</label>
-          <input
-            id="edit-attribute-name"
-            v-model="draft.name"
-            maxlength="64"
-            required />
-
-          <label>{{ t('color') }}</label>
-          <AppColorPicker v-model="draft.color" />
-
+          <BaseFieldGroup>
+            <BaseField
+              id="edit-attribute-name"
+              :label="t('name')">
+              <input
+                id="edit-attribute-name"
+                v-model="draft.name"
+                maxlength="64"
+                required />
+            </BaseField>
+            <BaseField
+              v-slot="{ labelId }"
+              :label="t('color')">
+              <AppColorPicker
+                v-model="draft.color"
+                :aria-labelledby="labelId" />
+            </BaseField>
+          </BaseFieldGroup>
           <fieldset v-if="draft.data.type === 'list'">
             <legend>{{ t('options') }}</legend>
             <TransitionGroup

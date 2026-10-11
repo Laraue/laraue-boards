@@ -17,32 +17,35 @@
           class="profile-card"
           @submit.prevent="save">
           <div class="profile-names">
-            <div class="profile-field">
-              <label for="profile-given-name">{{ t('givenName') }}</label>
+            <BaseField
+              id="profile-given-name"
+              :label="t('givenName')">
               <input
                 id="profile-given-name"
                 v-model="state.givenName"
                 autocomplete="given-name"
                 maxlength="128" />
-            </div>
-            <div class="profile-field">
-              <label for="profile-family-name">{{ t('familyName') }}</label>
+            </BaseField>
+            <BaseField
+              id="profile-family-name"
+              :label="t('familyName')">
               <input
                 id="profile-family-name"
                 v-model="state.familyName"
                 autocomplete="family-name"
                 maxlength="128" />
-            </div>
+            </BaseField>
           </div>
 
-          <div class="profile-field">
-            <label for="profile-display-name">{{ t('displayName') }}</label>
+          <BaseField
+            id="profile-display-name"
+            :label="t('displayName')">
             <input
               id="profile-display-name"
               v-model="state.displayName"
               maxlength="257"
               required />
-          </div>
+          </BaseField>
 
           <p
             v-if="state.saved"
@@ -170,15 +173,6 @@ const save = async (): Promise<void> => {
   display: grid;
   gap: var(--space-4);
   grid-template-columns: 1fr 1fr;
-}
-
-.profile-field {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.profile-field label {
-  margin: 0;
 }
 
 @media (max-width: 767px) {

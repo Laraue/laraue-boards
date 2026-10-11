@@ -17,16 +17,25 @@
               slug: page.slug,
             })
           ">
-          <label for="organization-settings-name">{{ t('name') }}</label>
-          <input
-            id="organization-settings-name"
-            v-model="state.name"
-            :disabled="!page.canUpdate"
-            required />
-          <label>{{ t('color') }}</label>
-          <AppColorPicker
-            v-model="state.color"
-            :disabled="!page.canUpdate" />
+          <BaseFieldGroup>
+            <BaseField
+              id="organization-settings-name"
+              :label="t('name')">
+              <input
+                id="organization-settings-name"
+                v-model="state.name"
+                :disabled="!page.canUpdate"
+                required />
+            </BaseField>
+            <BaseField
+              v-slot="{ labelId }"
+              :label="t('color')">
+              <AppColorPicker
+                v-model="state.color"
+                :aria-labelledby="labelId"
+                :disabled="!page.canUpdate" />
+            </BaseField>
+          </BaseFieldGroup>
           <p
             v-if="state.saved"
             class="form-success">

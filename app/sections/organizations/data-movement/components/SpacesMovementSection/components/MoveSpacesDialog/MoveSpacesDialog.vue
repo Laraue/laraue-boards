@@ -4,12 +4,17 @@
     :close-label="t('close')"
     :title="ids.length === 1 ? t('moveSpace') : t('moveSpaces')"
     @submit="confirmMove">
-    <label for="movement-space-organization">{{ t('organization') }}</label>
-    <OrganizationSelect
-      id="movement-space-organization"
-      v-model="state.organizationId"
-      :deps="deps.organizationSelect"
-      required />
+    <BaseFieldGroup>
+      <BaseField
+        id="movement-space-organization"
+        :label="t('organization')">
+        <OrganizationSelect
+          id="movement-space-organization"
+          v-model="state.organizationId"
+          :deps="deps.organizationSelect"
+          required />
+      </BaseField>
+    </BaseFieldGroup>
     <p
       v-if="message"
       class="form-error">

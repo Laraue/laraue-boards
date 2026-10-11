@@ -4,31 +4,42 @@
     :close-label="t('close')"
     :title="`${t('move')} ${tp('issues', state.issueKeys.length)}`"
     @submit="move">
-    <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
-    <SpaceSelect
-      :id="`${idPrefix}-space`"
-      v-model="state.spaceKey"
-      :deps="deps.spaceSelect"
-      :disabled="moving"
-      required />
-    <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
-    <BoardSelect
-      :id="`${idPrefix}-board`"
-      v-model="state.boardId"
-      :deps="deps.boardSelect"
-      :disabled="moving"
-      :excluded-value="excludedBoardId"
-      required
-      :space-key="state.spaceKey" />
-    <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
-    <StatusSelect
-      :id="`${idPrefix}-status`"
-      v-model="state.statusId"
-      :board-id="state.boardId"
-      :deps="deps.statusSelect"
-      :disabled="moving"
-      :placeholder="t('selectStatus')"
-      required />
+    <BaseFieldGroup>
+      <BaseField
+        :id="`${idPrefix}-space`"
+        :label="t('space')">
+        <SpaceSelect
+          :id="`${idPrefix}-space`"
+          v-model="state.spaceKey"
+          :deps="deps.spaceSelect"
+          :disabled="moving"
+          required />
+      </BaseField>
+      <BaseField
+        :id="`${idPrefix}-board`"
+        :label="t('board')">
+        <BoardSelect
+          :id="`${idPrefix}-board`"
+          v-model="state.boardId"
+          :deps="deps.boardSelect"
+          :disabled="moving"
+          :excluded-value="excludedBoardId"
+          required
+          :space-key="state.spaceKey" />
+      </BaseField>
+      <BaseField
+        :id="`${idPrefix}-status`"
+        :label="t('status')">
+        <StatusSelect
+          :id="`${idPrefix}-status`"
+          v-model="state.statusId"
+          :board-id="state.boardId"
+          :deps="deps.statusSelect"
+          :disabled="moving"
+          :placeholder="t('selectStatus')"
+          required />
+      </BaseField>
+    </BaseFieldGroup>
     <p
       v-if="message"
       class="form-error">

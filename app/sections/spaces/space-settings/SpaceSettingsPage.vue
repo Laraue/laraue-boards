@@ -48,37 +48,34 @@
           <form
             :id="formId"
             @submit.prevent="update">
-            <div class="settings-fields">
-              <label
-                class="field-label"
-                for="space-settings-name">
-                {{ t('name') }}
-              </label>
-              <BaseInput
+            <BaseFieldGroup horizontal>
+              <BaseField
                 id="space-settings-name"
-                v-model="form.name"
-                :disabled="!page.canUpdate || submitting"
-                required />
-              <label
-                class="field-label"
-                for="space-settings-key">
-                {{ t('key') }}
-              </label>
-              <BaseInput
+                :label="t('name')">
+                <BaseInput
+                  id="space-settings-name"
+                  v-model="form.name"
+                  :disabled="!page.canUpdate || submitting"
+                  required />
+              </BaseField>
+              <BaseField
                 id="space-settings-key"
-                v-model="form.key"
-                :disabled="!page.canUpdate || submitting"
-                required />
-              <span
-                :id="`${formId}-color`"
-                class="field-label">
-                {{ t('color') }}
-              </span>
-              <AppColorPicker
-                v-model="form.color"
-                :aria-labelledby="`${formId}-color`"
-                :disabled="!page.canUpdate || submitting" />
-            </div>
+                :label="t('key')">
+                <BaseInput
+                  id="space-settings-key"
+                  v-model="form.key"
+                  :disabled="!page.canUpdate || submitting"
+                  required />
+              </BaseField>
+              <BaseField
+                v-slot="{ labelId }"
+                :label="t('color')">
+                <AppColorPicker
+                  v-model="form.color"
+                  :aria-labelledby="labelId"
+                  :disabled="!page.canUpdate || submitting" />
+              </BaseField>
+            </BaseFieldGroup>
             <p
               v-if="updateMessage || removeMessage"
               class="form-error">
@@ -192,19 +189,5 @@ const remove = async (): Promise<void> => {
   margin-inline: auto;
   max-width: 768px;
   width: 100%;
-}
-
-.settings-fields {
-  align-items: center;
-  column-gap: var(--space-4);
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  row-gap: var(--space-3);
-}
-
-@media (max-width: 600px) {
-  .settings-fields {
-    column-gap: var(--space-2);
-  }
 }
 </style>

@@ -15,50 +15,71 @@
     </template>
     <section class="form-page">
       <form @submit.prevent="create">
-        <label for="create-board-name">{{ t('name') }}</label>
-        <input
-          id="create-board-name"
-          v-model="form.name"
-          required />
-        <label>{{ t('color') }}</label>
-        <AppColorPicker v-model="form.color" />
-        <label for="create-board-source">{{ t('copyStatusesFrom') }}</label>
-        <select
-          id="create-board-source"
-          v-model="form.sourceBoardId"
-          @change="copyStatuses">
-          <option value="">{{ t('dontCopy') }}</option>
-          <option
-            v-for="board in data?.boards ?? []"
-            :key="board.value"
-            :value="board.value">
-            {{ board.label }}
-          </option>
-        </select>
-        <label>{{ t('statuses') }}</label>
-        <div
-          v-for="(status, index) in form.statuses"
-          :key="status.id"
-          class="status-row">
-          <AppColorPicker v-model="status.color" />
-          <input
-            v-model="status.name"
-            :aria-label="t('statusName')"
-            required />
-          <StatusCategorySelect v-model="status.category" />
-          <BaseIconButton
-            :label="t('deleteStatus')"
-            variant="danger"
-            @click="form.statuses.splice(index, 1)">
-            <IconTrash />
-          </BaseIconButton>
-        </div>
-        <BaseButton
-          class="add-status"
-          @click="addStatus">
-          <IconPlus />
-          {{ t('addStatus') }}
-        </BaseButton>
+        <BaseFieldGroup>
+          <BaseField
+            id="create-board-name"
+            :label="t('name')">
+            <input
+              id="create-board-name"
+              v-model="form.name"
+              required />
+          </BaseField>
+          <BaseField
+            v-slot="{ labelId }"
+            :label="t('color')">
+            <AppColorPicker
+              v-model="form.color"
+              :aria-labelledby="labelId" />
+          </BaseField>
+          <BaseField
+            id="create-board-source"
+            :label="t('copyStatusesFrom')">
+            <select
+              id="create-board-source"
+              v-model="form.sourceBoardId"
+              @change="copyStatuses">
+              <option value="">{{ t('dontCopy') }}</option>
+              <option
+                v-for="board in data?.boards ?? []"
+                :key="board.value"
+                :value="board.value">
+                {{ board.label }}
+              </option>
+            </select>
+          </BaseField>
+          <BaseField
+            v-slot="{ labelId }"
+            :label="t('statuses')">
+            <div
+              :aria-labelledby="labelId"
+              class="status-list"
+              role="group">
+              <div
+                v-for="(status, index) in form.statuses"
+                :key="status.id"
+                class="status-row">
+                <AppColorPicker v-model="status.color" />
+                <input
+                  v-model="status.name"
+                  :aria-label="t('statusName')"
+                  required />
+                <StatusCategorySelect v-model="status.category" />
+                <BaseIconButton
+                  :label="t('deleteStatus')"
+                  variant="danger"
+                  @click="form.statuses.splice(index, 1)">
+                  <IconTrash />
+                </BaseIconButton>
+              </div>
+              <BaseButton
+                class="add-status"
+                @click="addStatus">
+                <IconPlus />
+                {{ t('addStatus') }}
+              </BaseButton>
+            </div>
+          </BaseField>
+        </BaseFieldGroup>
         <p
           v-if="message"
           class="form-error">
@@ -165,12 +186,16 @@ const create = async () => {
 </script>
 
 <style scoped>
+.status-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
 .status-row {
   align-items: center;
   display: grid;
   gap: var(--space-2);
   grid-template-columns: minmax(min-content, 0.2fr) minmax(0, 1fr) minmax(min-content, 0.3fr) auto;
-  margin-top: var(--space-2);
 }
 
 .status-row :deep(.color-picker) {
@@ -178,6 +203,6 @@ const create = async () => {
 }
 
 .add-status {
-  margin-top: var(--space-2);
+  justify-self: start;
 }
 </style>

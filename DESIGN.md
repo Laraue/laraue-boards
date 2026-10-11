@@ -112,6 +112,17 @@ check a design change there and add new components and variants to it.
   `--radius-card` (`--radius` × 1.75, 14px) for cards and dialogs; `--radius-small` (4px) for
   checkboxes; `--radius-full` for pills and circles. Nested rows are not made smaller. Space follows the 4px scale.
 
+## Forms
+
+- A labelled control is a `BaseField`: label (weight 500), the control, then an optional `hint`
+  (muted, small) and `error` (danger, small). The control takes `id` and `describedby` from the slot
+  props, or keeps its own id passed as `id`; a control that is not a single input (a color picker,
+  a list of rows) takes `labelId` for `aria-labelledby`.
+- Fields go in a `BaseFieldGroup`, which owns the space between them. `horizontal` is for settings
+  pages: labels in one column beside their controls, on every screen width. Do not space fields
+  with label margins or local wrappers.
+- Form-wide messages after a submit stay `.form-error` / `.form-success` under the fields.
+
 ## Surfaces
 
 - Group page content (lists, settings sections, summaries) in `BaseCard`: surface fill, border,

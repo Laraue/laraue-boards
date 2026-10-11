@@ -4,20 +4,28 @@
     :close-label="t('close')"
     :title="ids.length === 1 ? t('moveBoard') : t('moveBoards')"
     @submit="confirmMove">
-    <label for="movement-board-organization">{{ t('organization') }}</label>
-    <OrganizationSelect
-      id="movement-board-organization"
-      v-model="state.organizationId"
-      :deps="deps.organizationSelect"
-      :initial-option="{ label: currentOrganizationName, value: currentOrganizationId }"
-      required />
-    <label for="movement-board-space">{{ t('space') }}</label>
-    <SpaceSelect
-      id="movement-board-space"
-      v-model="state.spaceKey"
-      :deps="deps.spaceSelect"
-      :organization-id="state.organizationId"
-      required />
+    <BaseFieldGroup>
+      <BaseField
+        id="movement-board-organization"
+        :label="t('organization')">
+        <OrganizationSelect
+          id="movement-board-organization"
+          v-model="state.organizationId"
+          :deps="deps.organizationSelect"
+          :initial-option="{ label: currentOrganizationName, value: currentOrganizationId }"
+          required />
+      </BaseField>
+      <BaseField
+        id="movement-board-space"
+        :label="t('space')">
+        <SpaceSelect
+          id="movement-board-space"
+          v-model="state.spaceKey"
+          :deps="deps.spaceSelect"
+          :organization-id="state.organizationId"
+          required />
+      </BaseField>
+    </BaseFieldGroup>
     <p
       v-if="message"
       class="form-error">

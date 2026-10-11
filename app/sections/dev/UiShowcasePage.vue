@@ -187,6 +187,50 @@
     </section>
 
     <section>
+      <h2>BaseField and BaseFieldGroup</h2>
+      <div class="grid">
+        <BaseFieldGroup>
+          <BaseField
+            v-slot="{ id, describedby }"
+            hint="Shown on the board and in links."
+            label="Name">
+            <BaseInput
+              :id="id"
+              v-model="text"
+              :aria-describedby="describedby" />
+          </BaseField>
+          <BaseField
+            v-slot="{ id, describedby }"
+            error="Enter a key of 2 to 10 letters."
+            label="Key">
+            <BaseInput
+              :id="id"
+              v-model="empty"
+              :aria-describedby="describedby"
+              aria-invalid="true" />
+          </BaseField>
+        </BaseFieldGroup>
+        <BaseFieldGroup horizontal>
+          <BaseField
+            v-slot="{ id }"
+            label="Name">
+            <BaseInput
+              :id="id"
+              v-model="text" />
+          </BaseField>
+          <BaseField
+            v-slot="{ id }"
+            label="Status">
+            <BaseSelect
+              :id="id"
+              v-model="option"
+              :options="options" />
+          </BaseField>
+        </BaseFieldGroup>
+      </div>
+    </section>
+
+    <section>
       <h2>BaseSelect</h2>
       <div class="grid">
         <BaseSelect
@@ -307,10 +351,13 @@
         description="A form on the native dialog: title, fields and actions."
         title="Dialog title"
         @submit="dialog?.close()">
-        <label for="showcase-dialog-name">Name</label>
-        <BaseInput
-          id="showcase-dialog-name"
-          v-model="text" />
+        <BaseField
+          v-slot="{ id }"
+          label="Name">
+          <BaseInput
+            :id="id"
+            v-model="text" />
+        </BaseField>
         <template #actions>
           <BaseButton @click="dialog?.close()">Cancel</BaseButton>
           <BaseButton

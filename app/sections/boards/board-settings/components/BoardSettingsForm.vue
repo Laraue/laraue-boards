@@ -6,36 +6,27 @@
       :aria-labelledby="`${idPrefix}-general`"
       class="settings-section">
       <h2 :id="`${idPrefix}-general`">{{ t('general') }}</h2>
-      <div class="settings-fields">
-        <div class="settings-field">
-          <label
-            class="field-label"
-            for="board-settings-name">
-            {{ t('name') }}
-          </label>
+      <BaseFieldGroup horizontal>
+        <BaseField
+          id="board-settings-name"
+          :label="t('name')">
           <BaseInput
             id="board-settings-name"
             v-model="state.name"
             :disabled="!viewModel.canUpdate || submitting"
             required />
-        </div>
-        <div class="settings-field">
-          <span
-            :id="`${idPrefix}-color`"
-            class="field-label">
-            {{ t('color') }}
-          </span>
+        </BaseField>
+        <BaseField
+          v-slot="{ labelId }"
+          :label="t('color')">
           <AppColorPicker
             v-model="state.color"
-            :aria-labelledby="`${idPrefix}-color`"
+            :aria-labelledby="labelId"
             :disabled="!viewModel.canUpdate || submitting" />
-        </div>
-        <div class="settings-field">
-          <label
-            class="field-label"
-            for="board-settings-status">
-            {{ t('boardStatus') }}
-          </label>
+        </BaseField>
+        <BaseField
+          id="board-settings-status"
+          :label="t('boardStatus')">
           <div class="settings-status">
             <BaseSelect
               id="board-settings-status"
@@ -44,8 +35,8 @@
               :options="statusOptions"
               @update:model-value="updateStatus" />
           </div>
-        </div>
-      </div>
+        </BaseField>
+      </BaseFieldGroup>
     </section>
     <section
       :aria-labelledby="`${idPrefix}-columns`"
@@ -278,22 +269,6 @@ watch(
   margin-top: var(--space-1);
 }
 
-.settings-fields {
-  column-gap: var(--space-4);
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  row-gap: var(--space-3);
-}
-
-.settings-field {
-  align-items: center;
-  display: grid;
-  gap: var(--space-4);
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  min-width: 0;
-}
-
 .column-settings {
   display: flex;
   flex-direction: column;
@@ -318,14 +293,6 @@ watch(
 }
 
 @media (max-width: 600px) {
-  .settings-fields {
-    column-gap: var(--space-2);
-  }
-
-  .settings-field {
-    gap: var(--space-2);
-  }
-
   .column-settings-header {
     display: none;
   }

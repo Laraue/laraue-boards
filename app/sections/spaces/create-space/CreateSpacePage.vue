@@ -23,37 +23,34 @@
       <form
         :id="formId"
         @submit.prevent="submit">
-        <div class="settings-fields">
-          <label
-            class="field-label"
-            for="create-space-name">
-            {{ t('name') }}
-          </label>
-          <BaseInput
+        <BaseFieldGroup horizontal>
+          <BaseField
             id="create-space-name"
-            v-model="form.name"
-            :disabled="pending"
-            required />
-          <label
-            class="field-label"
-            for="create-space-key">
-            {{ t('key') }}
-          </label>
-          <BaseInput
+            :label="t('name')">
+            <BaseInput
+              id="create-space-name"
+              v-model="form.name"
+              :disabled="pending"
+              required />
+          </BaseField>
+          <BaseField
             id="create-space-key"
-            v-model="form.key"
-            :disabled="pending"
-            required />
-          <span
-            :id="`${formId}-color`"
-            class="field-label">
-            {{ t('color') }}
-          </span>
-          <AppColorPicker
-            v-model="form.color"
-            :aria-labelledby="`${formId}-color`"
-            :disabled="pending" />
-        </div>
+            :label="t('key')">
+            <BaseInput
+              id="create-space-key"
+              v-model="form.key"
+              :disabled="pending"
+              required />
+          </BaseField>
+          <BaseField
+            v-slot="{ labelId }"
+            :label="t('color')">
+            <AppColorPicker
+              v-model="form.color"
+              :aria-labelledby="labelId"
+              :disabled="pending" />
+          </BaseField>
+        </BaseFieldGroup>
         <p
           v-if="message"
           class="form-error">
@@ -111,19 +108,5 @@ const submit = async (): Promise<void> => {
   margin-inline: auto;
   max-width: 768px;
   width: 100%;
-}
-
-.settings-fields {
-  align-items: center;
-  column-gap: var(--space-4);
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  row-gap: var(--space-3);
-}
-
-@media (max-width: 600px) {
-  .settings-fields {
-    column-gap: var(--space-2);
-  }
 }
 </style>

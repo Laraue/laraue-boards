@@ -11,20 +11,33 @@
       </div>
       <p class="muted">{{ t('createDescription') }}</p>
       <form @submit.prevent="submit">
-        <label for="create-organization-name">{{ t('name') }}</label>
-        <input
-          id="create-organization-name"
-          v-model="form.name"
-          required />
-        <label for="create-organization-slug">{{ t('slug') }}</label>
-        <input
-          id="create-organization-slug"
-          v-model="form.slug"
-          pattern="[a-z0-9-]+"
-          :placeholder="t('slugPlaceholder')"
-          required />
-        <label>{{ t('color') }}</label>
-        <AppColorPicker v-model="form.color" />
+        <BaseFieldGroup>
+          <BaseField
+            id="create-organization-name"
+            :label="t('name')">
+            <input
+              id="create-organization-name"
+              v-model="form.name"
+              required />
+          </BaseField>
+          <BaseField
+            id="create-organization-slug"
+            :label="t('slug')">
+            <input
+              id="create-organization-slug"
+              v-model="form.slug"
+              pattern="[a-z0-9-]+"
+              :placeholder="t('slugPlaceholder')"
+              required />
+          </BaseField>
+          <BaseField
+            v-slot="{ labelId }"
+            :label="t('color')">
+            <AppColorPicker
+              v-model="form.color"
+              :aria-labelledby="labelId" />
+          </BaseField>
+        </BaseFieldGroup>
         <p
           v-if="message"
           class="form-error">

@@ -13,29 +13,39 @@
     <form
       class="attribute-editor"
       @submit.prevent="submit">
-      <label for="create-attribute-name">{{ t('name') }}</label>
-      <input
-        id="create-attribute-name"
-        v-model="draft.name"
-        maxlength="64"
-        required />
-
-      <label>{{ t('color') }}</label>
-      <AppColorPicker v-model="draft.color" />
-
-      <label for="create-attribute-type">{{ t('type') }}</label>
-      <select
-        id="create-attribute-type"
-        :value="draft.data.type"
-        @change="changeType">
-        <option value="text">{{ t('text') }}</option>
-        <option value="list">{{ t('list') }}</option>
-        <option value="integer">{{ t('integer') }}</option>
-        <option value="decimal">{{ t('decimal') }}</option>
-        <option value="date">{{ t('date') }}</option>
-        <option value="dateTime">{{ t('dateTime') }}</option>
-      </select>
-
+      <BaseFieldGroup>
+        <BaseField
+          id="create-attribute-name"
+          :label="t('name')">
+          <input
+            id="create-attribute-name"
+            v-model="draft.name"
+            maxlength="64"
+            required />
+        </BaseField>
+        <BaseField
+          v-slot="{ labelId }"
+          :label="t('color')">
+          <AppColorPicker
+            v-model="draft.color"
+            :aria-labelledby="labelId" />
+        </BaseField>
+        <BaseField
+          id="create-attribute-type"
+          :label="t('type')">
+          <select
+            id="create-attribute-type"
+            :value="draft.data.type"
+            @change="changeType">
+            <option value="text">{{ t('text') }}</option>
+            <option value="list">{{ t('list') }}</option>
+            <option value="integer">{{ t('integer') }}</option>
+            <option value="decimal">{{ t('decimal') }}</option>
+            <option value="date">{{ t('date') }}</option>
+            <option value="dateTime">{{ t('dateTime') }}</option>
+          </select>
+        </BaseField>
+      </BaseFieldGroup>
       <Transition name="slide-fade">
         <fieldset v-if="draft.data.type === 'list'">
           <legend>{{ t('options') }}</legend>

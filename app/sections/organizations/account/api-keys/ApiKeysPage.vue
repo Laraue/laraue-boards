@@ -3,16 +3,19 @@
     <form
       class="api-key-form"
       @submit.prevent="createKey">
-      <label>
-        {{ t('name') }}
+      <BaseField
+        v-slot="{ id }"
+        class="api-key-name"
+        :label="t('name')">
         <input
+          :id="id"
           v-model="name"
           autocomplete="off"
           name="api-key-name"
           :placeholder="t('namePlaceholder')"
           required
           type="text" />
-      </label>
+      </BaseField>
       <BaseButton
         :disabled="busy"
         type="submit"
@@ -221,10 +224,7 @@ const sectionMessage = computed(
   gap: var(--space-3);
 }
 
-.api-key-form label {
-  display: grid;
-  gap: var(--space-1);
-  margin: 0;
+.api-key-name {
   max-width: 360px;
   width: 100%;
 }
