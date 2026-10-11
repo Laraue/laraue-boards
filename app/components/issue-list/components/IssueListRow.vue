@@ -16,20 +16,12 @@
     </label>
     <span class="issue-key">{{ issueKey }}</span>
     <p class="issue-content">{{ title }}</p>
+    <!-- The key already names the space, so the row shows the board; the full path is on hover. -->
     <span
       class="issue-location"
       :title="spaceName ? `${spaceName} / ${boardName}` : boardName">
-      <span
-        v-if="spaceName"
-        class="issue-location-part">
-        <SpaceIcon />
-        <span class="truncate">{{ spaceName }}</span>
-      </span>
-      <span v-if="spaceName">/</span>
-      <span class="issue-location-part">
-        <BoardIcon />
-        <span class="truncate">{{ boardName }}</span>
-      </span>
+      <BoardIcon />
+      <span class="truncate">{{ boardName }}</span>
     </span>
     <div
       class="issue-status"
@@ -134,7 +126,7 @@ import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import type { IssueListQuickEditDeps } from '~/components/issue-list/IssueList.deps'
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
-import { BoardIcon, SpaceIcon } from '~/constants/icons'
+import { BoardIcon } from '~/constants/icons'
 
 const props = defineProps<{
   assignee: string
@@ -218,10 +210,12 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   display: grid;
   font-size: var(--font-size-body);
   gap: var(--space-3);
-  grid-template-columns: 20px 72px minmax(0, 1fr) minmax(120px, 200px) 100px 128px var(
-      --icon-btn-size
-    );
-  min-height: 48px;
+  /* Select, key, title, where it lives, status, assignee, actions. The location gets room for both
+     names before the title gives any up. */
+  grid-template-columns:
+    1.25rem 4.5rem minmax(0, 1fr) minmax(8rem, 14rem) 7rem 8rem
+    var(--icon-btn-size);
+  min-height: 2.75rem;
   min-width: 0;
   padding: var(--space-2) var(--space-4);
   text-decoration: none;
@@ -233,7 +227,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 }
 
 .issue-list-row:hover {
-  background: color-mix(in srgb, var(--color-hover) 20%, transparent);
+  background: var(--color-soft);
 }
 
 .issue-list-row:has(.row-select:checked) {
@@ -241,11 +235,24 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 }
 
 .issue-list-row:not(:has(.row-select)) {
-  grid-template-columns: 72px minmax(0, 1fr) minmax(120px, 200px) 100px 128px var(--icon-btn-size);
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(8rem, 14rem) 7rem 8rem var(--icon-btn-size);
 }
 
 .issue-list-row:not(.has-actions) {
-  grid-template-columns: 72px minmax(0, 1fr) minmax(120px, 200px) 100px 128px;
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(8rem, 14rem) 7rem 8rem;
+}
+
+/* With a mouse the row menu shows where the pointer or focus is, not as a column of dots down the
+   list; a touch screen keeps it in view. */
+@media (hover: hover) and (pointer: fine) {
+  .row-actions {
+    opacity: 0;
+  }
+
+  .issue-list-row:is(:hover, :focus-within) .row-actions,
+  .row-actions:has([data-state='open']) {
+    opacity: 1;
+  }
 }
 
 .issue-key {
@@ -294,21 +301,13 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   white-space: nowrap;
 }
 
-.issue-location,
-.issue-location-part {
-  align-items: center;
-  display: inline-flex;
-  min-width: 0;
-}
-
 .issue-location {
+  align-items: center;
   color: var(--color-muted);
+  display: inline-flex;
   font-size: var(--font-size-body);
-  gap: var(--space-1);
-}
-
-.issue-location-part {
   gap: var(--space-2);
+  min-width: 0;
 }
 
 .issue-location .tabler-icon {
@@ -321,7 +320,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   align-items: center;
   border-radius: var(--radius-small);
   display: inline-flex;
-  font-size: var(--font-size-small);
   font-weight: 400;
   gap: var(--space-2);
   justify-self: start;
@@ -343,7 +341,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   color: var(--color-muted);
   display: inline-flex;
   flex-shrink: 0;
-  font-size: var(--font-size-small);
   gap: var(--space-2);
   min-width: 0;
 }
