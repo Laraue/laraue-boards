@@ -8,16 +8,15 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="member-permissions-page">
-        <div class="title-row">
-          <div class="page-heading">
+        <BaseSectionHeader
+          :description="page.member.isOwner ? t('ownerReadonly') : undefined"
+          :title="`${page.member.name} ${t('permissions')}`">
+          <template #leading>
             <AppBackLink
               :label="t('backToMembers')"
               :to="organizationRoutes.permissions()" />
-            <div class="page-heading-text">
-              <h2>{{ page.member.name }} {{ t('permissions') }}</h2>
-            </div>
-          </div>
-        </div>
+          </template>
+        </BaseSectionHeader>
         <MemberPermissionsForm
           :error="submitMessage ?? null"
           :on-submit="submitForm"
@@ -48,6 +47,7 @@ const { t } = useI18n({
     loadError: 'Could not load member permissions',
     loading: 'Loading member permissions…',
     memberPermissions: 'Member permissions',
+    ownerReadonly: 'Owner permissions are read-only.',
     permissions: 'permissions',
   },
   ru: {
@@ -55,6 +55,7 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить права участника',
     loading: 'Загрузка прав участника…',
     memberPermissions: 'Права участника',
+    ownerReadonly: 'Права владельца доступны только для чтения.',
     permissions: 'права',
   },
 })

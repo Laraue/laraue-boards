@@ -2,11 +2,6 @@
   <form
     class="permissions-editor"
     @submit.prevent="submit">
-    <p
-      v-if="viewModel.member.isOwner"
-      class="muted">
-      {{ t('ownerReadonly') }}
-    </p>
     <fieldset :disabled="viewModel.member.isOwner">
       <legend>{{ t('administration') }}</legend>
       <p class="muted section-description">{{ t('administrationDescription') }}</p>
@@ -206,7 +201,6 @@ const { t } = useI18n({
     moveData: 'Move spaces and boards',
     organizationAccess: 'Organization access',
     organizationAccessDescription: 'These permissions apply to every space.',
-    ownerReadonly: 'Owner permissions are read-only.',
     permissionsSaved: 'Permissions saved.',
     read: 'Read',
     readOrganization: 'Read organization',
@@ -234,7 +228,6 @@ const { t } = useI18n({
     moveData: 'Перемещение разделов и досок',
     organizationAccess: 'Доступ к организации',
     organizationAccessDescription: 'Эти права действуют для каждого раздела.',
-    ownerReadonly: 'Права владельца доступны только для чтения.',
     permissionsSaved: 'Права сохранены.',
     read: 'Чтение',
     readOrganization: 'Чтение организации',
@@ -327,18 +320,21 @@ legend {
 .permission-option {
   align-items: center;
   display: flex;
-  font-weight: var(--font-weight-medium);
+  font-weight: 400;
   gap: var(--space-2);
   margin: 0;
 }
 
+/* A row like the table's under it: its name, then the switch. */
 .read-permission {
   align-items: center;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
   display: flex;
   justify-content: space-between;
-  padding: var(--space-3);
+  padding: 0 var(--space-3);
+}
+
+.read-permission strong {
+  font-weight: 400;
 }
 
 .read-permission + .read-permission {
@@ -346,19 +342,19 @@ legend {
 }
 
 .product-section + .product-section {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-divider);
   margin-top: var(--space-5);
   padding-top: var(--space-5);
 }
 
 .product-section h3 {
-  color: var(--color-muted);
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
   margin: 0 0 var(--space-3);
 }
 
 .space-permissions {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-divider);
   padding: var(--space-3) 0;
 }
 
@@ -374,6 +370,10 @@ legend {
   gap: var(--space-2);
   list-style: none;
   padding: var(--space-2);
+}
+
+.space-permissions summary strong {
+  font-weight: var(--font-weight-medium);
 }
 
 .space-permissions summary:hover {

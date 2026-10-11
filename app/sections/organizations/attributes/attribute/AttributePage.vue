@@ -8,16 +8,13 @@
     :pending="pending">
     <template #default="{ data: attribute }">
       <section class="form-page">
-        <div class="title-row">
-          <div class="page-heading">
+        <BaseSectionHeader :title="t('editAttribute')">
+          <template #leading>
             <AppBackLink
               :label="t('backToAttributes')"
               :to="organizationRoutes.attributes()" />
-            <div class="page-heading-text">
-              <h2>{{ t('editAttribute') }}</h2>
-            </div>
-          </div>
-        </div>
+          </template>
+        </BaseSectionHeader>
         <form
           v-if="draft"
           class="attribute-editor"
@@ -270,6 +267,11 @@ const remove = async (attribute: Attribute) => {
 </script>
 
 <style scoped>
+.form-page {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .attribute-editor fieldset {
   border: 0;
   margin: var(--space-5) 0 0;
@@ -277,7 +279,7 @@ const remove = async (attribute: Attribute) => {
 }
 
 .attribute-editor legend {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-2);
 }
 

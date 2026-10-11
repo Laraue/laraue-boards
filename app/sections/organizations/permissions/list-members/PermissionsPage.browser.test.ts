@@ -72,7 +72,10 @@ it('links every member to their permissions and labels their role', async () => 
     .toHaveAttribute('href', '/organizations/acme-ab12/admin/permissions/5')
   await expect.element(page.getByRole('link', { name: /Ada Lovelace/ })).toHaveTextContent('Admin')
   await expect.element(page.getByRole('link', { name: /Grace Hopper/ })).toHaveTextContent('Owner')
-  await expect.element(page.getByRole('link', { name: /Alan Turing/ })).toHaveTextContent('Member')
+  // A plain member carries no role badge.
+  await expect
+    .element(page.getByRole('link', { name: /Alan Turing/ }))
+    .not.toHaveTextContent(/Admin|Owner/)
 })
 
 it('replaces the invitation link after confirmation', async () => {

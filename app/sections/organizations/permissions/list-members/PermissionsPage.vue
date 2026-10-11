@@ -62,11 +62,13 @@
                 size="sm" />
             </template>
             {{ member.name }}
-            <template #trailing>
-              <span class="muted">
-                {{ member.isOwner ? t('owner') : member.isAdmin ? t('admin') : t('member') }}
-              </span>
-            </template>
+            <!-- Only the roles above a plain member are marked. -->
+            <BaseBadge
+              v-if="member.isOwner || member.isAdmin"
+              class="member-role"
+              :variant="member.isOwner ? 'accent' : 'neutral'">
+              {{ member.isOwner ? t('owner') : t('admin') }}
+            </BaseBadge>
           </BaseListRow>
         </BaseList>
       </section>
@@ -96,7 +98,6 @@ const { t } = useI18n({
     invitePeople: 'Invite people',
     loadError: 'Could not load permissions',
     loading: 'Loading permissions…',
-    member: 'Member',
     members: 'Members',
     owner: 'Owner',
     permissions: 'Permissions',
@@ -115,7 +116,6 @@ const { t } = useI18n({
     invitePeople: 'Пригласить участников',
     loadError: 'Не удалось загрузить права доступа',
     loading: 'Загрузка прав доступа…',
-    member: 'Участник',
     members: 'Участники',
     owner: 'Владелец',
     permissions: 'Права доступа',
@@ -255,6 +255,10 @@ const regenerate = async (): Promise<void> => {
 .regenerate-link .tabler-icon {
   height: 14px;
   width: 14px;
+}
+
+.member-role {
+  margin-left: var(--space-2);
 }
 
 .members-label {
