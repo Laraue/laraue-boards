@@ -22,12 +22,14 @@
           <BaseListRow
             v-for="attribute in attributes"
             :key="attribute.id"
-            :description="typeLabels[attribute.type]"
             :to="organizationRoutes.attribute(attribute.id)">
             <template #leading>
               <AttributeIcon :style="{ color: attribute.color }" />
             </template>
             {{ attribute.name }}
+            <template #trailing>
+              <span class="muted">{{ typeLabels[attribute.type] }}</span>
+            </template>
           </BaseListRow>
         </BaseList>
         <BaseEmptyState

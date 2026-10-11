@@ -54,14 +54,19 @@
           <BaseListRow
             v-for="member in page.members"
             :key="member.id"
-            :description="member.isOwner ? t('owner') : member.isAdmin ? t('admin') : t('member')"
             :to="organizationRoutes.memberPermissions(member.id)">
             <template #leading>
               <BaseAvatar
                 :color="member.color"
-                :initials="member.initials" />
+                :initials="member.initials"
+                size="sm" />
             </template>
             {{ member.name }}
+            <template #trailing>
+              <span class="muted">
+                {{ member.isOwner ? t('owner') : member.isAdmin ? t('admin') : t('member') }}
+              </span>
+            </template>
           </BaseListRow>
         </BaseList>
       </section>
