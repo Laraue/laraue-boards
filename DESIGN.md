@@ -87,7 +87,8 @@ check a design change there and add new components and variants to it.
   a color sample for dense rows; the default shows the color name.
 - `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
   active tab on a surface fill, no shadow. Tabs are 14px, weight 500 in every state, with an icon
-  and a count pill. Don't add other tab styles.
+  and a count pill. Tabs that switch pages are `BaseNavTabs`: the same look, links marked
+  `aria-current`. Don't add other tab styles.
 - Modal forms use `BaseDialog` (Reka Dialog: focus trap, Escape and backdrop press close it, scroll
   lock, focus returns on close): `title`, optional `description`, fields in the default slot,
   buttons in `#actions`; it emits `submit` and `close` and exposes `open()` and `close()`. It has a
