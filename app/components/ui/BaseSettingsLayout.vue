@@ -62,7 +62,9 @@ defineProps<{ items: NavTab[]; label: string }>()
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .base-settings-nav {
+  /* Scoped under the layout, so it outweighs the menu's own column rule whichever stylesheet loads
+     last: on the server and after hydration they arrive in a different order. */
+  .base-settings-layout .base-settings-nav {
     flex-direction: row;
     overflow-x: auto;
     scrollbar-width: none;
