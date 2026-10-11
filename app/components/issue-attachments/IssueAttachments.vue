@@ -32,13 +32,13 @@
             :alt="`${t('attachment')} ${index + 1}`"
             :src="attachment.previewUrl" />
         </button>
-        <IconButton
+        <BaseIconButton
           v-if="onRemoveAttachment && !disabled"
           class="issue-attachment-remove"
           :label="`${t('removeAttachment')} ${index + 1}`"
           @click="onRemoveAttachment(attachment.id)">
           <IconX />
-        </IconButton>
+        </BaseIconButton>
       </div>
       <div
         v-for="(preview, index) in pendingPreviews"
@@ -55,13 +55,13 @@
             :src="preview.url" />
           <span>{{ preview.file.name }}</span>
         </button>
-        <IconButton
+        <BaseIconButton
           v-if="!disabled"
           class="issue-attachment-remove"
           :label="`${t('remove')} ${preview.file.name}`"
           @click="removeFile(index)">
           <IconX />
-        </IconButton>
+        </BaseIconButton>
         <div
           v-if="disabled"
           :aria-label="t('uploading')"
@@ -78,13 +78,12 @@
         class="issue-attachment-lightbox"
         @click="closeLightboxFromBackdrop"
         @close="closeLightboxPreview">
-        <button
-          :aria-label="t('closePreview')"
-          class="icon-btn issue-attachment-lightbox-close"
-          type="button"
+        <BaseIconButton
+          class="issue-attachment-lightbox-close"
+          :label="t('closePreview')"
           @click="closeLightbox">
           <IconX />
-        </button>
+        </BaseIconButton>
         <img
           v-if="activeAttachment"
           :alt="activeAttachment.alt"
@@ -267,7 +266,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
 .issue-attachment-preview {
   background: var(--color-feed);
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   overflow: hidden;
   position: relative;
 }
@@ -404,7 +403,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
   width: 24px;
 }
 
-.issue-attachment-lightbox-close {
+.issue-attachment-lightbox :deep(.issue-attachment-lightbox-close) {
   position: fixed;
   right: var(--space-4);
   top: var(--space-4);

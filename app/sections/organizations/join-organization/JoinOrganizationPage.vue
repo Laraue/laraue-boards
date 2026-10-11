@@ -6,17 +6,17 @@
         <h1>{{ t('joinOrganization') }}</h1>
         <p class="muted">{{ t('invitationDescription') }}</p>
       </div>
-      <button
+      <BaseButton
         v-if="!state.loginRequired"
-        class="primary join-action"
+        class="join-action"
         :disabled="busy"
-        type="button"
+        variant="primary"
         @click="accept">
         <IconLoader
           v-if="busy"
           class="spinning" />
         {{ busy ? t('pleaseWait') : message ? t('tryAgain') : t('acceptInvitation') }}
-      </button>
+      </BaseButton>
       <div
         v-else
         aria-live="polite"
@@ -176,8 +176,7 @@ const loginGoogle = async (code: string): Promise<void> => {
 .join-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-dialog);
-  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-card);
   display: grid;
   gap: var(--space-5);
   justify-items: center;

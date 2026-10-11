@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<!-- Global on purpose: the landing shares the app's tokens (colors, Inter, theme) and only adds a
+<!-- Global on purpose: the landing shares the app's tokens (colors, Geist, theme) and only adds a
      reset and a few aliases, all fenced under `.landing-root` so the app is
      not affected. -->
 <style>

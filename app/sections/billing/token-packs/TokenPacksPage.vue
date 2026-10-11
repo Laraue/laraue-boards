@@ -8,19 +8,19 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="token-packs-page">
-        <div class="page-heading">
-          <AppBackLink
-            :label="t('back')"
-            :to="backTo" />
-          <h2>{{ t('title') }}</h2>
-        </div>
-        <p class="muted">{{ t('description') }}</p>
+        <BaseSectionHeader
+          :description="t('description')"
+          :title="t('title')">
+          <template #leading>
+            <AppBackLink
+              :label="t('back')"
+              :to="backTo" />
+          </template>
+        </BaseSectionHeader>
 
-        <p
+        <BaseEmptyState
           v-if="!packs.length"
-          class="muted">
-          {{ t('noPacks') }}
-        </p>
+          :title="t('noPacks')" />
         <template v-else>
           <div class="pack-list">
             <article
@@ -37,7 +37,6 @@
               </ul>
               <BaseButton
                 :disabled="!page.canPay"
-                variant="primary"
                 @click="select(pack)">
                 {{ t('select') }}
               </BaseButton>
@@ -175,11 +174,6 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
-.token-packs-page h2 {
-  line-height: var(--icon-btn-size);
-  margin: 0;
-}
-
 .token-packs-page p {
   margin: 0;
 }
@@ -190,31 +184,35 @@ const pay = async () => {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Price first, what it includes, then the choice at the bottom: the buttons of a row line up. */
 .pack-offer {
-  align-content: start;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
 }
 
+.pack-offer > .base-button {
+  margin-top: auto;
+}
+
 .pack-name {
   display: block;
-  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-medium);
 }
 
 .pack-price {
-  font-size: var(--font-size-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
   margin: var(--space-1) 0 0;
 }
 
 .pack-features {
   align-content: start;
   display: grid;
-  font-size: var(--font-size-small);
   gap: var(--space-1);
   list-style: none;
   margin: 0;

@@ -12,12 +12,12 @@
       class="issue-description-footer">
       <slot name="actions" />
       <!-- The blocks "/" offers, found by a button rather than a line of text to read. -->
-      <IconButton
+      <BaseIconButton
         :label="t('insertBlock')"
         :tooltip="t('insertBlockHint')"
         @click="editor?.insertSlash()">
         <IconSlash />
-      </IconButton>
+      </BaseIconButton>
       <!-- With a label, so it is seen; only with text, as there is nothing to improve before. -->
       <BaseButton
         v-if="model.trim()"

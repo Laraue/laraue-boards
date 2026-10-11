@@ -153,7 +153,12 @@ const selected = computed({
 .base-select:focus-visible,
 .base-select[data-state='open'] {
   border-color: var(--color-focus);
-  box-shadow: none;
+}
+
+.base-select:disabled {
+  background: var(--color-soft);
+  color: var(--color-muted);
+  cursor: not-allowed;
 }
 
 .base-select-value {
@@ -184,12 +189,18 @@ const selected = computed({
 .base-select-inline {
   background: transparent;
   border-color: transparent;
+  box-shadow: none;
   height: var(--control-height-small);
   width: fit-content;
 }
 
 .base-select-inline:is(:focus-visible, [data-state='open']) {
   border-color: var(--color-focus);
+  box-shadow: none;
+}
+
+.base-select-inline:disabled {
+  background: transparent;
 }
 
 .base-select-full-width {
@@ -217,8 +228,8 @@ const selected = computed({
 /* Unscoped: the content is rendered by Reka, outside this component's root. */
 .base-select-content {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-popover);
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
   font-size: var(--font-size-body);
@@ -246,8 +257,9 @@ const selected = computed({
   user-select: none;
 }
 
+/* The same soft fill as menu rows (BaseButton menu). */
 .base-select-item[data-highlighted] {
-  background: var(--color-hover);
+  background: var(--color-soft);
 }
 
 .base-select-item[data-state='checked'] {

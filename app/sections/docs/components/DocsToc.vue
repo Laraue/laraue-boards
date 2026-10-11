@@ -54,7 +54,7 @@ ul {
 a {
   color: var(--color-muted);
   display: block;
-  font-size: 13px;
+  font-size: var(--font-size-small);
   line-height: 1.4;
   padding: 4px 12px;
   text-decoration: none;

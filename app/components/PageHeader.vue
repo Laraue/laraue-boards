@@ -4,20 +4,20 @@
     class="app-header page-header"
     :class="{ 'has-tools': $slots.tools }">
     <div class="page-header-start">
-      <IconButton
+      <BaseIconButton
         class="page-header-menu"
         :label="t('openMenu')"
         @click="sidebarOpen = true">
         <IconMenu2 />
-      </IconButton>
+      </BaseIconButton>
       <!-- A phone has no room for the path, so it keeps the way back up it. -->
-      <IconButton
+      <BaseIconButton
         v-if="back"
         class="page-header-back"
         :label="t('backTo', { page: back.label })"
         :to="back.to">
         <IconArrowLeft />
-      </IconButton>
+      </BaseIconButton>
       <div class="page-header-context">
         <nav
           v-if="parents?.length"
@@ -125,6 +125,8 @@ const { t } = useI18n({
   top: 0;
 }
 
+/* The path and title take the free room, so the view tools sit on the right with the page's
+   actions: where you are on the left, what you can do on the right. */
 .page-header-start {
   align-items: center;
   display: flex;
@@ -180,22 +182,22 @@ const { t } = useI18n({
 
 .page-header-crumb > svg {
   flex: none;
-  height: 14px;
-  width: 14px;
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .page-header-title {
   color: var(--color-text);
   font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   letter-spacing: normal;
   margin: 0;
 }
 
 .page-header-title > svg {
   flex: none;
-  height: 14px;
-  width: 14px;
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .page-header-title-row,
@@ -222,10 +224,6 @@ const { t } = useI18n({
 
 .page-header-tools :deep(input[type='search']) {
   min-width: 0;
-}
-
-.page-header.has-tools .page-header-start {
-  flex: 0 1 auto;
 }
 
 .page-header-start :deep(:is(.page-header-menu, .page-header-back)) {

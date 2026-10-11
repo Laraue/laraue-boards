@@ -63,6 +63,7 @@ it('links every member to their permissions and labels their role', async () => 
   const view = vi.fn<PermissionsPageDeps['view']>(async () => ({ joinCode: 'invite-123', members }))
 
   await mount(view)
+  await page.getByRole('button', { name: 'Invite' }).click()
 
   await expect
     .element(page.getByLabelText('Invitation link'))
@@ -72,7 +73,10 @@ it('links every member to their permissions and labels their role', async () => 
     .toHaveAttribute('href', '/organizations/acme-ab12/admin/permissions/5')
   await expect.element(page.getByRole('link', { name: /Ada Lovelace/ })).toHaveTextContent('Admin')
   await expect.element(page.getByRole('link', { name: /Grace Hopper/ })).toHaveTextContent('Owner')
-  await expect.element(page.getByRole('link', { name: /Alan Turing/ })).toHaveTextContent('Member')
+  // A plain member carries no role badge.
+  await expect
+    .element(page.getByRole('link', { name: /Alan Turing/ }))
+    .not.toHaveTextContent(/Admin|Owner/)
 })
 
 it('replaces the invitation link after confirmation', async () => {
@@ -83,6 +87,7 @@ it('replaces the invitation link after confirmation', async () => {
   vi.spyOn(window, 'confirm').mockReturnValue(true)
 
   await mount(view, regenerateJoinCode)
+  await page.getByRole('button', { name: 'Invite' }).click()
   await page.getByRole('button', { name: 'Create a new link' }).click()
 
   expect(regenerateJoinCode).toHaveBeenCalledOnce()

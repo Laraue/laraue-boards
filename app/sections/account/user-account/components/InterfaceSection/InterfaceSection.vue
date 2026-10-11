@@ -1,6 +1,6 @@
 <template>
   <section class="interface-section">
-    <h2>{{ t('interface') }}</h2>
+    <BaseSectionHeader :title="t('interface')" />
 
     <div class="setting-list">
       <div class="setting-row">
@@ -87,14 +87,9 @@ const changeLocale = (value: string): void => {
   gap: var(--space-3);
 }
 
-.interface-section h2 {
-  font-size: 16px;
-  margin: 0;
-}
-
 .setting-list {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
 }
 
@@ -133,7 +128,7 @@ const changeLocale = (value: string): void => {
 .theme-switch button {
   background: transparent;
   border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
+  border-radius: var(--radius-control);
   color: var(--color-muted);
   font-weight: var(--font-weight-semibold);
   height: 34px;
@@ -142,7 +137,6 @@ const changeLocale = (value: string): void => {
 
 .theme-switch button[aria-pressed='true'] {
   background: var(--color-surface);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
   color: var(--color-text);
 }
 

@@ -1,6 +1,6 @@
 import { assert, beforeEach, test } from 'vitest'
 
-import { useToast } from '~/composables/useToast'
+import { useToast } from './useToast'
 
 const messages = (): string[] => useToast().toasts.value.map((toast) => toast.message)
 

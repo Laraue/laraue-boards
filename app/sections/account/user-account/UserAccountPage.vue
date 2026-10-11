@@ -1,12 +1,12 @@
 <template>
   <div class="user-account">
-    <NuxtLink
+    <BaseButton
       v-if="data"
-      class="secondary back"
+      class="back"
       :to="backPath || '/organizations'">
       <IconArrowLeft />
       {{ backPath ? t('back') : t('backToOrganizations') }}
-    </NuxtLink>
+    </BaseButton>
 
     <QueryState
       :data="data"
@@ -18,12 +18,10 @@
       <template #default="{ data: page }">
         <div class="user-account-main">
           <div class="user-account-title">
-            <span
+            <BaseAvatar
               v-if="page.initials"
-              class="avatar user-account-avatar"
-              :style="{ background: DEFAULT_COLOR }">
-              {{ page.initials }}
-            </span>
+              :color="DEFAULT_COLOR"
+              :initials="page.initials" />
             <IconUserCircle
               v-else
               class="user-account-icon" />
@@ -34,14 +32,13 @@
                 {{ t('scope') }}
               </p>
             </div>
-            <button
-              class="secondary danger log-out"
+            <BaseButton
+              class="log-out"
               :disabled="loggingOut"
-              type="button"
               @click="logout">
               <IconLogout />
               {{ t('logOut') }}
-            </button>
+            </BaseButton>
           </div>
 
           <ProfileSection
@@ -148,18 +145,11 @@ const logout = async (): Promise<void> => {
   margin: 0 0 var(--space-1);
 }
 
-.user-account-avatar {
-  flex: none;
-  font-size: 22px;
-  height: 56px;
-  width: 56px;
-}
-
 .user-account-icon {
   color: var(--color-muted);
   flex: none;
-  height: 56px;
-  width: 56px;
+  height: var(--control-height);
+  width: var(--control-height);
 }
 
 .scope {

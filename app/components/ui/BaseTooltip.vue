@@ -27,11 +27,11 @@ defineProps<{ text: string }>()
 /* Unscoped: the content is rendered by Reka, outside this component's root. */
 .base-tooltip {
   background: var(--color-tooltip);
-  border-radius: var(--radius-small);
+  border-radius: var(--radius-control);
   color: var(--color-tooltip-text);
   font-size: var(--font-size-small);
   max-width: 240px;
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
   z-index: 60;
 }
 </style>

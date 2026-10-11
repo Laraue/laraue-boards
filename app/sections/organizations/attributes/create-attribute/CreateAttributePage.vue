@@ -1,41 +1,48 @@
 <template>
   <section class="form-page">
-    <div class="title-row">
-      <div class="page-heading">
+    <BaseSectionHeader :title="t('createAttribute')">
+      <template #leading>
         <AppBackLink
           :label="t('backToAttributes')"
           :to="organizationRoutes.attributes()" />
-        <div class="page-heading-text">
-          <h2>{{ t('createAttribute') }}</h2>
-        </div>
-      </div>
-    </div>
+      </template>
+    </BaseSectionHeader>
     <form
       class="attribute-editor"
       @submit.prevent="submit">
-      <label for="create-attribute-name">{{ t('name') }}</label>
-      <input
-        id="create-attribute-name"
-        v-model="draft.name"
-        maxlength="64"
-        required />
-
-      <label>{{ t('color') }}</label>
-      <AppColorPicker v-model="draft.color" />
-
-      <label for="create-attribute-type">{{ t('type') }}</label>
-      <select
-        id="create-attribute-type"
-        :value="draft.data.type"
-        @change="changeType">
-        <option value="text">{{ t('text') }}</option>
-        <option value="list">{{ t('list') }}</option>
-        <option value="integer">{{ t('integer') }}</option>
-        <option value="decimal">{{ t('decimal') }}</option>
-        <option value="date">{{ t('date') }}</option>
-        <option value="dateTime">{{ t('dateTime') }}</option>
-      </select>
-
+      <BaseFieldGroup>
+        <BaseField
+          id="create-attribute-name"
+          :label="t('name')">
+          <input
+            id="create-attribute-name"
+            v-model="draft.name"
+            maxlength="64"
+            required />
+        </BaseField>
+        <BaseField
+          v-slot="{ labelId }"
+          :label="t('color')">
+          <AppColorPicker
+            v-model="draft.color"
+            :aria-labelledby="labelId" />
+        </BaseField>
+        <BaseField
+          id="create-attribute-type"
+          :label="t('type')">
+          <select
+            id="create-attribute-type"
+            :value="draft.data.type"
+            @change="changeType">
+            <option value="text">{{ t('text') }}</option>
+            <option value="list">{{ t('list') }}</option>
+            <option value="integer">{{ t('integer') }}</option>
+            <option value="decimal">{{ t('decimal') }}</option>
+            <option value="date">{{ t('date') }}</option>
+            <option value="dateTime">{{ t('dateTime') }}</option>
+          </select>
+        </BaseField>
+      </BaseFieldGroup>
       <Transition name="slide-fade">
         <fieldset v-if="draft.data.type === 'list'">
           <legend>{{ t('options') }}</legend>
@@ -51,23 +58,21 @@
                 :aria-label="`${t('option')} ${index + 1}`"
                 maxlength="64"
                 required />
-              <button
-                :aria-label="`${t('removeOption')} ${index + 1}`"
-                class="icon-btn danger"
+              <BaseIconButton
                 :disabled="draft.data.listValues.length === 1"
-                type="button"
+                :label="`${t('removeOption')} ${index + 1}`"
+                variant="danger"
                 @click="draft.data.listValues.splice(index, 1)">
                 <IconTrash />
-              </button>
+              </BaseIconButton>
             </div>
           </TransitionGroup>
-          <button
-            class="secondary add-option"
-            type="button"
+          <BaseButton
+            class="add-option"
             @click="addOption">
             <IconPlus />
             {{ t('addOption') }}
-          </button>
+          </BaseButton>
         </fieldset>
       </Transition>
 
@@ -77,11 +82,12 @@
         {{ message }}
       </p>
       <div class="form-actions">
-        <button
-          class="primary"
-          :disabled="pending">
+        <BaseButton
+          :disabled="pending"
+          type="submit"
+          variant="primary">
           {{ pending ? t('creating') : t('createAttribute') }}
-        </button>
+        </BaseButton>
       </div>
     </form>
   </section>
@@ -215,6 +221,11 @@ const submit = async () => {
 </script>
 
 <style scoped>
+.form-page {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .attribute-editor fieldset {
   border: 0;
   margin: var(--space-5) 0 0;
@@ -222,7 +233,7 @@ const submit = async () => {
 }
 
 .attribute-editor legend {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-2);
 }
 

@@ -55,13 +55,13 @@
             <IconLoader2 class="spin" />
             <span>{{ t('loading') }}</span>
           </div>
-          <button
+          <BaseButton
             v-else-if="historyState.hasNextPage"
-            class="secondary small history-more"
-            type="button"
+            class="history-more"
+            size="small"
             @click="loadPage()">
             {{ t('loadMore') }}
-          </button>
+          </BaseButton>
         </section>
       </template>
     </QueryState>

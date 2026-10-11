@@ -76,7 +76,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
 .section-title {
   color: var(--color-text);
   display: block;
-  font-size: 13px;
+  font-size: var(--font-size-small);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.02em;
   line-height: 1.35;
@@ -93,7 +93,7 @@ const isCurrent = (path: string[]): boolean => path.join('/') === props.current.
   border-left: 2px solid transparent;
   color: var(--color-muted);
   display: block;
-  font-size: 13px;
+  font-size: var(--font-size-body);
   line-height: 1.4;
   margin-left: -1px;
   padding: 6px 12px;

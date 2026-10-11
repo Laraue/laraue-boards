@@ -3,7 +3,7 @@ import { afterEach, expect, it } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 import { h } from 'vue'
 
-import AppPopover from './AppPopover.vue'
+import BasePopover from './BasePopover.vue'
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
@@ -13,7 +13,7 @@ afterEach(async () => {
 })
 
 it('closes the popover when the user presses Escape', async () => {
-  currentWrapper = await mountSuspended(AppPopover, {
+  currentWrapper = await mountSuspended(BasePopover, {
     attachTo: document.body,
     slots: {
       default: () => h('button', { type: 'button' }, 'Popover content'),

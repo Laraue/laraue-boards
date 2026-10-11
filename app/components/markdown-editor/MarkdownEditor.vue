@@ -70,14 +70,14 @@
               v-for="group in textActions"
               :key="group[0]!.label">
               <span class="markdown-editor-menu-divider" />
-              <IconButton
+              <BaseIconButton
                 v-for="action in group"
                 :key="action.label"
                 :class="{ active: action.isActive?.() }"
                 :label="action.label"
                 @click="action.run">
                 <component :is="action.icon" />
-              </IconButton>
+              </BaseIconButton>
             </template>
           </div>
         </BubbleMenu>
@@ -96,13 +96,13 @@
               <span
                 v-if="index"
                 class="markdown-editor-menu-divider" />
-              <IconButton
+              <BaseIconButton
                 v-for="action in group"
                 :key="action.label"
                 :label="action.label"
                 @click="action.run">
                 <component :is="action.icon" />
-              </IconButton>
+              </BaseIconButton>
             </template>
           </div>
         </BubbleMenu>
@@ -620,7 +620,7 @@ defineExpose({ insertSlash })
   align-items: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-control);
   box-shadow: var(--shadow-popover);
   display: flex;
   gap: 2px;
@@ -631,7 +631,7 @@ defineExpose({ insertSlash })
 .markdown-editor-list {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-control);
   box-shadow: var(--shadow-popover);
   display: grid;
   max-height: 40dvh;
@@ -650,12 +650,12 @@ defineExpose({ insertSlash })
   display: flex;
   gap: var(--space-2);
   min-height: var(--control-height-small);
-  padding: 0 var(--space-2);
+  padding: 0 var(--space-3);
   text-align: left;
 }
 
 .markdown-editor-list-item:is([aria-selected='true'], :hover) {
-  background: var(--color-hover);
+  background: var(--color-soft);
 }
 
 .markdown-editor-list-item[aria-checked='true'] {

@@ -7,12 +7,12 @@
         <template
           v-if="data?.canCreate"
           #actions>
-          <IconButton
+          <BaseIconButton
             :label="t('start')"
             :loading="starting"
             @click="start(null)">
             <IconPlus />
-          </IconButton>
+          </BaseIconButton>
         </template>
       </PageHeader>
     </template>
@@ -52,29 +52,26 @@
               <div
                 v-if="(listing.canCreate && retro.openActionCount > 0) || retro.canManage"
                 class="retro-row-actions">
-                <button
+                <BaseButton
                   v-if="listing.canCreate && retro.openActionCount > 0"
-                  class="secondary small"
                   :disabled="starting"
-                  :title="t('continueTitle', { name: retro.name })"
-                  type="button"
+                  size="small"
+                  :tooltip="t('continueTitle', { name: retro.name })"
                   @click="start(retro)">
                   {{ t('continue') }}
-                </button>
-                <button
+                </BaseButton>
+                <BaseIconButton
                   v-if="retro.canManage"
-                  :aria-label="t('delete')"
-                  class="icon-btn small"
                   :disabled="removing"
-                  :title="t('delete')"
-                  type="button"
+                  :label="t('delete')"
+                  variant="danger"
                   @click="remove(retro)">
                   <IconTrash />
-                </button>
+                </BaseIconButton>
               </div>
             </div>
           </div>
-          <AppEmptyState
+          <BaseEmptyState
             v-else
             :hint="t('emptyHint')"
             :title="t('empty')" />
@@ -105,6 +102,7 @@ const props = defineProps<{
   routeQuery: LocationQuery
 }>()
 
+const confirm = useConfirm()
 const { t, tp } = useI18n({
   en: {
     active: 'Active',
@@ -158,7 +156,7 @@ const { formatLocalDate } = useFormatters()
 // Nothing is carried over unless the team says so by continuing from a specific retro.
 // Deleting a retro takes its whole board with it and cannot be undone.
 const remove = async (retro: RetroListItemViewModel) => {
-  if (!confirm(t('deleteConfirm', { name: retro.name }))) {
+  if (!(await confirm({ danger: true, title: t('deleteConfirm', { name: retro.name }) }))) {
     return
   }
   if (await removeRetro({ retroId: retro.id })) {
@@ -207,7 +205,6 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
   border-radius: var(--radius-card);
   display: flex;
   padding-right: var(--space-3);
-  transition: var(--transition-press);
 }
 
 .retro-row-item:hover {
@@ -237,15 +234,10 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   text-decoration: none;
-  transition: var(--transition-press);
 }
 
 .retro-row:hover {
   border-color: var(--color-accent);
-}
-
-.retro-row:active {
-  translate: 0 var(--press-offset);
 }
 
 .retro-name {
@@ -258,7 +250,7 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
 
 .retro-status {
   background: color-mix(in srgb, var(--color-chart-done) 14%, transparent);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-chart-done);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);

@@ -19,13 +19,13 @@
           v-model:title="form.title"
           :deps="deps.description">
           <template #actions>
-            <IconButton
+            <BaseIconButton
               :disabled="pending"
               :label="t('attachImages')"
               :tooltip="t('attachImagesHint')"
               @click="attachments?.pick()">
               <IconPaperclip />
-            </IconButton>
+            </BaseIconButton>
           </template>
         </IssueDescription>
       </div>
@@ -244,11 +244,12 @@ defineExpose({ canSubmit, pending })
   background: transparent;
   border: 0;
   border-radius: 0;
+  box-shadow: none;
   color: var(--color-text);
-  font-size: 26px;
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: var(--line-height-heading);
   max-height: none;
   min-height: 0;
   overflow: hidden;

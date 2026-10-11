@@ -766,6 +766,7 @@ import type {
 
 const props = defineProps<{ deps: RetroBoardPageDeps; retroId: string }>()
 
+const confirm = useConfirm()
 const { t, tp } = useI18n({
   en: {
     actions: 'Actions',
@@ -3020,7 +3021,11 @@ const canResetVotes = (board: RetroBoardViewModel) =>
 const resetVotes = async () => {
   const board = data.value
 
-  if (!board || !canResetVotes(board) || !confirm(t('clearVotesConfirm'))) {
+  if (
+    !board ||
+    !canResetVotes(board) ||
+    !(await confirm({ action: t('resetVotes'), danger: true, title: t('clearVotesConfirm') }))
+  ) {
     return
   }
   await executeResetVotes({ retroId: props.retroId })
@@ -3100,7 +3105,7 @@ const finish = async () => {
   }
   // Finishing cannot be undone, so the click is worth one question - but the board itself is the
   // summary, and nobody reads a listing pasted into a browser dialog.
-  if (!confirm(t('finishConfirm'))) {
+  if (!(await confirm({ title: t('finishConfirm') }))) {
     return
   }
   await executeFinish({ retroId: props.retroId })
@@ -3257,7 +3262,7 @@ const finish = async () => {
 .facilitator-phase-index {
   align-items: center;
   border: 1px solid var(--color-border);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   display: flex;
   font-size: var(--font-size-caption);
   height: 22px;
@@ -3508,7 +3513,7 @@ const finish = async () => {
 
 .retro-finished {
   background: color-mix(in srgb, var(--color-chart-done) 14%, transparent);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: var(--color-chart-done);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-medium);
@@ -3519,7 +3524,7 @@ const finish = async () => {
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: calc(var(--radius-control) - 2px);
+  border-radius: var(--radius-control);
   box-shadow: none;
   display: flex;
   max-width: 220px;
@@ -3726,7 +3731,7 @@ const finish = async () => {
 .zone-title {
   align-items: center;
   display: flex;
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   gap: var(--space-2);
 }
 
@@ -3879,7 +3884,7 @@ const finish = async () => {
   border: 1px solid color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
   border-radius: var(--radius-card);
   bottom: calc(var(--space-4) + var(--icon-btn-size) + var(--space-2));
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 1px 2px #1018280d;
   display: flex;
   gap: var(--space-2);
   left: 50%;
@@ -3911,7 +3916,7 @@ const finish = async () => {
   border-radius: 0;
   color: inherit;
   cursor: inherit;
-  font-family: 'Caveat', 'Inter', cursive;
+  font-family: 'Caveat', 'Geist', cursive;
   font-size: 34px;
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.15px;
@@ -3930,6 +3935,7 @@ const finish = async () => {
 }
 
 textarea.card-text {
+  box-shadow: none;
   caret-color: var(--color-accent);
   cursor: text;
   height: 100%;
@@ -3956,7 +3962,7 @@ textarea.card-text:focus {
 }
 
 .card-author {
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   color: #fff;
   display: grid;
   font-size: 10px;
@@ -4007,7 +4013,7 @@ textarea.card-text:focus {
 }
 
 .remote-cursor-name {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   color: #fff;
   font-size: var(--font-size-caption);
   left: 14px;
@@ -4257,3 +4263,5 @@ textarea.card-text:focus {
   }
 }
 </style>
+
+<style scoped src="../retro-controls.css"></style>

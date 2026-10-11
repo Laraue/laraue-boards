@@ -8,33 +8,31 @@
     :pending="pending">
     <template #default="{ data: attributes }">
       <section class="attributes-page">
-        <div class="title-row">
-          <NuxtLink
-            :aria-label="t('newAttribute')"
-            class="primary"
-            :to="organizationRoutes.newAttribute()">
-            <IconPlus />
-            <span class="btn-label">{{ t('newAttribute') }}</span>
-          </NuxtLink>
-        </div>
-        <div
-          v-if="attributes.length"
-          class="attribute-list">
-          <NuxtLink
+        <BaseSectionHeader :title="t('attributes')">
+          <template #actions>
+            <BaseButton
+              :to="organizationRoutes.newAttribute()"
+              variant="primary">
+              <IconPlus />
+              {{ t('newAttribute') }}
+            </BaseButton>
+          </template>
+        </BaseSectionHeader>
+        <BaseList v-if="attributes.length">
+          <BaseListRow
             v-for="attribute in attributes"
             :key="attribute.id"
             :to="organizationRoutes.attribute(attribute.id)">
-            <AttributeIcon :style="{ color: attribute.color }" />
-            <span class="attribute-name">
-              <strong>{{ attribute.name }}</strong>
-              <small class="muted">
-                {{ typeLabels[attribute.type] }}
-              </small>
-            </span>
-            <IconChevronRight />
-          </NuxtLink>
-        </div>
-        <AppEmptyState
+            <template #leading>
+              <AttributeIcon :style="{ color: attribute.color }" />
+            </template>
+            {{ attribute.name }}
+            <template #trailing>
+              <span class="muted">{{ typeLabels[attribute.type] }}</span>
+            </template>
+          </BaseListRow>
+        </BaseList>
+        <BaseEmptyState
           v-else
           :hint="t('emptyHint')"
           :title="t('emptyTitle')" />
@@ -44,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconChevronRight, IconPlus } from '@tabler/icons-vue'
+import { IconPlus } from '@tabler/icons-vue'
 
 import { AttributeIcon } from '~/constants/icons'
 import type {
@@ -106,55 +104,7 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
 </script>
 
 <style scoped>
-.attributes-page > .title-row {
-  justify-content: flex-end;
+.attributes-page > .base-section-header {
   margin-bottom: var(--space-4);
-}
-
-.attribute-list {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.attribute-list a {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  color: var(--color-text);
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: auto 1fr auto;
-  padding: var(--space-3) var(--space-4);
-  text-decoration: none;
-  transition: var(--transition-press);
-}
-
-.attribute-list a:hover {
-  background: var(--color-hover);
-}
-
-.attribute-list a:active {
-  translate: 0 var(--press-offset);
-}
-
-.attribute-list a > .tabler-icon:last-child {
-  color: var(--color-muted);
-}
-
-.attribute-list a > .tabler-icon:first-child {
-  height: 16px;
-  width: 16px;
-}
-
-.attribute-name {
-  display: grid;
-  min-width: 0;
-}
-
-.attribute-name > * {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>

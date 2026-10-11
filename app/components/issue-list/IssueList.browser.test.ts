@@ -80,7 +80,7 @@ const dialog = () => page.getByRole('dialog')
 
 const rowAction = async (index: number, name: string) => {
   await page.getByRole('button', { name: 'Issue actions' }).nth(index).click()
-  await page.getByRole('button', { exact: true, name }).last().click()
+  await page.getByRole('menuitem', { exact: true, name }).last().click()
 }
 
 it('loads inline choices on opening and keeps the current status after a failed save', async () => {

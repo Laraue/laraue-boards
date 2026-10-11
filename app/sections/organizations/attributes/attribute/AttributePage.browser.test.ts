@@ -58,7 +58,7 @@ it('shows the loaded text attribute without an options editor', async () => {
   await mount(createDeps(), vi.fn<() => void>())
 
   await expect.element(page.getByLabelText('Name')).toHaveValue('Priority')
-  await expect.element(page.getByRole('button', { name: 'Blue' })).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Color' })).toHaveTextContent('Blue')
   await expect.element(page.getByRole('group', { name: 'Options' })).not.toBeInTheDocument()
 })
 
@@ -66,7 +66,7 @@ it('shows the options of the loaded list attribute', async () => {
   await mount(createDeps({}, listAttribute), vi.fn<() => void>())
 
   await expect.element(page.getByLabelText('Name')).toHaveValue('Severity')
-  await expect.element(page.getByRole('button', { name: 'Amber' })).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Color' })).toHaveTextContent('Amber')
   await expect.element(page.getByRole('textbox', { name: 'Option 1' })).toHaveValue('Low')
   await expect.element(page.getByRole('textbox', { name: 'Option 2' })).toHaveValue('High')
 })
@@ -78,7 +78,7 @@ it('submits the edited name and color', async () => {
   await mount(createDeps({ update }), onFinished)
 
   await page.getByLabelText('Name').fill('Severity')
-  await page.getByRole('button', { name: 'Blue' }).click()
+  await page.getByRole('button', { name: 'Color' }).click()
   await page.getByRole('option', { name: 'Teal' }).click()
   await page.getByRole('button', { name: 'Save changes' }).click()
 

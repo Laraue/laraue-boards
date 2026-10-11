@@ -97,17 +97,17 @@ useSeoMeta({
 
 .updated {
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: var(--font-size-small);
   margin: 10px 0 28px;
 }
 
 .article {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   line-height: 1.75;
 }
 
 .article h2 {
-  font-size: 22px;
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.01em;
   line-height: 1.3;

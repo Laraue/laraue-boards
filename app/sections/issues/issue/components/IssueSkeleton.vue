@@ -155,13 +155,13 @@ const { t } = useI18n({
 }
 
 .skeleton-title {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
 }
 
 .skeleton-link {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   height: var(--icon-size);
   width: var(--icon-size);
 }
@@ -296,7 +296,7 @@ const { t } = useI18n({
 
 .skeleton-comment-field {
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   height: 88px;
 }
 
@@ -347,7 +347,7 @@ const { t } = useI18n({
 }
 
 .skeleton-avatar {
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   height: 20px;
   width: 20px;
 }

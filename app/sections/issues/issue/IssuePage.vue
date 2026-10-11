@@ -29,7 +29,7 @@
         "
         :title="data?.issueKey ?? issueKey">
         <template #title-actions>
-          <IconButton
+          <BaseIconButton
             :label="state.copied ? t('copied') : t('copyIssueLink')"
             @click="copyIssueLink">
             <Transition
@@ -42,7 +42,7 @@
                 v-else
                 key="link" />
             </Transition>
-          </IconButton>
+          </BaseIconButton>
         </template>
         <template
           v-if="data?.canEdit"
@@ -61,12 +61,12 @@
         <h1>
           <NuxtLink :to="issueRoute">{{ data?.issueKey ?? issueKey }}</NuxtLink>
         </h1>
-        <IconButton
+        <BaseIconButton
           :label="state.copied ? t('copied') : t('copyIssueLink')"
           @click="copyIssueLink">
           <IconCheck v-if="state.copied" />
           <IconLink v-else />
-        </IconButton>
+        </BaseIconButton>
       </div>
     </template>
     <QueryState
@@ -109,13 +109,13 @@
                     :deps="deps.description"
                     :disabled="!issue.canEdit">
                     <template #actions>
-                      <IconButton
+                      <BaseIconButton
                         :disabled="saving || deleting"
                         :label="t('attachImages')"
                         :tooltip="t('attachImagesHint')"
                         @click="attachments?.pick()">
                         <IconPaperclip />
-                      </IconButton>
+                      </BaseIconButton>
                     </template>
                   </IssueDescription>
                 </div>
@@ -221,11 +221,10 @@
                     variant="inline" />
                   <span class="issue-property-label">{{ t('owner') }}</span>
                   <div class="issue-person">
-                    <span
-                      class="avatar"
-                      :style="{ background: issue.ownerColor }">
-                      {{ issue.ownerInitial }}
-                    </span>
+                    <BaseAvatar
+                      :color="issue.ownerColor"
+                      :initials="issue.ownerInitial"
+                      size="sm" />
                     <span>{{ issue.owner }}</span>
                   </div>
                   <IssueAttributeFields
@@ -311,6 +310,7 @@ const props = defineProps<{
 }>()
 const formId = `issue-form-${useId()}`
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     assignee: 'Assignee',
@@ -518,7 +518,10 @@ const save = async () => {
 }
 
 const remove = async () => {
-  if (confirm(t('deleteConfirm')) && (await deleteIssue({ issueKey: props.issueKey }))) {
+  if (
+    (await confirm({ danger: true, title: t('deleteConfirm') })) &&
+    (await deleteIssue({ issueKey: props.issueKey }))
+  ) {
     await props.onDeleted?.(props.issueKey)
     await leaveAfterIssueChanged()
   }
@@ -601,7 +604,7 @@ watch(dirty, setDirty, { immediate: true })
 }
 
 .issue-dialog-heading h1 {
-  font-size: 16px;
+  font-size: var(--font-size-lg);
 }
 
 .issue-dialog-heading h1 a {
@@ -656,11 +659,12 @@ watch(dirty, setDirty, { immediate: true })
   background: transparent;
   border: 0;
   border-radius: 0;
+  box-shadow: none;
   color: var(--color-text);
-  font-size: 26px;
+  font-size: var(--font-size-title);
   font-weight: var(--font-weight-semibold);
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: var(--line-height-heading);
   max-height: none;
   min-height: 0;
   overflow: hidden;
@@ -717,12 +721,6 @@ watch(dirty, setDirty, { immediate: true })
   gap: var(--space-2);
   min-height: var(--control-height);
   padding: 0 var(--space-3);
-}
-
-.issue-person .avatar {
-  font-size: var(--font-size-caption);
-  height: 20px;
-  width: 20px;
 }
 
 .issue-dates {

@@ -18,29 +18,21 @@
             <time :datetime="transaction.createdAt">
               {{ transaction.createdAtLabel }}
             </time>
-            <small
-              v-if="transaction.finishedAt"
-              class="transaction-finished muted">
-              {{ labels.finishedAt }}: {{ transaction.finishedAtLabel }}
-            </small>
+          </td>
+          <td v-if="showOwner">{{ transaction.ownerName }}</td>
+          <td>
+            {{ transaction.reason }}
+            <!-- Why it failed belongs to what was attempted. -->
             <small
               v-if="transaction.error"
               class="transaction-error">
               {{ transaction.error }}
             </small>
           </td>
-          <td v-if="showOwner">{{ transaction.ownerName }}</td>
-          <td>{{ transaction.reason }}</td>
           <td>
-            <span
-              class="status-pill"
-              :class="{
-                'status-canceled': transaction.statusClass === 'canceled',
-                'status-confirmed': transaction.statusClass === 'confirmed',
-                'status-started': transaction.statusClass === 'started',
-              }">
+            <BaseBadge :variant="statusVariant[transaction.statusClass] ?? 'neutral'">
               {{ transaction.status }}
-            </span>
+            </BaseBadge>
           </td>
           <td
             class="number-cell"
@@ -64,12 +56,18 @@ defineProps<{
   rows: TransactionsTableRow[]
   showOwner?: boolean
 }>()
+
+const statusVariant: Partial<Record<string, 'danger' | 'success' | 'warning'>> = {
+  canceled: 'danger',
+  confirmed: 'success',
+  started: 'warning',
+}
 </script>
 
 <style scoped>
 .transaction-table-wrap {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   overflow-x: auto;
 }
@@ -88,27 +86,27 @@ defineProps<{
   vertical-align: top;
 }
 
+.transaction-table td {
+  font-variant-numeric: tabular-nums;
+}
+
 .transaction-table th {
   color: var(--color-muted);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .transaction-table tbody tr:last-child td {
   border-bottom: 0;
 }
 
-.transaction-table time,
-.transaction-finished,
 .transaction-error {
   display: block;
 }
 
 .transaction-error {
   color: var(--color-danger);
-  font-size: var(--font-size-caption);
+  font-size: var(--font-size-sm);
   margin-top: var(--space-1);
 }
 
@@ -123,29 +121,5 @@ defineProps<{
 
 .negative {
   color: var(--color-danger);
-}
-
-.status-pill {
-  background: var(--color-soft);
-  border-radius: var(--radius-pill);
-  display: inline-block;
-  font-size: var(--font-size-caption);
-  padding: 2px 8px;
-  white-space: nowrap;
-}
-
-.status-confirmed {
-  background: color-mix(in srgb, var(--color-success) 14%, transparent);
-  color: var(--color-success);
-}
-
-.status-canceled {
-  background: color-mix(in srgb, var(--color-danger) 14%, transparent);
-  color: var(--color-danger);
-}
-
-.status-started {
-  background: color-mix(in srgb, var(--color-chart-2) 14%, transparent);
-  color: var(--color-chart-2);
 }
 </style>

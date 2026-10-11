@@ -224,7 +224,6 @@ const features: { description: string; icon: LandingIconName; link: string; titl
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
   color: inherit;
   padding: 28px 24px;
   text-decoration: none;

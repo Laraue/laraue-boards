@@ -19,11 +19,10 @@
           data-tour="organization-switcher"
           :title="t('switchOrganization')"
           to="/organizations">
-          <span
-            class="entity-avatar"
-            :style="{ background: viewModel.organization.color }">
-            {{ viewModel.organization.initial }}
-          </span>
+          <BaseAvatar
+            :color="viewModel.organization.color"
+            :initials="viewModel.organization.initial"
+            shape="square" />
           <span class="organization-name">
             {{ viewModel.organization.name }}
           </span>
@@ -90,7 +89,7 @@
             :to="organizationRoutes.retros()">
             <RetroIcon />
             {{ t('retro') }}
-            <span class="muted nav-badge">{{ t('alpha') }}</span>
+            <BaseBadge variant="outline">{{ t('alpha') }}</BaseBadge>
           </NuxtLink>
           <a
             :aria-label="t('documentationNewTab')"
@@ -104,24 +103,19 @@
         </div>
       </nav>
       <div class="sidebar-footer">
-        <AppPopover
+        <BaseMenu
           align="end"
           class="sidebar-account"
           side="right">
-          <template #trigger="{ open, toggle }">
+          <template #trigger="{ open }">
             <button
-              :aria-expanded="open"
-              aria-haspopup="dialog"
               :aria-label="t('userMenu')"
               class="sidebar-user"
               :class="{ active: open }"
-              type="button"
-              @click="toggle">
-              <span
-                class="avatar"
-                :style="{ background: viewModel.user.color }">
-                {{ viewModel.user.initials }}
-              </span>
+              type="button">
+              <BaseAvatar
+                :color="viewModel.user.color"
+                :initials="viewModel.user.initials" />
               <span class="sidebar-user-info">
                 <strong>{{ viewModel.user.name }}</strong>
                 <small class="muted">
@@ -130,51 +124,50 @@
               </span>
             </button>
           </template>
-          <template #default="{ close }">
-            <div
-              :aria-label="t('userMenu')"
-              class="user-menu"
-              role="dialog">
-              <BaseButton
-                menu
-                to="/account"
-                @click="closeUserMenu(close)">
-                <IconUserCircle />
-                {{ t('yourAccount') }}
-              </BaseButton>
-              <BaseButton
-                menu
-                :to="organizationRoutes.account()"
-                @click="closeUserMenu(close)">
-                <IconBuilding />
-                {{ t('organizationProfile') }}
-              </BaseButton>
-              <div class="user-menu-divider" />
-              <BaseButton
-                menu
-                @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
-                <IconSun v-if="theme === 'dark'" />
-                <IconMoon v-else />
-                {{ theme === 'dark' ? t('lightTheme') : t('darkTheme') }}
-              </BaseButton>
-              <BaseButton
-                menu
-                @click="setLocale(locale === 'ru' ? 'en' : 'ru')">
-                <IconLanguage />
-                {{ locale === 'ru' ? 'English' : 'Русский' }}
-              </BaseButton>
-              <div class="user-menu-divider" />
-              <BaseButton
-                :loading="loggingOut"
-                menu
-                variant="danger"
-                @click="onLogout">
-                <IconLogout />
-                {{ t('logOut') }}
-              </BaseButton>
-            </div>
-          </template>
-        </AppPopover>
+          <BaseMenuItem
+            to="/account"
+            @select="sidebarOpen = false">
+            <IconUserCircle />
+            {{ t('yourAccount') }}
+          </BaseMenuItem>
+          <BaseMenuItem
+            :to="organizationRoutes.account()"
+            @select="sidebarOpen = false">
+            <IconBuilding />
+            {{ t('organizationProfile') }}
+          </BaseMenuItem>
+          <BaseMenuSeparator />
+          <!-- Theme and language switch in place, so the menu stays open. -->
+          <BaseMenuItem
+            @select="
+              (event) => {
+                event.preventDefault()
+                setTheme(theme === 'dark' ? 'light' : 'dark')
+              }
+            ">
+            <IconSun v-if="theme === 'dark'" />
+            <IconMoon v-else />
+            {{ theme === 'dark' ? t('lightTheme') : t('darkTheme') }}
+          </BaseMenuItem>
+          <BaseMenuItem
+            @select="
+              (event) => {
+                event.preventDefault()
+                setLocale(locale === 'ru' ? 'en' : 'ru')
+              }
+            ">
+            <IconLanguage />
+            {{ locale === 'ru' ? 'English' : 'Русский' }}
+          </BaseMenuItem>
+          <BaseMenuSeparator />
+          <BaseMenuItem
+            :loading="loggingOut"
+            variant="danger"
+            @select="onLogout">
+            <IconLogout />
+            {{ t('logOut') }}
+          </BaseMenuItem>
+        </BaseMenu>
       </div>
     </aside>
     <Transition name="fade">
@@ -221,10 +214,6 @@ const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const sidebarOpen = useSidebarOpen()
 const { setLocale, setTheme, theme } = useAppPreferences()
-const closeUserMenu = (close: () => void) => {
-  close()
-  sidebarOpen.value = false
-}
 const { locale, t } = useI18n({
   en: {
     admin: 'Admin',
@@ -349,31 +338,17 @@ aside > nav button {
   color: var(--color-muted);
   display: flex;
   gap: var(--space-2);
-  height: 36px;
+  height: var(--control-height);
   padding: 0 var(--space-3);
   text-align: left;
   text-decoration: none;
-  transition: var(--transition-press);
   width: 100%;
-}
-
-/* Retro is still finding its shape, so the sidebar says so out loud. */
-.nav-badge {
-  border: 1px solid currentcolor;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-caption);
-  padding: 0 var(--space-2);
 }
 
 aside > nav a:hover,
 aside > nav button:hover {
   background: var(--color-soft);
   color: var(--color-text);
-}
-
-aside > nav a:active,
-aside > nav button:active {
-  translate: 0 var(--press-offset);
 }
 
 aside > nav a.active,
@@ -391,11 +366,9 @@ aside > nav button.active {
 
 .nav-title {
   color: var(--color-muted);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.09em;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
   padding: var(--space-5) var(--space-3) var(--space-2);
-  text-transform: uppercase;
 }
 
 /* The page's own header (PageHeader) scrolls with it, so the page shows through it while it scrolls. */
@@ -449,17 +422,6 @@ main :deep(.page-load-state) {
   width: 100%;
 }
 
-.user-menu {
-  display: grid;
-  gap: var(--space-1);
-  padding: var(--space-1);
-}
-
-.user-menu-divider {
-  border-top: 1px solid var(--color-divider);
-  margin: var(--space-1);
-}
-
 .sidebar-user {
   align-items: center;
   background: transparent;
@@ -472,7 +434,6 @@ main :deep(.page-load-state) {
   padding: var(--space-2);
   text-align: left;
   text-decoration: none;
-  transition: var(--transition-press);
   width: 100%;
 }
 
@@ -482,10 +443,6 @@ main :deep(.page-load-state) {
 
 .sidebar-user:hover {
   background: var(--color-soft);
-}
-
-.sidebar-user:active {
-  translate: 0 var(--press-offset);
 }
 
 /* Retro and the docs live together at the bottom, away from the settings block. */
@@ -538,16 +495,11 @@ main :deep(.page-load-state) {
   min-width: 0;
   padding: var(--space-2) var(--space-3);
   text-decoration: none;
-  transition: var(--transition-press);
   width: 100%;
 }
 
 .organization-select:hover {
   background: var(--color-hover);
-}
-
-.organization-select:active {
-  translate: 0 var(--press-offset);
 }
 
 .organization-name {

@@ -7,12 +7,12 @@
       v-if="canUpdate"
       ref="handle"
       class="column-drag">
-      <IconButton
+      <BaseIconButton
         :disabled="disabled"
         :label="t('reorder')"
         style="cursor: grab; touch-action: none">
         <IconGripVertical />
-      </IconButton>
+      </BaseIconButton>
     </div>
     <span
       v-else
@@ -45,13 +45,13 @@
     <div
       v-if="canUpdate"
       class="column-delete">
-      <IconButton
+      <BaseIconButton
         :disabled="disabled"
         :label="t('delete')"
         variant="danger"
         @click="props.onDelete">
         <IconTrash />
-      </IconButton>
+      </BaseIconButton>
     </div>
   </div>
 </template>

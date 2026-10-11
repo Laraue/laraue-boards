@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseSelectVariant } from '~/components/BaseSelect.vue'
+import type { BaseSelectVariant } from '~/components/ui/BaseSelect.vue'
 import { AttributeIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
 
@@ -112,6 +112,7 @@ const update = (id: string, value: string) => {
 .attribute-field-inline :deep(input) {
   background: transparent;
   border-color: transparent;
+  box-shadow: none;
   field-sizing: content;
   justify-self: start;
   max-width: 100%;

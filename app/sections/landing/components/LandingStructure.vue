@@ -74,9 +74,8 @@ const { t } = useI18n(
 .hierarchy-box {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-dialog);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-card);
   flex: 1;
   min-width: 140px;
   padding: 16px 20px;

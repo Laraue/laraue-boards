@@ -69,14 +69,9 @@
                 <div class="summary-title">
                   <BoardIcon :style="{ color: board.color }" />
                   <strong>{{ board.name }}</strong>
-                  <span
-                    class="board-status"
-                    :class="{
-                      'board-status--active': board.status === 'Active',
-                      'board-status--done': board.status === 'Done',
-                    }">
+                  <BaseBadge :variant="boardStatusVariant[board.status]">
                     {{ statusLabel(board.status) }}
-                  </span>
+                  </BaseBadge>
                   <span class="muted issue-count">{{ tp('issues', board.issueCount) }}</span>
                 </div>
                 <div class="meter">
@@ -100,7 +95,7 @@
                 </div>
               </NuxtLink>
             </div>
-            <AppEmptyState
+            <BaseEmptyState
               v-else
               :hint="t('emptyHint')"
               :title="t('emptyTitle')" />
@@ -171,6 +166,8 @@ const regularBoards = computed(() => boards.value.filter((board) => board.kind =
 
 const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
+
+const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' } as const
 </script>
 
 <style scoped>
@@ -213,12 +210,6 @@ const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   min-width: 0;
   padding: var(--space-4);
   text-decoration: none;
-  transition: var(--transition-press);
-}
-
-.board-summary:active,
-.backlog-summary:active {
-  translate: 0 var(--press-offset);
 }
 
 .backlog-summary:hover,
@@ -246,28 +237,9 @@ const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   white-space: nowrap;
 }
 
-.board-status {
-  --board-status-color: var(--color-chart-neutral);
-
-  background: color-mix(in srgb, var(--board-status-color) 14%, transparent);
-  border-radius: var(--radius-pill);
-  color: var(--board-status-color);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-medium);
-  padding: 2px 8px;
-}
-
-.board-status--active {
-  --board-status-color: var(--color-chart-2);
-}
-
-.board-status--done {
-  --board-status-color: var(--color-chart-done);
-}
-
 .meter {
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   display: flex;
   gap: 1px;
   height: 2px;

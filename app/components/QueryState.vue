@@ -24,11 +24,9 @@
         @click="onRetry">
         {{ translatedRetryText }}
       </BaseButton>
-      <NuxtLink
-        class="secondary"
-        to="/organizations">
+      <BaseButton to="/organizations">
         {{ t('goHome') }}
-      </NuxtLink>
+      </BaseButton>
     </div>
   </section>
   <slot
@@ -91,7 +89,7 @@ defineSlots<{
 }
 
 .page-state h2 {
-  font-size: 18px;
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
 }
 

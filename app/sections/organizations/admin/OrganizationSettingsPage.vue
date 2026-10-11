@@ -8,6 +8,7 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="form-page">
+        <BaseSectionHeader :title="t('general')" />
         <form
           @submit.prevent="
             submitForm({
@@ -17,16 +18,25 @@
               slug: page.slug,
             })
           ">
-          <label for="organization-settings-name">{{ t('name') }}</label>
-          <input
-            id="organization-settings-name"
-            v-model="state.name"
-            :disabled="!page.canUpdate"
-            required />
-          <label>{{ t('color') }}</label>
-          <AppColorPicker
-            v-model="state.color"
-            :disabled="!page.canUpdate" />
+          <BaseFieldGroup>
+            <BaseField
+              id="organization-settings-name"
+              :label="t('name')">
+              <input
+                id="organization-settings-name"
+                v-model="state.name"
+                :disabled="!page.canUpdate"
+                required />
+            </BaseField>
+            <BaseField
+              v-slot="{ labelId }"
+              :label="t('color')">
+              <AppColorPicker
+                v-model="state.color"
+                :aria-labelledby="labelId"
+                :disabled="!page.canUpdate" />
+            </BaseField>
+          </BaseFieldGroup>
           <p
             v-if="state.saved"
             class="form-success">
@@ -38,22 +48,26 @@
             {{ submitMessage || removeMessage }}
           </p>
           <div class="form-actions">
-            <button
+            <BaseButton
               v-if="page.canUpdate"
-              class="primary"
-              :disabled="busy">
-              {{ submitting ? t('saving') : t('saveChanges') }}
-            </button>
-            <button
-              v-if="page.canDelete"
-              class="secondary danger"
               :disabled="busy"
-              type="button"
-              @click="remove(page.id)">
-              {{ removing ? t('deleting') : t('deleteOrganization') }}
-            </button>
+              type="submit"
+              variant="primary">
+              {{ submitting ? t('saving') : t('saveChanges') }}
+            </BaseButton>
           </div>
         </form>
+        <BaseDangerZone
+          v-if="page.canDelete"
+          :description="t('deleteDescription')"
+          :title="t('deleteOrganization')">
+          <BaseButton
+            :disabled="busy"
+            variant="danger"
+            @click="remove(page.id)">
+            {{ removing ? t('deleting') : t('deleteOrganization') }}
+          </BaseButton>
+        </BaseDangerZone>
       </section>
     </template>
   </QueryState>
@@ -71,13 +85,17 @@ const props = defineProps<{
   onUpdated: () => Promise<void> | void
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     changesSaved: 'Changes saved.',
     color: 'Color',
     deleteConfirm: 'Delete this organization?',
+    deleteDescription:
+      'Removes the organization with its spaces, boards and issues for every member.',
     deleteOrganization: 'Delete organization',
     deleting: 'Deleting…',
+    general: 'General',
     generalSettings: 'General settings',
     loadError: 'Could not load settings',
     loading: 'Loading settings…',
@@ -90,8 +108,11 @@ const { t } = useI18n({
     changesSaved: 'Изменения сохранены.',
     color: 'Цвет',
     deleteConfirm: 'Удалить эту организацию?',
+    deleteDescription:
+      'Удаляет организацию со всеми пространствами, досками и задачами для всех участников.',
     deleteOrganization: 'Удалить организацию',
     deleting: 'Удаление…',
+    general: 'Общие',
     generalSettings: 'Общие настройки',
     loadError: 'Не удалось загрузить настройки',
     loading: 'Загрузка настроек…',
@@ -142,8 +163,19 @@ const {
 } = useApiAction(props.deps.remove)
 const busy = computed(() => submitting.value || removing.value)
 const remove = async (id: string): Promise<void> => {
-  if (confirm(t('deleteConfirm')) && (await removeOrganization({ id }))) {
+  if (
+    (await confirm({ danger: true, title: t('deleteConfirm') })) &&
+    (await removeOrganization({ id }))
+  ) {
     await props.onDeleted()
   }
 }
 </script>
+
+<style scoped>
+.form-page {
+  align-content: start;
+  display: grid;
+  gap: var(--space-5);
+}
+</style>

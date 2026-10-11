@@ -8,30 +8,35 @@
     :pending="pending">
     <template #default="{ data: attribute }">
       <section class="form-page">
-        <div class="title-row">
-          <div class="page-heading">
+        <BaseSectionHeader :title="t('editAttribute')">
+          <template #leading>
             <AppBackLink
               :label="t('backToAttributes')"
               :to="organizationRoutes.attributes()" />
-            <div class="page-heading-text">
-              <h2>{{ t('editAttribute') }}</h2>
-            </div>
-          </div>
-        </div>
+          </template>
+        </BaseSectionHeader>
         <form
           v-if="draft"
           class="attribute-editor"
           @submit.prevent="submit">
-          <label for="edit-attribute-name">{{ t('name') }}</label>
-          <input
-            id="edit-attribute-name"
-            v-model="draft.name"
-            maxlength="64"
-            required />
-
-          <label>{{ t('color') }}</label>
-          <AppColorPicker v-model="draft.color" />
-
+          <BaseFieldGroup>
+            <BaseField
+              id="edit-attribute-name"
+              :label="t('name')">
+              <input
+                id="edit-attribute-name"
+                v-model="draft.name"
+                maxlength="64"
+                required />
+            </BaseField>
+            <BaseField
+              v-slot="{ labelId }"
+              :label="t('color')">
+              <AppColorPicker
+                v-model="draft.color"
+                :aria-labelledby="labelId" />
+            </BaseField>
+          </BaseFieldGroup>
           <fieldset v-if="draft.data.type === 'list'">
             <legend>{{ t('options') }}</legend>
             <TransitionGroup
@@ -46,23 +51,21 @@
                   :aria-label="`${t('option')} ${index + 1}`"
                   maxlength="64"
                   required />
-                <button
-                  :aria-label="`${t('removeOption')} ${index + 1}`"
-                  class="icon-btn danger"
+                <BaseIconButton
                   :disabled="draft.data.listValues.length === 1"
-                  type="button"
+                  :label="`${t('removeOption')} ${index + 1}`"
+                  variant="danger"
                   @click="draft.data.listValues.splice(index, 1)">
                   <IconTrash />
-                </button>
+                </BaseIconButton>
               </div>
             </TransitionGroup>
-            <button
-              class="secondary add-option"
-              type="button"
+            <BaseButton
+              class="add-option"
               @click="addOption">
               <IconPlus />
               {{ t('addOption') }}
-            </button>
+            </BaseButton>
           </fieldset>
 
           <p
@@ -71,21 +74,24 @@
             {{ updateMessage || deleteMessage }}
           </p>
           <div class="form-actions">
-            <button
-              class="primary"
-              :disabled="submitting">
-              {{ submitting ? t('saving') : t('saveChanges') }}
-            </button>
-            <button
-              class="secondary danger"
+            <BaseButton
               :disabled="submitting"
-              type="button"
-              @click="remove(attribute)">
-              <IconTrash />
-              {{ t('deleteAttribute') }}
-            </button>
+              type="submit"
+              variant="primary">
+              {{ submitting ? t('saving') : t('saveChanges') }}
+            </BaseButton>
           </div>
         </form>
+        <BaseDangerZone
+          :description="t('deleteDescription')"
+          :title="t('deleteAttribute')">
+          <BaseButton
+            :disabled="submitting"
+            variant="danger"
+            @click="remove(attribute)">
+            {{ t('deleteAttribute') }}
+          </BaseButton>
+        </BaseDangerZone>
       </section>
     </template>
   </QueryState>
@@ -108,6 +114,7 @@ const props = defineProps<{
   onFinished: () => Promise<void> | void
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     addOption: 'Add option',
@@ -115,6 +122,7 @@ const { t } = useI18n({
     backToAttributes: 'Back to attributes',
     color: 'Color',
     deleteAttribute: 'Delete attribute',
+    deleteDescription: 'Removes the field and its values from every issue.',
     editAttribute: 'Edit attribute',
     loadError: 'Could not load attribute',
     loading: 'Loading attribute…',
@@ -131,6 +139,7 @@ const { t } = useI18n({
     backToAttributes: 'Назад к атрибутам',
     color: 'Цвет',
     deleteAttribute: 'Удалить атрибут',
+    deleteDescription: 'Удаляет поле и его значения из всех задач.',
     editAttribute: 'Изменить атрибут',
     loadError: 'Не удалось загрузить атрибут',
     loading: 'Загрузка атрибута…',
@@ -254,7 +263,7 @@ const submit = async () => {
 
 const remove = async (attribute: Attribute) => {
   if (
-    confirm(`${t('deleteAttribute')} "${attribute.name}"?`) &&
+    (await confirm({ danger: true, title: `${t('deleteAttribute')} "${attribute.name}"?` })) &&
     (await deleteAttribute({ id: attribute.id }))
   ) {
     await props.onFinished()
@@ -263,6 +272,11 @@ const remove = async (attribute: Attribute) => {
 </script>
 
 <style scoped>
+.form-page {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .attribute-editor fieldset {
   border: 0;
   margin: var(--space-5) 0 0;
@@ -270,7 +284,7 @@ const remove = async (attribute: Attribute) => {
 }
 
 .attribute-editor legend {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-2);
 }
 

@@ -1,0 +1,97 @@
+/* The retro board's own controls: the app's former button and avatar classes, kept here because
+   the retro board page lives apart from the UI kit for now. Do not use outside retro-board/. */
+
+.primary,
+.secondary,
+.icon-btn {
+  align-items: center;
+  border-radius: var(--radius-control);
+  display: inline-flex;
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  height: var(--control-height);
+  justify-content: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.primary {
+  background: var(--color-action);
+  border: 1px solid var(--color-action);
+  color: var(--color-on-action);
+  padding: 0 var(--space-4);
+}
+
+.primary:hover:not(:disabled) {
+  border-color: var(--color-action-hover);
+}
+
+.secondary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0 var(--space-4);
+}
+
+.secondary:hover {
+  border-color: var(--color-border-hover);
+}
+
+.icon-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  height: var(--icon-btn-size);
+  min-height: var(--icon-btn-size);
+  min-width: var(--icon-btn-size);
+  padding: 0;
+  width: var(--icon-btn-size);
+}
+
+.icon-btn:hover {
+  border-color: var(--color-border-hover);
+}
+
+.primary.small,
+.secondary.small {
+  font-size: var(--font-size-small);
+  height: var(--control-height-small);
+  padding: 0 var(--space-2);
+}
+
+.icon-btn.small {
+  height: var(--icon-btn-size-small);
+  min-height: var(--icon-btn-size-small);
+  min-width: var(--icon-btn-size-small);
+  width: var(--icon-btn-size-small);
+}
+
+.small .tabler-icon {
+  height: 14px;
+  width: 14px;
+}
+
+.entity-avatar {
+  background: #f79009;
+  color: white;
+  display: grid;
+  flex: none;
+  height: var(--icon-btn-size);
+  place-items: center;
+  text-transform: uppercase;
+  width: var(--icon-btn-size);
+}
+
+.entity-avatar {
+  border-radius: var(--radius-control);
+}
+
+.danger {
+  color: var(--color-danger);
+}
+
+.danger:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}

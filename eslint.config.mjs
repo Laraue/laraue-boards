@@ -52,4 +52,26 @@ export default [
       'vue/v-on-event-hyphenation': ['error', 'always', { autofix: true }],
     },
   },
+
+  // The UI kit will move to its own library, so it must not reach into the app.
+  {
+    files: ['app/components/ui/**/*.ts'],
+    languageOptions: { parser: tsParser },
+  },
+  {
+    files: ['app/components/ui/**/*.{ts,vue}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['~/*', '~~/*', '#infrastructure/*', '../../*'],
+              message: 'The UI kit imports only from itself and third-party packages.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]

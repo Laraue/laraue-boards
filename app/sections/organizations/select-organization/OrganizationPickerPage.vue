@@ -22,39 +22,36 @@
                 :disabled="selecting || leaving"
                 type="button"
                 @click="select(organization.id, organization.key)">
-                <span
-                  class="entity-avatar"
-                  :style="{ background: organization.color }">
-                  {{ organization.initial }}
-                </span>
+                <BaseAvatar
+                  :color="organization.color"
+                  :initials="organization.initial"
+                  shape="square" />
                 <span>
                   <strong>{{ organization.name }}</strong>
                   <small class="muted">{{ organization.description }}</small>
                 </span>
               </button>
-              <button
+              <BaseIconButton
                 v-if="organization.canLeave"
-                :aria-label="`${t('leave')} ${organization.name}`"
-                class="icon-btn danger"
                 :disabled="selecting || leaving"
-                :title="t('leaveOrganization')"
-                type="button"
+                :label="`${t('leave')} ${organization.name}`"
+                :tooltip="t('leaveOrganization')"
+                variant="danger"
                 @click="leave(organization.id, organization.name)">
                 <IconLogout />
-              </button>
+              </BaseIconButton>
             </div>
-            <AppEmptyState
+            <BaseEmptyState
               v-if="organizations.length === 0"
               :hint="t('emptyHint')"
               :title="t('emptyTitle')" />
           </div>
-          <NuxtLink
-            class="secondary"
+          <BaseButton
             data-tour="create-organization"
             to="/organizations/new">
             <IconPlus />
             {{ t('createOrganization') }}
-          </NuxtLink>
+          </BaseButton>
           <p
             v-if="selectMessage || leaveMessage"
             class="form-error">
@@ -77,6 +74,7 @@ const props = defineProps<{
   onSelected: (organizationKey: string) => Promise<void> | void
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     chooseOrganization: 'Choose an organization',
@@ -134,7 +132,10 @@ const select = async (organizationId: string, organizationKey: string): Promise<
 }
 
 const leave = async (id: string, name: string): Promise<void> => {
-  if (confirm(`${t('leave')} ${name}?`) && (await leaveOrganization({ id }))) {
+  if (
+    (await confirm({ action: t('leave'), danger: true, title: `${t('leave')} ${name}?` })) &&
+    (await leaveOrganization({ id }))
+  ) {
     await refresh()
   }
 }
@@ -168,7 +169,6 @@ const leave = async (id: string, name: string): Promise<void> => {
   min-width: 0;
   padding: var(--space-4);
   text-align: left;
-  transition: var(--transition-press);
 }
 
 .org-row {
@@ -177,7 +177,6 @@ const leave = async (id: string, name: string): Promise<void> => {
   border-radius: var(--radius-card);
   display: flex;
   overflow: hidden;
-  transition: var(--transition-press);
 }
 
 .org-row > .icon-btn {
@@ -196,10 +195,6 @@ const leave = async (id: string, name: string): Promise<void> => {
 
 .org-row:has(.org-choice:hover) > .icon-btn {
   border-left-color: var(--color-accent);
-}
-
-.org-choice:not(:disabled):active {
-  translate: 0 var(--press-offset);
 }
 
 .org-choice > span:nth-child(2) {

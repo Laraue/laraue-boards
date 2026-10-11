@@ -2,60 +2,59 @@
   <form
     class="permissions-editor"
     @submit.prevent="submit">
-    <p
-      v-if="viewModel.member.isOwner"
-      class="muted">
-      {{ t('ownerReadonly') }}
-    </p>
     <fieldset :disabled="viewModel.member.isOwner">
       <legend>{{ t('administration') }}</legend>
       <p class="muted section-description">{{ t('administrationDescription') }}</p>
-      <div class="permission-grid">
-        <label
-          v-for="permission in ADMIN_PERMISSION_OPTIONS"
-          :key="permission.key"
-          class="permission-option">
-          <input
-            v-model="state.draft.admin[permission.key]"
-            type="checkbox" />
-          <span>{{ t(permission.label) }}</span>
-        </label>
+      <div class="permission-card">
+        <div class="permission-grid">
+          <label
+            v-for="permission in ADMIN_PERMISSION_OPTIONS"
+            :key="permission.key"
+            class="permission-option">
+            <input
+              v-model="state.draft.admin[permission.key]"
+              type="checkbox" />
+            <span>{{ t(permission.label) }}</span>
+          </label>
+        </div>
       </div>
     </fieldset>
 
     <fieldset :disabled="viewModel.member.isOwner">
       <legend>{{ t('organizationAccess') }}</legend>
       <p class="muted section-description">{{ t('organizationAccessDescription') }}</p>
-      <div class="product-section">
-        <h3>{{ t('boards') }}</h3>
-        <div class="read-permission">
-          <strong>{{ t('read') }}</strong>
-          <label class="permission-option">
-            <input
-              :aria-label="t('readOrganization')"
-              :checked="state.draft.global.canRead || globalReadInherited"
-              :disabled="globalReadInherited"
-              :title="globalReadInherited ? t('inherited') : undefined"
-              type="checkbox"
-              @change="state.draft.global.canRead = !state.draft.global.canRead" />
-            <span>{{ t('readOrganization') }}</span>
-          </label>
+      <div class="permission-card">
+        <div class="product-section">
+          <h3>{{ t('boards') }}</h3>
+          <div class="read-permission">
+            <strong>{{ t('read') }}</strong>
+            <label class="permission-option">
+              <input
+                :aria-label="t('readOrganization')"
+                :checked="state.draft.global.canRead || globalReadInherited"
+                :disabled="globalReadInherited"
+                :title="globalReadInherited ? t('inherited') : undefined"
+                type="checkbox"
+                @change="state.draft.global.canRead = !state.draft.global.canRead" />
+              <span>{{ t('readOrganization') }}</span>
+            </label>
+          </div>
+          <PermissionTable
+            :on-toggle="toggleGlobal"
+            :rows="globalPermissionRows" />
         </div>
-        <PermissionTable
-          :on-toggle="toggleGlobal"
-          :rows="globalPermissionRows" />
-      </div>
-      <div class="product-section">
-        <h3>{{ t('retro') }}</h3>
-        <div class="read-permission">
-          <strong>{{ t('access') }}</strong>
-          <label class="permission-option">
-            <input
-              v-model="state.draft.global.canManageRetros"
-              :aria-label="t('manageRetrosOrganization')"
-              type="checkbox" />
-            <span>{{ t('manageRetros') }}</span>
-          </label>
+        <div class="product-section">
+          <h3>{{ t('retro') }}</h3>
+          <div class="read-permission">
+            <strong>{{ t('access') }}</strong>
+            <label class="permission-option">
+              <input
+                v-model="state.draft.global.canManageRetros"
+                :aria-label="t('manageRetrosOrganization')"
+                type="checkbox" />
+              <span>{{ t('manageRetros') }}</span>
+            </label>
+          </div>
         </div>
       </div>
     </fieldset>
@@ -63,72 +62,74 @@
     <fieldset :disabled="viewModel.member.isOwner">
       <legend>{{ t('directSpaceAccess') }}</legend>
       <p class="muted section-description">{{ t('directSpaceAccessDescription') }}</p>
-      <details
-        v-for="space in viewModel.spaces"
-        :key="space.id"
-        class="space-permissions">
-        <summary>
-          <IconChevronRight class="disclosure-icon" />
-          <SpaceIcon :style="{ color: space.color }" />
-          <strong>{{ space.name }}</strong>
-          <span
-            v-if="space.isDefault"
-            class="muted">
-            {{ t('default') }}
-          </span>
-        </summary>
-        <div class="direct-permissions">
-          <div class="product-section">
-            <h3>{{ t('boards') }}</h3>
-            <div class="read-permission">
-              <strong>{{ t('read') }}</strong>
-              <label class="permission-option">
-                <input
-                  :aria-label="`${t('read')} ${space.name}`"
-                  :checked="
-                    state.draft.direct[space.id]!.canRead ||
-                    directPermissionTables[space.id]!.readInherited
-                  "
-                  :disabled="directPermissionTables[space.id]!.readInherited"
-                  :title="
-                    directPermissionTables[space.id]!.readInherited ? t('inherited') : undefined
-                  "
-                  type="checkbox"
-                  @change="
-                    state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
-                  " />
-                <span>{{ t('readSpace') }}</span>
-              </label>
+      <div class="permission-card">
+        <details
+          v-for="space in viewModel.spaces"
+          :key="space.id"
+          class="space-permissions">
+          <summary>
+            <IconChevronRight class="disclosure-icon" />
+            <SpaceIcon :style="{ color: space.color }" />
+            <strong>{{ space.name }}</strong>
+            <span
+              v-if="space.isDefault"
+              class="muted">
+              {{ t('default') }}
+            </span>
+          </summary>
+          <div class="direct-permissions">
+            <div class="product-section">
+              <h3>{{ t('boards') }}</h3>
+              <div class="read-permission">
+                <strong>{{ t('read') }}</strong>
+                <label class="permission-option">
+                  <input
+                    :aria-label="`${t('read')} ${space.name}`"
+                    :checked="
+                      state.draft.direct[space.id]!.canRead ||
+                      directPermissionTables[space.id]!.readInherited
+                    "
+                    :disabled="directPermissionTables[space.id]!.readInherited"
+                    :title="
+                      directPermissionTables[space.id]!.readInherited ? t('inherited') : undefined
+                    "
+                    type="checkbox"
+                    @change="
+                      state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
+                    " />
+                  <span>{{ t('readSpace') }}</span>
+                </label>
+              </div>
+              <PermissionTable
+                :label-suffix="` ${t('in')} ${space.name}`"
+                :on-toggle="(key) => toggleDirect(space.id, key)"
+                :rows="directPermissionTables[space.id]!.rows" />
             </div>
-            <PermissionTable
-              :label-suffix="` ${t('in')} ${space.name}`"
-              :on-toggle="(key) => toggleDirect(space.id, key)"
-              :rows="directPermissionTables[space.id]!.rows" />
-          </div>
-          <div class="product-section">
-            <h3>{{ t('retro') }}</h3>
-            <div class="read-permission">
-              <strong>{{ t('access') }}</strong>
-              <label class="permission-option">
-                <input
-                  :aria-label="`${t('manageRetros')} ${t('in')} ${space.name}`"
-                  :checked="
-                    state.draft.direct[space.id]!.canManageRetros ||
-                    state.draft.global.canManageRetros
-                  "
-                  :disabled="state.draft.global.canManageRetros"
-                  :title="state.draft.global.canManageRetros ? t('inherited') : undefined"
-                  type="checkbox"
-                  @change="
-                    state.draft.direct[space.id]!.canManageRetros =
-                      !state.draft.direct[space.id]!.canManageRetros
-                  " />
-                <span>{{ t('manageRetros') }}</span>
-              </label>
+            <div class="product-section">
+              <h3>{{ t('retro') }}</h3>
+              <div class="read-permission">
+                <strong>{{ t('access') }}</strong>
+                <label class="permission-option">
+                  <input
+                    :aria-label="`${t('manageRetros')} ${t('in')} ${space.name}`"
+                    :checked="
+                      state.draft.direct[space.id]!.canManageRetros ||
+                      state.draft.global.canManageRetros
+                    "
+                    :disabled="state.draft.global.canManageRetros"
+                    :title="state.draft.global.canManageRetros ? t('inherited') : undefined"
+                    type="checkbox"
+                    @change="
+                      state.draft.direct[space.id]!.canManageRetros =
+                        !state.draft.direct[space.id]!.canManageRetros
+                    " />
+                  <span>{{ t('manageRetros') }}</span>
+                </label>
+              </div>
             </div>
           </div>
-        </div>
-      </details>
+        </details>
+      </div>
     </fieldset>
 
     <p
@@ -144,11 +145,12 @@
     <div
       v-if="!viewModel.member.isOwner"
       class="form-actions">
-      <button
-        class="primary"
-        :disabled="submitting">
+      <BaseButton
+        :disabled="submitting"
+        type="submit"
+        variant="primary">
         {{ submitting ? t('saving') : t('savePermissions') }}
-      </button>
+      </BaseButton>
     </div>
   </form>
 </template>
@@ -199,7 +201,6 @@ const { t } = useI18n({
     moveData: 'Move spaces and boards',
     organizationAccess: 'Organization access',
     organizationAccessDescription: 'These permissions apply to every space.',
-    ownerReadonly: 'Owner permissions are read-only.',
     permissionsSaved: 'Permissions saved.',
     read: 'Read',
     readOrganization: 'Read organization',
@@ -227,7 +228,6 @@ const { t } = useI18n({
     moveData: 'Перемещение разделов и досок',
     organizationAccess: 'Доступ к организации',
     organizationAccessDescription: 'Эти права действуют для каждого раздела.',
-    ownerReadonly: 'Права владельца доступны только для чтения.',
     permissionsSaved: 'Права сохранены.',
     read: 'Чтение',
     readOrganization: 'Чтение организации',
@@ -285,21 +285,30 @@ watch(
   margin-top: var(--space-6);
 }
 
+/* A group: its name and description on the page, its controls in a card under them. The fieldset
+   stays for the owner's disabled state; it draws nothing itself. */
 fieldset {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border: 0;
   margin: 0;
-  padding: var(--space-4);
+  min-width: 0;
+  padding: 0;
 }
 
 legend {
-  font-weight: var(--font-weight-semibold);
-  padding: 0 var(--space-2);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-1);
+  padding: 0;
 }
 
 .section-description {
-  margin-bottom: var(--space-4);
+  margin: 0 0 var(--space-3);
+}
+
+.permission-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
 }
 
 .permission-grid {
@@ -311,18 +320,21 @@ legend {
 .permission-option {
   align-items: center;
   display: flex;
-  font-weight: var(--font-weight-medium);
+  font-weight: 400;
   gap: var(--space-2);
   margin: 0;
 }
 
+/* A row like the table's under it: its name, then the switch. */
 .read-permission {
   align-items: center;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
   display: flex;
   justify-content: space-between;
-  padding: var(--space-3);
+  padding: 0 var(--space-3);
+}
+
+.read-permission strong {
+  font-weight: 400;
 }
 
 .read-permission + .read-permission {
@@ -330,22 +342,19 @@ legend {
 }
 
 .product-section + .product-section {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-divider);
   margin-top: var(--space-5);
   padding-top: var(--space-5);
 }
 
 .product-section h3 {
-  color: var(--color-muted);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
   margin: 0 0 var(--space-3);
-  text-transform: uppercase;
 }
 
 .space-permissions {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-divider);
   padding: var(--space-3) 0;
 }
 
@@ -361,6 +370,10 @@ legend {
   gap: var(--space-2);
   list-style: none;
   padding: var(--space-2);
+}
+
+.space-permissions summary strong {
+  font-weight: var(--font-weight-medium);
 }
 
 .space-permissions summary:hover {

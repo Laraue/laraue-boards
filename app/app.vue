@@ -6,12 +6,20 @@
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <AppToasts />
+  <BaseToasts :dismiss-label="t('dismiss')" />
+  <BaseConfirmHost
+    :cancel-label="t('cancel')"
+    :confirm-label="t('confirm')"
+    :danger-label="t('delete')" />
   <CookieConsent />
 </template>
 
 <script setup lang="ts">
 const { locale, theme } = useAppPreferences()
+const { t } = useI18n({
+  en: { cancel: 'Cancel', confirm: 'Confirm', delete: 'Delete', dismiss: 'Dismiss' },
+  ru: { cancel: 'Отмена', confirm: 'Подтвердить', delete: 'Удалить', dismiss: 'Закрыть' },
+})
 const route = useRoute()
 
 useHead(() => ({

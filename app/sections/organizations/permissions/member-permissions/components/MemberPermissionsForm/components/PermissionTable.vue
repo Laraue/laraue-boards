@@ -92,7 +92,7 @@ const { t } = useI18n({
 
 .permission-table th,
 .permission-table td {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-divider);
   padding: var(--space-3);
 }
 
@@ -101,8 +101,12 @@ const { t } = useI18n({
 }
 
 .permission-table th {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   text-align: left;
+}
+
+.permission-table tbody th {
+  font-weight: 400;
 }
 
 .permission-table thead th {

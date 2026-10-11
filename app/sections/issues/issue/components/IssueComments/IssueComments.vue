@@ -24,31 +24,30 @@
         class="issue-comment">
         <div class="issue-comment-body">
           <div class="issue-comment-head">
-            <span
-              class="avatar"
-              :style="{ background: comment.owner.color }">
-              {{ comment.owner.initials }}
-            </span>
+            <BaseAvatar
+              :color="comment.owner.color"
+              :initials="comment.owner.initials"
+              size="sm" />
             <span class="issue-comment-name">{{ comment.owner.name }}</span>
             <time :datetime="comment.createdAt">{{ formatDateTime(comment.createdAt) }}</time>
             <div
               v-if="comment.canModify && state.editingId !== comment.id"
               class="issue-comment-actions">
-              <IconButton
+              <BaseIconButton
                 :disabled="!!state.pendingId || summarizing"
                 :label="`${t('editCommentBy')} ${comment.owner.name}`"
                 :tooltip="t('edit')"
                 @click="startEdit(comment)">
                 <IconPencil />
-              </IconButton>
-              <IconButton
+              </BaseIconButton>
+              <BaseIconButton
                 :disabled="!!state.pendingId || summarizing"
                 :label="`${t('deleteCommentBy')} ${comment.owner.name}`"
                 :loading="state.pendingId === comment.id"
                 :tooltip="t('delete')"
                 @click="remove(comment.id)">
                 <IconTrash />
-              </IconButton>
+              </BaseIconButton>
             </div>
           </div>
           <div
@@ -72,13 +71,13 @@
                 <IconSparkles v-if="state.summarizingId !== comment.id" />
                 {{ state.summarizingId === comment.id ? t('improvingWithAi') : t('improveWithAi') }}
               </BaseButton>
-              <IconButton
+              <BaseIconButton
                 :disabled="!!state.pendingId || summarizing"
                 :label="t('cancel')"
                 @click="cancelEdit">
                 <IconX />
-              </IconButton>
-              <IconButton
+              </BaseIconButton>
+              <BaseIconButton
                 :disabled="!state.editText.trim() || !!state.pendingId || summarizing"
                 :label="t('save')"
                 :loading="state.pendingId === comment.id"
@@ -86,7 +85,7 @@
                 :variant="state.editText.trim() ? 'primary' : 'ghost'"
                 @click="update(comment.id)">
                 <IconCheck />
-              </IconButton>
+              </BaseIconButton>
             </div>
           </div>
           <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
@@ -121,7 +120,7 @@
           <IconSparkles v-if="state.summarizingId !== 'new'" />
           {{ state.summarizingId === 'new' ? t('improvingWithAi') : t('improveWithAi') }}
         </BaseButton>
-        <IconButton
+        <BaseIconButton
           :disabled="!state.newText.trim() || !!state.pendingId || summarizing"
           :label="t('addComment')"
           :loading="state.pendingId === 'new'"
@@ -129,7 +128,7 @@
           :variant="state.newText.trim() ? 'primary' : 'ghost'"
           @click="create">
           <IconArrowUp />
-        </IconButton>
+        </BaseIconButton>
       </div>
     </div>
   </section>
@@ -156,6 +155,7 @@ const props = defineProps<{
   issueKey: string
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     addComment: 'Add comment',
@@ -292,7 +292,7 @@ const improveWithAi = async (id: string) => {
 }
 
 const remove = async (id: string) => {
-  if (confirm(t('deleteConfirm'))) {
+  if (await confirm({ danger: true, title: t('deleteConfirm') })) {
     await run(id, () => props.deps.delete({ id }))
   }
 }
@@ -328,7 +328,7 @@ const remove = async (id: string) => {
 .issue-comment-composer {
   background: var(--color-feed);
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: var(--radius-control);
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
@@ -338,12 +338,6 @@ const remove = async (id: string) => {
   gap: var(--space-1);
   min-width: 0;
   padding: var(--space-2) var(--space-3);
-}
-
-.issue-comment-head .avatar {
-  font-size: 9px;
-  height: 20px;
-  width: 20px;
 }
 
 .issue-comment-head {

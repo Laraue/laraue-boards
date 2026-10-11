@@ -8,44 +8,44 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="billing-page">
-        <div class="usage-grid">
-          <article class="plan-card">
-            <div class="card-header">
-              <span class="eyebrow">{{ t('currentPlan') }}</span>
-              <span
-                v-if="page.periodEndsAt"
-                class="muted">
-                {{ periodText(page) }}
-              </span>
-            </div>
-            <div>
-              <strong class="plan-name">{{ page.subscriptionCode }}</strong>
-              <p class="muted">
-                {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
-              </p>
-            </div>
+        <!-- The plan is the context of the figures under it, so it heads the section; a limit card keeps
+             its own way to lift that limit. -->
+        <BaseSectionHeader :title="t('plan')">
+          <template #actions>
             <BaseButton
-              class="card-action"
+              variant="primary"
               @click="onChangePlan">
+              <IconArrowsExchange />
               {{ t('changePlan') }}
             </BaseButton>
-          </article>
+          </template>
+        </BaseSectionHeader>
+        <div class="plan-summary">
+          <p>
+            <strong>{{ page.subscriptionCode }}</strong>
+            <span class="muted">
+              {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
+            </span>
+          </p>
+          <p
+            v-if="page.periodEndsAt"
+            class="muted">
+            {{ periodText(page) }}
+          </p>
+        </div>
 
+        <div class="usage-grid">
           <article class="usage-card">
-            <div class="card-header">
-              <div class="usage-heading">
-                <span>{{ t('tokens') }}</span>
-                <strong>
-                  {{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}
-                </strong>
-              </div>
-            </div>
+            <span class="usage-label">{{ t('tokens') }}</span>
+            <strong class="usage-value">
+              {{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}
+            </strong>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.tokens) }" />
             </div>
             <p class="usage-note muted">{{ tokensUsageText(page) }}</p>
             <BaseButton
-              class="card-action"
+              class="usage-action"
               @click="onBuyTokens">
               {{ t('buyTokens') }}
             </BaseButton>
@@ -54,18 +54,14 @@
           <article
             v-if="page.issuesPerMonth"
             class="usage-card">
-            <div class="card-header">
-              <div class="usage-heading">
-                <span>{{ t('issuesPerMonth') }}</span>
-                <strong>{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
-              </div>
-            </div>
+            <span class="usage-label">{{ t('issuesPerMonth') }}</span>
+            <strong class="usage-value">{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
             </div>
             <p class="usage-note muted">{{ issuesUsageText(page, page.issuesPerMonth) }}</p>
             <BaseButton
-              class="card-action"
+              class="usage-action"
               @click="onChangePlan">
               {{ t('changePlan') }}
             </BaseButton>
@@ -74,12 +70,10 @@
           <article
             v-if="page.kind === 'personal' && page.freeTeamOrganizations"
             class="usage-card">
-            <div class="card-header">
-              <div class="usage-heading">
-                <span>{{ t('freeTeamOrganizations') }}</span>
-                <strong>{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
-              </div>
-            </div>
+            <span class="usage-label">{{ t('freeTeamOrganizations') }}</span>
+            <strong class="usage-value">
+              {{ formatNumber(page.freeTeamOrganizations.remaining) }}
+            </strong>
             <div class="usage-bar">
               <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
             </div>
@@ -92,7 +86,7 @@
               }}
             </p>
             <BaseButton
-              class="card-action"
+              class="usage-action"
               @click="onChangePlan">
               {{ t('changePlan') }}
             </BaseButton>
@@ -104,6 +98,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowsExchange } from '@tabler/icons-vue'
+
 import type {
   BillingPageData,
   BillingPageDeps,
@@ -122,17 +118,18 @@ const { t } = useI18n({
     buyTokens: 'Buy tokens',
     changePlan: 'Change plan',
     currentPlan: 'Current plan',
-    freeTeamOrganizations: 'Free team organizations',
-    issuesPerMonth: 'Issues this month',
+    freeTeamOrganizations: 'Free team organizations left',
+    issuesPerMonth: 'Issues left this month',
     loadError: 'Could not load billing summary',
     loading: 'Loading billing summary…',
     personalPlan: 'Personal plan',
+    plan: 'Plan and usage',
     purchasedAll: '+ {count} purchased tokens that expire on {date}',
     purchasedNoDate: '+ {count} purchased tokens',
     purchasedPart: '+ {count} purchased tokens, {expiring} of them expire on {date}',
     resetsOn: 'Resets on {date}',
     teamPlan: 'Team plan',
-    tokens: 'Tokens',
+    tokens: 'Tokens left',
     usedOfLimitInPlan: '{used} used of {limit} in the plan',
     usedOfLimitInPlanResets: '{used} used of {limit} in the plan, resets on {date}',
   },
@@ -141,17 +138,18 @@ const { t } = useI18n({
     buyTokens: 'Купить токены',
     changePlan: 'Сменить тариф',
     currentPlan: 'Текущий тариф',
-    freeTeamOrganizations: 'Бесплатные командные организации',
-    issuesPerMonth: 'Задачи за месяц',
+    freeTeamOrganizations: 'Осталось бесплатных командных организаций',
+    issuesPerMonth: 'Осталось задач в этом месяце',
     loadError: 'Не удалось загрузить информацию о биллинге',
     loading: 'Загрузка информации о биллинге…',
     personalPlan: 'Персональный тариф',
+    plan: 'Тариф и лимиты',
     purchasedAll: '+ {count} купленных токенов, которые сгорят {date}',
     purchasedNoDate: '+ {count} купленных токенов',
     purchasedPart: '+ {count} купленных токенов, {expiring} из них сгорят {date}',
     resetsOn: 'Обновится {date}',
     teamPlan: 'Командный тариф',
-    tokens: 'Токены',
+    tokens: 'Осталось токенов',
     usedOfLimitInPlan: 'использовано {used} из {limit} в тарифе',
     usedOfLimitInPlanResets: 'использовано {used} из {limit} в тарифе, обновится {date}',
   },
@@ -215,89 +213,60 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   gap: var(--space-5);
 }
 
-.plan-card,
-.usage-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+.plan-summary {
+  display: grid;
+  gap: var(--space-1);
 }
 
-.plan-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4);
+.plan-summary p {
+  margin: 0;
 }
 
-.plan-card p {
-  margin: var(--space-1) 0 0;
-}
-
-.plan-name {
-  display: block;
-  font-size: var(--font-size-heading);
-  margin-top: var(--space-1);
-}
-
-.eyebrow {
-  color: var(--color-muted);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.plan-summary strong {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin-right: var(--space-2);
 }
 
 .usage-grid {
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 }
 
 .usage-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-2);
   padding: var(--space-4);
 }
 
-/* A card has a header (its title on the left, a note such as the reset date on the right), its content and
-   its action, which always sits in the bottom right corner: the cards of a row are as tall as the tallest,
-   so the actions line up. */
-.card-header {
-  align-items: baseline;
-  display: flex;
-  gap: var(--space-3);
-  justify-content: space-between;
+.usage-label {
+  color: var(--color-muted);
+  font-weight: var(--font-weight-medium);
 }
 
-.card-action {
+.usage-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.usage-note {
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.usage-action {
   align-self: flex-end;
   margin-top: auto;
 }
 
-.usage-card p {
-  margin: 0;
-}
-
-/* The line under the usage bar, in the size of the usage lines. */
-.usage-note {
-  font-size: var(--font-size-small);
-}
-
-.usage-heading {
-  align-items: baseline;
-  display: flex;
-  gap: var(--space-3);
-}
-
-.usage-heading strong {
-  font-size: var(--font-size-heading);
-}
-
 .usage-bar {
   background: var(--color-soft);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   height: 8px;
   overflow: hidden;
 }
@@ -307,11 +276,5 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   border-radius: inherit;
   display: block;
   height: 100%;
-}
-
-@media (max-width: 767px) {
-  .usage-grid {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

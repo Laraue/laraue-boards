@@ -9,12 +9,12 @@
         <span class="column-count">{{ viewModel.issueCount }}</span>
       </div>
       <div class="column-head-actions">
-        <IconButton
+        <BaseIconButton
           v-if="canCreateIssues"
           :label="`${t('addIssueTo')} ${viewModel.title}`"
           @click="onCreateIssue(viewModel.id)">
           <IconPlus />
-        </IconButton>
+        </BaseIconButton>
       </div>
     </div>
     <div
@@ -42,12 +42,12 @@
         <IconLoader
           v-if="loadingMore"
           class="column-sentinel-loader" />
-        <IconButton
+        <BaseIconButton
           v-else-if="loadMoreFailed"
           :label="t('loadMoreRetry')"
           @click="onLoadMore(viewModel.id)">
           <IconRefresh />
-        </IconButton>
+        </BaseIconButton>
       </div>
     </div>
   </section>

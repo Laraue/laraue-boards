@@ -8,18 +8,30 @@
     :pending="pending">
     <template #default>
       <section class="form-page">
+        <BaseSectionHeader :title="t('profile')" />
         <form @submit.prevent="save">
-          <label for="member-profile-name">{{ t('name') }}</label>
-          <input
-            id="member-profile-name"
-            v-model="state.displayName"
-            maxlength="129"
-            :placeholder="t('namePlaceholder')" />
-          <p class="muted">{{ t('nameHint') }}</p>
-          <label>{{ t('color') }}</label>
-          <AppColorPicker
-            v-model="state.color"
-            :disabled="saving" />
+          <BaseFieldGroup>
+            <BaseField
+              id="member-profile-name"
+              v-slot="{ describedby }"
+              :hint="t('nameHint')"
+              :label="t('name')">
+              <input
+                id="member-profile-name"
+                v-model="state.displayName"
+                :aria-describedby="describedby"
+                maxlength="129"
+                :placeholder="t('namePlaceholder')" />
+            </BaseField>
+            <BaseField
+              v-slot="{ labelId }"
+              :label="t('color')">
+              <AppColorPicker
+                v-model="state.color"
+                :aria-labelledby="labelId"
+                :disabled="saving" />
+            </BaseField>
+          </BaseFieldGroup>
           <p
             v-if="state.saved"
             class="form-success">
@@ -31,11 +43,12 @@
             {{ saveMessage }}
           </p>
           <div class="form-actions">
-            <button
-              class="primary"
-              :disabled="saving">
+            <BaseButton
+              :disabled="saving"
+              type="submit"
+              variant="primary">
               {{ saving ? t('saving') : t('saveChanges') }}
-            </button>
+            </BaseButton>
           </div>
         </form>
       </section>
@@ -61,6 +74,7 @@ const { t } = useI18n({
     nameHint:
       'How other members see you in this organization. Leave it empty to use your profile name.',
     namePlaceholder: 'Your name from your profile',
+    profile: 'Profile',
     saveChanges: 'Save changes',
     saving: 'Saving…',
   },
@@ -73,6 +87,7 @@ const { t } = useI18n({
     nameHint:
       'Так вас видят другие участники этой организации. Оставьте пустым, чтобы взять имя из профиля.',
     namePlaceholder: 'Имя из вашего профиля',
+    profile: 'Профиль',
     saveChanges: 'Сохранить изменения',
     saving: 'Сохранение…',
   },
@@ -105,3 +120,11 @@ const save = async (): Promise<void> => {
   }
 }
 </script>
+
+<style scoped>
+.form-page {
+  align-content: start;
+  display: grid;
+  gap: var(--space-5);
+}
+</style>

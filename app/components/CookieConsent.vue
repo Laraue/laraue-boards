@@ -6,18 +6,14 @@
     role="dialog">
     <p class="text">{{ t('text') }}</p>
     <div class="actions">
-      <button
-        class="secondary"
-        type="button"
-        @click="decline">
+      <BaseButton @click="decline">
         {{ t('decline') }}
-      </button>
-      <button
-        class="primary"
-        type="button"
+      </BaseButton>
+      <BaseButton
+        variant="primary"
         @click="accept">
         {{ t('accept') }}
-      </button>
+      </BaseButton>
     </div>
   </div>
 </template>
@@ -99,7 +95,7 @@ const decline = (): void => {
 
 .text {
   color: var(--color-text);
-  font-size: 13px;
+  font-size: var(--font-size-body);
   line-height: 1.5;
 }
 

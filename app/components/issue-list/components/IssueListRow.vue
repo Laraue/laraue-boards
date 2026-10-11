@@ -1,8 +1,9 @@
 <template>
-  <NuxtLink
+  <!-- The title is the link to the issue and its hit area covers the row, so the space and board
+       can be links of their own: a link may not sit inside another. -->
+  <div
     class="issue-list-row"
-    :class="{ 'has-actions': canMove, 'selection-mode': selectionMode }"
-    :to="to">
+    :class="{ 'has-actions': canMove, 'selection-mode': selectionMode }">
     <label
       v-if="canMove && selectionMode"
       class="row-select-target"
@@ -15,21 +16,34 @@
         @change="props.onToggleSelection" />
     </label>
     <span class="issue-key">{{ issueKey }}</span>
-    <p class="issue-content">{{ title }}</p>
+    <NuxtLink
+      class="issue-content"
+      :to="to">
+      {{ title }}
+    </NuxtLink>
+    <!-- Space and board; the space gives up room first, the full path is on hover. -->
     <span
       class="issue-location"
       :title="spaceName ? `${spaceName} / ${boardName}` : boardName">
-      <span
-        v-if="spaceName"
-        class="issue-location-part">
+      <NuxtLink
+        v-if="spaceName && spaceKey"
+        class="issue-location-space"
+        :to="organizationRoutes.space(spaceKey)">
         <SpaceIcon :style="{ color: spaceColor }" />
         <span class="truncate">{{ spaceName }}</span>
+      </NuxtLink>
+      <span
+        v-if="spaceName && spaceKey"
+        aria-hidden="true">
+        /
       </span>
-      <span v-if="spaceName">/</span>
-      <span class="issue-location-part">
+      <component
+        :is="spaceKey && boardId ? NuxtLink : 'span'"
+        class="issue-location-board"
+        :to="spaceKey && boardId ? organizationRoutes.board(spaceKey, boardId) : undefined">
         <BoardIcon :style="{ color: boardColor }" />
         <span class="truncate">{{ boardName }}</span>
-      </span>
+      </component>
     </span>
     <div
       class="issue-status"
@@ -81,76 +95,48 @@
         variant="inline"
         @update:model-value="save('assignee', $event)" />
       <template v-else>
-        <span
-          class="avatar"
-          :style="{ background: assigneeColor }">
-          {{ assigneeInitial }}
-        </span>
+        <BaseAvatar
+          :color="assigneeColor"
+          :initials="assigneeInitial"
+          size="sm" />
         <span class="truncate">{{ assignee }}</span>
       </template>
     </div>
-    <AppPopover
+    <!-- The row is a link: the menu's clicks must neither bubble to it nor follow it. -->
+    <BaseMenu
       v-if="canMove"
       align="end"
       class="row-actions"
-      @click.stop>
-      <template #trigger="{ open, toggle }">
-        <IconButton
-          :aria-expanded="open"
-          aria-haspopup="dialog"
-          :label="t('actions')"
-          @click.stop.prevent="toggle">
+      @click.stop.prevent>
+      <template #trigger>
+        <BaseIconButton :label="t('actions')">
           <IconDots />
-        </IconButton>
+        </BaseIconButton>
       </template>
-      <template #default="{ close }">
-        <div class="row-menu">
-          <BaseButton
-            menu
-            @click.stop.prevent="
-              () => {
-                close()
-                props.onToggleSelection()
-              }
-            ">
-            <IconSquareCheck />
-            {{ selected ? t('deselectIssue') : t('selectIssue') }}
-          </BaseButton>
-          <BaseButton
-            menu
-            @click.stop.prevent="
-              () => {
-                close()
-                props.onMove()
-              }
-            ">
-            <IconArrowsLeftRight />
-            {{ t('moveToBoard') }}
-          </BaseButton>
-          <BaseButton
-            v-if="onDelete"
-            :disabled="deleting"
-            menu
-            variant="danger"
-            @click.stop.prevent="
-              () => {
-                close()
-                props.onDelete?.()
-              }
-            ">
-            <IconTrash />
-            {{ t('deleteIssue') }}
-          </BaseButton>
-        </div>
-      </template>
-    </AppPopover>
+      <BaseMenuItem @select="props.onToggleSelection()">
+        <IconSquareCheck />
+        {{ selected ? t('deselectIssue') : t('selectIssue') }}
+      </BaseMenuItem>
+      <BaseMenuItem @select="props.onMove()">
+        <IconArrowsLeftRight />
+        {{ t('moveToBoard') }}
+      </BaseMenuItem>
+      <BaseMenuItem
+        v-if="onDelete"
+        :disabled="deleting"
+        variant="danger"
+        @select="props.onDelete?.()">
+        <IconTrash />
+        {{ t('deleteIssue') }}
+      </BaseMenuItem>
+    </BaseMenu>
     <p
       v-if="saveMessage"
       class="form-error row-error"
       role="alert">
       {{ saveMessage }}
     </p>
-  </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -192,6 +178,8 @@ const props = defineProps<{
   title: string
   to: RouteLocationRaw
 }>()
+const NuxtLink = resolveComponent('NuxtLink')
+const organizationRoutes = useOrganizationRoutes()
 
 const { t } = useI18n({
   en: {
@@ -248,18 +236,73 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   display: grid;
   font-size: var(--font-size-body);
   gap: var(--space-3);
-  grid-template-columns: 20px 72px minmax(0, 1fr) minmax(120px, 200px) 100px 128px var(
-      --icon-btn-size
-    );
-  min-height: 48px;
+  /* Select, key, title, where it lives, status, assignee, actions. The location gets room for both
+     names before the title gives any up. */
+  grid-template-columns:
+    1.25rem 4.5rem minmax(0, 1fr) minmax(10rem, 18rem) 7rem 8rem
+    var(--icon-btn-size);
+  min-height: 2.75rem;
   min-width: 0;
-  padding: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  position: relative;
   text-decoration: none;
   transition: background-color var(--duration-fast) var(--ease-standard);
 }
 
+.issue-content {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* The title's hit area covers the whole row; the controls and links in it sit above. */
+.issue-content::after {
+  content: '';
+  inset: 0;
+  position: absolute;
+}
+
+.issue-content:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+
+.issue-list-row:has(.issue-content:focus-visible) {
+  box-shadow: var(--shadow-focus);
+}
+
+.row-select-target,
+.issue-location-space,
+.issue-location-board,
+.issue-status,
+.issue-person,
+.row-actions {
+  position: relative;
+  z-index: 1;
+}
+
+/* Those layers tie across rows; a row with an open menu or select rises so its popup is on top. */
+.issue-list-row:has([data-state='open']) {
+  z-index: 2;
+}
+
+a.issue-location-space,
+a.issue-location-board {
+  color: inherit;
+  text-decoration: none;
+}
+
+a.issue-location-space:hover,
+a.issue-location-board:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.issue-list-row:last-child {
+  border-bottom: none;
+}
+
 .issue-list-row:hover {
-  background: color-mix(in srgb, var(--color-hover) 20%, transparent);
+  background: var(--color-soft);
 }
 
 .issue-list-row:has(.row-select:checked) {
@@ -267,11 +310,11 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 }
 
 .issue-list-row:not(:has(.row-select)) {
-  grid-template-columns: 72px minmax(0, 1fr) minmax(120px, 200px) 100px 128px var(--icon-btn-size);
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(10rem, 18rem) 7rem 8rem var(--icon-btn-size);
 }
 
 .issue-list-row:not(.has-actions) {
-  grid-template-columns: 72px minmax(0, 1fr) minmax(120px, 200px) 100px 128px;
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(10rem, 18rem) 7rem 8rem;
 }
 
 .issue-key {
@@ -297,12 +340,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   visibility: visible;
 }
 
-.row-menu {
-  display: grid;
-  gap: var(--space-1);
-  padding: var(--space-1);
-}
-
 .issue-key {
   flex-shrink: 0;
 }
@@ -311,7 +348,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   -webkit-box-orient: vertical;
   display: -webkit-box;
   flex: 1;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   -webkit-line-clamp: 1;
   line-height: 1.4;
   margin: 0;
@@ -326,21 +363,31 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   white-space: nowrap;
 }
 
-.issue-location,
-.issue-location-part {
+.issue-location {
   align-items: center;
+  color: var(--color-muted);
   display: inline-flex;
+  font-size: var(--font-size-body);
+  gap: var(--space-1);
   min-width: 0;
 }
 
-.issue-location {
-  color: var(--color-muted);
-  font-size: var(--font-size-body);
-  gap: var(--space-1);
+.issue-location-space,
+.issue-location-board {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
-.issue-location-part {
-  gap: var(--space-2);
+/* The space is shorter and shared by many rows; it never takes more than half. */
+.issue-location-space {
+  flex: 0 1 auto;
+  max-width: 50%;
+}
+
+.issue-location-board {
+  flex: 1 1 auto;
 }
 
 .issue-location .tabler-icon {
@@ -353,7 +400,6 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   align-items: center;
   border-radius: var(--radius-small);
   display: inline-flex;
-  font-size: var(--font-size-small);
   font-weight: 400;
   gap: var(--space-2);
   justify-self: start;
@@ -375,15 +421,8 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   color: var(--color-muted);
   display: inline-flex;
   flex-shrink: 0;
-  font-size: var(--font-size-small);
   gap: var(--space-2);
   min-width: 0;
-}
-
-.issue-person > .avatar {
-  font-size: 10px;
-  height: 20px;
-  width: 20px;
 }
 
 @media (max-width: 1100px) {
@@ -449,7 +488,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   .issue-list-row {
     gap: var(--space-2);
     grid-template-columns: 20px minmax(0, 1fr) minmax(0, 144px) var(--icon-btn-size);
-    padding: var(--space-3) var(--space-2);
+    padding: var(--space-3) var(--space-4);
   }
 
   .issue-list-row:not(:has(.row-select)) {

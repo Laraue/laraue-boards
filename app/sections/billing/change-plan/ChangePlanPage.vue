@@ -8,18 +8,17 @@
     :pending="pending">
     <template #default="{ data: page }">
       <section class="change-plan-page">
-        <div class="page-heading">
-          <AppBackLink
-            :label="t('back')"
-            :to="backTo" />
-          <h2>{{ t('plans') }}</h2>
-        </div>
+        <BaseSectionHeader :title="t('plans')">
+          <template #leading>
+            <AppBackLink
+              :label="t('back')"
+              :to="backTo" />
+          </template>
+        </BaseSectionHeader>
 
-        <p
+        <BaseEmptyState
           v-if="!plans(page).length"
-          class="muted">
-          {{ t('noPlans') }}
-        </p>
+          :title="t('noPlans')" />
         <template v-else>
           <div class="plan-list">
             <article
@@ -48,7 +47,6 @@
               <BaseButton
                 v-else-if="!plan.isFree"
                 :disabled="!page.canPay"
-                variant="primary"
                 @click="select(plan)">
                 {{ t('select') }}
               </BaseButton>
@@ -190,46 +188,51 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
-.change-plan-page h2 {
-  line-height: var(--icon-btn-size);
-  margin: 0;
-}
-
 .plan-list {
   display: grid;
   gap: var(--space-3);
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Price first, what it includes, then the choice at the bottom: the buttons of a row line up. */
 .plan-offer {
-  align-content: start;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
 }
 
+.plan-offer > .base-button {
+  margin-top: auto;
+}
+
 .plan-offer[data-current='true'] {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 1px var(--color-accent);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
 }
 
 .plan-name {
   display: block;
-  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-medium);
 }
 
 .plan-price {
-  font-size: var(--font-size-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  margin: var(--space-1) 0 0;
+}
+
+.plan-price .muted {
+  font-size: var(--font-size-body);
+  font-weight: 400;
 }
 
 .plan-features {
   align-content: start;
   display: grid;
-  font-size: var(--font-size-small);
   gap: var(--space-1);
   list-style: none;
   margin: 0;

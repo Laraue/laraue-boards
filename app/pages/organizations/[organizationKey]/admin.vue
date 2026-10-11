@@ -5,54 +5,11 @@
         :icon="IconSettings"
         :title="t('admin')" />
     </template>
-    <section class="settings-page">
-      <nav
-        :aria-label="t('admin')"
-        class="page-tabs">
-        <NuxtLink
-          v-if="organization?.canUpdate"
-          class="page-tab"
-          :class="{ active: route.name === 'organizations-organizationKey-admin' }"
-          :to="organizationRoutes.admin()">
-          <IconSettings />
-          {{ t('general') }}
-        </NuxtLink>
-        <NuxtLink
-          v-if="organization?.canManage"
-          class="page-tab"
-          :class="{ active: within('organizations-organizationKey-admin-permissions') }"
-          :to="organizationRoutes.permissions()">
-          <IconShieldCheck />
-          {{ t('permissions') }}
-        </NuxtLink>
-        <NuxtLink
-          v-if="organization?.canManageAttributes"
-          class="page-tab"
-          :class="{ active: within('organizations-organizationKey-admin-attributes') }"
-          :to="organizationRoutes.attributes()">
-          <IconTags />
-          {{ t('attributes') }}
-        </NuxtLink>
-        <NuxtLink
-          v-if="organization?.canMassMove"
-          class="page-tab"
-          :class="{ active: within('organizations-organizationKey-admin-data-movement') }"
-          :to="organizationRoutes.dataMovement()">
-          <IconArrowsLeftRight />
-          {{ t('dataMovement') }}
-        </NuxtLink>
-        <NuxtLink
-          v-if="organization?.canViewBilling"
-          class="page-tab"
-          :class="{ active: within('organizations-organizationKey-admin-transactions') }"
-          :to="organizationRoutes.adminTransactions()">
-          <IconHistory />
-          {{ t('transactions') }}
-        </NuxtLink>
-      </nav>
-
+    <BaseSettingsLayout
+      :items="tabs"
+      :label="t('admin')">
       <NuxtPage />
-    </section>
+    </BaseSettingsLayout>
   </AppPage>
 </template>
 
@@ -71,6 +28,40 @@ const layout = useAppLayoutData()
 const organization = computed(() => layout.value?.organization)
 const within = (name: OrganizationRouteName) =>
   typeof route.name === 'string' && route.name.startsWith(name)
+const tabs = computed(() =>
+  [
+    organization.value?.canUpdate && {
+      active: route.name === 'organizations-organizationKey-admin',
+      icon: IconSettings,
+      label: t('general'),
+      to: organizationRoutes.admin(),
+    },
+    organization.value?.canManage && {
+      active: within('organizations-organizationKey-admin-permissions'),
+      icon: IconShieldCheck,
+      label: t('permissions'),
+      to: organizationRoutes.permissions(),
+    },
+    organization.value?.canManageAttributes && {
+      active: within('organizations-organizationKey-admin-attributes'),
+      icon: IconTags,
+      label: t('attributes'),
+      to: organizationRoutes.attributes(),
+    },
+    organization.value?.canMassMove && {
+      active: within('organizations-organizationKey-admin-data-movement'),
+      icon: IconArrowsLeftRight,
+      label: t('dataMovement'),
+      to: organizationRoutes.dataMovement(),
+    },
+    organization.value?.canViewBilling && {
+      active: within('organizations-organizationKey-admin-transactions'),
+      icon: IconHistory,
+      label: t('transactions'),
+      to: organizationRoutes.adminTransactions(),
+    },
+  ].filter((tab) => tab !== false && tab !== undefined),
+)
 const { t } = useI18n({
   en: {
     admin: 'Administration',
@@ -90,11 +81,3 @@ const { t } = useI18n({
   },
 })
 </script>
-
-<style scoped>
-.settings-page {
-  align-content: start;
-  display: grid;
-  gap: var(--space-6);
-}
-</style>

@@ -26,7 +26,7 @@ defineProps<{
 <style scoped>
 .platform-badge {
   align-items: center;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   display: inline-flex;
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-semibold);

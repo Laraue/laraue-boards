@@ -1,9 +1,7 @@
 <template>
-  <AppPopover
-    class="color-picker"
-    :class="{ 'color-picker-compact': compact }">
+  <BasePopover class="color-picker">
     <template #trigger="{ open, toggle }">
-      <IconButton
+      <BaseIconButton
         v-if="compact"
         v-bind="$attrs"
         :aria-expanded="open"
@@ -14,7 +12,7 @@
         <span
           class="color-trigger-swatch"
           :style="{ background: model }" />
-      </IconButton>
+      </BaseIconButton>
       <BaseButton
         v-else
         v-bind="$attrs"
@@ -46,7 +44,7 @@
           @click="select(color.value, close)" />
       </div>
     </template>
-  </AppPopover>
+  </BasePopover>
 </template>
 
 <script setup lang="ts">
@@ -104,11 +102,8 @@ const select = (value: string, close: () => void) => {
 </script>
 
 <style scoped>
+/* As wide as the color name; a parent may stretch it, and the trigger follows. */
 .color-picker {
-  width: 100%;
-}
-
-.color-picker-compact {
   width: fit-content;
 }
 
@@ -119,7 +114,7 @@ const select = (value: string, close: () => void) => {
 
 .color-trigger-swatch {
   border: 1px solid #0002;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   flex: none;
   height: var(--icon-size);
   width: var(--icon-size);
@@ -134,19 +129,14 @@ const select = (value: string, close: () => void) => {
 
 .color-swatch {
   border: 2px solid transparent;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-full);
   height: 24px;
   padding: 0;
-  transition: var(--transition-press);
   width: 24px;
 }
 
 .color-swatch:hover {
   border-color: var(--color-muted);
-}
-
-.color-swatch:active {
-  translate: 0 var(--press-offset);
 }
 
 .color-swatch.selected {

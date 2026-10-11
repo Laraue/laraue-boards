@@ -12,7 +12,7 @@ export default defineNuxtConfig({
         { href: 'https://fonts.googleapis.com', rel: 'preconnect' },
         { crossorigin: '', href: 'https://fonts.gstatic.com', rel: 'preconnect' },
         {
-          href: 'https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap',
           rel: 'stylesheet',
         },
       ],
@@ -26,8 +26,14 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-07-15',
+  // The UI kit (components/ui) keeps its own names, BaseButton not UiBaseButton.
+  components: [
+    { path: '~/components/ui', pathPrefix: false },
+    { ignore: ['ui/**'], path: '~/components' },
+  ],
   css: [
-    '~/assets/css/tokens.css',
+    '~/components/ui/styles/tokens.css',
+    '~/components/ui/styles/base.css',
     '~/assets/css/main.css',
     '~/assets/css/markdown.css',
     '~/assets/css/tours.css',
@@ -45,6 +51,9 @@ export default defineNuxtConfig({
     // Google Analytics can't be used (see utils/consent.ts).
     initCommands: [['consent', 'default', { analytics_storage: 'denied' }]],
     initMode: 'manual',
+  },
+  imports: {
+    dirs: ['components/ui/composables'],
   },
 
   modules: ['nuxt-gtag', '@nuxtjs/sitemap'],

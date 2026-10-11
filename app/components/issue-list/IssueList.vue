@@ -4,7 +4,7 @@
     :count="selected.size"
     :on-action="() => openMoveDialog([...selected])"
     :on-clear="() => selected.clear()" />
-  <div
+  <BaseCard
     :aria-busy="filtering"
     class="issue-list"
     :class="{ 'results-stale': filtering }">
@@ -37,11 +37,11 @@
       :status-id="issue.statusId"
       :title="issue.title"
       :to="organizationRoutes.issue(issue.issueKey)" />
-    <AppEmptyState
+    <BaseEmptyState
       v-if="issues.length === 0"
       :hint="emptyHint"
       :title="emptyText" />
-  </div>
+  </BaseCard>
   <p
     v-if="deleteMessage"
     class="form-error">
@@ -78,6 +78,7 @@ const props = defineProps<{
   page: number
 }>()
 
+const confirm = useConfirm()
 const { t } = useI18n({
   en: { deleteConfirm: 'Delete issue {key}?', moveToBoard: 'Move to board' },
   ru: { deleteConfirm: 'Удалить задачу {key}?', moveToBoard: 'Переместить на доску' },
@@ -99,7 +100,10 @@ const {
 })
 
 const remove = async (issueKey: string) => {
-  if (confirm(t('deleteConfirm', { key: issueKey })) && (await deleteIssue({ issueKey }))) {
+  if (
+    (await confirm({ danger: true, title: t('deleteConfirm', { key: issueKey }) })) &&
+    (await deleteIssue({ issueKey }))
+  ) {
     selected.value.delete(issueKey)
     await props.onMoved()
   }
@@ -125,7 +129,6 @@ const handleMoved = async () => {
 
 <style scoped>
 .issue-list {
-  background: transparent;
   display: grid;
 }
 </style>

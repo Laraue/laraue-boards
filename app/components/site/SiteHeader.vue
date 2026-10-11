@@ -19,18 +19,18 @@
         <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
       </nav>
       <div class="actions">
-        <IconButton
+        <BaseIconButton
           :hreflang="otherLocale"
           :label="otherLocale.toUpperCase()"
           :to="otherLocalePath">
           {{ otherLocale.toUpperCase() }}
-        </IconButton>
-        <IconButton
+        </BaseIconButton>
+        <BaseIconButton
           :label="t('theme_toggle')"
           @click="toggleTheme">
           <IconSun v-if="theme === 'dark'" />
           <IconMoon v-else />
-        </IconButton>
+        </BaseIconButton>
         <NuxtLink
           class="open-app"
           to="/organizations">
@@ -144,7 +144,7 @@ const otherLocalePath = computed(
   border-radius: var(--radius-control);
   color: #fff;
   display: inline-flex;
-  font-size: 13px;
+  font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
   height: 32px;
   margin-left: var(--space-2);
