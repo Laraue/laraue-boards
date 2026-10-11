@@ -34,9 +34,9 @@
   --red-10: #b13a35;
   --red-11: #c7443e;
   --green-3: #e8f4ec;
-  --green-11: #35805e;
+  --green-11: #2d7050;
   --amber-3: #fff1db;
-  --amber-11: #a97322;
+  --amber-11: #8a5d17;
   --white: #fff;
 
   /* Semantic roles: what components use. Only this layer is remapped between themes. */
@@ -51,7 +51,6 @@
   --color-text: var(--gray-12);
   --color-muted: var(--gray-11);
   /* Hints, placeholders' neighbours, disabled text: below muted, still readable. */
-  --color-text-subtle: var(--gray-10);
   --color-border: var(--gray-6);
   --color-border-hover: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   /* Separates parts inside a surface that already has a border. */
@@ -67,8 +66,8 @@
   --color-action-hover: var(--blue-10);
   /* Text and icons on an action fill. */
   --color-on-action: var(--white);
-  --color-focus: var(--blue-7);
-  --color-danger: var(--red-11);
+  --color-focus: var(--blue-9);
+  --color-danger: var(--red-10);
   --color-danger-soft: var(--red-3);
   /* Fills a destructive button under white text, like action does for the primary one. */
   --color-danger-action: var(--red-9);
@@ -183,7 +182,7 @@
   --red-3: #442c2c;
   --red-9: #c7443e;
   --red-10: #d2534d;
-  --red-11: #e37b75;
+  --red-11: #e8857f;
   --green-3: #20392e;
   --green-11: #6bb590;
   --amber-3: #403322;
@@ -193,11 +192,12 @@
   --color-background: var(--gray-1);
   --color-surface: var(--gray-3);
   --color-divider: var(--gray-4);
-  --color-text-subtle: var(--gray-9);
   --color-accent: var(--blue-11);
   --color-accent-hover: var(--blue-12);
   --color-accent-soft: var(--blue-3);
   --color-focus: var(--blue-11);
+  /* Dark red-10 is darker than red-11; the brighter one keeps red text legible. */
+  --color-danger: var(--red-11);
   --color-chart-neutral: var(--gray-10);
   --color-chart-2: var(--amber-11);
   --color-chart-3: #aa98cf;

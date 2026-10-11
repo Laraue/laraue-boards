@@ -91,7 +91,8 @@ const { t } = useI18n({
     changesSaved: 'Changes saved.',
     color: 'Color',
     deleteConfirm: 'Delete this organization?',
-    deleteDescription: 'Removes the organization with its spaces, boards and issues for every member.',
+    deleteDescription:
+      'Removes the organization with its spaces, boards and issues for every member.',
     deleteOrganization: 'Delete organization',
     deleting: 'Deleting…',
     general: 'General',
@@ -107,7 +108,8 @@ const { t } = useI18n({
     changesSaved: 'Изменения сохранены.',
     color: 'Цвет',
     deleteConfirm: 'Удалить эту организацию?',
-    deleteDescription: 'Удаляет организацию со всеми пространствами, досками и задачами для всех участников.',
+    deleteDescription:
+      'Удаляет организацию со всеми пространствами, досками и задачами для всех участников.',
     deleteOrganization: 'Удалить организацию',
     deleting: 'Удаление…',
     general: 'Общие',

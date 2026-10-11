@@ -31,6 +31,10 @@ check a design change there and add new components and variants to it.
 
 ## Colors
 
+- Contrast is checked against WCAG AA: text 4.5:1 (badges included), focus and control boundaries
+  that carry meaning 3:1. Focus is a 1px `--color-focus` line inside the element (its border, or
+  `--shadow-focus` where it has none), never an outer glow.
+
 - Two layers in `tokens.css`. Primitives (`--gray-1..12`, `--blue-1..12`, `--red/green/amber-3` and
   `-11`) are raw ramps, redefined per theme from the background end (1) to the text end (12).
   Semantic roles (`--color-*`) point at primitives and are the only colors components use.
@@ -139,14 +143,14 @@ check a design change there and add new components and variants to it.
   popovers, select lists, toasts) are edged with `--color-border-surface`, a faint ring of the text
   color; controls keep the solid `--color-border`. Do not rebuild these styles locally.
 
-- A list of things (attributes, members, keys, connected accounts) is a `BaseList` of `BaseListRow`s:
-  one card, rows divided by lines, something in front, a title with a line under it, actions or a
-  chevron at the end. Do not make each row its own card. Use a table only when rows have several
-  columns to compare, like issues.
+- A list of things (attributes, members, keys, connected accounts) is a `BaseList` of
+  `BaseListRow`s: one card, rows divided by lines, something in front, a title with a line under it,
+  actions or a chevron at the end. Do not make each row its own card. Use a table only when rows
+  have several columns to compare, like issues.
 
-- A destructive action of a settings page (delete the organization, the attribute) is not placed next
-  to Save: it goes under the form in `BaseDangerZone`, with a line above it and one sentence on what
-  it removes.
+- A destructive action of a settings page (delete the organization, the attribute) is not placed
+  next to Save: it goes under the form in `BaseDangerZone`, with a line above it and one sentence on
+  what it removes.
 
 ## Popovers and filters
 

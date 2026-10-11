@@ -175,7 +175,6 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
-
 .token-packs-page p {
   margin: 0;
 }

@@ -259,8 +259,8 @@ const sectionMessage = computed(() => revokeMessage.value || queryMessage.value)
 
 .created-key-value code {
   background: var(--color-soft);
-  flex: 1;
   border-radius: var(--radius-control);
+  flex: 1;
   overflow-wrap: anywhere;
   padding: var(--space-2);
 }

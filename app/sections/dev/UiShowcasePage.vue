@@ -429,7 +429,6 @@ const colors = [
   '--color-hover',
   '--color-divider',
   '--color-border',
-  '--color-text-subtle',
   '--color-muted',
   '--color-text',
   '--color-border-strong',

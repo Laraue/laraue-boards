@@ -189,7 +189,6 @@ const pay = async () => {
   gap: var(--space-4);
 }
 
-
 .plan-list {
   display: grid;
   gap: var(--space-3);
