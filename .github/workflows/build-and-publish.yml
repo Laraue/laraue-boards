@@ -78,9 +78,9 @@ jobs:
           user: ${{ secrets.SSH_USER }} # "user"
           password: ${{ secrets.SSH_PASSWORD }} # "password"
           local: laraue.tar.gz
-          remote: '/home/laraue/frontend/boards'
+          remote: '/home/laraue/laraue-boards'
           post_upload: |-
-            cd /home/laraue/frontend/boards && find . -mindepth 1 ! -name laraue.tar.gz -delete &&
+            cd /home/laraue/laraue-boards && find . -mindepth 1 ! -name laraue.tar.gz -delete &&
             tar -xzf laraue.tar.gz && rm laraue.tar.gz
 
       - name: Build container
@@ -92,8 +92,8 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            cd /home/laraue && docker compose build boardsssrhost
-            docker compose up -d --force-recreate boardsssrhost
+            cd /home/laraue && docker compose build laraue-boards
+            docker compose up -d --force-recreate laraue-boards
 
       - name: Notify deploy finished
         if: success()
