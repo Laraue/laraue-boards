@@ -123,8 +123,8 @@ const { t } = useI18n({
     buyTokens: 'Buy tokens',
     changePlan: 'Change plan',
     currentPlan: 'Current plan',
-    freeTeamOrganizations: 'Free team organizations',
-    issuesPerMonth: 'Issues this month',
+    freeTeamOrganizations: 'Free team organizations left',
+    issuesPerMonth: 'Issues left this month',
     loadError: 'Could not load billing summary',
     loading: 'Loading billing summary…',
     personalPlan: 'Personal plan',
@@ -134,7 +134,7 @@ const { t } = useI18n({
     purchasedPart: '+ {count} purchased tokens, {expiring} of them expire on {date}',
     resetsOn: 'Resets on {date}',
     teamPlan: 'Team plan',
-    tokens: 'Tokens',
+    tokens: 'Tokens left',
     usedOfLimitInPlan: '{used} used of {limit} in the plan',
     usedOfLimitInPlanResets: '{used} used of {limit} in the plan, resets on {date}',
   },
@@ -143,8 +143,8 @@ const { t } = useI18n({
     buyTokens: 'Купить токены',
     changePlan: 'Сменить тариф',
     currentPlan: 'Текущий тариф',
-    freeTeamOrganizations: 'Бесплатные командные организации',
-    issuesPerMonth: 'Задачи за месяц',
+    freeTeamOrganizations: 'Осталось бесплатных командных организаций',
+    issuesPerMonth: 'Осталось задач в этом месяце',
     loadError: 'Не удалось загрузить информацию о биллинге',
     loading: 'Загрузка информации о биллинге…',
     personalPlan: 'Персональный тариф',
@@ -154,7 +154,7 @@ const { t } = useI18n({
     purchasedPart: '+ {count} купленных токенов, {expiring} из них сгорят {date}',
     resetsOn: 'Обновится {date}',
     teamPlan: 'Командный тариф',
-    tokens: 'Токены',
+    tokens: 'Осталось токенов',
     usedOfLimitInPlan: 'использовано {used} из {limit} в тарифе',
     usedOfLimitInPlanResets: 'использовано {used} из {limit} в тарифе, обновится {date}',
   },
@@ -250,7 +250,13 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 .usage-grid {
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Two or three cards share one row, with no empty column left over; narrow screens stack them. */
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+/* Four would leave one alone on a second row, so they go two by two. */
+.usage-grid:has(> :nth-child(4)) {
+  grid-template-columns: repeat(auto-fit, minmax(max(15rem, calc(50% - var(--space-3))), 1fr));
 }
 
 .usage-card {
@@ -311,11 +317,5 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   border-radius: inherit;
   display: block;
   height: 100%;
-}
-
-@media (max-width: 767px) {
-  .usage-grid {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
