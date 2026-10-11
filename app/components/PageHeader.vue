@@ -125,6 +125,8 @@ const { t } = useI18n({
   top: 0;
 }
 
+/* The path and title take the free room, so the view tools sit on the right with the page's
+   actions: where you are on the left, what you can do on the right. */
 .page-header-start {
   align-items: center;
   display: flex;
@@ -222,10 +224,6 @@ const { t } = useI18n({
 
 .page-header-tools :deep(input[type='search']) {
   min-width: 0;
-}
-
-.page-header.has-tools .page-header-start {
-  flex: 0 1 auto;
 }
 
 .page-header-start :deep(:is(.page-header-menu, .page-header-back)) {
