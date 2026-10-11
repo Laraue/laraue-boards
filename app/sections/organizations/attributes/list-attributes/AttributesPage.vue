@@ -105,5 +105,4 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
 .attributes-page > .base-section-header {
   margin-bottom: var(--space-4);
 }
-
 </style>

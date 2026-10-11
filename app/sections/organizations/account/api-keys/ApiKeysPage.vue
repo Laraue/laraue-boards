@@ -58,7 +58,8 @@
           <BaseListRow
             v-for="key in pageData.keys"
             :key="key.id">
-            {{ key.name }} <code>{{ key.keyPrefix }}…</code>
+            {{ key.name }}
+            <code>{{ key.keyPrefix }}…</code>
             <template #description>
               {{ t('createdAt', { date: formatDateTime(key.createdAt) }) }}
               <template v-if="key.lastUsedAt">
