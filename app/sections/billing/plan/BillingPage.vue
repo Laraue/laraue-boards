@@ -9,96 +9,71 @@
     <template #default="{ data: page }">
       <section class="billing-page">
         <BaseSectionHeader :title="t('plan')" />
-        <div class="usage-grid">
-          <article class="plan-card">
-            <div class="card-header">
-              <span class="eyebrow">{{ t('currentPlan') }}</span>
-              <span
-                v-if="page.periodEndsAt"
-                class="muted">
-                {{ periodText(page) }}
-              </span>
-            </div>
-            <div>
-              <strong class="plan-name">{{ page.subscriptionCode }}</strong>
+        <!-- One row per figure: what it is, how much is left with its bar, and what to do about it. -->
+        <BaseList>
+          <div class="usage-row">
+            <span class="usage-label">{{ t('currentPlan') }}</span>
+            <div class="usage-value">
+              <strong>{{ page.subscriptionCode }}</strong>
               <p class="muted">
                 {{ page.kind === 'personal' ? t('personalPlan') : t('teamPlan') }}
               </p>
+              <p
+                v-if="page.periodEndsAt"
+                class="muted">
+                {{ periodText(page) }}
+              </p>
             </div>
-            <BaseButton
-              class="card-action"
-              @click="onChangePlan">
-              {{ t('changePlan') }}
-            </BaseButton>
-          </article>
+            <BaseButton @click="onChangePlan">{{ t('changePlan') }}</BaseButton>
+          </div>
 
-          <article class="usage-card">
-            <div class="card-header">
-              <div class="usage-heading">
-                <span>{{ t('tokens') }}</span>
-                <strong>
-                  {{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}
-                </strong>
+          <div class="usage-row">
+            <span class="usage-label">{{ t('tokens') }}</span>
+            <div class="usage-value">
+              <strong>{{ formatNumber(page.tokens.remaining + page.purchasedTokens.count) }}</strong>
+              <div class="usage-bar">
+                <span :style="{ width: usagePercent(page.tokens) }" />
               </div>
+              <p class="usage-note muted">{{ tokensUsageText(page) }}</p>
             </div>
-            <div class="usage-bar">
-              <span :style="{ width: usagePercent(page.tokens) }" />
-            </div>
-            <p class="usage-note muted">{{ tokensUsageText(page) }}</p>
-            <BaseButton
-              class="card-action"
-              @click="onBuyTokens">
-              {{ t('buyTokens') }}
-            </BaseButton>
-          </article>
+            <BaseButton @click="onBuyTokens">{{ t('buyTokens') }}</BaseButton>
+          </div>
 
-          <article
+          <div
             v-if="page.issuesPerMonth"
-            class="usage-card">
-            <div class="card-header">
-              <div class="usage-heading">
-                <span>{{ t('issuesPerMonth') }}</span>
-                <strong>{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
+            class="usage-row">
+            <span class="usage-label">{{ t('issuesPerMonth') }}</span>
+            <div class="usage-value">
+              <strong>{{ formatNumber(page.issuesPerMonth.remaining) }}</strong>
+              <div class="usage-bar">
+                <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
               </div>
+              <p class="usage-note muted">{{ issuesUsageText(page, page.issuesPerMonth) }}</p>
             </div>
-            <div class="usage-bar">
-              <span :style="{ width: usagePercent(page.issuesPerMonth) }" />
-            </div>
-            <p class="usage-note muted">{{ issuesUsageText(page, page.issuesPerMonth) }}</p>
-            <BaseButton
-              class="card-action"
-              @click="onChangePlan">
-              {{ t('changePlan') }}
-            </BaseButton>
-          </article>
+            <BaseButton @click="onChangePlan">{{ t('changePlan') }}</BaseButton>
+          </div>
 
-          <article
+          <div
             v-if="page.kind === 'personal' && page.freeTeamOrganizations"
-            class="usage-card">
-            <div class="card-header">
-              <div class="usage-heading">
-                <span>{{ t('freeTeamOrganizations') }}</span>
-                <strong>{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
+            class="usage-row">
+            <span class="usage-label">{{ t('freeTeamOrganizations') }}</span>
+            <div class="usage-value">
+              <strong>{{ formatNumber(page.freeTeamOrganizations.remaining) }}</strong>
+              <div class="usage-bar">
+                <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
               </div>
+              <p class="usage-note muted">
+                {{
+                  t('usedOfLimitInPlan', {
+                    limit: formatNumber(page.freeTeamOrganizations.limit),
+                    used: formatNumber(page.freeTeamOrganizations.used),
+                  })
+                }}
+              </p>
             </div>
-            <div class="usage-bar">
-              <span :style="{ width: usagePercent(page.freeTeamOrganizations) }" />
-            </div>
-            <p class="usage-note muted">
-              {{
-                t('usedOfLimitInPlan', {
-                  limit: formatNumber(page.freeTeamOrganizations.limit),
-                  used: formatNumber(page.freeTeamOrganizations.used),
-                })
-              }}
-            </p>
-            <BaseButton
-              class="card-action"
-              @click="onChangePlan">
-              {{ t('changePlan') }}
-            </BaseButton>
-          </article>
-        </div>
+            <BaseButton @click="onChangePlan">{{ t('changePlan') }}</BaseButton>
+          </div>
+        </BaseList>
       </section>
     </template>
   </QueryState>
@@ -218,92 +193,46 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   gap: var(--space-5);
 }
 
-.plan-card,
-.usage-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-surface);
-  border-radius: var(--radius-card);
-}
-
-.plan-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+.usage-row {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2) var(--space-4);
+  /* One action width for every row, so the bars end on one line. */
+  grid-template-columns: 11rem minmax(0, 1fr) 8rem;
   padding: var(--space-4);
 }
 
-.plan-card p {
-  margin: var(--space-1) 0 0;
+.usage-row > .base-button {
+  justify-self: end;
 }
 
-.plan-name {
-  display: block;
-  font-size: var(--font-size-heading);
-  margin-top: var(--space-1);
+.usage-row + .usage-row {
+  border-top: 1px solid var(--color-divider);
 }
 
-.eyebrow {
+.usage-label {
+  align-self: start;
   color: var(--color-muted);
   font-weight: var(--font-weight-medium);
 }
 
-.usage-grid {
+.usage-value {
   display: grid;
-  gap: var(--space-3);
-  /* Two or three cards share one row, with no empty column left over; narrow screens stack them. */
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--space-1);
+  min-width: 0;
 }
 
-/* Four would leave one alone on a second row, so they go two by two. */
-.usage-grid:has(> :nth-child(4)) {
-  grid-template-columns: repeat(auto-fit, minmax(max(15rem, calc(50% - var(--space-3))), 1fr));
+.usage-value strong {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
 }
 
-.usage-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4);
-}
-
-/* A card has a header (its title on the left, a note such as the reset date on the right), its content and
-   its action, which always sits in the bottom right corner: the cards of a row are as tall as the tallest,
-   so the actions line up. */
-.card-header {
-  align-items: baseline;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  justify-content: space-between;
-}
-
-.card-action {
-  align-self: flex-end;
-  margin-top: auto;
-}
-
-.usage-card p {
+.usage-value p {
   margin: 0;
 }
 
-/* The line under the usage bar, in the size of the usage lines. */
 .usage-note {
-  font-size: var(--font-size-small);
-}
-
-/* Like the plan card: the label on its own line, the value under it. */
-.usage-heading {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.usage-heading span {
-  color: var(--color-muted);
-  font-weight: var(--font-weight-medium);
-}
-
-.usage-heading strong {
-  font-size: var(--font-size-heading);
+  font-size: var(--font-size-sm);
 }
 
 .usage-bar {
@@ -318,5 +247,16 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   border-radius: inherit;
   display: block;
   height: 100%;
+}
+
+/* On a phone the label heads the row; the figure and its action share the line under it. */
+@media (max-width: 767px) {
+  .usage-row {
+    grid-template-columns: minmax(0, 1fr) 8rem;
+  }
+
+  .usage-label {
+    grid-column: 1 / -1;
+  }
 }
 </style>
