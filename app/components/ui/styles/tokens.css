@@ -141,7 +141,7 @@
      neighbours. */
   --shadow-focus: inset 0 0 0 1px var(--color-focus);
   /* Floating surfaces (popovers, menus, toasts) lift clearly off the page. */
-  --shadow-popover: 0 4px 12px #1018281a, 0 1px 2px #1018280d;
+  --shadow-popover: 0 2px 8px #1018280f, 0 1px 2px #1018280a;
   --shadow-workspace: 0 0 40px #1018280d;
 
   --duration-fast: 120ms;
@@ -199,6 +199,6 @@
   --color-chart-3: #aa98cf;
   --color-chart-done: var(--green-11);
 
-  --shadow-popover: 0 4px 12px #00000059, 0 1px 2px #00000033;
+  --shadow-popover: 0 2px 8px #00000040, 0 1px 2px #00000026;
   --shadow-workspace: 0 0 40px #00000059;
 }
