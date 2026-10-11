@@ -272,7 +272,8 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 .card-header {
   align-items: baseline;
   display: flex;
-  gap: var(--space-3);
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
   justify-content: space-between;
 }
 

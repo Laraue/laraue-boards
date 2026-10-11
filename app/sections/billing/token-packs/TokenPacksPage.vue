@@ -37,7 +37,6 @@
               </ul>
               <BaseButton
                 :disabled="!page.canPay"
-                variant="primary"
                 @click="select(pack)">
                 {{ t('select') }}
               </BaseButton>
@@ -185,30 +184,35 @@ const pay = async () => {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Price first, what it includes, then the choice at the bottom: the buttons of a row line up. */
 .pack-offer {
-  align-content: start;
   background: var(--color-surface);
   border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
 }
 
+.pack-offer > .base-button {
+  margin-top: auto;
+}
+
 .pack-name {
   display: block;
-  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-medium);
 }
 
 .pack-price {
-  font-size: var(--font-size-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
   margin: var(--space-1) 0 0;
 }
 
 .pack-features {
   align-content: start;
   display: grid;
-  font-size: var(--font-size-small);
   gap: var(--space-1);
   list-style: none;
   margin: 0;
