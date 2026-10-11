@@ -1,17 +1,25 @@
 <template>
-  <label :for="`${id}-from`">{{ t('from') }}</label>
-  <input
-    :id="`${id}-from`"
-    autofocus
-    type="datetime-local"
-    :value="model[0] ?? ''"
-    @input="update(0, $event)" />
-  <label :for="`${id}-to`">{{ t('to') }}</label>
-  <input
-    :id="`${id}-to`"
-    type="datetime-local"
-    :value="model[1] ?? ''"
-    @input="update(1, $event)" />
+  <div class="range-filter">
+    <BaseField
+      :id="`${id}-from`"
+      :label="t('from')">
+      <input
+        :id="`${id}-from`"
+        autofocus
+        type="datetime-local"
+        :value="model[0] ?? ''"
+        @input="update(0, $event)" />
+    </BaseField>
+    <BaseField
+      :id="`${id}-to`"
+      :label="t('to')">
+      <input
+        :id="`${id}-to`"
+        type="datetime-local"
+        :value="model[1] ?? ''"
+        @input="update(1, $event)" />
+    </BaseField>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -32,8 +40,9 @@ const update = (index: number, event: Event) => {
 </script>
 
 <style scoped>
-label:first-child {
-  margin-top: 0;
+.range-filter {
+  display: grid;
+  gap: var(--space-3);
 }
 
 input {

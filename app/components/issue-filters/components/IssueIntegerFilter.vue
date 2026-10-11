@@ -1,17 +1,25 @@
 <template>
-  <label :for="`${id}-from`">{{ t('minimum') }}</label>
-  <input
-    :id="`${id}-from`"
-    autofocus
-    type="number"
-    :value="model[0] ?? ''"
-    @input="update(0, $event)" />
-  <label :for="`${id}-to`">{{ t('maximum') }}</label>
-  <input
-    :id="`${id}-to`"
-    type="number"
-    :value="model[1] ?? ''"
-    @input="update(1, $event)" />
+  <div class="range-filter">
+    <BaseField
+      :id="`${id}-from`"
+      :label="t('minimum')">
+      <input
+        :id="`${id}-from`"
+        autofocus
+        type="number"
+        :value="model[0] ?? ''"
+        @input="update(0, $event)" />
+    </BaseField>
+    <BaseField
+      :id="`${id}-to`"
+      :label="t('maximum')">
+      <input
+        :id="`${id}-to`"
+        type="number"
+        :value="model[1] ?? ''"
+        @input="update(1, $event)" />
+    </BaseField>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -32,8 +40,9 @@ const update = (index: number, event: Event) => {
 </script>
 
 <style scoped>
-label:first-child {
-  margin-top: 0;
+.range-filter {
+  display: grid;
+  gap: var(--space-3);
 }
 
 input {
