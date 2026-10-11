@@ -295,11 +295,17 @@
     </section>
 
     <section>
-      <h2>BaseTabs</h2>
+      <h2>BaseTabs and BaseNavTabs</h2>
       <BaseTabs
         v-model="tab"
         :items="tabs"
         label="Tabs" />
+      <BaseNavTabs
+        :items="[
+          { exact: true, label: 'This page', to: '/dev/ui' },
+          { label: 'Home', to: '/' },
+        ]"
+        label="Pages" />
     </section>
 
     <section>

@@ -10,38 +10,14 @@
       <NuxtLink :to="userAccountTo">{{ t('yourAccount') }}</NuxtLink>
     </p>
 
-    <nav
-      :aria-label="t('youIn', { organization: organizationName })"
-      class="page-tabs">
-      <NuxtLink
-        class="page-tab"
-        exact-active-class="active"
-        :to="profileTo">
-        <IconUser />
-        {{ t('profile') }}
-      </NuxtLink>
-      <NuxtLink
-        active-class="active"
-        class="page-tab"
-        :to="planTo">
-        <IconCreditCard />
-        {{ t('plan') }}
-      </NuxtLink>
-      <NuxtLink
-        class="page-tab"
-        exact-active-class="active"
-        :to="transactionsTo">
-        <IconHistory />
-        {{ t('transactions') }}
-      </NuxtLink>
-      <NuxtLink
-        class="page-tab"
-        exact-active-class="active"
-        :to="apiKeysTo">
-        <IconKey />
-        {{ t('apiKeys') }}
-      </NuxtLink>
-    </nav>
+    <BaseNavTabs
+      :items="[
+        { exact: true, icon: IconUser, label: t('profile'), to: profileTo },
+        { icon: IconCreditCard, label: t('plan'), to: planTo },
+        { exact: true, icon: IconHistory, label: t('transactions'), to: transactionsTo },
+        { exact: true, icon: IconKey, label: t('apiKeys'), to: apiKeysTo },
+      ]"
+      :label="t('youIn', { organization: organizationName })" />
 
     <slot />
   </AppPage>
