@@ -17,8 +17,8 @@ check a design change there and add new components and variants to it.
   in through props or slots (e.g. `BaseToasts dismiss-label`). Auto-imported app composables such as
   `useI18n` are off limits too, though lint cannot see them.
 - Buttons are `BaseButton` / `BaseIconButton` everywhere; the old `.primary`, `.secondary` and
-  `.icon-btn` classes are gone from the app. The retro board page (retro-board/) lives apart and keeps them in
-  `sections/retro/retro-controls.css`, which nothing else may use.
+  `.icon-btn` classes are gone from the app. The retro board page (retro-board/) lives apart and
+  keeps them in `sections/retro/retro-controls.css`, which nothing else may use.
 - Everything that knows about issues, boards, spaces, users or this app's copy is an app component
   outside `ui/` (`App*` or a domain name). A generic need found in an app component moves into the
   kit.
@@ -71,8 +71,8 @@ check a design change there and add new components and variants to it.
   content-width control for Properties and tables. Both share the same 32px height, 14px text and
   option styling.
 - `BaseButton` variants express intent: neutral, primary, danger, ghost. Primary and a standalone
-  danger button are filled (`--color-action`, `--color-danger-action`) under white text; danger in
-  a menu is a red label and on an icon button a muted icon that turns red. The `menu` prop changes
+  danger button are filled (`--color-action`, `--color-danger-action`) under white text; danger in a
+  menu is a red label and on an icon button a muted icon that turns red. The `menu` prop changes
   alignment and framing, not text size. Combine it with danger for destructive menu actions.
 - Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
   `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in

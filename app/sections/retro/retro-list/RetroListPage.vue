@@ -290,4 +290,3 @@ const start = async (basedOn: null | RetroListItemViewModel) => {
   }
 }
 </style>
-
