@@ -1,9 +1,8 @@
 <template>
   <section class="connected-accounts-section">
-    <div class="section-heading">
-      <h2>{{ t('signInMethods') }}</h2>
-      <p class="muted">{{ t('description') }}</p>
-    </div>
+    <BaseSectionHeader
+      :description="t('description')"
+      :title="t('signInMethods')" />
 
     <p
       v-if="outcomeMessage"
@@ -221,16 +220,6 @@ const connectGoogleAccount = async (code: string): Promise<void> => {
   margin: 0;
 }
 
-.section-heading {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.section-heading h2 {
-  font-size: var(--font-size-lg);
-  margin: 0;
-}
-
 .connect-success {
   color: var(--color-accent);
 }
@@ -243,7 +232,7 @@ const connectGoogleAccount = async (code: string): Promise<void> => {
 .account-card {
   align-items: center;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   display: flex;
   gap: var(--space-4);

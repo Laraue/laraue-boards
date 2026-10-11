@@ -1,6 +1,6 @@
 <template>
   <section class="interface-section">
-    <h2>{{ t('interface') }}</h2>
+    <BaseSectionHeader :title="t('interface')" />
 
     <div class="setting-list">
       <div class="setting-row">
@@ -87,14 +87,9 @@ const changeLocale = (value: string): void => {
   gap: var(--space-3);
 }
 
-.interface-section h2 {
-  font-size: var(--font-size-lg);
-  margin: 0;
-}
-
 .setting-list {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
 }
 

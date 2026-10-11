@@ -1,9 +1,8 @@
 <template>
   <section class="profile-section">
-    <div class="section-heading">
-      <h2>{{ t('profile') }}</h2>
-      <p class="muted">{{ t('description') }}</p>
-    </div>
+    <BaseSectionHeader
+      :description="t('description')"
+      :title="t('profile')" />
 
     <QueryState
       :data="data"
@@ -150,19 +149,9 @@ const save = async (): Promise<void> => {
   gap: var(--space-3);
 }
 
-.section-heading {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.section-heading h2 {
-  font-size: var(--font-size-lg);
-  margin: 0;
-}
-
 .profile-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   display: grid;
   gap: var(--space-4);

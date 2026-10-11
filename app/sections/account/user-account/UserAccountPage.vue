@@ -35,7 +35,6 @@
             <BaseButton
               class="log-out"
               :disabled="loggingOut"
-              variant="danger"
               @click="logout">
               <IconLogout />
               {{ t('logOut') }}

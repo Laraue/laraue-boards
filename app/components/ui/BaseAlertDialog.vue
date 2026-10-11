@@ -63,6 +63,24 @@ const emit = defineEmits<{ action: []; 'update:open': [value: boolean] }>()
   margin: 0;
 }
 
+/* The one filled destructive button: the action that confirms a deletion. Elsewhere a danger button
+   is a red label. */
+.base-alert-dialog .dialog-actions .base-button.danger {
+  background: var(--color-danger-action);
+  border-color: var(--color-danger-action);
+  color: var(--color-on-action);
+}
+
+.base-alert-dialog .dialog-actions .base-button.danger:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--color-surface);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .base-alert-dialog .dialog-actions .base-button.danger:hover:not(:disabled) {
+    border-color: var(--color-danger-action-hover);
+  }
+}
+
 .base-alert-dialog-description {
   color: var(--color-muted);
   margin: var(--space-2) 0 0;

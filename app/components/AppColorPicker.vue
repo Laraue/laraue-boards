@@ -1,7 +1,5 @@
 <template>
-  <BasePopover
-    class="color-picker"
-    :class="{ 'color-picker-compact': compact }">
+  <BasePopover class="color-picker">
     <template #trigger="{ open, toggle }">
       <BaseIconButton
         v-if="compact"
@@ -104,11 +102,8 @@ const select = (value: string, close: () => void) => {
 </script>
 
 <style scoped>
+/* As wide as the color name; a parent may stretch it, and the trigger follows. */
 .color-picker {
-  width: 100%;
-}
-
-.color-picker-compact {
   width: fit-content;
 }
 

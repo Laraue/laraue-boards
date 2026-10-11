@@ -17,7 +17,6 @@
       </span>
     </component>
   </BaseTooltip>
-  <!-- Without a tooltip the button is the root, so a parent's scoped class still styles it. -->
   <component
     :is="tag"
     v-else
@@ -70,6 +69,8 @@ const props = withDefaults(
   },
 )
 
+// Without a tooltip the button is the root, so a parent's scoped class still styles it. No comment
+// may sit between the two roots: in development it turns them into a fragment and drops that class.
 defineOptions({ inheritAttrs: false })
 
 const NuxtLink = resolveComponent('NuxtLink')
@@ -152,14 +153,6 @@ const classes = computed(() => [
   color: var(--color-danger);
 }
 
-/* A standalone destructive button is filled, like primary; in a menu or as an icon it stays a
-   red label or a muted icon. */
-.base-button.danger:not(.menu, .icon) {
-  background: var(--color-danger-action);
-  border-color: var(--color-danger-action);
-  color: var(--color-on-action);
-}
-
 .base-button.menu {
   background: transparent;
   border-color: transparent;
@@ -188,8 +181,7 @@ const classes = computed(() => [
   box-shadow: none;
 }
 
-.base-button.primary:focus-visible,
-.base-button.danger:not(.menu, .icon):focus-visible {
+.base-button.primary:focus-visible {
   box-shadow: inset 0 0 0 1px var(--color-surface);
 }
 
@@ -215,10 +207,6 @@ const classes = computed(() => [
 
   .base-button.primary:hover:not(:disabled) {
     border-color: var(--color-action-hover);
-  }
-
-  .base-button.danger:not(.menu, .icon):hover:not(:disabled) {
-    border-color: var(--color-danger-action-hover);
   }
 
   /* Borderless buttons show hover as a soft fill, like menu rows. */
