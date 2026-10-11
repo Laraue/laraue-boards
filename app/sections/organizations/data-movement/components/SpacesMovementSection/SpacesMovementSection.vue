@@ -9,31 +9,34 @@
       :count="selectedIds.length"
       :on-action="() => openDialog(selectedIds)"
       :on-clear="() => state.selected.clear()" />
-    <div class="entity-list">
-      <div
+    <BaseList v-if="movableSpaces.length">
+      <BaseListRow
         v-for="space in movableSpaces"
-        :key="space.key"
-        class="entity-row">
-        <input
-          :aria-label="`${t('select')} ${space.name}`"
-          :checked="state.selected.has(space.key)"
-          type="checkbox"
-          @change="toggle(space.key)" />
-        <SpaceIcon :style="{ color: space.color }" />
-        <strong>{{ space.name }}</strong>
-        <BaseIconButton
-          :label="`${t('move')} ${space.name}`"
-          :tooltip="t('moveSpace')"
-          @click="openDialog([space.key])">
-          <IconArrowsLeftRight />
-        </BaseIconButton>
-      </div>
-      <p
-        v-if="!movableSpaces.length"
-        class="empty">
-        {{ t('empty') }}
-      </p>
-    </div>
+        :key="space.key">
+        <template #leading>
+          <input
+            :aria-label="`${t('select')} ${space.name}`"
+            :checked="state.selected.has(space.key)"
+            type="checkbox"
+            @change="toggle(space.key)" />
+          <SpaceIcon :style="{ color: space.color }" />
+        </template>
+        {{ space.name }}
+        <template #trailing>
+          <BaseIconButton
+            :label="`${t('move')} ${space.name}`"
+            :tooltip="t('moveSpace')"
+            @click="openDialog([space.key])">
+            <IconArrowsLeftRight />
+          </BaseIconButton>
+        </template>
+      </BaseListRow>
+    </BaseList>
+    <p
+      v-else
+      class="empty">
+      {{ t('empty') }}
+    </p>
 
     <MoveSpacesDialog
       ref="dialog"
@@ -107,8 +110,7 @@ const openDialog = (ids: string[]) => {
 </script>
 
 <style scoped>
-.movement-section,
-.entity-list {
+.movement-section {
   display: grid;
   gap: var(--space-2);
 }
@@ -121,25 +123,5 @@ const openDialog = (ids: string[]) => {
 .movement-section h3 {
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-medium);
-}
-
-.entity-row {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: auto auto 1fr auto;
-  padding: var(--space-3) var(--space-4);
-}
-
-.entity-row:focus-within {
-  border-color: var(--color-accent);
-}
-
-.entity-row:has(input:checked) {
-  background: color-mix(in srgb, var(--color-accent-soft) 55%, var(--color-surface));
-  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
 }
 </style>

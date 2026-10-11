@@ -63,8 +63,6 @@ const onSpacesMoved = async () => {
 
 <style scoped>
 .movement-page {
-  --movement-tree-line-width: 2px;
-
   align-content: start;
   display: grid;
   gap: var(--space-5);

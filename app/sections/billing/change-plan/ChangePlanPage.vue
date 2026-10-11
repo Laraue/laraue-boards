@@ -204,7 +204,7 @@ const pay = async () => {
 .plan-offer {
   align-content: start;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   display: grid;
   gap: var(--space-4);

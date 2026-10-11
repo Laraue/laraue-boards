@@ -17,28 +17,31 @@
         class="board-group">
         <div class="board-group-heading">
           <SpaceIcon :style="{ color: space.color }" />
-          <strong>{{ space.name }}</strong>
+          <span>{{ space.name }}</span>
         </div>
-        <div class="board-list">
-          <div
+        <BaseList>
+          <BaseListRow
             v-for="board in space.boards"
-            :key="board.id"
-            class="entity-row">
-            <input
-              :aria-label="`${t('select')} ${board.name}`"
-              :checked="state.selected.has(board.id)"
-              type="checkbox"
-              @change="toggle(board.id)" />
-            <BoardIcon :style="{ color: board.color }" />
-            <strong>{{ board.name }}</strong>
-            <BaseIconButton
-              :label="`${t('move')} ${board.name}`"
-              :tooltip="t('moveBoard')"
-              @click="openDialog([board.id])">
-              <IconArrowsLeftRight />
-            </BaseIconButton>
-          </div>
-        </div>
+            :key="board.id">
+            <template #leading>
+              <input
+                :aria-label="`${t('select')} ${board.name}`"
+                :checked="state.selected.has(board.id)"
+                type="checkbox"
+                @change="toggle(board.id)" />
+              <BoardIcon :style="{ color: board.color }" />
+            </template>
+            {{ board.name }}
+            <template #trailing>
+              <BaseIconButton
+                :label="`${t('move')} ${board.name}`"
+                :tooltip="t('moveBoard')"
+                @click="openDialog([board.id])">
+                <IconArrowsLeftRight />
+              </BaseIconButton>
+            </template>
+          </BaseListRow>
+        </BaseList>
       </section>
       <p
         v-if="!boardCount"
@@ -123,10 +126,13 @@ const openDialog = (ids: string[]) => {
 <style scoped>
 .movement-section,
 .board-groups,
-.board-group,
-.board-list {
+.board-group {
   display: grid;
   gap: var(--space-2);
+}
+
+.board-groups {
+  gap: var(--space-4);
 }
 
 .movement-section h3,
@@ -139,36 +145,15 @@ const openDialog = (ids: string[]) => {
   font-weight: var(--font-weight-medium);
 }
 
-.entity-row {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: auto auto 1fr auto;
-  padding: var(--space-3) var(--space-4);
-}
-
-.entity-row:focus-within {
-  border-color: var(--color-accent);
-}
-
-.entity-row:has(input:checked) {
-  background: color-mix(in srgb, var(--color-accent-soft) 55%, var(--color-surface));
-  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-border));
-}
-
 .board-group-heading {
   align-items: center;
   display: flex;
+  font-weight: var(--font-weight-medium);
   gap: var(--space-2);
-  padding: var(--space-2) 0;
 }
 
-.board-list {
-  border-left: var(--movement-tree-line-width) solid var(--color-border);
-  margin-left: calc((var(--icon-size) - var(--movement-tree-line-width)) / 2);
-  padding-left: var(--space-4);
+.board-group-heading > svg {
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 </style>

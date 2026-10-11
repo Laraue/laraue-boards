@@ -54,24 +54,18 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default="{ data: pageData }">
-        <div
-          v-if="pageData.keys.length"
-          class="api-key-list">
-          <article
+        <BaseList v-if="pageData.keys.length">
+          <BaseListRow
             v-for="key in pageData.keys"
-            :key="key.id"
-            class="api-key-card">
-            <div class="api-key-info">
-              <strong>{{ key.name }}</strong>
-              <code>{{ key.keyPrefix }}…</code>
-              <small class="muted">
-                {{ t('createdAt', { date: formatDateTime(key.createdAt) }) }}
-                <template v-if="key.lastUsedAt">
-                  · {{ t('lastUsedAt', { date: formatDateTime(key.lastUsedAt) }) }}
-                </template>
-              </small>
-            </div>
-            <div class="api-key-actions">
+            :key="key.id">
+            {{ key.name }} <code>{{ key.keyPrefix }}…</code>
+            <template #description>
+              {{ t('createdAt', { date: formatDateTime(key.createdAt) }) }}
+              <template v-if="key.lastUsedAt">
+                · {{ t('lastUsedAt', { date: formatDateTime(key.lastUsedAt) }) }}
+              </template>
+            </template>
+            <template #trailing>
               <span
                 v-if="key.revokedAt"
                 class="muted">
@@ -83,9 +77,9 @@
                 @click="revokeKey(key.id)">
                 {{ t('revoke') }}
               </BaseButton>
-            </div>
-          </article>
-        </div>
+            </template>
+          </BaseListRow>
+        </BaseList>
         <BaseEmptyState
           v-else
           :hint="t('emptyHint')"
@@ -231,17 +225,13 @@ const sectionMessage = computed(
   width: 100%;
 }
 
-.created-key,
-.api-key-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  padding: var(--space-4);
-}
-
 .created-key {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
   display: grid;
   gap: var(--space-2);
+  padding: var(--space-4);
 }
 
 .created-key p {
@@ -261,44 +251,13 @@ const sectionMessage = computed(
   padding: var(--space-2);
 }
 
-.api-key-list {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.api-key-card,
-.api-key-info,
-.api-key-actions {
-  align-items: center;
-  display: flex;
-}
-
-.api-key-card {
-  gap: var(--space-4);
-  justify-content: space-between;
-}
-
-.api-key-info {
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.api-key-info code,
+.base-list-row code,
 .created-key-value code {
   font-family: var(--font-family-mono);
 }
 
-.api-key-info small {
-  flex-basis: 100%;
-}
-
-.api-key-actions {
-  flex-shrink: 0;
-}
-
 @media (max-width: 767px) {
   .api-key-form,
-  .api-key-card,
   .created-key-value {
     align-items: stretch;
     flex-direction: column;

@@ -50,30 +50,27 @@
           </p>
         </div>
         <h3 class="members-label">{{ t('members') }}</h3>
-        <div class="member-list">
-          <NuxtLink
+        <BaseList>
+          <BaseListRow
             v-for="member in page.members"
             :key="member.id"
+            :description="member.isOwner ? t('owner') : member.isAdmin ? t('admin') : t('member')"
             :to="organizationRoutes.memberPermissions(member.id)">
-            <BaseAvatar
-              :color="member.color"
-              :initials="member.initials" />
-            <span class="member-name">
-              <strong>{{ member.name }}</strong>
-              <small class="muted">
-                {{ member.isOwner ? t('owner') : member.isAdmin ? t('admin') : t('member') }}
-              </small>
-            </span>
-            <IconChevronRight />
-          </NuxtLink>
-        </div>
+            <template #leading>
+              <BaseAvatar
+                :color="member.color"
+                :initials="member.initials" />
+            </template>
+            {{ member.name }}
+          </BaseListRow>
+        </BaseList>
       </section>
     </template>
   </QueryState>
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconChevronRight, IconCopy, IconRefresh, IconTicket } from '@tabler/icons-vue'
+import { IconCheck, IconCopy, IconRefresh, IconTicket } from '@tabler/icons-vue'
 
 import type { PermissionsPageDeps } from '~/sections/organizations/permissions/list-members/PermissionsPage.deps'
 
@@ -185,7 +182,7 @@ const regenerate = async (): Promise<void> => {
 
 .invitation-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   padding: var(--space-4);
 }
@@ -260,43 +257,6 @@ const regenerate = async (): Promise<void> => {
   font-weight: var(--font-weight-medium);
   /* Closer to its list than the page gap. */
   margin: 0 0 calc(var(--space-3) * -1);
-}
-
-.member-list {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.member-list a {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  color: var(--color-text);
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: auto 1fr auto;
-  padding: var(--space-3) var(--space-4);
-  text-decoration: none;
-}
-
-.member-list a:hover {
-  background: var(--color-hover);
-}
-
-.member-list a > .tabler-icon:last-child {
-  color: var(--color-muted);
-}
-
-.member-name {
-  display: grid;
-  min-width: 0;
-}
-
-.member-name > * {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media (max-width: 600px) {

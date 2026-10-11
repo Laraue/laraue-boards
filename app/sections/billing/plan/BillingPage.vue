@@ -221,7 +221,7 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 .plan-card,
 .usage-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
 }
 
@@ -244,10 +244,7 @@ const usagePercent = (usage: BillingUsageViewModel) =>
 
 .eyebrow {
   color: var(--color-muted);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
 }
 
 .usage-grid {

@@ -288,7 +288,7 @@ watch(
 
 fieldset {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
   margin: 0;
   padding: var(--space-4);
@@ -338,11 +338,8 @@ legend {
 
 .product-section h3 {
   color: var(--color-muted);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
+  font-weight: var(--font-weight-medium);
   margin: 0 0 var(--space-3);
-  text-transform: uppercase;
 }
 
 .space-permissions {

@@ -18,23 +18,18 @@
             </BaseButton>
           </template>
         </BaseSectionHeader>
-        <div
-          v-if="attributes.length"
-          class="attribute-list">
-          <NuxtLink
+        <BaseList v-if="attributes.length">
+          <BaseListRow
             v-for="attribute in attributes"
             :key="attribute.id"
+            :description="typeLabels[attribute.type]"
             :to="organizationRoutes.attribute(attribute.id)">
-            <AttributeIcon :style="{ color: attribute.color }" />
-            <span class="attribute-name">
-              <strong>{{ attribute.name }}</strong>
-              <small class="muted">
-                {{ typeLabels[attribute.type] }}
-              </small>
-            </span>
-            <IconChevronRight />
-          </NuxtLink>
-        </div>
+            <template #leading>
+              <AttributeIcon :style="{ color: attribute.color }" />
+            </template>
+            {{ attribute.name }}
+          </BaseListRow>
+        </BaseList>
         <BaseEmptyState
           v-else
           :hint="t('emptyHint')"
@@ -45,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconChevronRight, IconPlus } from '@tabler/icons-vue'
+import { IconPlus } from '@tabler/icons-vue'
 
 import { AttributeIcon } from '~/constants/icons'
 import type {
@@ -111,45 +106,4 @@ const { data, message, pending, refresh } = await useApiQuery('organization-attr
   margin-bottom: var(--space-4);
 }
 
-.attribute-list {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.attribute-list a {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  color: var(--color-text);
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: auto 1fr auto;
-  padding: var(--space-3) var(--space-4);
-  text-decoration: none;
-}
-
-.attribute-list a:hover {
-  background: var(--color-hover);
-}
-
-.attribute-list a > .tabler-icon:last-child {
-  color: var(--color-muted);
-}
-
-.attribute-list a > .tabler-icon:first-child {
-  height: 16px;
-  width: 16px;
-}
-
-.attribute-name {
-  display: grid;
-  min-width: 0;
-}
-
-.attribute-name > * {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 </style>

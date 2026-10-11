@@ -90,10 +90,8 @@ const statusVariant: Partial<Record<string, 'danger' | 'success' | 'warning'>> =
 
 .transaction-table th {
   color: var(--color-muted);
-  font-size: var(--font-size-caption);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
 }
 
 .transaction-table tbody tr:last-child td {

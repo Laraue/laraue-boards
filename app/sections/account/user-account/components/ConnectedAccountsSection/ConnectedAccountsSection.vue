@@ -19,54 +19,51 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default="{ data: accounts }">
-        <div class="account-list">
-          <article class="account-card">
-            <div class="account-info">
-              <strong>Telegram</strong>
-              <small class="muted">{{ t('telegramHint') }}</small>
-            </div>
-            <span
-              v-if="accounts.telegram"
-              class="account-status">
-              <IconCheck aria-hidden="true" />
-              {{ t('connected') }}
-            </span>
-            <TelegramSignInButton
-              v-else-if="telegramBotId"
-              :bot-id="telegramBotId"
-              class="account-connect"
-              :deps="deps.telegramSignInButton"
-              :disabled="busy"
-              :label="t('connectTelegram')"
-              :on-sign-in="connectTelegramAccount" />
-          </article>
-
-          <article class="account-card">
-            <div class="account-info">
-              <strong>Google</strong>
-              <small class="muted">{{ t('googleHint') }}</small>
-            </div>
-            <span
-              v-if="accounts.google"
-              class="account-status">
-              <IconCheck aria-hidden="true" />
-              {{ t('connected') }}
-            </span>
-            <small
-              v-else-if="isTelegramMiniApp"
-              class="muted account-unavailable">
-              {{ t('googleInMiniApp') }}
-            </small>
-            <GoogleSignInButton
-              v-else-if="googleClientId"
-              class="account-connect"
-              :client-id="googleClientId"
-              :deps="deps.googleSignInButton"
-              :disabled="busy"
-              :label="t('connectGoogle')"
-              :on-sign-in="connectGoogleAccount" />
-          </article>
-        </div>
+        <BaseList>
+          <BaseListRow :description="t('telegramHint')">
+            Telegram
+            <template #trailing>
+              <span
+                v-if="accounts.telegram"
+                class="account-status">
+                <IconCheck aria-hidden="true" />
+                {{ t('connected') }}
+              </span>
+              <TelegramSignInButton
+                v-else-if="telegramBotId"
+                :bot-id="telegramBotId"
+                class="account-connect"
+                :deps="deps.telegramSignInButton"
+                :disabled="busy"
+                :label="t('connectTelegram')"
+                :on-sign-in="connectTelegramAccount" />
+            </template>
+          </BaseListRow>
+          <BaseListRow :description="t('googleHint')">
+            Google
+            <template #trailing>
+              <span
+                v-if="accounts.google"
+                class="account-status">
+                <IconCheck aria-hidden="true" />
+                {{ t('connected') }}
+              </span>
+              <small
+                v-else-if="isTelegramMiniApp"
+                class="muted account-unavailable">
+                {{ t('googleInMiniApp') }}
+              </small>
+              <GoogleSignInButton
+                v-else-if="googleClientId"
+                class="account-connect"
+                :client-id="googleClientId"
+                :deps="deps.googleSignInButton"
+                :disabled="busy"
+                :label="t('connectGoogle')"
+                :on-sign-in="connectGoogleAccount" />
+            </template>
+          </BaseListRow>
+        </BaseList>
       </template>
     </QueryState>
   </section>
@@ -224,33 +221,12 @@ const connectGoogleAccount = async (code: string): Promise<void> => {
   color: var(--color-accent);
 }
 
-.account-list {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.account-card {
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-surface);
-  border-radius: var(--radius-card);
-  display: flex;
-  gap: var(--space-4);
-  justify-content: space-between;
-  padding: var(--space-4);
-}
-
-.account-info {
-  display: grid;
-  gap: var(--space-1);
-}
-
 .account-status {
   align-items: center;
   color: var(--color-accent);
   display: inline-flex;
   flex-shrink: 0;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   gap: var(--space-1);
 }
 
@@ -270,11 +246,6 @@ const connectGoogleAccount = async (code: string): Promise<void> => {
 }
 
 @media (max-width: 767px) {
-  .account-card {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
   .account-unavailable {
     text-align: left;
   }

@@ -149,18 +149,15 @@ const save = async (): Promise<void> => {
   gap: var(--space-3);
 }
 
+/* A form sits on the page, not in a card. */
 .profile-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-surface);
-  border-radius: var(--radius-card);
   display: grid;
-  gap: var(--space-4);
-  padding: var(--space-4);
+  gap: var(--space-5);
 }
 
 .profile-names {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
   grid-template-columns: 1fr 1fr;
 }
 
