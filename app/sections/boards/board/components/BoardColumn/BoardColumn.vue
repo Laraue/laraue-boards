@@ -126,13 +126,16 @@ onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <style scoped>
+/* A soft sunken band; its cards are filled and outlined, so they read against it (DESIGN.md). */
 .column {
-  border-radius: var(--radius-control);
+  background: var(--color-feed);
+  border-radius: var(--radius-popover);
   display: flex;
   flex-direction: column;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
+  padding: var(--space-2);
   width: 100%;
 }
 
@@ -162,13 +165,12 @@ onBeforeUnmount(() => observer?.disconnect())
 
 .column-head {
   align-items: center;
-  border-bottom: 1px solid var(--color-divider);
   display: flex;
   flex: none;
   justify-content: space-between;
   margin-bottom: var(--space-2);
   min-height: var(--control-height-small);
-  padding-bottom: var(--space-2);
+  padding-left: var(--space-2);
 }
 
 .column-heading {

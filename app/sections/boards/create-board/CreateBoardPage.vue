@@ -13,8 +13,12 @@
         ]"
         :title="t('createBoard')" />
     </template>
-    <section class="form-page">
-      <form @submit.prevent="create">
+    <section class="create-board-page">
+      <!-- A form as Create attribute's: fields, the statuses with Add status under them, the submit
+           at the end. -->
+      <form
+        class="create-board-form"
+        @submit.prevent="create">
         <BaseFieldGroup>
           <BaseField
             id="create-board-name"
@@ -34,52 +38,43 @@
           <BaseField
             id="create-board-source"
             :label="t('copyStatusesFrom')">
-            <select
+            <BaseSelect
               id="create-board-source"
-              v-model="form.sourceBoardId"
-              @change="copyStatuses">
-              <option value="">{{ t('dontCopy') }}</option>
-              <option
-                v-for="board in data?.boards ?? []"
-                :key="board.value"
-                :value="board.value">
-                {{ board.label }}
-              </option>
-            </select>
-          </BaseField>
-          <BaseField
-            v-slot="{ labelId }"
-            :label="t('statuses')">
-            <div
-              :aria-labelledby="labelId"
-              class="status-list"
-              role="group">
-              <div
-                v-for="(status, index) in form.statuses"
-                :key="status.id"
-                class="status-row">
-                <AppColorPicker v-model="status.color" />
-                <input
-                  v-model="status.name"
-                  :aria-label="t('statusName')"
-                  required />
-                <StatusCategorySelect v-model="status.category" />
-                <BaseIconButton
-                  :label="t('deleteStatus')"
-                  variant="danger"
-                  @click="form.statuses.splice(index, 1)">
-                  <IconTrash />
-                </BaseIconButton>
-              </div>
-              <BaseButton
-                class="add-status"
-                @click="addStatus">
-                <IconPlus />
-                {{ t('addStatus') }}
-              </BaseButton>
-            </div>
+              :model-value="form.sourceBoardId"
+              :options="[
+                { label: t('dontCopy'), value: '' },
+                ...(data?.boards ?? []).map(({ label, value }) => ({ label, value })),
+              ]"
+              @update:model-value="copyStatuses" />
           </BaseField>
         </BaseFieldGroup>
+        <fieldset class="create-board-statuses">
+          <legend>{{ t('statuses') }}</legend>
+          <p class="create-board-hint">{{ t('statusesHint') }}</p>
+          <div
+            v-for="(status, index) in form.statuses"
+            :key="status.id"
+            class="status-row">
+            <AppColorPicker v-model="status.color" />
+            <input
+              v-model="status.name"
+              :aria-label="t('statusName')"
+              required />
+            <StatusCategorySelect v-model="status.category" />
+            <BaseIconButton
+              :label="t('deleteStatus')"
+              variant="danger"
+              @click="form.statuses.splice(index, 1)">
+              <IconTrash />
+            </BaseIconButton>
+          </div>
+          <BaseButton
+            class="add-status"
+            @click="addStatus">
+            <IconPlus />
+            {{ t('addStatus') }}
+          </BaseButton>
+        </fieldset>
         <p
           v-if="message"
           class="form-error">
@@ -87,10 +82,10 @@
         </p>
         <div class="form-actions">
           <BaseButton
-            :disabled="pending"
+            :loading="pending"
             type="submit"
             variant="primary">
-            {{ pending ? t('creating') : t('createBoard') }}
+            {{ t('createBoard') }}
           </BaseButton>
         </div>
       </form>
@@ -119,11 +114,11 @@ const { t } = useI18n({
     color: 'Color',
     copyStatusesFrom: 'Copy statuses from',
     createBoard: 'Create board',
-    creating: 'Creating…',
     deleteStatus: 'Delete status',
     dontCopy: "Don't copy",
     name: 'Name',
     statuses: 'Statuses',
+    statusesHint: 'The board columns, left to right.',
     statusName: 'Status name',
   },
   ru: {
@@ -131,11 +126,11 @@ const { t } = useI18n({
     color: 'Цвет',
     copyStatusesFrom: 'Скопировать статусы из',
     createBoard: 'Создать доску',
-    creating: 'Создание…',
     deleteStatus: 'Удалить статус',
     dontCopy: 'Не копировать',
     name: 'Название',
     statuses: 'Статусы',
+    statusesHint: 'Колонки доски слева направо.',
     statusName: 'Название статуса',
   },
 })
@@ -165,7 +160,8 @@ const addStatus = () => {
   })
 }
 
-const copyStatuses = () => {
+const copyStatuses = (sourceBoardId: string) => {
+  form.sourceBoardId = sourceBoardId
   const source = data.value?.boards.find((board) => board.value === form.sourceBoardId)
   form.statuses = (source?.statuses ?? []).map((status) => ({ ...status, id: ++nextStatusId }))
 }
@@ -186,9 +182,36 @@ const create = async () => {
 </script>
 
 <style scoped>
-.status-list {
+.create-board-page {
+  margin-inline: auto;
+  max-width: 768px;
+  width: 100%;
+}
+
+.create-board-form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.create-board-statuses {
+  border: 0;
   display: grid;
   gap: var(--space-2);
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.create-board-statuses legend {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-1);
+  padding: 0;
+}
+
+.create-board-hint {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  margin: 0;
 }
 
 .status-row {

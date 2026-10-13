@@ -83,9 +83,10 @@ useSortable({
 </script>
 
 <style scoped>
+/* A white block on the page, as the kit's lists and cards. */
 .task {
-  background: var(--color-feed);
-  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-control);
   color: inherit;
   cursor: pointer;

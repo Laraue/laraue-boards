@@ -772,7 +772,8 @@ const resolveIssueDialogCloseTarget = (input: {
 .board {
   display: grid;
   flex: 1;
-  gap: var(--space-4);
+  /* The columns are bands of their own now; a tighter gap keeps them one board, as Jira's. */
+  gap: var(--space-3);
   grid-auto-columns: 320px;
   grid-auto-flow: column;
   grid-template-columns: none;

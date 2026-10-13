@@ -40,18 +40,23 @@
   --white: #fff;
 
   /* Semantic roles: what components use. Only this layer is remapped between themes. */
-  --color-background: var(--gray-3);
+  /* One background for the page and its sidebar; fill marks only what means something (DESIGN.md). */
+  --color-background: var(--gray-1);
   --color-surface: var(--gray-1);
   --color-workspace: var(--gray-2);
   /* Comment and history cards: a light lift off the page. */
   --color-feed: var(--gray-2);
   --color-divider: var(--gray-5);
   --color-soft: var(--gray-4);
+  /* Half a step under the soft fill: a hovered row stays lighter than the buttons inside it. */
+  --color-row-hover: color-mix(in srgb, var(--color-soft) 50%, transparent);
   --color-hover: var(--gray-5);
   --color-text: var(--gray-12);
   --color-muted: var(--gray-11);
   /* Hints, placeholders' neighbours, disabled text: below muted, still readable. */
-  --color-border: var(--gray-6);
+  /* Three line weights: dividers the quietest, group outlines (--color-border-surface) in between,
+     control borders the strongest, so a field never reads as page structure. */
+  --color-border: var(--gray-7);
   --color-border-hover: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   /* Separates parts inside a surface that already has a border. */
   --color-border-strong: var(--gray-7);
@@ -189,9 +194,13 @@
   --amber-11: #d4a464;
 
   /* The dark ramps run the other way, so the page sits on 1 and surfaces rise from it. */
-  --color-background: var(--gray-1);
+  --color-background: var(--gray-3);
   --color-surface: var(--gray-3);
-  --color-divider: var(--gray-4);
+  /* Bands (board columns, list groups) rise half a step over the dark page instead of sinking into
+     black, as Linear's; on the light page they stay a step under it. */
+  --color-feed: color-mix(in srgb, var(--gray-4) 60%, var(--gray-3));
+  /* The dark page is gray-3; the divider steps one past it, controls (gray-7) stay above both. */
+  --color-divider: var(--gray-5);
   --color-accent: var(--blue-11);
   --color-accent-hover: var(--blue-12);
   --color-accent-soft: var(--blue-3);

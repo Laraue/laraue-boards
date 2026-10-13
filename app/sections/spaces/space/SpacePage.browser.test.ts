@@ -25,7 +25,7 @@ const pageData: SpacePageData = {
       kind: 'board',
       name: 'Roadmap',
       status: 'Active',
-      statuses: [{ color: '#333', count: 3, name: 'To do' }],
+      statuses: [{ category: 'Created', color: '#333', count: 3, name: 'To do' }],
     },
   ],
   canCreateBoards: true,

@@ -17,30 +17,7 @@
             to: organizationRoutes.board(spaceKey, boardId),
           },
         ]"
-        :title="t('settings')">
-        <template
-          v-if="data"
-          #actions>
-          <DeleteActionMenu
-            v-if="data.canDelete"
-            :disabled="saving || removing"
-            :label="t('deleteBoard')"
-            :loading="removing"
-            :on-delete="remove" />
-          <BaseButton
-            v-if="data.canUpdate"
-            :aria-label="t('saveChanges')"
-            :disabled="removing"
-            :form="formId"
-            icon-on-mobile
-            :loading="saving"
-            type="submit"
-            variant="primary">
-            <IconCheck />
-            <template #label>{{ t('saveChanges') }}</template>
-          </BaseButton>
-        </template>
-      </PageHeader>
+        :title="t('settings')" />
     </template>
     <QueryState
       :data="data"
@@ -57,6 +34,31 @@
             :on-update="(input) => save(page, input)"
             :submitting="saving || removing"
             :view-model="page" />
+          <!-- The form is the component above; the button submits it through its id. -->
+          <div
+            v-if="page.canUpdate"
+            class="form-actions">
+            <BaseButton
+              :disabled="removing"
+              :form="formId"
+              :loading="saving"
+              type="submit"
+              variant="primary">
+              {{ t('saveChanges') }}
+            </BaseButton>
+          </div>
+          <BaseDangerZone
+            v-if="page.canDelete"
+            :description="t('deleteDescription')"
+            :title="t('deleteBoard')">
+            <BaseButton
+              :disabled="saving"
+              :loading="removing"
+              variant="danger"
+              @click="remove">
+              {{ t('deleteBoard') }}
+            </BaseButton>
+          </BaseDangerZone>
         </section>
       </template>
     </QueryState>
@@ -64,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconSettings } from '@tabler/icons-vue'
+import { IconSettings } from '@tabler/icons-vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type {
@@ -88,6 +90,7 @@ const { t } = useI18n({
     board: 'Board',
     deleteBoard: 'Delete board',
     deleteConfirm: 'Delete this board?',
+    deleteDescription: 'Deletes the board for every member. This cannot be undone.',
     loadError: 'Could not load board',
     loading: 'Loading board…',
     saveChanges: 'Save changes',
@@ -97,6 +100,7 @@ const { t } = useI18n({
     board: 'Доска',
     deleteBoard: 'Удалить доску',
     deleteConfirm: 'Удалить эту доску?',
+    deleteDescription: 'Удаляет доску для всех участников. Отменить нельзя.',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
     saveChanges: 'Сохранить изменения',
@@ -150,6 +154,8 @@ const remove = async (): Promise<void> => {
 
 <style scoped>
 .board-settings-page {
+  display: grid;
+  gap: var(--space-5);
   margin-inline: auto;
   max-width: 768px;
   width: 100%;

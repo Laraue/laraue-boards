@@ -46,6 +46,10 @@ check a design change there and add new components and variants to it.
 - Never reference a primitive or a hex value in a component; add or remap a semantic role instead.
 - Text: `--color-text`, `--color-muted` for secondary context, `--color-text-subtle` for hints. Text
   and icons on an action fill use `--color-on-action`.
+- Lines come in three weights, quietest first: `--color-divider` for page structure (the sidebar's
+  and the header's edges, lines between rows), `--color-border-surface` for group outlines (lists,
+  cards, comments), `--color-border` for controls (fields, selects, buttons). A field must never
+  read as page structure, so the control border stays the strongest in both themes.
 - Chart colors are a separate data palette.
 
 ## Typography
@@ -57,7 +61,9 @@ check a design change there and add new components and variants to it.
   checkbox labels. Compact controls use the same text size.
 - Use `--font-size-small` (12px) for secondary metadata, not interactive options.
 - Reserve `--font-size-caption` (11px) for small annotations and avatar initials.
-- Use heading sizes for hierarchy, not to distinguish controls.
+- Use heading sizes for hierarchy, not to distinguish controls. The levels: a page or issue title
+  `3xl` (24) weight 600; a section heading (`BaseSectionHeader`) `lg` (16) weight 600; body `md`
+  (14); metadata `sm` (12), muted.
 - Weights: 400 for body text, controls inside menus and options; 500 for buttons, row and card
   titles, page header titles and group labels; 600 and above only for page headings (h1, dialog
   titles). Group labels are sentence case, not uppercase.
@@ -87,7 +93,10 @@ check a design change there and add new components and variants to it.
 - A button carries an icon when it is an action in a page or section header (Add issue, New
   attribute, Create key, Invite, Change plan), a bulk action, or adds a row to a list (Add status,
   Add option): those are entry points people look for. Buttons inside the content (a form's Save,
-  dialog buttons, a card's action, a danger zone) are text only.
+  dialog buttons, a card's action, a danger zone) are text only. A page that is a form (to create a
+  board, a space, an attribute, an organization, or a settings form) submits at the end of the form,
+  above its danger zone, and a list inside it gets its add-row button under its rows, not in a
+  header.
 - Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
   `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in
   `BaseButton`.
@@ -102,7 +111,8 @@ check a design change there and add new components and variants to it.
 - `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
   active tab on a surface fill, no shadow. Tabs are 14px, weight 500 in every state, with an icon
   and a count pill. Tabs that switch pages are `BaseNavTabs`: the same look, links marked
-  `aria-current`. Don't add other tab styles.
+  `aria-current`. A choice between a few values (the theme) is the same track: buttons in
+  `.base-tabs-list` / `.base-tabs-tab`, the current one `aria-pressed`. Don't add other tab styles.
 - Settings pages with several sections (administration, your account in an organization) use
   `BaseSettingsLayout`: the sections as a vertical menu on the left (`BaseNavTabs vertical`), the
   current one beside it, at most 48rem wide. On narrow screens the menu runs across the top. Each
@@ -147,15 +157,27 @@ check a design change there and add new components and variants to it.
 
 ## Surfaces
 
-- Group page content (lists, settings sections, summaries) in `BaseCard`: surface fill, border,
-  `--radius-card` on the page background, no shadow. Cards, dialogs and floating surfaces (menus,
-  popovers, select lists, toasts) are edged with `--color-border-surface`, a faint ring of the text
-  color; controls keep the solid `--color-border`. Do not rebuild these styles locally.
+As in Jira, Linear and ChatGPT: one background, and fill is spent on the few layers that mean
+something.
 
-- A list of things (attributes, members, keys, connected accounts) is a `BaseList` of
-  `BaseListRow`s: one card, rows divided by lines, something in front, a title with a line under it,
-  actions or a chevron at the end. Do not make each row its own card. Use a table only when rows
-  have several columns to compare, like issues.
+- One page background for the sidebar and the content (`--color-background`, the surface color in
+  the light theme); the sidebar is set apart by a line, not by another fill. Gray is not a frame
+  around white blocks: it marks only a board column, a hovered or selected row and soft pills.
+- Data lists (issues, history) are rows on the page itself, with no box around them: a line between
+  rows, `--color-row-hover` on hover: half a step under `--color-soft`, so the buttons inside a
+  hovered row still show their own hover. A group inside such a list is a quiet muted label with
+  space above it, never a fill: a filled band reads as a hovered row.
+- Groups of settings and lists of things to manage (attributes, members, keys, connected accounts, a
+  settings section) are outlined, as ChatGPT's and Linear's settings: `BaseList` of `BaseListRow`s
+  or `BaseCard`, a `--color-border-surface` ring and `--radius-card`, no fill of their own. Rows are
+  divided by lines: something in front, a title with a line under it, actions or a chevron at the
+  end. Do not make each row its own card. Use a table only when rows have several columns to
+  compare.
+- A board is the one place where fill stacks: a column is a soft sunken band (`--radius-popover`),
+  its cards are surface-filled and outlined (`--radius-control`), so they read against the band.
+- Dialogs and floating surfaces (menus, popovers, select lists, toasts) keep their surface fill and
+  `--color-border-surface` edge; controls keep the solid `--color-border`. Do not rebuild these
+  styles locally.
 
 - A destructive action of a settings page (delete the organization, the attribute) is not placed
   next to Save: it goes under the form in `BaseDangerZone`, with a line above it and one sentence on

@@ -27,7 +27,8 @@ it('filters organization transactions by member', async () => {
     route: '/organizations/acme-ab12/admin/transactions',
   })
 
-  await page.getByLabelText('Member').selectOptions('user-1')
+  await page.getByLabelText('Member').click()
+  await page.getByRole('option', { name: 'Ada Lovelace' }).click()
   await vi.waitFor(() =>
     expect(view).toHaveBeenCalledWith({
       page: 1,

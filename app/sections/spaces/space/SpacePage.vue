@@ -36,70 +36,70 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default>
+        <!-- A data list, as the issue list: rows on the page itself, no box around them. -->
         <section class="space-page">
-          <div
+          <NuxtLink
             v-if="backlog"
-            class="space-section">
-            <h2 class="space-section-title">{{ t('backlog') }}</h2>
+            class="space-row"
+            :to="organizationRoutes.backlog(spaceKey)">
+            <span class="space-row-name">
+              <IconListDetails :style="{ color: backlog.color }" />
+              <span class="space-row-title">{{ t('backlog') }}</span>
+            </span>
+            <span class="space-row-count">{{ tp('issues', backlog.issueCount) }}</span>
+            <IconChevronRight class="space-row-chevron" />
+          </NuxtLink>
+
+          <h2 class="space-group">
+            {{ t('boards') }}
+            <span class="muted">{{ regularBoards.length }}</span>
+          </h2>
+
+          <template v-if="regularBoards.length">
             <NuxtLink
-              class="backlog-summary"
-              :to="organizationRoutes.backlog(spaceKey)">
-              <div class="summary-title">
-                <IconListDetails :style="{ color: backlog.color }" />
-                <strong>{{ t('backlog') }}</strong>
-                <span class="muted issue-count">{{ tp('issues', backlog.issueCount) }}</span>
-              </div>
-            </NuxtLink>
-          </div>
-
-          <div class="space-section">
-            <h2 class="space-section-title">
-              {{ t('boards') }}
-              <span class="muted">{{ regularBoards.length }}</span>
-            </h2>
-
-            <div
-              v-if="regularBoards.length"
-              class="board-grid">
-              <NuxtLink
-                v-for="board in regularBoards"
-                :key="board.id"
-                class="board-summary"
-                :to="organizationRoutes.board(spaceKey, board.id)">
-                <div class="summary-title">
-                  <BoardIcon :style="{ color: board.color }" />
-                  <strong>{{ board.name }}</strong>
-                  <BaseBadge :variant="boardStatusVariant[board.status]">
-                    {{ statusLabel(board.status) }}
-                  </BaseBadge>
-                  <span class="muted issue-count">{{ tp('issues', board.issueCount) }}</span>
-                </div>
-                <div class="meter">
+              v-for="board in regularBoards"
+              :key="board.id"
+              class="space-row"
+              :to="organizationRoutes.board(spaceKey, board.id)">
+              <span class="space-row-name">
+                <BoardIcon :style="{ color: board.color }" />
+                <span class="space-row-title">{{ board.name }}</span>
+                <BaseBadge :variant="boardStatusVariant[board.status]">
+                  {{ statusLabel(board.status) }}
+                </BaseBadge>
+              </span>
+              <span
+                class="space-row-progress"
+                :title="
+                  board.statuses.map((status) => `${status.count} ${status.name}`).join(' · ')
+                ">
+                <span
+                  aria-hidden="true"
+                  class="meter">
                   <span
                     v-for="status in board.statuses"
                     :key="status.name"
-                    :style="{
-                      flex: status.count || 0,
-                      background: status.color,
-                    }" />
-                </div>
-                <div class="summary-statuses">
+                    :style="{ background: status.color, flex: status.count || 0 }" />
+                </span>
+                <span class="space-row-statuses">
                   <span
                     v-for="status in board.statuses"
                     :key="status.name">
-                    <span
-                      class="dot"
-                      :style="{ background: status.color }" />
+                    <StatusIndicator
+                      :category="status.category"
+                      :color="status.color" />
                     {{ status.count }} {{ status.name }}
                   </span>
-                </div>
-              </NuxtLink>
-            </div>
-            <BaseEmptyState
-              v-else
-              :hint="t('emptyHint')"
-              :title="t('emptyTitle')" />
-          </div>
+                </span>
+              </span>
+              <span class="space-row-count">{{ tp('issues', board.issueCount) }}</span>
+              <IconChevronRight class="space-row-chevron" />
+            </NuxtLink>
+          </template>
+          <BaseEmptyState
+            v-else
+            :hint="t('emptyHint')"
+            :title="t('emptyTitle')" />
         </section>
       </template>
     </QueryState>
@@ -107,8 +107,14 @@
 </template>
 
 <script setup lang="ts">
-import { IconLayoutGridAdd, IconListDetails, IconSettings } from '@tabler/icons-vue'
+import {
+  IconChevronRight,
+  IconLayoutGridAdd,
+  IconListDetails,
+  IconSettings,
+} from '@tabler/icons-vue'
 
+import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
@@ -174,107 +180,148 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
 .space-page {
   align-content: start;
   display: grid;
-  gap: var(--space-4);
   grid-template-columns: minmax(0, 1fr);
 }
 
-.space-section {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.space-section-title {
+/* Name, progress, count, chevron: the same columns for the backlog and every board. */
+.space-row {
   align-items: center;
-  color: var(--color-muted);
-  display: flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  gap: var(--space-2);
-  letter-spacing: 0.04em;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.board-grid {
-  display: grid;
-  gap: var(--space-3);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.board-summary,
-.backlog-summary {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border-bottom: 1px solid var(--color-divider);
   color: var(--color-text);
-  min-width: 0;
-  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-2) var(--space-4);
+  /* The name keeps its room: grid grows a capped track to its cap before an fr one gets anything,
+     so the progress may shrink to nothing but never takes the name's space. */
+  grid-template-columns: minmax(12rem, 1fr) minmax(0, 28rem) 6rem var(--icon-size);
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
   text-decoration: none;
 }
 
-.backlog-summary:hover,
-.board-summary:hover {
-  border-color: var(--color-accent);
+.space-row:hover {
+  background: var(--color-row-hover);
 }
 
-.backlog-summary {
-  background: var(--color-soft);
-  border-style: dashed;
+.space-row:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
-.summary-title {
+.space-row-name {
   align-items: center;
   display: flex;
   gap: var(--space-2);
   min-width: 0;
 }
 
-.summary-title strong {
-  flex: 1;
-  min-width: 0;
+.space-row-name > svg {
+  flex: none;
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.space-row-title {
+  font-weight: var(--font-weight-medium);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* One line, centred with the name and the count: a short bar, its legend beside it. */
+.space-row-progress {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* The board's statuses as one bar, each its share of the issues. */
 .meter {
   background: var(--color-soft);
   border-radius: var(--radius-full);
   display: flex;
-  gap: 1px;
-  height: 2px;
-  margin-top: var(--space-3);
-  opacity: 0.9;
+  flex: none;
+  gap: 2px;
+  height: 4px;
+  overflow: hidden;
+  width: 7.5rem;
+}
+
+/* A legend for the bar: the caption size kept for small annotations. */
+.space-row-statuses {
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-caption);
+  gap: 0 var(--space-3);
+  min-width: 0;
   overflow: hidden;
 }
 
-.summary-statuses {
-  color: var(--color-muted);
-  display: flex;
-  flex-wrap: wrap;
-  font-size: var(--font-size-caption);
-  gap: var(--space-1);
-  margin-top: var(--space-3);
-}
-
-.summary-statuses > span {
+.space-row-statuses > span {
   align-items: center;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
   display: inline-flex;
   gap: var(--space-1);
-  padding: 2px 8px;
+  white-space: nowrap;
 }
 
+.space-row-statuses :deep(svg) {
+  flex: none;
+  height: 12px;
+  width: 12px;
+}
+
+.space-row-count {
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  grid-column: 3;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.space-row-chevron {
+  color: var(--color-muted);
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+/* A group inside the list: a quiet label, no fill, so it never reads as a hovered row. */
+.space-group {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  gap: var(--space-2);
+  margin: var(--space-6) 0 0;
+  padding: var(--space-2) var(--space-4);
+}
+
+/* Under 1100px the one-line row would cut the legend: the progress goes under the name, the count
+   stays at the end of the first line. */
 @media (max-width: 1100px) {
-  .board-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .space-row {
+    grid-template-columns: minmax(0, 1fr) auto var(--icon-size);
   }
-}
 
-@media (max-width: 767px) {
-  .board-grid {
-    grid-template-columns: 1fr;
+  .space-row-count {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .space-row-chevron {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .space-row-progress {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  /* The legend wraps instead of being cut: no hover shows it whole on a phone. */
+  .space-row-statuses {
+    flex-wrap: wrap;
   }
 }
 </style>

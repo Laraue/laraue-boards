@@ -74,6 +74,7 @@ withDefaults(
 }
 
 .base-nav-row[aria-current='page'] {
+  /* A step darker than the hover fill, so the current section never looks merely hovered. */
   background: var(--color-hover);
   color: var(--color-text);
 }

@@ -27,7 +27,7 @@ test('maps the space and its board summaries', async () => {
     }
     const backlog = {
       color: null,
-      columns: [{ color: COLORS.gray, count: 2, id: 1, name: 'Inbox' }],
+      columns: [{ category: 'Created', color: COLORS.gray, count: 2, id: 1, name: 'Inbox' }],
       createdAt: '2026-04-01T00:00:00Z',
       id: 10,
       isDefault: true,

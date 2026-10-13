@@ -1,41 +1,13 @@
 <template>
-  <select
+  <BaseSelect
     v-bind="$attrs"
     v-model="model"
-    :aria-busy="pending"
     :disabled="disabled"
-    @focus="load">
-    <option
-      v-if="!message"
-      disabled
-      value="">
-      {{ placeholder ?? t('select') }}
-    </option>
-    <option
-      v-if="message"
-      disabled
-      value="">
-      {{ t('loadError') }}
-    </option>
-    <option
-      v-else-if="pending"
-      disabled
-      value="__loading">
-      {{ t('loading') }}
-    </option>
-    <option
-      v-else-if="loaded && visibleOptions.length === 0"
-      disabled
-      value="__empty">
-      {{ t('empty') }}
-    </option>
-    <option
-      v-for="option in visibleOptions"
-      :key="option.value"
-      :value="option.value">
-      {{ option.label }}
-    </option>
-  </select>
+    :loading="pending"
+    :message="status"
+    :on-open="load"
+    :options="visibleOptions"
+    :placeholder="placeholder ?? t('select')" />
 </template>
 
 <script setup lang="ts">
@@ -73,13 +45,28 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { data, execute, message, pending, status } = await useApiQuery(
+const {
+  data,
+  execute,
+  message,
+  pending,
+  status: loadStatus,
+} = await useApiQuery(
   `organization-select:${useId()}`,
   (signal) => props.deps.loadOrganizations({ signal }),
   { immediate: false },
 )
 
-const loaded = computed(() => status.value !== 'idle' && !pending.value)
+// Shown in the list instead of the options while they load, fail or are none.
+const status = computed(() => {
+  if (message.value) {
+    return t('loadError')
+  }
+  if (pending.value) {
+    return t('loading')
+  }
+  return loadStatus.value !== 'idle' && visibleOptions.value.length === 0 ? t('empty') : undefined
+})
 
 const options = computed(() => data.value ?? [])
 

@@ -1,5 +1,6 @@
 <!-- The heading of a page section: its title, an optional line under it and the section's actions on
-     the right. The `leading` slot goes before the title, such as a link back to the list above. -->
+     the right. The `leading` slot is a line above the title, such as a link back to the list, so the
+     title keeps the page's left edge. -->
 <template>
   <header class="base-section-header">
     <div
@@ -7,14 +8,16 @@
       class="base-section-header-leading">
       <slot name="leading" />
     </div>
-    <div class="base-section-header-text">
-      <h2 :id="id">{{ title }}</h2>
-      <p v-if="description">{{ description }}</p>
-    </div>
-    <div
-      v-if="$slots.actions"
-      class="base-section-header-actions">
-      <slot name="actions" />
+    <div class="base-section-header-main">
+      <div class="base-section-header-text">
+        <h2 :id="id">{{ title }}</h2>
+        <p v-if="description">{{ description }}</p>
+      </div>
+      <div
+        v-if="$slots.actions"
+        class="base-section-header-actions">
+        <slot name="actions" />
+      </div>
     </div>
   </header>
 </template>
@@ -26,6 +29,11 @@ defineProps<{ description?: string; id?: string; title: string }>()
 
 <style scoped>
 .base-section-header {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.base-section-header-main {
   align-items: center;
   display: flex;
   gap: var(--space-4);
@@ -35,8 +43,6 @@ defineProps<{ description?: string; id?: string; title: string }>()
 
 .base-section-header-leading {
   display: flex;
-  flex: none;
-  margin-right: calc(var(--space-4) * -1 + var(--space-2));
 }
 
 .base-section-header-text {

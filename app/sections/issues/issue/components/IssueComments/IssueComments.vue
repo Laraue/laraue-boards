@@ -30,25 +30,29 @@
               size="sm" />
             <span class="issue-comment-name">{{ comment.owner.name }}</span>
             <time :datetime="comment.createdAt">{{ formatDateTime(comment.createdAt) }}</time>
-            <div
+            <BaseMenu
               v-if="comment.canModify && state.editingId !== comment.id"
+              align="end"
               class="issue-comment-actions">
-              <BaseIconButton
-                :disabled="!!state.pendingId || summarizing"
-                :label="`${t('editCommentBy')} ${comment.owner.name}`"
-                :tooltip="t('edit')"
-                @click="startEdit(comment)">
+              <template #trigger>
+                <BaseIconButton
+                  :disabled="!!state.pendingId || summarizing"
+                  :label="`${t('actionsFor')} ${comment.owner.name}`"
+                  :loading="state.pendingId === comment.id">
+                  <IconDots />
+                </BaseIconButton>
+              </template>
+              <BaseMenuItem @select="startEdit(comment)">
                 <IconPencil />
-              </BaseIconButton>
-              <BaseIconButton
-                :disabled="!!state.pendingId || summarizing"
-                :label="`${t('deleteCommentBy')} ${comment.owner.name}`"
-                :loading="state.pendingId === comment.id"
-                :tooltip="t('delete')"
-                @click="remove(comment.id)">
+                {{ t('edit') }}
+              </BaseMenuItem>
+              <BaseMenuItem
+                variant="danger"
+                @select="remove(comment.id)">
                 <IconTrash />
-              </BaseIconButton>
-            </div>
+                {{ t('delete') }}
+              </BaseMenuItem>
+            </BaseMenu>
           </div>
           <div
             v-if="state.editingId === comment.id"
@@ -138,6 +142,7 @@
 import {
   IconArrowUp,
   IconCheck,
+  IconDots,
   IconLoader2,
   IconPencil,
   IconSparkles,
@@ -158,12 +163,12 @@ const props = defineProps<{
 const confirm = useConfirm()
 const { t } = useI18n({
   en: {
+    actionsFor: 'Actions for the comment by',
     addComment: 'Add comment',
     addCommentShortcut: 'Add comment (Ctrl+Enter)',
     cancel: 'Cancel',
     comments: 'Comments',
     delete: 'Delete',
-    deleteCommentBy: 'Delete comment by',
     deleteConfirm: 'Delete this comment?',
     edit: 'Edit',
     editCommentBy: 'Edit comment by',
@@ -177,12 +182,12 @@ const { t } = useI18n({
     writeCommentPlaceholder: 'Write a comment…',
   },
   ru: {
+    actionsFor: 'Действия с комментарием пользователя',
     addComment: 'Добавить комментарий',
     addCommentShortcut: 'Добавить комментарий (Ctrl+Enter)',
     cancel: 'Отмена',
     comments: 'Комментарии',
     delete: 'Удалить',
-    deleteCommentBy: 'Удалить комментарий пользователя',
     deleteConfirm: 'Удалить этот комментарий?',
     edit: 'Изменить',
     editCommentBy: 'Изменить комментарий пользователя',
@@ -323,12 +328,12 @@ const remove = async (id: string) => {
   gap: var(--space-2);
 }
 
-/* Barely off the page, as in Linear: a tint and a faint line, so the text leads, not the box. */
+/* White blocks on the page, like the kit's lists and cards. */
 .issue-comment-body,
 .issue-comment-composer {
-  background: var(--color-feed);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
@@ -337,7 +342,7 @@ const remove = async (id: string) => {
   display: grid;
   gap: var(--space-1);
   min-width: 0;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
 }
 
 .issue-comment-head {
@@ -387,11 +392,6 @@ const remove = async (id: string) => {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  /* The comment's buttons show on hover, so the list reads as text. */
-  .issue-comment:not(:hover, :focus-within) .issue-comment-actions {
-    opacity: 0;
-  }
-
   .issue-comment-composer:hover:not(:focus-within) {
     border-color: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   }

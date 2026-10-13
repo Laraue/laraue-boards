@@ -3,7 +3,36 @@
     <template #header>
       <PageHeader
         :icon="IconHistory"
-        :title="t('history')" />
+        :title="t('history')">
+        <template
+          v-if="data"
+          #tools>
+          <FilterMenu
+            :active-count="activeCount"
+            :items="filterItems"
+            :label="t('historyFilters')"
+            :on-clear="clear">
+            <template #panel="{ item }">
+              <fieldset
+                v-if="item.id === 'user'"
+                :aria-label="t('user')"
+                class="filter-options">
+                <BaseCheckbox
+                  v-for="user in data.users"
+                  :key="user.value"
+                  :model-value="form.ownerId === user.value"
+                  @update:model-value="setOwner(user.value, $event)">
+                  {{ user.label }}
+                </BaseCheckbox>
+              </fieldset>
+              <IssueDateFilter
+                v-else
+                :model-value="[form.dateFrom, form.dateTo]"
+                @update:model-value="setDates" />
+            </template>
+          </FilterMenu>
+        </template>
+      </PageHeader>
     </template>
     <QueryState
       :data="data"
@@ -12,38 +41,8 @@
       :message="message"
       :on-retry="refresh"
       :pending="pending">
-      <template #default="{ data: view }">
+      <template #default>
         <section class="history-page">
-          <form
-            class="history-filters"
-            @change="applyFilters"
-            @submit.prevent>
-            <label>
-              {{ t('user') }}
-              <select v-model="form.ownerId">
-                <option value="">{{ t('allUsers') }}</option>
-                <option
-                  v-for="user in view.users"
-                  :key="user.value"
-                  :value="user.value">
-                  {{ user.label }}
-                </option>
-              </select>
-            </label>
-            <label>
-              {{ t('from') }}
-              <input
-                v-model="form.dateFrom"
-                type="date" />
-            </label>
-            <label>
-              {{ t('to') }}
-              <input
-                v-model="form.dateTo"
-                :min="form.dateFrom || undefined"
-                type="date" />
-            </label>
-          </form>
           <HistoryTimeline
             v-if="historyState.items.length || !pagePending"
             :items="historyState.items"
@@ -69,11 +68,14 @@
 </template>
 
 <script setup lang="ts">
-import { IconHistory, IconLoader2 } from '@tabler/icons-vue'
+import { IconCalendar, IconHistory, IconLoader2, IconUser } from '@tabler/icons-vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
+import type { FilterMenuItem } from '~/components/filter-menu/FilterMenu.types'
+import FilterMenu from '~/components/filter-menu/FilterMenu.vue'
 import type { HistoryItemViewModel } from '~/components/history-timeline/HistoryTimeline.types'
 import HistoryTimeline from '~/components/history-timeline/HistoryTimeline.vue'
+import IssueDateFilter from '~/components/issue-filters/components/IssueDateFilter.vue'
 
 import type { OrganizationHistoryPageDeps } from './OrganizationHistoryPage.deps'
 
@@ -85,25 +87,23 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
-    allUsers: 'All users',
+    date: 'Date',
     entries: 'Organization history entries',
-    from: 'From',
     history: 'Organization history',
+    historyFilters: 'History filters',
     loadError: 'Could not load organization history',
     loading: 'Loading history…',
     loadMore: 'Load more',
-    to: 'To',
     user: 'User',
   },
   ru: {
-    allUsers: 'Все пользователи',
+    date: 'Дата',
     entries: 'Записи истории организации',
-    from: 'От',
     history: 'История организации',
+    historyFilters: 'Фильтры истории',
     loadError: 'Не удалось загрузить историю организации',
     loading: 'Загрузка истории…',
     loadMore: 'Загрузить ещё',
-    to: 'До',
     user: 'Пользователь',
   },
 })
@@ -118,6 +118,7 @@ const filters = computed(() => ({
   ownerId: queryValue(props.routeQuery.user),
 }))
 const form = reactive({ ...filters.value })
+const activeCount = computed(() => Object.values(filters.value).filter(Boolean).length)
 const requestFilters = computed(() => ({
   dateFrom: filters.value.dateFrom ? `${filters.value.dateFrom}T00:00:00.000Z` : undefined,
   dateTo: filters.value.dateTo ? `${filters.value.dateTo}T23:59:59.999Z` : undefined,
@@ -172,6 +173,32 @@ const applyFilters = () => {
   void props.onUpdateQuery(query)
 }
 
+const filterItems = computed<FilterMenuItem[]>(() => [
+  { count: Number(Boolean(filters.value.ownerId)), icon: IconUser, id: 'user', label: t('user') },
+  {
+    count: Number(Boolean(filters.value.dateFrom)) + Number(Boolean(filters.value.dateTo)),
+    icon: IconCalendar,
+    id: 'date',
+    label: t('date'),
+  },
+])
+
+// One author at a time: picking another replaces the first.
+const setOwner = (ownerId: string, checked: boolean) => {
+  form.ownerId = checked ? ownerId : ''
+  applyFilters()
+}
+
+const setDates = ([dateFrom = '', dateTo = '']: string[]) => {
+  Object.assign(form, { dateFrom, dateTo })
+  applyFilters()
+}
+
+const clear = () => {
+  Object.assign(form, { dateFrom: '', dateTo: '', ownerId: '' })
+  applyFilters()
+}
+
 watch(filters, (value) => {
   Object.assign(form, value)
   void loadPage(true)
@@ -197,17 +224,12 @@ watch(
   gap: var(--space-5);
 }
 
-.history-filters {
-  align-items: end;
+.filter-options {
+  border: 0;
   display: grid;
-  gap: var(--space-3);
-  grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(140px, 0.5fr));
-}
-
-.history-filters label {
-  display: grid;
-  gap: var(--space-1);
   margin: 0;
+  min-width: 0;
+  padding: 0;
 }
 
 .history-loading {
@@ -227,11 +249,5 @@ watch(
 
 .history-more {
   justify-self: start;
-}
-
-@media (max-width: 767px) {
-  .history-filters {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

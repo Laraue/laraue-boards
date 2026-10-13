@@ -58,7 +58,7 @@ it('shows the current list value', async () => {
   await expect.element(page.getByLabelText('Priority')).toHaveTextContent('High')
 })
 
-it('uses native controls for integer and date-time values', async () => {
+it('uses native controls for numbers and a date picker with time for date-time', async () => {
   await mount()
 
   await expect.element(page.getByLabelText('Estimate')).toHaveAttribute('inputmode', 'numeric')
@@ -67,7 +67,9 @@ it('uses native controls for integer and date-time values', async () => {
   await expect
     .element(page.getByLabelText('Cost'))
     .toHaveAttribute('pattern', '-?[0-9]+(?:\\.[0-9]+)?')
-  await expect.element(page.getByLabelText('Starts')).toHaveAttribute('type', 'datetime-local')
+  const starts = page.getByRole('group', { name: 'Starts' })
+  await expect.element(starts.getByRole('spinbutton', { name: /hour/i })).toBeInTheDocument()
+  await expect.element(starts.getByRole('button', { name: 'Open calendar' })).toBeInTheDocument()
 })
 
 it('returns integer values as strings', async () => {

@@ -142,10 +142,13 @@ const { t } = useI18n({
   min-width: 0;
 }
 
+/* The parents give way first: they shrink far faster than the current page's name, which is cut
+   only once they are down to their icons. */
 .page-header-path {
   align-items: center;
   color: var(--color-text);
   display: flex;
+  flex: 0 1000 auto;
   font-size: var(--font-size-body);
   gap: var(--space-2);
   min-width: 0;

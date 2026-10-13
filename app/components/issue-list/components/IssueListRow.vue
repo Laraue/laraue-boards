@@ -302,7 +302,7 @@ a.issue-location-board:hover {
 }
 
 .issue-list-row:hover {
-  background: var(--color-soft);
+  background: var(--color-row-hover);
 }
 
 .issue-list-row:has(.row-select:checked) {
@@ -427,15 +427,15 @@ a.issue-location-board:hover {
 
 @media (max-width: 1100px) {
   .issue-list-row {
-    grid-template-columns: 20px 64px minmax(0, 1fr) 88px var(--icon-btn-size);
+    grid-template-columns: 20px 64px minmax(0, 1fr) 8rem var(--icon-btn-size);
   }
 
   .issue-list-row:not(:has(.row-select)) {
-    grid-template-columns: 64px minmax(0, 1fr) 88px var(--icon-btn-size);
+    grid-template-columns: 64px minmax(0, 1fr) 8rem var(--icon-btn-size);
   }
 
   .issue-list-row:not(.has-actions) {
-    grid-template-columns: 64px minmax(0, 1fr) 88px;
+    grid-template-columns: 64px minmax(0, 1fr) 8rem;
   }
 
   .issue-content {
@@ -517,7 +517,6 @@ a.issue-location-board:hover {
 
   .issue-location,
   .issue-list-row:not(:has(.row-select)) .issue-location {
-    flex-wrap: wrap;
     grid-column: 1 / -2;
     grid-row: 3;
   }

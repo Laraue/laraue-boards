@@ -240,6 +240,20 @@ const connectGoogleAccount = async (code: string): Promise<void> => {
   width: auto;
 }
 
+/* In a row they are row actions, sized as the kit's buttons; the big sign-in look stays on the login
+   page, where they are the screen's main action. Their brand icons keep their colors. */
+.account-connect {
+  font-weight: var(--font-weight-medium);
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+}
+
+.account-connect :deep(svg) {
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
 .account-unavailable {
   max-width: 280px;
   text-align: right;

@@ -110,7 +110,7 @@ const { t } = useI18n({
 }
 
 .permission-table thead th {
-  background: var(--color-hover);
+  background: var(--color-soft);
   color: var(--color-muted);
   font-size: var(--font-size-small);
 }

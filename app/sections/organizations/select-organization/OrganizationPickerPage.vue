@@ -9,43 +9,50 @@
     <template #default="{ data: organizations }">
       <section class="org-picker">
         <div class="picker-card">
-          <h1>{{ t('chooseOrganization') }}</h1>
-          <p class="muted">{{ t('selectWhere') }}</p>
-          <div class="org-list">
-            <div
+          <BaseSectionHeader
+            :description="t('selectWhere')"
+            :title="t('chooseOrganization')" />
+          <BaseList
+            v-if="organizations.length"
+            class="org-list">
+            <BaseListRow
               v-for="organization in organizations"
               :key="organization.id"
-              class="org-row">
-              <button
-                class="org-choice"
-                :data-tour="organization.isPersonal ? 'personal-organization' : undefined"
-                :disabled="selecting || leaving"
-                type="button"
-                @click="select(organization.id, organization.key)">
+              class="org-row"
+              :data-tour="organization.isPersonal ? 'personal-organization' : undefined"
+              :description="organization.description">
+              <template #leading>
                 <BaseAvatar
                   :color="organization.color"
                   :initials="organization.initial"
                   shape="square" />
-                <span>
-                  <strong>{{ organization.name }}</strong>
-                  <small class="muted">{{ organization.description }}</small>
-                </span>
-              </button>
-              <BaseIconButton
-                v-if="organization.canLeave"
+              </template>
+              <!-- The button covers the row, so the whole row picks the organization. -->
+              <button
+                class="org-choice"
                 :disabled="selecting || leaving"
-                :label="`${t('leave')} ${organization.name}`"
-                :tooltip="t('leaveOrganization')"
-                variant="danger"
-                @click="leave(organization.id, organization.name)">
-                <IconLogout />
-              </BaseIconButton>
-            </div>
-            <BaseEmptyState
-              v-if="organizations.length === 0"
-              :hint="t('emptyHint')"
-              :title="t('emptyTitle')" />
-          </div>
+                type="button"
+                @click="select(organization.id, organization.key)">
+                {{ organization.name }}
+              </button>
+              <template #trailing>
+                <BaseIconButton
+                  v-if="organization.canLeave"
+                  :disabled="selecting || leaving"
+                  :label="`${t('leave')} ${organization.name}`"
+                  :tooltip="t('leaveOrganization')"
+                  @click="leave(organization.id, organization.name)">
+                  <IconLogout />
+                </BaseIconButton>
+                <IconChevronRight class="org-chevron" />
+              </template>
+            </BaseListRow>
+          </BaseList>
+          <BaseEmptyState
+            v-else
+            class="org-list"
+            :hint="t('emptyHint')"
+            :title="t('emptyTitle')" />
           <BaseButton
             data-tour="create-organization"
             to="/organizations/new">
@@ -64,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconLogout, IconPlus } from '@tabler/icons-vue'
+import { IconChevronRight, IconLogout, IconPlus } from '@tabler/icons-vue'
 
 import type { OrganizationPickerPageDeps } from '~/sections/organizations/select-organization/OrganizationPickerPage.deps'
 import { useOrganizationTour } from '~/sections/organizations/select-organization/useOrganizationTour'
@@ -153,51 +160,56 @@ const leave = async (id: string, name: string): Promise<void> => {
 }
 
 .org-list {
-  display: grid;
-  gap: var(--space-2);
   margin: var(--space-6) 0 var(--space-4);
 }
 
+.org-row {
+  position: relative;
+}
+
+.org-row:has(.org-choice:hover:not(:disabled)) {
+  background: var(--color-row-hover);
+}
+
 .org-choice {
-  align-items: center;
   background: transparent;
   border: 0;
-  color: var(--color-text);
-  display: flex;
-  flex: 1;
-  gap: var(--space-3);
-  min-width: 0;
-  padding: var(--space-4);
+  color: inherit;
+  font: inherit;
+  padding: 0;
   text-align: left;
 }
 
-.org-row {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  display: flex;
-  overflow: hidden;
+.org-choice::after {
+  content: '';
+  inset: 0;
+  position: absolute;
 }
 
-.org-row > .icon-btn {
-  align-self: stretch;
-  border: 0;
-  border-left: 1px solid var(--color-border);
-  border-radius: 0;
-  flex: 0 0 auto;
-  height: auto;
-  width: 56px;
+.org-choice:focus-visible {
+  box-shadow: none;
+  outline: none;
 }
 
-.org-row:has(.org-choice:hover) {
-  border-color: var(--color-accent);
+.org-row:has(.org-choice:focus-visible) {
+  box-shadow: var(--shadow-focus);
 }
 
-.org-row:has(.org-choice:hover) > .icon-btn {
-  border-left-color: var(--color-accent);
+/* The end of the row sits above the row's button, so Leave takes its own clicks; the rest of it
+   lets clicks through to the row. */
+.org-row :deep(.base-list-row-trailing) {
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 
-.org-choice > span:nth-child(2) {
-  display: grid;
+.org-row :deep(.base-list-row-trailing button) {
+  pointer-events: auto;
+}
+
+.org-chevron {
+  color: var(--color-muted);
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 </style>

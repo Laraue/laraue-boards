@@ -377,7 +377,7 @@ legend {
 }
 
 .space-permissions summary:hover {
-  background: var(--color-hover);
+  background: var(--color-soft);
 }
 
 .space-permissions summary::-webkit-details-marker {

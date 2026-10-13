@@ -11,30 +11,7 @@
             to: organizationRoutes.space(spaceKey),
           },
         ]"
-        :title="t('settings')">
-        <template
-          v-if="data"
-          #actions>
-          <DeleteActionMenu
-            v-if="data.canDelete"
-            :disabled="submitting"
-            :label="t('deleteSpace')"
-            :loading="removing"
-            :on-delete="remove" />
-          <BaseButton
-            v-if="data.canUpdate"
-            :aria-label="t('saveChanges')"
-            :disabled="removing"
-            :form="formId"
-            icon-on-mobile
-            :loading="updating"
-            type="submit"
-            variant="primary">
-            <IconCheck />
-            <template #label>{{ t('saveChanges') }}</template>
-          </BaseButton>
-        </template>
-      </PageHeader>
+        :title="t('settings')" />
     </template>
     <QueryState
       :data="data"
@@ -46,9 +23,7 @@
       <template #default="{ data: page }">
         <section class="space-settings-page">
           <BaseSectionHeader :title="t('general')" />
-          <form
-            :id="formId"
-            @submit.prevent="update">
+          <form @submit.prevent="update">
             <BaseFieldGroup>
               <BaseField
                 id="space-settings-name"
@@ -82,7 +57,30 @@
               class="form-error">
               {{ updateMessage || removeMessage }}
             </p>
+            <div
+              v-if="page.canUpdate"
+              class="form-actions">
+              <BaseButton
+                :disabled="removing"
+                :loading="updating"
+                type="submit"
+                variant="primary">
+                {{ t('saveChanges') }}
+              </BaseButton>
+            </div>
           </form>
+          <BaseDangerZone
+            v-if="page.canDelete"
+            :description="t('deleteDescription')"
+            :title="t('deleteSpace')">
+            <BaseButton
+              :disabled="submitting"
+              :loading="removing"
+              variant="danger"
+              @click="remove">
+              {{ t('deleteSpace') }}
+            </BaseButton>
+          </BaseDangerZone>
         </section>
       </template>
     </QueryState>
@@ -90,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconSettings } from '@tabler/icons-vue'
+import { IconSettings } from '@tabler/icons-vue'
 
 import { SpaceIcon } from '~/constants/icons'
 import type { SpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
@@ -107,6 +105,7 @@ const { t } = useI18n({
   en: {
     color: 'Color',
     deleteConfirm: 'Delete this space?',
+    deleteDescription: 'Deletes the space for every member. This cannot be undone.',
     deleteSpace: 'Delete space',
     general: 'General',
     key: 'Key',
@@ -119,6 +118,7 @@ const { t } = useI18n({
   ru: {
     color: 'Цвет',
     deleteConfirm: 'Удалить этот раздел?',
+    deleteDescription: 'Удаляет раздел для всех участников. Отменить нельзя.',
     deleteSpace: 'Удалить раздел',
     general: 'Общие',
     key: 'Ключ',
@@ -137,7 +137,6 @@ const form = reactive({
 })
 
 const organizationRoutes = useOrganizationRoutes()
-const formId = `space-settings-${useId()}`
 
 const { data, message, pending, refresh } = await useApiQuery(
   () => `space-settings:${props.spaceKey}`,
@@ -190,7 +189,7 @@ const remove = async (): Promise<void> => {
 <style scoped>
 .space-settings-page {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
   margin-inline: auto;
   max-width: 768px;
   width: 100%;

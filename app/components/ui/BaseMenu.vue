@@ -31,7 +31,7 @@ import { DropdownMenuContent, DropdownMenuRoot, DropdownMenuTrigger } from 'reka
 withDefaults(
   defineProps<{
     align?: 'end' | 'start'
-    side?: 'bottom' | 'right'
+    side?: 'bottom' | 'right' | 'top'
   }>(),
   { align: 'start', side: 'bottom' },
 )

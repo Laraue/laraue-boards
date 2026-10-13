@@ -15,26 +15,24 @@
         <form
           class="profile-card"
           @submit.prevent="save">
-          <div class="profile-names">
-            <BaseField
+          <BaseField
+            id="profile-given-name"
+            :label="t('givenName')">
+            <input
               id="profile-given-name"
-              :label="t('givenName')">
-              <input
-                id="profile-given-name"
-                v-model="state.givenName"
-                autocomplete="given-name"
-                maxlength="128" />
-            </BaseField>
-            <BaseField
+              v-model="state.givenName"
+              autocomplete="given-name"
+              maxlength="128" />
+          </BaseField>
+          <BaseField
+            id="profile-family-name"
+            :label="t('familyName')">
+            <input
               id="profile-family-name"
-              :label="t('familyName')">
-              <input
-                id="profile-family-name"
-                v-model="state.familyName"
-                autocomplete="family-name"
-                maxlength="128" />
-            </BaseField>
-          </div>
+              v-model="state.familyName"
+              autocomplete="family-name"
+              maxlength="128" />
+          </BaseField>
 
           <BaseField
             id="profile-display-name"
@@ -153,17 +151,5 @@ const save = async (): Promise<void> => {
 .profile-card {
   display: grid;
   gap: var(--space-5);
-}
-
-.profile-names {
-  display: grid;
-  gap: var(--space-5);
-  grid-template-columns: 1fr 1fr;
-}
-
-@media (max-width: 767px) {
-  .profile-names {
-    grid-template-columns: 1fr;
-  }
 }
 </style>

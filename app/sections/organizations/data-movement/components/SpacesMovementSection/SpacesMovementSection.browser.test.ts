@@ -49,7 +49,7 @@ const dialog = () => page.getByRole('dialog')
 const chooseOrganization = async () => {
   await dialog().getByLabelText('Organization').click()
   await expect.element(dialog().getByRole('option', { name: 'Target' })).toBeInTheDocument()
-  await dialog().getByLabelText('Organization').selectOptions('2')
+  await dialog().getByRole('option', { name: 'Target' }).click()
 }
 
 afterEach(async () => {

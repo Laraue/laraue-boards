@@ -90,7 +90,7 @@ it('refreshes the page and notifies the layout after spaces moved', async () => 
   await page.getByLabelText('Move Development').click()
   await dialog().getByLabelText('Organization').click()
   await expect.element(dialog().getByRole('option', { name: 'Target' })).toBeInTheDocument()
-  await dialog().getByLabelText('Organization').selectOptions('2')
+  await dialog().getByRole('option', { name: 'Target' }).click()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
   await expect.element(page.getByText('No movable spaces.')).toBeInTheDocument()

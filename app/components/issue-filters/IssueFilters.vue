@@ -1,123 +1,74 @@
 <template>
-  <BasePopover
+  <FilterMenu
     v-if="attributes.length || spaces.length || epicStatuses.length"
-    align="end"
-    class="issue-filters">
-    <template #trigger="{ open, toggle }">
-      <BaseButton
-        :aria-expanded="open"
-        aria-haspopup="dialog"
-        :loading="loading"
-        @click="toggle">
-        <IconFilter v-if="!loading" />
-        {{ t('filters') }}
-        <span v-if="activeCount">({{ activeCount }})</span>
-      </BaseButton>
+    :active-count="activeCount"
+    :items="filterItems"
+    :label="t('issueFilters')"
+    :loading="loading"
+    :on-clear="clear">
+    <template #panel="{ id, item }">
+      <fieldset
+        v-if="item.id === EPIC_STATUS_FILTER"
+        :aria-label="t('boardStatus')"
+        class="filter-options">
+        <BaseCheckbox
+          v-for="option in epicStatuses"
+          :key="option.value"
+          :model-value="selectedEpicStatuses.includes(option.value)"
+          @update:model-value="toggleEpicStatus(option.value)">
+          {{ option.label }}
+        </BaseCheckbox>
+      </fieldset>
+      <fieldset
+        v-else-if="item.id === SPACE_FILTER"
+        :aria-label="t('spaces')"
+        class="filter-options">
+        <BaseCheckbox
+          v-for="option in spaces"
+          :key="option.value"
+          :model-value="selectedSpaces.includes(option.value)"
+          @update:model-value="toggleSpace(option.value)">
+          {{ option.label }}
+        </BaseCheckbox>
+      </fieldset>
+      <template v-else-if="item.attribute">
+        <IssueTextFilter
+          v-if="item.attribute.type === 'text'"
+          :id="id"
+          :model-value="String(modelValue.attributes[item.id] ?? '')"
+          @update:model-value="updateValue(item.id, $event)" />
+        <IssueListFilter
+          v-else-if="item.attribute.type === 'list'"
+          :model-value="arrayValue(item.id)"
+          :options="item.attribute.options"
+          @update:model-value="updateValue(item.id, $event)" />
+        <IssueIntegerFilter
+          v-else-if="item.attribute.type === 'integer'"
+          :id="id"
+          :model-value="arrayValue(item.id)"
+          @update:model-value="updateValue(item.id, $event)" />
+        <IssueDecimalFilter
+          v-else-if="item.attribute.type === 'decimal'"
+          :id="id"
+          :model-value="arrayValue(item.id)"
+          @update:model-value="updateValue(item.id, $event)" />
+        <IssueDateFilter
+          v-else-if="item.attribute.type === 'date'"
+          :model-value="arrayValue(item.id)"
+          @update:model-value="updateValue(item.id, $event)" />
+        <IssueDateTimeFilter
+          v-else-if="item.attribute.type === 'dateTime'"
+          :model-value="arrayValue(item.id)"
+          @update:model-value="updateValue(item.id, $event)" />
+        <template v-else>{{ assertNever(item.attribute) }}</template>
+      </template>
     </template>
-    <div class="filter-menu">
-      <div class="filter-menu-header">
-        <span>{{ t('issueFilters') }}</span>
-        <BaseIconButton
-          :disabled="!activeCount"
-          :label="t('clearAll')"
-          @click="clear()">
-          <IconFilterOff />
-        </BaseIconButton>
-      </div>
-      <nav :aria-label="t('issueFilters')">
-        <div
-          v-for="item in filterItems"
-          :key="item.id"
-          class="filter-item">
-          <BaseButton
-            :aria-controls="`${idPrefix}-${item.id}-panel`"
-            :aria-expanded="activeFilterId === item.id"
-            :data-active="activeFilterId === item.id || undefined"
-            menu
-            @click="setOpenFilter(item.id, activeFilterId !== item.id)">
-            <component
-              :is="item.icon"
-              aria-hidden="true"
-              :style="{ color: item.color }" />
-            <span class="filter-label">{{ item.label }}</span>
-            <small v-if="item.count">{{ item.count }}</small>
-            <IconChevronRight
-              aria-hidden="true"
-              class="submenu-chevron"
-              :class="{ expanded: activeFilterId === item.id }" />
-          </BaseButton>
-          <section
-            v-if="activeFilterId === item.id"
-            :id="`${idPrefix}-${item.id}-panel`"
-            :aria-label="item.label"
-            class="filter-editor">
-            <fieldset
-              v-if="item.id === EPIC_STATUS_FILTER"
-              :aria-label="t('boardStatus')"
-              class="filter-options">
-              <BaseCheckbox
-                v-for="option in epicStatuses"
-                :key="option.value"
-                :model-value="selectedEpicStatuses.includes(option.value)"
-                @update:model-value="toggleEpicStatus(option.value)">
-                {{ option.label }}
-              </BaseCheckbox>
-            </fieldset>
-            <fieldset
-              v-else-if="item.id === SPACE_FILTER"
-              :aria-label="t('spaces')"
-              class="filter-options">
-              <BaseCheckbox
-                v-for="option in spaces"
-                :key="option.value"
-                :model-value="selectedSpaces.includes(option.value)"
-                @update:model-value="toggleSpace(option.value)">
-                {{ option.label }}
-              </BaseCheckbox>
-            </fieldset>
-            <template v-else-if="item.attribute">
-              <IssueTextFilter
-                v-if="item.attribute.type === 'text'"
-                :id="`${idPrefix}-${item.id}`"
-                :model-value="String(modelValue.attributes[item.id] ?? '')"
-                @update:model-value="updateValue(item.id, $event)" />
-              <IssueListFilter
-                v-else-if="item.attribute.type === 'list'"
-                :model-value="arrayValue(item.id)"
-                :options="item.attribute.options"
-                @update:model-value="updateValue(item.id, $event)" />
-              <IssueIntegerFilter
-                v-else-if="item.attribute.type === 'integer'"
-                :id="`${idPrefix}-${item.id}`"
-                :model-value="arrayValue(item.id)"
-                @update:model-value="updateValue(item.id, $event)" />
-              <IssueDecimalFilter
-                v-else-if="item.attribute.type === 'decimal'"
-                :id="`${idPrefix}-${item.id}`"
-                :model-value="arrayValue(item.id)"
-                @update:model-value="updateValue(item.id, $event)" />
-              <IssueDateFilter
-                v-else-if="item.attribute.type === 'date'"
-                :id="`${idPrefix}-${item.id}`"
-                :model-value="arrayValue(item.id)"
-                @update:model-value="updateValue(item.id, $event)" />
-              <IssueDateTimeFilter
-                v-else-if="item.attribute.type === 'dateTime'"
-                :id="`${idPrefix}-${item.id}`"
-                :model-value="arrayValue(item.id)"
-                @update:model-value="updateValue(item.id, $event)" />
-              <template v-else>{{ assertNever(item.attribute) }}</template>
-            </template>
-          </section>
-        </div>
-      </nav>
-    </div>
-  </BasePopover>
+  </FilterMenu>
 </template>
 
 <script setup lang="ts">
-import { IconChevronRight, IconFilter, IconFilterOff } from '@tabler/icons-vue'
-
+import type { FilterMenuItem } from '~/components/filter-menu/FilterMenu.types'
+import FilterMenu from '~/components/filter-menu/FilterMenu.vue'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 import { AttributeIcon, BoardIcon, SpaceIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'
@@ -148,35 +99,20 @@ const emit = defineEmits<{
 const { t } = useI18n({
   en: {
     boardStatus: 'Board status',
-    clear: 'Clear',
-    clearAll: 'Clear all',
-    filters: 'Filters',
     issueFilters: 'Issue filters',
     space: 'Space',
     spaces: 'Spaces',
   },
   ru: {
     boardStatus: 'Статус доски',
-    clear: 'Очистить',
-    clearAll: 'Очистить всё',
-    filters: 'Фильтры',
     issueFilters: 'Фильтры задач',
     space: 'Раздел',
     spaces: 'Разделы',
   },
 })
 
-const idPrefix = useId()
 const SPACE_FILTER = '__space__'
 const EPIC_STATUS_FILTER = '__epic_status__'
-const activeFilterId = ref<string>()
-const setOpenFilter = (id: string, open: boolean) => {
-  if (open) {
-    activeFilterId.value = id
-  } else if (activeFilterId.value === id) {
-    activeFilterId.value = undefined
-  }
-}
 const selectedSpaces = computed(() => props.modelValue.spaceIds ?? [])
 const selectedEpicStatuses = computed(() => props.modelValue.epicStatuses ?? [])
 const activeCount = computed(
@@ -239,14 +175,7 @@ const toggleSpace = (spaceId: string) => {
   )
 }
 
-type FilterItem = {
-  attribute?: IssueAttributeField
-  color?: string
-  count: number
-  icon: typeof AttributeIcon
-  id: string
-  label: string
-}
+type FilterItem = FilterMenuItem & { attribute?: IssueAttributeField }
 const filterItems = computed<FilterItem[]>(() => [
   ...(props.spaces.length
     ? [
@@ -280,52 +209,6 @@ const filterItems = computed<FilterItem[]>(() => [
 </script>
 
 <style scoped>
-.issue-filters {
-  --base-popover-width: min(320px, calc(100vw - var(--space-8)));
-}
-
-.filter-menu {
-  min-width: 0;
-  padding: var(--space-1);
-  width: 100%;
-}
-.filter-menu-header {
-  align-items: center;
-  color: var(--color-muted);
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--space-1);
-  padding-left: var(--space-3);
-}
-.filter-menu nav {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-.filter-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.submenu-chevron {
-  flex: none;
-  height: 12px;
-  margin-left: auto;
-  width: 12px;
-}
-
-.submenu-chevron.expanded {
-  rotate: 90deg;
-}
-.filter-editor {
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100dvh - var(--space-8));
-  min-width: 0;
-  overflow-y: auto;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-  width: 100%;
-}
 .filter-options {
   border: 0;
   display: grid;
