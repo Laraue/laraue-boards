@@ -3,7 +3,72 @@
     <template #header>
       <PageHeader
         :icon="IconHistory"
-        :title="t('history')" />
+        :title="t('history')">
+        <template
+          v-if="data"
+          #tools>
+          <BasePopover
+            align="end"
+            class="history-filters-popover">
+            <template #trigger="{ open, toggle }">
+              <BaseButton
+                :aria-expanded="open"
+                aria-haspopup="dialog"
+                @click="toggle">
+                <IconFilter />
+                {{ t('filters') }}
+                <span v-if="activeCount">({{ activeCount }})</span>
+              </BaseButton>
+            </template>
+            <form
+              class="history-filters"
+              @change="applyFilters"
+              @submit.prevent>
+              <div class="history-filters-header">
+                <span>{{ t('filters') }}</span>
+                <BaseIconButton
+                  :disabled="!activeCount"
+                  :label="t('clearAll')"
+                  @click="clear">
+                  <IconFilterOff />
+                </BaseIconButton>
+              </div>
+              <BaseField
+                id="history-user"
+                :label="t('user')">
+                <select
+                  id="history-user"
+                  v-model="form.ownerId">
+                  <option value="">{{ t('allUsers') }}</option>
+                  <option
+                    v-for="user in data.users"
+                    :key="user.value"
+                    :value="user.value">
+                    {{ user.label }}
+                  </option>
+                </select>
+              </BaseField>
+              <BaseField
+                id="history-from"
+                :label="t('from')">
+                <input
+                  id="history-from"
+                  v-model="form.dateFrom"
+                  type="date" />
+              </BaseField>
+              <BaseField
+                id="history-to"
+                :label="t('to')">
+                <input
+                  id="history-to"
+                  v-model="form.dateTo"
+                  :min="form.dateFrom || undefined"
+                  type="date" />
+              </BaseField>
+            </form>
+          </BasePopover>
+        </template>
+      </PageHeader>
     </template>
     <QueryState
       :data="data"
@@ -12,45 +77,8 @@
       :message="message"
       :on-retry="refresh"
       :pending="pending">
-      <template #default="{ data: view }">
+      <template #default>
         <section class="history-page">
-          <form
-            class="history-filters"
-            @change="applyFilters"
-            @submit.prevent>
-            <BaseField
-              id="history-user"
-              :label="t('user')">
-              <select
-                id="history-user"
-                v-model="form.ownerId">
-                <option value="">{{ t('allUsers') }}</option>
-                <option
-                  v-for="user in view.users"
-                  :key="user.value"
-                  :value="user.value">
-                  {{ user.label }}
-                </option>
-              </select>
-            </BaseField>
-            <BaseField
-              id="history-from"
-              :label="t('from')">
-              <input
-                id="history-from"
-                v-model="form.dateFrom"
-                type="date" />
-            </BaseField>
-            <BaseField
-              id="history-to"
-              :label="t('to')">
-              <input
-                id="history-to"
-                v-model="form.dateTo"
-                :min="form.dateFrom || undefined"
-                type="date" />
-            </BaseField>
-          </form>
           <HistoryTimeline
             v-if="historyState.items.length || !pagePending"
             :items="historyState.items"
@@ -76,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconHistory, IconLoader2 } from '@tabler/icons-vue'
+import { IconFilter, IconFilterOff, IconHistory, IconLoader2 } from '@tabler/icons-vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import type { HistoryItemViewModel } from '~/components/history-timeline/HistoryTimeline.types'
@@ -93,7 +121,9 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     allUsers: 'All users',
+    clearAll: 'Clear all',
     entries: 'Organization history entries',
+    filters: 'Filters',
     from: 'From',
     history: 'Organization history',
     loadError: 'Could not load organization history',
@@ -104,7 +134,9 @@ const { t } = useI18n({
   },
   ru: {
     allUsers: 'Все пользователи',
+    clearAll: 'Очистить всё',
     entries: 'Записи истории организации',
+    filters: 'Фильтры',
     from: 'От',
     history: 'История организации',
     loadError: 'Не удалось загрузить историю организации',
@@ -125,6 +157,7 @@ const filters = computed(() => ({
   ownerId: queryValue(props.routeQuery.user),
 }))
 const form = reactive({ ...filters.value })
+const activeCount = computed(() => Object.values(filters.value).filter(Boolean).length)
 const requestFilters = computed(() => ({
   dateFrom: filters.value.dateFrom ? `${filters.value.dateFrom}T00:00:00.000Z` : undefined,
   dateTo: filters.value.dateTo ? `${filters.value.dateTo}T23:59:59.999Z` : undefined,
@@ -179,6 +212,11 @@ const applyFilters = () => {
   void props.onUpdateQuery(query)
 }
 
+const clear = () => {
+  Object.assign(form, { dateFrom: '', dateTo: '', ownerId: '' })
+  applyFilters()
+}
+
 watch(filters, (value) => {
   Object.assign(form, value)
   void loadPage(true)
@@ -207,11 +245,22 @@ watch(
   width: 100%;
 }
 
+.history-filters-popover {
+  --base-popover-width: min(320px, calc(100vw - var(--space-8)));
+}
+
 .history-filters {
-  align-items: end;
   display: grid;
-  gap: var(--space-3);
-  grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(140px, 0.5fr));
+  gap: var(--space-4);
+  padding: var(--space-1) var(--space-3) var(--space-3);
+}
+
+.history-filters-header {
+  align-items: center;
+  color: var(--color-muted);
+  display: flex;
+  justify-content: space-between;
+  margin-right: calc(-1 * var(--space-2));
 }
 
 .history-loading {
@@ -231,11 +280,5 @@ watch(
 
 .history-more {
   justify-self: start;
-}
-
-@media (max-width: 767px) {
-  .history-filters {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
