@@ -412,9 +412,10 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   text-transform: uppercase;
 }
 
-/* On the first line's baseline: a value that wraps keeps its label beside the first line. */
+/* Top-aligned, the label and the value's first line being one line high: a value that wraps keeps its
+   label beside its first line. Not by baseline: a value that starts with an icon has the icon's. */
 .history-change {
-  align-items: baseline;
+  align-items: flex-start;
   color: var(--color-muted);
   display: flex;
   flex-wrap: wrap;
