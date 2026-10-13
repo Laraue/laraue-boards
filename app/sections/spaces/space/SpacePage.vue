@@ -232,7 +232,7 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   border-radius: var(--radius-full);
   display: flex;
   gap: 2px;
-  height: 6px;
+  height: 4px;
   overflow: hidden;
 }
 
