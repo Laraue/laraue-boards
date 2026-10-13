@@ -1,26 +1,16 @@
 <template>
   <section class="org-picker">
     <div class="picker-card">
-      <StandalonePageHeader
-        :back-label="t('backToOrganizations')"
-        back-to="/organizations"
+      <BaseSectionHeader
+        :description="t('createDescription')"
         :title="t('createOrganization')">
-        <template #actions>
-          <BaseButton
-            :aria-label="t('createOrganization')"
-            :form="formId"
-            icon-on-mobile
-            :loading="pending"
-            type="submit"
-            variant="primary">
-            <IconBuildingPlus />
-            <template #label>{{ t('createOrganization') }}</template>
-          </BaseButton>
+        <template #leading>
+          <AppBackLink
+            :label="t('backToOrganizations')"
+            to="/organizations" />
         </template>
-      </StandalonePageHeader>
-      <p class="muted">{{ t('createDescription') }}</p>
+      </BaseSectionHeader>
       <form
-        :id="formId"
         class="create-organization-form"
         @submit.prevent="submit">
         <BaseFieldGroup>
@@ -55,14 +45,20 @@
           class="form-error">
           {{ message }}
         </p>
+        <div class="form-actions">
+          <BaseButton
+            :loading="pending"
+            type="submit"
+            variant="primary">
+            {{ t('createOrganization') }}
+          </BaseButton>
+        </div>
       </form>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { IconBuildingPlus } from '@tabler/icons-vue'
-
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { CreateOrganizationPageDeps } from '~/sections/organizations/create-organization/CreateOrganizationPage.deps'
 
@@ -92,7 +88,6 @@ const { t } = useI18n({
   },
 })
 
-const formId = `create-organization-${useId()}`
 const form = reactive({
   color: DEFAULT_COLOR,
   name: '',
@@ -121,9 +116,6 @@ const submit = async (): Promise<void> => {
   width: min(var(--form-page-max-width), 100%);
 }
 
-.picker-card .muted {
-  margin: var(--space-2) 0 0;
-}
 
 .create-organization-form {
   display: grid;

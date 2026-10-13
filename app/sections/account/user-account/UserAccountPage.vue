@@ -1,9 +1,13 @@
 <template>
   <div class="user-account">
-    <StandalonePageHeader
-      :back-label="backPath ? t('back') : t('backToOrganizations')"
-      :back-to="backPath || '/organizations'"
+    <BaseSectionHeader
+      :description="t('scope')"
       :title="t('yourAccount')">
+      <template #leading>
+        <AppBackLink
+          :label="backPath ? t('back') : t('backToOrganizations')"
+          :to="backPath || '/organizations'" />
+      </template>
       <template #actions>
         <BaseButton
           v-if="data"
@@ -13,11 +17,7 @@
           {{ t('logOut') }}
         </BaseButton>
       </template>
-    </StandalonePageHeader>
-    <p class="muted scope">
-      <IconWorld />
-      {{ t('scope') }}
-    </p>
+    </BaseSectionHeader>
 
     <QueryState
       :data="data"
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconLogout, IconWorld } from '@tabler/icons-vue'
+import { IconLogout } from '@tabler/icons-vue'
 
 import ConnectedAccountsSection from './components/ConnectedAccountsSection/ConnectedAccountsSection.vue'
 import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue'
@@ -104,22 +104,10 @@ const logout = async (): Promise<void> => {
   width: min(var(--form-page-max-width), 100%);
 }
 
-.scope {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-  margin: var(--space-2) 0 var(--space-8);
-}
-
-.scope > svg {
-  flex: none;
-  height: var(--icon-size);
-  width: var(--icon-size);
-}
-
 .user-account-main {
   display: grid;
   gap: var(--space-8);
+  margin-top: var(--space-8);
 }
 
 /* A line between the sections, as between a settings form and its danger zone. */
