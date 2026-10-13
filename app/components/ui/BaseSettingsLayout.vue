@@ -3,7 +3,9 @@
      menu runs across the top. -->
 <template>
   <div class="base-settings-layout">
-    <div class="base-settings-aside">
+    <div
+      ref="aside"
+      class="base-settings-aside">
       <BaseNavTabs
         class="base-settings-nav"
         :items="items"
@@ -25,6 +27,20 @@
 import type { NavTab } from './BaseNavTabs.types'
 
 defineProps<{ items: NavTab[]; label: string }>()
+
+// On a phone the menu is a row that scrolls; the current section is brought into it, so a section at
+// the row's end is not hidden past the screen's edge.
+const aside = useTemplateRef('aside')
+const route = useRoute()
+const showCurrent = () =>
+  aside.value
+    ?.querySelector('[aria-current="page"]')
+    ?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+onMounted(showCurrent)
+watch(
+  () => route.path,
+  () => nextTick(showCurrent),
+)
 </script>
 
 <style scoped>

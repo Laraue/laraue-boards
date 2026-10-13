@@ -9,8 +9,9 @@
     <template #default="{ data: organizations }">
       <section class="org-picker">
         <div class="picker-card">
-          <h1>{{ t('chooseOrganization') }}</h1>
-          <p class="muted">{{ t('selectWhere') }}</p>
+          <BaseSectionHeader
+            :description="t('selectWhere')"
+            :title="t('chooseOrganization')" />
           <BaseList
             v-if="organizations.length"
             class="org-list">
@@ -156,14 +157,6 @@ const leave = async (id: string, name: string): Promise<void> => {
 
 .picker-card {
   width: min(var(--form-page-max-width), 100%);
-}
-
-.picker-card h1 {
-  margin: 0 0 var(--space-1);
-}
-
-.picker-card .muted {
-  margin: 0;
 }
 
 .org-list {

@@ -104,9 +104,9 @@
       </nav>
       <div class="sidebar-footer">
         <BaseMenu
-          align="end"
+          :align="narrow ? 'start' : 'end'"
           class="sidebar-account"
-          side="right">
+          :side="narrow ? 'top' : 'right'">
           <template #trigger="{ open }">
             <button
               :aria-label="t('userMenu')"
@@ -284,6 +284,17 @@ const adminHome = computed(() => {
   }
   return undefined
 })
+// On a phone the sidebar fills the screen's side, so the account menu opens above its button.
+const narrow = ref(false)
+let phoneQuery: MediaQueryList | undefined
+const updateNarrow = () => (narrow.value = Boolean(phoneQuery?.matches))
+onMounted(() => {
+  phoneQuery = matchMedia('(max-width: 767px)')
+  updateNarrow()
+  phoneQuery.addEventListener('change', updateNarrow)
+})
+onBeforeUnmount(() => phoneQuery?.removeEventListener('change', updateNarrow))
+
 const spaceActive = (space: AppLayoutData['spaces'][number]) =>
   within('organizations-organizationKey-spaces-spaceKey') &&
   route.params.spaceKey !== undefined &&

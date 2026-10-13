@@ -517,7 +517,6 @@ a.issue-location-board:hover {
 
   .issue-location,
   .issue-list-row:not(:has(.row-select)) .issue-location {
-    flex-wrap: wrap;
     grid-column: 1 / -2;
     grid-row: 3;
   }
