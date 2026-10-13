@@ -1,30 +1,29 @@
 <template>
   <div class="range-filter">
     <BaseField
-      :id="`${id}-from`"
+      v-slot="{ labelId }"
       :label="t('from')">
-      <input
-        :id="`${id}-from`"
-        autofocus
-        type="datetime-local"
-        :value="model[0] ?? ''"
-        @input="update(0, $event)" />
+      <BaseDatePicker
+        :aria-labelledby="labelId"
+        :max="model[1] ?? ''"
+        :model-value="model[0] ?? ''"
+        with-time
+        @update:model-value="update(0, $event)" />
     </BaseField>
     <BaseField
-      :id="`${id}-to`"
+      v-slot="{ labelId }"
       :label="t('to')">
-      <input
-        :id="`${id}-to`"
-        type="datetime-local"
-        :value="model[1] ?? ''"
-        @input="update(1, $event)" />
+      <BaseDatePicker
+        :aria-labelledby="labelId"
+        :min="model[0] ?? ''"
+        :model-value="model[1] ?? ''"
+        with-time
+        @update:model-value="update(1, $event)" />
     </BaseField>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{ id: string }>()
-
 const { t } = useI18n({
   en: { from: 'From', to: 'To' },
   ru: { from: 'От', to: 'До' },
@@ -32,9 +31,9 @@ const { t } = useI18n({
 
 const model = defineModel<string[]>({ required: true })
 
-const update = (index: number, event: Event) => {
+const update = (index: number, date: string) => {
   const value = [...model.value]
-  value[index] = (event.target as HTMLInputElement).value
+  value[index] = date
   model.value = [value[0] ?? '', value[1] ?? '']
 }
 </script>
@@ -43,9 +42,5 @@ const update = (index: number, event: Event) => {
 .range-filter {
   display: grid;
   gap: var(--space-3);
-}
-
-input {
-  max-width: none;
 }
 </style>

@@ -12,7 +12,7 @@
             :items="filterItems"
             :label="t('historyFilters')"
             :on-clear="clear">
-            <template #panel="{ id, item }">
+            <template #panel="{ item }">
               <fieldset
                 v-if="item.id === 'user'"
                 :aria-label="t('user')"
@@ -27,7 +27,6 @@
               </fieldset>
               <IssueDateFilter
                 v-else
-                :id="id"
                 :model-value="[form.dateFrom, form.dateTo]"
                 @update:model-value="setDates" />
             </template>

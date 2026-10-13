@@ -54,12 +54,10 @@
           @update:model-value="updateValue(item.id, $event)" />
         <IssueDateFilter
           v-else-if="item.attribute.type === 'date'"
-          :id="id"
           :model-value="arrayValue(item.id)"
           @update:model-value="updateValue(item.id, $event)" />
         <IssueDateTimeFilter
           v-else-if="item.attribute.type === 'dateTime'"
-          :id="id"
           :model-value="arrayValue(item.id)"
           @update:model-value="updateValue(item.id, $event)" />
         <template v-else>{{ assertNever(item.attribute) }}</template>

@@ -2,7 +2,9 @@
   <template
     v-for="attribute in attributes"
     :key="attribute.id">
-    <label :for="`${idPrefix}-${attribute.id}`">
+    <label
+      :id="`${idPrefix}-${attribute.id}-label`"
+      :for="`${idPrefix}-${attribute.id}`">
       {{ attribute.name }}
     </label>
     <div
