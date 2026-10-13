@@ -340,13 +340,13 @@ button:disabled {
   width: var(--icon-size);
 }
 
-.base-tabs-tab:is([data-state='active'], [aria-current='page']) {
+.base-tabs-tab:is([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
   background: var(--color-surface);
   color: var(--color-text);
 }
 
 /* On the dark track the surface would sink; the active tab lightens instead. */
-:root[data-theme='dark'] .base-tabs-tab:is([data-state='active'], [aria-current='page']) {
+:root[data-theme='dark'] .base-tabs-tab:is([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
   background: color-mix(in srgb, var(--color-text) 10%, var(--color-hover));
   border-color: var(--color-border);
 }
@@ -357,7 +357,7 @@ button:disabled {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .base-tabs-tab:hover:not([data-state='active'], [aria-current='page']) {
+  .base-tabs-tab:hover:not([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
     color: var(--color-text);
   }
 }

@@ -510,7 +510,7 @@ main :deep(.page-load-state) {
 }
 
 .organization-select:hover {
-  background: var(--color-hover);
+  background: var(--color-soft);
 }
 
 .organization-name {

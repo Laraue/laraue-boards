@@ -28,12 +28,13 @@
         </div>
         <div
           :aria-label="t('theme')"
-          class="theme-switch"
+          class="base-tabs-list"
           role="group">
           <button
             v-for="option in themes"
             :key="option"
             :aria-pressed="deps.theme.value === option"
+            class="base-tabs-tab"
             type="button"
             @click="deps.setTheme(option)">
             {{ option === 'light' ? t('light') : t('dark') }}
@@ -116,29 +117,6 @@ const changeLocale = (value: string): void => {
 :deep(.setting-control) {
   min-width: 180px;
   width: auto;
-}
-
-.theme-switch {
-  background: var(--color-soft);
-  border-radius: var(--radius-control);
-  display: flex;
-  gap: 2px;
-  padding: 3px;
-}
-
-.theme-switch button {
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-control);
-  color: var(--color-muted);
-  font-weight: var(--font-weight-semibold);
-  height: 34px;
-  padding: 0 var(--space-3);
-}
-
-.theme-switch button[aria-pressed='true'] {
-  background: var(--color-surface);
-  color: var(--color-text);
 }
 
 @media (max-width: 767px) {

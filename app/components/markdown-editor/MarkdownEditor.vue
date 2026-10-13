@@ -699,7 +699,7 @@ defineExpose({ insertSlash })
 }
 
 .markdown-editor-style-trigger:is(:hover, [aria-expanded='true']) {
-  background: var(--color-hover);
+  background: var(--color-soft);
   color: var(--color-text);
 }
 

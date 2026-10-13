@@ -104,7 +104,8 @@ check a design change there and add new components and variants to it.
 - `BaseTabs` is a segmented control (as in shadcn/ui): a soft 32px track as wide as its tabs, the
   active tab on a surface fill, no shadow. Tabs are 14px, weight 500 in every state, with an icon
   and a count pill. Tabs that switch pages are `BaseNavTabs`: the same look, links marked
-  `aria-current`. Don't add other tab styles.
+  `aria-current`. A choice between a few values (the theme) is the same track: buttons in
+  `.base-tabs-list` / `.base-tabs-tab`, the current one `aria-pressed`. Don't add other tab styles.
 - Settings pages with several sections (administration, your account in an organization) use
   `BaseSettingsLayout`: the sections as a vertical menu on the left (`BaseNavTabs vertical`), the
   current one beside it, at most 48rem wide. On narrow screens the menu runs across the top. Each

@@ -192,7 +192,8 @@
   /* The dark ramps run the other way, so the page sits on 1 and surfaces rise from it. */
   --color-background: var(--gray-3);
   --color-surface: var(--gray-3);
-  --color-divider: var(--gray-4);
+  /* The dark page is gray-3, so the divider steps further to stay visible. */
+  --color-divider: var(--gray-6);
   --color-accent: var(--blue-11);
   --color-accent-hover: var(--blue-12);
   --color-accent-soft: var(--blue-3);
