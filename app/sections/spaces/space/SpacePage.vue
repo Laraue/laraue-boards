@@ -312,5 +312,10 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
     grid-column: 1 / -1;
     grid-row: 2;
   }
+
+  /* No hover on a phone to show the full legend, so it wraps instead of being cut. */
+  .space-row-statuses {
+    flex-wrap: wrap;
+  }
 }
 </style>
