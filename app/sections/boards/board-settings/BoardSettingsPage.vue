@@ -21,12 +21,6 @@
         <template
           v-if="data"
           #actions>
-          <DeleteActionMenu
-            v-if="data.canDelete"
-            :disabled="saving || removing"
-            :label="t('deleteBoard')"
-            :loading="removing"
-            :on-delete="remove" />
           <BaseButton
             v-if="data.canUpdate"
             :aria-label="t('saveChanges')"
@@ -57,6 +51,18 @@
             :on-update="(input) => save(page, input)"
             :submitting="saving || removing"
             :view-model="page" />
+          <BaseDangerZone
+            v-if="page.canDelete"
+            :description="t('deleteDescription')"
+            :title="t('deleteBoard')">
+            <BaseButton
+              :disabled="saving"
+              :loading="removing"
+              variant="danger"
+              @click="remove">
+              {{ t('deleteBoard') }}
+            </BaseButton>
+          </BaseDangerZone>
         </section>
       </template>
     </QueryState>
@@ -88,6 +94,7 @@ const { t } = useI18n({
     board: 'Board',
     deleteBoard: 'Delete board',
     deleteConfirm: 'Delete this board?',
+    deleteDescription: 'Deletes the board for every member. This cannot be undone.',
     loadError: 'Could not load board',
     loading: 'Loading board…',
     saveChanges: 'Save changes',
@@ -97,6 +104,7 @@ const { t } = useI18n({
     board: 'Доска',
     deleteBoard: 'Удалить доску',
     deleteConfirm: 'Удалить эту доску?',
+    deleteDescription: 'Удаляет доску для всех участников. Отменить нельзя.',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
     saveChanges: 'Сохранить изменения',
@@ -150,6 +158,8 @@ const remove = async (): Promise<void> => {
 
 <style scoped>
 .board-settings-page {
+  display: grid;
+  gap: var(--space-5);
   margin-inline: auto;
   max-width: 768px;
   width: 100%;

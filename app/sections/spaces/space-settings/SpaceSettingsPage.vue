@@ -15,12 +15,6 @@
         <template
           v-if="data"
           #actions>
-          <DeleteActionMenu
-            v-if="data.canDelete"
-            :disabled="submitting"
-            :label="t('deleteSpace')"
-            :loading="removing"
-            :on-delete="remove" />
           <BaseButton
             v-if="data.canUpdate"
             :aria-label="t('saveChanges')"
@@ -83,6 +77,18 @@
               {{ updateMessage || removeMessage }}
             </p>
           </form>
+          <BaseDangerZone
+            v-if="page.canDelete"
+            :description="t('deleteDescription')"
+            :title="t('deleteSpace')">
+            <BaseButton
+              :disabled="submitting"
+              :loading="removing"
+              variant="danger"
+              @click="remove">
+              {{ t('deleteSpace') }}
+            </BaseButton>
+          </BaseDangerZone>
         </section>
       </template>
     </QueryState>
@@ -107,6 +113,7 @@ const { t } = useI18n({
   en: {
     color: 'Color',
     deleteConfirm: 'Delete this space?',
+    deleteDescription: 'Deletes the space for every member. This cannot be undone.',
     deleteSpace: 'Delete space',
     general: 'General',
     key: 'Key',
@@ -119,6 +126,7 @@ const { t } = useI18n({
   ru: {
     color: 'Цвет',
     deleteConfirm: 'Удалить этот раздел?',
+    deleteDescription: 'Удаляет раздел для всех участников. Отменить нельзя.',
     deleteSpace: 'Удалить раздел',
     general: 'Общие',
     key: 'Ключ',
@@ -190,7 +198,7 @@ const remove = async (): Promise<void> => {
 <style scoped>
 .space-settings-page {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
   margin-inline: auto;
   max-width: 768px;
   width: 100%;
