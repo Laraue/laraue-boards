@@ -1,3 +1,5 @@
+import type { components } from '#infrastructure/api/generated'
+
 export type SpaceBoardStatus = 'Active' | 'Done' | 'New'
 
 export type SpaceBoardSummary = {
@@ -7,7 +9,12 @@ export type SpaceBoardSummary = {
   kind: 'backlog' | 'board'
   name: string
   status: SpaceBoardStatus
-  statuses: Array<{ color: string; count: number; name: string }>
+  statuses: Array<{
+    category: components['schemas']['StatusCategory']
+    color: string
+    count: number
+    name: string
+  }>
 }
 
 export type SpacePageData = {

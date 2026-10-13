@@ -196,6 +196,9 @@
   /* The dark ramps run the other way, so the page sits on 1 and surfaces rise from it. */
   --color-background: var(--gray-3);
   --color-surface: var(--gray-3);
+  /* Bands (board columns, list groups) rise half a step over the dark page instead of sinking into
+     black, as Linear's; on the light page they stay a step under it. */
+  --color-feed: color-mix(in srgb, var(--gray-4) 60%, var(--gray-3));
   /* The dark page is gray-3; the divider steps one past it, controls (gray-7) stay above both. */
   --color-divider: var(--gray-5);
   --color-accent: var(--blue-11);

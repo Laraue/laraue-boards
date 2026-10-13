@@ -70,7 +70,9 @@
               </span>
               <span
                 class="space-row-progress"
-                :title="board.statuses.map((status) => `${status.count} ${status.name}`).join(' · ')">
+                :title="
+                  board.statuses.map((status) => `${status.count} ${status.name}`).join(' · ')
+                ">
                 <span
                   aria-hidden="true"
                   class="meter">
@@ -83,9 +85,9 @@
                   <span
                     v-for="status in board.statuses"
                     :key="status.name">
-                    <span
-                      class="dot"
-                      :style="{ background: status.color }" />
+                    <StatusIndicator
+                      :category="status.category"
+                      :color="status.color" />
                     {{ status.count }} {{ status.name }}
                   </span>
                 </span>
@@ -112,6 +114,7 @@ import {
   IconSettings,
 } from '@tabler/icons-vue'
 
+import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
@@ -233,23 +236,23 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
 /* The board's statuses as one bar, each its share of the issues. */
 .meter {
   background: var(--color-soft);
-  flex: none;
-  width: 7.5rem;
   border-radius: var(--radius-full);
   display: flex;
+  flex: none;
   gap: 2px;
   height: 4px;
   overflow: hidden;
+  width: 7.5rem;
 }
 
 /* A legend for the bar: the caption size kept for small annotations. */
 .space-row-statuses {
   color: var(--color-muted);
   display: flex;
-  min-width: 0;
-  overflow: hidden;
   font-size: var(--font-size-caption);
   gap: 0 var(--space-3);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .space-row-statuses > span {
@@ -259,10 +262,10 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   white-space: nowrap;
 }
 
-.dot {
-  border-radius: var(--radius-full);
-  height: 6px;
-  width: 6px;
+.space-row-statuses :deep(svg) {
+  flex: none;
+  height: 12px;
+  width: 12px;
 }
 
 .space-row-count {

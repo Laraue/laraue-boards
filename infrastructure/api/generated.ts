@@ -3374,6 +3374,7 @@ export interface components {
             id: number | string;
             name: string;
             color: null | string;
+            category: components["schemas"]["StatusCategory"];
             /** Format: int32 */
             count: number | string;
         };

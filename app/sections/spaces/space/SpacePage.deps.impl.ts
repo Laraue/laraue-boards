@@ -32,6 +32,7 @@ export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
           status:
             boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
           statuses: board.columns.map((column) => ({
+            category: column.category,
             color: column.color ?? COLORS.gray,
             count: Number(column.count),
             name: column.name,
