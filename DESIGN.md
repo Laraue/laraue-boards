@@ -57,7 +57,9 @@ check a design change there and add new components and variants to it.
   checkbox labels. Compact controls use the same text size.
 - Use `--font-size-small` (12px) for secondary metadata, not interactive options.
 - Reserve `--font-size-caption` (11px) for small annotations and avatar initials.
-- Use heading sizes for hierarchy, not to distinguish controls.
+- Use heading sizes for hierarchy, not to distinguish controls. The levels: a page or issue title
+  `3xl` (24) weight 600; a section heading (`BaseSectionHeader`) `lg` (16) weight 600; body `md`
+  (14); metadata `sm` (12), muted.
 - Weights: 400 for body text, controls inside menus and options; 500 for buttons, row and card
   titles, page header titles and group labels; 600 and above only for page headings (h1, dialog
   titles). Group labels are sentence case, not uppercase.
@@ -147,15 +149,26 @@ check a design change there and add new components and variants to it.
 
 ## Surfaces
 
-- Group page content (lists, settings sections, summaries) in `BaseCard`: surface fill, border,
-  `--radius-card` on the page background, no shadow. Cards, dialogs and floating surfaces (menus,
-  popovers, select lists, toasts) are edged with `--color-border-surface`, a faint ring of the text
-  color; controls keep the solid `--color-border`. Do not rebuild these styles locally.
+As in Jira, Linear and ChatGPT: one background, and fill is spent on the few layers that mean
+something.
 
-- A list of things (attributes, members, keys, connected accounts) is a `BaseList` of
-  `BaseListRow`s: one card, rows divided by lines, something in front, a title with a line under it,
-  actions or a chevron at the end. Do not make each row its own card. Use a table only when rows
-  have several columns to compare, like issues.
+- One page background for the sidebar and the content (`--color-background`, the surface color in
+  the light theme); the sidebar is set apart by a line, not by another fill. Gray is not a frame
+  around white blocks: it marks only a board column, a hovered or selected row, a group band and
+  soft pills.
+- Data lists (issues, history) are rows on the page itself, with no box around them:
+  a line between rows, a soft fill on hover. A group inside such a list is a soft band.
+- Groups of settings and lists of things to manage (attributes, members, keys, connected accounts,
+  a settings section) are outlined, as ChatGPT's and Linear's settings: `BaseList` of `BaseListRow`s
+  or `BaseCard`, a `--color-border-surface` ring and `--radius-card`, no fill of their own. Rows are
+  divided by lines: something in front, a title with a line under it, actions or a chevron at the
+  end. Do not make each row its own card. Use a table only when rows have several columns to
+  compare.
+- A board is the one place where fill stacks: a column is a soft sunken band (`--radius-popover`),
+  its cards are surface-filled and outlined (`--radius-control`), so they read against the band.
+- Dialogs and floating surfaces (menus, popovers, select lists, toasts) keep their surface fill and
+  `--color-border-surface` edge; controls keep the solid `--color-border`. Do not rebuild these
+  styles locally.
 
 - A destructive action of a settings page (delete the organization, the attribute) is not placed
   next to Save: it goes under the form in `BaseDangerZone`, with a line above it and one sentence on
