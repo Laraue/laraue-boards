@@ -68,7 +68,9 @@
                   {{ statusLabel(board.status) }}
                 </BaseBadge>
               </span>
-              <span class="space-row-progress">
+              <span
+                class="space-row-progress"
+                :title="board.statuses.map((status) => `${status.count} ${status.name}`).join(' · ')">
                 <span
                   aria-hidden="true"
                   class="meter">
@@ -185,7 +187,7 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   color: var(--color-text);
   display: grid;
   gap: var(--space-2) var(--space-4);
-  grid-template-columns: minmax(0, 1fr) minmax(12rem, 24rem) 6rem var(--icon-size);
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 28rem) 6rem var(--icon-size);
   min-height: 2.75rem;
   padding: var(--space-2) var(--space-4);
   text-decoration: none;
@@ -220,15 +222,19 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   white-space: nowrap;
 }
 
+/* One line, centred with the name and the count: a short bar, its legend beside it. */
 .space-row-progress {
-  display: grid;
-  gap: var(--space-1);
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
   min-width: 0;
 }
 
 /* The board's statuses as one bar, each its share of the issues. */
 .meter {
   background: var(--color-soft);
+  flex: none;
+  width: 7.5rem;
   border-radius: var(--radius-full);
   display: flex;
   gap: 2px;
@@ -240,7 +246,8 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
 .space-row-statuses {
   color: var(--color-muted);
   display: flex;
-  flex-wrap: wrap;
+  min-width: 0;
+  overflow: hidden;
   font-size: var(--font-size-caption);
   gap: 0 var(--space-3);
 }
