@@ -354,8 +354,8 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 
 .history-content {
   display: grid;
-  grid-column: 2;
   gap: var(--space-1);
+  grid-column: 2;
   min-width: 0;
 }
 

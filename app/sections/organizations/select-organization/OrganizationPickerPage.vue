@@ -37,7 +37,6 @@
               <template #trailing>
                 <BaseIconButton
                   v-if="organization.canLeave"
-                  class="org-leave"
                   :disabled="selecting || leaving"
                   :label="`${t('leave')} ${organization.name}`"
                   :tooltip="t('leaveOrganization')"
@@ -203,10 +202,16 @@ const leave = async (id: string, name: string): Promise<void> => {
   box-shadow: var(--shadow-focus);
 }
 
-/* Above the row's button, so it takes its own clicks. */
-.org-leave {
+/* The end of the row sits above the row's button, so Leave takes its own clicks; the rest of it
+   lets clicks through to the row. */
+.org-row :deep(.base-list-row-trailing) {
+  pointer-events: none;
   position: relative;
   z-index: 1;
+}
+
+.org-row :deep(.base-list-row-trailing button) {
+  pointer-events: auto;
 }
 
 .org-chevron {
