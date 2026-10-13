@@ -4,7 +4,8 @@
     :count="selected.size"
     :on-action="() => openMoveDialog([...selected])"
     :on-clear="() => selected.clear()" />
-  <BaseCard
+  <!-- Rows on the page itself, with no box around them: a data list (DESIGN.md, Surfaces). -->
+  <div
     :aria-busy="filtering"
     class="issue-list"
     :class="{ 'results-stale': filtering }">
@@ -41,7 +42,7 @@
       v-if="issues.length === 0"
       :hint="emptyHint"
       :title="emptyText" />
-  </BaseCard>
+  </div>
   <p
     v-if="deleteMessage"
     class="form-error">

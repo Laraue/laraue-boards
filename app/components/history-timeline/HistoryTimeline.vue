@@ -247,12 +247,8 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 }
 
 .history-list {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-surface);
-  border-radius: var(--radius-card);
   display: grid;
   gap: var(--space-5);
-  padding: var(--space-4) var(--space-5);
 }
 
 .history-day-label {
