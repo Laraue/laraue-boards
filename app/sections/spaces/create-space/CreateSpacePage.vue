@@ -4,24 +4,11 @@
       <PageHeader
         :icon="SpaceIcon"
         :icon-color="form.color"
-        :title="t('createSpace')">
-        <template #actions>
-          <BaseButton
-            :aria-label="t('createSpace')"
-            :form="formId"
-            icon-on-mobile
-            :loading="pending"
-            type="submit"
-            variant="primary">
-            <SpaceIcon />
-            <template #label>{{ t('createSpace') }}</template>
-          </BaseButton>
-        </template>
-      </PageHeader>
+        :title="t('createSpace')" />
     </template>
     <section class="create-space-page">
       <form
-        :id="formId"
+        class="create-space-form"
         @submit.prevent="submit">
         <BaseFieldGroup>
           <BaseField
@@ -56,6 +43,14 @@
           class="form-error">
           {{ message }}
         </p>
+        <div class="form-actions">
+          <BaseButton
+            :loading="pending"
+            type="submit"
+            variant="primary">
+            {{ t('createSpace') }}
+          </BaseButton>
+        </div>
       </form>
     </section>
   </AppPage>
@@ -91,7 +86,6 @@ const form = reactive({
   key: '',
   name: '',
 })
-const formId = `create-space-${useId()}`
 
 const { execute: create, message, pending } = useApiAction(props.deps.create)
 
@@ -108,5 +102,10 @@ const submit = async (): Promise<void> => {
   margin-inline: auto;
   max-width: 768px;
   width: 100%;
+}
+
+.create-space-form {
+  display: grid;
+  gap: var(--space-5);
 }
 </style>

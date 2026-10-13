@@ -93,7 +93,9 @@ check a design change there and add new components and variants to it.
 - A button carries an icon when it is an action in a page or section header (Add issue, New
   attribute, Create key, Invite, Change plan), a bulk action, or adds a row to a list (Add status,
   Add option): those are entry points people look for. Buttons inside the content (a form's Save,
-  dialog buttons, a card's action, a danger zone) are text only.
+  dialog buttons, a card's action, a danger zone) are text only. A page that is a form to create
+  something (a board, a space, an attribute, an organization) submits at the end of the form, and a
+  list inside it gets its add-row button under its rows, not in a header.
 - Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
   `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in
   `BaseButton`.

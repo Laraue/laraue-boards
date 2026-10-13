@@ -11,24 +11,12 @@
             to: organizationRoutes.space(spaceKey),
           },
         ]"
-        :title="t('createBoard')">
-        <template #actions>
-          <BaseButton
-            :aria-label="t('createBoard')"
-            :form="formId"
-            icon-on-mobile
-            :loading="pending"
-            type="submit"
-            variant="primary">
-            <IconLayoutGridAdd />
-            <template #label>{{ t('createBoard') }}</template>
-          </BaseButton>
-        </template>
-      </PageHeader>
+        :title="t('createBoard')" />
     </template>
     <section class="create-board-page">
+      <!-- A form as Create attribute's: fields, the statuses with Add status under them, the submit
+           at the end. -->
       <form
-        :id="formId"
         class="create-board-form"
         @submit.prevent="create">
         <BaseFieldGroup>
@@ -47,21 +35,6 @@
               v-model="form.color"
               :aria-labelledby="labelId" />
           </BaseField>
-        </BaseFieldGroup>
-        <section
-          aria-labelledby="create-board-statuses"
-          class="create-board-statuses">
-          <BaseSectionHeader
-            id="create-board-statuses"
-            :description="t('statusesHint')"
-            :title="t('statuses')">
-            <template #actions>
-              <BaseButton @click="addStatus">
-                <IconPlus />
-                {{ t('addStatus') }}
-              </BaseButton>
-            </template>
-          </BaseSectionHeader>
           <BaseField
             id="create-board-source"
             :label="t('copyStatusesFrom')">
@@ -74,35 +47,47 @@
               ]"
               @update:model-value="copyStatuses" />
           </BaseField>
+        </BaseFieldGroup>
+        <fieldset class="create-board-statuses">
+          <legend>{{ t('statuses') }}</legend>
+          <p class="create-board-hint">{{ t('statusesHint') }}</p>
           <div
-            v-if="form.statuses.length"
-            :aria-label="t('statuses')"
-            class="status-list"
-            role="group">
-            <div
-              v-for="(status, index) in form.statuses"
-              :key="status.id"
-              class="status-row">
-              <AppColorPicker v-model="status.color" />
-              <input
-                v-model="status.name"
-                :aria-label="t('statusName')"
-                required />
-              <StatusCategorySelect v-model="status.category" />
-              <BaseIconButton
-                :label="t('deleteStatus')"
-                variant="danger"
-                @click="form.statuses.splice(index, 1)">
-                <IconTrash />
-              </BaseIconButton>
-            </div>
+            v-for="(status, index) in form.statuses"
+            :key="status.id"
+            class="status-row">
+            <AppColorPicker v-model="status.color" />
+            <input
+              v-model="status.name"
+              :aria-label="t('statusName')"
+              required />
+            <StatusCategorySelect v-model="status.category" />
+            <BaseIconButton
+              :label="t('deleteStatus')"
+              variant="danger"
+              @click="form.statuses.splice(index, 1)">
+              <IconTrash />
+            </BaseIconButton>
           </div>
-        </section>
+          <BaseButton
+            class="add-status"
+            @click="addStatus">
+            <IconPlus />
+            {{ t('addStatus') }}
+          </BaseButton>
+        </fieldset>
         <p
           v-if="message"
           class="form-error">
           {{ message }}
         </p>
+        <div class="form-actions">
+          <BaseButton
+            :loading="pending"
+            type="submit"
+            variant="primary">
+            {{ t('createBoard') }}
+          </BaseButton>
+        </div>
       </form>
     </section>
   </AppPage>
@@ -151,7 +136,6 @@ const { t } = useI18n({
 })
 
 const organizationRoutes = useOrganizationRoutes()
-const formId = `create-board-${useId()}`
 
 const form = reactive({
   color: DEFAULT_COLOR,
@@ -204,19 +188,30 @@ const create = async () => {
   width: 100%;
 }
 
-.create-board-form,
-.create-board-statuses {
+.create-board-form {
   display: grid;
   gap: var(--space-5);
 }
 
-.create-board-form {
-  gap: var(--space-8);
-}
-
-.status-list {
+.create-board-statuses {
+  border: 0;
   display: grid;
   gap: var(--space-2);
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.create-board-statuses legend {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-1);
+  padding: 0;
+}
+
+.create-board-hint {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  margin: 0;
 }
 
 .status-row {
@@ -228,5 +223,9 @@ const create = async () => {
 
 .status-row :deep(.color-picker) {
   width: 100%;
+}
+
+.add-status {
+  justify-self: start;
 }
 </style>
