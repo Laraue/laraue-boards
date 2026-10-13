@@ -222,9 +222,6 @@ watch(
   align-content: start;
   display: grid;
   gap: var(--space-5);
-  margin-inline: auto;
-  max-width: 768px;
-  width: 100%;
 }
 
 .filter-options {
