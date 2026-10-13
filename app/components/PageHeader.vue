@@ -142,17 +142,13 @@ const { t } = useI18n({
   min-width: 0;
 }
 
-.page-header-context > .page-header-title-row {
-  flex: 0 0 auto;
-  max-width: 60%;
-}
-
-/* The parents give way first; the current page keeps its name up to most of the row. */
+/* The parents give way first: they shrink far faster than the current page's name, which is cut
+   only once they are down to their icons. */
 .page-header-path {
   align-items: center;
   color: var(--color-text);
   display: flex;
-  flex: 0 1 auto;
+  flex: 0 1000 auto;
   font-size: var(--font-size-body);
   gap: var(--space-2);
   min-width: 0;
