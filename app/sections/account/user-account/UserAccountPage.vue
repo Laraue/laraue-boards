@@ -12,6 +12,7 @@
         <BaseButton
           v-if="data"
           :disabled="loggingOut"
+          variant="danger"
           @click="logout">
           <IconLogout />
           {{ t('logOut') }}
