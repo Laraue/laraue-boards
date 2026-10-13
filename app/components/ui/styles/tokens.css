@@ -52,7 +52,9 @@
   --color-text: var(--gray-12);
   --color-muted: var(--gray-11);
   /* Hints, placeholders' neighbours, disabled text: below muted, still readable. */
-  --color-border: var(--gray-6);
+  /* Three line weights: dividers the quietest, group outlines (--color-border-surface) in between,
+     control borders the strongest, so a field never reads as page structure. */
+  --color-border: var(--gray-7);
   --color-border-hover: color-mix(in srgb, var(--color-border) 55%, var(--color-muted));
   /* Separates parts inside a surface that already has a border. */
   --color-border-strong: var(--gray-7);
@@ -192,8 +194,8 @@
   /* The dark ramps run the other way, so the page sits on 1 and surfaces rise from it. */
   --color-background: var(--gray-3);
   --color-surface: var(--gray-3);
-  /* The dark page is gray-3, so the divider steps further to stay visible. */
-  --color-divider: var(--gray-6);
+  /* The dark page is gray-3; the divider steps one past it, controls (gray-7) stay above both. */
+  --color-divider: var(--gray-5);
   --color-accent: var(--blue-11);
   --color-accent-hover: var(--blue-12);
   --color-accent-soft: var(--blue-3);

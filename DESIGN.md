@@ -46,6 +46,10 @@ check a design change there and add new components and variants to it.
 - Never reference a primitive or a hex value in a component; add or remap a semantic role instead.
 - Text: `--color-text`, `--color-muted` for secondary context, `--color-text-subtle` for hints. Text
   and icons on an action fill use `--color-on-action`.
+- Lines come in three weights, quietest first: `--color-divider` for page structure (the sidebar's
+  and the header's edges, lines between rows), `--color-border-surface` for group outlines (lists,
+  cards, comments), `--color-border` for controls (fields, selects, buttons). A field must never
+  read as page structure, so the control border stays the strongest in both themes.
 - Chart colors are a separate data palette.
 
 ## Typography
