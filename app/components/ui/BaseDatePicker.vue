@@ -26,7 +26,9 @@
           v-for="item in segments"
           :key="item.part">
           <DatePickerInput
-            :class="item.part === 'literal' ? 'base-date-picker-literal' : 'base-date-picker-segment'"
+            :class="
+              item.part === 'literal' ? 'base-date-picker-literal' : 'base-date-picker-segment'
+            "
             :part="item.part">
             {{ item.value }}
           </DatePickerInput>
@@ -298,7 +300,7 @@ const value = computed({
 // The month the calendar shows; the heading and the month and year views move it. Its type sets the
 // field's segments, so a field with time starts from a date with time.
 const startOfToday = today(getLocalTimeZone())
-const shown = ref<DateValue>(
+const shown = shallowRef<DateValue>(
   value.value ?? (props.withTime ? toCalendarDateTime(startOfToday) : startOfToday),
 )
 const view = ref<'day' | 'month' | 'year'>('day')

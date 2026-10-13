@@ -67,8 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import FilterMenu from '~/components/filter-menu/FilterMenu.vue'
 import type { FilterMenuItem } from '~/components/filter-menu/FilterMenu.types'
+import FilterMenu from '~/components/filter-menu/FilterMenu.vue'
 import type { IssueAttributeField } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
 import { AttributeIcon, BoardIcon, SpaceIcon } from '~/constants/icons'
 import { assertNever } from '~/utils/assertNever'

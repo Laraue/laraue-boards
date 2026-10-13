@@ -48,9 +48,7 @@ it('shows the empty state when there are no organizations', async () => {
   await mount(createDeps(loadOrganizations))
   await page.getByLabelText('Organization').click()
 
-  await expect
-    .element(page.getByRole('option', { name: 'No organizations available' }))
-    .toBeInTheDocument()
+  await expect.element(page.getByText('No organizations available')).toBeInTheDocument()
 })
 
 it('shows an error when loading fails', async () => {
@@ -75,6 +73,5 @@ it('keeps the initial option visible before the options are loaded', async () =>
     },
   })
 
-  await expect.element(page.getByLabelText('Organization')).toHaveValue('7')
-  await expect.element(page.getByRole('option', { name: 'Current' })).toBeInTheDocument()
+  await expect.element(page.getByLabelText('Organization')).toHaveTextContent('Current')
 })

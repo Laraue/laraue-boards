@@ -71,8 +71,8 @@
 import { IconCalendar, IconHistory, IconLoader2, IconUser } from '@tabler/icons-vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
-import FilterMenu from '~/components/filter-menu/FilterMenu.vue'
 import type { FilterMenuItem } from '~/components/filter-menu/FilterMenu.types'
+import FilterMenu from '~/components/filter-menu/FilterMenu.vue'
 import type { HistoryItemViewModel } from '~/components/history-timeline/HistoryTimeline.types'
 import HistoryTimeline from '~/components/history-timeline/HistoryTimeline.vue'
 import IssueDateFilter from '~/components/issue-filters/components/IssueDateFilter.vue'

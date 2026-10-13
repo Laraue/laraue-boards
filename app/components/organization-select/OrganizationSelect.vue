@@ -45,7 +45,13 @@ defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
 
-const { data, execute, message, pending, status: loadStatus } = await useApiQuery(
+const {
+  data,
+  execute,
+  message,
+  pending,
+  status: loadStatus,
+} = await useApiQuery(
   `organization-select:${useId()}`,
   (signal) => props.deps.loadOrganizations({ signal }),
   { immediate: false },
