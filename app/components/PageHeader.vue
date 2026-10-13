@@ -142,10 +142,17 @@ const { t } = useI18n({
   min-width: 0;
 }
 
+.page-header-context > .page-header-title-row {
+  flex: 0 0 auto;
+  max-width: 60%;
+}
+
+/* The parents give way first; the current page keeps its name up to most of the row. */
 .page-header-path {
   align-items: center;
   color: var(--color-text);
   display: flex;
+  flex: 0 1 auto;
   font-size: var(--font-size-body);
   gap: var(--space-2);
   min-width: 0;

@@ -72,7 +72,7 @@ watch(
   min-width: 0;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .base-settings-layout {
     gap: var(--space-5);
     grid-template-columns: minmax(0, 1fr);

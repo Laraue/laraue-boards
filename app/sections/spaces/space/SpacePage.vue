@@ -190,7 +190,9 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   color: var(--color-text);
   display: grid;
   gap: var(--space-2) var(--space-4);
-  grid-template-columns: minmax(0, 1fr) minmax(12rem, 28rem) 6rem var(--icon-size);
+  /* The name keeps its room: grid grows a capped track to its cap before an fr one gets anything,
+     so the progress may shrink to nothing but never takes the name's space. */
+  grid-template-columns: minmax(12rem, 1fr) minmax(0, 28rem) 6rem var(--icon-size);
   min-height: 2.75rem;
   padding: var(--space-2) var(--space-4);
   text-decoration: none;
@@ -231,6 +233,7 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   display: flex;
   gap: var(--space-3);
   min-width: 0;
+  overflow: hidden;
 }
 
 /* The board's statuses as one bar, each its share of the issues. */
@@ -294,8 +297,9 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   padding: var(--space-2) var(--space-4);
 }
 
-@media (max-width: 767px) {
-  /* The progress goes under the name; the count stays at the end of the first line. */
+/* Under 1100px the one-line row would cut the legend: the progress goes under the name, the count
+   stays at the end of the first line. */
+@media (max-width: 1100px) {
   .space-row {
     grid-template-columns: minmax(0, 1fr) auto var(--icon-size);
   }
@@ -315,7 +319,7 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
     grid-row: 2;
   }
 
-  /* No hover on a phone to show the full legend, so it wraps instead of being cut. */
+  /* The legend wraps instead of being cut: no hover shows it whole on a phone. */
   .space-row-statuses {
     flex-wrap: wrap;
   }

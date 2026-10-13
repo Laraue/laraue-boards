@@ -734,11 +734,9 @@ watch(dirty, setDirty, { immediate: true })
   margin: 0;
 }
 
-@media (max-width: 767px) {
-  .issue-title-input {
-    font-size: var(--font-size-title);
-  }
-
+/* Beside a 320px Properties column the issue would get under 400px on a tablet; up to 1023px the
+   properties go under it. */
+@media (max-width: 1023px) {
   .issue-form-content {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;

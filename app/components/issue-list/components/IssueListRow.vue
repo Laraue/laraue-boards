@@ -427,15 +427,15 @@ a.issue-location-board:hover {
 
 @media (max-width: 1100px) {
   .issue-list-row {
-    grid-template-columns: 20px 64px minmax(0, 1fr) 88px var(--icon-btn-size);
+    grid-template-columns: 20px 64px minmax(0, 1fr) 8rem var(--icon-btn-size);
   }
 
   .issue-list-row:not(:has(.row-select)) {
-    grid-template-columns: 64px minmax(0, 1fr) 88px var(--icon-btn-size);
+    grid-template-columns: 64px minmax(0, 1fr) 8rem var(--icon-btn-size);
   }
 
   .issue-list-row:not(.has-actions) {
-    grid-template-columns: 64px minmax(0, 1fr) 88px;
+    grid-template-columns: 64px minmax(0, 1fr) 8rem;
   }
 
   .issue-content {
