@@ -10,14 +10,15 @@
           <strong>{{ t('language') }}</strong>
           <small class="muted">{{ t('languageHint') }}</small>
         </label>
-        <select
+        <BaseSelect
           id="interface-language"
           class="setting-control"
-          :value="deps.locale.value"
-          @change="changeLocale(($event.target as HTMLSelectElement).value)">
-          <option value="en">English</option>
-          <option value="ru">Русский</option>
-        </select>
+          :model-value="deps.locale.value"
+          :options="[
+            { label: 'English', value: 'en' },
+            { label: 'Русский', value: 'ru' },
+          ]"
+          @update:model-value="changeLocale" />
       </div>
 
       <div class="setting-row">
@@ -112,7 +113,7 @@ const changeLocale = (value: string): void => {
   margin: 0;
 }
 
-.setting-control {
+:deep(.setting-control) {
   min-width: 180px;
   width: auto;
 }

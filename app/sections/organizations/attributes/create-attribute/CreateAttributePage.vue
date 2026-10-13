@@ -30,17 +30,18 @@
         <BaseField
           id="create-attribute-type"
           :label="t('type')">
-          <select
+          <BaseSelect
             id="create-attribute-type"
-            :value="draft.data.type"
-            @change="changeType">
-            <option value="text">{{ t('text') }}</option>
-            <option value="list">{{ t('list') }}</option>
-            <option value="integer">{{ t('integer') }}</option>
-            <option value="decimal">{{ t('decimal') }}</option>
-            <option value="date">{{ t('date') }}</option>
-            <option value="dateTime">{{ t('dateTime') }}</option>
-          </select>
+            :model-value="draft.data.type"
+            :options="[
+              { label: t('text'), value: 'text' },
+              { label: t('list'), value: 'list' },
+              { label: t('integer'), value: 'integer' },
+              { label: t('decimal'), value: 'decimal' },
+              { label: t('date'), value: 'date' },
+              { label: t('dateTime'), value: 'dateTime' },
+            ]"
+            @update:model-value="changeType" />
         </BaseField>
       </BaseFieldGroup>
       <Transition name="slide-fade">
@@ -168,8 +169,8 @@ const addOption = () => {
   }
 }
 
-const changeType = (event: Event) => {
-  const type = (event.target as HTMLSelectElement).value as AttributeDraft['data']['type']
+const changeType = (value: string) => {
+  const type = value as AttributeDraft['data']['type']
   switch (type) {
     case 'text':
       draft.data = { type: 'text' }

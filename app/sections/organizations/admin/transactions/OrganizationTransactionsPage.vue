@@ -11,19 +11,15 @@
         <BaseSectionHeader :title="t('transactions')">
           <!-- The filter sits with the heading, like a section's actions. -->
           <template #actions>
-            <select
+            <BaseSelect
               :aria-label="t('member')"
               class="member-filter"
-              :value="userId"
-              @change="applyMember(($event.target as HTMLSelectElement).value)">
-              <option value="">{{ t('allMembers') }}</option>
-              <option
-                v-for="member in pageData.members"
-                :key="member.id"
-                :value="member.id">
-                {{ member.name }}
-              </option>
-            </select>
+              :model-value="userId"
+              :options="[
+                { label: t('allMembers'), value: '' },
+                ...pageData.members.map((member) => ({ label: member.name, value: member.id })),
+              ]"
+              @update:model-value="applyMember" />
           </template>
         </BaseSectionHeader>
 
@@ -166,7 +162,7 @@ const updatePage = (value: number) => (page.value = value)
   gap: var(--space-5);
 }
 
-.member-filter {
+:deep(.member-filter) {
   width: 14rem;
 }
 </style>

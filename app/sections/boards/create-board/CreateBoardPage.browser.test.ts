@@ -50,7 +50,8 @@ it('copies statuses into the editor before creating', async () => {
     spaceName: 'Product',
   }))
   await page.getByLabelText('Name').fill('Roadmap')
-  await page.getByLabelText('Copy statuses from').selectOptions('7')
+  await page.getByLabelText('Copy statuses from').click()
+  await page.getByRole('option', { name: 'Development' }).click()
   await page.getByLabelText('Status name').fill('Ready')
   await page.getByRole('combobox', { name: 'Status category' }).click()
   await page.getByRole('option', { exact: true, name: 'In progress' }).click()

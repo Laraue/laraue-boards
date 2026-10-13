@@ -65,18 +65,14 @@
           <BaseField
             id="create-board-source"
             :label="t('copyStatusesFrom')">
-            <select
+            <BaseSelect
               id="create-board-source"
-              v-model="form.sourceBoardId"
-              @change="copyStatuses">
-              <option value="">{{ t('dontCopy') }}</option>
-              <option
-                v-for="board in data?.boards ?? []"
-                :key="board.value"
-                :value="board.value">
-                {{ board.label }}
-              </option>
-            </select>
+              :model-value="form.sourceBoardId"
+              :options="[
+                { label: t('dontCopy'), value: '' },
+                ...(data?.boards ?? []).map(({ label, value }) => ({ label, value })),
+              ]"
+              @update:model-value="copyStatuses" />
           </BaseField>
           <div
             v-if="form.statuses.length"
@@ -180,7 +176,8 @@ const addStatus = () => {
   })
 }
 
-const copyStatuses = () => {
+const copyStatuses = (sourceBoardId: string) => {
+  form.sourceBoardId = sourceBoardId
   const source = data.value?.boards.find((board) => board.value === form.sourceBoardId)
   form.statuses = (source?.statuses ?? []).map((status) => ({ ...status, id: ++nextStatusId }))
 }

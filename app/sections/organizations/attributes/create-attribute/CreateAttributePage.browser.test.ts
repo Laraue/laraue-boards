@@ -32,7 +32,7 @@ afterEach(async () => {
 it('starts as a text attribute without an options editor', async () => {
   await mount(succeeds())
 
-  await expect.element(page.getByLabelText('Type')).toHaveValue('text')
+  await expect.element(page.getByLabelText('Type')).toHaveTextContent('Text')
   await expect.element(page.getByRole('button', { name: 'Color' })).toHaveTextContent('Blue')
   await expect.element(page.getByRole('group', { name: 'Options' })).not.toBeInTheDocument()
 })
@@ -77,7 +77,8 @@ it('submits a list attribute with its options', async () => {
   await mount(create)
 
   await page.getByLabelText('Name').fill('Severity')
-  await page.getByLabelText('Type').selectOptions('list')
+  await page.getByLabelText('Type').click()
+  await page.getByRole('option', { exact: true, name: 'List' }).click()
   await page.getByRole('textbox', { name: 'Option 1' }).fill('Low')
   await page.getByRole('button', { name: 'Add option' }).click()
   await page.getByRole('textbox', { name: 'Option 2' }).fill('High')
@@ -96,7 +97,8 @@ it('removes an option and keeps the last one undeletable', async () => {
   await mount(create)
 
   await page.getByLabelText('Name').fill('Severity')
-  await page.getByLabelText('Type').selectOptions('list')
+  await page.getByLabelText('Type').click()
+  await page.getByRole('option', { exact: true, name: 'List' }).click()
   await page.getByRole('textbox', { name: 'Option 1' }).fill('Low')
   await page.getByRole('button', { name: 'Add option' }).click()
   await page.getByRole('textbox', { name: 'Option 2' }).fill('High')
@@ -121,9 +123,11 @@ it('drops the options when switching back to a text attribute', async () => {
   await mount(create)
 
   await page.getByLabelText('Name').fill('Severity')
-  await page.getByLabelText('Type').selectOptions('list')
+  await page.getByLabelText('Type').click()
+  await page.getByRole('option', { exact: true, name: 'List' }).click()
   await page.getByRole('textbox', { name: 'Option 1' }).fill('Low')
-  await page.getByLabelText('Type').selectOptions('text')
+  await page.getByLabelText('Type').click()
+  await page.getByRole('option', { exact: true, name: 'Text' }).click()
 
   await expect.element(page.getByRole('group', { name: 'Options' })).not.toBeInTheDocument()
 

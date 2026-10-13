@@ -74,7 +74,8 @@ it('changes the theme and the language for the whole account', async () => {
   await mount(depsOf({ interface: preferences }))
 
   await page.getByRole('button', { name: 'Dark' }).click()
-  await page.getByLabelText('Language').selectOptions('ru')
+  await page.getByLabelText('Language').click()
+  await page.getByRole('option', { name: 'Русский' }).click()
 
   expect(preferences.setTheme).toHaveBeenCalledWith('dark')
   expect(preferences.setLocale).toHaveBeenCalledWith('ru')
