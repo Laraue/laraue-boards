@@ -161,10 +161,10 @@ something.
   the light theme); the sidebar is set apart by a line, not by another fill. Gray is not a frame
   around white blocks: it marks only a board column, a hovered or selected row, a group band and
   soft pills.
-- Data lists (issues, history) are rows on the page itself, with no box around them:
-  a line between rows, a soft fill on hover. A group inside such a list is a soft band.
-- Groups of settings and lists of things to manage (attributes, members, keys, connected accounts,
-  a settings section) are outlined, as ChatGPT's and Linear's settings: `BaseList` of `BaseListRow`s
+- Data lists (issues, history) are rows on the page itself, with no box around them: a line between
+  rows, a soft fill on hover. A group inside such a list is a soft band.
+- Groups of settings and lists of things to manage (attributes, members, keys, connected accounts, a
+  settings section) are outlined, as ChatGPT's and Linear's settings: `BaseList` of `BaseListRow`s
   or `BaseCard`, a `--color-border-surface` ring and `--radius-card`, no fill of their own. Rows are
   divided by lines: something in front, a title with a line under it, actions or a chevron at the
   end. Do not make each row its own card. Use a table only when rows have several columns to

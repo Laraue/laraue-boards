@@ -130,12 +130,12 @@ onBeforeUnmount(() => observer?.disconnect())
 .column {
   background: var(--color-feed);
   border-radius: var(--radius-popover);
-  padding: var(--space-2);
   display: flex;
   flex-direction: column;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
+  padding: var(--space-2);
   width: 100%;
 }
 

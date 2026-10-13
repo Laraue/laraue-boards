@@ -346,7 +346,8 @@ button:disabled {
 }
 
 /* On the dark track the surface would sink; the active tab lightens instead. */
-:root[data-theme='dark'] .base-tabs-tab:is([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
+:root[data-theme='dark']
+  .base-tabs-tab:is([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
   background: color-mix(in srgb, var(--color-text) 10%, var(--color-hover));
   border-color: var(--color-border);
 }
