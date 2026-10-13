@@ -1,15 +1,26 @@
 <template>
   <section class="org-picker">
     <div class="picker-card">
-      <BaseButton
-        class="back"
-        to="/organizations">
-        <IconArrowLeft />
-        {{ t('backToOrganizations') }}
-      </BaseButton>
-      <h1>{{ t('createOrganization') }}</h1>
+      <StandalonePageHeader
+        :back-label="t('backToOrganizations')"
+        back-to="/organizations"
+        :title="t('createOrganization')">
+        <template #actions>
+          <BaseButton
+            :aria-label="t('createOrganization')"
+            :form="formId"
+            icon-on-mobile
+            :loading="pending"
+            type="submit"
+            variant="primary">
+            <IconBuildingPlus />
+            <template #label>{{ t('createOrganization') }}</template>
+          </BaseButton>
+        </template>
+      </StandalonePageHeader>
       <p class="muted">{{ t('createDescription') }}</p>
       <form
+        :id="formId"
         class="create-organization-form"
         @submit.prevent="submit">
         <BaseFieldGroup>
@@ -44,24 +55,13 @@
           class="form-error">
           {{ message }}
         </p>
-        <div class="form-actions">
-          <BaseButton
-            :loading="pending"
-            type="submit"
-            variant="primary">
-            {{ t('createOrganization') }}
-          </BaseButton>
-          <BaseButton to="/organizations">
-            {{ t('cancel') }}
-          </BaseButton>
-        </div>
       </form>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { IconArrowLeft } from '@tabler/icons-vue'
+import { IconBuildingPlus } from '@tabler/icons-vue'
 
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { CreateOrganizationPageDeps } from '~/sections/organizations/create-organization/CreateOrganizationPage.deps'
@@ -74,7 +74,6 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     backToOrganizations: 'Back to organizations',
-    cancel: 'Cancel',
     color: 'Color',
     createDescription: 'Create a new workspace for your team.',
     createOrganization: 'Create organization',
@@ -84,7 +83,6 @@ const { t } = useI18n({
   },
   ru: {
     backToOrganizations: 'Назад к организациям',
-    cancel: 'Отмена',
     color: 'Цвет',
     createDescription: 'Создайте новое рабочее пространство для своей команды.',
     createOrganization: 'Создать организацию',
@@ -94,6 +92,7 @@ const { t } = useI18n({
   },
 })
 
+const formId = `create-organization-${useId()}`
 const form = reactive({
   color: DEFAULT_COLOR,
   name: '',
@@ -122,16 +121,8 @@ const submit = async (): Promise<void> => {
   width: min(var(--form-page-max-width), 100%);
 }
 
-.back {
-  margin-bottom: var(--space-6);
-}
-
-.picker-card h1 {
-  margin: 0 0 var(--space-1);
-}
-
 .picker-card .muted {
-  margin: 0;
+  margin: var(--space-2) 0 0;
 }
 
 .create-organization-form {

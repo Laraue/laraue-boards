@@ -1,12 +1,23 @@
 <template>
   <div class="user-account">
-    <BaseButton
-      v-if="data"
-      class="back"
-      :to="backPath || '/organizations'">
-      <IconArrowLeft />
-      {{ backPath ? t('back') : t('backToOrganizations') }}
-    </BaseButton>
+    <StandalonePageHeader
+      :back-label="backPath ? t('back') : t('backToOrganizations')"
+      :back-to="backPath || '/organizations'"
+      :title="t('yourAccount')">
+      <template #actions>
+        <BaseButton
+          v-if="data"
+          :disabled="loggingOut"
+          @click="logout">
+          <IconLogout />
+          {{ t('logOut') }}
+        </BaseButton>
+      </template>
+    </StandalonePageHeader>
+    <p class="muted scope">
+      <IconWorld />
+      {{ t('scope') }}
+    </p>
 
     <QueryState
       :data="data"
@@ -15,32 +26,8 @@
       :message="message"
       :on-retry="refresh"
       :pending="pending">
-      <template #default="{ data: page }">
+      <template #default>
         <div class="user-account-main">
-          <div class="user-account-title">
-            <BaseAvatar
-              v-if="page.initials"
-              :color="DEFAULT_COLOR"
-              :initials="page.initials" />
-            <IconUserCircle
-              v-else
-              class="user-account-icon" />
-            <div>
-              <h1>{{ t('yourAccount') }}</h1>
-              <p class="muted scope">
-                <IconWorld />
-                {{ t('scope') }}
-              </p>
-            </div>
-            <BaseButton
-              class="log-out"
-              :disabled="loggingOut"
-              @click="logout">
-              <IconLogout />
-              {{ t('logOut') }}
-            </BaseButton>
-          </div>
-
           <ProfileSection
             :deps="deps.profile"
             :on-updated="refresh" />
@@ -58,9 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowLeft, IconLogout, IconUserCircle, IconWorld } from '@tabler/icons-vue'
-
-import { DEFAULT_COLOR } from '~/constants/colors'
+import { IconLogout, IconWorld } from '@tabler/icons-vue'
 
 import ConnectedAccountsSection from './components/ConnectedAccountsSection/ConnectedAccountsSection.vue'
 import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue'
@@ -119,13 +104,17 @@ const logout = async (): Promise<void> => {
   width: min(var(--form-page-max-width), 100%);
 }
 
-.back {
-  margin-bottom: var(--space-6);
+.scope {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-8);
 }
 
-.log-out {
+.scope > svg {
   flex: none;
-  margin-left: auto;
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .user-account-main {
@@ -133,35 +122,9 @@ const logout = async (): Promise<void> => {
   gap: var(--space-8);
 }
 
-.user-account-title {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-}
-
-.user-account-title h1 {
-  font-size: var(--font-size-title);
-  margin: 0 0 var(--space-1);
-}
-
-.user-account-icon {
-  color: var(--color-muted);
-  flex: none;
-  height: var(--control-height);
-  width: var(--control-height);
-}
-
-.scope {
-  align-items: center;
-  display: flex;
-  gap: var(--space-2);
-  margin: 0;
-}
-
-.scope > svg {
-  flex: none;
-  height: 16px;
-  width: 16px;
+/* A line between the sections, as between a settings form and its danger zone. */
+.user-account-main > * + * {
+  border-top: 1px solid var(--color-divider);
+  padding-top: var(--space-8);
 }
 </style>
