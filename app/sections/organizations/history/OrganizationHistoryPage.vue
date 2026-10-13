@@ -18,9 +18,12 @@
             class="history-filters"
             @change="applyFilters"
             @submit.prevent>
-            <label>
-              {{ t('user') }}
-              <select v-model="form.ownerId">
+            <BaseField
+              id="history-user"
+              :label="t('user')">
+              <select
+                id="history-user"
+                v-model="form.ownerId">
                 <option value="">{{ t('allUsers') }}</option>
                 <option
                   v-for="user in view.users"
@@ -29,20 +32,24 @@
                   {{ user.label }}
                 </option>
               </select>
-            </label>
-            <label>
-              {{ t('from') }}
+            </BaseField>
+            <BaseField
+              id="history-from"
+              :label="t('from')">
               <input
+                id="history-from"
                 v-model="form.dateFrom"
                 type="date" />
-            </label>
-            <label>
-              {{ t('to') }}
+            </BaseField>
+            <BaseField
+              id="history-to"
+              :label="t('to')">
               <input
+                id="history-to"
                 v-model="form.dateTo"
                 :min="form.dateFrom || undefined"
                 type="date" />
-            </label>
+            </BaseField>
           </form>
           <HistoryTimeline
             v-if="historyState.items.length || !pagePending"
@@ -195,6 +202,9 @@ watch(
   align-content: start;
   display: grid;
   gap: var(--space-5);
+  margin-inline: auto;
+  max-width: 768px;
+  width: 100%;
 }
 
 .history-filters {
@@ -202,12 +212,6 @@ watch(
   display: grid;
   gap: var(--space-3);
   grid-template-columns: minmax(180px, 1fr) repeat(2, minmax(140px, 0.5fr));
-}
-
-.history-filters label {
-  display: grid;
-  gap: var(--space-1);
-  margin: 0;
 }
 
 .history-loading {
