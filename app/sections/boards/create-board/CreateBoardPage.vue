@@ -11,10 +11,26 @@
             to: organizationRoutes.space(spaceKey),
           },
         ]"
-        :title="t('createBoard')" />
+        :title="t('createBoard')">
+        <template #actions>
+          <BaseButton
+            :aria-label="t('createBoard')"
+            :form="formId"
+            icon-on-mobile
+            :loading="pending"
+            type="submit"
+            variant="primary">
+            <IconLayoutGridAdd />
+            <template #label>{{ t('createBoard') }}</template>
+          </BaseButton>
+        </template>
+      </PageHeader>
     </template>
-    <section class="form-page">
-      <form @submit.prevent="create">
+    <section class="create-board-page">
+      <form
+        :id="formId"
+        class="create-board-form"
+        @submit.prevent="create">
         <BaseFieldGroup>
           <BaseField
             id="create-board-name"
@@ -31,6 +47,21 @@
               v-model="form.color"
               :aria-labelledby="labelId" />
           </BaseField>
+        </BaseFieldGroup>
+        <section
+          aria-labelledby="create-board-statuses"
+          class="create-board-statuses">
+          <BaseSectionHeader
+            id="create-board-statuses"
+            :description="t('statusesHint')"
+            :title="t('statuses')">
+            <template #actions>
+              <BaseButton @click="addStatus">
+                <IconPlus />
+                {{ t('addStatus') }}
+              </BaseButton>
+            </template>
+          </BaseSectionHeader>
           <BaseField
             id="create-board-source"
             :label="t('copyStatusesFrom')">
@@ -47,52 +78,35 @@
               </option>
             </select>
           </BaseField>
-          <BaseField
-            v-slot="{ labelId }"
-            :label="t('statuses')">
+          <div
+            v-if="form.statuses.length"
+            :aria-label="t('statuses')"
+            class="status-list"
+            role="group">
             <div
-              :aria-labelledby="labelId"
-              class="status-list"
-              role="group">
-              <div
-                v-for="(status, index) in form.statuses"
-                :key="status.id"
-                class="status-row">
-                <AppColorPicker v-model="status.color" />
-                <input
-                  v-model="status.name"
-                  :aria-label="t('statusName')"
-                  required />
-                <StatusCategorySelect v-model="status.category" />
-                <BaseIconButton
-                  :label="t('deleteStatus')"
-                  variant="danger"
-                  @click="form.statuses.splice(index, 1)">
-                  <IconTrash />
-                </BaseIconButton>
-              </div>
-              <BaseButton
-                class="add-status"
-                @click="addStatus">
-                <IconPlus />
-                {{ t('addStatus') }}
-              </BaseButton>
+              v-for="(status, index) in form.statuses"
+              :key="status.id"
+              class="status-row">
+              <AppColorPicker v-model="status.color" />
+              <input
+                v-model="status.name"
+                :aria-label="t('statusName')"
+                required />
+              <StatusCategorySelect v-model="status.category" />
+              <BaseIconButton
+                :label="t('deleteStatus')"
+                variant="danger"
+                @click="form.statuses.splice(index, 1)">
+                <IconTrash />
+              </BaseIconButton>
             </div>
-          </BaseField>
-        </BaseFieldGroup>
+          </div>
+        </section>
         <p
           v-if="message"
           class="form-error">
           {{ message }}
         </p>
-        <div class="form-actions">
-          <BaseButton
-            :disabled="pending"
-            type="submit"
-            variant="primary">
-            {{ pending ? t('creating') : t('createBoard') }}
-          </BaseButton>
-        </div>
       </form>
     </section>
   </AppPage>
@@ -119,11 +133,11 @@ const { t } = useI18n({
     color: 'Color',
     copyStatusesFrom: 'Copy statuses from',
     createBoard: 'Create board',
-    creating: 'Creating…',
     deleteStatus: 'Delete status',
     dontCopy: "Don't copy",
     name: 'Name',
     statuses: 'Statuses',
+    statusesHint: 'The board columns, left to right.',
     statusName: 'Status name',
   },
   ru: {
@@ -131,16 +145,17 @@ const { t } = useI18n({
     color: 'Цвет',
     copyStatusesFrom: 'Скопировать статусы из',
     createBoard: 'Создать доску',
-    creating: 'Создание…',
     deleteStatus: 'Удалить статус',
     dontCopy: 'Не копировать',
     name: 'Название',
     statuses: 'Статусы',
+    statusesHint: 'Колонки доски слева направо.',
     statusName: 'Название статуса',
   },
 })
 
 const organizationRoutes = useOrganizationRoutes()
+const formId = `create-board-${useId()}`
 
 const form = reactive({
   color: DEFAULT_COLOR,
@@ -186,6 +201,22 @@ const create = async () => {
 </script>
 
 <style scoped>
+.create-board-page {
+  margin-inline: auto;
+  max-width: 768px;
+  width: 100%;
+}
+
+.create-board-form,
+.create-board-statuses {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.create-board-form {
+  gap: var(--space-8);
+}
+
 .status-list {
   display: grid;
   gap: var(--space-2);
@@ -200,9 +231,5 @@ const create = async () => {
 
 .status-row :deep(.color-picker) {
   width: 100%;
-}
-
-.add-status {
-  justify-self: start;
 }
 </style>
