@@ -60,7 +60,7 @@ it('shows organizations and selects one', async () => {
 
   await mount(createDeps(view, select), onSelected)
 
-  await page.getByRole('button', { name: 'L Laraue Team organization' }).click()
+  await page.getByRole('button', { exact: true, name: 'Laraue' }).click()
 
   expect(select).toHaveBeenCalledWith({ organizationId: '42' })
   expect(onSelected).toHaveBeenCalledWith('laraue-HF2P0')
@@ -73,7 +73,7 @@ it('shows no organizations when the list is empty', async () => {
 
   await expect.element(page.getByText('No organizations yet')).toBeInTheDocument()
   await expect
-    .element(page.getByRole('button', { name: 'L Laraue Team organization' }))
+    .element(page.getByRole('button', { exact: true, name: 'Laraue' }))
     .not.toBeInTheDocument()
 })
 
@@ -134,7 +134,7 @@ it('reloads the organizations when the failed request is retried', async () => {
   await page.getByRole('button', { name: 'Try again' }).click()
 
   await expect
-    .element(page.getByRole('button', { name: 'L Laraue Team organization' }))
+    .element(page.getByRole('button', { exact: true, name: 'Laraue' }))
     .toBeInTheDocument()
 })
 
@@ -147,7 +147,7 @@ it('stays on the picker and shows the message when selecting fails', async () =>
 
   await mount(createDeps(view, select), onSelected)
 
-  await page.getByRole('button', { name: 'L Laraue Team organization' }).click()
+  await page.getByRole('button', { exact: true, name: 'Laraue' }).click()
 
   await expect
     .element(page.getByText('This organization is no longer available.'))

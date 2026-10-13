@@ -116,7 +116,7 @@ const logout = async (): Promise<void> => {
 .user-account {
   margin: 0 auto;
   padding: var(--space-8) var(--space-4);
-  width: min(760px, 100%);
+  width: min(var(--form-page-max-width), 100%);
 }
 
 .back {

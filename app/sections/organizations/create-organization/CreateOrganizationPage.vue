@@ -1,16 +1,17 @@
 <template>
   <section class="org-picker">
-    <div class="picker-card form-page">
-      <div class="page-heading">
-        <AppBackLink
-          :label="t('backToOrganizations')"
-          to="/organizations" />
-        <div class="page-heading-text">
-          <h1>{{ t('createOrganization') }}</h1>
-        </div>
-      </div>
+    <div class="picker-card">
+      <BaseButton
+        class="back"
+        to="/organizations">
+        <IconArrowLeft />
+        {{ t('backToOrganizations') }}
+      </BaseButton>
+      <h1>{{ t('createOrganization') }}</h1>
       <p class="muted">{{ t('createDescription') }}</p>
-      <form @submit.prevent="submit">
+      <form
+        class="create-organization-form"
+        @submit.prevent="submit">
         <BaseFieldGroup>
           <BaseField
             id="create-organization-name"
@@ -45,10 +46,10 @@
         </p>
         <div class="form-actions">
           <BaseButton
-            :disabled="pending"
+            :loading="pending"
             type="submit"
             variant="primary">
-            {{ pending ? t('creating') : t('createOrganization') }}
+            {{ t('createOrganization') }}
           </BaseButton>
           <BaseButton to="/organizations">
             {{ t('cancel') }}
@@ -60,6 +61,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowLeft } from '@tabler/icons-vue'
+
 import { DEFAULT_COLOR } from '~/constants/colors'
 import type { CreateOrganizationPageDeps } from '~/sections/organizations/create-organization/CreateOrganizationPage.deps'
 
@@ -75,7 +78,6 @@ const { t } = useI18n({
     color: 'Color',
     createDescription: 'Create a new workspace for your team.',
     createOrganization: 'Create organization',
-    creating: 'Creating…',
     name: 'Name',
     slug: 'Slug',
     slugPlaceholder: 'acme-studio',
@@ -86,7 +88,6 @@ const { t } = useI18n({
     color: 'Цвет',
     createDescription: 'Создайте новое рабочее пространство для своей команды.',
     createOrganization: 'Создать организацию',
-    creating: 'Создание…',
     name: 'Название',
     slug: 'Идентификатор',
     slugPlaceholder: 'acme-studio',
@@ -119,5 +120,23 @@ const submit = async (): Promise<void> => {
 
 .picker-card {
   width: min(var(--form-page-max-width), 100%);
+}
+
+.back {
+  margin-bottom: var(--space-6);
+}
+
+.picker-card h1 {
+  margin: 0 0 var(--space-1);
+}
+
+.picker-card .muted {
+  margin: 0;
+}
+
+.create-organization-form {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
 }
 </style>
