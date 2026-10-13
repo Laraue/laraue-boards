@@ -130,6 +130,25 @@ const update = (id: string, value: string) => {
   border-color: var(--color-focus);
 }
 
+/* A date picker in Properties reads as the other inline values: no frame until hover or focus. */
+.attribute-field-inline :deep(.base-date-picker-root) {
+  justify-self: start;
+  max-width: 100%;
+}
+
+.attribute-field-inline :deep(.base-date-picker) {
+  background: transparent;
+  border-color: transparent;
+}
+
+.attribute-field-inline :deep(.base-date-picker:hover:not([data-disabled], :focus-within)) {
+  border-color: var(--color-border-hover);
+}
+
+.attribute-field-inline :deep(.base-date-picker:focus-within) {
+  border-color: var(--color-focus);
+}
+
 .attribute-icon {
   left: calc(var(--space-3) + 1px);
   pointer-events: none;
@@ -139,7 +158,7 @@ const update = (id: string, value: string) => {
   z-index: 1;
 }
 
-.attribute-field :deep(:is(input, .base-select)) {
+.attribute-field :deep(:is(input, .base-select, .base-date-picker)) {
   padding-left: calc(var(--space-3) + var(--icon-size) + var(--space-2));
 }
 </style>
