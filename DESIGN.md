@@ -159,11 +159,11 @@ something.
 
 - One page background for the sidebar and the content (`--color-background`, the surface color in
   the light theme); the sidebar is set apart by a line, not by another fill. Gray is not a frame
-  around white blocks: it marks only a board column, a hovered or selected row, a group band and
-  soft pills.
+  around white blocks: it marks only a board column, a hovered or selected row and soft pills.
 - Data lists (issues, history) are rows on the page itself, with no box around them: a line between
   rows, `--color-row-hover` on hover: half a step under `--color-soft`, so the buttons inside a
-  hovered row still show their own hover. A group inside such a list is a soft band.
+  hovered row still show their own hover. A group inside such a list is a quiet muted label with
+  space above it, never a fill: a filled band reads as a hovered row.
 - Groups of settings and lists of things to manage (attributes, members, keys, connected accounts, a
   settings section) are outlined, as ChatGPT's and Linear's settings: `BaseList` of `BaseListRow`s
   or `BaseCard`, a `--color-border-surface` ring and `--radius-card`, no fill of their own. Rows are

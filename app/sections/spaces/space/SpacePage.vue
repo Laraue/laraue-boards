@@ -282,16 +282,15 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   width: var(--icon-size);
 }
 
-/* A group inside the list: a soft band, as Linear's. */
+/* A group inside the list: a quiet label, no fill, so it never reads as a hovered row. */
 .space-group {
   align-items: center;
-  background: var(--color-feed);
-  border-radius: var(--radius-control);
+  color: var(--color-muted);
   display: flex;
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-small);
   font-weight: var(--font-weight-medium);
   gap: var(--space-2);
-  margin: var(--space-4) 0 var(--space-1);
+  margin: var(--space-6) 0 0;
   padding: var(--space-2) var(--space-4);
 }
 
