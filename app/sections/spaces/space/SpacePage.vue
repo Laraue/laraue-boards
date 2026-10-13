@@ -236,11 +236,12 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   overflow: hidden;
 }
 
+/* A legend for the bar: the caption size kept for small annotations. */
 .space-row-statuses {
   color: var(--color-muted);
   display: flex;
   flex-wrap: wrap;
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-caption);
   gap: 0 var(--space-3);
 }
 
