@@ -168,7 +168,7 @@ const leave = async (id: string, name: string): Promise<void> => {
 }
 
 .org-row:has(.org-choice:hover:not(:disabled)) {
-  background: var(--color-soft);
+  background: var(--color-row-hover);
 }
 
 .org-choice {

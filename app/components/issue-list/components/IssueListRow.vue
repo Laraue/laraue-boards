@@ -302,7 +302,7 @@ a.issue-location-board:hover {
 }
 
 .issue-list-row:hover {
-  background: var(--color-soft);
+  background: var(--color-row-hover);
 }
 
 .issue-list-row:has(.row-select:checked) {

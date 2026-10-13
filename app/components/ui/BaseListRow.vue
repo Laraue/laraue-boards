@@ -62,7 +62,7 @@ const NuxtLink = resolveComponent('NuxtLink')
 }
 
 .base-list-row.link:hover {
-  background: var(--color-soft);
+  background: var(--color-row-hover);
 }
 
 .base-list-row.link:focus-visible {
