@@ -412,8 +412,9 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   text-transform: uppercase;
 }
 
+/* On the first line's baseline: a value that wraps keeps its label beside the first line. */
 .history-change {
-  align-items: center;
+  align-items: baseline;
   color: var(--color-muted);
   display: flex;
   flex-wrap: wrap;
