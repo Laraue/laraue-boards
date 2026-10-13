@@ -116,7 +116,6 @@ const submit = async (): Promise<void> => {
   width: min(var(--form-page-max-width), 100%);
 }
 
-
 .create-organization-form {
   display: grid;
   gap: var(--space-5);
