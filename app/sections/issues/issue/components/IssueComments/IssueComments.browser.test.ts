@@ -77,10 +77,13 @@ it('edits and deletes a comment', async () => {
   vi.stubGlobal('confirm', () => true)
   await mount(createDeps({ delete: remove, update }))
 
-  await page.getByRole('button', { name: 'Edit' }).click()
+  const actions = page.getByRole('button', { name: 'Actions for the comment by Ada Lovelace' })
+  await actions.click()
+  await page.getByRole('menuitem', { name: 'Edit' }).click()
   await page.getByLabelText('Edit comment by Ada Lovelace').fill('Updated')
   await page.getByRole('button', { name: 'Save' }).click()
-  await page.getByRole('button', { name: 'Delete' }).click()
+  await actions.click()
+  await page.getByRole('menuitem', { name: 'Delete' }).click()
 
   expect(update).toHaveBeenCalledWith({ id: '12', text: 'Updated' })
   expect(remove).toHaveBeenCalledWith({ id: '12' })

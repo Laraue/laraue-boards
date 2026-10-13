@@ -17,6 +17,38 @@
             v-for="(item, index) in day.items"
             :key="`${item.createdAt}-${index}`"
             class="history-item">
+            <span
+              :aria-label="ownerHint(item.owner)"
+              class="history-avatar"
+              role="img"
+              :title="ownerHint(item.owner)">
+              <BaseAvatar
+                aria-hidden="true"
+                :color="item.owner.color"
+                :initials="item.owner.initials"
+                size="sm" />
+              <span
+                v-if="item.owner.apiKeyName"
+                aria-hidden="true"
+                class="history-avatar-key">
+                <IconKey />
+              </span>
+            </span>
+            <div class="history-aside">
+              <span class="history-owner">{{ item.owner.name }}</span>
+              <span
+                v-if="item.owner.apiKeyName"
+                class="history-key">
+                <IconKey />
+                {{ t('viaKey', { key: item.owner.apiKeyName }) }}
+              </span>
+              <time
+                class="history-time"
+                :datetime="item.createdAt"
+                :title="formatDateTime(item.createdAt)">
+                {{ formatTime(item.createdAt) }}
+              </time>
+            </div>
             <div class="history-content">
               <div
                 v-if="item.link || isIssueDeleted(item)"
@@ -79,39 +111,6 @@
                     :change="change" />
                 </div>
               </div>
-            </div>
-            <!-- Metadata sits above the changes. -->
-            <div class="history-aside">
-              <span
-                :aria-label="ownerHint(item.owner)"
-                class="history-avatar"
-                role="img"
-                :title="ownerHint(item.owner)">
-                <BaseAvatar
-                  aria-hidden="true"
-                  :color="item.owner.color"
-                  :initials="item.owner.initials"
-                  size="sm" />
-                <span
-                  v-if="item.owner.apiKeyName"
-                  aria-hidden="true"
-                  class="history-avatar-key">
-                  <IconKey />
-                </span>
-              </span>
-              <span class="history-owner">{{ item.owner.name }}</span>
-              <span
-                v-if="item.owner.apiKeyName"
-                class="history-key">
-                <IconKey />
-                {{ t('viaKey', { key: item.owner.apiKeyName }) }}
-              </span>
-              <time
-                class="history-time"
-                :datetime="item.createdAt"
-                :title="formatDateTime(item.createdAt)">
-                {{ formatTime(item.createdAt) }}
-              </time>
             </div>
           </article>
         </div>
@@ -240,7 +239,8 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 </script>
 
 <style scoped>
-/* An activity feed, each save in a card tinted like the comments. */
+/* An activity feed: each save is the author's line and the changes under it, the avatars joined by a
+   line down the side, without a box around each save. */
 .issue-history {
   display: grid;
   gap: var(--space-4);
@@ -254,27 +254,37 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 .history-day-label {
   color: var(--color-muted);
   font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.04em;
-  margin: 0 0 var(--space-2);
-  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
+  margin: 0 0 var(--space-3);
 }
 
 .history-day-items {
   display: grid;
-  gap: var(--space-2);
 }
 
-/* Metadata first, then changes across the full width. */
+/* The avatar in its own column; the author's line and the changes beside it. */
 .history-item {
   align-items: start;
-  background: var(--color-feed);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-control);
   display: grid;
-  gap: var(--space-3);
-  grid-template-columns: minmax(0, 1fr);
-  padding: var(--space-3) var(--space-4);
+  gap: var(--space-1) var(--space-3);
+  grid-template-columns: 20px minmax(0, 1fr);
+  padding-bottom: var(--space-5);
+  position: relative;
+}
+
+.history-item:last-child {
+  padding-bottom: 0;
+}
+
+/* The line from this avatar down to the next save's. */
+.history-item:not(:last-child)::before {
+  background: var(--color-border);
+  bottom: var(--space-1);
+  content: '';
+  left: 9.5px;
+  position: absolute;
+  top: calc(20px + var(--space-1));
+  width: 1px;
 }
 
 .history-owner {
@@ -295,7 +305,6 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
   flex-wrap: wrap;
   font-size: var(--font-size-small);
   gap: var(--space-2);
-  grid-row: 1;
   min-height: 20px;
   min-width: 0;
 }
@@ -313,7 +322,6 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 }
 
 .history-time {
-  margin-left: auto;
   white-space: nowrap;
 }
 
@@ -346,6 +354,7 @@ const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
 
 .history-content {
   display: grid;
+  grid-column: 2;
   gap: var(--space-1);
   min-width: 0;
 }
