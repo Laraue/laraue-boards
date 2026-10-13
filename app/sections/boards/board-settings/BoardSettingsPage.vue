@@ -17,24 +17,7 @@
             to: organizationRoutes.board(spaceKey, boardId),
           },
         ]"
-        :title="t('settings')">
-        <template
-          v-if="data"
-          #actions>
-          <BaseButton
-            v-if="data.canUpdate"
-            :aria-label="t('saveChanges')"
-            :disabled="removing"
-            :form="formId"
-            icon-on-mobile
-            :loading="saving"
-            type="submit"
-            variant="primary">
-            <IconCheck />
-            <template #label>{{ t('saveChanges') }}</template>
-          </BaseButton>
-        </template>
-      </PageHeader>
+        :title="t('settings')" />
     </template>
     <QueryState
       :data="data"
@@ -51,6 +34,19 @@
             :on-update="(input) => save(page, input)"
             :submitting="saving || removing"
             :view-model="page" />
+          <!-- The form is the component above; the button submits it through its id. -->
+          <div
+            v-if="page.canUpdate"
+            class="form-actions">
+            <BaseButton
+              :disabled="removing"
+              :form="formId"
+              :loading="saving"
+              type="submit"
+              variant="primary">
+              {{ t('saveChanges') }}
+            </BaseButton>
+          </div>
           <BaseDangerZone
             v-if="page.canDelete"
             :description="t('deleteDescription')"
@@ -70,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconSettings } from '@tabler/icons-vue'
+import { IconSettings } from '@tabler/icons-vue'
 
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type {
