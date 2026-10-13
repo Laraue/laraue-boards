@@ -7,66 +7,31 @@
         <template
           v-if="data"
           #tools>
-          <BasePopover
-            align="end"
-            class="history-filters-popover">
-            <template #trigger="{ open, toggle }">
-              <BaseButton
-                :aria-expanded="open"
-                aria-haspopup="dialog"
-                @click="toggle">
-                <IconFilter />
-                {{ t('filters') }}
-                <span v-if="activeCount">({{ activeCount }})</span>
-              </BaseButton>
+          <FilterMenu
+            :active-count="activeCount"
+            :items="filterItems"
+            :label="t('historyFilters')"
+            :on-clear="clear">
+            <template #panel="{ id, item }">
+              <fieldset
+                v-if="item.id === 'user'"
+                :aria-label="t('user')"
+                class="filter-options">
+                <BaseCheckbox
+                  v-for="user in data.users"
+                  :key="user.value"
+                  :model-value="form.ownerId === user.value"
+                  @update:model-value="setOwner(user.value, $event)">
+                  {{ user.label }}
+                </BaseCheckbox>
+              </fieldset>
+              <IssueDateFilter
+                v-else
+                :id="id"
+                :model-value="[form.dateFrom, form.dateTo]"
+                @update:model-value="setDates" />
             </template>
-            <form
-              class="history-filters"
-              @change="applyFilters"
-              @submit.prevent>
-              <div class="history-filters-header">
-                <span>{{ t('filters') }}</span>
-                <BaseIconButton
-                  :disabled="!activeCount"
-                  :label="t('clearAll')"
-                  @click="clear">
-                  <IconFilterOff />
-                </BaseIconButton>
-              </div>
-              <BaseField
-                id="history-user"
-                :label="t('user')">
-                <select
-                  id="history-user"
-                  v-model="form.ownerId">
-                  <option value="">{{ t('allUsers') }}</option>
-                  <option
-                    v-for="user in data.users"
-                    :key="user.value"
-                    :value="user.value">
-                    {{ user.label }}
-                  </option>
-                </select>
-              </BaseField>
-              <BaseField
-                id="history-from"
-                :label="t('from')">
-                <input
-                  id="history-from"
-                  v-model="form.dateFrom"
-                  type="date" />
-              </BaseField>
-              <BaseField
-                id="history-to"
-                :label="t('to')">
-                <input
-                  id="history-to"
-                  v-model="form.dateTo"
-                  :min="form.dateFrom || undefined"
-                  type="date" />
-              </BaseField>
-            </form>
-          </BasePopover>
+          </FilterMenu>
         </template>
       </PageHeader>
     </template>
@@ -104,11 +69,14 @@
 </template>
 
 <script setup lang="ts">
-import { IconFilter, IconFilterOff, IconHistory, IconLoader2 } from '@tabler/icons-vue'
+import { IconCalendar, IconHistory, IconLoader2, IconUser } from '@tabler/icons-vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
+import FilterMenu from '~/components/filter-menu/FilterMenu.vue'
+import type { FilterMenuItem } from '~/components/filter-menu/FilterMenu.types'
 import type { HistoryItemViewModel } from '~/components/history-timeline/HistoryTimeline.types'
 import HistoryTimeline from '~/components/history-timeline/HistoryTimeline.vue'
+import IssueDateFilter from '~/components/issue-filters/components/IssueDateFilter.vue'
 
 import type { OrganizationHistoryPageDeps } from './OrganizationHistoryPage.deps'
 
@@ -120,29 +88,23 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
-    allUsers: 'All users',
-    clearAll: 'Clear all',
+    date: 'Date',
     entries: 'Organization history entries',
-    filters: 'Filters',
-    from: 'From',
     history: 'Organization history',
+    historyFilters: 'History filters',
     loadError: 'Could not load organization history',
     loading: 'Loading history…',
     loadMore: 'Load more',
-    to: 'To',
     user: 'User',
   },
   ru: {
-    allUsers: 'Все пользователи',
-    clearAll: 'Очистить всё',
+    date: 'Дата',
     entries: 'Записи истории организации',
-    filters: 'Фильтры',
-    from: 'От',
     history: 'История организации',
+    historyFilters: 'Фильтры истории',
     loadError: 'Не удалось загрузить историю организации',
     loading: 'Загрузка истории…',
     loadMore: 'Загрузить ещё',
-    to: 'До',
     user: 'Пользователь',
   },
 })
@@ -212,6 +174,27 @@ const applyFilters = () => {
   void props.onUpdateQuery(query)
 }
 
+const filterItems = computed<FilterMenuItem[]>(() => [
+  { count: Number(Boolean(filters.value.ownerId)), icon: IconUser, id: 'user', label: t('user') },
+  {
+    count: Number(Boolean(filters.value.dateFrom)) + Number(Boolean(filters.value.dateTo)),
+    icon: IconCalendar,
+    id: 'date',
+    label: t('date'),
+  },
+])
+
+// One author at a time: picking another replaces the first.
+const setOwner = (ownerId: string, checked: boolean) => {
+  form.ownerId = checked ? ownerId : ''
+  applyFilters()
+}
+
+const setDates = ([dateFrom = '', dateTo = '']: string[]) => {
+  Object.assign(form, { dateFrom, dateTo })
+  applyFilters()
+}
+
 const clear = () => {
   Object.assign(form, { dateFrom: '', dateTo: '', ownerId: '' })
   applyFilters()
@@ -245,22 +228,12 @@ watch(
   width: 100%;
 }
 
-.history-filters-popover {
-  --base-popover-width: min(320px, calc(100vw - var(--space-8)));
-}
-
-.history-filters {
+.filter-options {
+  border: 0;
   display: grid;
-  gap: var(--space-4);
-  padding: var(--space-1) var(--space-3) var(--space-3);
-}
-
-.history-filters-header {
-  align-items: center;
-  color: var(--color-muted);
-  display: flex;
-  justify-content: space-between;
-  margin-right: calc(-1 * var(--space-2));
+  margin: 0;
+  min-width: 0;
+  padding: 0;
 }
 
 .history-loading {
