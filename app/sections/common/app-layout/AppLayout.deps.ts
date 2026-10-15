@@ -1,4 +1,5 @@
 import type { TourStateDeps } from '~/composables/useTour'
+import type { FeedbackDialogDeps } from '~/sections/common/app-layout/components/FeedbackDialog/FeedbackDialog.deps'
 
 export type AppLayoutData = {
   organization: {
@@ -44,6 +45,7 @@ export type ViewAppLayout = (input: {
 }) => Promise<AppLayoutResult>
 
 export type AppLayoutDeps = {
+  feedback: FeedbackDialogDeps
   logout: () => Promise<void>
   tour: TourStateDeps
   view: ViewAppLayout

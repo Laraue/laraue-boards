@@ -1081,6 +1081,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendFeedbackRequest"];
+                    "text/json": components["schemas"]["SendFeedbackRequest"];
+                    "application/*+json": components["schemas"]["SendFeedbackRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SendFeedbackResponse"];
+                        "application/json": components["schemas"]["SendFeedbackResponse"];
+                        "text/json": components["schemas"]["SendFeedbackResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/files/{id}": {
         parameters: {
             query?: never;
@@ -3543,6 +3586,8 @@ export interface components {
             createdAt: string;
             isDefault: boolean;
         };
+        /** @enum {unknown} */
+        FeedbackType: "Bug" | "Idea" | "Question" | null;
         GetAdminBillingTransactionsRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: uuid */
@@ -3971,6 +4016,18 @@ export interface components {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
             };
             sorting?: null | components["schemas"]["IssueSorting"];
+        };
+        SendFeedbackRequest: {
+            type: null | components["schemas"]["FeedbackType"];
+            message: string;
+            contact?: null | string;
+            context?: null | {
+                [key: string]: string;
+            };
+        };
+        SendFeedbackResponse: {
+            /** Format: int64 */
+            feedbackId: number | string;
         };
         SetOnboardingStatusRequest: {
             status: components["schemas"]["OnboardingStatus"];

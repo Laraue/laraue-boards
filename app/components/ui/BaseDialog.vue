@@ -155,4 +155,9 @@ defineExpose({
 .base-dialog-form label:not(.base-checkbox):first-of-type {
   margin-top: 0;
 }
+
+/* A BaseField spaces its own label, and BaseFieldGroup the fields: margins here would double the gaps. */
+.base-dialog-form label.base-field-label {
+  margin: 0;
+}
 </style>
