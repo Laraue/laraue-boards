@@ -1,6 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { isApiError, request } from '#infrastructure/api/request'
 import { DEFAULT_COLOR } from '~/constants/colors'
+import { createFeedbackDialogDeps } from '~/sections/common/app-layout/components/FeedbackDialog/FeedbackDialog.deps.impl'
 import { getOrganizationKey } from '~/utils/organizationKey'
 
 import type { AppLayoutDeps, AppLayoutProblem, AppLayoutResult } from './AppLayout.deps'
@@ -87,6 +88,7 @@ const loadAppLayout = async (
 }
 
 export const createAppLayoutDeps = (client: ApiClient): AppLayoutDeps => ({
+  feedback: createFeedbackDialogDeps(client),
   logout: async () => {
     await request(client.POST('/api/user/logout')).catch(() => undefined)
   },
