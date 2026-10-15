@@ -41,6 +41,20 @@
             rows="6" />
         </template>
       </BaseField>
+      <BaseField
+        :hint="t('contactHint')"
+        :label="t('contact')">
+        <template #default="{ describedby, id }">
+          <BaseInput
+            :id="id"
+            v-model="state.contact"
+            :aria-describedby="describedby"
+            autocomplete="email"
+            :disabled="sending"
+            :maxlength="MAX_CONTACT_LENGTH"
+            :placeholder="t('contactPlaceholder')" />
+        </template>
+      </BaseField>
     </BaseFieldGroup>
     <p
       v-if="message"
@@ -72,6 +86,8 @@ const props = defineProps<{ deps: FeedbackDialogDeps }>()
 
 // The feedback service keeps at most this many characters of a message.
 const MAX_MESSAGE_LENGTH = 3000
+// An email, a Telegram username or a phone fits easily.
+const MAX_CONTACT_LENGTH = 256
 
 const types: FeedbackType[] = ['bug', 'idea', 'question']
 
@@ -81,6 +97,10 @@ const { locale, t } = useI18n({
     bugPlaceholder: 'What happened, and what did you expect?',
     cancel: 'Cancel',
     close: 'Close',
+    contact: 'Another way to reach you (optional)',
+    contactHint:
+      'We will reply through the Telegram or Google account you signed in with. Prefer email or something else? Leave it here.',
+    contactPlaceholder: 'Email, Telegram or phone',
     description: 'The team reads every message.',
     hint: 'The address of this page is sent with it.',
     idea: 'Idea',
@@ -99,6 +119,10 @@ const { locale, t } = useI18n({
     bugPlaceholder: 'Что произошло и что вы ожидали увидеть?',
     cancel: 'Отмена',
     close: 'Закрыть',
+    contact: 'Другой способ связи (необязательно)',
+    contactHint:
+      'Мы ответим через аккаунт Telegram или Google, с которым вы вошли. Удобнее по почте или иначе? Укажите здесь.',
+    contactPlaceholder: 'Почта, Telegram или телефон',
     description: 'Команда читает каждое сообщение.',
     hint: 'Вместе с ним отправится адрес этой страницы.',
     idea: 'Идея',
@@ -119,6 +143,7 @@ const toast = useToast()
 const dialog = useTemplateRef('dialog')
 
 const state = reactive({
+  contact: '',
   message: '',
   type: 'bug' as FeedbackType,
 })
@@ -136,13 +161,14 @@ const send = async (): Promise<void> => {
   }
   const sent = await execute({
     browser: navigator.userAgent,
+    contact: state.contact,
     locale: locale.value,
     message: state.message,
     page: location.href,
     type: state.type,
   })
   if (sent) {
-    Object.assign(state, { message: '', type: 'bug' })
+    Object.assign(state, { contact: '', message: '', type: 'bug' })
     dialog.value?.close()
     toast.show(t('sent'), 'success')
   }
