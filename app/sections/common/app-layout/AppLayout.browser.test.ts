@@ -2,6 +2,7 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 
+import { ApiError } from '#infrastructure/api/request'
 import PageHeader from '~/components/PageHeader.vue'
 import type { TourStateDeps } from '~/composables/useTour'
 
@@ -180,4 +181,42 @@ it('finishes the tour before unavailable settings', async () => {
   await expect.element(page.getByText('Spaces, backlog, and boards')).toBeInTheDocument()
   await expect.element(page.getByText('3 of 3')).toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Start working' })).toBeInTheDocument()
+})
+
+it('sends feedback from the sidebar', async () => {
+  const send = vi.fn<AppLayoutDeps['feedback']['send']>(async () => undefined)
+  await page.viewport(1280, 800)
+  await mount(createDeps({ feedback: { send } }))
+
+  await page.getByRole('button', { name: 'Send feedback' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Send feedback' })
+  await expect.element(dialog.getByRole('button', { name: 'Send', exact: true })).toBeDisabled()
+  await dialog.getByRole('button', { name: 'Idea' }).click()
+  await dialog.getByLabelText('Message').fill('Add a dark theme to the board')
+  await dialog.getByRole('button', { name: 'Send', exact: true }).click()
+
+  await expect.element(dialog).not.toBeInTheDocument()
+  expect(send).toHaveBeenCalledWith({
+    browser: navigator.userAgent,
+    locale: 'en',
+    message: 'Add a dark theme to the board',
+    page: location.href,
+    type: 'idea',
+  })
+})
+
+it('keeps the feedback and shows why it was not sent', async () => {
+  const send = vi.fn<AppLayoutDeps['feedback']['send']>(async () => {
+    throw new ApiError(400, 'The message is too long.')
+  })
+  await page.viewport(1280, 800)
+  await mount(createDeps({ feedback: { send } }))
+
+  await page.getByRole('button', { name: 'Send feedback' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Send feedback' })
+  await dialog.getByLabelText('Message').fill('Cards jump after a move')
+  await dialog.getByRole('button', { name: 'Send', exact: true }).click()
+
+  await expect.element(dialog.getByText('The message is too long.')).toBeVisible()
+  await expect.element(dialog.getByLabelText('Message')).toHaveValue('Cards jump after a move')
 })
