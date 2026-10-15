@@ -25,9 +25,7 @@
           </div>
         </template>
       </BaseField>
-      <BaseField
-        :hint="t('hint')"
-        :label="t('message')">
+      <BaseField :label="t('message')">
         <template #default="{ describedby, id }">
           <textarea
             :id="id"
@@ -41,9 +39,7 @@
             rows="6" />
         </template>
       </BaseField>
-      <BaseField
-        :hint="t('contactHint')"
-        :label="t('contact')">
+      <BaseField :label="t('contact')">
         <template #default="{ describedby, id }">
           <BaseInput
             :id="id"
@@ -98,10 +94,8 @@ const { locale, t } = useI18n({
     cancel: 'Cancel',
     close: 'Close',
     contact: 'Contact (optional)',
-    contactHint: 'Otherwise we reply through the account you signed in with.',
-    contactPlaceholder: 'Email, Telegram or phone',
-    description: 'The team reads every message.',
-    hint: 'The address of this page is sent with it.',
+    contactPlaceholder: 'Email or Telegram, if not your sign-in account',
+    description: 'The team reads every message and sees which page you sent it from.',
     idea: 'Idea',
     ideaPlaceholder: 'What would make Boards better for you?',
     message: 'Message',
@@ -119,10 +113,8 @@ const { locale, t } = useI18n({
     cancel: 'Отмена',
     close: 'Закрыть',
     contact: 'Контакт (необязательно)',
-    contactHint: 'Иначе ответим через аккаунт, с которым вы вошли.',
-    contactPlaceholder: 'Почта, Telegram или телефон',
-    description: 'Команда читает каждое сообщение.',
-    hint: 'Вместе с ним отправится адрес этой страницы.',
+    contactPlaceholder: 'Почта или Telegram, если не аккаунт для входа',
+    description: 'Команда читает каждое сообщение и видит, с какой страницы оно отправлено.',
     idea: 'Идея',
     ideaPlaceholder: 'Что сделало бы Boards удобнее для вас?',
     message: 'Сообщение',
