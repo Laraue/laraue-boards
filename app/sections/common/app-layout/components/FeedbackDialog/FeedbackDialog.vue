@@ -68,12 +68,12 @@
 import type { FeedbackDialogDeps } from './FeedbackDialog.deps'
 import type { FeedbackType } from './FeedbackDialog.types'
 
+const props = defineProps<{ deps: FeedbackDialogDeps }>()
+
 // The feedback service keeps at most this many characters of a message.
 const MAX_MESSAGE_LENGTH = 3000
 
 const types: FeedbackType[] = ['bug', 'idea', 'question']
-
-const props = defineProps<{ deps: FeedbackDialogDeps }>()
 
 const { locale, t } = useI18n({
   en: {

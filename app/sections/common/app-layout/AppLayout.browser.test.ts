@@ -190,10 +190,10 @@ it('sends feedback from the sidebar', async () => {
 
   await page.getByRole('button', { name: 'Send feedback' }).click()
   const dialog = page.getByRole('dialog', { name: 'Send feedback' })
-  await expect.element(dialog.getByRole('button', { name: 'Send', exact: true })).toBeDisabled()
+  await expect.element(dialog.getByRole('button', { exact: true, name: 'Send' })).toBeDisabled()
   await dialog.getByRole('button', { name: 'Idea' }).click()
   await dialog.getByLabelText('Message').fill('Add a dark theme to the board')
-  await dialog.getByRole('button', { name: 'Send', exact: true }).click()
+  await dialog.getByRole('button', { exact: true, name: 'Send' }).click()
 
   await expect.element(dialog).not.toBeInTheDocument()
   expect(send).toHaveBeenCalledWith({
@@ -215,7 +215,7 @@ it('keeps the feedback and shows why it was not sent', async () => {
   await page.getByRole('button', { name: 'Send feedback' }).click()
   const dialog = page.getByRole('dialog', { name: 'Send feedback' })
   await dialog.getByLabelText('Message').fill('Cards jump after a move')
-  await dialog.getByRole('button', { name: 'Send', exact: true }).click()
+  await dialog.getByRole('button', { exact: true, name: 'Send' }).click()
 
   await expect.element(dialog.getByText('The message is too long.')).toBeVisible()
   await expect.element(dialog.getByLabelText('Message')).toHaveValue('Cards jump after a move')
