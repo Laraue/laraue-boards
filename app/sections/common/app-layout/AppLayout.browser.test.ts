@@ -193,7 +193,7 @@ it('sends feedback from the sidebar', async () => {
   await expect.element(dialog.getByRole('button', { exact: true, name: 'Send' })).toBeDisabled()
   await dialog.getByRole('button', { name: 'Idea' }).click()
   await dialog.getByLabelText('Message').fill('Add a dark theme to the board')
-  await dialog.getByLabelText('Another way to reach you (optional)').fill('ada@example.com')
+  await dialog.getByLabelText('Contact (optional)').fill('ada@example.com')
   await dialog.getByRole('button', { exact: true, name: 'Send' }).click()
 
   await expect.element(dialog).not.toBeInTheDocument()

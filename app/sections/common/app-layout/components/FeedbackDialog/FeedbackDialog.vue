@@ -97,9 +97,8 @@ const { locale, t } = useI18n({
     bugPlaceholder: 'What happened, and what did you expect?',
     cancel: 'Cancel',
     close: 'Close',
-    contact: 'Another way to reach you (optional)',
-    contactHint:
-      'We will reply through the Telegram or Google account you signed in with. Prefer email or something else? Leave it here.',
+    contact: 'Contact (optional)',
+    contactHint: 'Otherwise we reply through the account you signed in with.',
     contactPlaceholder: 'Email, Telegram or phone',
     description: 'The team reads every message.',
     hint: 'The address of this page is sent with it.',
@@ -119,9 +118,8 @@ const { locale, t } = useI18n({
     bugPlaceholder: 'Что произошло и что вы ожидали увидеть?',
     cancel: 'Отмена',
     close: 'Закрыть',
-    contact: 'Другой способ связи (необязательно)',
-    contactHint:
-      'Мы ответим через аккаунт Telegram или Google, с которым вы вошли. Удобнее по почте или иначе? Укажите здесь.',
+    contact: 'Контакт (необязательно)',
+    contactHint: 'Иначе ответим через аккаунт, с которым вы вошли.',
     contactPlaceholder: 'Почта, Telegram или телефон',
     description: 'Команда читает каждое сообщение.',
     hint: 'Вместе с ним отправится адрес этой страницы.',
