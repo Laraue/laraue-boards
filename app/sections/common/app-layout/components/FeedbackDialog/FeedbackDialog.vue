@@ -186,7 +186,8 @@ defineExpose({ open })
 
 <style scoped>
 .feedback-message {
-  resize: vertical;
-  width: 100%;
+  /* The textarea grows with its content from one line (field-sizing), which ignores rows: start
+     with room for a few sentences. */
+  min-height: 8rem;
 }
 </style>

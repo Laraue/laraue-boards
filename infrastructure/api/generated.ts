@@ -4020,6 +4020,7 @@ export interface components {
         SendFeedbackRequest: {
             type: null | components["schemas"]["FeedbackType"];
             message: string;
+            contact?: null | string;
             context?: null | {
                 [key: string]: string;
             };

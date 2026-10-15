@@ -18,6 +18,7 @@ test('sends the trimmed message with its type and where it was written', async (
 
   assert.deepEqual(paths(), ['/api/feedback'])
   assert.deepEqual(await requests[0]!.json(), {
+    contact: null,
     context: {
       browser: 'Firefox',
       locale: 'ru',
@@ -57,6 +58,7 @@ test('sends the preferred contact when the user gave one', async () => {
     type: 'question',
   })
 
-  const body = (await requests[0]!.json()) as { context: Record<string, string> }
-  assert.equal(body.context.contact, 'ada@example.com')
+  const body = (await requests[0]!.json()) as { contact: string; context: Record<string, string> }
+  assert.equal(body.contact, 'ada@example.com')
+  assert.notProperty(body.context, 'contact')
 })

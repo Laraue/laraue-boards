@@ -17,14 +17,13 @@ const toApiType: Record<FeedbackType, components['schemas']['FeedbackType']> = {
 export const createFeedbackDialogDeps = (client: ApiClient): FeedbackDialogDeps => ({
   // The backend adds the user and the current organization.
   send: async ({ browser, contact, locale, message, page, type }) => {
-    const preferredContact = contact.trim()
     await request(
       client.POST('/api/feedback', {
         body: {
+          // Empty when the team can answer through the account the user signed in with.
+          contact: contact.trim() || null,
           context: {
             browser: browser.slice(0, MAX_CONTEXT_VALUE_LENGTH),
-            // Left out when empty: the team then answers through the account the user signed in with.
-            ...(preferredContact ? { contact: preferredContact } : {}),
             locale,
             page: page.slice(0, MAX_CONTEXT_VALUE_LENGTH),
           },
