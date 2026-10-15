@@ -1,6 +1,7 @@
 <template>
   <AppLayoutContent
     v-if="data"
+    :feedback-deps="deps.feedback"
     :logging-out="loggingOut"
     :on-logout="logout"
     :view-model="data">

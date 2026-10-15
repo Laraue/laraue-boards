@@ -100,6 +100,12 @@
             <IconBook />
             {{ t('documentation') }}
           </a>
+          <button
+            type="button"
+            @click="feedbackDialog?.open()">
+            <IconMessageCircle />
+            {{ t('feedback') }}
+          </button>
         </div>
       </nav>
       <div class="sidebar-footer">
@@ -177,6 +183,9 @@
         class="scrim"
         @click="sidebarOpen = false" />
     </Transition>
+    <FeedbackDialog
+      ref="feedbackDialog"
+      :deps="feedbackDeps" />
     <main>
       <div class="app-layout-page">
         <slot />
@@ -193,6 +202,7 @@ import {
   IconHistory,
   IconLanguage,
   IconLogout,
+  IconMessageCircle,
   IconMoon,
   IconPlus,
   IconSelector,
@@ -203,9 +213,12 @@ import {
 
 import { RetroIcon, SpaceIcon } from '~/constants/icons'
 import type { AppLayoutData } from '~/sections/common/app-layout/AppLayout.deps'
+import type { FeedbackDialogDeps } from '~/sections/common/app-layout/components/FeedbackDialog/FeedbackDialog.deps'
+import FeedbackDialog from '~/sections/common/app-layout/components/FeedbackDialog/FeedbackDialog.vue'
 import { docsPath } from '~/sections/docs/docsPaths'
 
 const props = defineProps<{
+  feedbackDeps: FeedbackDialogDeps
   loggingOut: boolean
   onLogout: () => Promise<void>
   viewModel: AppLayoutData
@@ -213,6 +226,7 @@ const props = defineProps<{
 const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const sidebarOpen = useSidebarOpen()
+const feedbackDialog = useTemplateRef('feedbackDialog')
 const { setLocale, setTheme, theme } = useAppPreferences()
 const { locale, t } = useI18n({
   en: {
@@ -225,6 +239,7 @@ const { locale, t } = useI18n({
     darkTheme: 'Dark theme',
     documentation: 'Documentation',
     documentationNewTab: 'Documentation (opens in a new tab)',
+    feedback: 'Send feedback',
     history: 'History',
     lightTheme: 'Light theme',
     logOut: 'Log out',
@@ -248,6 +263,7 @@ const { locale, t } = useI18n({
     darkTheme: 'Тёмная тема',
     documentation: 'Документация',
     documentationNewTab: 'Документация (откроется в новой вкладке)',
+    feedback: 'Обратная связь',
     history: 'История',
     lightTheme: 'Светлая тема',
     logOut: 'Выйти',
@@ -456,7 +472,7 @@ main :deep(.page-load-state) {
   background: var(--color-soft);
 }
 
-/* Retro and the docs live together at the bottom, away from the settings block. */
+/* Retro, the docs and feedback live together at the bottom, away from the settings block. */
 .sidebar-bottom {
   display: grid;
   gap: var(--space-1);
