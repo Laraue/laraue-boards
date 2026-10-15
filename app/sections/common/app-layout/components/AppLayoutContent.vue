@@ -100,12 +100,6 @@
             <IconBook />
             {{ t('documentation') }}
           </a>
-          <button
-            type="button"
-            @click="feedbackDialog?.open()">
-            <IconMessageCircle />
-            {{ t('feedback') }}
-          </button>
         </div>
       </nav>
       <div class="sidebar-footer">
@@ -174,6 +168,13 @@
             {{ t('logOut') }}
           </BaseMenuItem>
         </BaseMenu>
+        <BaseIconButton
+          class="sidebar-feedback"
+          :label="t('feedback')"
+          variant="ghost"
+          @click="openFeedback">
+          <IconBug />
+        </BaseIconButton>
       </div>
     </aside>
     <Transition name="fade">
@@ -197,12 +198,12 @@
 <script setup lang="ts">
 import {
   IconBook,
+  IconBug,
   IconBuilding,
   IconClipboardList,
   IconHistory,
   IconLanguage,
   IconLogout,
-  IconMessageCircle,
   IconMoon,
   IconPlus,
   IconSelector,
@@ -227,6 +228,10 @@ const route = useRoute<OrganizationRouteName>()
 const organizationRoutes = useOrganizationRoutes()
 const sidebarOpen = useSidebarOpen()
 const feedbackDialog = useTemplateRef('feedbackDialog')
+const openFeedback = () => {
+  sidebarOpen.value = false
+  feedbackDialog.value?.open()
+}
 const { setLocale, setTheme, theme } = useAppPreferences()
 const { locale, t } = useI18n({
   en: {
@@ -438,15 +443,22 @@ main :deep(.page-load-state) {
   z-index: 29;
 }
 
+/* The account menu takes the row; feedback sits beside it, always one click away. */
 .sidebar-footer {
+  align-items: center;
   border-top: 1px solid var(--color-divider);
-  display: grid;
+  display: flex;
   gap: var(--space-2);
   padding-top: var(--space-3);
 }
 
 .sidebar-account {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-feedback {
+  flex: none;
 }
 
 .sidebar-user {
@@ -472,7 +484,7 @@ main :deep(.page-load-state) {
   background: var(--color-soft);
 }
 
-/* Retro, the docs and feedback live together at the bottom, away from the settings block. */
+/* Retro and the docs live together at the bottom, away from the settings block. */
 .sidebar-bottom {
   display: grid;
   gap: var(--space-1);
