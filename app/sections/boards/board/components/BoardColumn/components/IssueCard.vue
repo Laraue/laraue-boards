@@ -23,6 +23,9 @@
             :initials="viewModel.assigneeInitial"
             size="sm" />
           <span class="task-assignee">{{ viewModel.assigneeName }}</span>
+          <AgentRunBadge
+            v-if="viewModel.agentRunState"
+            :state="viewModel.agentRunState" />
           <!-- A native title: a board renders hundreds of cards, too many for tooltip components. -->
           <time
             :datetime="viewModel.time"
@@ -42,6 +45,8 @@
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
 import { IconLoader } from '@tabler/icons-vue'
+
+import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
 
 import type { IssueCardViewModel } from './IssueCard.types'
 

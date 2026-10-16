@@ -9,6 +9,10 @@ import type {
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
+import type {
+  IssueAgentRunDeps,
+  IssueAgentRunViewModel,
+} from './components/IssueAgentRun/IssueAgentRun.deps'
 import type { IssueCommentsDeps } from './components/IssueComments/IssueComments.deps'
 import type { IssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps'
 import type { IssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps'
@@ -43,6 +47,8 @@ export type IssuePageInput = {
 }
 
 export type IssuePageViewModel = {
+  // The latest agent run; null when the issue was never handed to the agent.
+  agentRun: IssueAgentRunViewModel | null
   assignee: string
   assigneeColor: string
   assigneeId: string
@@ -74,6 +80,7 @@ export type IssuePageViewModel = {
 }
 
 export type IssuePageDeps = {
+  agentRun: IssueAgentRunDeps
   assigneeSelect: AssigneeSelectDeps
   boardSelect: BoardSelectDeps
   comments: IssueCommentsDeps

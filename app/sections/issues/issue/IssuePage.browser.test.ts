@@ -8,6 +8,7 @@ import type { IssuePageDeps, IssuePageViewModel } from './IssuePage.deps'
 import IssuePage from './IssuePage.vue'
 
 const issue: IssuePageViewModel = {
+  agentRun: null,
   assignee: 'Ada Lovelace',
   assigneeColor: '#111',
   assigneeId: '9',
@@ -37,6 +38,10 @@ const issue: IssuePageViewModel = {
 }
 
 const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
+  agentRun: {
+    cancel: vi.fn<IssuePageDeps['agentRun']['cancel']>(async () => {}),
+    handOff: vi.fn<IssuePageDeps['agentRun']['handOff']>(async () => {}),
+  },
   assigneeSelect: {
     loadAssignees: vi.fn<IssuePageDeps['assigneeSelect']['loadAssignees']>(async () => [
       {
@@ -328,6 +333,47 @@ it('stays on the page after the issue is saved', async () => {
   expect(onBack).not.toHaveBeenCalled()
   expect(onDirtyChange).toHaveBeenLastCalledWith(false)
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
+})
+
+it('hands the issue to the agent and shows the new run', async () => {
+  const view = vi
+    .fn<IssuePageDeps['view']>()
+    .mockResolvedValueOnce(issue)
+    .mockResolvedValue({ ...issue, agentRun: { failureReason: null, id: '5', state: 'ready' } })
+  const deps = createDeps({ view })
+  await mount(deps)
+
+  await page.getByRole('button', { name: 'Hand to agent' }).click()
+
+  expect(deps.agentRun.handOff).toHaveBeenCalledWith({ issueKey: 'ISS-1' })
+  await expect.element(page.getByText('For agent')).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeInTheDocument()
+})
+
+it('cancels the open agent run after confirmation', async () => {
+  const deps = createDeps({
+    view: vi.fn<IssuePageDeps['view']>(async () => ({
+      ...issue,
+      agentRun: { failureReason: null, id: '5', state: 'working' },
+    })),
+  })
+  await mount(deps)
+
+  await page.getByRole('button', { name: 'Cancel run' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Stop agent' }).click()
+
+  await vi.waitFor(() => expect(deps.agentRun.cancel).toHaveBeenCalledWith({ runId: '5' }))
+})
+
+it('hides the agent actions when the issue cannot be edited', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, canEdit: false })),
+    }),
+  )
+
+  await expect.element(page.getByText('Not handed off')).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
 })
 
 it('hides the actions when the issue cannot be edited', async () => {

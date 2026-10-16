@@ -107,6 +107,49 @@ test('maps board columns in status order with their issues', async () => {
   )
 })
 
+test('maps the latest agent run of a card to its badge state', async () => {
+  const { client } = createTestApiClient((_request, path) => {
+    if (path === '/api/issues/board') {
+      return [
+        {
+          items: {
+            data: [
+              {
+                assignee: 'Ada',
+                assigneeColor: '#444',
+                assigneeInitial: 'A',
+                content: null,
+                epicId: 7,
+                id: 1,
+                key: 'ISS-1',
+                latestAgentRun: { id: 5, state: 'Working' },
+                spaceKey: 'product',
+                statusId: 1,
+                time: '2026-01-01T00:00:00Z',
+                title: 'Fix it',
+              },
+            ],
+            hasNext: false,
+            offset: 1,
+            totalCount: 1,
+          },
+          statusId: 1,
+        },
+      ]
+    }
+    return []
+  })
+
+  const result = await createBoardPageDeps(client).searchBoardIssues({
+    boardId: '7',
+    filters: [],
+    search: '',
+    take: 25,
+  })
+
+  expect(result.columns[0]?.issues[0]?.agentRunState).toBe('working')
+})
+
 test('searches the board with the filters read from the query', async () => {
   const { client, requests } = createTestApiClient((_request, path) => {
     if (path === '/api/organizations/attributes') {

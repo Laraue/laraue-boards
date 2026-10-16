@@ -12,6 +12,7 @@ import type {
 import IssueDialog from './IssueDialog.vue'
 
 const issue: IssuePageViewModel = {
+  agentRun: null,
   assignee: 'Ada Lovelace',
   assigneeColor: '#4774d4',
   assigneeId: '9',
@@ -41,6 +42,10 @@ const issue: IssuePageViewModel = {
 }
 
 const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
+  agentRun: {
+    cancel: vi.fn<IssuePageDeps['agentRun']['cancel']>(async () => {}),
+    handOff: vi.fn<IssuePageDeps['agentRun']['handOff']>(async () => {}),
+  },
   assigneeSelect: {
     loadAssignees: vi.fn<IssuePageDeps['assigneeSelect']['loadAssignees']>(),
   },

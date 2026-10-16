@@ -227,6 +227,14 @@
                       size="sm" />
                     <span>{{ issue.owner }}</span>
                   </div>
+                  <span class="issue-property-label">{{ t('agent') }}</span>
+                  <IssueAgentRun
+                    :key="`agent-${issue.issueKey}`"
+                    :can-edit="issue.canEdit"
+                    :deps="deps.agentRun"
+                    :issue-key="issue.issueKey"
+                    :on-changed="refreshAfterAgentRunChange"
+                    :run="issue.agentRun" />
                   <IssueAttributeFields
                     v-if="issue.attributes.length"
                     v-model="state.attributeValues"
@@ -290,6 +298,7 @@ import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
+import IssueAgentRun from './components/IssueAgentRun/IssueAgentRun.vue'
 import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueDescription from './components/IssueDescription/IssueDescription.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
@@ -313,6 +322,7 @@ const formId = `issue-form-${useId()}`
 const confirm = useConfirm()
 const { t } = useI18n({
   en: {
+    agent: 'Agent',
     assignee: 'Assignee',
     attachImages: 'Attach images',
     attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
@@ -340,6 +350,7 @@ const { t } = useI18n({
     updated: 'Updated',
   },
   ru: {
+    agent: 'Агент',
     assignee: 'Исполнитель',
     attachImages: 'Прикрепить изображения',
     attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',
@@ -456,6 +467,12 @@ const syncState = (issue: IssuePageViewModel) => {
     statusId: issue.statusId,
     title: issue.title,
   })
+}
+
+// The run's state also shows in the history, which loads separately.
+const refreshAfterAgentRunChange = async () => {
+  await refresh()
+  void history.value?.refresh()
 }
 
 const setDirty = (value: boolean) => {

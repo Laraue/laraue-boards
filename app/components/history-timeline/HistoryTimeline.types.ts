@@ -1,6 +1,7 @@
 import type { RouteLocationRaw } from 'vue-router'
 
 import type { components } from '#infrastructure/api/generated'
+import type { AgentRunState } from '~/components/agent-run-badge/AgentRunBadge.types'
 import type { IssueDescriptionDiffLine } from '~/sections/issues/issue/components/IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.types'
 
 export type HistoryAction = components['schemas']['LogAction']
@@ -17,6 +18,13 @@ export type HistoryAttachmentChangeViewModel = {
   fileName: null | string
   imageUrl: null | string
   kind: 'attachment'
+}
+
+// An agent run of the issue moved from one state to another; no old state when it was handed off.
+export type HistoryAgentRunChangeViewModel = {
+  kind: 'agentRun'
+  newState: AgentRunState
+  oldState: AgentRunState | null
 }
 
 export type HistoryEventChangeViewModel = {
@@ -53,6 +61,7 @@ export type HistoryStatusChangeViewModel = HistoryValueChange<'status'> & {
 export type HistoryTitleChangeViewModel = HistoryValueChange<'title'>
 
 export type HistoryChangeViewModel =
+  | HistoryAgentRunChangeViewModel
   | HistoryAssigneeChangeViewModel
   | HistoryAttachmentChangeViewModel
   | HistoryBoardChangeViewModel

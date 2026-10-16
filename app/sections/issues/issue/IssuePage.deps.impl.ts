@@ -6,11 +6,13 @@ import { createBoardSelectDeps } from '~/components/board-select/BoardSelect.dep
 import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps.impl'
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
 import { COLORS, DEFAULT_COLOR } from '~/constants/colors'
+import { mapAgentRunState } from '~/sections/issues/shared/api/agentRun'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
 import { assertNever } from '~/utils/assertNever'
 
+import { createIssueAgentRunDeps } from './components/IssueAgentRun/IssueAgentRun.deps.impl'
 import { createIssueCommentsDeps } from './components/IssueComments/IssueComments.deps.impl'
 import { createIssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps.impl'
 import { createIssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps.impl'
@@ -72,6 +74,13 @@ const mapIssue = (
   baseUrl: string,
   boardIsBacklog: boolean,
 ): IssuePageViewModel => ({
+  agentRun: issue.latestAgentRun
+    ? {
+        failureReason: issue.latestAgentRun.failureReason,
+        id: String(issue.latestAgentRun.id),
+        state: mapAgentRunState(issue.latestAgentRun.state),
+      }
+    : null,
   assignee: issue.assignee.displayName,
   assigneeColor: issue.assignee.color,
   assigneeId: issue.assigneeId,
@@ -102,6 +111,7 @@ const mapIssue = (
 })
 
 export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
+  agentRun: createIssueAgentRunDeps(client),
   assigneeSelect: createAssigneeSelectDeps(client),
   boardSelect: createBoardSelectDeps(client),
   comments: createIssueCommentsDeps(client),
