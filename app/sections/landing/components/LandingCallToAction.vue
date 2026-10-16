@@ -1,9 +1,11 @@
 <template>
   <section class="cta-section">
     <div class="cta-inner">
-      <div class="cta-label">{{ texts.label }}</div>
-      <h2 class="cta-title">{{ texts.title }}</h2>
-      <p class="cta-sub">{{ texts.sub }}</p>
+      <div class="cta-copy">
+        <p class="cta-label">{{ texts.label }}</p>
+        <h2 class="cta-title">{{ texts.title }}</h2>
+        <p class="cta-sub">{{ texts.sub }}</p>
+      </div>
       <div class="cta-actions">
         <LandingActionButton
           :link="appUrl"
@@ -64,75 +66,73 @@ const texts = computed(() =>
 .cta-section {
   --btn-site-bg: #fff;
   --btn-site-color: var(--color-action);
-  --btn-site-hover: color-mix(in srgb, #fff 88%, transparent);
+  --btn-site-hover: color-mix(in srgb, #fff 90%, var(--color-action));
   --btn-alt-bg: transparent;
-  --btn-alt-border: rgb(255 255 255 / 50%);
+  --btn-alt-border: rgb(255 255 255 / 45%);
   --btn-alt-color: #fff;
-  --btn-alt-hover: rgb(255 255 255 / 14%);
+  --btn-alt-hover: #fff;
 
-  background: var(--landing-cta-bg);
+  /* The hero's dotted canvas again, in white on the accent. */
+  background-color: var(--landing-cta-bg);
+  background-image: radial-gradient(rgb(255 255 255 / 22%) 1px, transparent 1px);
+  background-size: 24px 24px;
   border-bottom: 1px solid var(--landing-cta-border);
   border-top: 1px solid var(--landing-cta-border);
   color: #fff;
-  overflow: hidden;
-  padding: 96px 24px;
-  position: relative;
-  text-align: center;
-}
-
-.cta-section::after {
-  background: radial-gradient(circle, rgb(255 255 255 / 16%) 0%, transparent 70%);
-  content: '';
-  height: 600px;
-  left: 50%;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  transform: translate(-50%, -50%);
-  width: 600px;
+  padding: 104px 24px;
 }
 
 .cta-inner {
+  align-items: end;
+  display: grid;
+  gap: 32px 64px;
+  grid-template-columns: minmax(0, 1fr) auto;
   margin: 0 auto;
-  max-width: 640px;
-  position: relative;
-  z-index: 1;
+  max-width: 1312px;
 }
 
 .cta-label {
-  color: rgb(255 255 255 / 70%);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.1em;
-  margin-bottom: 20px;
-  text-transform: uppercase;
+  color: #fff;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 14px;
 }
 
 .cta-title {
-  font-size: clamp(28px, 4vw, 44px);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.02em;
-  line-height: 1.12;
-  margin-bottom: 16px;
+  font-size: clamp(32px, 4.4vw, 60px);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  margin-bottom: 20px;
+  text-wrap: balance;
 }
 
 .cta-sub {
-  color: rgb(255 255 255 / 80%);
-  font-size: 17px;
+  color: #fff;
+  font-size: var(--font-size-xl);
   line-height: 1.6;
-  margin-bottom: 36px;
+  max-width: 34em;
 }
 
 .cta-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
-  justify-content: center;
+  gap: 12px;
 }
 
-@media (width <= 720px) {
+@media (width > 900px) {
+  .cta-title {
+    white-space: pre-line;
+  }
+}
+
+@media (width <= 900px) {
   .cta-section {
-    padding: 60px 22px;
+    padding: 72px 16px;
+  }
+
+  .cta-inner {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

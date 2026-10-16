@@ -3,8 +3,8 @@
     :post-title="t('os_sub')"
     :pre-title="t('os_label')"
     :title="t('os_title')"
-    type="plain">
-    <div class="cards-grid">
+    type="alt">
+    <div class="cards">
       <LandingInfoCard
         :description="t('os_code_desc')"
         external
@@ -82,23 +82,24 @@ const devlogUrl = laraueUrl(
 </script>
 
 <style scoped>
+.cards {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .pricing-note {
   color: var(--color-muted);
-  font-size: var(--font-size-body);
-  margin-top: 36px;
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  margin: 40px auto 0;
+  max-width: 70ch;
   text-align: center;
 }
 
-.cards-grid {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 48px;
-}
-
 @media (width <= 900px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

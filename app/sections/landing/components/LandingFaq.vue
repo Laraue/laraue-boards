@@ -3,8 +3,10 @@
     id="faq"
     class="faq">
     <div class="faq-inner">
-      <div class="section-label">{{ t('faq_label') }}</div>
-      <h2 class="section-title">{{ t('faq_title') }}</h2>
+      <LandingHeading
+        class="faq-heading"
+        :pre-title="t('faq_label')"
+        :title="t('faq_title')" />
       <div class="faq-list">
         <div
           v-for="(item, index) in items"
@@ -18,6 +20,10 @@
             type="button"
             @click="toggleItem(index)">
             {{ item.question }}
+            <IconPlus
+              aria-hidden="true"
+              class="faq-sign"
+              stroke="1.8" />
           </button>
           <div class="faq-answer-wrap">
             <div class="faq-answer-inner">
@@ -31,7 +37,11 @@
 </template>
 
 <script setup lang="ts">
+import { IconPlus } from '@tabler/icons-vue'
+
 import type { Locale } from '~/composables/useI18n'
+
+import LandingHeading from './LandingHeading.vue'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -149,95 +159,80 @@ useHead({
 </script>
 
 <style scoped>
-.faq-item {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  border-radius: var(--radius-card);
-  padding: 20px 24px;
-}
-
 .faq {
-  background: var(--color-workspace);
   border-bottom: 1px solid var(--color-divider);
-  padding: 88px 24px;
+  padding: 112px 24px;
 }
 
 .faq-inner {
+  align-items: start;
+  display: grid;
+  gap: 64px;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
   margin: 0 auto;
   /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
   max-width: 1312px;
 }
 
-.section-label {
-  align-items: center;
-  color: var(--color-accent);
-  display: flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
-  gap: 8px;
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
-  text-transform: uppercase;
-}
-
-.section-label::after {
-  background: var(--color-accent);
-  content: '';
-  flex: 1;
-  height: 1px;
-  max-width: 40px;
-  opacity: 0.5;
-}
-
-.section-title {
-  font-size: clamp(26px, 3vw, 40px);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin-bottom: 16px;
+.faq-heading {
+  position: sticky;
+  top: 96px;
 }
 
 .faq-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 40px;
+  border-top: 1px solid var(--color-border-surface);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--color-border-surface);
 }
 
 .faq-summary {
   align-items: center;
   background: none;
   border: none;
+  border-radius: var(--radius-control);
   color: var(--color-text);
   cursor: pointer;
   display: flex;
   font: inherit;
-  font-size: 15px;
-  font-weight: var(--font-weight-bold);
-  gap: 12px;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  gap: 24px;
   justify-content: space-between;
-  margin: 0;
-  padding: 0;
+  line-height: 1.4;
+  padding: 22px 0;
   text-align: left;
+  transition: color var(--duration-base);
   width: 100%;
 }
 
-.faq-summary::after {
-  color: var(--color-muted);
-  content: '+';
-  flex-shrink: 0;
-  font-size: 20px;
-  font-weight: 400;
+.faq-summary:hover {
+  color: var(--color-accent);
 }
 
-.faq-item[data-open='true'] .faq-summary::after {
+.faq-summary:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.faq-sign {
+  color: var(--color-muted);
+  flex-shrink: 0;
+  height: 22px;
+  transition: transform var(--duration-base) var(--ease-standard);
+  width: 22px;
+}
+
+.faq-item[data-open='true'] .faq-sign {
+  color: var(--color-accent);
   transform: rotate(45deg);
 }
 
 .faq-answer-wrap {
   display: grid;
   grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-base) var(--ease-standard);
 }
 
 .faq-item[data-open='true'] .faq-answer-wrap {
@@ -250,14 +245,34 @@ useHead({
 
 .faq-item p {
   color: var(--color-muted);
-  font-size: 15px;
+  font-size: var(--font-size-lg);
   line-height: 1.7;
-  margin-top: 14px;
+  max-width: 70ch;
+  padding-bottom: 24px;
 }
 
-@media (width <= 720px) {
+@media (width <= 900px) {
   .faq {
-    padding: 60px 22px;
+    padding: 72px 16px;
+  }
+
+  .faq-inner {
+    display: block;
+  }
+
+  .faq-heading {
+    position: static;
+  }
+
+  .faq-list {
+    margin-top: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-sign,
+  .faq-answer-wrap {
+    transition: none;
   }
 }
 </style>

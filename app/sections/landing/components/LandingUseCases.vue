@@ -3,8 +3,8 @@
     :post-title="t('uc_sub')"
     :pre-title="t('uc_label')"
     :title="t('uc_title')"
-    type="alt">
-    <div class="cards-grid">
+    type="plain">
+    <div class="cards">
       <LandingInfoCard
         :description="t('uc_personal_desc')"
         external
@@ -104,16 +104,17 @@ const saveGuideUrl = docsPath(props.locale, ['use-cases', 'save-links-and-ideas-
 </script>
 
 <style scoped>
-.cards-grid {
+/* Top-aligned: the shorter card ends where its list ends, with no gap above its links. */
+.cards {
+  align-items: start;
   display: grid;
-  gap: 24px;
-  grid-template-columns: 1fr 1fr;
-  margin-top: 48px;
+  gap: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (width <= 900px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

@@ -2,15 +2,15 @@
   <SiteHeader :locale="locale" />
   <main>
     <LandingHero :locale="locale" />
+    <LandingPlatforms :locale="locale" />
     <LandingUseCases :locale="locale" />
     <LandingStructure :locale="locale" />
-    <LandingCallToAction
-      :locale="locale"
-      variant="start" />
     <LandingFeaturesGrid
       id="features"
       :locale="locale" />
-    <LandingPlatforms :locale="locale" />
+    <LandingCallToAction
+      :locale="locale"
+      variant="start" />
     <LandingPricing
       id="pricing"
       :locale="locale"
