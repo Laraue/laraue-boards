@@ -4123,7 +4123,7 @@ export interface components {
             isCurrentUser: boolean;
         };
         /** @enum {unknown} */
-        StatusCategory: "Created" | "InProgress" | "Completed";
+        StatusCategory: "Created" | "InProgress" | "Completed" | "Review";
         StatusDto: {
             /** Format: int64 */
             id: number | string;

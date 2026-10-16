@@ -30,12 +30,14 @@ const { t } = useI18n({
     completed: 'Done',
     created: 'Not started',
     inProgress: 'In progress',
+    review: 'In review',
   },
   ru: {
     category: 'Категория статуса',
     completed: 'Готово',
     created: 'Не начато',
     inProgress: 'В работе',
+    review: 'На проверке',
   },
 })
 
@@ -44,6 +46,7 @@ const options = computed(
     [
       { label: t('created'), value: 'Created' },
       { label: t('inProgress'), value: 'InProgress' },
+      { label: t('review'), value: 'Review' },
       { label: t('completed'), value: 'Completed' },
     ] satisfies Array<{ label: string; value: StatusCategory }>,
 )

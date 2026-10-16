@@ -1,1 +1,1 @@
-export type StatusCategory = 'Completed' | 'Created' | 'InProgress'
+export type StatusCategory = 'Completed' | 'Created' | 'InProgress' | 'Review'
