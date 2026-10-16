@@ -324,4 +324,17 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
     flex-wrap: wrap;
   }
 }
+
+/* On a phone the bar takes the row's width and the legend goes under it. */
+@media (max-width: 767px) {
+  .space-row-progress {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .meter {
+    width: 100%;
+  }
+}
 </style>

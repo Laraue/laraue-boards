@@ -1,42 +1,55 @@
+<!-- On Reka Dialog, as the kit's modals: a confirmation opened from the issue stacks above it. -->
 <template>
-  <div
-    aria-hidden="true"
-    class="issue-dialog-overlay" />
-  <dialog
-    ref="dialogEl"
-    :aria-label="t('issueDetails')"
-    class="issue-dialog"
-    open
-    tabindex="-1"
-    @cancel.self="handleCancel">
-    <div class="issue-close">
-      <BaseIconButton
-        :label="t('closeDialog')"
-        @click="close()">
-        <IconX />
-      </BaseIconButton>
-    </div>
-    <div class="issue-dialog-content">
-      <ClientOnly>
-        <IssuePage
-          :deps="deps"
-          in-dialog
-          :issue-key="issueKey"
-          lazy
-          :on-back="() => close()"
-          :on-deleted="onDeleted"
-          :on-dirty-change="setDirty"
-          :on-saved="handleSaved" />
-        <template #fallback>
-          <IssueSkeleton in-dialog />
-        </template>
-      </ClientOnly>
-    </div>
-  </dialog>
+  <DialogRoot
+    :open="true"
+    @update:open="(open) => !open && close()">
+    <DialogPortal>
+      <DialogOverlay class="base-dialog-overlay" />
+      <DialogContent
+        :aria-describedby="undefined"
+        class="issue-dialog"
+        @open-auto-focus="focusDialog">
+        <VisuallyHidden>
+          <DialogTitle>{{ t('issueDetails') }}</DialogTitle>
+        </VisuallyHidden>
+        <div class="issue-close">
+          <BaseIconButton
+            :label="t('closeDialog')"
+            @click="close()">
+            <IconX />
+          </BaseIconButton>
+        </div>
+        <div class="issue-dialog-content">
+          <ClientOnly>
+            <IssuePage
+              :deps="deps"
+              in-dialog
+              :issue-key="issueKey"
+              lazy
+              :on-back="() => close()"
+              :on-deleted="onDeleted"
+              :on-dirty-change="setDirty"
+              :on-saved="handleSaved" />
+            <template #fallback>
+              <IssueSkeleton in-dialog />
+            </template>
+          </ClientOnly>
+        </div>
+      </DialogContent>
+    </DialogPortal>
+  </DialogRoot>
 </template>
 
 <script setup lang="ts">
 import { IconX } from '@tabler/icons-vue'
+import {
+  DialogContent,
+  DialogOverlay,
+  DialogPortal,
+  DialogRoot,
+  DialogTitle,
+  VisuallyHidden,
+} from 'reka-ui'
 
 import { confirmUnsavedChanges } from '~/composables/useUnsavedChangesWarning'
 import IssueSkeleton from '~/sections/issues/issue/components/IssueSkeleton.vue'
@@ -64,14 +77,13 @@ const { t } = useI18n({
   },
 })
 
-const dialogEl = useTemplateRef('dialogEl')
 const state = reactive({ dirty: false })
 
-const showDialog = () => {
-  if (dialogEl.value) {
-    dialogEl.value.close()
-    dialogEl.value.showModal()
-    dialogEl.value.focus({ preventScroll: true })
+// Focus the dialog itself, not its first control, so opening an issue does not scroll or open a field.
+const focusDialog = (event: Event) => {
+  event.preventDefault()
+  if (event.target instanceof HTMLElement) {
+    event.target.focus({ preventScroll: true })
   }
 }
 const setDirty = (dirty: boolean) => {
@@ -89,12 +101,6 @@ const close = (skipWarning = false) => {
   setDirty(false)
   props.onClose()
 }
-const handleCancel = (event: Event) => {
-  event.preventDefault()
-  close()
-}
-
-onMounted(showDialog)
 onBeforeUnmount(() => props.onDirtyChange(false))
 watch(
   () => props.issueKey,
@@ -103,17 +109,15 @@ watch(
 </script>
 
 <style scoped>
-.issue-dialog-overlay {
-  backdrop-filter: blur(1px);
-  background: #00000082;
-  inset: 0;
-  opacity: 1;
-  position: fixed;
-  transition: opacity var(--duration-base) var(--ease-standard);
-  z-index: 1000;
-}
 .issue-dialog {
   background: var(--color-background);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-popover);
+  color: var(--color-text);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   inset: var(--space-8) 0 auto;
   margin: 0 auto;
   max-height: calc(100dvh - var(--space-8) - var(--space-8));
@@ -121,19 +125,8 @@ watch(
   overflow: hidden;
   padding: var(--space-6);
   position: fixed;
-  transition: none;
   width: min(1280px, calc(100% - var(--space-8)));
-  z-index: 1001;
-}
-.issue-dialog[open] {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
-}
-.issue-dialog::backdrop {
-  backdrop-filter: none;
-  background: transparent;
-  transition: none;
+  z-index: 46;
 }
 .issue-dialog-content {
   display: grid;
@@ -152,20 +145,6 @@ watch(
   right: var(--space-6);
   top: var(--space-6);
   z-index: 1;
-}
-@starting-style {
-  .issue-dialog-overlay {
-    opacity: 0;
-  }
-  .issue-dialog[open] {
-    opacity: 1;
-    scale: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .issue-dialog-overlay {
-    transition: none;
-  }
 }
 @media (max-width: 767px) {
   .issue-dialog {
