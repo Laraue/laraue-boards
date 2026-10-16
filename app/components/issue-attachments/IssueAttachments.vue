@@ -371,7 +371,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
   padding: var(--space-8);
   place-items: center;
   position: fixed;
-  z-index: 46;
+  z-index: 48;
 }
 
 .issue-attachment-lightbox > img {
@@ -406,7 +406,9 @@ defineExpose({ pick: () => inputEl.value?.click() })
 }
 
 /* Darker than a dialog's backdrop: the image is the only thing to look at. */
+/* Above the issue dialog it opens from. */
 .base-dialog-overlay.issue-attachment-lightbox-overlay {
   background: #000000bd;
+  z-index: 47;
 }
 </style>

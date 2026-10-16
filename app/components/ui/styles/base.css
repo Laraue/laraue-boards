@@ -34,7 +34,7 @@ body {
 }
 
 /* Modal surfaces on Reka Dialog, rendered in a portal: BaseDialog, BaseAlertDialog, IssueDialog and
-   the attachment preview. Same z-index for all, so a dialog opened from another stacks above it. */
+   the attachment preview. A confirmation is above the rest. */
 
 .base-dialog-overlay {
   animation: base-dialog-fade var(--duration-base) var(--ease-standard);
@@ -63,6 +63,16 @@ body {
   position: fixed;
   width: min(27.5rem, calc(100% - var(--space-8)));
   z-index: 46;
+}
+
+/* A confirmation can open from any dialog (the issue's delete), so it is always the top layer. All
+   modals share <body>, where Teleport keeps the place it took at mount, so DOM order cannot decide. */
+.base-dialog-overlay.base-alert-dialog-overlay {
+  z-index: 49;
+}
+
+.base-dialog.base-alert-dialog {
+  z-index: 50;
 }
 
 .base-dialog:focus-visible {

@@ -6,7 +6,7 @@
     :open="open"
     @update:open="(value) => emit('update:open', value)">
     <AlertDialogPortal>
-      <AlertDialogOverlay class="base-dialog-overlay" />
+      <AlertDialogOverlay class="base-dialog-overlay base-alert-dialog-overlay" />
       <AlertDialogContent class="base-dialog base-alert-dialog">
         <AlertDialogTitle class="base-alert-dialog-title">{{ title }}</AlertDialogTitle>
         <AlertDialogDescription
