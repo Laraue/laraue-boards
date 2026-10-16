@@ -247,7 +247,7 @@ useHead({
   color: var(--color-muted);
   font-size: var(--font-size-lg);
   line-height: 1.7;
-  max-width: 44em;
+  max-width: 70ch;
   padding-bottom: 24px;
 }
 

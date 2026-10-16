@@ -255,7 +255,7 @@ const { t } = useI18n(
 .platform-card-tag {
   color: var(--card-muted, var(--color-muted));
   font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   margin-top: 2px;
   overflow-wrap: anywhere;
 }
@@ -327,6 +327,37 @@ const { t } = useI18n(
 .platform-card-link.mcp:hover {
   background: color-mix(in srgb, var(--color-background) 88%, var(--color-text));
   color: var(--color-text);
+}
+
+/* Inverting on a dark page would make a glaring white block; there the card is tinted instead. */
+:root[data-theme='dark'] .platform-card.mcp {
+  --card-muted: var(--color-muted);
+
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+  color: var(--color-text);
+}
+
+:root[data-theme='dark'] .mcp .platform-card-icon {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+:root[data-theme='dark'] .mcp .platform-card-features {
+  border-top-color: var(--color-divider);
+}
+
+:root[data-theme='dark'] .mcp .platform-card-features li svg {
+  color: var(--color-accent);
+}
+
+:root[data-theme='dark'] .platform-card-link.mcp {
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+:root[data-theme='dark'] .platform-card-link.mcp:hover {
+  background: var(--color-action-hover);
+  color: var(--color-on-action);
 }
 
 @media (width <= 1000px) {

@@ -3,7 +3,7 @@
     :post-title="t('feat_sub')"
     :pre-title="t('feat_label')"
     :title="t('feat_title')"
-    type="alt">
+    type="plain">
     <div class="features-grid">
       <NuxtLink
         v-for="feature in features"

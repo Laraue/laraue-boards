@@ -277,6 +277,7 @@ watch(
   color: var(--color-muted);
   font-size: var(--font-size-md);
   line-height: 1.6;
+  max-width: 70ch;
 }
 
 .pricing-note a {
@@ -308,7 +309,7 @@ watch(
   font-size: var(--font-size-md);
   line-height: 1.55;
   margin-bottom: 20px;
-  max-width: 48em;
+  max-width: 70ch;
 }
 
 .pricing-cards {

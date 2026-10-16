@@ -93,7 +93,7 @@ const devlogUrl = laraueUrl(
   font-size: var(--font-size-md);
   line-height: 1.6;
   margin: 40px auto 0;
-  max-width: 52em;
+  max-width: 70ch;
   text-align: center;
 }
 

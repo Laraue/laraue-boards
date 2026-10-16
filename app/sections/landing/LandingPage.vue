@@ -4,6 +4,7 @@
     <LandingHero :locale="locale" />
     <LandingPlatforms :locale="locale" />
     <LandingUseCases :locale="locale" />
+    <LandingStructure :locale="locale" />
     <LandingFeaturesGrid
       id="features"
       :locale="locale" />
@@ -35,6 +36,7 @@ import LandingHero from './components/LandingHero.vue'
 import LandingOpenSource from './components/LandingOpenSource.vue'
 import LandingPlatforms from './components/LandingPlatforms.vue'
 import LandingPricing from './components/LandingPricing.vue'
+import LandingStructure from './components/LandingStructure.vue'
 import LandingUseCases from './components/LandingUseCases.vue'
 import type { LandingPageDeps } from './LandingPage.deps'
 import { useLandingSeo } from './useLandingSeo'

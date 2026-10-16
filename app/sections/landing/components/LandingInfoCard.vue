@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="info-card"
-    :class="{ bare }">
+  <div class="info-card">
     <div class="info-card-head">
       <div class="info-card-icon">
         <slot name="icon" />
@@ -44,8 +42,6 @@
 import { IconArrowUpRight } from '@tabler/icons-vue'
 
 defineProps<{
-  /** Drops the card's own frame, for a card that sits inside a shared panel. */
-  bare?: boolean
   description: string
   external?: boolean
   items?: string[]
@@ -181,15 +177,8 @@ defineProps<{
   text-decoration-color: currentcolor;
 }
 
-.info-card.bare {
-  border: none;
-  border-radius: 0;
-  padding: 40px;
-}
-
 @media (width <= 560px) {
-  .info-card,
-  .info-card.bare {
+  .info-card {
     padding: 22px;
   }
 }
