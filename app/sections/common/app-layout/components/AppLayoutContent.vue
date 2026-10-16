@@ -447,6 +447,10 @@ main :deep(.page-load-state) {
   padding-top: var(--space-3);
 }
 
+.sidebar-account {
+  width: 100%;
+}
+
 .sidebar-user {
   align-items: center;
   background: transparent;
