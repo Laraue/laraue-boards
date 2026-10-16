@@ -21,6 +21,10 @@
       v-else-if="category === 'InProgress'"
       d="M8 4a4 4 0 0 1 0 8Z"
       fill="currentColor" />
+    <path
+      v-else-if="category === 'Review'"
+      d="M8 8V4a4 4 0 1 1-4 4Z"
+      fill="currentColor" />
   </svg>
 </template>
 

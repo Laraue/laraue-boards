@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-04-22
-updatedAt: 2026-08-20
+updatedAt: 2026-10-16
 ---
 An Epic is a kanban board — a named collection of status columns that group related issues together. In Laraue Boards the terms "board" and "epic" are used interchangeably. An epic works with an internal id only — it does not have its own key. Issue keys come from the space the epic belongs to, not from the epic itself.
 
@@ -35,6 +35,8 @@ Each column in a board represents a status. Issues move from left to right as wo
 - **Reorder columns** — drag the status rows into the order you want
 
 There is no limit on the number of columns. A simple workflow might have three; a more complex one might have seven or eight.
+
+Each column also has a **status category** that says what the status means, whatever the column is called: **Not started**, **In progress**, **In review** (the work is done and waits for someone to check it) or **Done**. You pick it for each row in the board's settings, and the icon next to a status shows it. Only **Done** counts as finished; an issue in review is still open. The category lets the [MCP server](/en/documentation/integrations/mcp) find, for example, every issue in review across boards whose columns are named differently.
 
 ## Sorting and filtering issues
 

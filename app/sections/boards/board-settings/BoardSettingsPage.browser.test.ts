@@ -92,6 +92,31 @@ it('saves a column category picked by the user', async () => {
   )
 })
 
+it('saves the review category picked by the user', async () => {
+  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => {})
+
+  await mount(
+    {
+      remove: vi.fn<BoardSettingsPageDeps['remove']>(),
+      save,
+      view: vi.fn<BoardSettingsPageDeps['view']>(async () => board),
+    },
+    vi.fn<() => void>(),
+  )
+  await page.getByRole('combobox', { name: 'Status category' }).first().click()
+  await page.getByRole('option', { exact: true, name: 'In review' }).click()
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      columns: [
+        { category: 'Review', color: '#4774d4', id: '1', name: 'To do' },
+        { category: 'Completed', color: '#d65f63', id: '2', name: 'Done' },
+      ],
+    }),
+  )
+})
+
 it('reorders columns through keyboard drag and drop before saving', async () => {
   const save = vi.fn<BoardSettingsPageDeps['save']>(async () => {})
 
