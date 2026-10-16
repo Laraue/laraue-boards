@@ -46,18 +46,7 @@
       <BaseSectionHeader
         :id="`${idPrefix}-columns`"
         :description="t('columnsHint')"
-        :title="t('columns')">
-        <template
-          v-if="viewModel.canUpdate"
-          #actions>
-          <BaseButton
-            :disabled="submitting"
-            @click="addColumn">
-            <IconPlus />
-            {{ t('addColumn') }}
-          </BaseButton>
-        </template>
-      </BaseSectionHeader>
+        :title="t('columns')" />
       <DragDropProvider
         :plugins="defaultPreset.plugins"
         :sensors="sensors"
@@ -85,6 +74,14 @@
             :on-update-name="(value) => (column.name = value)" />
         </div>
       </DragDropProvider>
+      <BaseButton
+        v-if="viewModel.canUpdate"
+        class="add-column"
+        :disabled="submitting"
+        @click="addColumn">
+        <IconPlus />
+        {{ t('addColumn') }}
+      </BaseButton>
     </section>
     <p
       v-if="error"
@@ -252,6 +249,10 @@ watch(
 .settings-section + .settings-section {
   border-top: 1px solid var(--color-divider);
   padding-top: var(--space-5);
+}
+
+.add-column {
+  justify-self: start;
 }
 
 .column-settings {

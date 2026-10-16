@@ -124,13 +124,13 @@ const { isDragging } = useSortable({
   min-width: 0;
 }
 
+/* On a phone the logical status goes under the name, in the name's column. */
 @media (max-width: 600px) {
   .setting-row {
-    border-bottom: 1px solid var(--color-divider);
+    gap: 0 var(--space-1);
     grid-template-columns: var(--icon-btn-size) var(--icon-btn-size) minmax(0, 1fr) var(
         --icon-btn-size
       );
-    padding-bottom: var(--space-3);
   }
 
   .column-drag {
@@ -154,7 +154,7 @@ const { isDragging } = useSortable({
   }
 
   .column-category {
-    grid-column: 3 / 5;
+    grid-column: 3;
     grid-row: 2;
   }
 }

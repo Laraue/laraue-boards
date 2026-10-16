@@ -38,8 +38,8 @@ it('opens and closes a preview of an existing attachment', async () => {
   await page.getByRole('button', { name: 'Close attachment preview' }).click()
 
   await expect
-    .element(page.getByRole('dialog', { includeHidden: true, name: 'Attachment preview' }))
-    .not.toHaveAttribute('open')
+    .element(page.getByRole('dialog', { name: 'Attachment preview' }))
+    .not.toBeInTheDocument()
 })
 
 it('removes an existing attachment when requested', async () => {

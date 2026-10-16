@@ -19,6 +19,12 @@ test('strips embedded scripts and event handlers', () => {
   assert.notInclude(html, 'onerror')
 })
 
+test('opens web links in a new tab', () => {
+  const html = renderMarkdown('see https://example.com and [docs](/docs)')
+  assert.include(html, '<a href="https://example.com" target="_blank" rel="noopener noreferrer">')
+  assert.include(html, '<a href="/docs">')
+})
+
 test('strips javascript: urls', () => {
   assert.notInclude(renderMarkdown('[click](javascript:alert(1))'), 'javascript:')
 })
