@@ -1,36 +1,39 @@
 <template>
-  <div
+  <section
     id="faq"
     class="faq">
-    <LandingHeading
-      :pre-title="t('faq_label')"
-      :title="t('faq_title')" />
-    <div class="faq-list">
-      <div
-        v-for="(item, index) in items"
-        :key="index"
-        class="faq-item"
-        :data-open="openItem === index ? 'true' : null">
-        <button
-          :aria-controls="`faq-answer-${index}`"
-          :aria-expanded="openItem === index"
-          class="faq-summary"
-          type="button"
-          @click="toggleItem(index)">
-          {{ item.question }}
-          <IconPlus
-            aria-hidden="true"
-            class="faq-sign"
-            stroke="1.8" />
-        </button>
-        <div class="faq-answer-wrap">
-          <div class="faq-answer-inner">
-            <p :id="`faq-answer-${index}`">{{ item.answer }}</p>
+    <div class="faq-inner">
+      <LandingHeading
+        class="faq-heading"
+        :pre-title="t('faq_label')"
+        :title="t('faq_title')" />
+      <div class="faq-list">
+        <div
+          v-for="(item, index) in items"
+          :key="index"
+          class="faq-item"
+          :data-open="openItem === index ? 'true' : null">
+          <button
+            :aria-controls="`faq-answer-${index}`"
+            :aria-expanded="openItem === index"
+            class="faq-summary"
+            type="button"
+            @click="toggleItem(index)">
+            {{ item.question }}
+            <IconPlus
+              aria-hidden="true"
+              class="faq-sign"
+              stroke="1.8" />
+          </button>
+          <div class="faq-answer-wrap">
+            <div class="faq-answer-inner">
+              <p :id="`faq-answer-${index}`">{{ item.answer }}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -156,9 +159,28 @@ useHead({
 </script>
 
 <style scoped>
+.faq {
+  border-bottom: 1px solid var(--color-divider);
+  padding: 112px 24px;
+}
+
+.faq-inner {
+  align-items: start;
+  display: grid;
+  gap: 64px;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  margin: 0 auto;
+  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
+  max-width: 1312px;
+}
+
+.faq-heading {
+  position: sticky;
+  top: 96px;
+}
+
 .faq-list {
   border-top: 1px solid var(--color-border-surface);
-  margin-top: 40px;
 }
 
 .faq-item {
@@ -227,6 +249,24 @@ useHead({
   line-height: 1.7;
   max-width: 44em;
   padding-bottom: 24px;
+}
+
+@media (width <= 900px) {
+  .faq {
+    padding: 72px 16px;
+  }
+
+  .faq-inner {
+    display: block;
+  }
+
+  .faq-heading {
+    position: static;
+  }
+
+  .faq-list {
+    margin-top: 40px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

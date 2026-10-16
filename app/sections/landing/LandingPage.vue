@@ -14,15 +14,8 @@
       id="pricing"
       :locale="locale"
       :tariffs="tariffs" />
-    <!-- Open code, the devlog and the answers all earn the same thing: trust. -->
-    <section class="trust">
-      <div class="trust-inner">
-        <LandingOpenSource
-          class="trust-aside"
-          :locale="locale" />
-        <LandingFaq :locale="locale" />
-      </div>
-    </section>
+    <LandingOpenSource :locale="locale" />
+    <LandingFaq :locale="locale" />
     <LandingCallToAction
       :locale="locale"
       variant="final" />
@@ -69,41 +62,3 @@ const { data: tariffs } = await useApiQuery('landing-tariffs', () => props.deps.
 
 useLandingSeo(props.locale, { description: t('seoDescription'), title: t('seoTitle') })
 </script>
-
-<style scoped>
-.trust {
-  background: var(--color-workspace);
-  border-bottom: 1px solid var(--color-divider);
-  padding: 112px 24px;
-}
-
-.trust-inner {
-  align-items: start;
-  display: grid;
-  gap: 80px;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  margin: 0 auto;
-  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
-  max-width: 1312px;
-}
-
-.trust-aside {
-  position: sticky;
-  top: 96px;
-}
-
-@media (width <= 1000px) {
-  .trust {
-    padding: 72px 16px;
-  }
-
-  .trust-inner {
-    gap: 72px;
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .trust-aside {
-    position: static;
-  }
-}
-</style>
