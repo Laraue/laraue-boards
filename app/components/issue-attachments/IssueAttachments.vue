@@ -79,7 +79,8 @@
         <DialogContent
           :aria-describedby="undefined"
           class="issue-attachment-lightbox"
-          @click="closeLightboxFromBackdrop">
+          @click="closeLightboxFromBackdrop"
+          @open-auto-focus="focusLightbox">
           <VisuallyHidden>
             <DialogTitle>{{ t('attachmentPreview') }}</DialogTitle>
           </VisuallyHidden>
@@ -220,6 +221,14 @@ const openLightbox = (url: string, alt: string) => {
 const closeLightbox = () => {
   activeAttachment.value = null
   lightboxLoading.value = false
+}
+
+// Focus the preview itself: on the close button its tooltip would show at once.
+const focusLightbox = (event: Event) => {
+  event.preventDefault()
+  if (event.target instanceof HTMLElement) {
+    event.target.focus({ preventScroll: true })
+  }
 }
 
 // The content fills the screen around the image: a click beside the image closes the preview.
@@ -367,6 +376,7 @@ defineExpose({ pick: () => inputEl.value?.click() })
   display: grid;
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   inset: 0;
+  outline: none;
   overflow: hidden;
   padding: var(--space-8);
   place-items: center;
