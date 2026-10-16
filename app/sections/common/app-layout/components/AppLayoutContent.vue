@@ -100,6 +100,12 @@
             <IconBook />
             {{ t('documentation') }}
           </a>
+          <button
+            type="button"
+            @click="openFeedback">
+            <IconMessageReport />
+            {{ t('feedback') }}
+          </button>
         </div>
       </nav>
       <div class="sidebar-footer">
@@ -168,13 +174,6 @@
             {{ t('logOut') }}
           </BaseMenuItem>
         </BaseMenu>
-        <BaseIconButton
-          class="sidebar-feedback"
-          :label="t('feedback')"
-          variant="ghost"
-          @click="openFeedback">
-          <IconBug />
-        </BaseIconButton>
       </div>
     </aside>
     <Transition name="fade">
@@ -198,12 +197,12 @@
 <script setup lang="ts">
 import {
   IconBook,
-  IconBug,
   IconBuilding,
   IconClipboardList,
   IconHistory,
   IconLanguage,
   IconLogout,
+  IconMessageReport,
   IconMoon,
   IconPlus,
   IconSelector,
@@ -443,22 +442,13 @@ main :deep(.page-load-state) {
   z-index: 29;
 }
 
-/* The account menu takes the row; feedback sits beside it, always one click away. */
 .sidebar-footer {
-  align-items: center;
   border-top: 1px solid var(--color-divider);
-  display: flex;
-  gap: var(--space-2);
   padding-top: var(--space-3);
 }
 
 .sidebar-account {
-  flex: 1;
-  min-width: 0;
-}
-
-.sidebar-feedback {
-  flex: none;
+  width: 100%;
 }
 
 .sidebar-user {
@@ -484,7 +474,7 @@ main :deep(.page-load-state) {
   background: var(--color-soft);
 }
 
-/* Retro and the docs live together at the bottom, away from the settings block. */
+/* Retro, the docs and feedback live together at the bottom, away from the settings block. */
 .sidebar-bottom {
   display: grid;
   gap: var(--space-1);

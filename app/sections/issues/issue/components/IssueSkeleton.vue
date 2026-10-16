@@ -17,21 +17,28 @@
       :class="{ 'has-footer': inDialog }">
       <div class="skeleton-content">
         <div class="skeleton-main">
-          <div class="skeleton-description">
+          <!-- The title, then the description as the editor's three empty lines and its buttons. -->
+          <div class="skeleton-head">
             <span class="skeleton skeleton-description-title" />
-            <span class="skeleton skeleton-description-line" />
-            <span class="skeleton skeleton-description-line skeleton-description-line--short" />
-            <span class="skeleton skeleton-description-line skeleton-description-line--medium" />
-          </div>
-          <div class="skeleton-description-actions">
-            <span class="skeleton skeleton-icon" />
-            <span class="skeleton skeleton-icon" />
-            <span class="skeleton skeleton-ai" />
+            <div class="skeleton-description">
+              <div class="skeleton-description-lines">
+                <span class="skeleton skeleton-description-line" />
+                <span class="skeleton skeleton-description-line skeleton-description-line--short" />
+                <span
+                  class="skeleton skeleton-description-line skeleton-description-line--medium" />
+              </div>
+              <div class="skeleton-description-actions">
+                <span class="skeleton skeleton-icon" />
+                <span class="skeleton skeleton-icon" />
+                <span class="skeleton skeleton-ai" />
+              </div>
+            </div>
           </div>
           <div class="skeleton-comments">
-            <div class="skeleton-tabs">
-              <span class="skeleton skeleton-copy skeleton-tab">{{ t('comments') }}</span>
-              <span class="skeleton skeleton-copy skeleton-tab">{{ t('history') }}</span>
+            <!-- The kit's tabs: a track with an icon and a label per tab. -->
+            <div class="skeleton skeleton-tabs">
+              <span class="skeleton-tab">{{ t('comments') }}</span>
+              <span class="skeleton-tab">{{ t('history') }}</span>
             </div>
             <span class="skeleton skeleton-comment-field" />
           </div>
@@ -234,20 +241,33 @@ const { t } = useI18n({
   flex-shrink: 0;
 }
 
-.skeleton-description {
-  display: flex;
-  flex-direction: column;
+/* As .issue-head and .issue-description. */
+.skeleton-head {
+  display: grid;
   gap: var(--space-4);
 }
 
+.skeleton-description {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .skeleton-description-title {
-  height: 32px;
+  /* The title's line: 24px at the heading line height. */
+  height: calc(var(--font-size-title) * var(--line-height-heading));
   width: 76%;
+}
+
+/* The editor's empty minimum: three lines of body text. */
+.skeleton-description-lines {
+  align-items: center;
+  display: grid;
+  grid-auto-rows: 1.6em;
 }
 
 .skeleton-description-line {
   border-radius: var(--radius-small);
-  height: 16px;
+  height: 12px;
   width: 92%;
 }
 
@@ -281,17 +301,30 @@ const { t } = useI18n({
   width: 104px;
 }
 
+/* As .base-tabs-list and .base-tabs-tab. */
 .skeleton-tabs {
-  align-items: center;
-  border-bottom: 1px solid var(--color-divider);
+  border-radius: calc(var(--radius-control) + 3px);
   display: flex;
-  gap: var(--space-5);
-  height: 40px;
-  padding: 0 var(--space-2);
+  gap: 2px;
+  height: var(--control-height);
+  justify-self: start;
+  padding: 3px;
+  width: max-content;
 }
 
 .skeleton-tab {
-  font-size: var(--font-size-body);
+  align-items: center;
+  border: 1px solid transparent;
+  color: transparent;
+  display: flex;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  user-select: none;
+}
+
+.skeleton-tab::before {
+  content: '';
+  width: var(--icon-size);
 }
 
 .skeleton-comment-field {
@@ -315,7 +348,7 @@ const { t } = useI18n({
 .skeleton-dates {
   align-items: center;
   display: grid;
-  gap: var(--space-2) var(--space-3);
+  gap: var(--space-1) var(--space-3);
   grid-auto-rows: var(--control-height-small);
   grid-template-columns: 88px minmax(0, 1fr);
 }
@@ -379,15 +412,8 @@ const { t } = useI18n({
   }
 }
 
-@media (max-width: 767px) {
-  .skeleton-save-label {
-    display: none;
-  }
-
-  .skeleton-save-label-mobile {
-    display: inline;
-  }
-
+/* As the issue: up to 1023px the properties go under it. */
+@media (max-width: 1023px) {
   .skeleton-content {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: max-content max-content;
@@ -397,11 +423,18 @@ const { t } = useI18n({
 
   .skeleton-main,
   .skeleton-side {
+    max-height: none;
     overflow: visible;
   }
+}
 
-  .skeleton-description-title {
-    height: 30px;
+@media (max-width: 767px) {
+  .skeleton-save-label {
+    display: none;
+  }
+
+  .skeleton-save-label-mobile {
+    display: inline;
   }
 }
 </style>

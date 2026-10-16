@@ -71,39 +71,54 @@
         </div>
       </div>
     </div>
-    <Teleport to="body">
-      <dialog
-        ref="lightboxEl"
-        :aria-label="t('attachmentPreview')"
-        class="issue-attachment-lightbox"
-        @click="closeLightboxFromBackdrop"
-        @close="closeLightboxPreview">
-        <BaseIconButton
-          class="issue-attachment-lightbox-close"
-          :label="t('closePreview')"
-          @click="closeLightbox">
-          <IconX />
-        </BaseIconButton>
-        <img
-          v-if="activeAttachment"
-          :alt="activeAttachment.alt"
-          :src="activeAttachment.url"
-          @error="lightboxLoading = false"
-          @load="lightboxLoading = false" />
-        <div
-          v-if="lightboxLoading"
-          :aria-label="t('loadingPreview')"
-          class="issue-attachment-lightbox-loading"
-          role="status">
-          <IconLoader />
-        </div>
-      </dialog>
-    </Teleport>
+    <DialogRoot
+      :open="activeAttachment !== null"
+      @update:open="(open) => !open && closeLightbox()">
+      <DialogPortal>
+        <DialogOverlay class="base-dialog-overlay issue-attachment-lightbox-overlay" />
+        <DialogContent
+          :aria-describedby="undefined"
+          class="issue-attachment-lightbox"
+          @click="closeLightboxFromBackdrop"
+          @open-auto-focus="focusLightbox">
+          <VisuallyHidden>
+            <DialogTitle>{{ t('attachmentPreview') }}</DialogTitle>
+          </VisuallyHidden>
+          <BaseIconButton
+            class="issue-attachment-lightbox-close"
+            :label="t('closePreview')"
+            @click="closeLightbox">
+            <IconX />
+          </BaseIconButton>
+          <img
+            v-if="activeAttachment"
+            :alt="activeAttachment.alt"
+            :src="activeAttachment.url"
+            @error="lightboxLoading = false"
+            @load="lightboxLoading = false" />
+          <div
+            v-if="lightboxLoading"
+            :aria-label="t('loadingPreview')"
+            class="issue-attachment-lightbox-loading"
+            role="status">
+            <IconLoader />
+          </div>
+        </DialogContent>
+      </DialogPortal>
+    </DialogRoot>
   </div>
 </template>
 
 <script setup lang="ts">
 import { IconLoader, IconX } from '@tabler/icons-vue'
+import {
+  DialogContent,
+  DialogOverlay,
+  DialogPortal,
+  DialogRoot,
+  DialogTitle,
+  VisuallyHidden,
+} from 'reka-ui'
 
 import { MAX_IMAGE_SIZE } from '~/constants/attachments'
 
@@ -148,7 +163,6 @@ const { t } = useI18n({
 const activeAttachment = ref<null | { alt: string; url: string }>(null)
 const attachmentError = ref('')
 const inputEl = useTemplateRef('inputEl')
-const lightboxEl = useTemplateRef('lightboxEl')
 const lightboxLoading = ref(false)
 const pendingPreviews = ref<Array<{ file: File; url: string }>>([])
 const supportedImageTypes = new Set(['image/jpeg', 'image/png'])
@@ -199,24 +213,27 @@ const revokePreviews = () => {
   }
 }
 
-const openLightbox = async (url: string, alt: string) => {
+const openLightbox = (url: string, alt: string) => {
   lightboxLoading.value = true
   activeAttachment.value = { alt, url }
-  await nextTick()
-  lightboxEl.value?.showModal()
 }
 
 const closeLightbox = () => {
-  lightboxEl.value?.close()
-}
-
-const closeLightboxPreview = () => {
   activeAttachment.value = null
   lightboxLoading.value = false
 }
 
+// Focus the preview itself: on the close button its tooltip would show at once.
+const focusLightbox = (event: Event) => {
+  event.preventDefault()
+  if (event.target instanceof HTMLElement) {
+    event.target.focus({ preventScroll: true })
+  }
+}
+
+// The content fills the screen around the image: a click beside the image closes the preview.
 const closeLightboxFromBackdrop = (event: MouseEvent) => {
-  if (event.target === lightboxEl.value) {
+  if (event.target === event.currentTarget) {
     closeLightbox()
   }
 }
@@ -356,27 +373,15 @@ defineExpose({ pick: () => inputEl.value?.click() })
   border: 0;
   border-radius: 0;
   box-sizing: border-box;
-  height: 100dvh;
-  inset: 0;
-  margin: 0;
-  max-height: none;
-  max-width: none;
-  overflow: hidden;
-  padding: var(--space-8);
-  transition: none;
-  width: 100vw;
-}
-
-.issue-attachment-lightbox::backdrop {
-  background: #000000bd;
-  opacity: 1;
-  transition: opacity var(--duration-base) var(--ease-standard);
-}
-
-.issue-attachment-lightbox[open] {
   display: grid;
   grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  inset: 0;
+  outline: none;
+  overflow: hidden;
+  padding: var(--space-8);
   place-items: center;
+  position: fixed;
+  z-index: 48;
 }
 
 .issue-attachment-lightbox > img {
@@ -410,15 +415,10 @@ defineExpose({ pick: () => inputEl.value?.click() })
   z-index: 1;
 }
 
-@starting-style {
-  .issue-attachment-lightbox::backdrop {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .issue-attachment-lightbox::backdrop {
-    transition: none;
-  }
+/* Darker than a dialog's backdrop: the image is the only thing to look at. */
+/* Above the issue dialog it opens from. */
+.base-dialog-overlay.issue-attachment-lightbox-overlay {
+  background: #000000bd;
+  z-index: 47;
 }
 </style>

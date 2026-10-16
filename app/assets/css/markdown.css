@@ -145,4 +145,5 @@
 
 .markdown a {
   color: var(--color-accent);
+  cursor: pointer;
 }
