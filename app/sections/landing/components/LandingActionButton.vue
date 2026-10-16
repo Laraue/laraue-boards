@@ -36,25 +36,34 @@ const isExternal = computed(() => props.link.startsWith('http'))
 <style scoped>
 .btn {
   align-items: center;
+  border: 1px solid transparent;
   border-radius: var(--radius-control);
   display: inline-flex;
-  font-size: 15px;
-  font-weight: var(--font-weight-semibold);
-  gap: 8px;
-  padding: 12px 24px;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  gap: 10px;
+  height: 48px;
+  padding: 0 22px;
   text-decoration: none;
   transition:
     background var(--duration-base),
-    transform 0.15s;
+    border-color var(--duration-base);
 }
 
-.btn:hover {
-  transform: translateY(-1px);
+.btn svg {
+  height: 18px;
+  width: 18px;
+}
+
+.btn:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--color-on-action);
+  outline: 1px solid var(--color-focus);
+  outline-offset: -1px;
 }
 
 .btn.site {
   background: var(--btn-site-bg, var(--color-action));
-  color: var(--btn-site-color, #fff);
+  color: var(--btn-site-color, var(--color-on-action));
 }
 
 .btn.site:hover {
@@ -63,11 +72,11 @@ const isExternal = computed(() => props.link.startsWith('http'))
 
 .btn.telegram {
   background: var(--btn-alt-bg, var(--color-surface));
-  border: 1px solid var(--btn-alt-border, var(--color-border));
+  border-color: var(--btn-alt-border, var(--color-border));
   color: var(--btn-alt-color, var(--color-text));
 }
 
 .btn.telegram:hover {
-  background: var(--btn-alt-hover, var(--color-hover));
+  border-color: var(--btn-alt-hover, var(--color-border-hover));
 }
 </style>

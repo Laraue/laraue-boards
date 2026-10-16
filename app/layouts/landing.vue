@@ -44,4 +44,22 @@
 .landing-root :where(strong) {
   font-weight: 700;
 }
+
+/* Text links get the app's focus line inside them instead of the browser's outer outline. */
+.landing-root :where(a:focus-visible) {
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+/* Anchored sections (#features, #pricing, #faq) stop below the sticky header, not under it. */
+.landing-root :where(section[id]) {
+  scroll-margin-top: 72px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.landing-root) {
+    scroll-behavior: smooth;
+  }
+}
 </style>

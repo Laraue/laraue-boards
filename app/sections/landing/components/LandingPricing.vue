@@ -264,135 +264,139 @@ watch(
 
 <style scoped>
 .pricing-error {
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  background: var(--color-danger-soft);
   border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
   border-radius: var(--radius-card);
   color: var(--color-danger);
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
-  margin-top: 24px;
   padding: 16px 20px;
 }
 
 .pricing-note {
-  background: var(--color-accent-soft);
-  border-radius: var(--radius-card);
-  color: var(--color-text);
-  font-size: 13px;
+  color: var(--color-muted);
+  font-size: var(--font-size-md);
   line-height: 1.6;
-  margin-top: 24px;
-  padding: 14px 18px;
+}
+
+.pricing-note a {
+  color: var(--color-accent);
 }
 
 .pricing-group {
-  margin-top: 40px;
+  margin-top: 48px;
 }
 
 .pricing-group-label {
   align-items: center;
-  color: var(--color-accent);
+  color: var(--color-text);
   display: flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
-  gap: 8px;
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
-  text-transform: uppercase;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.pricing-group-label :deep(.landing-icon) {
+  color: var(--color-accent);
+  height: 22px;
+  width: 22px;
 }
 
 .pricing-group-note {
   color: var(--color-muted);
-  font-size: 13px;
-  line-height: 1.5;
-  margin: -8px 0 20px;
+  font-size: var(--font-size-md);
+  line-height: 1.55;
+  margin-bottom: 20px;
+  max-width: 48em;
 }
 
 .pricing-cards {
-  align-items: stretch;
   display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .pricing-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   padding: 28px;
 }
 
 .pricing-card-title {
-  font-size: 18px;
-  font-weight: var(--font-weight-bold);
+  color: var(--color-muted);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
 }
 
 .pricing-card-price-row {
   align-items: baseline;
+  border-bottom: 1px solid var(--color-divider);
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 12px 0 22px;
+  margin: 8px 0 20px;
+  padding-bottom: 20px;
 }
 
 .pricing-card-price {
-  font-size: 30px;
+  font-size: clamp(32px, 3vw, 40px);
+  font-variant-numeric: tabular-nums;
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .pricing-card-billing {
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: var(--font-size-md);
 }
 
 .pricing-card-features {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
   margin-bottom: 28px;
 }
 
 .pricing-card-features li {
   align-items: flex-start;
-  color: var(--color-muted);
   display: flex;
-  font-size: var(--font-size-body);
+  font-size: var(--font-size-md);
   gap: 10px;
   line-height: 1.45;
 }
 
 .pricing-card-features li svg {
+  color: var(--color-accent);
   flex-shrink: 0;
-  height: 15px;
+  height: 16px;
   margin-top: 2px;
-  stroke: var(--color-accent);
-  width: 15px;
+  width: 16px;
 }
 
 .pricing-card-cta {
-  background: var(--color-accent-soft);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
-  color: var(--color-accent);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.04em;
-  padding: 12px;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 40px;
   text-align: center;
   text-decoration: none;
-  text-transform: uppercase;
-  transition: background var(--duration-base);
+  transition: border-color var(--duration-base);
 }
 
 .pricing-card-cta:hover {
-  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  border-color: var(--color-border-hover);
 }
 
-@media (width <= 480px) {
-  .pricing-cards {
-    grid-template-columns: 1fr;
-  }
+.pricing-card-cta:focus-visible {
+  border-color: var(--color-focus);
+  outline: none;
 }
 </style>

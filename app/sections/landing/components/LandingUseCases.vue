@@ -106,9 +106,8 @@ const saveGuideUrl = docsPath(props.locale, ['use-cases', 'save-links-and-ideas-
 <style scoped>
 .cards-grid {
   display: grid;
-  gap: 24px;
+  gap: 20px;
   grid-template-columns: 1fr 1fr;
-  margin-top: 48px;
 }
 
 @media (width <= 900px) {

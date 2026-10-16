@@ -3,11 +3,11 @@
     aria-labelledby="hero-heading"
     class="hero">
     <div class="hero-inner">
-      <div>
+      <div class="hero-copy">
         <div class="platform-badges">
           <slot name="badges" />
         </div>
-        <div class="hero-eyebrow">{{ preTitle }}</div>
+        <p class="hero-eyebrow">{{ preTitle }}</p>
         <h1
           id="hero-heading"
           class="hero-title">
@@ -35,70 +35,72 @@ defineProps<{
 
 <style scoped>
 .hero {
-  align-items: center;
-  background: radial-gradient(
-    circle at 88% -8%,
-    color-mix(in srgb, var(--color-accent) 10%, transparent),
-    transparent 55%
+  /* A board's dotted canvas: the page opens on the surface the product lives on. */
+  background-color: var(--color-background);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--color-muted) 28%, transparent) 1px,
+    transparent 1px
   );
+  background-position: -11px -11px;
+  background-size: 24px 24px;
   border-bottom: 1px solid var(--color-divider);
-  display: flex;
-  min-height: 100vh;
-  overflow: hidden;
-  padding: 100px 24px 80px;
+  padding: 120px 24px 96px;
   position: relative;
+}
+
+/* Fades the dots out towards the copy, so the text sits on a calm field. */
+.hero::before {
+  background: linear-gradient(100deg, var(--color-background) 35%, transparent 75%);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 .hero-inner {
   align-items: center;
   display: grid;
-  gap: 80px;
-  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   margin: 0 auto;
   /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
   max-width: 1312px;
   position: relative;
-  width: 100%;
-  z-index: 1;
 }
 
 .platform-badges {
-  align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 28px;
+  gap: 8px;
+  margin-bottom: 32px;
 }
 
 .hero-eyebrow {
-  color: var(--color-muted);
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
-  text-transform: uppercase;
+  color: var(--color-accent);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 14px;
 }
 
 .hero-title {
-  font-size: clamp(32px, 4vw, 52px);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.03em;
-  line-height: 1.08;
-  margin-bottom: 16px;
-  overflow: visible;
-  text-overflow: clip;
-  white-space: normal;
+  font-size: clamp(36px, 4.2vw, 60px);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  margin-bottom: 24px;
+  text-wrap: balance;
 }
 
 .hero-sub {
   color: var(--color-muted);
-  font-size: 18px;
-  line-height: 1.65;
-  margin-bottom: 36px;
-  max-width: 460px;
+  font-size: var(--font-size-xl);
+  line-height: 1.6;
+  margin-bottom: 40px;
+  max-width: 34em;
 }
 
 .hero-actions {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -106,19 +108,28 @@ defineProps<{
 
 .hero-visual {
   display: flex;
-  /* The right edge of the content, where the header ends too. */
   justify-content: flex-end;
-  position: relative;
+  min-width: 0;
 }
 
-@media (width <= 720px) {
+@media (width > 900px) {
+  .hero-title {
+    white-space: pre-line;
+  }
+}
+
+@media (width <= 1000px) {
   .hero {
-    padding: 80px 22px 60px;
+    padding: 96px 16px 72px;
+  }
+
+  .hero::before {
+    background: linear-gradient(180deg, var(--color-background) 30%, transparent 70%);
   }
 
   .hero-inner {
-    gap: 48px;
-    grid-template-columns: 1fr;
+    gap: 56px;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .hero-visual {

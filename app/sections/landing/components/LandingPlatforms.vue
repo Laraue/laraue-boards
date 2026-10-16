@@ -5,7 +5,7 @@
     :title="t('pl_title')"
     type="alt">
     <div class="platforms-grid">
-      <div class="platform-card">
+      <div class="platform-card web">
         <div class="platform-card-header">
           <div class="platform-card-icon web"><LandingIcon name="globe" /></div>
           <div>
@@ -16,31 +16,30 @@
         <p class="platform-card-desc">{{ t('web_desc') }}</p>
         <ul class="platform-card-features">
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('web_f1') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('web_f2') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('web_f3') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('web_f4') }}</span>
           </li>
         </ul>
         <a
           class="platform-card-link web"
-          :href="appUrl"
-          style="align-self: flex-start">
-          {{ t('open_webapp') }} &#8594;
+          :href="appUrl">
+          {{ t('open_webapp') }}
         </a>
       </div>
 
-      <div class="platform-card">
+      <div class="platform-card tg">
         <div class="platform-card-header">
           <div class="platform-card-icon tg"><LandingIcon name="chat" /></div>
           <div>
@@ -51,19 +50,19 @@
         <p class="platform-card-desc">{{ t('tg_desc') }}</p>
         <ul class="platform-card-features">
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('tg_f1') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('tg_f2') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('tg_f3') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('tg_f4') }}</span>
           </li>
         </ul>
@@ -71,13 +70,12 @@
           class="platform-card-link tg"
           href="https://t.me/msgboard_bot"
           rel="noopener"
-          style="align-self: flex-start"
           target="_blank">
-          @msgboard_bot &#8594;
+          @msgboard_bot
         </a>
       </div>
 
-      <div class="platform-card">
+      <div class="platform-card mcp">
         <div class="platform-card-header">
           <div class="platform-card-icon mcp"><LandingIcon name="sparkle" /></div>
           <div>
@@ -88,27 +86,26 @@
         <p class="platform-card-desc">{{ t('mcp_desc') }}</p>
         <ul class="platform-card-features">
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('mcp_f1') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('mcp_f2') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('mcp_f3') }}</span>
           </li>
           <li>
-            <IconCheck stroke="2.2" />
+            <IconCheck stroke="2" />
             <span>{{ t('mcp_f4') }}</span>
           </li>
         </ul>
         <a
           class="platform-card-link mcp"
-          :href="appUrl"
-          style="align-self: flex-start">
-          {{ t('mcp_cta') }} &#8594;
+          :href="appUrl">
+          {{ t('mcp_cta') }}
         </a>
       </div>
     </div>
@@ -194,55 +191,28 @@ const { t } = useI18n(
 </script>
 
 <style scoped>
+.platforms-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .platform-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   padding: 32px;
-  transition:
-    box-shadow var(--duration-base),
-    transform var(--duration-base);
 }
 
-.platform-card:hover {
-  box-shadow: var(--shadow-popover);
-  transform: translateY(-3px);
-}
+/* The agent is the newest way in, so its card is the one inverted. */
+.platform-card.mcp {
+  --card-muted: color-mix(in srgb, var(--color-background) 72%, var(--color-text));
 
-.platform-card-icon {
-  align-items: center;
-  background: var(--color-accent-soft);
-  border-radius: var(--radius-card);
-  color: var(--color-accent);
-  display: flex;
-  flex-shrink: 0;
-  height: 48px;
-  justify-content: center;
-  width: 48px;
-}
-
-.platform-card-link {
-  align-items: center;
-  color: var(--color-accent);
-  display: inline-flex;
-  font-size: 13px;
-  font-weight: var(--font-weight-bold);
-  gap: 6px;
-  text-decoration: none;
-  transition: gap 0.15s;
-}
-
-.platform-card-link:hover {
-  gap: 10px;
-}
-
-.platforms-grid {
-  display: grid;
-  gap: 24px;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 48px;
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-background);
 }
 
 .platform-card-header {
@@ -252,58 +222,120 @@ const { t } = useI18n(
   margin-bottom: 20px;
 }
 
+.platform-card-icon {
+  align-items: center;
+  background: var(--color-accent-soft);
+  border-radius: 12px;
+  color: var(--color-accent);
+  display: flex;
+  flex-shrink: 0;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.mcp .platform-card-icon {
+  background: color-mix(in srgb, var(--color-background) 14%, transparent);
+  color: var(--color-background);
+}
+
 .platform-card-icon :deep(.landing-icon) {
   height: 24px;
   width: 24px;
 }
 
 .platform-card-name {
-  font-size: 18px;
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
 }
 
 .platform-card-tag {
-  color: var(--color-muted);
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.06em;
+  color: var(--card-muted, var(--color-muted));
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
   margin-top: 2px;
-  text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .platform-card-desc {
-  color: var(--color-muted);
+  color: var(--card-muted, var(--color-muted));
   flex: 1;
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
   margin-bottom: 24px;
 }
 
 .platform-card-features {
+  border-top: 1px solid var(--color-divider);
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 10px;
   margin-bottom: 28px;
+  padding-top: 20px;
+}
+
+.mcp .platform-card-features {
+  border-top-color: color-mix(in srgb, var(--color-background) 20%, transparent);
 }
 
 .platform-card-features li {
-  align-items: center;
-  color: var(--color-muted);
+  align-items: flex-start;
   display: flex;
-  font-size: 13px;
-  gap: 8px;
+  font-size: var(--font-size-md);
+  gap: 10px;
+  line-height: 1.45;
 }
 
 .platform-card-features li svg {
+  color: var(--color-accent);
   flex-shrink: 0;
-  height: 14px;
-  stroke: var(--color-accent);
-  width: 14px;
+  height: 16px;
+  margin-top: 2px;
+  width: 16px;
 }
 
-@media (width <= 900px) {
+.mcp .platform-card-features li svg {
+  color: var(--color-background);
+}
+
+.platform-card-link {
+  align-items: center;
+  align-self: flex-start;
+  color: var(--color-accent);
+  display: inline-flex;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  min-height: var(--control-height);
+  text-decoration: none;
+}
+
+.platform-card-link:hover {
+  color: var(--color-accent-hover);
+}
+
+.platform-card-link.mcp {
+  background: var(--color-background);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  min-height: 40px;
+  padding: 0 16px;
+}
+
+.platform-card-link.mcp:hover {
+  background: color-mix(in srgb, var(--color-background) 88%, var(--color-text));
+  color: var(--color-text);
+}
+
+@media (width <= 1000px) {
   .platforms-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width <= 560px) {
+  .platform-card {
+    padding: 22px;
   }
 }
 </style>

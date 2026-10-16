@@ -4,25 +4,27 @@
     :pre-title="t('struct_label')"
     :title="t('struct_title')"
     type="plain">
-    <div class="hierarchy">
-      <div class="hierarchy-box">
-        <div class="hierarchy-box-label">{{ t('struct_org') }}</div>
-        <div class="hierarchy-box-ex">{{ t('struct_org_ex') }}</div>
+    <!-- Each level sits inside the one above it, the way the tracker actually nests them. -->
+    <div class="nest level-org">
+      <div class="nest-label">
+        <span class="nest-kind">{{ t('struct_org') }}</span>
+        <span class="nest-name">{{ t('struct_org_ex') }}</span>
       </div>
-      <div class="hierarchy-arrow">&#8594;</div>
-      <div class="hierarchy-box">
-        <div class="hierarchy-box-label">{{ t('struct_space') }}</div>
-        <div class="hierarchy-box-ex">{{ t('struct_space_ex') }}</div>
-      </div>
-      <div class="hierarchy-arrow">&#8594;</div>
-      <div class="hierarchy-box">
-        <div class="hierarchy-box-label">{{ t('struct_board') }}</div>
-        <div class="hierarchy-box-ex">{{ t('struct_board_ex') }}</div>
-      </div>
-      <div class="hierarchy-arrow">&#8594;</div>
-      <div class="hierarchy-box highlight">
-        <div class="hierarchy-box-label">{{ t('struct_issue') }}</div>
-        <div class="hierarchy-box-ex">{{ t('struct_issue_ex') }}</div>
+      <div class="nest level-space">
+        <div class="nest-label">
+          <span class="nest-kind">{{ t('struct_space') }}</span>
+          <span class="nest-name">{{ t('struct_space_ex') }}</span>
+        </div>
+        <div class="nest level-board">
+          <div class="nest-label">
+            <span class="nest-kind">{{ t('struct_board') }}</span>
+            <span class="nest-name">{{ t('struct_board_ex') }}</span>
+          </div>
+          <div class="nest level-issue">
+            <span class="nest-kind">{{ t('struct_issue') }}</span>
+            <span class="nest-name">{{ t('struct_issue_ex') }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </LandingSection>
@@ -71,58 +73,79 @@ const { t } = useI18n(
 </script>
 
 <style scoped>
-.hierarchy-box {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  border-radius: var(--radius-card);
-  flex: 1;
-  min-width: 140px;
-  padding: 16px 20px;
+.nest {
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
 }
 
-.hierarchy {
-  align-items: center;
+.level-org {
+  background: var(--color-workspace);
+  border: 1px solid var(--color-border-surface);
+}
+
+.level-space {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 18px;
+  margin-left: clamp(0px, 6vw, 96px);
+}
+
+.level-board {
+  background: var(--color-soft);
+  border-radius: 14px;
+  margin-left: clamp(0px, 6vw, 96px);
+}
+
+.level-issue {
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-left: clamp(0px, 6vw, 96px);
+  padding: 16px 18px;
+}
+
+.nest-label {
+  align-items: baseline;
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 48px;
+  gap: 4px 16px;
 }
 
-.hierarchy-box.highlight {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
-}
-
-.hierarchy-box-label {
-  color: var(--color-accent);
-  font-size: 10px;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-}
-
-.hierarchy-box-ex {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-semibold);
-}
-
-.hierarchy-arrow {
+.nest-kind {
   color: var(--color-muted);
-  flex-shrink: 0;
-  font-size: 18px;
+  font-size: var(--font-size-md);
+  min-width: 7em;
 }
 
-@media (width <= 720px) {
-  .hierarchy {
-    align-items: stretch;
-    flex-direction: column;
+.level-issue .nest-kind {
+  color: var(--color-accent);
+}
+
+.nest-name {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+}
+
+@media (width <= 560px) {
+  .nest {
+    padding: 14px;
   }
 
-  .hierarchy-arrow {
-    text-align: center;
-    transform: rotate(90deg);
+  .level-space,
+  .level-board,
+  .level-issue {
+    margin-left: 0;
+  }
+
+  .nest-label,
+  .level-issue {
+    flex-direction: column;
   }
 }
 </style>

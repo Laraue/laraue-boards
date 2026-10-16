@@ -84,16 +84,17 @@ const devlogUrl = laraueUrl(
 <style scoped>
 .pricing-note {
   color: var(--color-muted);
-  font-size: var(--font-size-body);
-  margin-top: 36px;
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  margin: 40px auto 0;
+  max-width: 52em;
   text-align: center;
 }
 
 .cards-grid {
   display: grid;
-  gap: 24px;
+  gap: 20px;
   grid-template-columns: 1fr 1fr;
-  margin-top: 48px;
 }
 
 @media (width <= 900px) {

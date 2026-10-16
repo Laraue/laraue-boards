@@ -1,10 +1,13 @@
 <template>
   <div class="info-card">
-    <div class="info-card-icon">
-      <slot name="icon" />
+    <div class="info-card-head">
+      <div class="info-card-icon">
+        <slot name="icon" />
+      </div>
+      <h3 class="info-card-title">{{ title }}</h3>
     </div>
-    <div class="info-card-title">{{ title }}</div>
     <p class="info-card-desc">{{ description }}</p>
+    <!-- The points stack like cards in a column, so the list reads as the board it describes. -->
     <ul
       v-if="items"
       class="info-card-list">
@@ -20,7 +23,10 @@
         :href="linkHref"
         :rel="external ? 'noopener' : undefined"
         :target="external ? '_blank' : undefined">
-        {{ linkText }} &#8594;
+        {{ linkText }}
+        <IconArrowUpRight
+          v-if="external"
+          stroke="2" />
       </a>
       <a
         v-if="moreHref && moreText"
@@ -33,6 +39,8 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowUpRight } from '@tabler/icons-vue'
+
 defineProps<{
   description: string
   external?: boolean
@@ -48,28 +56,29 @@ defineProps<{
 <style scoped>
 .info-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  padding: 36px 36px 32px;
-  transition:
-    box-shadow var(--duration-base),
-    transform var(--duration-base);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
 }
 
-.info-card:hover {
-  box-shadow: var(--shadow-popover);
-  transform: translateY(-3px);
+.info-card-head {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .info-card-icon {
   align-items: center;
   background: var(--color-accent-soft);
-  border-radius: var(--radius-card);
+  border-radius: 12px;
   color: var(--color-accent);
   display: flex;
+  flex-shrink: 0;
   height: 44px;
   justify-content: center;
-  margin-bottom: 16px;
   width: 44px;
 }
 
@@ -79,73 +88,98 @@ defineProps<{
 }
 
 .info-card-title {
-  font-size: 20px;
-  font-weight: var(--font-weight-bold);
-  margin-bottom: 10px;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.015em;
+  line-height: var(--line-height-heading);
 }
 
 .info-card-desc {
   color: var(--color-muted);
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
   margin-bottom: 24px;
+  max-width: 38em;
 }
 
 .info-card-list {
+  background: var(--color-soft);
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 6px;
   margin-bottom: 28px;
+  padding: 8px;
 }
 
 .info-card-list li {
-  align-items: flex-start;
-  color: var(--color-muted);
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 10px;
   display: flex;
-  font-size: var(--font-size-body);
-  gap: 10px;
+  font-size: var(--font-size-md);
+  gap: 12px;
   line-height: 1.4;
+  padding: 10px 14px;
 }
 
 .info-card-list li::before {
-  color: var(--color-accent);
-  content: '✓';
+  border: 1.5px solid var(--color-accent);
+  border-radius: 50%;
+  content: '';
   flex-shrink: 0;
-  font-weight: var(--font-weight-bold);
-  margin-top: 1px;
-}
-
-.info-card-link {
-  align-items: center;
-  color: var(--color-accent);
-  display: inline-flex;
-  font-size: 13px;
-  font-weight: var(--font-weight-bold);
-  gap: 6px;
-  text-decoration: none;
-  transition: gap 0.15s;
-}
-
-.info-card:hover .info-card-link {
-  gap: 10px;
+  height: 10px;
+  width: 10px;
 }
 
 .info-card-links {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 22px;
+  gap: 0 24px;
+  margin-top: auto;
+}
+
+.info-card-link {
+  align-items: center;
+  color: var(--color-accent);
+  display: inline-flex;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  gap: 4px;
+  min-height: var(--control-height);
+  text-decoration: none;
+}
+
+.info-card-link svg {
+  height: 16px;
+  width: 16px;
+}
+
+.info-card-link:hover {
+  color: var(--color-accent-hover);
 }
 
 .info-card-more {
+  align-items: center;
   color: var(--color-muted);
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  font-size: var(--font-size-md);
+  min-height: var(--control-height);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 4px;
 }
 
 .info-card-more:hover {
   color: var(--color-text);
+  text-decoration-color: currentcolor;
+}
+
+@media (width <= 560px) {
+  .info-card {
+    padding: 22px;
+  }
 }
 </style>

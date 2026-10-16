@@ -26,27 +26,22 @@ defineProps<{
 <style scoped>
 .platform-badge {
   align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-full);
-  display: inline-flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-semibold);
-  gap: 6px;
-  padding: 5px 12px;
-}
-
-.platform-badge.web {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-}
-
-.platform-badge.tg {
-  background: var(--color-soft);
   color: var(--color-muted);
+  display: inline-flex;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px 0 10px;
 }
 
 .platform-badge svg {
+  color: var(--color-accent);
   flex-shrink: 0;
-  height: 12px;
-  width: 12px;
+  height: 14px;
+  width: 14px;
 }
 </style>
