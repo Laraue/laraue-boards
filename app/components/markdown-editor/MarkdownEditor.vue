@@ -272,7 +272,8 @@ const editor = useEditor({
     handleKeyDown: (_view, event) => handleSlashKey(event) || handleSubmitKey(event),
   },
   extensions: [
-    StarterKit.configure({ link: { openOnClick: false }, trailingNode: false }),
+    // A click opens a link in a new tab, as in Linear and Jira; its text changes from the toolbar.
+    StarterKit.configure({ link: { openOnClick: true }, trailingNode: false }),
     // Inline, as markdown has it: an image is part of a paragraph.
     Image.configure({ inline: true }),
     TableKit,
