@@ -3,9 +3,10 @@
     :post-title="t('uc_sub')"
     :pre-title="t('uc_label')"
     :title="t('uc_title')"
-    type="alt">
-    <div class="cards-grid">
+    type="plain">
+    <div class="duo">
       <LandingInfoCard
+        bare
         :description="t('uc_personal_desc')"
         external
         :items="[t('uc_p1'), t('uc_p2'), t('uc_p3'), t('uc_p4')]"
@@ -17,6 +18,7 @@
         <template #icon><LandingIcon name="brain" /></template>
       </LandingInfoCard>
       <LandingInfoCard
+        bare
         :description="t('uc_teams_desc')"
         :items="[t('uc_t1'), t('uc_t2'), t('uc_t3'), t('uc_t4'), t('uc_t5'), t('uc_t6')]"
         :link-href="appUrl"
@@ -26,6 +28,9 @@
         :title="t('uc_teams_title')">
         <template #icon><LandingIcon name="partners" /></template>
       </LandingInfoCard>
+      <LandingStructure
+        class="duo-wide"
+        :locale="locale" />
     </div>
   </LandingSection>
 </template>
@@ -38,6 +43,7 @@ import { appUrl, botUrl } from '../landingLinks'
 import LandingIcon from './LandingIcon.vue'
 import LandingInfoCard from './LandingInfoCard.vue'
 import LandingSection from './LandingSection.vue'
+import LandingStructure from './LandingStructure.vue'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -104,15 +110,24 @@ const saveGuideUrl = docsPath(props.locale, ['use-cases', 'save-links-and-ideas-
 </script>
 
 <style scoped>
-.cards-grid {
+/* Both ways of working share one panel, and the hierarchy that serves them runs underneath. */
+.duo {
+  background: var(--color-border-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 24px;
   display: grid;
-  gap: 20px;
-  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+}
+
+.duo-wide {
+  grid-column: 1 / -1;
 }
 
 @media (width <= 900px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
+  .duo {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

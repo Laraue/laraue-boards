@@ -53,7 +53,7 @@
 }
 
 /* Anchored sections (#features, #pricing, #faq) stop below the sticky header, not under it. */
-.landing-root :where(section[id]) {
+.landing-root :where([id]) {
   scroll-margin-top: 72px;
 }
 

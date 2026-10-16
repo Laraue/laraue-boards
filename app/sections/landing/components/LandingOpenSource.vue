@@ -1,10 +1,10 @@
 <template>
-  <LandingSection
-    :post-title="t('os_sub')"
-    :pre-title="t('os_label')"
-    :title="t('os_title')"
-    type="plain">
-    <div class="cards-grid">
+  <div class="open-source">
+    <LandingHeading
+      :post-title="t('os_sub')"
+      :pre-title="t('os_label')"
+      :title="t('os_title')" />
+    <div class="cards">
       <LandingInfoCard
         :description="t('os_code_desc')"
         external
@@ -26,16 +26,16 @@
       </LandingInfoCard>
     </div>
     <p class="pricing-note">{{ t('pr_note') }}</p>
-  </LandingSection>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
 
 import { githubUrl, laraueUrl } from '../landingLinks'
+import LandingHeading from './LandingHeading.vue'
 import LandingIcon from './LandingIcon.vue'
 import LandingInfoCard from './LandingInfoCard.vue'
-import LandingSection from './LandingSection.vue'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -82,24 +82,17 @@ const devlogUrl = laraueUrl(
 </script>
 
 <style scoped>
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 40px;
+}
+
 .pricing-note {
   color: var(--color-muted);
   font-size: var(--font-size-md);
   line-height: 1.6;
-  margin: 40px auto 0;
-  max-width: 52em;
-  text-align: center;
-}
-
-.cards-grid {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: 1fr 1fr;
-}
-
-@media (width <= 900px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
+  margin-top: 24px;
 }
 </style>

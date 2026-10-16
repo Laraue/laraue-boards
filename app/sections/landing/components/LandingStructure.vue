@@ -1,9 +1,10 @@
 <template>
-  <LandingSection
-    :post-title="t('struct_sub')"
-    :pre-title="t('struct_label')"
-    :title="t('struct_title')"
-    type="plain">
+  <div class="structure">
+    <div class="structure-copy">
+      <p class="structure-label">{{ t('struct_label') }}</p>
+      <h3 class="structure-title">{{ t('struct_title') }}</h3>
+      <p class="structure-sub">{{ t('struct_sub') }}</p>
+    </div>
     <!-- Each level sits inside the one above it, the way the tracker actually nests them. -->
     <div class="nest level-org">
       <div class="nest-label">
@@ -27,13 +28,12 @@
         </div>
       </div>
     </div>
-  </LandingSection>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { Locale } from '~/composables/useI18n'
 
-import LandingSection from './LandingSection.vue'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -73,12 +73,43 @@ const { t } = useI18n(
 </script>
 
 <style scoped>
+.structure {
+  align-items: center;
+  background: var(--color-surface);
+  display: grid;
+  gap: 40px 56px;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  padding: 40px;
+}
+
+.structure-label {
+  color: var(--color-accent);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 10px;
+}
+
+.structure-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.015em;
+  line-height: var(--line-height-heading);
+  margin-bottom: 14px;
+  text-wrap: balance;
+}
+
+.structure-sub {
+  color: var(--color-muted);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+}
+
 .nest {
-  border-radius: 22px;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 22px;
+  gap: 14px;
+  padding: 18px;
 }
 
 .level-org {
@@ -89,25 +120,24 @@ const { t } = useI18n(
 .level-space {
   background: var(--color-surface);
   border: 1px solid var(--color-border-surface);
-  border-radius: 18px;
-  margin-left: clamp(0px, 6vw, 96px);
+  border-radius: 16px;
+  margin-left: 32px;
 }
 
 .level-board {
   background: var(--color-soft);
-  border-radius: 14px;
-  margin-left: clamp(0px, 6vw, 96px);
+  border-radius: 12px;
+  margin-left: 32px;
 }
 
 .level-issue {
   background: var(--color-surface);
   border: 1px solid var(--color-accent);
   border-radius: 10px;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   gap: 4px 16px;
-  margin-left: clamp(0px, 6vw, 96px);
-  padding: 16px 18px;
+  margin-left: 32px;
+  padding: 14px 16px;
 }
 
 .nest-label {
@@ -119,7 +149,7 @@ const { t } = useI18n(
 
 .nest-kind {
   color: var(--color-muted);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   min-width: 7em;
 }
 
@@ -128,13 +158,23 @@ const { t } = useI18n(
 }
 
 .nest-name {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
 }
 
+@media (width <= 900px) {
+  .structure {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (width <= 560px) {
+  .structure {
+    padding: 22px;
+  }
+
   .nest {
-    padding: 14px;
+    padding: 12px;
   }
 
   .level-space,

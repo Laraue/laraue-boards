@@ -1,10 +1,10 @@
 <template>
-  <LandingSection
+  <div
     id="faq"
-    :pre-title="t('faq_label')"
-    split
-    :title="t('faq_title')"
-    type="alt">
+    class="faq">
+    <LandingHeading
+      :pre-title="t('faq_label')"
+      :title="t('faq_title')" />
     <div class="faq-list">
       <div
         v-for="(item, index) in items"
@@ -30,7 +30,7 @@
         </div>
       </div>
     </div>
-  </LandingSection>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -38,7 +38,7 @@ import { IconPlus } from '@tabler/icons-vue'
 
 import type { Locale } from '~/composables/useI18n'
 
-import LandingSection from './LandingSection.vue'
+import LandingHeading from './LandingHeading.vue'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -158,6 +158,7 @@ useHead({
 <style scoped>
 .faq-list {
   border-top: 1px solid var(--color-border-surface);
+  margin-top: 40px;
 }
 
 .faq-item {

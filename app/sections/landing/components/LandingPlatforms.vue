@@ -5,40 +5,6 @@
     :title="t('pl_title')"
     type="alt">
     <div class="platforms-grid">
-      <div class="platform-card web">
-        <div class="platform-card-header">
-          <div class="platform-card-icon web"><LandingIcon name="globe" /></div>
-          <div>
-            <div class="platform-card-name">{{ t('web_name') }}</div>
-            <div class="platform-card-tag">boards.laraue.com</div>
-          </div>
-        </div>
-        <p class="platform-card-desc">{{ t('web_desc') }}</p>
-        <ul class="platform-card-features">
-          <li>
-            <IconCheck stroke="2" />
-            <span>{{ t('web_f1') }}</span>
-          </li>
-          <li>
-            <IconCheck stroke="2" />
-            <span>{{ t('web_f2') }}</span>
-          </li>
-          <li>
-            <IconCheck stroke="2" />
-            <span>{{ t('web_f3') }}</span>
-          </li>
-          <li>
-            <IconCheck stroke="2" />
-            <span>{{ t('web_f4') }}</span>
-          </li>
-        </ul>
-        <a
-          class="platform-card-link web"
-          :href="appUrl">
-          {{ t('open_webapp') }}
-        </a>
-      </div>
-
       <div class="platform-card tg">
         <div class="platform-card-header">
           <div class="platform-card-icon tg"><LandingIcon name="chat" /></div>
@@ -72,6 +38,40 @@
           rel="noopener"
           target="_blank">
           @msgboard_bot
+        </a>
+      </div>
+
+      <div class="platform-card web">
+        <div class="platform-card-header">
+          <div class="platform-card-icon web"><LandingIcon name="globe" /></div>
+          <div>
+            <div class="platform-card-name">{{ t('web_name') }}</div>
+            <div class="platform-card-tag">boards.laraue.com</div>
+          </div>
+        </div>
+        <p class="platform-card-desc">{{ t('web_desc') }}</p>
+        <ul class="platform-card-features">
+          <li>
+            <IconCheck stroke="2" />
+            <span>{{ t('web_f1') }}</span>
+          </li>
+          <li>
+            <IconCheck stroke="2" />
+            <span>{{ t('web_f2') }}</span>
+          </li>
+          <li>
+            <IconCheck stroke="2" />
+            <span>{{ t('web_f3') }}</span>
+          </li>
+          <li>
+            <IconCheck stroke="2" />
+            <span>{{ t('web_f4') }}</span>
+          </li>
+        </ul>
+        <a
+          class="platform-card-link web"
+          :href="appUrl">
+          {{ t('open_webapp') }}
         </a>
       </div>
 
@@ -192,18 +192,21 @@ const { t } = useI18n(
 
 <style scoped>
 .platforms-grid {
+  /* One strip split by hairlines: three doors into the same boards. */
+  background: var(--color-border-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 20px;
   display: grid;
-  gap: 20px;
+  gap: 1px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: hidden;
 }
 
 .platform-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border-surface);
-  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  padding: 32px;
+  padding: 36px;
 }
 
 /* The agent is the newest way in, so its card is the one inverted. */
@@ -211,7 +214,6 @@ const { t } = useI18n(
   --card-muted: color-mix(in srgb, var(--color-background) 72%, var(--color-text));
 
   background: var(--color-text);
-  border-color: var(--color-text);
   color: var(--color-background);
 }
 
