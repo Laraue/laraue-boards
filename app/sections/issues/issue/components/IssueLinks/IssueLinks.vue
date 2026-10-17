@@ -6,17 +6,16 @@
     v-if="links.length || canEdit"
     :aria-labelledby="headingId"
     class="issue-links">
-    <div class="issue-links-header">
-      <h2 :id="headingId">{{ t('links') }}</h2>
-      <BaseButton
-        v-if="canEdit"
-        size="small"
-        variant="ghost"
-        @click="openDialog">
-        <IconLink />
-        {{ t('addLink') }}
-      </BaseButton>
-    </div>
+    <h2 :id="headingId">{{ t('links') }}</h2>
+    <BaseButton
+      v-if="canEdit"
+      class="issue-links-add"
+      size="small"
+      variant="ghost"
+      @click="openDialog">
+      <IconLink />
+      {{ t('addLink') }}
+    </BaseButton>
 
     <div
       v-for="group in groups"
@@ -229,18 +228,15 @@ const remove = async (otherIssueKey: string) => {
   min-width: 0;
 }
 
-.issue-links-header {
-  align-items: center;
-  display: flex;
-  gap: var(--space-3);
-  justify-content: space-between;
-  min-height: var(--control-height);
-}
-
 /* The same heading as Properties above it. */
-.issue-links-header h2 {
+.issue-links h2 {
   font-size: inherit;
   margin: 0;
+}
+
+/* A row under the heading, as the first property is under Properties. */
+.issue-links-add {
+  justify-self: start;
 }
 
 .issue-links-group {
