@@ -408,7 +408,11 @@ it('adds a link to an issue picked from the suggestions', async () => {
   expect(searchIssues).toHaveBeenCalledWith(expect.objectContaining({ search: 'api' }))
   // The issue itself is not suggested.
   expect(page.getByRole('option', { name: /ISS-1/ }).all()).toHaveLength(0)
-  expect(add).toHaveBeenCalledWith({ issueKey: 'ISS-1', otherIssueKey: 'ISS-7', relation: 'blockedBy' })
+  expect(add).toHaveBeenCalledWith({
+    issueKey: 'ISS-1',
+    otherIssueKey: 'ISS-7',
+    relation: 'blockedBy',
+  })
   await expect.element(page.getByRole('combobox', { name: 'Issue' })).not.toBeInTheDocument()
 })
 
@@ -423,4 +427,3 @@ it('keeps the link fields open when no such issue is found', async () => {
   await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()
   await expect.element(page.getByRole('combobox', { name: 'Issue' })).toBeInTheDocument()
 })
-

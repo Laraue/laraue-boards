@@ -25,6 +25,14 @@ export const createIssueLinksDeps = (client: ApiClient): IssueLinksDeps => ({
     return { outcome: 'added' }
   },
 
+  remove: async ({ issueKey, otherIssueKey }) => {
+    await request(
+      client.DELETE('/api/issues/{key}/links/{otherKey}', {
+        params: { path: { key: issueKey, otherKey: otherIssueKey } },
+      }),
+    )
+  },
+
   searchIssues: async ({ search, signal }) => {
     let result
     try {
@@ -44,13 +52,5 @@ export const createIssueLinksDeps = (client: ApiClient): IssueLinksDeps => ({
       issues: result.data.map((issue) => ({ issueKey: issue.key, title: issue.title })),
       outcome: 'found',
     }
-  },
-
-  remove: async ({ issueKey, otherIssueKey }) => {
-    await request(
-      client.DELETE('/api/issues/{key}/links/{otherKey}', {
-        params: { path: { key: issueKey, otherKey: otherIssueKey } },
-      }),
-    )
   },
 })

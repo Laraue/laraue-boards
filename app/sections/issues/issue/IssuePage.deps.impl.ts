@@ -7,9 +7,9 @@ import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.dep
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
 import { COLORS, DEFAULT_COLOR } from '~/constants/colors'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
-import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
+import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
 import { assertNever } from '~/utils/assertNever'
 
 import { createIssueCommentsDeps } from './components/IssueComments/IssueComments.deps.impl'

@@ -47,4 +47,3 @@ test('searches issues to suggest by the typed text', async () => {
   assert.equal(new URL(requests[0]!.url).pathname, '/api/issues/search')
   assert.deepEqual(await requests[0]!.json(), { page: 0, perPage: 10, searchString: 'api' })
 })
-

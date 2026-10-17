@@ -89,8 +89,6 @@ const search = defineModel<string>('search', { required: true })
 const open = ref(false)
 const input = useTemplateRef<{ $el: HTMLInputElement }>('input')
 
-defineExpose({ focus: () => input.value?.$el.focus() })
-
 const selected = computed({
   get: () => model.value,
   set: (value: string) => {
@@ -110,6 +108,8 @@ watch(search, (text) => {
   }
   open.value = text.trim() !== '' && text !== picked?.label
 })
+
+defineExpose({ focus: () => input.value?.$el.focus() })
 </script>
 
 <style scoped>

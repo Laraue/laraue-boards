@@ -171,10 +171,10 @@ const props = defineProps<{
   assigneeColor: string
   assigneeId?: string
   assigneeInitial: string
+  blocked: boolean
   boardColor: string
   boardId?: string
   boardName: string
-  blocked: boolean
   canMove: boolean
   deleting?: boolean
   issueKey: string
