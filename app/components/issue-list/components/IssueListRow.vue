@@ -19,14 +19,16 @@
     <NuxtLink
       class="issue-content"
       :to="to">
-      <!-- Before the title, so the one-line clamp cuts the title and not the mark. -->
-      <BaseBadge
+      <!-- Before the title, so the one-line clamp cuts the title and not the mark. A native title: a
+           list renders many rows, too many for tooltip components. -->
+      <span
         v-if="blocked"
+        :aria-label="t('blocked')"
         class="issue-blocked"
-        variant="warning">
-        <IconLock class="issue-blocked-icon" />
-        {{ t('blocked') }}
-      </BaseBadge>
+        role="img"
+        :title="t('blocked')">
+        <IconLock aria-hidden="true" />
+      </span>
       {{ title }}
     </NuxtLink>
     <!-- Space and board; the space gives up room first, the full path is on hover. -->
@@ -374,14 +376,16 @@ a.issue-location-board:hover {
 }
 
 .issue-blocked {
-  margin-right: var(--space-2);
-  vertical-align: text-bottom;
+  color: var(--color-warning);
+  display: inline-flex;
+  margin-right: var(--space-1);
+  /* Centered on the title's lowercase letters, as an icon in a line of text. */
+  vertical-align: -0.125em;
 }
 
-.issue-blocked-icon {
-  height: 12px;
-  margin-right: var(--space-1);
-  width: 12px;
+.issue-blocked .tabler-icon {
+  height: 1em;
+  width: 1em;
 }
 
 .truncate {

@@ -221,6 +221,6 @@ it('marks a blocked issue', async () => {
   ])
 
   await expect.element(page.getByText('Build the API')).toBeInTheDocument()
-  expect(page.getByText('Blocked', { exact: true }).all()).toHaveLength(1)
+  expect(page.getByRole('img', { name: 'Blocked' }).all()).toHaveLength(1)
 })
 
