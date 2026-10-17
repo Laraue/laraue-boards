@@ -14,6 +14,15 @@
         @click.left.exact.prevent="onOpenIssue(viewModel.issueKey)">
         <!-- The key leads the title's first line; the title wraps under it. -->
         <p class="task-title">
+          <!-- A native title, like the time below: a board renders too many cards for tooltips. -->
+          <span
+            v-if="viewModel.blocked"
+            :aria-label="t('blocked')"
+            class="task-blocked"
+            role="img"
+            :title="t('blocked')">
+            <IconLock aria-hidden="true" />
+          </span>
           <span class="task-key">{{ viewModel.issueKey }}</span>
           {{ viewModel.title }}
         </p>
@@ -23,12 +32,6 @@
             :initials="viewModel.assigneeInitial"
             size="sm" />
           <span class="task-assignee">{{ viewModel.assigneeName }}</span>
-          <BaseBadge
-            v-if="viewModel.blocked"
-            variant="warning">
-            <IconLock class="task-blocked-icon" />
-            {{ t('blocked') }}
-          </BaseBadge>
           <!-- A native title: a board renders hundreds of cards, too many for tooltip components. -->
           <time
             :datetime="viewModel.time"
@@ -137,10 +140,17 @@ useSortable({
   color: var(--color-muted);
 }
 
-.task-blocked-icon {
-  height: 12px;
+.task-blocked {
+  color: var(--color-warning);
+  display: inline-flex;
   margin-right: var(--space-1);
-  width: 12px;
+  /* Centered on the title's lowercase letters, as an icon in a line of text. */
+  vertical-align: -0.125em;
+}
+
+.task-blocked .tabler-icon {
+  height: 1em;
+  width: 1em;
 }
 
 .task-assignee {

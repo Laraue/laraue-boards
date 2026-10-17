@@ -168,5 +168,5 @@ it('marks the card of a blocked issue', async () => {
   })
 
   await expect.element(page.getByText('ISS-2')).toBeInTheDocument()
-  expect(page.getByText('Blocked', { exact: true }).all()).toHaveLength(1)
+  expect(page.getByRole('img', { name: 'Blocked' }).all()).toHaveLength(1)
 })
