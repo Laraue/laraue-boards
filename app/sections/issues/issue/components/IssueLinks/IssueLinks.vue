@@ -1,6 +1,6 @@
 <!-- The issue's links to other issues, grouped by what they mean from this issue's side, with
-     "Add link" and a remove button for someone who can edit the issue. Links change at once, apart
-     from the issue form's Save. -->
+     "Add link" (fields that open in place) and a remove button for someone who can edit the issue.
+     Links change at once, apart from the issue form's Save. -->
 <template>
   <section
     v-if="links.length || canEdit"
@@ -8,14 +8,57 @@
     class="issue-links">
     <h2 :id="headingId">{{ t('links') }}</h2>
     <BaseButton
-      v-if="canEdit"
+      v-if="canEdit && !state.adding"
       class="issue-links-add"
       size="small"
       variant="ghost"
-      @click="openDialog">
+      @click="openAdding">
       <IconLink />
       {{ t('addLink') }}
     </BaseButton>
+    <!-- Inside the issue's form: Enter adds the link instead of saving the issue, and Escape closes. -->
+    <div
+      v-if="state.adding"
+      class="issue-links-new"
+      @keydown.enter="addOnEnter"
+      @keydown.esc="closeOnEscape">
+      <BaseSelect
+        v-model="state.relation"
+        :aria-label="t('relation')"
+        :options="relationOptions" />
+      <BaseCombobox
+        ref="issueField"
+        v-model="state.otherIssueKey"
+        v-model:search="state.search"
+        :aria-describedby="state.notFoundKey ? notFoundId : undefined"
+        :aria-label="t('issueKey')"
+        :loading="state.searching"
+        :message="suggestionMessage"
+        :options="suggestionOptions"
+        :placeholder="t('issueKeyPlaceholder')" />
+      <p
+        v-if="state.notFoundKey || addMessage"
+        :id="notFoundId"
+        class="form-error issue-links-new-error"
+        role="alert">
+        {{ state.notFoundKey ? t('notFound', { key: state.notFoundKey }) : addMessage }}
+      </p>
+      <div class="issue-links-new-actions">
+        <BaseButton
+          size="small"
+          @click="closeAdding">
+          {{ t('cancel') }}
+        </BaseButton>
+        <BaseButton
+          :disabled="!state.search.trim()"
+          :loading="adding"
+          size="small"
+          variant="primary"
+          @click="add">
+          {{ t('add') }}
+        </BaseButton>
+      </div>
+    </div>
 
     <div
       v-for="group in groups"
@@ -57,52 +100,6 @@
       role="alert">
       {{ removeMessage }}
     </p>
-
-    <BaseDialog
-      ref="dialog"
-      :close-label="t('close')"
-      :title="t('addLink')"
-      @submit="add">
-      <BaseFieldGroup>
-        <BaseField
-          v-slot="{ id }"
-          :label="t('relation')">
-          <BaseSelect
-            :id="id"
-            v-model="state.relation"
-            :options="relationOptions" />
-        </BaseField>
-        <BaseField
-          v-slot="{ id, describedby }"
-          :error="state.notFoundKey ? t('notFound', { key: state.notFoundKey }) : undefined"
-          :label="t('issueKey')">
-          <BaseCombobox
-            :id="id"
-            v-model="state.otherIssueKey"
-            v-model:search="state.search"
-            :aria-describedby="describedby"
-            :loading="state.searching"
-            :message="suggestionMessage"
-            :options="suggestionOptions"
-            :placeholder="t('issueKeyPlaceholder')"
-            required />
-        </BaseField>
-      </BaseFieldGroup>
-      <p
-        v-if="addMessage"
-        class="form-error">
-        {{ addMessage }}
-      </p>
-      <template #actions>
-        <BaseButton @click="dialog?.close()">{{ t('cancel') }}</BaseButton>
-        <BaseButton
-          :loading="adding"
-          type="submit"
-          variant="primary">
-          {{ t('add') }}
-        </BaseButton>
-      </template>
-    </BaseDialog>
   </section>
 </template>
 
@@ -131,7 +128,6 @@ const { t } = useI18n({
     blockedBy: 'Blocked by',
     blocks: 'Blocks',
     cancel: 'Cancel',
-    close: 'Close',
     duplicatedBy: 'Duplicated by',
     duplicates: 'Duplicates',
     issueKey: 'Issue',
@@ -142,7 +138,7 @@ const { t } = useI18n({
     links: 'Links',
     notFound: 'No issue {key} that you can see',
     relatesTo: 'Relates to',
-    relation: 'This issue',
+    relation: 'Link type',
     remove: 'Remove the link to {key}',
     removeTooltip: 'Remove link',
   },
@@ -153,7 +149,6 @@ const { t } = useI18n({
     blockedBy: 'Заблокирована',
     blocks: 'Блокирует',
     cancel: 'Отмена',
-    close: 'Закрыть',
     duplicatedBy: 'Дублируется',
     duplicates: 'Дублирует',
     issueKey: 'Задача',
@@ -164,7 +159,7 @@ const { t } = useI18n({
     links: 'Связи',
     notFound: 'Нет доступной вам задачи {key}',
     relatesTo: 'Связана с',
-    relation: 'Эта задача',
+    relation: 'Тип связи',
     remove: 'Удалить связь с {key}',
     removeTooltip: 'Удалить связь',
   },
@@ -172,9 +167,12 @@ const { t } = useI18n({
 
 const organizationRoutes = useOrganizationRoutes()
 const headingId = useId()
-const dialog = useTemplateRef('dialog')
+const notFoundId = useId()
+const issueField = useTemplateRef('issueField')
 
 const state = reactive({
+  // The Add link fields are open.
+  adding: false,
   // The key typed last time when no such issue was found, shown under the field.
   notFoundKey: '',
   // The picked suggestion's key; '' while only text is typed.
@@ -272,14 +270,44 @@ const {
   pending: removing,
 } = useApiAction(props.deps.remove)
 
-const openDialog = () => {
-  Object.assign(state, { notFoundKey: '', otherIssueKey: '', search: '', suggestions: [] })
-  dialog.value?.open()
+const openAdding = async () => {
+  Object.assign(state, {
+    adding: true,
+    notFoundKey: '',
+    otherIssueKey: '',
+    search: '',
+    suggestions: [],
+  })
+  await nextTick()
+  issueField.value?.focus()
+}
+
+const closeAdding = () => {
+  state.adding = false
+}
+
+// Escape first closes an open suggestion list or select (they handle it); then the fields.
+const closeOnEscape = (event: KeyboardEvent) => {
+  if (!event.defaultPrevented) {
+    closeAdding()
+  }
+}
+
+// Enter on a highlighted suggestion picks it (the combobox handles that); otherwise it adds the link.
+const addOnEnter = (event: KeyboardEvent) => {
+  if (event.defaultPrevented) {
+    return
+  }
+  event.preventDefault()
+  void add()
 }
 
 const add = async () => {
   // A key typed in full works without picking it from the suggestions.
   const otherIssueKey = (state.otherIssueKey || state.search).trim().toUpperCase()
+  if (!otherIssueKey || adding.value) {
+    return
+  }
   const result = await executeAdd({
     issueKey: props.issueKey,
     otherIssueKey,
@@ -292,7 +320,7 @@ const add = async () => {
     state.notFoundKey = otherIssueKey
     return
   }
-  dialog.value?.close()
+  state.adding = false
   await props.onChanged()
 }
 
@@ -319,6 +347,22 @@ const remove = async (otherIssueKey: string) => {
 /* A row under the heading, as the first property is under Properties. */
 .issue-links-add {
   justify-self: start;
+}
+
+.issue-links-new {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.issue-links-new-error {
+  margin: 0;
+}
+
+.issue-links-new-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
 }
 
 .issue-links-group {

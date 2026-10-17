@@ -12,6 +12,7 @@
     :reset-search-term-on-select="false">
     <ComboboxAnchor class="base-combobox">
       <ComboboxInput
+        ref="input"
         v-bind="$attrs"
         v-model="search"
         autocomplete="off"
@@ -86,6 +87,9 @@ const model = defineModel<string>({ required: true })
 const search = defineModel<string>('search', { required: true })
 
 const open = ref(false)
+const input = useTemplateRef<{ $el: HTMLInputElement }>('input')
+
+defineExpose({ focus: () => input.value?.$el.focus() })
 
 const selected = computed({
   get: () => model.value,

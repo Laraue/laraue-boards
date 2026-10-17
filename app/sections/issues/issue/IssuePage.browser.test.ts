@@ -409,10 +409,10 @@ it('adds a link to an issue picked from the suggestions', async () => {
   // The issue itself is not suggested.
   expect(page.getByRole('option', { name: /ISS-1/ }).all()).toHaveLength(0)
   expect(add).toHaveBeenCalledWith({ issueKey: 'ISS-1', otherIssueKey: 'ISS-7', relation: 'blockedBy' })
-  await expect.element(page.getByRole('dialog')).not.toBeInTheDocument()
+  await expect.element(page.getByRole('combobox', { name: 'Issue' })).not.toBeInTheDocument()
 })
 
-it('keeps the link dialog open when no such issue is found', async () => {
+it('keeps the link fields open when no such issue is found', async () => {
   const add = vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'notFound' as const }))
   await mount(createDeps({ links: { ...createDeps().links, add } }))
 
@@ -421,6 +421,6 @@ it('keeps the link dialog open when no such issue is found', async () => {
   await page.getByRole('button', { exact: true, name: 'Add' }).click()
 
   await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()
-  await expect.element(page.getByRole('dialog')).toBeInTheDocument()
+  await expect.element(page.getByRole('combobox', { name: 'Issue' })).toBeInTheDocument()
 })
 
