@@ -13,6 +13,7 @@ const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
   assigneeColor: issue.assigneeColor,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,
+  blocked: issue.isBlocked ?? false,
   issueKey: issue.key,
   time: issue.time,
   title: issue.title,

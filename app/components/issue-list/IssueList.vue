@@ -16,6 +16,7 @@
       :assignee-color="issue.assigneeColor"
       :assignee-id="issue.assigneeId"
       :assignee-initial="issue.assigneeInitial"
+      :blocked="issue.blocked"
       :board-color="issue.boardColor"
       :board-id="issue.boardId"
       :board-name="issue.boardName"

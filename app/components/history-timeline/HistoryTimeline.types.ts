@@ -2,6 +2,7 @@ import type { RouteLocationRaw } from 'vue-router'
 
 import type { components } from '#infrastructure/api/generated'
 import type { IssueDescriptionDiffLine } from '~/sections/issues/issue/components/IssueDescription/components/IssueDescriptionDiff/IssueDescriptionDiff.types'
+import type { IssueLinkRelation } from '~/sections/issues/issue/components/IssueLinks/IssueLinks.types'
 
 export type HistoryAction = components['schemas']['LogAction']
 
@@ -17,6 +18,14 @@ export type HistoryAttachmentChangeViewModel = {
   fileName: null | string
   imageUrl: null | string
   kind: 'attachment'
+}
+
+// A link to another issue added or removed; `relation` is what it means from this issue's side.
+export type HistoryLinkChangeViewModel = {
+  action: 'added' | 'removed'
+  issueKey: null | string
+  kind: 'link'
+  relation: IssueLinkRelation
 }
 
 export type HistoryEventChangeViewModel = {
@@ -58,6 +67,7 @@ export type HistoryChangeViewModel =
   | HistoryBoardChangeViewModel
   | HistoryDescriptionChangeViewModel
   | HistoryEventChangeViewModel
+  | HistoryLinkChangeViewModel
   | HistoryPropertyChangeViewModel
   | HistorySpaceChangeViewModel
   | HistoryStatusChangeViewModel

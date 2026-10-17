@@ -12,6 +12,8 @@ import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.d
 import type { IssueCommentsDeps } from './components/IssueComments/IssueComments.deps'
 import type { IssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps'
 import type { IssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps'
+import type { IssueLinksDeps } from './components/IssueLinks/IssueLinks.deps'
+import type { IssueLinkViewModel } from './components/IssueLinks/IssueLinks.types'
 
 type IssuePageAttributeViewModel = IssueAttributeField & {
   value: string
@@ -59,6 +61,8 @@ export type IssuePageViewModel = {
   content: string
   createdAt: string
   issueKey: string
+  // Links to the issues the user can see.
+  links: IssueLinkViewModel[]
   owner: string
   ownerColor: string
   ownerInitial: string
@@ -80,6 +84,7 @@ export type IssuePageDeps = {
   deleteIssue: (input: { issueKey: string }) => Promise<void>
   description: IssueDescriptionDeps
   history: IssueHistoryDeps
+  links: IssueLinksDeps
   // Resolves `complete: false` when the issue was saved but could not be moved to the new status.
   saveIssue: (
     input: IssuePageInput & {

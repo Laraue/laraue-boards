@@ -1,6 +1,7 @@
 import { assert, test } from 'vitest'
 
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
+import { COLORS } from '~/constants/colors'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 
 import { createIssuePageDeps } from './IssuePage.deps.impl'
@@ -72,6 +73,16 @@ test('maps issue detail', async () => {
           epicId: 7,
           epicName: null,
           key: 'ISS-1',
+          links: [
+            {
+              key: 'ISS-2',
+              relation: 'DuplicatedBy',
+              statusCategory: 'Completed',
+              statusColor: null,
+              statusName: null,
+              title: 'Same bug',
+            },
+          ],
           owner: { color: '#333', displayName: 'Grace', initials: 'G' },
           spaceKey: 'product',
           spaceName: 'Product',
@@ -92,6 +103,16 @@ test('maps issue detail', async () => {
   assert.equal(result.owner, 'Grace')
   assert.equal(result.boardIsBacklog, true)
   assert.equal(result.statusCategory, 'Created')
+  assert.deepEqual(result.links, [
+    {
+      issueKey: 'ISS-2',
+      relation: 'duplicatedBy',
+      statusCategory: 'Completed',
+      statusColor: COLORS.gray,
+      statusLabel: '',
+      title: 'Same bug',
+    },
+  ])
   assert.deepEqual(result.attributes, [
     {
       color: '#222',

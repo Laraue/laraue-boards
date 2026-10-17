@@ -252,6 +252,24 @@
     </section>
 
     <section>
+      <h2>BaseCombobox</h2>
+      <div class="grid">
+        <BaseCombobox
+          v-model="comboboxValue"
+          v-model:search="comboboxSearch"
+          :message="comboboxOptions.length ? undefined : 'Nothing found'"
+          :options="comboboxOptions"
+          placeholder="Type to search" />
+        <BaseCombobox
+          v-model="comboboxValue"
+          v-model:search="comboboxSearch"
+          disabled
+          :options="comboboxOptions"
+          placeholder="Disabled" />
+      </div>
+    </section>
+
+    <section>
       <h2>BaseCheckbox</h2>
       <div class="row">
         <BaseCheckbox v-model="checked">Checked</BaseCheckbox>
@@ -503,6 +521,17 @@ const query = ref('')
 const text = ref('Text value')
 const empty = ref('')
 const option = ref('todo')
+// The combobox's consumer filters the options itself, as an API search would.
+const comboboxValue = ref('')
+const comboboxSearch = ref('')
+const comboboxOptions = computed(() =>
+  [
+    { description: 'Fix the login page', label: 'BRD-12', value: 'BRD-12' },
+    { description: 'Build the links API', label: 'BRD-13', value: 'BRD-13' },
+  ].filter((item) =>
+    `${item.label} ${item.description}`.toLowerCase().includes(comboboxSearch.value.toLowerCase()),
+  ),
+)
 const checked = ref(true)
 const unchecked = ref(false)
 const tab = ref('comments')
