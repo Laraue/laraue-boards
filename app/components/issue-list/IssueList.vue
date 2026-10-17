@@ -23,6 +23,7 @@
       :deleting="deleting"
       :issue-key="issue.issueKey"
       :on-delete="deps.deleteIssue ? () => remove(issue.issueKey) : undefined"
+      :blocked="issue.blocked"
       :on-move="() => openMoveDialog([issue.issueKey])"
       :on-toggle-selection="() => toggleSelection(issue.issueKey)"
       :on-updated="onMoved"

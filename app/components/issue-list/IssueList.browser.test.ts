@@ -18,6 +18,7 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
   assigneeInitial: 'A',
   boardColor: '#222',
   boardName: 'Roadmap',
+  blocked: false,
   canMove: true,
   issueKey,
   spaceColor: '#333',
@@ -212,3 +213,14 @@ it('drops the failure message as soon as the destination changes', async () => {
     .element(dialog().getByText('These issues can no longer be moved.'))
     .not.toBeInTheDocument()
 })
+
+it('marks a blocked issue', async () => {
+  await mount(createDeps(), vi.fn<() => void>(), [
+    { ...issueOf('ISS-1', 'Waits for the API'), blocked: true },
+    issueOf('ISS-2', 'Build the API'),
+  ])
+
+  await expect.element(page.getByText('Build the API')).toBeInTheDocument()
+  expect(page.getByText('Blocked', { exact: true }).all()).toHaveLength(1)
+})
+

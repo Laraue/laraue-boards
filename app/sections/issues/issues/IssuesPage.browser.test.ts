@@ -19,6 +19,7 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
   assigneeInitial: 'A',
   boardColor: '#222',
   boardName: 'Roadmap',
+  blocked: false,
   canMove: true,
   issueKey,
   spaceColor: '#333',

@@ -19,6 +19,7 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
   assigneeInitial: 'A',
   boardColor: '#222',
   boardName: 'Backlog',
+  blocked: false,
   canMove: true,
   issueKey,
   status: null,

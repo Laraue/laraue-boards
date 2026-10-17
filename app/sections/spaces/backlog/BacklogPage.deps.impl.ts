@@ -19,6 +19,7 @@ const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem
   boardColor: issue.epic.color,
   boardId: String(issue.epicId),
   boardName: issue.epic.name,
+  blocked: issue.isBlocked ?? false,
   canMove: issue.canEdit,
   issueKey: issue.key,
   spaceKey: issue.spaceKey,

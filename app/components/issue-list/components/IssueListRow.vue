@@ -19,6 +19,14 @@
     <NuxtLink
       class="issue-content"
       :to="to">
+      <!-- Before the title, so the one-line clamp cuts the title and not the mark. -->
+      <BaseBadge
+        v-if="blocked"
+        class="issue-blocked"
+        variant="warning">
+        <IconLock class="issue-blocked-icon" />
+        {{ t('blocked') }}
+      </BaseBadge>
       {{ title }}
     </NuxtLink>
     <!-- Space and board; the space gives up room first, the full path is on hover. -->
@@ -140,7 +148,13 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowsLeftRight, IconDots, IconSquareCheck, IconTrash } from '@tabler/icons-vue'
+import {
+  IconArrowsLeftRight,
+  IconDots,
+  IconLock,
+  IconSquareCheck,
+  IconTrash,
+} from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 import type { components } from '#infrastructure/api/generated'
@@ -158,6 +172,7 @@ const props = defineProps<{
   boardColor: string
   boardId?: string
   boardName: string
+  blocked: boolean
   canMove: boolean
   deleting?: boolean
   issueKey: string
@@ -186,6 +201,7 @@ const { t } = useI18n({
     actions: 'Issue actions',
     assignee: 'Assignee',
     backlog: 'Backlog',
+    blocked: 'Blocked',
     deleteIssue: 'Delete issue',
     deselectIssue: 'Deselect issue',
     moveToBoard: 'Move to board',
@@ -196,6 +212,7 @@ const { t } = useI18n({
     actions: 'Действия с задачей',
     assignee: 'Исполнитель',
     backlog: 'Бэклог',
+    blocked: 'Заблокирована',
     deleteIssue: 'Удалить задачу',
     deselectIssue: 'Снять выделение',
     moveToBoard: 'Переместить на доску',
@@ -354,6 +371,17 @@ a.issue-location-board:hover {
   margin: 0;
   min-width: 0;
   overflow: hidden;
+}
+
+.issue-blocked {
+  margin-right: var(--space-2);
+  vertical-align: text-bottom;
+}
+
+.issue-blocked-icon {
+  height: 12px;
+  margin-right: var(--space-1);
+  width: 12px;
 }
 
 .truncate {
