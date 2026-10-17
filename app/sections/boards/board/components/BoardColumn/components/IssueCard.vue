@@ -23,6 +23,12 @@
             :initials="viewModel.assigneeInitial"
             size="sm" />
           <span class="task-assignee">{{ viewModel.assigneeName }}</span>
+          <BaseBadge
+            v-if="viewModel.blocked"
+            variant="warning">
+            <IconLock class="task-blocked-icon" />
+            {{ t('blocked') }}
+          </BaseBadge>
           <!-- A native title: a board renders hundreds of cards, too many for tooltip components. -->
           <time
             :datetime="viewModel.time"
@@ -41,7 +47,7 @@
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
-import { IconLoader } from '@tabler/icons-vue'
+import { IconLoader, IconLock } from '@tabler/icons-vue'
 
 import type { IssueCardViewModel } from './IssueCard.types'
 
@@ -56,10 +62,12 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
+    blocked: 'Blocked',
     created: 'Created',
     savingPosition: 'Saving issue position',
   },
   ru: {
+    blocked: 'Заблокирована',
     created: 'Создана',
     savingPosition: 'Сохранение позиции задачи',
   },
@@ -127,6 +135,12 @@ useSortable({
 
 .task-key {
   color: var(--color-muted);
+}
+
+.task-blocked-icon {
+  height: 12px;
+  margin-right: var(--space-1);
+  width: 12px;
 }
 
 .task-assignee {

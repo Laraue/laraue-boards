@@ -23,6 +23,7 @@ const issue: IssuePageViewModel = {
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
   issueKey: 'ISS-1',
+  links: [],
   owner: 'Grace Hopper',
   ownerColor: '#222',
   ownerInitial: 'G',
@@ -71,6 +72,10 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   },
   history: {
     load: vi.fn<IssuePageDeps['history']['load']>(async () => ({ hasNextPage: false, items: [] })),
+  },
+  links: {
+    add: vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const })),
+    remove: vi.fn<IssuePageDeps['links']['remove']>(async () => {}),
   },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {
@@ -353,3 +358,54 @@ it('reloads the issue when the failed request is retried', async () => {
 
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
 })
+
+it('lists the issue links by what they mean and removes one', async () => {
+  const remove = vi.fn<IssuePageDeps['links']['remove']>(async () => {})
+  const view = vi.fn<IssuePageDeps['view']>(async () => ({
+    ...issue,
+    links: [
+      {
+        issueKey: 'ISS-2',
+        relation: 'blockedBy' as const,
+        statusCategory: 'InProgress' as const,
+        statusColor: '#444',
+        statusLabel: 'Doing',
+        title: 'Build the API',
+      },
+    ],
+  }))
+  await mount(createDeps({ links: { add: vi.fn<IssuePageDeps['links']['add']>(), remove }, view }))
+
+  await expect.element(page.getByRole('heading', { name: 'Blocked by' })).toBeInTheDocument()
+  await expect.element(page.getByText('Build the API')).toBeInTheDocument()
+
+  await page.getByRole('button', { name: 'Remove the link to ISS-2' }).click()
+
+  expect(remove).toHaveBeenCalledWith({ issueKey: 'ISS-1', otherIssueKey: 'ISS-2' })
+  expect(view).toHaveBeenCalledTimes(2)
+})
+
+it('adds a link by type and issue key', async () => {
+  const add = vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const }))
+  await mount(createDeps({ links: { add, remove: vi.fn<IssuePageDeps['links']['remove']>() } }))
+
+  await page.getByRole('button', { name: 'Add link' }).click()
+  await page.getByRole('textbox', { name: 'Issue' }).fill('iss-7')
+  await page.getByRole('button', { exact: true, name: 'Add' }).click()
+
+  expect(add).toHaveBeenCalledWith({ issueKey: 'ISS-1', otherIssueKey: 'ISS-7', relation: 'blockedBy' })
+  await expect.element(page.getByRole('dialog')).not.toBeInTheDocument()
+})
+
+it('keeps the link dialog open when no such issue is found', async () => {
+  const add = vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'notFound' as const }))
+  await mount(createDeps({ links: { add, remove: vi.fn<IssuePageDeps['links']['remove']>() } }))
+
+  await page.getByRole('button', { name: 'Add link' }).click()
+  await page.getByRole('textbox', { name: 'Issue' }).fill('ISS-404')
+  await page.getByRole('button', { exact: true, name: 'Add' }).click()
+
+  await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()
+  await expect.element(page.getByRole('dialog')).toBeInTheDocument()
+})
+

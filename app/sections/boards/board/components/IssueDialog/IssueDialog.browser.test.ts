@@ -27,6 +27,7 @@ const issue: IssuePageViewModel = {
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
   issueKey: 'ISS-1',
+  links: [],
   owner: 'Grace Hopper',
   ownerColor: '#d65f63',
   ownerInitial: 'G',
@@ -60,6 +61,10 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   },
   history: {
     load: vi.fn<IssuePageDeps['history']['load']>(),
+  },
+  links: {
+    add: vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const })),
+    remove: vi.fn<IssuePageDeps['links']['remove']>(async () => {}),
   },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {

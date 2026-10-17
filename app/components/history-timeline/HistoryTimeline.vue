@@ -97,6 +97,9 @@
                   <HistoryBoardChange
                     v-else-if="change.kind === 'board'"
                     :change="change" />
+                  <HistoryLinkChange
+                    v-else-if="change.kind === 'link'"
+                    :change="change" />
                   <HistoryPropertyChange
                     v-else-if="change.kind === 'property'"
                     :change="change" />
@@ -132,6 +135,7 @@ import HistoryAttachmentChange from './components/HistoryAttachmentChange.vue'
 import HistoryBoardChange from './components/HistoryBoardChange.vue'
 import HistoryDescriptionChange from './components/HistoryDescriptionChange.vue'
 import HistoryEventChange from './components/HistoryEventChange.vue'
+import HistoryLinkChange from './components/HistoryLinkChange.vue'
 import HistoryPropertyChange from './components/HistoryPropertyChange.vue'
 import HistorySpaceChange from './components/HistorySpaceChange.vue'
 import HistoryStatusChange from './components/HistoryStatusChange.vue'
