@@ -128,13 +128,6 @@
                   :on-change="changeFiles"
                   :on-remove-attachment="removeAttachment"
                   :removed-attachment-ids="state.removedAttachmentIds" />
-                <IssueLinks
-                  :key="`links-${issue.issueKey}`"
-                  :can-edit="issue.canEdit"
-                  :deps="deps.links"
-                  :issue-key="issue.issueKey"
-                  :links="issue.links"
-                  :on-changed="refreshAfterLinkChange" />
                 <BaseTabs
                   v-model="state.activeTab"
                   :items="[
@@ -241,6 +234,13 @@
                     :disabled="!issue.canEdit"
                     select-variant="inline" />
                 </div>
+                <IssueLinks
+                  :key="`links-${issue.issueKey}`"
+                  :can-edit="issue.canEdit"
+                  :deps="deps.links"
+                  :issue-key="issue.issueKey"
+                  :links="issue.links"
+                  :on-changed="refreshAfterLinkChange" />
                 <dl class="issue-dates">
                   <dt>{{ t('created') }}</dt>
                   <dd>

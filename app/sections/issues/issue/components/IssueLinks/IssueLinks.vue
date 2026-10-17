@@ -23,36 +23,33 @@
       :key="group.relation"
       class="issue-links-group">
       <h3 class="issue-links-group-label">{{ t(group.relation) }}</h3>
-      <BaseList>
-        <BaseListRow
+      <ul class="issue-links-list">
+        <li
           v-for="link in group.links"
-          :key="link.issueKey">
-          <template #leading>
+          :key="link.issueKey"
+          class="issue-links-row">
+          <!-- A native title: the narrow column truncates the title and has no room for the status. -->
+          <NuxtLink
+            class="issue-links-link"
+            :title="`${link.issueKey} ${link.title} · ${link.statusLabel || t('backlog')}`"
+            :to="organizationRoutes.issue(link.issueKey)">
             <StatusIndicator
               :category="link.statusCategory"
               :color="link.statusColor" />
-          </template>
-          <NuxtLink
-            class="issue-links-link"
-            :to="organizationRoutes.issue(link.issueKey)">
             <span class="issue-links-key">{{ link.issueKey }}</span>
-            {{ link.title }}
+            <span class="issue-links-title">{{ link.title }}</span>
           </NuxtLink>
-          <template #description>{{ link.statusLabel || t('backlog') }}</template>
-          <template
+          <BaseIconButton
             v-if="canEdit"
-            #trailing>
-            <BaseIconButton
-              :disabled="removing"
-              :label="t('remove', { key: link.issueKey })"
-              :tooltip="t('removeTooltip')"
-              variant="danger"
-              @click="remove(link.issueKey)">
-              <IconX />
-            </BaseIconButton>
-          </template>
-        </BaseListRow>
-      </BaseList>
+            :disabled="removing"
+            :label="t('remove', { key: link.issueKey })"
+            :tooltip="t('removeTooltip')"
+            variant="danger"
+            @click="remove(link.issueKey)">
+            <IconX />
+          </BaseIconButton>
+        </li>
+      </ul>
     </div>
 
     <p
@@ -229,6 +226,7 @@ const remove = async (otherIssueKey: string) => {
 .issue-links {
   display: grid;
   gap: var(--space-3);
+  min-width: 0;
 }
 
 .issue-links-header {
@@ -239,15 +237,16 @@ const remove = async (otherIssueKey: string) => {
   min-height: var(--control-height);
 }
 
+/* The same heading as Properties above it. */
 .issue-links-header h2 {
-  font-size: var(--font-size-body);
-  font-weight: var(--font-weight-medium);
+  font-size: inherit;
   margin: 0;
 }
 
 .issue-links-group {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  min-width: 0;
 }
 
 .issue-links-group-label {
@@ -257,16 +256,53 @@ const remove = async (otherIssueKey: string) => {
   margin: 0;
 }
 
+.issue-links-list {
+  display: grid;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.issue-links-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  min-width: 0;
+}
+
 .issue-links-link {
+  align-items: center;
+  border-radius: var(--radius-control);
   color: inherit;
+  display: flex;
+  flex: 1;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
   text-decoration: none;
 }
 
-.issue-links-link:hover {
-  text-decoration: underline;
+.issue-links-link:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 .issue-links-key {
   color: var(--color-muted);
+  flex: none;
+}
+
+.issue-links-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .issue-links-link:hover {
+    background: var(--color-row-hover);
+  }
 }
 </style>
