@@ -76,6 +76,10 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   links: {
     add: vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const })),
     remove: vi.fn<IssuePageDeps['links']['remove']>(async () => {}),
+    searchIssues: vi.fn<IssuePageDeps['links']['searchIssues']>(async () => ({
+      issues: [],
+      outcome: 'found' as const,
+    })),
   },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {
@@ -374,7 +378,7 @@ it('lists the issue links by what they mean and removes one', async () => {
       },
     ],
   }))
-  await mount(createDeps({ links: { add: vi.fn<IssuePageDeps['links']['add']>(), remove }, view }))
+  await mount(createDeps({ links: { ...createDeps().links, remove }, view }))
 
   await expect.element(page.getByRole('heading', { name: 'Blocked by' })).toBeInTheDocument()
   await expect.element(page.getByText('Build the API')).toBeInTheDocument()
@@ -385,24 +389,35 @@ it('lists the issue links by what they mean and removes one', async () => {
   expect(view).toHaveBeenCalledTimes(2)
 })
 
-it('adds a link by type and issue key', async () => {
+it('adds a link to an issue picked from the suggestions', async () => {
   const add = vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const }))
-  await mount(createDeps({ links: { add, remove: vi.fn<IssuePageDeps['links']['remove']>() } }))
+  const searchIssues = vi.fn<IssuePageDeps['links']['searchIssues']>(async () => ({
+    issues: [
+      { issueKey: 'ISS-1', title: 'Fix the bug' },
+      { issueKey: 'ISS-7', title: 'Build the API' },
+    ],
+    outcome: 'found' as const,
+  }))
+  await mount(createDeps({ links: { ...createDeps().links, add, searchIssues } }))
 
   await page.getByRole('button', { name: 'Add link' }).click()
-  await page.getByRole('textbox', { name: 'Issue' }).fill('iss-7')
+  await page.getByRole('combobox', { name: 'Issue' }).fill('api')
+  await page.getByRole('option', { name: /ISS-7/ }).click()
   await page.getByRole('button', { exact: true, name: 'Add' }).click()
 
+  expect(searchIssues).toHaveBeenCalledWith(expect.objectContaining({ search: 'api' }))
+  // The issue itself is not suggested.
+  expect(page.getByRole('option', { name: /ISS-1/ }).all()).toHaveLength(0)
   expect(add).toHaveBeenCalledWith({ issueKey: 'ISS-1', otherIssueKey: 'ISS-7', relation: 'blockedBy' })
   await expect.element(page.getByRole('dialog')).not.toBeInTheDocument()
 })
 
 it('keeps the link dialog open when no such issue is found', async () => {
   const add = vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'notFound' as const }))
-  await mount(createDeps({ links: { add, remove: vi.fn<IssuePageDeps['links']['remove']>() } }))
+  await mount(createDeps({ links: { ...createDeps().links, add } }))
 
   await page.getByRole('button', { name: 'Add link' }).click()
-  await page.getByRole('textbox', { name: 'Issue' }).fill('ISS-404')
+  await page.getByRole('combobox', { name: 'Issue' }).fill('ISS-404')
   await page.getByRole('button', { exact: true, name: 'Add' }).click()
 
   await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()

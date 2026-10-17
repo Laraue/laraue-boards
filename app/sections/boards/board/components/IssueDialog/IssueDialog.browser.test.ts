@@ -65,6 +65,10 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   links: {
     add: vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const })),
     remove: vi.fn<IssuePageDeps['links']['remove']>(async () => {}),
+    searchIssues: vi.fn<IssuePageDeps['links']['searchIssues']>(async () => ({
+      issues: [],
+      outcome: 'found' as const,
+    })),
   },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {

@@ -76,11 +76,14 @@
           v-slot="{ id, describedby }"
           :error="state.notFoundKey ? t('notFound', { key: state.notFoundKey }) : undefined"
           :label="t('issueKey')">
-          <BaseInput
+          <BaseCombobox
             :id="id"
             v-model="state.otherIssueKey"
+            v-model:search="state.search"
             :aria-describedby="describedby"
-            autocomplete="off"
+            :loading="state.searching"
+            :message="suggestionMessage"
+            :options="suggestionOptions"
             :placeholder="t('issueKeyPlaceholder')"
             required />
         </BaseField>
@@ -108,7 +111,7 @@ import { IconLink, IconX } from '@tabler/icons-vue'
 
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 
-import type { IssueLinksDeps } from './IssueLinks.deps'
+import type { IssueLinkCandidate, IssueLinksDeps } from './IssueLinks.deps'
 import { ISSUE_LINK_RELATIONS } from './IssueLinks.types'
 import type { IssueLinkRelation, IssueLinkViewModel } from './IssueLinks.types'
 
@@ -132,7 +135,10 @@ const { t } = useI18n({
     duplicatedBy: 'Duplicated by',
     duplicates: 'Duplicates',
     issueKey: 'Issue',
-    issueKeyPlaceholder: 'For example, BRD-12',
+    issueKeyPlaceholder: 'Key or words from the title',
+    noSuggestions: 'No issues found',
+    searchError: 'Could not search issues',
+    searching: 'Searching…',
     links: 'Links',
     notFound: 'No issue {key} that you can see',
     relatesTo: 'Relates to',
@@ -151,7 +157,10 @@ const { t } = useI18n({
     duplicatedBy: 'Дублируется',
     duplicates: 'Дублирует',
     issueKey: 'Задача',
-    issueKeyPlaceholder: 'Например, BRD-12',
+    issueKeyPlaceholder: 'Ключ или слова из заголовка',
+    noSuggestions: 'Задачи не найдены',
+    searchError: 'Не удалось найти задачи',
+    searching: 'Поиск…',
     links: 'Связи',
     notFound: 'Нет доступной вам задачи {key}',
     relatesTo: 'Связана с',
@@ -168,8 +177,13 @@ const dialog = useTemplateRef('dialog')
 const state = reactive({
   // The key typed last time when no such issue was found, shown under the field.
   notFoundKey: '',
+  // The picked suggestion's key; '' while only text is typed.
   otherIssueKey: '',
   relation: 'blockedBy' as IssueLinkRelation,
+  search: '',
+  searchFailed: false,
+  searching: false,
+  suggestions: [] as IssueLinkCandidate[],
 })
 
 const groups = computed(() =>
@@ -183,6 +197,74 @@ const relationOptions = computed(() =>
   ISSUE_LINK_RELATIONS.map((relation) => ({ label: t(relation), value: relation })),
 )
 
+const suggestionOptions = computed(() =>
+  state.suggestions.map((issue) => ({
+    description: issue.title,
+    label: issue.issueKey,
+    value: issue.issueKey,
+  })),
+)
+
+const suggestionMessage = computed(() => {
+  if (state.searching) {
+    return t('searching')
+  }
+  if (state.searchFailed) {
+    return t('searchError')
+  }
+  return state.suggestions.length ? undefined : t('noSuggestions')
+})
+
+// Waits for a pause in typing, and drops the answer to a search the user has typed past.
+const SEARCH_DELAY_MS = 250
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+let searchAbort: AbortController | undefined
+
+const searchIssues = async (search: string) => {
+  searchAbort?.abort()
+  const abort = new AbortController()
+  searchAbort = abort
+  try {
+    const result = await props.deps.searchIssues({ search, signal: abort.signal })
+    // The issue itself is no link target.
+    state.suggestions =
+      result.outcome === 'found'
+        ? result.issues.filter((issue) => issue.issueKey !== props.issueKey)
+        : []
+    state.searchFailed = result.outcome === 'failed'
+  } catch (error) {
+    // A search the user typed past was aborted on purpose.
+    if (!abort.signal.aborted) {
+      throw error
+    }
+  } finally {
+    if (searchAbort === abort) {
+      state.searching = false
+    }
+  }
+}
+
+watch(
+  () => state.search,
+  (search) => {
+    clearTimeout(searchTimer)
+    state.notFoundKey = ''
+    // Picking a suggestion puts its key in the field; that needs no new search.
+    if (!search.trim() || search === state.otherIssueKey) {
+      searchAbort?.abort()
+      state.searching = false
+      return
+    }
+    state.searching = true
+    searchTimer = setTimeout(() => void searchIssues(search.trim()), SEARCH_DELAY_MS)
+  },
+)
+
+onBeforeUnmount(() => {
+  clearTimeout(searchTimer)
+  searchAbort?.abort()
+})
+
 const { execute: executeAdd, message: addMessage, pending: adding } = useApiAction(props.deps.add)
 const {
   execute: executeRemove,
@@ -191,13 +273,13 @@ const {
 } = useApiAction(props.deps.remove)
 
 const openDialog = () => {
-  state.notFoundKey = ''
-  state.otherIssueKey = ''
+  Object.assign(state, { notFoundKey: '', otherIssueKey: '', search: '', suggestions: [] })
   dialog.value?.open()
 }
 
 const add = async () => {
-  const otherIssueKey = state.otherIssueKey.trim().toUpperCase()
+  // A key typed in full works without picking it from the suggestions.
+  const otherIssueKey = (state.otherIssueKey || state.search).trim().toUpperCase()
   const result = await executeAdd({
     issueKey: props.issueKey,
     otherIssueKey,
