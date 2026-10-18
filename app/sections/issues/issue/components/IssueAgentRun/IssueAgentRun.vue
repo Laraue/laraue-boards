@@ -13,8 +13,9 @@
         v-if="badgeShown && run"
         :state="run.state"
         :title="run.failureReason ?? undefined" />
+      <!-- The hand-off button says it on its own; the text is for someone who can't hand it off. -->
       <span
-        v-else
+        v-else-if="!handOffShown"
         class="issue-agent-run-none">
         {{ t('none') }}
       </span>
@@ -29,8 +30,8 @@
           {{ t('cancel') }}
         </BaseButton>
         <BaseButton
-          v-else-if="assigneeIsCurrentUser"
-          class="issue-agent-run-action"
+          v-else-if="handOffShown"
+          :class="{ 'issue-agent-run-action': badgeShown }"
           :loading="pending"
           size="small"
           variant="ghost"
@@ -107,6 +108,7 @@ const headingId = useId()
 
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
 const badgeShown = computed(() => open.value || props.run?.state === 'failed')
+const handOffShown = computed(() => props.canEdit && props.assigneeIsCurrentUser && !open.value)
 // A working run already started; for any other state the blockers decide when the agent can start.
 const waitsForBlockers = computed(
   () => props.blockedBy.length > 0 && props.run?.state !== 'working',
