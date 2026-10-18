@@ -93,7 +93,9 @@ const confirm = useConfirm()
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
 const badgeShown = computed(() => open.value || props.run?.state === 'failed')
 // A working run already started; for any other state the blockers decide when the agent can start.
-const waitsForBlockers = computed(() => props.blockedBy.length > 0 && props.run?.state !== 'working')
+const waitsForBlockers = computed(
+  () => props.blockedBy.length > 0 && props.run?.state !== 'working',
+)
 
 const { execute, message, pending } = useApiAction((action: () => Promise<void>) => action())
 

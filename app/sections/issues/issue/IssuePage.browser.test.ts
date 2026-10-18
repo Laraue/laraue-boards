@@ -1,8 +1,10 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
+import { defineComponent, h } from 'vue'
 
 import { ApiError } from '#infrastructure/api/request'
+import BaseConfirmHost from '~/components/ui/BaseConfirmHost.vue'
 
 import type { IssuePageDeps, IssuePageViewModel } from './IssuePage.deps'
 import IssuePage from './IssuePage.vue'
@@ -366,7 +368,22 @@ it('cancels the open agent run after confirmation', async () => {
       agentRun: { failureReason: null, id: '5', state: 'working' },
     })),
   })
-  await mount(deps)
+  // The confirmation is drawn by the app layout's host, which a bare page mount doesn't have.
+  const PageWithConfirmHost = defineComponent({
+    setup: () => () => [
+      h(BaseConfirmHost, { cancelLabel: 'Cancel', dangerLabel: 'Delete' }),
+      h(IssuePage, {
+        deps,
+        issueKey: 'ISS-1',
+        onBack: vi.fn<() => void>(),
+        onDirtyChange: vi.fn<(dirty: boolean) => void>(),
+      }),
+    ],
+  })
+  currentWrapper = await mountSuspended(PageWithConfirmHost, {
+    attachTo: document.body,
+    route: '/organizations/acme-ab12/issues/ISS-1',
+  })
 
   await page.getByRole('button', { name: 'Cancel run' }).click()
   await page.getByRole('alertdialog').getByRole('button', { name: 'Stop agent' }).click()
@@ -398,7 +415,11 @@ it('locks the fields but still lets anyone who can edit cancel the run', async (
 
   await expect.element(page.getByRole('textbox', { name: 'Title' })).toBeDisabled()
   await expect
-    .element(page.getByText('Editing is locked while the agent has the issue. Cancel the run to change it.'))
+    .element(
+      page.getByText(
+        'Editing is locked while the agent has the issue. Cancel the run to change it.',
+      ),
+    )
     .toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeEnabled()
 })
@@ -529,7 +550,8 @@ it('keeps the link fields open when no such issue is found', async () => {
 
   await page.getByRole('button', { name: 'Add link' }).click()
   await page.getByRole('combobox', { name: 'Issue' }).fill('ISS-404')
-  await page.getByRole('button', { exact: true, name: 'Add' }).click()
+  // Enter adds the typed key; the suggestion list's "No issues found" covers the Add button.
+  await userEvent.keyboard('{Enter}')
 
   await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()
   await expect.element(page.getByRole('combobox', { name: 'Issue' })).toBeInTheDocument()
