@@ -1,5 +1,6 @@
 <!-- The issue's agent run in the properties: its state, "Hand to agent" for the assignee (their own
-     runner picks it up), and "Cancel run" for anyone who can edit the issue. A run is open while it is
+     runner picks it up), and a remove-style × beside an open run's badge to cancel it, for anyone who can
+     edit the issue. A run is open while it is
      ready or working, and the issue's fields are locked meanwhile. A blocked issue can be handed off:
      its run waits until the blockers are completed, which the note says. -->
 <template>
@@ -24,15 +25,15 @@
         {{ t('none') }}
       </span>
       <template v-if="canEdit">
-        <BaseButton
+        <!-- The same × as a link's remove button, right after the badge it cancels. -->
+        <BaseIconButton
           v-if="open && run"
-          class="issue-agent-run-action"
-          :loading="pending"
-          size="small"
-          variant="ghost"
+          :disabled="pending"
+          :label="t('cancel')"
+          variant="danger"
           @click="cancel(run.id)">
-          {{ t('cancel') }}
-        </BaseButton>
+          <IconX />
+        </BaseIconButton>
         <BaseButton
           v-else-if="handOffShown"
           :class="{ 'issue-agent-run-action': badgeShown }"
@@ -84,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconRobot } from '@tabler/icons-vue'
+import { IconRobot, IconX } from '@tabler/icons-vue'
 
 import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
 import DocsHelpLink from '~/components/docs-help-link/DocsHelpLink.vue'
