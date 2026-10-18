@@ -374,6 +374,35 @@ it('cancels the open agent run after confirmation', async () => {
   await vi.waitFor(() => expect(deps.agentRun.cancel).toHaveBeenCalledWith({ runId: '5' }))
 })
 
+it('offers the hand-off only to the assignee', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, assigneeIsCurrentUser: false })),
+    }),
+  )
+
+  await expect.element(page.getByText('Not handed off')).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
+})
+
+it('locks the fields but still lets anyone who can edit cancel the run', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentRun: { failureReason: null, id: '5', state: 'ready' },
+        assigneeIsCurrentUser: false,
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('textbox', { name: 'Title' })).toBeDisabled()
+  await expect
+    .element(page.getByText('Editing is locked while the agent has the issue. Cancel the run to change it.'))
+    .toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeEnabled()
+})
+
 it('says the agent waits for the open blockers', async () => {
   await mount(
     createDeps({

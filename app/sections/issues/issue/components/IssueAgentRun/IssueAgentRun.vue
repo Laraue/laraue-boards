@@ -1,6 +1,7 @@
-<!-- The issue's agent run in the properties: its state, and "Hand to agent" or "Cancel" for
-     someone who can edit the issue. A run is open while it is ready or working. A blocked issue can
-     be handed off: its run waits until the blockers are completed, which the note says. -->
+<!-- The issue's agent run in the properties: its state, "Hand to agent" for the assignee (their own
+     runner picks it up), and "Cancel run" for anyone who can edit the issue. A run is open while it is
+     ready or working, and the issue's fields are locked meanwhile. A blocked issue can be handed off:
+     its run waits until the blockers are completed, which the note says. -->
 <template>
   <div class="issue-agent-run">
     <AgentRunBadge
@@ -22,7 +23,7 @@
         {{ t('cancel') }}
       </BaseButton>
       <BaseButton
-        v-else
+        v-else-if="assigneeIsCurrentUser"
         :loading="pending"
         size="small"
         variant="ghost"
@@ -31,6 +32,11 @@
       </BaseButton>
     </template>
   </div>
+  <p
+    v-if="open"
+    class="issue-agent-run-note">
+    {{ t('locked') }}
+  </p>
   <p
     v-if="waitsForBlockers"
     class="issue-agent-run-note">
@@ -50,6 +56,8 @@ import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
 import type { IssueAgentRunDeps, IssueAgentRunViewModel } from './IssueAgentRun.deps'
 
 const props = defineProps<{
+  // Only the assignee hands an issue to the agent: the run goes to their own runner.
+  assigneeIsCurrentUser: boolean
   // Keys of the issues that block this one and aren't completed yet.
   blockedBy: string[]
   canEdit: boolean
@@ -64,6 +72,7 @@ const { t } = useI18n({
     cancel: 'Cancel run',
     cancelConfirm: 'Stop the agent on this issue?',
     handOff: 'Hand to agent',
+    locked: 'Editing is locked while the agent has the issue. Cancel the run to change it.',
     none: 'Not handed off',
     stop: 'Stop agent',
     waitsFor: 'Blocked by {keys}: the agent starts once they are completed.',
@@ -72,6 +81,7 @@ const { t } = useI18n({
     cancel: 'Отменить запуск',
     cancelConfirm: 'Остановить агента на этой задаче?',
     handOff: 'Передать агенту',
+    locked: 'Пока задача у агента, её нельзя редактировать. Отмените запуск, чтобы изменить её.',
     none: 'Не передана',
     stop: 'Остановить',
     waitsFor: 'Заблокирована задачами {keys}: агент начнёт, когда они будут завершены.',

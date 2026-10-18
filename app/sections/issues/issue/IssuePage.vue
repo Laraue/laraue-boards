@@ -51,6 +51,7 @@
             :can-save="canSave"
             :deleting="deleting"
             :form-id="formId"
+            :locked="fieldsLocked(data)"
             :on-delete="remove"
             :saving="saving" />
         </template>
@@ -96,7 +97,7 @@
                     id="issue-title"
                     :aria-label="t('title')"
                     class="issue-title-input"
-                    :disabled="!issue.canEdit"
+                    :disabled="!canEditFields(issue)"
                     :maxlength="256"
                     :placeholder="t('titlePlaceholder')"
                     rows="1"
@@ -107,10 +108,10 @@
                     v-model="state.content"
                     v-model:title="state.title"
                     :deps="deps.description"
-                    :disabled="!issue.canEdit">
+                    :disabled="!canEditFields(issue)">
                     <template #actions>
                       <BaseIconButton
-                        :disabled="saving || deleting"
+                        :disabled="!canEditFields(issue) || saving || deleting"
                         :label="t('attachImages')"
                         :tooltip="t('attachImagesHint')"
                         @click="attachments?.pick()">
@@ -123,7 +124,7 @@
                   :key="issue.issueKey"
                   ref="attachments"
                   :attachments="issue.attachments"
-                  :disabled="!issue.canEdit || saving || deleting"
+                  :disabled="!canEditFields(issue) || saving || deleting"
                   :files="state.files"
                   :on-change="changeFiles"
                   :on-remove-attachment="removeAttachment"
@@ -209,7 +210,7 @@
                     :key="`assignee-${issue.issueKey}`"
                     v-model="state.assigneeId"
                     :deps="deps.assigneeSelect"
-                    :disabled="!issue.canEdit"
+                    :disabled="!canEditFields(issue)"
                     :initial-option="{
                       color: issue.assigneeColor,
                       initials: issue.assigneeInitial,
@@ -230,6 +231,7 @@
                   <span class="issue-property-label">{{ t('agent') }}</span>
                   <IssueAgentRun
                     :key="`agent-${issue.issueKey}`"
+                    :assignee-is-current-user="issue.assigneeIsCurrentUser"
                     :blocked-by="openBlockers(issue)"
                     :can-edit="issue.canEdit"
                     :deps="deps.agentRun"
@@ -240,7 +242,7 @@
                     v-if="issue.attributes.length"
                     v-model="state.attributeValues"
                     :attributes="issue.attributes"
-                    :disabled="!issue.canEdit"
+                    :disabled="!canEditFields(issue)"
                     select-variant="inline" />
                 </div>
                 <IssueLinks
@@ -276,6 +278,7 @@
                   :can-save="canSave"
                   :deleting="deleting"
                   :form-id="formId"
+                  :locked="fieldsLocked(issue)"
                   :on-delete="remove"
                   :saving="saving" />
               </footer>
@@ -478,6 +481,13 @@ const syncState = (issue: IssuePageViewModel) => {
   })
 }
 
+// An open agent run locks the issue's fields (the agent works from what was handed off); status, comments and
+// cancelling the run stay available.
+const fieldsLocked = (issue?: IssuePageViewModel | null) =>
+  issue?.agentRun?.state === 'ready' || issue?.agentRun?.state === 'working'
+
+const canEditFields = (issue: IssuePageViewModel) => issue.canEdit && !fieldsLocked(issue)
+
 const openBlockers = (issue: IssuePageViewModel) =>
   issue.links
     .filter((link) => link.relation === 'blockedBy' && link.statusCategory !== 'Completed')
@@ -534,6 +544,7 @@ const save = async () => {
     boardId: state.boardId,
     content: state.content,
     files: state.files,
+    fieldsLocked: fieldsLocked(issue),
     issueKey: issue.issueKey,
     previousBoardId: issue.boardId,
     previousSpaceKey: issue.spaceId,

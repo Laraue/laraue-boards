@@ -1,7 +1,7 @@
 <template>
   <div class="issue-page-actions">
     <DeleteActionMenu
-      :disabled="saving"
+      :disabled="saving || locked"
       :label="t('deleteIssue')"
       :loading="deleting"
       :on-delete="onDelete" />
@@ -26,6 +26,8 @@ defineProps<{
   canSave: boolean
   deleting: boolean
   formId: string
+  // Handed to the agent: the issue can't be deleted until the run ends.
+  locked: boolean
   onDelete: () => Promise<void> | void
   saving: boolean
 }>()

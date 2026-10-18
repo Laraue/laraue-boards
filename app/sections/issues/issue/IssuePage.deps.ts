@@ -95,6 +95,8 @@ export type IssuePageDeps = {
   // Resolves `complete: false` when the issue was saved but could not be moved to the new status.
   saveIssue: (
     input: IssuePageInput & {
+      // The issue is handed to the agent: only the status move is saved, its fields are locked.
+      fieldsLocked?: boolean
       issueKey: string
       previousBoardId: string
       previousSpaceKey: string

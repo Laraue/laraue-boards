@@ -137,17 +137,19 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
   // Saving and moving to another status are two requests: when only the move fails, the
   // save still stands and the issue stays where it was.
   saveIssue: async (input) => {
-    await request(
-      client.PUT('/api/issues/{key}', {
-        body: {},
-        bodySerializer: () =>
-          updateIssueFormData({
-            ...input,
-            attributeValues: mapIssueAttributeValues(input.attributeValues),
-          }),
-        params: { path: { key: input.issueKey } },
-      }),
-    )
+    if (!input.fieldsLocked) {
+      await request(
+        client.PUT('/api/issues/{key}', {
+          body: {},
+          bodySerializer: () =>
+            updateIssueFormData({
+              ...input,
+              attributeValues: mapIssueAttributeValues(input.attributeValues),
+            }),
+          params: { path: { key: input.issueKey } },
+        }),
+      )
+    }
     const saved = {
       boardId: input.boardId,
       complete: true,
