@@ -234,6 +234,13 @@
                     :disabled="!issue.canEdit"
                     select-variant="inline" />
                 </div>
+                <IssueLinks
+                  :key="`links-${issue.issueKey}`"
+                  :can-edit="issue.canEdit"
+                  :deps="deps.links"
+                  :issue-key="issue.issueKey"
+                  :links="issue.links"
+                  :on-changed="refreshAfterLinkChange" />
                 <dl class="issue-dates">
                   <dt>{{ t('created') }}</dt>
                   <dd>
@@ -293,6 +300,7 @@ import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueDescription from './components/IssueDescription/IssueDescription.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
+import IssueLinks from './components/IssueLinks/IssueLinks.vue'
 import IssuePageActions from './components/IssuePageActions.vue'
 import IssueSkeleton from './components/IssueSkeleton.vue'
 import type { IssuePageDeps, IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.deps'
@@ -456,6 +464,12 @@ const syncState = (issue: IssuePageViewModel) => {
     statusId: issue.statusId,
     title: issue.title,
   })
+}
+
+// A link change also shows in the history, which loads separately.
+const refreshAfterLinkChange = async () => {
+  await refresh()
+  void history.value?.refresh()
 }
 
 const setDirty = (value: boolean) => {

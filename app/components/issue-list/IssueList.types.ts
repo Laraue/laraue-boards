@@ -8,6 +8,8 @@ export type IssueListItem = {
   boardColor: string
   boardId?: string
   boardName: string
+  // An issue the user can read blocks this one and isn't completed yet.
+  blocked: boolean
   canMove: boolean
   issueKey: string
   spaceColor?: string

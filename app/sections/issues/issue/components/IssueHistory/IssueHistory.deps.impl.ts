@@ -6,6 +6,7 @@ import type {
   HistoryChangeViewModel,
   HistoryPageViewModel,
 } from '~/components/history-timeline/HistoryTimeline.types'
+import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
 
 import type { IssueHistoryDeps } from './IssueHistory.deps'
 
@@ -92,6 +93,13 @@ const mapChange = (
         oldColor: change.oldSpaceColor,
         oldValue: change.oldSpaceName,
       }
+    case 'link':
+      return {
+        action: change.action === 'Removed' ? 'removed' : 'added',
+        issueKey: change.issueKey,
+        kind: 'link',
+        relation: mapIssueLinkRelation(change.relation),
+      }
     default:
       return { action, entityType, kind: 'event' }
   }
@@ -109,7 +117,8 @@ const mapHistoryPage = (
         if (
           change.kind === 'attachment' ||
           change.kind === 'description' ||
-          change.kind === 'event'
+          change.kind === 'event' ||
+          change.kind === 'link'
         ) {
           return true
         }

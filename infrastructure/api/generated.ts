@@ -1924,6 +1924,83 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/issues/{key}/links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AddIssueLinkRequest"];
+                    "text/json": components["schemas"]["AddIssueLinkRequest"];
+                    "application/*+json": components["schemas"]["AddIssueLinkRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/issues/{key}/links/{otherKey}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                    otherKey: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/movement/space/{key}/to-organization/{organizationId}": {
         parameters: {
             query?: never;
@@ -3177,6 +3254,12 @@ export interface components {
     schemas: {
         /** @enum {unknown} */
         AccountLinkOutcome: "Linked" | "UserHasOtherAccount" | "OwnerHasData" | "OwnerUsedByAnotherService";
+        AddIssueLinkRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKey?: string;
+            relation: components["schemas"]["IssueLinkRelation"];
+            otherIssueKey: string;
+        };
         AdminAccessLevel: string;
         AdminBillingTransaction: {
             /** Format: uuid */
@@ -3669,7 +3752,7 @@ export interface components {
             code?: null | string;
             languageCode?: null | string;
         };
-        HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryTitleChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"];
+        HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryTitleChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"] | components["schemas"]["HistoryItemChangeIssueHistoryLinkChange"];
         HistoryItemChangeIssueHistoryAssigneeChange: {
             /** @enum {string} */
             $type?: "assignee";
@@ -3699,6 +3782,13 @@ export interface components {
             oldEpicColor: null | string;
             newEpicName: null | string;
             newEpicColor: null | string;
+        };
+        HistoryItemChangeIssueHistoryLinkChange: {
+            /** @enum {string} */
+            $type?: "link";
+            relation: components["schemas"]["IssueLinkRelation"];
+            issueKey: null | string;
+            action: components["schemas"]["IssueLinkAction"];
         };
         HistoryItemChangeIssueHistoryPropertyChange: {
             /** @enum {string} */
@@ -3787,7 +3877,20 @@ export interface components {
             key: string;
             attributeValues: components["schemas"]["DetailIssueAttributeDto"][];
             attachments: components["schemas"]["AttachmentData"][];
+            links: components["schemas"]["IssueLinkDto"][];
         };
+        /** @enum {unknown} */
+        IssueLinkAction: "Added" | "Removed";
+        IssueLinkDto: {
+            relation: components["schemas"]["IssueLinkRelation"];
+            key: string;
+            title: string;
+            statusName: null | string;
+            statusColor: null | string;
+            statusCategory: components["schemas"]["StatusCategory"];
+        };
+        /** @enum {unknown} */
+        IssueLinkRelation: "Blocks" | "BlockedBy" | "RelatesTo" | "Duplicates" | "DuplicatedBy";
         IssueListAttributeDto: {
             value: string;
             color: string;
@@ -3811,6 +3914,7 @@ export interface components {
             statusId: number | string;
             spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
+            isBlocked?: boolean;
         };
         /** @enum {unknown} */
         IssueProperty: "Content" | "CreatedAt" | "UpdatedAt" | "Title";
@@ -3995,6 +4099,7 @@ export interface components {
             statusId: number | string;
             spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
+            isBlocked?: boolean;
         };
         SearchIssueStatusDto: {
             category: components["schemas"]["StatusCategory"];
