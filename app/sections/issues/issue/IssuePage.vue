@@ -228,16 +228,6 @@
                       size="sm" />
                     <span>{{ issue.owner }}</span>
                   </div>
-                  <span class="issue-property-label">{{ t('agent') }}</span>
-                  <IssueAgentRun
-                    :key="`agent-${issue.issueKey}`"
-                    :assignee-is-current-user="issue.assigneeIsCurrentUser"
-                    :blocked-by="openBlockers(issue)"
-                    :can-edit="issue.canEdit"
-                    :deps="deps.agentRun"
-                    :issue-key="issue.issueKey"
-                    :on-changed="refreshAfterChange"
-                    :run="issue.agentRun" />
                   <IssueAttributeFields
                     v-if="issue.attributes.length"
                     v-model="state.attributeValues"
@@ -252,6 +242,15 @@
                   :issue-key="issue.issueKey"
                   :links="issue.links"
                   :on-changed="refreshAfterChange" />
+                <IssueAgentRun
+                  :key="`agent-${issue.issueKey}`"
+                  :assignee-is-current-user="issue.assigneeIsCurrentUser"
+                  :blocked-by="openBlockers(issue)"
+                  :can-edit="issue.canEdit"
+                  :deps="deps.agentRun"
+                  :issue-key="issue.issueKey"
+                  :on-changed="refreshAfterChange"
+                  :run="issue.agentRun" />
                 <dl class="issue-dates">
                   <dt>{{ t('created') }}</dt>
                   <dd>
@@ -334,7 +333,6 @@ const formId = `issue-form-${useId()}`
 const confirm = useConfirm()
 const { t } = useI18n({
   en: {
-    agent: 'Agent',
     assignee: 'Assignee',
     attachImages: 'Attach images',
     attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
@@ -362,7 +360,6 @@ const { t } = useI18n({
     updated: 'Updated',
   },
   ru: {
-    agent: 'Агент',
     assignee: 'Исполнитель',
     attachImages: 'Прикрепить изображения',
     attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',

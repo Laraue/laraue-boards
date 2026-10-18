@@ -398,7 +398,7 @@ it('offers the hand-off only to the assignee', async () => {
     }),
   )
 
-  await expect.element(page.getByText('Not handed off')).toBeInTheDocument()
+  await expect.element(page.getByRole('heading', { name: 'Agent' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
 })
 
@@ -463,7 +463,7 @@ it('hides the agent actions when the issue cannot be edited', async () => {
     }),
   )
 
-  await expect.element(page.getByText('Not handed off')).toBeInTheDocument()
+  await expect.element(page.getByRole('heading', { name: 'Agent' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
 })
 
