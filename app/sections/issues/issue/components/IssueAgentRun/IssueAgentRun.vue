@@ -7,7 +7,12 @@
     v-if="run || (canEdit && assigneeIsCurrentUser)"
     :aria-labelledby="headingId"
     class="issue-agent-run">
-    <h2 :id="headingId">{{ t('agent') }}</h2>
+    <div class="issue-agent-run-heading">
+      <h2 :id="headingId">{{ t('agent') }}</h2>
+      <DocsHelpLink
+        :path="['integrations', 'agent-hand-off']"
+        :topic="t('agent')" />
+    </div>
     <div class="issue-agent-run-row">
       <AgentRunBadge
         v-if="badgeShown && run"
@@ -82,6 +87,7 @@
 import { IconRobot } from '@tabler/icons-vue'
 
 import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
+import DocsHelpLink from '~/components/docs-help-link/DocsHelpLink.vue'
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 
 import type { IssueAgentRunDeps, IssueAgentRunViewModel } from './IssueAgentRun.deps'
@@ -199,6 +205,12 @@ const cancel = async (runId: string) => {
   display: grid;
   gap: var(--space-3);
   min-width: 0;
+}
+
+.issue-agent-run-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
 }
 
 .issue-agent-run h2 {

@@ -6,7 +6,12 @@
     v-if="links.length || canEdit"
     :aria-labelledby="headingId"
     class="issue-links">
-    <h2 :id="headingId">{{ t('links') }}</h2>
+    <div class="issue-links-heading">
+      <h2 :id="headingId">{{ t('links') }}</h2>
+      <DocsHelpLink
+        :path="['features', 'issue-links']"
+        :topic="t('links')" />
+    </div>
     <BaseButton
       v-if="canEdit && !state.adding"
       class="issue-links-add"
@@ -106,6 +111,7 @@
 <script setup lang="ts">
 import { IconLink, IconX } from '@tabler/icons-vue'
 
+import DocsHelpLink from '~/components/docs-help-link/DocsHelpLink.vue'
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 
 import type { IssueLinkCandidate, IssueLinksDeps } from './IssueLinks.deps'
@@ -338,7 +344,13 @@ const remove = async (otherIssueKey: string) => {
   min-width: 0;
 }
 
-/* The same heading as Properties above it. */
+/* The same heading as Properties above it, with the help link beside it. */
+.issue-links-heading {
+  align-items: center;
+  display: flex;
+  gap: var(--space-1);
+}
+
 .issue-links h2 {
   font-size: inherit;
   margin: 0;

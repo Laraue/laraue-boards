@@ -463,6 +463,25 @@ it('disables the hand-off of a started issue and says why', async () => {
     .toBeInTheDocument()
 })
 
+it('links the Links and Agent sections to their documentation', async () => {
+  await mount(createDeps())
+
+  await expect
+    .element(
+      page.getByRole('link', {
+        name: 'Links: how it works (opens the documentation in a new tab)',
+      }),
+    )
+    .toHaveAttribute('href', '/en/documentation/features/issue-links')
+  await expect
+    .element(
+      page.getByRole('link', {
+        name: 'Agent: how it works (opens the documentation in a new tab)',
+      }),
+    )
+    .toHaveAttribute('href', '/en/documentation/integrations/agent-hand-off')
+})
+
 it('says the agent waits for the open blockers', async () => {
   await mount(
     createDeps({

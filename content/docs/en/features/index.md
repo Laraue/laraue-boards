@@ -26,3 +26,5 @@ This section is the feature reference — detailed guides for each capability of
 - [Organization history](/en/documentation/features/organization-history) — A combined activity feed across every board, scoped to the issues you have access to.
 
 - [Data movement](/en/documentation/features/mass-move) — Move an entire space or a single board to a different organization.
+
+- [Issue links](/en/documentation/features/issue-links) — Show that one issue blocks another, relates to it, or duplicates it. Blocked issues are marked on the board.
