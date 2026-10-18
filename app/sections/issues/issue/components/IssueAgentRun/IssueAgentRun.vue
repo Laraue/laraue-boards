@@ -92,7 +92,8 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     agent: 'Agent',
-    boardNotReady: 'To hand issues to the agent, this board needs {statuses} statuses.',
+    boardNotReady:
+      'To hand issues to the agent, add statuses for these stages to the board: {statuses}.',
     cancel: 'Cancel run',
     cancelConfirm: 'Stop the agent on this issue?',
     created: 'Not started',
@@ -107,7 +108,8 @@ const { t } = useI18n({
   },
   ru: {
     agent: 'Агент',
-    boardNotReady: 'Чтобы передавать задачи агенту, на доске нужны статусы: {statuses}.',
+    boardNotReady:
+      'Чтобы передавать задачи агенту, добавьте на доску статусы для этапов: {statuses}.',
     cancel: 'Отменить запуск',
     cancelConfirm: 'Остановить агента на этой задаче?',
     created: 'Не начато',

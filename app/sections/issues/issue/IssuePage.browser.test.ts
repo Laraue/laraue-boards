@@ -439,7 +439,7 @@ it('says which statuses the board lacks instead of offering the hand-off', async
   await expect
     .element(
       page.getByText(
-        'To hand issues to the agent, this board needs In progress, In review statuses.',
+        'To hand issues to the agent, add statuses for these stages to the board: In progress, In review.',
       ),
     )
     .toBeInTheDocument()
