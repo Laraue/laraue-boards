@@ -13,14 +13,8 @@
         v-if="badgeShown && run"
         :state="run.state"
         :title="run.failureReason ?? undefined" />
-      <!-- The assignee sees why they can't hand it off; the button says the rest on its own. -->
       <span
-        v-else-if="handOffUnavailable"
-        class="issue-agent-run-none">
-        {{ handOffUnavailable }}
-      </span>
-      <span
-        v-else-if="!handOffShown"
+        v-else-if="!canHandOff"
         class="issue-agent-run-none">
         {{ t('none') }}
       </span>
@@ -44,6 +38,25 @@
           <IconRobot />
           {{ t('handOff') }}
         </BaseButton>
+        <!-- Not available yet: the disabled button, with the reason on hover or focus. A disabled button gets no
+             pointer events, so the tooltip sits on a focusable wrapper. -->
+        <BaseTooltip
+          v-else-if="handOffUnavailable"
+          :text="handOffUnavailable">
+          <span
+            :aria-label="`${t('handOff')}: ${handOffUnavailable}`"
+            :class="['issue-agent-run-unavailable', { 'issue-agent-run-action': badgeShown }]"
+            role="note"
+            tabindex="0">
+            <BaseButton
+              disabled
+              size="small"
+              variant="ghost">
+              <IconRobot />
+              {{ t('handOff') }}
+            </BaseButton>
+          </span>
+        </BaseTooltip>
       </template>
     </div>
     <p
@@ -208,6 +221,19 @@ const cancel = async (runId: string) => {
 
 .issue-agent-run-action {
   margin-left: auto;
+}
+
+.issue-agent-run-unavailable {
+  border-radius: var(--radius-control);
+  display: inline-flex;
+}
+
+.issue-agent-run-unavailable:focus-visible {
+  outline: 2px solid var(--color-focus);
+}
+
+.issue-agent-run-unavailable :deep(button) {
+  pointer-events: none;
 }
 
 .issue-agent-run-error,

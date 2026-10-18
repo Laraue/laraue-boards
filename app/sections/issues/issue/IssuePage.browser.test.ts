@@ -426,7 +426,7 @@ it('locks the fields but still lets anyone who can edit cancel the run', async (
   await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeEnabled()
 })
 
-it('says which statuses the board lacks instead of offering the hand-off', async () => {
+it('disables the hand-off and says which statuses the board lacks', async () => {
   await mount(
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
@@ -436,27 +436,31 @@ it('says which statuses the board lacks instead of offering the hand-off', async
     }),
   )
 
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).toBeDisabled()
   await expect
     .element(
-      page.getByText(
-        'To hand issues to the agent, add statuses for these stages to the board: In progress, In review.',
-      ),
+      page.getByRole('note', {
+        name: 'Hand to agent: To hand issues to the agent, add statuses for these stages to the board: In progress, In review.',
+      }),
     )
     .toBeInTheDocument()
-  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
 })
 
-it('asks to move a started issue back before the hand-off', async () => {
+it('disables the hand-off of a started issue and says why', async () => {
   await mount(
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, statusCategory: 'InProgress' })),
     }),
   )
 
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).toBeDisabled()
   await expect
-    .element(page.getByText('Move the issue to a not started status to hand it to the agent.'))
+    .element(
+      page.getByRole('note', {
+        name: 'Hand to agent: Move the issue to a not started status to hand it to the agent.',
+      }),
+    )
     .toBeInTheDocument()
-  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
 })
 
 it('says the agent waits for the open blockers', async () => {
