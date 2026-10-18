@@ -230,10 +230,11 @@
                   <span class="issue-property-label">{{ t('agent') }}</span>
                   <IssueAgentRun
                     :key="`agent-${issue.issueKey}`"
+                    :blocked-by="openBlockers(issue)"
                     :can-edit="issue.canEdit"
                     :deps="deps.agentRun"
                     :issue-key="issue.issueKey"
-                    :on-changed="refreshAfterAgentRunChange"
+                    :on-changed="refreshAfterChange"
                     :run="issue.agentRun" />
                   <IssueAttributeFields
                     v-if="issue.attributes.length"
@@ -242,6 +243,13 @@
                     :disabled="!issue.canEdit"
                     select-variant="inline" />
                 </div>
+                <IssueLinks
+                  :key="`links-${issue.issueKey}`"
+                  :can-edit="issue.canEdit"
+                  :deps="deps.links"
+                  :issue-key="issue.issueKey"
+                  :links="issue.links"
+                  :on-changed="refreshAfterChange" />
                 <dl class="issue-dates">
                   <dt>{{ t('created') }}</dt>
                   <dd>
@@ -302,6 +310,7 @@ import IssueAgentRun from './components/IssueAgentRun/IssueAgentRun.vue'
 import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueDescription from './components/IssueDescription/IssueDescription.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
+import IssueLinks from './components/IssueLinks/IssueLinks.vue'
 import IssuePageActions from './components/IssuePageActions.vue'
 import IssueSkeleton from './components/IssueSkeleton.vue'
 import type { IssuePageDeps, IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.deps'
@@ -469,8 +478,13 @@ const syncState = (issue: IssuePageViewModel) => {
   })
 }
 
-// The run's state also shows in the history, which loads separately.
-const refreshAfterAgentRunChange = async () => {
+const openBlockers = (issue: IssuePageViewModel) =>
+  issue.links
+    .filter((link) => link.relation === 'blockedBy' && link.statusCategory !== 'Completed')
+    .map((link) => link.issueKey)
+
+// Agent run and link changes also show in the history, which loads separately.
+const refreshAfterChange = async () => {
   await refresh()
   void history.value?.refresh()
 }

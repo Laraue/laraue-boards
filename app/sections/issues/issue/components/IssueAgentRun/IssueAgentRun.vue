@@ -1,5 +1,6 @@
 <!-- The issue's agent run in the properties: its state, and "Hand to agent" or "Cancel" for
-     someone who can edit the issue. A run is open while it is ready or working. -->
+     someone who can edit the issue. A run is open while it is ready or working. A blocked issue can
+     be handed off: its run waits until the blockers are completed, which the note says. -->
 <template>
   <div class="issue-agent-run">
     <AgentRunBadge
@@ -31,6 +32,11 @@
     </template>
   </div>
   <p
+    v-if="waitsForBlockers"
+    class="issue-agent-run-note">
+    {{ t('waitsFor', { keys: blockedBy.join(', ') }) }}
+  </p>
+  <p
     v-if="message"
     class="form-error issue-agent-run-error"
     role="alert">
@@ -44,6 +50,8 @@ import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
 import type { IssueAgentRunDeps, IssueAgentRunViewModel } from './IssueAgentRun.deps'
 
 const props = defineProps<{
+  // Keys of the issues that block this one and aren't completed yet.
+  blockedBy: string[]
   canEdit: boolean
   deps: IssueAgentRunDeps
   issueKey: string
@@ -58,6 +66,7 @@ const { t } = useI18n({
     handOff: 'Hand to agent',
     none: 'Not handed off',
     stop: 'Stop agent',
+    waitsFor: 'Blocked by {keys}: the agent starts once they are completed.',
   },
   ru: {
     cancel: 'Отменить запуск',
@@ -65,6 +74,7 @@ const { t } = useI18n({
     handOff: 'Передать агенту',
     none: 'Не передана',
     stop: 'Остановить',
+    waitsFor: 'Заблокирована задачами {keys}: агент начнёт, когда они будут завершены.',
   },
 })
 
@@ -72,6 +82,8 @@ const confirm = useConfirm()
 
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
 const badgeShown = computed(() => open.value || props.run?.state === 'failed')
+// A working run already started; for any other state the blockers decide when the agent can start.
+const waitsForBlockers = computed(() => props.blockedBy.length > 0 && props.run?.state !== 'working')
 
 const { execute, message, pending } = useApiAction((action: () => Promise<void>) => action())
 
@@ -105,8 +117,14 @@ const cancel = async (runId: string) => {
   color: var(--color-muted);
 }
 
-.issue-agent-run-error {
+.issue-agent-run-error,
+.issue-agent-run-note {
   grid-column: 1 / -1;
   margin: 0;
+}
+
+.issue-agent-run-note {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
 }
 </style>

@@ -1,24 +1,23 @@
 <template>
-  <section class="features">
-    <div class="features-inner">
-      <div class="section-label">{{ t('feat_label') }}</div>
-      <h2 class="section-title">{{ t('feat_title') }}</h2>
-      <p class="section-sub">{{ t('feat_sub') }}</p>
-      <div class="features-grid">
-        <NuxtLink
-          v-for="feature in features"
-          :key="feature.title"
-          class="feat-cell"
-          :to="feature.link">
-          <div class="feat-icon">
-            <LandingIcon :name="feature.icon" />
-          </div>
-          <h3 class="feat-title">{{ feature.title }}</h3>
-          <div class="feat-desc">{{ feature.description }}</div>
-        </NuxtLink>
-      </div>
+  <LandingSection
+    :post-title="t('feat_sub')"
+    :pre-title="t('feat_label')"
+    :title="t('feat_title')"
+    type="plain">
+    <div class="features-grid">
+      <NuxtLink
+        v-for="feature in features"
+        :key="feature.title"
+        class="feat-cell"
+        :to="feature.link">
+        <div class="feat-icon">
+          <LandingIcon :name="feature.icon" />
+        </div>
+        <h3 class="feat-title">{{ feature.title }}</h3>
+        <p class="feat-desc">{{ feature.description }}</p>
+      </NuxtLink>
     </div>
-  </section>
+  </LandingSection>
 </template>
 
 <script setup lang="ts">
@@ -28,6 +27,7 @@ import { docsPath } from '../../docs/docsPaths'
 import { githubUrl } from '../landingLinks'
 import type { LandingIconName } from './LandingIcon.vue'
 import LandingIcon from './LandingIcon.vue'
+import LandingSection from './LandingSection.vue'
 
 const props = defineProps<{ locale: Locale }>()
 
@@ -166,119 +166,87 @@ const features: { description: string; icon: LandingIconName; link: string; titl
 </script>
 
 <style scoped>
-.features {
-  border-bottom: 1px solid var(--color-divider);
-  padding: 88px 24px;
-}
-
-.features-inner {
-  margin: 0 auto;
-  /* The width of the header and footer (1360px with 24px of padding), so the page lines up with them. */
-  max-width: 1312px;
-}
-
-.section-label {
-  align-items: center;
-  color: var(--color-accent);
-  display: flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-bold);
-  gap: 8px;
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
-  text-transform: uppercase;
-}
-
-.section-label::after {
-  background: var(--color-accent);
-  content: '';
-  flex: 1;
-  height: 1px;
-  max-width: 40px;
-  opacity: 0.5;
-}
-
-.section-title {
-  font-size: clamp(26px, 3vw, 40px);
-  font-weight: var(--font-weight-extrabold);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin-bottom: 16px;
-}
-
-.section-sub {
-  color: var(--color-muted);
-  font-size: 17px;
-  line-height: 1.7;
-  max-width: 560px;
-}
-
+/* One sheet split by hairlines, like a board's columns, instead of a pile of separate cards. */
 .features-grid {
+  background: var(--color-border-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 20px;
   display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 48px;
+  gap: 1px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: hidden;
 }
 
 .feat-cell {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
   color: inherit;
-  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 28px;
   text-decoration: none;
-  transition:
-    border-color var(--duration-base),
-    transform var(--duration-base);
+  transition: background var(--duration-base);
+}
+
+/* Kanban opens the sheet and fills the row the 11 features would otherwise leave half empty. */
+.feat-cell:first-child {
+  background: var(--color-accent-soft);
+  grid-column: span 2;
 }
 
 .feat-cell:hover {
-  border-color: var(--color-accent);
-  transform: translateY(-2px);
+  background: var(--color-workspace);
+}
+
+.feat-cell:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 .feat-icon {
-  align-items: center;
-  background: var(--color-accent-soft);
-  border-radius: var(--radius-card);
   color: var(--color-accent);
-  display: flex;
-  height: 44px;
-  justify-content: center;
-  margin-bottom: 14px;
-  width: 44px;
+  margin-bottom: 20px;
 }
 
 .feat-icon :deep(.landing-icon) {
-  height: 22px;
-  width: 22px;
+  height: 26px;
+  width: 26px;
 }
 
 .feat-title {
-  font-size: 15px;
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
   margin-bottom: 8px;
+}
+
+.feat-cell:first-child .feat-title {
+  font-size: var(--font-size-3xl);
 }
 
 .feat-desc {
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: var(--font-size-md);
   line-height: 1.6;
+  max-width: 36em;
 }
 
 @media (width <= 900px) {
   .features-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (width <= 720px) {
-  .features {
-    padding: 60px 22px;
+@media (width <= 560px) {
+  .features-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .features-grid {
-    grid-template-columns: 1fr;
+  .feat-cell:first-child {
+    grid-column: auto;
+  }
+
+  .feat-cell {
+    padding: 24px 20px;
   }
 }
 </style>

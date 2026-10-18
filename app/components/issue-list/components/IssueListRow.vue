@@ -19,6 +19,16 @@
     <NuxtLink
       class="issue-content"
       :to="to">
+      <!-- Before the title, so the one-line clamp cuts the title and not the mark. A native title: a
+           list renders many rows, too many for tooltip components. -->
+      <span
+        v-if="blocked"
+        :aria-label="t('blocked')"
+        class="issue-blocked"
+        role="img"
+        :title="t('blocked')">
+        <IconLock aria-hidden="true" />
+      </span>
       {{ title }}
     </NuxtLink>
     <!-- Space and board; the space gives up room first, the full path is on hover. -->
@@ -140,7 +150,13 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowsLeftRight, IconDots, IconSquareCheck, IconTrash } from '@tabler/icons-vue'
+import {
+  IconArrowsLeftRight,
+  IconDots,
+  IconLock,
+  IconSquareCheck,
+  IconTrash,
+} from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
 import type { components } from '#infrastructure/api/generated'
@@ -155,6 +171,7 @@ const props = defineProps<{
   assigneeColor: string
   assigneeId?: string
   assigneeInitial: string
+  blocked: boolean
   boardColor: string
   boardId?: string
   boardName: string
@@ -186,6 +203,7 @@ const { t } = useI18n({
     actions: 'Issue actions',
     assignee: 'Assignee',
     backlog: 'Backlog',
+    blocked: 'Blocked',
     deleteIssue: 'Delete issue',
     deselectIssue: 'Deselect issue',
     moveToBoard: 'Move to board',
@@ -196,6 +214,7 @@ const { t } = useI18n({
     actions: 'Действия с задачей',
     assignee: 'Исполнитель',
     backlog: 'Бэклог',
+    blocked: 'Заблокирована',
     deleteIssue: 'Удалить задачу',
     deselectIssue: 'Снять выделение',
     moveToBoard: 'Переместить на доску',
@@ -354,6 +373,19 @@ a.issue-location-board:hover {
   margin: 0;
   min-width: 0;
   overflow: hidden;
+}
+
+.issue-blocked {
+  color: var(--color-warning);
+  display: inline-flex;
+  margin-right: var(--space-1);
+  /* Centered on the title's lowercase letters, as an icon in a line of text. */
+  vertical-align: -0.125em;
+}
+
+.issue-blocked .tabler-icon {
+  height: 1em;
+  width: 1em;
 }
 
 .truncate {

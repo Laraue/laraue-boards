@@ -21,136 +21,88 @@
         title="@msgboard_bot"
         type="telegram" />
       <div class="hero-quick-links">
-        <a :href="docsUrl">{{ t('documentation') }} &#8594;</a>
-        <a :href="projectUrl">{{ t('project_description') }} &#8594;</a>
+        <a :href="docsUrl">{{ t('documentation') }}</a>
+        <a :href="projectUrl">{{ t('project_description') }}</a>
       </div>
     </template>
     <template #visual>
-      <div class="hero-visual">
-        <!-- Message → AI-cleaned card transformation -->
-        <div class="transform-mockup">
-          <div class="phone-mockup">
-            <div class="phone-screen">
-              <div class="phone-statusbar">
-                <span class="phone-time">{{ t('hv_time1') }}</span>
-                <span class="phone-island"></span>
-                <span class="phone-indicators">
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 18 12">
-                    <rect
-                      height="4"
-                      rx="1"
-                      width="3"
-                      x="0"
-                      y="8" />
-                    <rect
-                      height="7"
-                      rx="1"
-                      width="3"
-                      x="5"
-                      y="5" />
-                    <rect
-                      height="10"
-                      rx="1"
-                      width="3"
-                      x="10"
-                      y="2" />
-                    <rect
-                      height="12"
-                      rx="1"
-                      width="3"
-                      x="15"
-                      y="0" />
-                  </svg>
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 26 12">
-                    <rect
-                      height="11"
-                      rx="3.5"
-                      width="22"
-                      x="0.5"
-                      y="0.5" />
-                    <rect
-                      fill="currentColor"
-                      height="7"
-                      rx="1.5"
-                      stroke="none"
-                      width="16"
-                      x="2.5"
-                      y="2.5" />
-                    <path
-                      d="M24.5 4v4"
-                      stroke-linecap="round" />
-                  </svg>
-                </span>
-              </div>
-              <div class="phone-status">
-                <IconChevronLeft
-                  class="phone-back"
-                  stroke="2.4" />
-                <div class="phone-status-avatar"><LandingIcon name="chat" /></div>
-                <div>
-                  <div class="phone-status-name">{{ t('hv_chat_title') }}</div>
-                  <div class="phone-status-sub">{{ t('hv_chat') }}</div>
-                </div>
-              </div>
-              <div class="phone-body">
-                <div class="tg-bubble">
-                  <div class="tg-bubble-header">
-                    <div class="tg-bubble-avatar">{{ t('hv_sender_initials') }}</div>
-                    <div class="tg-bubble-name">{{ t('hv_sender') }}</div>
-                  </div>
-                  <p class="tg-bubble-text">{{ t('hv_msg') }}</p>
-                  <span class="tg-bubble-time">{{ t('hv_time1') }}</span>
-                </div>
-                <div class="tg-bubble reply">
-                  <div class="tg-bubble-header">
-                    <div class="tg-bubble-name">{{ t('hv_replier') }}</div>
-                    <div class="tg-bubble-avatar you">{{ t('hv_replier_initials') }}</div>
-                  </div>
-                  <p class="tg-bubble-text command">{{ t('hv_command') }}</p>
-                  <span class="tg-bubble-time">{{ t('hv_time2') }}</span>
-                </div>
-              </div>
-              <div class="phone-input">
-                <span class="phone-input-field">{{ t('hv_input') }}</span>
-                <span class="phone-input-send">
-                  <svg
-                    fill="currentColor"
-                    viewBox="0 0 24 24">
-                    <path
-                      d="M3.4 20.4l17.45-7.48a1 1 0 0 0 0-1.84L3.4 3.6a.993.993 0 0 0-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z" />
-                  </svg>
-                </span>
-              </div>
+      <!-- A chat message travels into the Backlog column as an AI-written card. -->
+      <figure class="stage">
+        <div class="chat">
+          <div class="chat-head">
+            <IconChevronLeft
+              class="chat-back"
+              stroke="2.4" />
+            <div class="chat-avatar"><LandingIcon name="chat" /></div>
+            <div>
+              <div class="chat-name">{{ t('hv_chat_title') }}</div>
+              <div class="chat-sub">{{ t('hv_chat') }}</div>
             </div>
           </div>
-          <div class="transform-arrow">
-            <IconArrowDown />
-            <span>{{ t('hv_arrow') }}</span>
-          </div>
-          <div class="issue-card-mockup">
-            <div class="issue-card-row">
-              <span class="issue-card-key">{{ t('hv_key') }}</span>
-              <span class="issue-card-status">&#9679; {{ t('hv_badge') }}</span>
+          <div class="chat-body">
+            <div class="bubble">
+              <div class="bubble-header">
+                <div class="avatar">{{ t('hv_sender_initials') }}</div>
+                <div class="bubble-name">{{ t('hv_sender') }}</div>
+              </div>
+              <p class="bubble-text">{{ t('hv_msg') }}</p>
+              <span class="bubble-time">{{ t('hv_time1') }}</span>
             </div>
+            <div class="bubble reply">
+              <div class="bubble-header">
+                <div class="bubble-name">{{ t('hv_replier') }}</div>
+                <div class="avatar">{{ t('hv_replier_initials') }}</div>
+              </div>
+              <p class="bubble-text command">{{ t('hv_command') }}</p>
+              <span class="bubble-time">{{ t('hv_time2') }}</span>
+            </div>
+          </div>
+          <div class="chat-input">
+            <span class="chat-input-field">{{ t('hv_input') }}</span>
+            <span class="chat-input-send"><IconSend stroke="2" /></span>
+          </div>
+        </div>
+
+        <div
+          aria-hidden="true"
+          class="flow">
+          <IconSparkles stroke="1.8" />
+        </div>
+
+        <div class="column">
+          <div class="column-head">
+            <span class="column-dot"></span>
+            {{ t('hv_badge') }}
+          </div>
+          <div
+            aria-hidden="true"
+            class="ghost-card">
+            <span></span>
+            <span></span>
+          </div>
+          <div class="issue-card">
+            <span class="issue-card-key">{{ t('hv_key') }}</span>
             <p class="issue-card-content">{{ t('hv_title') }}</p>
             <div class="issue-card-footer">
-              <div class="issue-card-avatar">{{ t('hv_sender_initials') }}</div>
+              <div class="avatar">{{ t('hv_sender_initials') }}</div>
               <span>{{ t('hv_sender') }}</span>
             </div>
           </div>
+          <div
+            aria-hidden="true"
+            class="ghost-card faded">
+            <span></span>
+          </div>
         </div>
-      </div>
+
+        <figcaption class="stage-caption">{{ t('hv_arrow') }}</figcaption>
+      </figure>
     </template>
   </LandingIntro>
 </template>
 
 <script setup lang="ts">
-import { IconArrowDown, IconChevronLeft } from '@tabler/icons-vue'
+import { IconChevronLeft, IconSend, IconSparkles } from '@tabler/icons-vue'
 
 import type { Locale } from '~/composables/useI18n'
 
@@ -227,327 +179,390 @@ const projectUrl = laraueUrl(props.locale, '/blog/projects/boards')
   display: flex;
   flex-basis: 100%;
   flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 6px;
+  gap: 0 24px;
+  margin-top: 4px;
 }
 
 .hero-quick-links a {
+  align-items: center;
   color: var(--color-muted);
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  font-size: var(--font-size-md);
+  min-height: var(--control-height);
   text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color var(--duration-base);
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 4px;
+  transition:
+    color var(--duration-base),
+    text-decoration-color var(--duration-base);
 }
 
 .hero-quick-links a:hover {
   color: var(--color-text);
+  text-decoration-color: currentcolor;
 }
 
-.transform-mockup {
+/* The stage: chat on the left, the board column on the right, the caption under both. */
+.stage {
   align-items: center;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 270px;
-}
-
-.phone-mockup {
-  background: #1a1a1d;
-  border-radius: 44px;
-  box-shadow:
-    var(--shadow-popover),
-    inset 0 0 0 2px #3a3a3f;
-  flex-shrink: 0;
-  padding: 8px;
-  width: 270px;
-}
-
-.phone-screen {
   background: var(--color-workspace);
-  border-radius: 36px;
+  border: 1px solid var(--color-border-surface);
+  border-radius: 20px;
+  display: grid;
+  gap: 0 20px;
+  grid-template-areas:
+    'chat flow column'
+    'caption caption caption';
+  grid-template-columns: minmax(0, 1.15fr) auto minmax(0, 1fr);
+  max-width: 640px;
+  padding: 24px;
+  width: 100%;
+}
+
+.chat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 14px;
+  grid-area: chat;
   overflow: hidden;
 }
 
-.phone-statusbar {
+.chat-head {
   align-items: center;
-  background: var(--color-surface);
-  display: flex;
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  justify-content: space-between;
-  padding: 10px 20px 4px;
-}
-
-.phone-island {
-  background: #1a1a1d;
-  border-radius: var(--radius-full);
-  height: 18px;
-  width: 64px;
-}
-
-.phone-indicators {
-  align-items: center;
-  display: flex;
-  gap: 5px;
-}
-
-.phone-indicators svg:first-child {
-  height: 9px;
-  width: 13px;
-}
-
-.phone-indicators svg:last-child {
-  height: 10px;
-  width: 20px;
-}
-
-.phone-status {
-  align-items: center;
-  background: var(--color-surface);
   border-bottom: 1px solid var(--color-divider);
   display: flex;
   gap: 8px;
-  padding: 8px 14px 10px 10px;
+  padding: 10px 12px;
 }
 
-.phone-back {
+.chat-back {
   color: var(--color-accent);
   flex-shrink: 0;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
 }
 
-.phone-status-avatar {
+.chat-avatar {
   align-items: center;
   background: var(--color-accent-soft);
   border-radius: 50%;
   color: var(--color-accent);
   display: flex;
   flex-shrink: 0;
-  height: 34px;
+  height: 32px;
   justify-content: center;
-  width: 34px;
+  width: 32px;
 }
 
-.phone-status-avatar :deep(.landing-icon) {
-  height: 18px;
-  width: 18px;
+.chat-avatar :deep(.landing-icon) {
+  height: 16px;
+  width: 16px;
 }
 
-.phone-status-name {
-  font-size: 13px;
-  font-weight: var(--font-weight-bold);
+.chat-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.3;
 }
 
-.phone-status-sub {
+.chat-sub {
   color: var(--color-muted);
-  font-size: 10px;
+  font-size: var(--font-size-xs);
 }
 
-.phone-body {
+.chat-body {
+  background: var(--color-soft);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 190px;
+  min-height: 172px;
   padding: 14px 12px;
 }
 
-.phone-input {
-  align-items: center;
+.bubble {
+  align-self: flex-start;
   background: var(--color-surface);
-  border-top: 1px solid var(--color-divider);
-  display: flex;
-  gap: 8px;
-  padding: 8px 12px 14px;
+  border-radius: 4px 12px 12px;
+  max-width: 92%;
+  padding: 8px 11px 6px;
 }
 
-.phone-input-field {
+.bubble.reply {
+  align-self: flex-end;
+  background: var(--color-accent-soft);
+  border-radius: 12px 4px 12px 12px;
+}
+
+.bubble-header {
   align-items: center;
-  background: var(--color-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-muted);
   display: flex;
-  flex: 1;
-  font-size: 12px;
-  height: 28px;
-  padding: 0 12px;
+  gap: 6px;
+  margin-bottom: 4px;
 }
 
-.phone-input-send {
+.bubble.reply .bubble-header {
+  flex-direction: row-reverse;
+}
+
+.bubble-name {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.bubble-text {
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.bubble-text.command {
+  color: var(--color-accent);
+  font-family: var(--font-family-mono);
+  font-weight: var(--font-weight-medium);
+}
+
+.bubble-time {
+  color: var(--color-muted);
+  display: block;
+  font-size: 10px;
+  text-align: right;
+}
+
+.avatar {
   align-items: center;
   background: var(--color-action);
   border-radius: 50%;
-  color: #fff;
+  color: var(--color-on-action);
   display: flex;
-  height: 28px;
+  flex-shrink: 0;
+  font-size: 8px;
+  font-weight: var(--font-weight-semibold);
+  height: 18px;
   justify-content: center;
-  width: 28px;
+  width: 18px;
 }
 
-.phone-input-send svg {
+.chat-input {
+  align-items: center;
+  border-top: 1px solid var(--color-divider);
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+}
+
+.chat-input-field {
+  background: var(--color-soft);
+  border-radius: var(--radius-full);
+  color: var(--color-muted);
+  flex: 1;
+  font-size: var(--font-size-xs);
+  line-height: 26px;
+  padding: 0 12px;
+}
+
+.chat-input-send {
+  align-items: center;
+  background: var(--color-action);
+  border-radius: 50%;
+  color: var(--color-on-action);
+  display: flex;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.chat-input-send svg {
   height: 14px;
   width: 14px;
 }
 
-.tg-bubble {
-  align-self: flex-start;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 4px 12px 12px;
-  max-width: 88%;
-  padding: 9px 12px;
-  width: fit-content;
-}
-
-.tg-bubble-header {
+/* The hand-off between chat and board: a dashed track with the AI step on it. */
+.flow {
   align-items: center;
+  align-self: stretch;
+  color: var(--color-accent);
   display: flex;
-  gap: 6px;
-  margin-bottom: 5px;
-}
-
-.tg-bubble-avatar {
-  align-items: center;
-  background: var(--color-action);
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  flex-shrink: 0;
-  font-size: 8px;
-  font-weight: var(--font-weight-bold);
-  height: 18px;
+  grid-area: flow;
   justify-content: center;
-  width: 18px;
+  position: relative;
+  width: 28px;
 }
 
-.tg-bubble-name {
-  font-size: 11px;
-  font-weight: var(--font-weight-bold);
+.flow::before {
+  border-top: 1.5px dashed color-mix(in srgb, var(--color-accent) 55%, transparent);
+  content: '';
+  left: -20px;
+  position: absolute;
+  right: -20px;
+  top: 50%;
 }
 
-.tg-bubble-text {
-  font-size: 12px;
-  line-height: 1.5;
-  margin: 0;
+.flow svg {
+  background: var(--color-workspace);
+  height: 28px;
+  padding: 4px;
+  position: relative;
+  width: 28px;
 }
 
-.tg-bubble-text.command {
-  color: var(--color-accent);
-  font-family: var(--font-family-mono);
-  font-weight: var(--font-weight-semibold);
-}
-
-.tg-bubble-time {
-  color: var(--color-muted);
-  display: block;
-  font-size: 9px;
-  margin-top: 3px;
-  text-align: right;
-}
-
-.tg-bubble.reply {
-  align-self: flex-end;
-  background: var(--color-accent-soft);
-  border-color: transparent;
-  border-radius: 12px 4px 12px 12px;
-}
-
-.tg-bubble.reply .tg-bubble-header {
-  flex-direction: row-reverse;
-}
-
-.transform-arrow {
-  align-items: flex-start;
-  color: var(--color-muted);
+.column {
+  background: var(--color-soft);
+  border-radius: 14px;
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  width: 260px;
+  grid-area: column;
+  padding: 10px;
 }
 
-.transform-arrow svg {
-  color: var(--color-accent);
-  flex-shrink: 0;
-  height: 18px;
-  margin-top: 1px;
-  width: 18px;
-}
-
-.transform-arrow span {
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  line-height: 1.5;
-}
-
-.issue-card-mockup {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-popover);
-  padding: 14px 16px;
-  width: 260px;
-}
-
-.issue-card-row {
+.column-head {
   align-items: center;
+  color: var(--color-muted);
   display: flex;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   gap: 8px;
-  margin-bottom: 10px;
+  padding: 2px 4px 4px;
+}
+
+.column-dot {
+  border: 1.5px solid currentcolor;
+  border-radius: 50%;
+  height: 9px;
+  width: 9px;
+}
+
+.ghost-card,
+.issue-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: 10px;
+}
+
+.ghost-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px;
+}
+
+.ghost-card span {
+  background: var(--color-soft);
+  border-radius: var(--radius-full);
+  height: 6px;
+  width: 85%;
+}
+
+.ghost-card span:last-child {
+  width: 55%;
+}
+
+.ghost-card.faded {
+  opacity: 0.55;
+}
+
+.issue-card {
+  border-color: var(--color-accent);
+  padding: 12px;
 }
 
 .issue-card-key {
   color: var(--color-accent);
   font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-}
-
-.issue-card-status {
-  align-items: center;
-  background: var(--color-soft);
-  border-radius: var(--radius-full);
-  color: var(--color-muted);
-  display: flex;
-  font-size: 10px;
-  font-weight: var(--font-weight-semibold);
-  gap: 5px;
-  margin-left: auto;
-  padding: 3px 9px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
 }
 
 .issue-card-content {
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
-  font-size: 13px;
-  -webkit-line-clamp: 2;
-  line-height: 1.5;
-  margin: 0 0 12px;
-  overflow: hidden;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.35;
+  margin: 4px 0 10px;
 }
 
 .issue-card-footer {
   align-items: center;
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
-}
-
-.issue-card-avatar {
-  align-items: center;
-  background: var(--color-action);
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  flex-shrink: 0;
-  font-size: 8px;
-  font-weight: var(--font-weight-bold);
-  height: 18px;
-  justify-content: center;
-  width: 18px;
-}
-
-.issue-card-footer span {
   color: var(--color-muted);
-  font-size: 11px;
+  display: flex;
+  font-size: var(--font-size-xs);
+  gap: 6px;
+}
+
+.stage-caption {
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-muted);
+  font-size: var(--font-size-sm);
+  grid-area: caption;
+  margin-top: 20px;
+  padding-top: 14px;
+  text-align: center;
+}
+
+/* One orchestrated moment on load: the message, the command, then the card lands in Backlog. */
+@media (prefers-reduced-motion: no-preference) {
+  .bubble,
+  .flow svg {
+    animation: stage-in 0.5s var(--ease-standard) 0.3s both;
+  }
+
+  .bubble.reply {
+    animation-delay: 0.9s;
+  }
+
+  .flow svg {
+    animation-delay: 1.4s;
+  }
+
+  .issue-card {
+    animation: card-land 0.7s var(--ease-standard) 1.8s both;
+  }
+}
+
+@keyframes stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes card-land {
+  from {
+    opacity: 0;
+    transform: translateX(-48px) rotate(-3deg);
+  }
+
+  60% {
+    opacity: 1;
+  }
+}
+
+@media (width <= 560px) {
+  .stage {
+    gap: 16px 0;
+    grid-template-areas:
+      'chat'
+      'flow'
+      'column'
+      'caption';
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+
+  .flow {
+    height: 28px;
+    width: auto;
+  }
+
+  .flow::before {
+    border-left: 1.5px dashed color-mix(in srgb, var(--color-accent) 55%, transparent);
+    border-top: none;
+    bottom: -16px;
+    left: 50%;
+    right: auto;
+    top: -16px;
+  }
+
+  .stage-caption {
+    margin-top: 4px;
+  }
 }
 </style>

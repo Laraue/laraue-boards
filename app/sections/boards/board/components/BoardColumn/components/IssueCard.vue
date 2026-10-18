@@ -14,6 +14,15 @@
         @click.left.exact.prevent="onOpenIssue(viewModel.issueKey)">
         <!-- The key leads the title's first line; the title wraps under it. -->
         <p class="task-title">
+          <!-- A native title, like the time below: a board renders too many cards for tooltips. -->
+          <span
+            v-if="viewModel.blocked"
+            :aria-label="t('blocked')"
+            class="task-blocked"
+            role="img"
+            :title="t('blocked')">
+            <IconLock aria-hidden="true" />
+          </span>
           <span class="task-key">{{ viewModel.issueKey }}</span>
           {{ viewModel.title }}
         </p>
@@ -44,7 +53,7 @@
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
-import { IconLoader } from '@tabler/icons-vue'
+import { IconLoader, IconLock } from '@tabler/icons-vue'
 
 import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
 
@@ -61,10 +70,12 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
+    blocked: 'Blocked',
     created: 'Created',
     savingPosition: 'Saving issue position',
   },
   ru: {
+    blocked: 'Заблокирована',
     created: 'Создана',
     savingPosition: 'Сохранение позиции задачи',
   },
@@ -132,6 +143,19 @@ useSortable({
 
 .task-key {
   color: var(--color-muted);
+}
+
+.task-blocked {
+  color: var(--color-warning);
+  display: inline-flex;
+  margin-right: var(--space-1);
+  /* Centered on the title's lowercase letters, as an icon in a line of text. */
+  vertical-align: -0.125em;
+}
+
+.task-blocked .tabler-icon {
+  height: 1em;
+  width: 1em;
 }
 
 .task-assignee {

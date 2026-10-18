@@ -24,6 +24,7 @@ const issue: IssuePageViewModel = {
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
   issueKey: 'ISS-1',
+  links: [],
   owner: 'Grace Hopper',
   ownerColor: '#222',
   ownerInitial: 'G',
@@ -76,6 +77,14 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   },
   history: {
     load: vi.fn<IssuePageDeps['history']['load']>(async () => ({ hasNextPage: false, items: [] })),
+  },
+  links: {
+    add: vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const })),
+    remove: vi.fn<IssuePageDeps['links']['remove']>(async () => {}),
+    searchIssues: vi.fn<IssuePageDeps['links']['searchIssues']>(async () => ({
+      issues: [],
+      outcome: 'found' as const,
+    })),
   },
   saveIssue: vi.fn<IssuePageDeps['saveIssue']>(),
   spaceSelect: {
@@ -365,6 +374,38 @@ it('cancels the open agent run after confirmation', async () => {
   await vi.waitFor(() => expect(deps.agentRun.cancel).toHaveBeenCalledWith({ runId: '5' }))
 })
 
+it('says the agent waits for the open blockers', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        links: [
+          {
+            issueKey: 'ISS-2',
+            relation: 'blockedBy',
+            statusCategory: 'InProgress',
+            statusColor: '#111',
+            statusLabel: 'In progress',
+            title: 'Do this first',
+          },
+          {
+            issueKey: 'ISS-3',
+            relation: 'blockedBy',
+            statusCategory: 'Completed',
+            statusColor: '#222',
+            statusLabel: 'Done',
+            title: 'Already done',
+          },
+        ],
+      })),
+    }),
+  )
+
+  await expect
+    .element(page.getByText('Blocked by ISS-2: the agent starts once they are completed.'))
+    .toBeInTheDocument()
+})
+
 it('hides the agent actions when the issue cannot be edited', async () => {
   await mount(
     createDeps({
@@ -398,4 +439,69 @@ it('reloads the issue when the failed request is retried', async () => {
   await page.getByRole('button', { name: 'Try again' }).click()
 
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
+})
+
+it('lists the issue links by what they mean and removes one', async () => {
+  const remove = vi.fn<IssuePageDeps['links']['remove']>(async () => {})
+  const view = vi.fn<IssuePageDeps['view']>(async () => ({
+    ...issue,
+    links: [
+      {
+        issueKey: 'ISS-2',
+        relation: 'blockedBy' as const,
+        statusCategory: 'InProgress' as const,
+        statusColor: '#444',
+        statusLabel: 'Doing',
+        title: 'Build the API',
+      },
+    ],
+  }))
+  await mount(createDeps({ links: { ...createDeps().links, remove }, view }))
+
+  await expect.element(page.getByRole('heading', { name: 'Blocked by' })).toBeInTheDocument()
+  await expect.element(page.getByText('Build the API')).toBeInTheDocument()
+
+  await page.getByRole('button', { name: 'Remove the link to ISS-2' }).click()
+
+  expect(remove).toHaveBeenCalledWith({ issueKey: 'ISS-1', otherIssueKey: 'ISS-2' })
+  expect(view).toHaveBeenCalledTimes(2)
+})
+
+it('adds a link to an issue picked from the suggestions', async () => {
+  const add = vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'added' as const }))
+  const searchIssues = vi.fn<IssuePageDeps['links']['searchIssues']>(async () => ({
+    issues: [
+      { issueKey: 'ISS-1', title: 'Fix the bug' },
+      { issueKey: 'ISS-7', title: 'Build the API' },
+    ],
+    outcome: 'found' as const,
+  }))
+  await mount(createDeps({ links: { ...createDeps().links, add, searchIssues } }))
+
+  await page.getByRole('button', { name: 'Add link' }).click()
+  await page.getByRole('combobox', { name: 'Issue' }).fill('api')
+  await page.getByRole('option', { name: /ISS-7/ }).click()
+  await page.getByRole('button', { exact: true, name: 'Add' }).click()
+
+  expect(searchIssues).toHaveBeenCalledWith(expect.objectContaining({ search: 'api' }))
+  // The issue itself is not suggested.
+  expect(page.getByRole('option', { name: /ISS-1/ }).all()).toHaveLength(0)
+  expect(add).toHaveBeenCalledWith({
+    issueKey: 'ISS-1',
+    otherIssueKey: 'ISS-7',
+    relation: 'blockedBy',
+  })
+  await expect.element(page.getByRole('combobox', { name: 'Issue' })).not.toBeInTheDocument()
+})
+
+it('keeps the link fields open when no such issue is found', async () => {
+  const add = vi.fn<IssuePageDeps['links']['add']>(async () => ({ outcome: 'notFound' as const }))
+  await mount(createDeps({ links: { ...createDeps().links, add } }))
+
+  await page.getByRole('button', { name: 'Add link' }).click()
+  await page.getByRole('combobox', { name: 'Issue' }).fill('ISS-404')
+  await page.getByRole('button', { exact: true, name: 'Add' }).click()
+
+  await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()
+  await expect.element(page.getByRole('combobox', { name: 'Issue' })).toBeInTheDocument()
 })

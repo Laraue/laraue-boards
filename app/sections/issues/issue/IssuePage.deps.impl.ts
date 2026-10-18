@@ -10,12 +10,14 @@ import { mapAgentRunState } from '~/sections/issues/shared/api/agentRun'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
+import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
 import { assertNever } from '~/utils/assertNever'
 
 import { createIssueAgentRunDeps } from './components/IssueAgentRun/IssueAgentRun.deps.impl'
 import { createIssueCommentsDeps } from './components/IssueComments/IssueComments.deps.impl'
 import { createIssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps.impl'
 import { createIssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps.impl'
+import { createIssueLinksDeps } from './components/IssueLinks/IssueLinks.deps.impl'
 import type { IssuePageDeps, IssuePageViewModel } from './IssuePage.deps'
 
 type Schemas = components['schemas']
@@ -96,6 +98,14 @@ const mapIssue = (
   content: issue.content ?? '',
   createdAt: issue.time,
   issueKey: issue.key,
+  links: issue.links.map((link) => ({
+    issueKey: link.key,
+    relation: mapIssueLinkRelation(link.relation),
+    statusCategory: link.statusCategory,
+    statusColor: link.statusColor ?? COLORS.gray,
+    statusLabel: link.statusName ?? '',
+    title: link.title,
+  })),
   owner: issue.owner.displayName,
   ownerColor: issue.owner.color,
   ownerInitial: issue.owner.initials,
@@ -122,6 +132,7 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
 
   description: createIssueDescriptionDeps(client),
   history: createIssueHistoryDeps(client),
+  links: createIssueLinksDeps(client),
 
   // Saving and moving to another status are two requests: when only the move fails, the
   // save still stands and the issue stays where it was.

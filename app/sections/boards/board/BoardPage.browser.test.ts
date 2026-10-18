@@ -118,6 +118,7 @@ it('does not show a backlog action on issue cards', async () => {
               assigneeColor: '#4774d4',
               assigneeInitial: 'JD',
               assigneeName: 'Jane Doe',
+              blocked: false,
               issueKey: 'ISS-1',
               time: '2026-01-01T10:00:00Z',
               title: 'Fix the regression',
@@ -136,4 +137,36 @@ it('does not show a backlog action on issue cards', async () => {
     .element(page.getByRole('button', { exact: true, name: 'Move to backlog' }))
     .not.toBeInTheDocument()
   expect(moveIssueToBacklog).not.toHaveBeenCalled()
+})
+
+it('marks the card of a blocked issue', async () => {
+  const issue = {
+    assigneeColor: '#4774d4',
+    assigneeInitial: 'JD',
+    assigneeName: 'Jane Doe',
+    time: '2026-01-01T10:00:00Z',
+  }
+
+  await mount({
+    data: {
+      ...board,
+      columns: [
+        {
+          color: '#4774d4',
+          hasNext: false,
+          id: '1',
+          issueCount: 2,
+          issues: [
+            { ...issue, blocked: true, issueKey: 'ISS-1', title: 'Waits for the API' },
+            { ...issue, blocked: false, issueKey: 'ISS-2', title: 'Build the API' },
+          ],
+          title: 'To do',
+        },
+      ],
+      issueCount: 2,
+    },
+  })
+
+  await expect.element(page.getByText('ISS-2')).toBeInTheDocument()
+  expect(page.getByRole('img', { name: 'Blocked' }).all()).toHaveLength(1)
 })
