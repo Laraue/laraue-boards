@@ -106,7 +106,8 @@ const mapIssue = (
     statusLabel: link.statusName ?? '',
     title: link.title,
   })),
-  missingStatusCategoriesForAgent: issue.missingStatusCategoriesForAgent,
+  // An API older than the agent runs has no such field: nothing missing, the hand-off then answers for itself.
+  missingStatusCategoriesForAgent: issue.missingStatusCategoriesForAgent ?? [],
   owner: issue.owner.displayName,
   ownerColor: issue.owner.color,
   ownerInitial: issue.owner.initials,
