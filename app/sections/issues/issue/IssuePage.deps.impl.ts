@@ -106,6 +106,7 @@ const mapIssue = (
     statusLabel: link.statusName ?? '',
     title: link.title,
   })),
+  missingStatusCategoriesForAgent: issue.missingStatusCategoriesForAgent,
   owner: issue.owner.displayName,
   ownerColor: issue.owner.color,
   ownerInitial: issue.owner.initials,

@@ -249,6 +249,8 @@
                   :can-edit="issue.canEdit"
                   :deps="deps.agentRun"
                   :issue-key="issue.issueKey"
+                  :issue-started="issue.statusCategory !== 'Created'"
+                  :missing-status-categories="issue.missingStatusCategoriesForAgent"
                   :on-changed="refreshAfterChange"
                   :run="issue.agentRun" />
                 <dl class="issue-dates">

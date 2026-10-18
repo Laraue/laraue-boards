@@ -51,6 +51,7 @@ export type IssuePageInput = {
 export type IssuePageViewModel = {
   // The latest agent run; null when the issue was never handed to the agent.
   agentRun: IssueAgentRunViewModel | null
+  // Status categories the agent needs that the issue's board has no status in; empty when it can be handed off.
   assignee: string
   assigneeColor: string
   assigneeId: string
@@ -60,6 +61,7 @@ export type IssuePageViewModel = {
   attributes: IssuePageAttributeViewModel[]
   boardColor: string
   boardId: string
+  missingStatusCategoriesForAgent: components['schemas']['StatusCategory'][]
   // The backlog has its own page, not a board's.
   boardIsBacklog: boolean
   boardLabel: string

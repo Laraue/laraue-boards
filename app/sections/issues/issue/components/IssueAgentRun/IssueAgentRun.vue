@@ -13,7 +13,12 @@
         v-if="badgeShown && run"
         :state="run.state"
         :title="run.failureReason ?? undefined" />
-      <!-- The hand-off button says it on its own; the text is for someone who can't hand it off. -->
+      <!-- The assignee sees why they can't hand it off; the button says the rest on its own. -->
+      <span
+        v-else-if="handOffUnavailable"
+        class="issue-agent-run-none">
+        {{ handOffUnavailable }}
+      </span>
       <span
         v-else-if="!handOffShown"
         class="issue-agent-run-none">
@@ -64,6 +69,7 @@
 import { IconRobot } from '@tabler/icons-vue'
 
 import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
+import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 
 import type { IssueAgentRunDeps, IssueAgentRunViewModel } from './IssueAgentRun.deps'
 
@@ -75,6 +81,10 @@ const props = defineProps<{
   canEdit: boolean
   deps: IssueAgentRunDeps
   issueKey: string
+  // The issue is past not started: only a not started issue is handed off.
+  issueStarted: boolean
+  // What the issue's board lacks for the agent (not started, in progress, in review statuses).
+  missingStatusCategories: StatusCategory[]
   onChanged: () => Promise<void> | void
   run: IssueAgentRunViewModel | null
 }>()
@@ -82,21 +92,31 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     agent: 'Agent',
+    boardNotReady: 'To hand issues to the agent, this board needs {statuses} statuses.',
     cancel: 'Cancel run',
     cancelConfirm: 'Stop the agent on this issue?',
+    created: 'Not started',
     handOff: 'Hand to agent',
+    inProgress: 'In progress',
+    issueStarted: 'Move the issue to a not started status to hand it to the agent.',
     locked: 'Editing is locked while the agent has the issue. Cancel the run to change it.',
     none: 'Not handed off',
+    review: 'In review',
     stop: 'Stop agent',
     waitsFor: 'Blocked by {keys}: the agent starts once they are completed.',
   },
   ru: {
     agent: 'Агент',
+    boardNotReady: 'Чтобы передавать задачи агенту, на доске нужны статусы: {statuses}.',
     cancel: 'Отменить запуск',
     cancelConfirm: 'Остановить агента на этой задаче?',
+    created: 'Не начато',
     handOff: 'Передать агенту',
+    inProgress: 'В работе',
+    issueStarted: 'Переведите задачу в не начатый статус, чтобы передать её агенту.',
     locked: 'Пока задача у агента, её нельзя редактировать. Отмените запуск, чтобы изменить её.',
     none: 'Не передана',
+    review: 'На проверке',
     stop: 'Остановить',
     waitsFor: 'Заблокирована задачами {keys}: агент начнёт, когда они будут завершены.',
   },
@@ -108,7 +128,33 @@ const headingId = useId()
 
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
 const badgeShown = computed(() => open.value || props.run?.state === 'failed')
-const handOffShown = computed(() => props.canEdit && props.assigneeIsCurrentUser && !open.value)
+const canHandOff = computed(() => props.canEdit && props.assigneeIsCurrentUser && !open.value)
+
+const CATEGORY_KEYS = {
+  Completed: null,
+  Created: 'created',
+  InProgress: 'inProgress',
+  Review: 'review',
+} as const satisfies Record<StatusCategory, 'created' | 'inProgress' | 'review' | null>
+
+// Why the assignee can't hand the issue off yet: the agent moves it not started -> in progress -> in review.
+const handOffUnavailable = computed(() => {
+  if (!canHandOff.value) {
+    return null
+  }
+  if (props.missingStatusCategories.length) {
+    const statuses = props.missingStatusCategories
+      .flatMap((category) => {
+        const key = CATEGORY_KEYS[category]
+        return key ? [t(key)] : []
+      })
+      .join(', ')
+    return t('boardNotReady', { statuses })
+  }
+  return props.issueStarted ? t('issueStarted') : null
+})
+
+const handOffShown = computed(() => canHandOff.value && !handOffUnavailable.value)
 // A working run already started; for any other state the blockers decide when the agent can start.
 const waitsForBlockers = computed(
   () => props.blockedBy.length > 0 && props.run?.state !== 'working',

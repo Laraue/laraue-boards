@@ -3990,6 +3990,7 @@ export interface components {
             attachments: components["schemas"]["AttachmentData"][];
             links: components["schemas"]["IssueLinkDto"][];
             latestAgentRun: null | components["schemas"]["AgentRunDto"];
+            missingStatusCategoriesForAgent: components["schemas"]["StatusCategory"][];
         };
         /** @enum {unknown} */
         IssueLinkAction: "Added" | "Removed";

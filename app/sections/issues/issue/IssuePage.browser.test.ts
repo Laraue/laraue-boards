@@ -27,12 +27,14 @@ const issue: IssuePageViewModel = {
   createdAt: '2026-01-01T00:00:00Z',
   issueKey: 'ISS-1',
   links: [],
+  missingStatusCategoriesForAgent: [],
   owner: 'Grace Hopper',
   ownerColor: '#222',
   ownerInitial: 'G',
   spaceColor: '#4774d4',
   spaceId: '7',
   spaceLabel: 'Product',
+  statusCategory: 'Created',
   statusColor: '#444',
   statusId: '3',
   statusLabel: 'To do',
@@ -422,6 +424,39 @@ it('locks the fields but still lets anyone who can edit cancel the run', async (
     )
     .toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeEnabled()
+})
+
+it('says which statuses the board lacks instead of offering the hand-off', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        missingStatusCategoriesForAgent: ['InProgress', 'Review'],
+      })),
+    }),
+  )
+
+  await expect
+    .element(
+      page.getByText(
+        'To hand issues to the agent, this board needs In progress, In review statuses.',
+      ),
+    )
+    .toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
+})
+
+it('asks to move a started issue back before the hand-off', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, statusCategory: 'InProgress' })),
+    }),
+  )
+
+  await expect
+    .element(page.getByText('Move the issue to a not started status to hand it to the agent.'))
+    .toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
 })
 
 it('says the agent waits for the open blockers', async () => {
