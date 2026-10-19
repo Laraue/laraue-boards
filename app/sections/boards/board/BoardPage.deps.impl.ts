@@ -3,6 +3,7 @@ import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
 import { DEFAULT_COLOR } from '~/constants/colors'
 import { createIssuePageDeps } from '~/sections/issues/issue/IssuePage.deps.impl'
+import { mapAgentRunState } from '~/sections/issues/shared/api/agentRun'
 import { mapIssueFilters, mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
 
 import type { BoardPageDeps, SearchBoardIssuesResult } from './BoardPage.deps'
@@ -10,6 +11,7 @@ import type { BoardPageDeps, SearchBoardIssuesResult } from './BoardPage.deps'
 type Schemas = components['schemas']
 
 const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
+  ...(issue.latestAgentRun ? { agentRunState: mapAgentRunState(issue.latestAgentRun.state) } : {}),
   assigneeColor: issue.assigneeColor,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,

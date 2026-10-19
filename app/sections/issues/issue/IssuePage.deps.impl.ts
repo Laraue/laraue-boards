@@ -6,12 +6,18 @@ import { createBoardSelectDeps } from '~/components/board-select/BoardSelect.dep
 import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps.impl'
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
 import { COLORS, DEFAULT_COLOR } from '~/constants/colors'
+import { mapAgentRunState } from '~/sections/issues/shared/api/agentRun'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
 import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
 import { assertNever } from '~/utils/assertNever'
 
+import type {
+  AgentHandOffBlocker,
+  AgentHandOffViewModel,
+} from './components/IssueAgentRun/IssueAgentRun.deps'
+import { createIssueAgentRunDeps } from './components/IssueAgentRun/IssueAgentRun.deps.impl'
 import { createIssueCommentsDeps } from './components/IssueComments/IssueComments.deps.impl'
 import { createIssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps.impl'
 import { createIssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps.impl'
@@ -69,11 +75,38 @@ const mapAttachments = (
     return [{ id: attachment.id, originalUrl: fileUrl(originalId), previewUrl: fileUrl(previewId) }]
   })
 
+const AGENT_HAND_OFF_BLOCKERS = {
+  BoardNotReady: 'boardNotReady',
+  IssueStarted: 'issueStarted',
+  NoApiKey: 'noApiKey',
+  NotAllowed: 'notAllowed',
+  RunOpen: 'runOpen',
+} as const satisfies Record<NonNullable<Schemas['AgentHandOffBlocker']>, AgentHandOffBlocker>
+
+// An API older than the agent runs sends nothing: offer no hand-off.
+const mapAgentHandOff = (handOff: Schemas['AgentHandOffDto'] | undefined): AgentHandOffViewModel =>
+  handOff
+    ? {
+        available: handOff.available,
+        blocker: handOff.blocker ? AGENT_HAND_OFF_BLOCKERS[handOff.blocker] : null,
+        missingStatusCategories: handOff.missingStatusCategories,
+      }
+    : { available: false, blocker: 'notAllowed', missingStatusCategories: [] }
+
 const mapIssue = (
   issue: Schemas['IssueDetailDto'],
   baseUrl: string,
   boardIsBacklog: boolean,
 ): IssuePageViewModel => ({
+  agentHandOff: mapAgentHandOff(issue.agentHandOff),
+  agentRun: issue.latestAgentRun
+    ? {
+        failureReason: issue.latestAgentRun.failureReason,
+        finishedAt: issue.latestAgentRun.finishedAt,
+        id: String(issue.latestAgentRun.id),
+        state: mapAgentRunState(issue.latestAgentRun.state),
+      }
+    : null,
   assignee: issue.assignee.displayName,
   assigneeColor: issue.assignee.color,
   assigneeId: issue.assigneeId,
@@ -112,6 +145,7 @@ const mapIssue = (
 })
 
 export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
+  agentRun: createIssueAgentRunDeps(client),
   assigneeSelect: createAssigneeSelectDeps(client),
   boardSelect: createBoardSelectDeps(client),
   comments: createIssueCommentsDeps(client),
@@ -127,17 +161,19 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
   // Saving and moving to another status are two requests: when only the move fails, the
   // save still stands and the issue stays where it was.
   saveIssue: async (input) => {
-    await request(
-      client.PUT('/api/issues/{key}', {
-        body: {},
-        bodySerializer: () =>
-          updateIssueFormData({
-            ...input,
-            attributeValues: mapIssueAttributeValues(input.attributeValues),
-          }),
-        params: { path: { key: input.issueKey } },
-      }),
-    )
+    if (!input.fieldsLocked) {
+      await request(
+        client.PUT('/api/issues/{key}', {
+          body: {},
+          bodySerializer: () =>
+            updateIssueFormData({
+              ...input,
+              attributeValues: mapIssueAttributeValues(input.attributeValues),
+            }),
+          params: { path: { key: input.issueKey } },
+        }),
+      )
+    }
     const saved = {
       boardId: input.boardId,
       complete: true,

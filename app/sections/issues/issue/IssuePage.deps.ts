@@ -9,6 +9,11 @@ import type {
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
+import type {
+  AgentHandOffViewModel,
+  IssueAgentRunDeps,
+  IssueAgentRunViewModel,
+} from './components/IssueAgentRun/IssueAgentRun.deps'
 import type { IssueCommentsDeps } from './components/IssueComments/IssueComments.deps'
 import type { IssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps'
 import type { IssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps'
@@ -45,6 +50,10 @@ export type IssuePageInput = {
 }
 
 export type IssuePageViewModel = {
+  // Whether the user can hand the issue to the agent now, and if not, why - decided by the backend.
+  agentHandOff: AgentHandOffViewModel
+  // The latest agent run; null when the issue was never handed to the agent.
+  agentRun: IssueAgentRunViewModel | null
   assignee: string
   assigneeColor: string
   assigneeId: string
@@ -78,6 +87,7 @@ export type IssuePageViewModel = {
 }
 
 export type IssuePageDeps = {
+  agentRun: IssueAgentRunDeps
   assigneeSelect: AssigneeSelectDeps
   boardSelect: BoardSelectDeps
   comments: IssueCommentsDeps
@@ -88,6 +98,8 @@ export type IssuePageDeps = {
   // Resolves `complete: false` when the issue was saved but could not be moved to the new status.
   saveIssue: (
     input: IssuePageInput & {
+      // The issue is handed to the agent: only the status move is saved, its fields are locked.
+      fieldsLocked?: boolean
       issueKey: string
       previousBoardId: string
       previousSpaceKey: string

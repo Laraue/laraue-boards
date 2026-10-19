@@ -6,6 +6,7 @@ import type {
   HistoryChangeViewModel,
   HistoryPageViewModel,
 } from '~/components/history-timeline/HistoryTimeline.types'
+import { mapAgentRunState } from '~/sections/issues/shared/api/agentRun'
 import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
 
 import type { IssueHistoryDeps } from './IssueHistory.deps'
@@ -93,6 +94,12 @@ const mapChange = (
         oldColor: change.oldSpaceColor,
         oldValue: change.oldSpaceName,
       }
+    case 'agentRun':
+      return {
+        kind: 'agentRun',
+        newState: mapAgentRunState(change.newState),
+        oldState: change.oldState ? mapAgentRunState(change.oldState) : null,
+      }
     case 'link':
       return {
         action: change.action === 'Removed' ? 'removed' : 'added',
@@ -115,6 +122,7 @@ const mapHistoryPage = (
       .map((change) => mapChange(change, item.action, item.entityType, baseUrl))
       .filter((change) => {
         if (
+          change.kind === 'agentRun' ||
           change.kind === 'attachment' ||
           change.kind === 'description' ||
           change.kind === 'event' ||

@@ -44,6 +44,18 @@ const mount = async (deps = createDeps()) => {
   return currentWrapper
 }
 
+it('names the API key a comment was written through', async () => {
+  await mount(
+    createDeps({
+      load: vi.fn<IssueCommentsDeps['load']>(async () => [
+        { ...comments[0]!, owner: { ...comments[0]!.owner, apiKeyName: 'boards-agent' } },
+      ]),
+    }),
+  )
+
+  await expect.element(page.getByText('via boards-agent')).toBeInTheDocument()
+})
+
 it('creates a comment', async () => {
   const create = vi.fn<IssueCommentsDeps['create']>(async () => {})
   const load = vi.fn<IssueCommentsDeps['load']>(async () => comments)

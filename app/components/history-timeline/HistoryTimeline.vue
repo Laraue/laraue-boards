@@ -91,6 +91,9 @@
                   <HistoryAttachmentChange
                     v-else-if="change.kind === 'attachment'"
                     :change="change" />
+                  <HistoryAgentRunChange
+                    v-else-if="change.kind === 'agentRun'"
+                    :change="change" />
                   <HistoryAssigneeChange
                     v-else-if="change.kind === 'assignee'"
                     :change="change" />
@@ -130,6 +133,7 @@
 <script setup lang="ts">
 import { IconKey, IconTrash } from '@tabler/icons-vue'
 
+import HistoryAgentRunChange from './components/HistoryAgentRunChange.vue'
 import HistoryAssigneeChange from './components/HistoryAssigneeChange.vue'
 import HistoryAttachmentChange from './components/HistoryAttachmentChange.vue'
 import HistoryBoardChange from './components/HistoryBoardChange.vue'

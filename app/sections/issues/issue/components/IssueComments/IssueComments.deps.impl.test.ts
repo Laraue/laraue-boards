@@ -8,6 +8,7 @@ test('maps the comments of an issue', async () => {
   const { client, paths } = createTestApiClient(() => ({
     data: [
       {
+        apiKeyName: null,
         canModify: true,
         createdAt: '2026-01-03T00:00:00Z',
         id: 8,

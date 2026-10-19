@@ -51,6 +51,7 @@
             :can-save="canSave"
             :deleting="deleting"
             :form-id="formId"
+            :locked="fieldsLocked(data)"
             :on-delete="remove"
             :saving="saving" />
         </template>
@@ -96,7 +97,7 @@
                     id="issue-title"
                     :aria-label="t('title')"
                     class="issue-title-input"
-                    :disabled="!issue.canEdit"
+                    :disabled="!canEditFields(issue)"
                     :maxlength="256"
                     :placeholder="t('titlePlaceholder')"
                     rows="1"
@@ -107,10 +108,10 @@
                     v-model="state.content"
                     v-model:title="state.title"
                     :deps="deps.description"
-                    :disabled="!issue.canEdit">
+                    :disabled="!canEditFields(issue)">
                     <template #actions>
                       <BaseIconButton
-                        :disabled="saving || deleting"
+                        :disabled="!canEditFields(issue) || saving || deleting"
                         :label="t('attachImages')"
                         :tooltip="t('attachImagesHint')"
                         @click="attachments?.pick()">
@@ -123,7 +124,7 @@
                   :key="issue.issueKey"
                   ref="attachments"
                   :attachments="issue.attachments"
-                  :disabled="!issue.canEdit || saving || deleting"
+                  :disabled="!canEditFields(issue) || saving || deleting"
                   :files="state.files"
                   :on-change="changeFiles"
                   :on-remove-attachment="removeAttachment"
@@ -209,7 +210,7 @@
                     :key="`assignee-${issue.issueKey}`"
                     v-model="state.assigneeId"
                     :deps="deps.assigneeSelect"
-                    :disabled="!issue.canEdit"
+                    :disabled="!canEditFields(issue)"
                     :initial-option="{
                       color: issue.assigneeColor,
                       initials: issue.assigneeInitial,
@@ -231,7 +232,7 @@
                     v-if="issue.attributes.length"
                     v-model="state.attributeValues"
                     :attributes="issue.attributes"
-                    :disabled="!issue.canEdit"
+                    :disabled="!canEditFields(issue)"
                     select-variant="inline" />
                 </div>
                 <IssueLinks
@@ -240,7 +241,16 @@
                   :deps="deps.links"
                   :issue-key="issue.issueKey"
                   :links="issue.links"
-                  :on-changed="refreshAfterLinkChange" />
+                  :on-changed="refreshAfterChange" />
+                <IssueAgentRun
+                  :key="`agent-${issue.issueKey}`"
+                  :blocked-by="openBlockers(issue)"
+                  :can-edit="issue.canEdit"
+                  :deps="deps.agentRun"
+                  :hand-off="issue.agentHandOff"
+                  :issue-key="issue.issueKey"
+                  :on-changed="refreshAfterChange"
+                  :run="issue.agentRun" />
                 <dl class="issue-dates">
                   <dt>{{ t('created') }}</dt>
                   <dd>
@@ -267,6 +277,7 @@
                   :can-save="canSave"
                   :deleting="deleting"
                   :form-id="formId"
+                  :locked="fieldsLocked(issue)"
                   :on-delete="remove"
                   :saving="saving" />
               </footer>
@@ -297,6 +308,7 @@ import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
+import IssueAgentRun from './components/IssueAgentRun/IssueAgentRun.vue'
 import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueDescription from './components/IssueDescription/IssueDescription.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
@@ -466,8 +478,20 @@ const syncState = (issue: IssuePageViewModel) => {
   })
 }
 
-// A link change also shows in the history, which loads separately.
-const refreshAfterLinkChange = async () => {
+// An open agent run locks the issue's fields (the agent works from what was handed off); status, comments and
+// cancelling the run stay available.
+const fieldsLocked = (issue?: IssuePageViewModel | null) =>
+  issue?.agentRun?.state === 'ready' || issue?.agentRun?.state === 'working'
+
+const canEditFields = (issue: IssuePageViewModel) => issue.canEdit && !fieldsLocked(issue)
+
+const openBlockers = (issue: IssuePageViewModel) =>
+  issue.links
+    .filter((link) => link.relation === 'blockedBy' && link.statusCategory !== 'Completed')
+    .map((link) => link.issueKey)
+
+// Agent run and link changes also show in the history, which loads separately.
+const refreshAfterChange = async () => {
   await refresh()
   void history.value?.refresh()
 }
@@ -516,6 +540,7 @@ const save = async () => {
     ),
     boardId: state.boardId,
     content: state.content,
+    fieldsLocked: fieldsLocked(issue),
     files: state.files,
     issueKey: issue.issueKey,
     previousBoardId: issue.boardId,

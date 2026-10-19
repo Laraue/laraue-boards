@@ -1,13 +1,17 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
+import { defineComponent, h } from 'vue'
 
 import { ApiError } from '#infrastructure/api/request'
+import BaseConfirmHost from '~/components/ui/BaseConfirmHost.vue'
 
 import type { IssuePageDeps, IssuePageViewModel } from './IssuePage.deps'
 import IssuePage from './IssuePage.vue'
 
 const issue: IssuePageViewModel = {
+  agentHandOff: { available: true, blocker: null, missingStatusCategories: [] },
+  agentRun: null,
   assignee: 'Ada Lovelace',
   assigneeColor: '#111',
   assigneeId: '9',
@@ -30,6 +34,7 @@ const issue: IssuePageViewModel = {
   spaceColor: '#4774d4',
   spaceId: '7',
   spaceLabel: 'Product',
+  statusCategory: 'Created',
   statusColor: '#444',
   statusId: '3',
   statusLabel: 'To do',
@@ -38,6 +43,10 @@ const issue: IssuePageViewModel = {
 }
 
 const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
+  agentRun: {
+    cancel: vi.fn<IssuePageDeps['agentRun']['cancel']>(async () => {}),
+    handOff: vi.fn<IssuePageDeps['agentRun']['handOff']>(async () => {}),
+  },
   assigneeSelect: {
     loadAssignees: vi.fn<IssuePageDeps['assigneeSelect']['loadAssignees']>(async () => [
       {
@@ -339,6 +348,250 @@ it('stays on the page after the issue is saved', async () => {
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
 })
 
+it('hands the issue to the agent and shows the new run', async () => {
+  const view = vi
+    .fn<IssuePageDeps['view']>()
+    .mockResolvedValueOnce(issue)
+    .mockResolvedValue({
+      ...issue,
+      agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'ready' },
+    })
+  const deps = createDeps({ view })
+  await mount(deps)
+
+  await page.getByRole('button', { name: 'Hand to agent' }).click()
+
+  expect(deps.agentRun.handOff).toHaveBeenCalledWith({ issueKey: 'ISS-1' })
+  await expect.element(page.getByText('For agent')).toBeInTheDocument()
+  await expect
+    .element(
+      page.getByRole('note', {
+        name: "For agent: Handed to the agent: waits for the assignee's runner to pick it up.",
+      }),
+    )
+    .toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeInTheDocument()
+})
+
+it('cancels the open agent run after confirmation', async () => {
+  const deps = createDeps({
+    view: vi.fn<IssuePageDeps['view']>(async () => ({
+      ...issue,
+      agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'working' },
+    })),
+  })
+  // The confirmation is drawn by the app layout's host, which a bare page mount doesn't have.
+  const PageWithConfirmHost = defineComponent({
+    setup: () => () => [
+      h(BaseConfirmHost, { cancelLabel: 'Cancel', dangerLabel: 'Delete' }),
+      h(IssuePage, {
+        deps,
+        issueKey: 'ISS-1',
+        onBack: vi.fn<() => void>(),
+        onDirtyChange: vi.fn<(dirty: boolean) => void>(),
+      }),
+    ],
+  })
+  currentWrapper = await mountSuspended(PageWithConfirmHost, {
+    attachTo: document.body,
+    route: '/organizations/acme-ab12/issues/ISS-1',
+  })
+
+  await page.getByRole('button', { name: 'Cancel run' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Stop agent' }).click()
+
+  await vi.waitFor(() => expect(deps.agentRun.cancel).toHaveBeenCalledWith({ runId: '5' }))
+})
+
+it('hides the hand-off when the backend does not allow it', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('heading', { name: 'Agent' })).not.toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
+})
+
+it('locks the fields but still lets anyone who can edit cancel the run', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+        agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'ready' },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('textbox', { name: 'Title' })).toBeDisabled()
+  await expect
+    .element(
+      page.getByText(
+        'Editing is locked while the agent has the issue. Cancel the run to change it.',
+      ),
+    )
+    .toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeEnabled()
+})
+
+it('disables the hand-off and says which statuses the board lacks', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: {
+          available: false,
+          blocker: 'boardNotReady',
+          missingStatusCategories: ['InProgress', 'Review'],
+        },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).toBeDisabled()
+  await expect
+    .element(
+      page.getByRole('note', {
+        name: 'Hand to agent: To hand issues to the agent, add statuses for these stages to the board: In progress, In review.',
+      }),
+    )
+    .toBeInTheDocument()
+})
+
+it('disables the hand-off until the user has an API key for the runner', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'noApiKey', missingStatusCategories: [] },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).toBeDisabled()
+  await expect
+    .element(
+      page.getByRole('note', {
+        name: 'Hand to agent: Create an API key for your agent runner first: Account → API keys.',
+      }),
+    )
+    .toBeInTheDocument()
+})
+
+it('disables the hand-off of a started issue and says why', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'issueStarted', missingStatusCategories: [] },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).toBeDisabled()
+  await expect
+    .element(
+      page.getByRole('note', {
+        name: 'Hand to agent: Move the issue to a not started status to hand it to the agent.',
+      }),
+    )
+    .toBeInTheDocument()
+})
+
+it('links the Links and Agent sections to their documentation', async () => {
+  await mount(createDeps())
+
+  await expect
+    .element(
+      page.getByRole('link', {
+        name: 'Links: how it works (opens the documentation in a new tab)',
+      }),
+    )
+    .toHaveAttribute('href', '/en/documentation/features/issue-links')
+  await expect
+    .element(
+      page.getByRole('link', {
+        name: 'Agent: how it works (opens the documentation in a new tab)',
+      }),
+    )
+    .toHaveAttribute('href', '/en/documentation/integrations/agent-hand-off')
+})
+
+it('shows why a failed run gave up and how to try again', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'issueStarted', missingStatusCategories: [] },
+        agentRun: {
+          failureReason: 'Timed out after 60 min',
+          finishedAt: '2026-01-02T10:00:00Z',
+          id: '5',
+          state: 'failed',
+        },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('status')).toHaveTextContent(/Timed out after 60 min/)
+  await expect.element(page.getByText('Agent failed')).not.toBeInTheDocument()
+  await expect
+    .element(page.getByText(/To try again, move the issue back to a not started status\./))
+    .toBeInTheDocument()
+})
+
+it('says the agent waits for the open blockers', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        links: [
+          {
+            issueKey: 'ISS-2',
+            relation: 'blockedBy',
+            statusCategory: 'InProgress',
+            statusColor: '#111',
+            statusLabel: 'In progress',
+            title: 'Do this first',
+          },
+          {
+            issueKey: 'ISS-3',
+            relation: 'blockedBy',
+            statusCategory: 'Completed',
+            statusColor: '#222',
+            statusLabel: 'Done',
+            title: 'Already done',
+          },
+        ],
+      })),
+    }),
+  )
+
+  await expect
+    .element(page.getByText('Blocked by ISS-2: the agent starts once they are completed.'))
+    .toBeInTheDocument()
+})
+
+it('hides the agent actions when the issue cannot be edited', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+        canEdit: false,
+      })),
+    }),
+  )
+
+  await expect.element(page.getByRole('heading', { name: 'Agent' })).not.toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
+})
+
 it('hides the actions when the issue cannot be edited', async () => {
   await mount(
     createDeps({
@@ -422,7 +675,8 @@ it('keeps the link fields open when no such issue is found', async () => {
 
   await page.getByRole('button', { name: 'Add link' }).click()
   await page.getByRole('combobox', { name: 'Issue' }).fill('ISS-404')
-  await page.getByRole('button', { exact: true, name: 'Add' }).click()
+  // Enter adds the typed key; the suggestion list's "No issues found" covers the Add button.
+  await userEvent.keyboard('{Enter}')
 
   await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()
   await expect.element(page.getByRole('combobox', { name: 'Issue' })).toBeInTheDocument()

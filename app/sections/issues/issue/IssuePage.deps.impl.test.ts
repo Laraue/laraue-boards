@@ -11,6 +11,11 @@ test('maps issue detail', async () => {
     path === '/api/spaces/product/epics'
       ? [{ id: 7, isDefault: true, name: 'Backlog' }]
       : {
+          agentHandOff: {
+            available: false,
+            blocker: 'BoardNotReady',
+            missingStatusCategories: ['Review'],
+          },
           assignee: {
             color: '#111',
             displayName: 'Ada',
@@ -103,6 +108,11 @@ test('maps issue detail', async () => {
   assert.equal(result.owner, 'Grace')
   assert.equal(result.boardIsBacklog, true)
   assert.equal(result.statusCategory, 'Created')
+  assert.deepEqual(result.agentHandOff, {
+    available: false,
+    blocker: 'boardNotReady',
+    missingStatusCategories: ['Review'],
+  })
   assert.deepEqual(result.links, [
     {
       issueKey: 'ISS-2',
@@ -178,6 +188,32 @@ test('returns the new issue key after moving it to another space', async () => {
   assert.deepEqual(
     { issueKey: result.issueKey, previousIssueKey: result.previousIssueKey },
     { issueKey: 'BACKLOG-9000', previousIssueKey: 'ISS-42' },
+  )
+})
+
+test('only moves the status of an issue handed to the agent', async () => {
+  const { client, requests } = createTestApiClient(() => ({ 'ISS-42': 'ISS-42' }))
+
+  await createIssuePageDeps(client).saveIssue({
+    assigneeId: '4',
+    attributeValues: [],
+    boardId: '7',
+    content: 'Updated issue',
+    fieldsLocked: true,
+    files: [],
+    issueKey: 'ISS-42',
+    previousBoardId: '7',
+    previousSpaceKey: 'ISS',
+    previousStatusId: '2',
+    removeAttachmentIds: [],
+    spaceKey: 'ISS',
+    statusId: '3',
+    title: 'Updated title',
+  })
+
+  assert.deepEqual(
+    requests.map((value) => `${value.method} ${new URL(value.url).pathname}`),
+    ['POST /api/issues/status'],
   )
 })
 

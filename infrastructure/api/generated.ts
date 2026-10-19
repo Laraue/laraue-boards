@@ -457,6 +457,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/agent-runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateAgentRunRequest"];
+                    "text/json": components["schemas"]["CreateAgentRunRequest"];
+                    "application/*+json": components["schemas"]["CreateAgentRunRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AgentRunDto"];
+                        "application/json": components["schemas"]["AgentRunDto"];
+                        "text/json": components["schemas"]["AgentRunDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent-runs/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": boolean;
+                        "application/json": boolean;
+                        "text/json": boolean;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/api-keys": {
         parameters: {
             query?: never;
@@ -1349,9 +1431,7 @@ export interface paths {
                         "AuthData.UserId"?: string;
                         /** Format: uuid */
                         "AuthData.ApiKeyId"?: string;
-                        /** Format: int32 */
-                        "IssueKey.Number"?: number | string;
-                        "IssueKey.SpaceKey"?: string;
+                        IssueKey?: string;
                         Content?: string;
                         Title?: string;
                         /** Format: uuid */
@@ -3277,6 +3357,28 @@ export interface components {
             delta: number | string;
             error?: null | string;
         };
+        /** @enum {unknown} */
+        AgentHandOffBlocker: "NotAllowed" | "RunOpen" | "NoApiKey" | "BoardNotReady" | "IssueStarted" | null;
+        AgentHandOffDto: {
+            available: boolean;
+            blocker: null | components["schemas"]["AgentHandOffBlocker"];
+            missingStatusCategories: components["schemas"]["StatusCategory"][];
+        };
+        AgentRunDto: {
+            /** Format: int64 */
+            id: number | string;
+            state: components["schemas"]["AgentRunState"];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            claimedAt: null | string;
+            claimedByApiKeyName: null | string;
+            /** Format: date-time */
+            finishedAt: null | string;
+            failureReason: null | string;
+        };
+        /** @enum {unknown} */
+        AgentRunState: "Ready" | "Working" | "Done" | "Failed" | "Cancelled";
         ApiKeyDto: {
             /** Format: uuid */
             id: string;
@@ -3515,6 +3617,7 @@ export interface components {
             updatedAt: string;
             canModify: boolean;
             owner: components["schemas"]["UserDetails"];
+            apiKeyName: null | string;
         };
         ConnectAccountResponse: {
             outcome: components["schemas"]["AccountLinkOutcome"];
@@ -3522,6 +3625,9 @@ export interface components {
         ConnectGoogleAccountRequest: {
             idToken?: null | string;
             code?: null | string;
+        };
+        CreateAgentRunRequest: {
+            issueKey: string;
         };
         CreateApiKeyRequest: {
             name: string;
@@ -3752,7 +3858,15 @@ export interface components {
             code?: null | string;
             languageCode?: null | string;
         };
-        HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryTitleChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"] | components["schemas"]["HistoryItemChangeIssueHistoryLinkChange"];
+        HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryTitleChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAgentRunChange"] | components["schemas"]["HistoryItemChangeIssueHistoryLinkChange"];
+        HistoryItemChangeIssueHistoryAgentRunChange: {
+            /** @enum {string} */
+            $type?: "agentRun";
+            /** Format: int64 */
+            runId: number | string;
+            oldState: null | components["schemas"]["AgentRunState"];
+            newState: components["schemas"]["AgentRunState"];
+        };
         HistoryItemChangeIssueHistoryAssigneeChange: {
             /** @enum {string} */
             $type?: "assignee";
@@ -3834,6 +3948,11 @@ export interface components {
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
+        IssueAgentRunShortDto: {
+            /** Format: int64 */
+            id: number | string;
+            state: components["schemas"]["AgentRunState"];
+        };
         IssueAssigneeDetails: {
             isCurrentUser: boolean;
             /** Format: uuid */
@@ -3878,6 +3997,8 @@ export interface components {
             attributeValues: components["schemas"]["DetailIssueAttributeDto"][];
             attachments: components["schemas"]["AttachmentData"][];
             links: components["schemas"]["IssueLinkDto"][];
+            latestAgentRun: null | components["schemas"]["AgentRunDto"];
+            agentHandOff: components["schemas"]["AgentHandOffDto"];
         };
         /** @enum {unknown} */
         IssueLinkAction: "Added" | "Removed";
@@ -3915,6 +4036,7 @@ export interface components {
             spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
             isBlocked?: boolean;
+            latestAgentRun?: null | components["schemas"]["IssueAgentRunShortDto"];
         };
         /** @enum {unknown} */
         IssueProperty: "Content" | "CreatedAt" | "UpdatedAt" | "Title";
@@ -4100,6 +4222,7 @@ export interface components {
             spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
             isBlocked?: boolean;
+            latestAgentRun?: null | components["schemas"]["IssueAgentRunShortDto"];
         };
         SearchIssueStatusDto: {
             category: components["schemas"]["StatusCategory"];
