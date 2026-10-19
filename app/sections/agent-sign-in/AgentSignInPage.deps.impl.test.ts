@@ -14,9 +14,7 @@ const signIn = {
 
 test('loads the sign-in with the organizations to allow it for', async () => {
   const { client } = createTestApiClient((_request, path) =>
-    path === '/api/organizations'
-      ? [{ id: 7, isPersonal: false, name: 'Laraue' }]
-      : signIn,
+    path === '/api/organizations' ? [{ id: 7, isPersonal: false, name: 'Laraue' }] : signIn,
   )
 
   assert.deepEqual(await createAgentSignInPageDeps(client).view({ code: 'WXYZ-2345' }), {

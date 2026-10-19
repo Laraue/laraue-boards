@@ -18,9 +18,11 @@ const signIn = {
   userCode: 'WXYZ-2345',
 }
 
-const readyView = (
-  organizations = [{ id: '7', name: 'Laraue' }],
-): AgentSignInView => ({ organizations, signIn, status: 'ready' })
+const readyView = (organizations = [{ id: '7', name: 'Laraue' }]): AgentSignInView => ({
+  organizations,
+  signIn,
+  status: 'ready',
+})
 
 const depsOf = (overrides: Partial<AgentSignInPageDeps> = {}): AgentSignInPageDeps => ({
   approve: vi.fn<AgentSignInPageDeps['approve']>(async () => 'answered'),
