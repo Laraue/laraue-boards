@@ -248,6 +248,7 @@
                   :blocked-by="openBlockers(issue)"
                   :can-edit="issue.canEdit"
                   :deps="deps.agentRun"
+                  :has-api-key="issue.hasApiKey"
                   :issue-key="issue.issueKey"
                   :issue-started="issue.statusCategory !== 'Created'"
                   :missing-status-categories="issue.missingStatusCategoriesForAgent"

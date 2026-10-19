@@ -27,6 +27,7 @@ const issue: IssuePageViewModel = {
   canEdit: true,
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
+  hasApiKey: true,
   issueKey: 'ISS-1',
   links: [],
   missingStatusCategoriesForAgent: [],

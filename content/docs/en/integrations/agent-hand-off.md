@@ -25,6 +25,7 @@ Only the issue's assignee, and only to their own agent: a runner works only on i
 
 The **Hand to agent** button is greyed out, with the reason in its hint, until:
 
+- you have an [API key](/en/documentation/integrations/api-keys) in the organization — your runner signs in with it,
 - the issue is in a not started status, and
 - its board has statuses for each stage the agent goes through — not started, in progress, and in review.
 

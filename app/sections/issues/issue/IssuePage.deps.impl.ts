@@ -107,6 +107,8 @@ const mapIssue = (
     statusLabel: link.statusName ?? '',
     title: link.title,
   })),
+  // An older API has no such field: let the hand-off itself answer.
+  hasApiKey: issue.hasApiKey ?? true,
   // An API older than the agent runs has no such field: nothing missing, the hand-off then answers for itself.
   missingStatusCategoriesForAgent: issue.missingStatusCategoriesForAgent ?? [],
   owner: issue.owner.displayName,

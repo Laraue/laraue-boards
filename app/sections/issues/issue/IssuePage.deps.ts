@@ -51,6 +51,8 @@ export type IssuePageInput = {
 export type IssuePageViewModel = {
   // The latest agent run; null when the issue was never handed to the agent.
   agentRun: IssueAgentRunViewModel | null
+  // The user has an active API key here - what their agent runner signs in with; hand-off needs one.
+  hasApiKey: boolean
   // Status categories the agent needs that the issue's board has no status in; empty when it can be handed off.
   assignee: string
   assigneeColor: string

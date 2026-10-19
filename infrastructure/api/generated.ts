@@ -3992,6 +3992,7 @@ export interface components {
             links: components["schemas"]["IssueLinkDto"][];
             latestAgentRun: null | components["schemas"]["AgentRunDto"];
             missingStatusCategoriesForAgent: components["schemas"]["StatusCategory"][];
+            hasApiKey: boolean;
         };
         /** @enum {unknown} */
         IssueLinkAction: "Added" | "Removed";

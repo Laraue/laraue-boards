@@ -124,6 +124,8 @@ const props = defineProps<{
   blockedBy: string[]
   canEdit: boolean
   deps: IssueAgentRunDeps
+  // The user has an API key for their agent runner to sign in with.
+  hasApiKey: boolean
   issueKey: string
   // The issue is past not started: only a not started issue is handed off.
   issueStarted: boolean
@@ -146,6 +148,7 @@ const { t } = useI18n({
     inProgress: 'In progress',
     issueStarted: 'Move the issue to a not started status to hand it to the agent.',
     locked: 'Editing is locked while the agent has the issue. Cancel the run to change it.',
+    needsApiKey: 'Create an API key for your agent runner first: Account → API keys.',
     none: 'Not handed off',
     retryAfterMove: 'To try again, move the issue back to a not started status.',
     review: 'In review',
@@ -164,6 +167,7 @@ const { t } = useI18n({
     inProgress: 'В работе',
     issueStarted: 'Переведите задачу в не начатый статус, чтобы передать её агенту.',
     locked: 'Пока задача у агента, её нельзя редактировать. Отмените запуск, чтобы изменить её.',
+    needsApiKey: 'Сначала создайте API-ключ для раннера агента: Аккаунт → API-ключи.',
     none: 'Не передана',
     retryAfterMove: 'Чтобы попробовать снова, верните задачу в не начатый статус.',
     review: 'На проверке',
@@ -193,6 +197,9 @@ const CATEGORY_KEYS = {
 const handOffUnavailable = computed(() => {
   if (!canHandOff.value) {
     return null
+  }
+  if (!props.hasApiKey) {
+    return t('needsApiKey')
   }
   if (props.missingStatusCategories.length) {
     const statuses = props.missingStatusCategories

@@ -25,6 +25,7 @@ const issue: IssuePageViewModel = {
   canEdit: true,
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
+  hasApiKey: true,
   issueKey: 'ISS-1',
   links: [],
   missingStatusCategoriesForAgent: [],
@@ -451,6 +452,23 @@ it('disables the hand-off and says which statuses the board lacks', async () => 
     .element(
       page.getByRole('note', {
         name: 'Hand to agent: To hand issues to the agent, add statuses for these stages to the board: In progress, In review.',
+      }),
+    )
+    .toBeInTheDocument()
+})
+
+it('disables the hand-off until the user has an API key for the runner', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, hasApiKey: false })),
+    }),
+  )
+
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).toBeDisabled()
+  await expect
+    .element(
+      page.getByRole('note', {
+        name: 'Hand to agent: Create an API key for your agent runner first: Account → API keys.',
       }),
     )
     .toBeInTheDocument()
