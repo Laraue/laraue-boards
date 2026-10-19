@@ -14,12 +14,14 @@
         :path="['integrations', 'agent-hand-off']"
         :topic="t('agent')" />
     </div>
-    <div class="issue-agent-run-row">
+    <div
+      v-if="rowShown"
+      class="issue-agent-run-row">
       <AgentRunBadge
         v-if="badgeShown && run"
         :state="run.state" />
       <span
-        v-else-if="!canHandOff"
+        v-else-if="!canHandOff && run?.state !== 'failed'"
         class="issue-agent-run-none">
         {{ t('none') }}
       </span>
@@ -64,19 +66,27 @@
         </BaseTooltip>
       </template>
     </div>
-    <!-- A failed run says why and when in the open - a hover hint isn't found, nor shown on touch screens. -->
-    <p
+    <!-- A failed run is its reason in a red frame - no "Agent failed" badge on top of it; the card on the board
+         has that. Said in the open: a hover hint isn't found, nor shown on touch screens. -->
+    <div
       v-if="run?.state === 'failed'"
-      class="issue-agent-run-failure">
-      <time
-        v-if="run.finishedAt"
-        :datetime="run.finishedAt"
-        :title="formatDateTime(run.finishedAt)">
-        {{ formatRecent(run.finishedAt) }}:
-      </time>
-      {{ run.failureReason ?? t('failedNoReason') }}
-      <template v-if="canHandOff && issueStarted">{{ t('retryAfterMove') }}</template>
-    </p>
+      class="issue-agent-run-failure"
+      role="status">
+      <p class="issue-agent-run-failure-reason">
+        <time
+          v-if="run.finishedAt"
+          :datetime="run.finishedAt"
+          :title="formatDateTime(run.finishedAt)">
+          {{ formatRecent(run.finishedAt) }}:
+        </time>
+        {{ run.failureReason ?? t('failedNoReason') }}
+      </p>
+      <p
+        v-if="canHandOff && issueStarted"
+        class="issue-agent-run-failure-hint">
+        {{ t('retryAfterMove') }}
+      </p>
+    </div>
     <p
       v-if="open"
       class="issue-agent-run-note">
@@ -166,7 +176,8 @@ const { formatDateTime, formatRecent } = useFormatters()
 const headingId = useId()
 
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
-const badgeShown = computed(() => open.value || props.run?.state === 'failed')
+// Only an open run gets a badge here; a failed one shows its reason instead.
+const badgeShown = computed(() => open.value)
 const canHandOff = computed(() => props.canEdit && props.assigneeIsCurrentUser && !open.value)
 
 const CATEGORY_KEYS = {
@@ -194,6 +205,11 @@ const handOffUnavailable = computed(() => {
 })
 
 const handOffShown = computed(() => canHandOff.value && !handOffUnavailable.value)
+
+// Something to put in the first row: the open run's badge, a hand-off button, or "Not handed off".
+const rowShown = computed(
+  () => badgeShown.value || canHandOff.value || props.run?.state !== 'failed',
+)
 // A working run already started; for any other state the blockers decide when the agent can start.
 const waitsForBlockers = computed(
   () => props.blockedBy.length > 0 && props.run?.state !== 'working',
@@ -267,14 +283,30 @@ const cancel = async (runId: string) => {
 }
 
 .issue-agent-run-failure {
-  -webkit-box-orient: vertical;
-  color: var(--color-muted);
-  display: -webkit-box;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-control);
+  display: grid;
   font-size: var(--font-size-small);
-  -webkit-line-clamp: 3;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+
+.issue-agent-run-failure-reason {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
   margin: 0;
   overflow: hidden;
   overflow-wrap: anywhere;
+}
+
+.issue-agent-run-failure-reason time {
+  color: var(--color-muted);
+}
+
+.issue-agent-run-failure-hint {
+  color: var(--color-muted);
+  margin: 0;
 }
 
 .issue-agent-run-error,

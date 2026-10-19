@@ -501,8 +501,8 @@ it('shows why a failed run gave up and how to try again', async () => {
     }),
   )
 
-  await expect.element(page.getByText('Agent failed')).toBeInTheDocument()
-  await expect.element(page.getByText(/Timed out after 60 min/)).toBeInTheDocument()
+  await expect.element(page.getByRole('status')).toHaveTextContent(/Timed out after 60 min/)
+  await expect.element(page.getByText('Agent failed')).not.toBeInTheDocument()
   await expect
     .element(page.getByText(/To try again, move the issue back to a not started status\./))
     .toBeInTheDocument()
