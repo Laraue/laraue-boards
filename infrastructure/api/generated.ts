@@ -4001,6 +4001,7 @@ export interface components {
         };
         GetApiKeysRequest: {
             pagination: components["schemas"]["PaginationData"];
+            includeRevoked?: boolean;
             authData?: components["schemas"]["OrganizationAuthData"];
         };
         GetBillingTransactionsRequest: {
@@ -4582,6 +4583,7 @@ export interface components {
         };
         StartAgentSignInRequest: {
             machineName: string;
+            replacesApiKey?: null | string;
         };
         StartAgentSignInResponse: {
             deviceCode: string;

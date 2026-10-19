@@ -66,6 +66,13 @@
       </p>
     </div>
 
+    <BaseCheckbox
+      class="show-revoked"
+      :model-value="showRevoked"
+      @update:model-value="setShowRevoked">
+      {{ t('showRevoked') }}
+    </BaseCheckbox>
+
     <QueryState
       :data="data"
       :error-title="t('loadError')"
@@ -145,6 +152,7 @@ const { t } = useI18n({
     revoke: 'Revoke',
     revokeConfirm: 'Revoke this API key?',
     revoked: 'Revoked',
+    showRevoked: 'Show revoked keys',
   },
   ru: {
     apiKeys: 'API-ключи',
@@ -167,11 +175,13 @@ const { t } = useI18n({
     revoke: 'Отозвать',
     revokeConfirm: 'Отозвать этот API-ключ?',
     revoked: 'Отозван',
+    showRevoked: 'Показывать отозванные ключи',
   },
 })
 
 const dialog = useTemplateRef('dialog')
 const page = ref(1)
+const showRevoked = ref(false)
 const name = ref('')
 const rawKey = ref('')
 const copied = ref(false)
@@ -183,8 +193,8 @@ const {
   pending,
   refresh,
 } = await useApiQuery(
-  () => `account-api-keys:${page.value}`,
-  (signal) => props.deps.view({ page: page.value, signal }),
+  () => `account-api-keys:${page.value}:${showRevoked.value}`,
+  (signal) => props.deps.view({ includeRevoked: showRevoked.value, page: page.value, signal }),
 )
 
 const {
@@ -209,6 +219,12 @@ const createKey = async () => {
     await refresh()
   }
 }
+// The other list has its own pages: start it from the first.
+const setShowRevoked = (value: boolean) => {
+  showRevoked.value = value
+  page.value = 1
+}
+
 const revokeKey = async (id: string) => {
   if (
     (await confirm({ action: t('revoke'), danger: true, title: t('revokeConfirm') })) &&
@@ -236,6 +252,10 @@ const sectionMessage = computed(() => revokeMessage.value || queryMessage.value)
   align-content: start;
   display: grid;
   gap: var(--space-5);
+}
+
+.show-revoked {
+  justify-self: start;
 }
 
 .created-key {
