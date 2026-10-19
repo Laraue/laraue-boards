@@ -19,7 +19,8 @@
       class="issue-agent-run-row">
       <AgentRunBadge
         v-if="badgeShown && run"
-        :state="run.state" />
+        :state="run.state"
+        tooltip />
       <span
         v-else-if="!canHandOff && run?.state !== 'failed'"
         class="issue-agent-run-none">
@@ -262,15 +263,21 @@ const cancel = async (runId: string) => {
   min-width: 0;
 }
 
-/* As tall as the badge it belongs to (BaseBadge is 1.25rem), not a full icon button. :deep - the button is
-   rendered through BaseButton's tooltip, so it doesn't carry this component's scope. */
+/* The badge and its cancel × at one height, the small control size - larger than a plain badge, so the ×
+   is easy to hit. :deep - both render inside child components (the × through BaseButton's tooltip), so they
+   don't carry this component's scope. */
+.issue-agent-run-row :deep(.base-badge) {
+  height: var(--icon-btn-size-small);
+  padding: 0 var(--space-3);
+}
+
 .issue-agent-run-row :deep(.issue-agent-run-cancel) {
-  --icon-btn-size: 1.25rem;
+  --icon-btn-size: var(--icon-btn-size-small);
 }
 
 .issue-agent-run-row :deep(.issue-agent-run-cancel svg) {
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
 }
 
 .issue-agent-run-none {

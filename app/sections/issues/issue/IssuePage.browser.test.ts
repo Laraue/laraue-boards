@@ -363,6 +363,13 @@ it('hands the issue to the agent and shows the new run', async () => {
 
   expect(deps.agentRun.handOff).toHaveBeenCalledWith({ issueKey: 'ISS-1' })
   await expect.element(page.getByText('For agent')).toBeInTheDocument()
+  await expect
+    .element(
+      page.getByRole('note', {
+        name: "For agent: Handed to the agent: waits for the assignee's runner to pick it up.",
+      }),
+    )
+    .toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeInTheDocument()
 })
 
