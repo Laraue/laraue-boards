@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 7
 createdAt: 2026-09-23
-updatedAt: 2026-10-01
+updatedAt: 2026-10-19
 ---
 Laraue Boards runs a remote **MCP** (Model Context Protocol) server, so an AI agent like Claude can work with your issues directly — listing them, opening one, moving it between statuses, or leaving a comment — without you copying anything back and forth by hand.
 
@@ -65,6 +65,8 @@ Every action runs with your own permissions, live — Claude can't do anything i
 - **Comments** — add a comment to an issue, or edit one you wrote
 - **Organization structure** — look up spaces, statuses, custom attributes, and members, so Claude can resolve names to the right ids on its own
 - **Attachments** — download an image attached to an issue
+- **Issue links** — link issues (blocks, relates to, duplicates), remove a link, and leave blocked issues out when looking for work to start — see [Issue links](/en/documentation/features/issue-links)
+- **Agent runs** — hand an issue to your coding agent, and, for a runner, pick up and finish the issues handed off to you — see [Hand issues to an AI agent](/en/documentation/integrations/agent-hand-off)
 
 Claude only offers actions you're actually allowed to take — for example, it won't suggest deleting an issue in a space where you don't have delete permission.
 

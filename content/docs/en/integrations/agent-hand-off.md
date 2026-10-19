@@ -6,18 +6,18 @@ type: documentation
 project: boards
 order: 8
 createdAt: 2026-10-18
-updatedAt: 2026-10-18
+updatedAt: 2026-10-19
 ---
 You can hand an issue to an AI coding agent — Claude Code on your own machine, with your repository and your settings. The agent takes the issue, works on it, reports progress in comments, and moves it to review for you to check.
 
 ## How it works
 
 1. **You hand the issue off.** In the **Agent** section of the issue page, click **Hand to agent**. The card on the board shows **For agent**.
-2. **Your agent takes it.** A runner on your machine, connected [over MCP](/en/documentation/integrations/mcp) with your [API key](/en/documentation/integrations/api-keys), picks up the issues handed off to you and moves the issue to in progress. The card shows **Agent working**.
+2. **Your agent takes it.** A runner on your machine — [boards-agent](https://github.com/Laraue/boards-agent), see [below](#set-up-the-runner) — signs in with your [API key](/en/documentation/integrations/api-keys), picks up the issues handed off to you, and moves the issue to in progress. The card shows **Agent working**.
 3. **The agent works.** It writes progress comments and a summary, then moves the issue to a review status.
 4. **You review.** Move the issue to done, or send it back: move it to a not started status, add a comment, and hand it off again.
 
-If the agent gives up, the card shows **Agent failed**, and the reason is in the badge's hint on the issue page.
+If the agent gives up, the card shows **Agent failed**. On the issue page the reason and when it happened are in a red box in the Agent section, and the runner leaves a comment with the details.
 
 ## Who can hand an issue off
 
@@ -33,11 +33,22 @@ The **Hand to agent** button is greyed out, with the reason in its hint, until:
 
 The issue is **locked**: its title, description, attributes, attachments, and assignee can't be changed, and it can't be deleted — the agent works from what you handed off. Status changes and comments still work. Comments from people other than the assignee are treated as information for the agent, not instructions.
 
-Anyone who can edit the issue can click **Cancel run** in the Agent section. That stops the agent and unlocks the issue.
+Anyone who can edit the issue can cancel the run with the **×** next to its badge in the Agent section. That stops the agent and unlocks the issue.
 
 ## Blocked issues
 
 You can hand off a [blocked issue](/en/documentation/features/issue-links). It waits — the agent doesn't take it — until every issue that blocks it is done.
+
+## Set up the runner
+
+[boards-agent](https://github.com/Laraue/boards-agent) is the runner: a single program you start on your computer. It's in beta.
+
+1. Create an [API key](/en/documentation/integrations/api-keys) in **Account → API keys** — the runner signs in with it, as you.
+2. Download the archive for your system from the [boards-agent releases](https://github.com/Laraue/boards-agent/releases) and unpack it.
+3. In its config, map each space you want it to work on to the local checkout of that space's repository.
+4. Set the key in the `BOARDS_AGENT_API_KEY` environment variable and start `boards-agent`.
+
+It works in a separate git worktree on a branch named after the issue, runs Claude Code with a fixed list of allowed commands, and never pushes — you review the branch and push it yourself. The [README](https://github.com/Laraue/boards-agent#readme) has the details.
 
 ## For runner authors
 
