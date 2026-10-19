@@ -244,14 +244,11 @@
                   :on-changed="refreshAfterChange" />
                 <IssueAgentRun
                   :key="`agent-${issue.issueKey}`"
-                  :assignee-is-current-user="issue.assigneeIsCurrentUser"
                   :blocked-by="openBlockers(issue)"
                   :can-edit="issue.canEdit"
                   :deps="deps.agentRun"
-                  :has-api-key="issue.hasApiKey"
+                  :hand-off="issue.agentHandOff"
                   :issue-key="issue.issueKey"
-                  :issue-started="issue.statusCategory !== 'Created'"
-                  :missing-status-categories="issue.missingStatusCategoriesForAgent"
                   :on-changed="refreshAfterChange"
                   :run="issue.agentRun" />
                 <dl class="issue-dates">

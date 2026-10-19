@@ -10,6 +10,7 @@ import type { IssuePageDeps, IssuePageViewModel } from './IssuePage.deps'
 import IssuePage from './IssuePage.vue'
 
 const issue: IssuePageViewModel = {
+  agentHandOff: { available: true, blocker: null, missingStatusCategories: [] },
   agentRun: null,
   assignee: 'Ada Lovelace',
   assigneeColor: '#111',
@@ -25,10 +26,8 @@ const issue: IssuePageViewModel = {
   canEdit: true,
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
-  hasApiKey: true,
   issueKey: 'ISS-1',
   links: [],
-  missingStatusCategoriesForAgent: [],
   owner: 'Grace Hopper',
   ownerColor: '#222',
   ownerInitial: 'G',
@@ -404,10 +403,13 @@ it('cancels the open agent run after confirmation', async () => {
   await vi.waitFor(() => expect(deps.agentRun.cancel).toHaveBeenCalledWith({ runId: '5' }))
 })
 
-it('offers the hand-off only to the assignee', async () => {
+it('hides the hand-off when the backend does not allow it', async () => {
   await mount(
     createDeps({
-      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, assigneeIsCurrentUser: false })),
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+      })),
     }),
   )
 
@@ -420,8 +422,8 @@ it('locks the fields but still lets anyone who can edit cancel the run', async (
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
+        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
         agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'ready' },
-        assigneeIsCurrentUser: false,
       })),
     }),
   )
@@ -442,7 +444,11 @@ it('disables the hand-off and says which statuses the board lacks', async () => 
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        missingStatusCategoriesForAgent: ['InProgress', 'Review'],
+        agentHandOff: {
+          available: false,
+          blocker: 'boardNotReady',
+          missingStatusCategories: ['InProgress', 'Review'],
+        },
       })),
     }),
   )
@@ -460,7 +466,10 @@ it('disables the hand-off and says which statuses the board lacks', async () => 
 it('disables the hand-off until the user has an API key for the runner', async () => {
   await mount(
     createDeps({
-      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, hasApiKey: false })),
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'noApiKey', missingStatusCategories: [] },
+      })),
     }),
   )
 
@@ -477,7 +486,10 @@ it('disables the hand-off until the user has an API key for the runner', async (
 it('disables the hand-off of a started issue and says why', async () => {
   await mount(
     createDeps({
-      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, statusCategory: 'InProgress' })),
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'issueStarted', missingStatusCategories: [] },
+      })),
     }),
   )
 
@@ -515,13 +527,13 @@ it('shows why a failed run gave up and how to try again', async () => {
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
+        agentHandOff: { available: false, blocker: 'issueStarted', missingStatusCategories: [] },
         agentRun: {
           failureReason: 'Timed out after 60 min',
           finishedAt: '2026-01-02T10:00:00Z',
           id: '5',
           state: 'failed',
         },
-        statusCategory: 'InProgress',
       })),
     }),
   )
@@ -568,7 +580,11 @@ it('says the agent waits for the open blockers', async () => {
 it('hides the agent actions when the issue cannot be edited', async () => {
   await mount(
     createDeps({
-      view: vi.fn<IssuePageDeps['view']>(async () => ({ ...issue, canEdit: false })),
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+        canEdit: false,
+      })),
     }),
   )
 

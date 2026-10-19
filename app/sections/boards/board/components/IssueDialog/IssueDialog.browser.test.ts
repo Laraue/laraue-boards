@@ -12,6 +12,7 @@ import type {
 import IssueDialog from './IssueDialog.vue'
 
 const issue: IssuePageViewModel = {
+  agentHandOff: { available: true, blocker: null, missingStatusCategories: [] },
   agentRun: null,
   assignee: 'Ada Lovelace',
   assigneeColor: '#4774d4',
@@ -27,10 +28,8 @@ const issue: IssuePageViewModel = {
   canEdit: true,
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
-  hasApiKey: true,
   issueKey: 'ISS-1',
   links: [],
-  missingStatusCategoriesForAgent: [],
   owner: 'Grace Hopper',
   ownerColor: '#d65f63',
   ownerInitial: 'G',

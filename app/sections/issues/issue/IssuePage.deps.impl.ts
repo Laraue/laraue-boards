@@ -13,6 +13,10 @@ import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
 import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
 import { assertNever } from '~/utils/assertNever'
 
+import type {
+  AgentHandOffBlocker,
+  AgentHandOffViewModel,
+} from './components/IssueAgentRun/IssueAgentRun.deps'
 import { createIssueAgentRunDeps } from './components/IssueAgentRun/IssueAgentRun.deps.impl'
 import { createIssueCommentsDeps } from './components/IssueComments/IssueComments.deps.impl'
 import { createIssueDescriptionDeps } from './components/IssueDescription/IssueDescription.deps.impl'
@@ -71,11 +75,30 @@ const mapAttachments = (
     return [{ id: attachment.id, originalUrl: fileUrl(originalId), previewUrl: fileUrl(previewId) }]
   })
 
+const AGENT_HAND_OFF_BLOCKERS = {
+  BoardNotReady: 'boardNotReady',
+  IssueStarted: 'issueStarted',
+  NoApiKey: 'noApiKey',
+  NotAllowed: 'notAllowed',
+  RunOpen: 'runOpen',
+} as const satisfies Record<NonNullable<Schemas['AgentHandOffBlocker']>, AgentHandOffBlocker>
+
+// An API older than the agent runs sends nothing: offer no hand-off.
+const mapAgentHandOff = (handOff: Schemas['AgentHandOffDto'] | undefined): AgentHandOffViewModel =>
+  handOff
+    ? {
+        available: handOff.available,
+        blocker: handOff.blocker ? AGENT_HAND_OFF_BLOCKERS[handOff.blocker] : null,
+        missingStatusCategories: handOff.missingStatusCategories,
+      }
+    : { available: false, blocker: 'notAllowed', missingStatusCategories: [] }
+
 const mapIssue = (
   issue: Schemas['IssueDetailDto'],
   baseUrl: string,
   boardIsBacklog: boolean,
 ): IssuePageViewModel => ({
+  agentHandOff: mapAgentHandOff(issue.agentHandOff),
   agentRun: issue.latestAgentRun
     ? {
         failureReason: issue.latestAgentRun.failureReason,
@@ -107,10 +130,6 @@ const mapIssue = (
     statusLabel: link.statusName ?? '',
     title: link.title,
   })),
-  // An older API has no such field: let the hand-off itself answer.
-  hasApiKey: issue.hasApiKey ?? true,
-  // An API older than the agent runs has no such field: nothing missing, the hand-off then answers for itself.
-  missingStatusCategoriesForAgent: issue.missingStatusCategoriesForAgent ?? [],
   owner: issue.owner.displayName,
   ownerColor: issue.owner.color,
   ownerInitial: issue.owner.initials,

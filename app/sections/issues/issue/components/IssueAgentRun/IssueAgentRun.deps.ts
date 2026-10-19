@@ -1,4 +1,20 @@
 import type { AgentRunState } from '~/components/agent-run-badge/AgentRunBadge.types'
+import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
+
+// What keeps the user from handing the issue off now, as the backend decided it.
+export type AgentHandOffBlocker =
+  | 'boardNotReady'
+  | 'issueStarted'
+  | 'noApiKey'
+  | 'notAllowed'
+  | 'runOpen'
+
+export type AgentHandOffViewModel = {
+  available: boolean
+  blocker: AgentHandOffBlocker | null
+  // For boardNotReady: the stages the board has no status for.
+  missingStatusCategories: StatusCategory[]
+}
 
 export type IssueAgentRunViewModel = {
   // Why a failed run gave up, as the runner reported it.

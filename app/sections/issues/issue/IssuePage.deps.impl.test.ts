@@ -11,6 +11,11 @@ test('maps issue detail', async () => {
     path === '/api/spaces/product/epics'
       ? [{ id: 7, isDefault: true, name: 'Backlog' }]
       : {
+          agentHandOff: {
+            available: false,
+            blocker: 'BoardNotReady',
+            missingStatusCategories: ['Review'],
+          },
           assignee: {
             color: '#111',
             displayName: 'Ada',
@@ -103,6 +108,11 @@ test('maps issue detail', async () => {
   assert.equal(result.owner, 'Grace')
   assert.equal(result.boardIsBacklog, true)
   assert.equal(result.statusCategory, 'Created')
+  assert.deepEqual(result.agentHandOff, {
+    available: false,
+    blocker: 'boardNotReady',
+    missingStatusCategories: ['Review'],
+  })
   assert.deepEqual(result.links, [
     {
       issueKey: 'ISS-2',

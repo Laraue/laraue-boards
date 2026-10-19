@@ -3357,6 +3357,13 @@ export interface components {
             delta: number | string;
             error?: null | string;
         };
+        /** @enum {unknown} */
+        AgentHandOffBlocker: "NotAllowed" | "RunOpen" | "NoApiKey" | "BoardNotReady" | "IssueStarted" | null;
+        AgentHandOffDto: {
+            available: boolean;
+            blocker: null | components["schemas"]["AgentHandOffBlocker"];
+            missingStatusCategories: components["schemas"]["StatusCategory"][];
+        };
         AgentRunDto: {
             /** Format: int64 */
             id: number | string;
@@ -3991,8 +3998,7 @@ export interface components {
             attachments: components["schemas"]["AttachmentData"][];
             links: components["schemas"]["IssueLinkDto"][];
             latestAgentRun: null | components["schemas"]["AgentRunDto"];
-            missingStatusCategoriesForAgent: components["schemas"]["StatusCategory"][];
-            hasApiKey: boolean;
+            agentHandOff: components["schemas"]["AgentHandOffDto"];
         };
         /** @enum {unknown} */
         IssueLinkAction: "Added" | "Removed";

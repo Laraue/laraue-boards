@@ -1,11 +1,10 @@
-<!-- The issue's agent run in the properties: its state, "Hand to agent" for the assignee (their own
-     runner picks it up), and a remove-style × beside an open run's badge to cancel it, for anyone who can
-     edit the issue. A run is open while it is
-     ready or working, and the issue's fields are locked meanwhile. A blocked issue can be handed off:
-     its run waits until the blockers are completed, which the note says. -->
+<!-- The issue's agent run: its state, "Hand to agent", and a remove-style × beside an open run's badge to
+     cancel it, for anyone who can edit the issue. Whether the user can hand the issue off, and why not, comes
+     decided from the backend (handOff) - this only shows it. A run is open while it is ready or working, and
+     the issue's fields are locked meanwhile. -->
 <template>
   <section
-    v-if="run || (canEdit && assigneeIsCurrentUser)"
+    v-if="run || handOff.blocker !== 'notAllowed'"
     :aria-labelledby="headingId"
     class="issue-agent-run">
     <div class="issue-agent-run-heading">
@@ -22,51 +21,48 @@
         :state="run.state"
         tooltip />
       <span
-        v-else-if="!canHandOff && run?.state !== 'failed'"
+        v-else-if="noneShown"
         class="issue-agent-run-none">
         {{ t('none') }}
       </span>
-      <template v-if="canEdit">
-        <!-- The same × as a link's remove button, right after the badge it cancels. -->
-        <BaseIconButton
-          v-if="open && run"
-          class="issue-agent-run-cancel"
-          :disabled="pending"
-          :label="t('cancel')"
-          variant="danger"
-          @click="cancel(run.id)">
-          <IconX />
-        </BaseIconButton>
-        <BaseButton
-          v-else-if="handOffShown"
-          :class="{ 'issue-agent-run-action': badgeShown }"
-          :loading="pending"
-          size="small"
-          variant="ghost"
-          @click="handOff">
-          <IconRobot />
-          {{ t('handOff') }}
-        </BaseButton>
-        <!-- Not available yet: the disabled button, with the reason on hover or focus. A disabled button gets no
-             pointer events, so the tooltip sits on a focusable wrapper. -->
-        <BaseTooltip
-          v-else-if="handOffUnavailable"
-          :text="handOffUnavailable">
-          <span
-            :aria-label="`${t('handOff')}: ${handOffUnavailable}`"
-            :class="['issue-agent-run-unavailable', { 'issue-agent-run-action': badgeShown }]"
-            role="note"
-            tabindex="0">
-            <BaseButton
-              disabled
-              size="small"
-              variant="ghost">
-              <IconRobot />
-              {{ t('handOff') }}
-            </BaseButton>
-          </span>
-        </BaseTooltip>
-      </template>
+      <!-- The same × as a link's remove button, right after the badge it cancels. -->
+      <BaseIconButton
+        v-if="canEdit && open && run"
+        class="issue-agent-run-cancel"
+        :disabled="pending"
+        :label="t('cancel')"
+        variant="danger"
+        @click="cancel(run.id)">
+        <IconX />
+      </BaseIconButton>
+      <BaseButton
+        v-else-if="handOff.available"
+        :loading="pending"
+        size="small"
+        variant="ghost"
+        @click="startHandOff">
+        <IconRobot />
+        {{ t('handOff') }}
+      </BaseButton>
+      <!-- Not available yet: the disabled button, with the reason on hover or focus. A disabled button gets no
+           pointer events, so the tooltip sits on a focusable wrapper. -->
+      <BaseTooltip
+        v-else-if="unavailableReason"
+        :text="unavailableReason">
+        <span
+          :aria-label="`${t('handOff')}: ${unavailableReason}`"
+          class="issue-agent-run-unavailable"
+          role="note"
+          tabindex="0">
+          <BaseButton
+            disabled
+            size="small"
+            variant="ghost">
+            <IconRobot />
+            {{ t('handOff') }}
+          </BaseButton>
+        </span>
+      </BaseTooltip>
     </div>
     <!-- A failed run is its reason in a red frame - no "Agent failed" badge on top of it; the card on the board
          has that. Said in the open: a hover hint isn't found, nor shown on touch screens. -->
@@ -84,7 +80,7 @@
         {{ run.failureReason ?? t('failedNoReason') }}
       </p>
       <p
-        v-if="canHandOff && issueStarted"
+        v-if="handOff.blocker === 'issueStarted'"
         class="issue-agent-run-failure-hint">
         {{ t('retryAfterMove') }}
       </p>
@@ -115,22 +111,21 @@ import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
 import DocsHelpLink from '~/components/docs-help-link/DocsHelpLink.vue'
 import type { StatusCategory } from '~/components/status-category-select/StatusCategorySelect.types'
 
-import type { IssueAgentRunDeps, IssueAgentRunViewModel } from './IssueAgentRun.deps'
+import type {
+  AgentHandOffViewModel,
+  IssueAgentRunDeps,
+  IssueAgentRunViewModel,
+} from './IssueAgentRun.deps'
 
 const props = defineProps<{
-  // Only the assignee hands an issue to the agent: the run goes to their own runner.
-  assigneeIsCurrentUser: boolean
   // Keys of the issues that block this one and aren't completed yet.
   blockedBy: string[]
+  // Who can cancel an open run: anyone who can edit the issue.
   canEdit: boolean
   deps: IssueAgentRunDeps
-  // The user has an API key for their agent runner to sign in with.
-  hasApiKey: boolean
+  // Whether the user can hand the issue off now, and why not - as the backend decided.
+  handOff: AgentHandOffViewModel
   issueKey: string
-  // The issue is past not started: only a not started issue is handed off.
-  issueStarted: boolean
-  // What the issue's board lacks for the agent (not started, in progress, in review statuses).
-  missingStatusCategories: StatusCategory[]
   onChanged: () => Promise<void> | void
   run: IssueAgentRunViewModel | null
 }>()
@@ -184,7 +179,6 @@ const headingId = useId()
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
 // Only an open run gets a badge here; a failed one shows its reason instead.
 const badgeShown = computed(() => open.value)
-const canHandOff = computed(() => props.canEdit && props.assigneeIsCurrentUser && !open.value)
 
 const CATEGORY_KEYS = {
   Completed: null,
@@ -193,31 +187,38 @@ const CATEGORY_KEYS = {
   Review: 'review',
 } as const satisfies Record<StatusCategory, 'created' | 'inProgress' | 'review' | null>
 
-// Why the assignee can't hand the issue off yet: the agent moves it not started -> in progress -> in review.
-const handOffUnavailable = computed(() => {
-  if (!canHandOff.value) {
-    return null
-  }
-  if (!props.hasApiKey) {
-    return t('needsApiKey')
-  }
-  if (props.missingStatusCategories.length) {
-    const statuses = props.missingStatusCategories
-      .flatMap((category) => {
-        const key = CATEGORY_KEYS[category]
-        return key ? [t(key)] : []
+// The words for why the hand-off isn't available yet; the reason itself is the backend's.
+const unavailableReason = computed(() => {
+  switch (props.handOff.blocker) {
+    case 'noApiKey':
+      return t('needsApiKey')
+    case 'boardNotReady':
+      return t('boardNotReady', {
+        statuses: props.handOff.missingStatusCategories
+          .flatMap((category) => {
+            const key = CATEGORY_KEYS[category]
+            return key ? [t(key)] : []
+          })
+          .join(', '),
       })
-      .join(', ')
-    return t('boardNotReady', { statuses })
+    case 'issueStarted':
+      return t('issueStarted')
+    default:
+      return null
   }
-  return props.issueStarted ? t('issueStarted') : null
 })
 
-const handOffShown = computed(() => canHandOff.value && !handOffUnavailable.value)
+// "Not handed off" for someone who sees the section but has nothing else in its first row.
+const noneShown = computed(
+  () =>
+    !badgeShown.value &&
+    !props.handOff.available &&
+    !unavailableReason.value &&
+    props.run?.state !== 'failed',
+)
 
-// Something to put in the first row: the open run's badge, a hand-off button, or "Not handed off".
 const rowShown = computed(
-  () => badgeShown.value || canHandOff.value || props.run?.state !== 'failed',
+  () => badgeShown.value || props.handOff.available || !!unavailableReason.value || noneShown.value,
 )
 // A working run already started; for any other state the blockers decide when the agent can start.
 const waitsForBlockers = computed(
@@ -226,7 +227,7 @@ const waitsForBlockers = computed(
 
 const { execute, message, pending } = useApiAction((action: () => Promise<void>) => action())
 
-const handOff = async () => {
+const startHandOff = async () => {
   if (await execute(() => props.deps.handOff({ issueKey: props.issueKey }))) {
     await props.onChanged()
   }
@@ -289,10 +290,6 @@ const cancel = async (runId: string) => {
 
 .issue-agent-run-none {
   color: var(--color-muted);
-}
-
-.issue-agent-run-action {
-  margin-left: auto;
 }
 
 .issue-agent-run-unavailable {
