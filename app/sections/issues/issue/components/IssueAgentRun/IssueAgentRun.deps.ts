@@ -3,6 +3,8 @@ import type { AgentRunState } from '~/components/agent-run-badge/AgentRunBadge.t
 export type IssueAgentRunViewModel = {
   // Why a failed run gave up, as the runner reported it.
   failureReason: null | string
+  // When the run was done, failed or cancelled; null while it's open.
+  finishedAt: null | string
   id: string
   state: AgentRunState
 }

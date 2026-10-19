@@ -352,7 +352,10 @@ it('hands the issue to the agent and shows the new run', async () => {
   const view = vi
     .fn<IssuePageDeps['view']>()
     .mockResolvedValueOnce(issue)
-    .mockResolvedValue({ ...issue, agentRun: { failureReason: null, id: '5', state: 'ready' } })
+    .mockResolvedValue({
+      ...issue,
+      agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'ready' },
+    })
   const deps = createDeps({ view })
   await mount(deps)
 
@@ -367,7 +370,7 @@ it('cancels the open agent run after confirmation', async () => {
   const deps = createDeps({
     view: vi.fn<IssuePageDeps['view']>(async () => ({
       ...issue,
-      agentRun: { failureReason: null, id: '5', state: 'working' },
+      agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'working' },
     })),
   })
   // The confirmation is drawn by the app layout's host, which a bare page mount doesn't have.
@@ -409,7 +412,7 @@ it('locks the fields but still lets anyone who can edit cancel the run', async (
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        agentRun: { failureReason: null, id: '5', state: 'ready' },
+        agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'ready' },
         assigneeIsCurrentUser: false,
       })),
     }),
@@ -480,6 +483,29 @@ it('links the Links and Agent sections to their documentation', async () => {
       }),
     )
     .toHaveAttribute('href', '/en/documentation/integrations/agent-hand-off')
+})
+
+it('shows why a failed run gave up and how to try again', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentRun: {
+          failureReason: 'Timed out after 60 min',
+          finishedAt: '2026-01-02T10:00:00Z',
+          id: '5',
+          state: 'failed',
+        },
+        statusCategory: 'InProgress',
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Agent failed')).toBeInTheDocument()
+  await expect.element(page.getByText(/Timed out after 60 min/)).toBeInTheDocument()
+  await expect
+    .element(page.getByText(/To try again, move the issue back to a not started status\./))
+    .toBeInTheDocument()
 })
 
 it('says the agent waits for the open blockers', async () => {

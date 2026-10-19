@@ -17,8 +17,7 @@
     <div class="issue-agent-run-row">
       <AgentRunBadge
         v-if="badgeShown && run"
-        :state="run.state"
-        :title="run.failureReason ?? undefined" />
+        :state="run.state" />
       <span
         v-else-if="!canHandOff"
         class="issue-agent-run-none">
@@ -65,6 +64,19 @@
         </BaseTooltip>
       </template>
     </div>
+    <!-- A failed run says why and when in the open - a hover hint isn't found, nor shown on touch screens. -->
+    <p
+      v-if="run?.state === 'failed'"
+      class="issue-agent-run-failure">
+      <time
+        v-if="run.finishedAt"
+        :datetime="run.finishedAt"
+        :title="formatDateTime(run.finishedAt)">
+        {{ formatRecent(run.finishedAt) }}:
+      </time>
+      {{ run.failureReason ?? t('failedNoReason') }}
+      <template v-if="canHandOff && issueStarted">{{ t('retryAfterMove') }}</template>
+    </p>
     <p
       v-if="open"
       class="issue-agent-run-note">
@@ -117,11 +129,13 @@ const { t } = useI18n({
     cancel: 'Cancel run',
     cancelConfirm: 'Stop the agent on this issue?',
     created: 'Not started',
+    failedNoReason: 'The agent gave up.',
     handOff: 'Hand to agent',
     inProgress: 'In progress',
     issueStarted: 'Move the issue to a not started status to hand it to the agent.',
     locked: 'Editing is locked while the agent has the issue. Cancel the run to change it.',
     none: 'Not handed off',
+    retryAfterMove: 'To try again, move the issue back to a not started status.',
     review: 'In review',
     stop: 'Stop agent',
     waitsFor: 'Blocked by {keys}: the agent starts once they are completed.',
@@ -133,11 +147,13 @@ const { t } = useI18n({
     cancel: 'Отменить запуск',
     cancelConfirm: 'Остановить агента на этой задаче?',
     created: 'Не начато',
+    failedNoReason: 'Агент не справился.',
     handOff: 'Передать агенту',
     inProgress: 'В работе',
     issueStarted: 'Переведите задачу в не начатый статус, чтобы передать её агенту.',
     locked: 'Пока задача у агента, её нельзя редактировать. Отмените запуск, чтобы изменить её.',
     none: 'Не передана',
+    retryAfterMove: 'Чтобы попробовать снова, верните задачу в не начатый статус.',
     review: 'На проверке',
     stop: 'Остановить',
     waitsFor: 'Заблокирована задачами {keys}: агент начнёт, когда они будут завершены.',
@@ -145,6 +161,7 @@ const { t } = useI18n({
 })
 
 const confirm = useConfirm()
+const { formatDateTime, formatRecent } = useFormatters()
 
 const headingId = useId()
 
@@ -247,6 +264,17 @@ const cancel = async (runId: string) => {
 
 .issue-agent-run-unavailable :deep(button) {
   pointer-events: none;
+}
+
+.issue-agent-run-failure {
+  -webkit-box-orient: vertical;
+  color: var(--color-muted);
+  display: -webkit-box;
+  font-size: var(--font-size-small);
+  -webkit-line-clamp: 3;
+  margin: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .issue-agent-run-error,

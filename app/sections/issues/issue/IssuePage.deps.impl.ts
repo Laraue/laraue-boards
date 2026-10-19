@@ -79,6 +79,7 @@ const mapIssue = (
   agentRun: issue.latestAgentRun
     ? {
         failureReason: issue.latestAgentRun.failureReason,
+        finishedAt: issue.latestAgentRun.finishedAt,
         id: String(issue.latestAgentRun.id),
         state: mapAgentRunState(issue.latestAgentRun.state),
       }
