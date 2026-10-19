@@ -29,6 +29,7 @@
         <!-- The same × as a link's remove button, right after the badge it cancels. -->
         <BaseIconButton
           v-if="open && run"
+          class="issue-agent-run-cancel"
           :disabled="pending"
           :label="t('cancel')"
           variant="danger"
@@ -259,6 +260,17 @@ const cancel = async (runId: string) => {
   gap: var(--space-2);
   min-height: var(--control-height);
   min-width: 0;
+}
+
+/* As tall as the badge it belongs to (BaseBadge is 1.25rem), not a full icon button. :deep - the button is
+   rendered through BaseButton's tooltip, so it doesn't carry this component's scope. */
+.issue-agent-run-row :deep(.issue-agent-run-cancel) {
+  --icon-btn-size: 1.25rem;
+}
+
+.issue-agent-run-row :deep(.issue-agent-run-cancel svg) {
+  height: 14px;
+  width: 14px;
 }
 
 .issue-agent-run-none {
