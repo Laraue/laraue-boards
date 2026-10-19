@@ -3610,6 +3610,7 @@ export interface components {
             updatedAt: string;
             canModify: boolean;
             owner: components["schemas"]["UserDetails"];
+            apiKeyName: null | string;
         };
         ConnectAccountResponse: {
             outcome: components["schemas"]["AccountLinkOutcome"];

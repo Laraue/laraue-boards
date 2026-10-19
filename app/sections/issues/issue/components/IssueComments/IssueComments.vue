@@ -29,6 +29,13 @@
               :initials="comment.owner.initials"
               size="sm" />
             <span class="issue-comment-name">{{ comment.owner.name }}</span>
+            <!-- Like the history: a comment an agent or a script wrote through an API key says which key. -->
+            <span
+              v-if="comment.owner.apiKeyName"
+              class="issue-comment-key">
+              <IconKey />
+              {{ t('viaKey', { key: comment.owner.apiKeyName }) }}
+            </span>
             <time :datetime="comment.createdAt">{{ formatDateTime(comment.createdAt) }}</time>
             <BaseMenu
               v-if="comment.canModify && state.editingId !== comment.id"
@@ -143,6 +150,7 @@ import {
   IconArrowUp,
   IconCheck,
   IconDots,
+  IconKey,
   IconLoader2,
   IconPencil,
   IconSparkles,
@@ -178,6 +186,7 @@ const { t } = useI18n({
     loading: 'Loading comments…',
     save: 'Save',
     saveShortcut: 'Save (Ctrl+Enter)',
+    viaKey: 'via {key}',
     writeComment: 'Write a comment',
     writeCommentPlaceholder: 'Write a comment…',
   },
@@ -197,6 +206,7 @@ const { t } = useI18n({
     loading: 'Загрузка комментариев…',
     save: 'Сохранить',
     saveShortcut: 'Сохранить (Ctrl+Enter)',
+    viaKey: 'через {key}',
     writeComment: 'Написать комментарий',
     writeCommentPlaceholder: 'Напишите комментарий…',
   },
@@ -353,6 +363,20 @@ const remove = async (id: string) => {
   font-size: var(--font-size-small);
   gap: var(--space-2);
   min-height: 24px;
+}
+
+.issue-comment-key {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.issue-comment-key svg {
+  flex: none;
+  height: 14px;
+  width: 14px;
 }
 
 .issue-comment-name {

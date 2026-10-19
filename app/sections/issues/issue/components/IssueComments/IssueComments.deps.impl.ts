@@ -9,6 +9,7 @@ const mapComment = (comment: components['schemas']['CommentDto']): IssueCommentV
   createdAt: comment.createdAt ?? '',
   id: String(comment.id),
   owner: {
+    ...(comment.apiKeyName ? { apiKeyName: comment.apiKeyName } : {}),
     color: comment.owner.color,
     initials: comment.owner.initials,
     name: comment.owner.displayName,
