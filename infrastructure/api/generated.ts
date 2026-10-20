@@ -539,6 +539,207 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/agent-sign-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StartAgentSignInRequest"];
+                    "text/json": components["schemas"]["StartAgentSignInRequest"];
+                    "application/*+json": components["schemas"]["StartAgentSignInRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["StartAgentSignInResponse"];
+                        "application/json": components["schemas"]["StartAgentSignInResponse"];
+                        "text/json": components["schemas"]["StartAgentSignInResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent-sign-in/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["PollAgentSignInRequest"];
+                    "text/json": components["schemas"]["PollAgentSignInRequest"];
+                    "application/*+json": components["schemas"]["PollAgentSignInRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PollAgentSignInResponse"];
+                        "application/json": components["schemas"]["PollAgentSignInResponse"];
+                        "text/json": components["schemas"]["PollAgentSignInResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent-sign-in/{userCode}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userCode: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AgentSignInDto"];
+                        "application/json": components["schemas"]["AgentSignInDto"];
+                        "text/json": components["schemas"]["AgentSignInDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent-sign-in/{userCode}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userCode: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApproveAgentSignInRequest"];
+                    "text/json": components["schemas"]["ApproveAgentSignInRequest"];
+                    "application/*+json": components["schemas"]["ApproveAgentSignInRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent-sign-in/{userCode}/deny": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    userCode: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/api-keys": {
         parameters: {
             query?: never;
@@ -3379,6 +3580,18 @@ export interface components {
         };
         /** @enum {unknown} */
         AgentRunState: "Ready" | "Working" | "Done" | "Failed" | "Cancelled";
+        AgentSignInDto: {
+            userCode: string;
+            clientName: string;
+            machineName: string;
+            keyName: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        /** @enum {unknown} */
+        AgentSignInPollOutcome: "Pending" | "SlowDown" | "Denied" | "Expired" | "Approved";
         ApiKeyDto: {
             /** Format: uuid */
             id: string;
@@ -3390,6 +3603,10 @@ export interface components {
             lastUsedAt?: null | string;
             /** Format: date-time */
             revokedAt?: null | string;
+        };
+        ApproveAgentSignInRequest: {
+            /** Format: int64 */
+            organizationId: number | string;
         };
         /** @enum {unknown} */
         AttachmentAction: "Created" | "Deleted";
@@ -3785,6 +4002,7 @@ export interface components {
         };
         GetApiKeysRequest: {
             pagination: components["schemas"]["PaginationData"];
+            includeRevoked?: boolean;
             authData?: components["schemas"]["OrganizationAuthData"];
         };
         GetBillingTransactionsRequest: {
@@ -4192,6 +4410,20 @@ export interface components {
             color: string;
             isDefault: boolean;
         };
+        PollAgentSignInRequest: {
+            deviceCode: string;
+        };
+        PollAgentSignInResponse: {
+            outcome: components["schemas"]["AgentSignInPollOutcome"];
+            apiKey?: null | string;
+            /** Format: uuid */
+            apiKeyId?: null | string;
+            /** Format: int64 */
+            organizationId?: null | number | string;
+            organizationName?: null | string;
+            /** Format: uuid */
+            userId?: null | string;
+        };
         SearchEpicStatusesRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             spaceKey?: null | string;
@@ -4349,6 +4581,20 @@ export interface components {
             initials: string;
             color: string;
             isCurrentUser: boolean;
+        };
+        StartAgentSignInRequest: {
+            clientName: string;
+            machineName: string;
+            replacesApiKey?: null | string;
+        };
+        StartAgentSignInResponse: {
+            deviceCode: string;
+            userCode: string;
+            verificationPath: string;
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: int32 */
+            intervalSeconds: number | string;
         };
         /** @enum {unknown} */
         StatusCategory: "Created" | "InProgress" | "Completed" | "Review";

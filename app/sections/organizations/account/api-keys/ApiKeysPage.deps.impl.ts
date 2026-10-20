@@ -10,10 +10,10 @@ export const createApiKeysPageDeps = (client: ApiClient): ApiKeysPageDeps => ({
     await request(client.DELETE('/api/api-keys/{id}', { params: { path: { id } } }))
   },
 
-  view: async ({ page, signal }) => {
+  view: async ({ includeRevoked, page, signal }) => {
     const result = await request(
       client.POST('/api/api-keys/search', {
-        body: { pagination: { page: page - 1, perPage: 20 } },
+        body: { includeRevoked, pagination: { page: page - 1, perPage: 20 } },
         signal,
       }),
     )

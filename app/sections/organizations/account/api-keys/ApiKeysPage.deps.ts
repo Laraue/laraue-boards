@@ -21,5 +21,10 @@ export type ApiKeysPageDeps = {
   // Resolves with the key itself, which is shown only this once.
   create: (input: { name: string }) => Promise<CreatedApiKey>
   revoke: (input: { id: string }) => Promise<void>
-  view: (input: { page: number; signal?: AbortSignal }) => Promise<ApiKeysPageData>
+  // Revoked keys are left out unless includeRevoked is set.
+  view: (input: {
+    includeRevoked: boolean
+    page: number
+    signal?: AbortSignal
+  }) => Promise<ApiKeysPageData>
 }
