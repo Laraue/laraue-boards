@@ -32,9 +32,14 @@
 
           <template v-else>
             <div class="agent-intro">
-              <h1>{{ t('title') }}</h1>
+              <h1>{{ t('heading', { client: view.signIn.clientName }) }}</h1>
               <p class="muted">
-                {{ t('allowText', { machine: view.signIn.machineName }) }}
+                {{
+                  t('allowText', {
+                    client: view.signIn.clientName,
+                    machine: view.signIn.machineName,
+                  })
+                }}
               </p>
             </div>
 
@@ -110,7 +115,7 @@ const { t } = useI18n({
     allowedText: 'You can close this tab and return to the terminal.',
     allowedTitle: 'Agent connected',
     allowText:
-      'Claude Code agent on {machine} wants to work on the issues you hand to it. Allow it for an organization:',
+      '{client} on {machine} wants to work on the issues you hand to it. Allow it for an organization:',
     chooseOrganization: 'Choose an organization',
     codeHint: 'Check that your terminal shows the same code',
     deniedText: 'The agent was not connected. You can close this tab.',
@@ -119,18 +124,19 @@ const { t } = useI18n({
     expiredText:
       'This link timed out or was already used. Run this command again in your terminal:',
     expiredTitle: 'This sign-in link has expired',
+    heading: 'Connect {client}',
     keyNote:
       'It gets an API key named “{keyName}”, with the same access as you. You can revoke it any time under Account → API keys.',
     organization: 'Organization',
     signingIn: 'Opening the sign-in page…',
-    title: 'Connect Claude Code agent',
+    title: 'Connect an agent',
   },
   ru: {
     allow: 'Разрешить',
     allowedText: 'Можно закрыть вкладку и вернуться в терминал.',
     allowedTitle: 'Агент подключён',
     allowText:
-      'Агент Claude Code на {machine} хочет работать над задачами, которые вы ему передадите. Разрешите ему доступ к организации:',
+      '{client} на {machine} хочет работать над задачами, которые вы ему передадите. Разрешите ему доступ к организации:',
     chooseOrganization: 'Выберите организацию',
     codeHint: 'Проверьте, что в терминале тот же код',
     deniedText: 'Агент не подключён. Вкладку можно закрыть.',
@@ -138,11 +144,12 @@ const { t } = useI18n({
     deny: 'Запретить',
     expiredText: 'Ссылка устарела или уже использована. Запустите эту команду в терминале ещё раз:',
     expiredTitle: 'Ссылка для входа устарела',
+    heading: 'Подключение: {client}',
     keyNote:
       'Он получит API-ключ «{keyName}» с теми же правами, что у вас. Отозвать его можно в любой момент: Аккаунт → API-ключи.',
     organization: 'Организация',
     signingIn: 'Открываем страницу входа…',
-    title: 'Подключение агента Claude Code',
+    title: 'Подключение агента',
   },
 })
 

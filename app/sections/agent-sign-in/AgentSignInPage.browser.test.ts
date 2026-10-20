@@ -13,6 +13,7 @@ afterEach(async () => {
 })
 
 const signIn = {
+  clientName: 'Claude Code agent',
   keyName: 'Claude Code agent (dev-laptop)',
   machineName: 'dev-laptop',
   userCode: 'WXYZ-2345',
@@ -44,7 +45,12 @@ it('allows the agent for the only organization and tells the user to return to t
 
   await mount(deps)
   await expect.element(page.getByText('WXYZ-2345')).toBeInTheDocument()
-  await expect.element(page.getByText(/dev-laptop wants to work/)).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('heading', { name: 'Connect Claude Code agent' }))
+    .toBeInTheDocument()
+  await expect
+    .element(page.getByText(/Claude Code agent on dev-laptop wants to work/))
+    .toBeInTheDocument()
   await page.getByRole('button', { name: 'Allow' }).click()
 
   expect(deps.approve).toHaveBeenCalledWith({ code: 'WXYZ-2345', organizationId: '7' })

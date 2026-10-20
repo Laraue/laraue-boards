@@ -56,6 +56,7 @@ export const createAgentSignInPageDeps = (client: ApiClient): AgentSignInPageDep
           name: organization.name,
         })),
         signIn: {
+          clientName: signIn.clientName,
           keyName: signIn.keyName,
           machineName: signIn.machineName,
           userCode: signIn.userCode,

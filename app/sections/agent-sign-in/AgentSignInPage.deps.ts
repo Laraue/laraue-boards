@@ -4,6 +4,8 @@ export type AgentSignInOrganization = {
 }
 
 export type AgentSignIn = {
+  // The agent as it calls itself, e.g. "Claude Code agent".
+  clientName: string
   keyName: string
   machineName: string
   userCode: string

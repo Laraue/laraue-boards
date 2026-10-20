@@ -3582,6 +3582,7 @@ export interface components {
         AgentRunState: "Ready" | "Working" | "Done" | "Failed" | "Cancelled";
         AgentSignInDto: {
             userCode: string;
+            clientName: string;
             machineName: string;
             keyName: string;
             /** Format: date-time */
@@ -4582,6 +4583,7 @@ export interface components {
             isCurrentUser: boolean;
         };
         StartAgentSignInRequest: {
+            clientName: string;
             machineName: string;
             replacesApiKey?: null | string;
         };

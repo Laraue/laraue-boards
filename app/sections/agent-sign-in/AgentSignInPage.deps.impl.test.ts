@@ -5,6 +5,7 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 import { createAgentSignInPageDeps } from './AgentSignInPage.deps.impl'
 
 const signIn = {
+  clientName: 'Claude Code agent',
   createdAt: '2026-10-19T10:00:00Z',
   expiresAt: '2026-10-19T10:10:00Z',
   keyName: 'Claude Code agent (dev-laptop)',
@@ -20,6 +21,7 @@ test('loads the sign-in with the organizations to allow it for', async () => {
   assert.deepEqual(await createAgentSignInPageDeps(client).view({ code: 'WXYZ-2345' }), {
     organizations: [{ id: '7', name: 'Laraue' }],
     signIn: {
+      clientName: 'Claude Code agent',
       keyName: 'Claude Code agent (dev-laptop)',
       machineName: 'dev-laptop',
       userCode: 'WXYZ-2345',
