@@ -7,19 +7,29 @@ import type { SpacePageDeps } from './SpacePage.deps'
 export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
   view: async ({ signal, spaceKey }) => {
     const path = { key: spaceKey }
-    const [spaces, details, boards, boardStatuses] = await Promise.all([
+    const [spaces, details, boards, boardStatuses, about] = await Promise.all([
       request(client.GET('/api/spaces', { signal })),
       request(client.GET('/api/spaces/{key}', { params: { path }, signal })),
       request(
         client.GET('/api/issues/summary', { params: { query: { SpaceKey: spaceKey } }, signal }),
       ),
       request(client.GET('/api/spaces/{key}/epics', { params: { path }, signal })),
+      request(client.GET('/api/spaces/{key}/about', { params: { path }, signal })),
     ])
     const space = spaces.find((item) => item.key === spaceKey)
     if (!space) {
       throw new ApiError(404)
     }
     return {
+      about: {
+        canEdit: about.canEdit,
+        description: about.description ?? null,
+        links: about.links.map((link) => ({
+          description: link.description,
+          id: String(link.id),
+          url: link.url,
+        })),
+      },
       // Newest first; the backlog is the default board and keeps the space's own color.
       boards: boards
         .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))

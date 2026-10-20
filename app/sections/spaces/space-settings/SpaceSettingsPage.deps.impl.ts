@@ -1,9 +1,12 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
 
+import { createSpaceAboutSettingsDeps } from './components/SpaceAboutSettings/SpaceAboutSettings.deps.impl'
 import type { SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
 
 export const createSpaceSettingsPageDeps = (client: ApiClient): SpaceSettingsPageDeps => ({
+  about: createSpaceAboutSettingsDeps(client),
+
   remove: async ({ spaceKey }) => {
     await request(client.DELETE('/api/spaces/{key}', { params: { path: { key: spaceKey } } }))
   },

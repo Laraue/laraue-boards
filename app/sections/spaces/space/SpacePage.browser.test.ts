@@ -8,6 +8,7 @@ import type { SpacePageData, SpacePageDeps } from './SpacePage.deps'
 import SpacePage from './SpacePage.vue'
 
 const pageData: SpacePageData = {
+  about: { canEdit: true, description: null, links: [] },
   boards: [
     {
       color: '#111',
@@ -87,4 +88,41 @@ it('reloads the space when the failed request is retried', async () => {
   await page.getByRole('button', { name: 'Try again' }).click()
 
   await expect.element(page.getByRole('heading', { name: 'Product' })).toBeInTheDocument()
+})
+
+it('shows what the space is about, and folds it away on request', async () => {
+  const view = vi.fn<SpacePageDeps['view']>(async () => ({
+    ...pageData,
+    about: {
+      canEdit: false,
+      description: 'The **product** tracker.',
+      links: [
+        {
+          description: 'Nuxt web app',
+          id: '1',
+          url: 'https://github.com/Laraue/laraue-boards',
+        },
+      ],
+    },
+  }))
+
+  await mount(view)
+
+  await expect.element(page.getByText('The product tracker.')).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('link', { name: 'github.com/Laraue/laraue-boards' }))
+    .toHaveAttribute('href', 'https://github.com/Laraue/laraue-boards')
+  await expect.element(page.getByText('Nuxt web app')).toBeInTheDocument()
+
+  await page.getByRole('button', { name: 'About this space' }).click()
+
+  await expect.element(page.getByText('Nuxt web app')).not.toBeInTheDocument()
+})
+
+it('invites an editor to describe an empty space', async () => {
+  await mount(vi.fn<SpacePageDeps['view']>(async () => pageData))
+
+  await expect
+    .element(page.getByRole('link', { name: /Describe this space/ }))
+    .toHaveAttribute('href', '/organizations/acme-ab12/spaces/product/settings')
 })

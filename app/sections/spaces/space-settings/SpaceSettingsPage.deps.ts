@@ -1,3 +1,5 @@
+import type { SpaceAboutSettingsDeps } from './components/SpaceAboutSettings/SpaceAboutSettings.deps'
+
 export type SpaceSettingsPageData = {
   canDelete: boolean
   canUpdate: boolean
@@ -13,6 +15,7 @@ export type UpdateSpaceInput = {
 }
 
 export type SpaceSettingsPageDeps = {
+  about: SpaceAboutSettingsDeps
   remove: (input: { spaceKey: string }) => Promise<void>
   update: (input: UpdateSpaceInput) => Promise<void>
   view: (input: { signal?: AbortSignal; spaceKey: string }) => Promise<SpaceSettingsPageData>

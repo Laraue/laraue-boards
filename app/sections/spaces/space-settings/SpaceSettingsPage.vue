@@ -69,6 +69,9 @@
               </BaseButton>
             </div>
           </form>
+          <SpaceAboutSettings
+            :deps="deps.about"
+            :space-key="spaceKey" />
           <BaseDangerZone
             v-if="page.canDelete"
             :description="t('deleteDescription')"
@@ -91,6 +94,7 @@
 import { IconSettings } from '@tabler/icons-vue'
 
 import { SpaceIcon } from '~/constants/icons'
+import SpaceAboutSettings from '~/sections/spaces/space-settings/components/SpaceAboutSettings/SpaceAboutSettings.vue'
 import type { SpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
 
 const props = defineProps<{

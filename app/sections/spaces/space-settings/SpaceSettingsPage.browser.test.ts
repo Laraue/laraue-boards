@@ -4,6 +4,7 @@ import { page } from 'vitest/browser'
 
 import { ApiError } from '#infrastructure/api/request'
 
+import type { SpaceAboutSettingsDeps } from './components/SpaceAboutSettings/SpaceAboutSettings.deps'
 import type { SpaceSettingsPageData, SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
 import SpaceSettingsPage from './SpaceSettingsPage.vue'
 
@@ -15,6 +16,13 @@ const pageData: SpaceSettingsPageData = {
 }
 
 const createDeps = (overrides: Partial<SpaceSettingsPageDeps> = {}): SpaceSettingsPageDeps => ({
+  about: {
+    createLink: vi.fn<SpaceAboutSettingsDeps['createLink']>(),
+    deleteLink: vi.fn<SpaceAboutSettingsDeps['deleteLink']>(),
+    saveDescription: vi.fn<SpaceAboutSettingsDeps['saveDescription']>(),
+    updateLink: vi.fn<SpaceAboutSettingsDeps['updateLink']>(),
+    view: async () => ({ canEdit: true, description: '', links: [] }),
+  },
   remove: vi.fn<SpaceSettingsPageDeps['remove']>(async () => {}),
   update: vi.fn<SpaceSettingsPageDeps['update']>(async () => {}),
   view: vi.fn<SpaceSettingsPageDeps['view']>(async () => pageData),

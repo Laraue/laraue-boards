@@ -1,5 +1,7 @@
 import type { components } from '#infrastructure/api/generated'
 
+import type { SpaceAboutViewModel } from './components/SpaceAbout/SpaceAbout.types'
+
 export type SpaceBoardStatus = 'Active' | 'Done' | 'New'
 
 export type SpaceBoardSummary = {
@@ -18,6 +20,7 @@ export type SpaceBoardSummary = {
 }
 
 export type SpacePageData = {
+  about: SpaceAboutViewModel
   boards: SpaceBoardSummary[]
   canCreateBoards: boolean
   canManage: boolean
