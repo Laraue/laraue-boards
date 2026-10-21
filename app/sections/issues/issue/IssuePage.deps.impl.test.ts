@@ -14,6 +14,7 @@ test('maps issue detail', async () => {
           agentHandOff: {
             available: false,
             blocker: 'BoardNotReady',
+            canSendBack: false,
             missingStatusCategories: ['Review'],
           },
           assignee: {
@@ -111,6 +112,7 @@ test('maps issue detail', async () => {
   assert.deepEqual(result.agentHandOff, {
     available: false,
     blocker: 'boardNotReady',
+    canSendBack: false,
     missingStatusCategories: ['Review'],
   })
   assert.deepEqual(result.links, [

@@ -31,6 +31,7 @@
         :key="issue.issueKey"
         :column-id="viewModel.id"
         :disabled="!canMoveIssues || movingIssueKeys.has(issue.issueKey)"
+        :in-review="viewModel.category === 'Review'"
         :index="index"
         :moving="movingIssueKeys.has(issue.issueKey)"
         :on-open-issue="onOpenIssue"

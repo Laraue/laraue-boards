@@ -13,4 +13,8 @@ export const createIssueAgentRunDeps = (client: ApiClient): IssueAgentRunDeps =>
   handOff: async ({ issueKey }) => {
     await request(client.POST('/api/agent-runs', { body: { issueKey } }))
   },
+
+  sendBack: async ({ comment, issueKey }) => {
+    await request(client.POST('/api/agent-runs/send-back', { body: { comment, issueKey } }))
+  },
 })
