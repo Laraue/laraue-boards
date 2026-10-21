@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 6
 createdAt: 2026-09-23
-updatedAt: 2026-09-23
+updatedAt: 2026-10-21
 ---
 An **API key** is a long-lived credential that lets something other than the web app or the Telegram bot act as you — a script, a CI job, or an AI agent like Claude connecting over [MCP](/en/documentation/integrations/mcp). No password, no login flow — just a key in a header.
 
@@ -29,7 +29,9 @@ The API keys list shows, for each key:
 - **Created** — when the key was made
 - **Last used** — the last time it successfully authenticated a request, or blank if it never has
 
-You only see and manage your own keys — not keys other members of the organization created.
+You only see and manage your own keys — not keys other members of the organization created. Revoked keys are hidden; turn on **Show revoked keys** to see them too.
+
+A key can also be created for you: when you set up [boards-agent](/en/documentation/integrations/agent-hand-off#set-up-the-runner) and click **Allow** in the browser, Boards creates a key named after the agent and your computer, e.g. "Claude Code agent (MacBook)", and hands it straight to the runner. It's in the list like any other key; revoke it to disconnect that computer. Signing the runner in again replaces its key and revokes the old one.
 
 ## Revoking a key
 
