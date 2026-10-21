@@ -31,8 +31,7 @@
             class="space-about-link"
             :href="link.url"
             rel="noopener noreferrer"
-            target="_blank"
-            :title="link.url">
+            target="_blank">
             <IconExternalLink />
             <span>{{ displayUrl(link.url) }}</span>
           </a>
