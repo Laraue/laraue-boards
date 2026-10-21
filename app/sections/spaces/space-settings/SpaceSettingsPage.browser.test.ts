@@ -4,7 +4,6 @@ import { page } from 'vitest/browser'
 
 import { ApiError } from '#infrastructure/api/request'
 
-import type { SpaceAboutSettingsDeps } from './components/SpaceAboutSettings/SpaceAboutSettings.deps'
 import type { SpaceSettingsPageData, SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
 import SpaceSettingsPage from './SpaceSettingsPage.vue'
 
@@ -12,19 +11,14 @@ const pageData: SpaceSettingsPageData = {
   canDelete: true,
   canUpdate: true,
   color: '#4774d4',
+  description: '',
+  links: [{ description: 'Product docs', id: '1', url: 'https://example.com/docs' }],
   name: 'Product',
 }
 
 const createDeps = (overrides: Partial<SpaceSettingsPageDeps> = {}): SpaceSettingsPageDeps => ({
-  about: {
-    createLink: vi.fn<SpaceAboutSettingsDeps['createLink']>(),
-    deleteLink: vi.fn<SpaceAboutSettingsDeps['deleteLink']>(),
-    saveDescription: vi.fn<SpaceAboutSettingsDeps['saveDescription']>(),
-    updateLink: vi.fn<SpaceAboutSettingsDeps['updateLink']>(),
-    view: async () => ({ canEdit: true, description: '', links: [] }),
-  },
   remove: vi.fn<SpaceSettingsPageDeps['remove']>(async () => {}),
-  update: vi.fn<SpaceSettingsPageDeps['update']>(async () => {}),
+  save: vi.fn<SpaceSettingsPageDeps['save']>(async () => {}),
   view: vi.fn<SpaceSettingsPageDeps['view']>(async () => pageData),
   ...overrides,
 })
@@ -49,22 +43,42 @@ afterEach(async () => {
   vi.restoreAllMocks()
 })
 
-it('submits edited settings and reports the trimmed key', async () => {
-  const update = vi.fn<SpaceSettingsPageDeps['update']>(async () => {})
+it('saves the settings, description and links with one button and reports the trimmed key', async () => {
+  const save = vi.fn<SpaceSettingsPageDeps['save']>(async () => {})
   const onUpdated = vi.fn<(spaceKey: string) => void>()
 
-  await mount(createDeps({ update }), vi.fn<() => void>(), onUpdated)
+  await mount(createDeps({ save }), vi.fn<() => void>(), onUpdated)
   await page.getByLabelText('Name').fill('Product team')
   await page.getByLabelText('Key').fill(' product-team ')
+  await page.getByRole('button', { name: 'Add link' }).click()
+  await page.getByLabelText('URL').last().fill('https://github.com/acme/web')
+  await page.getByLabelText('What it is').last().fill('Web app')
   await page.getByRole('button', { name: 'Save changes' }).click()
 
-  expect(update).toHaveBeenCalledWith({
+  expect(save).toHaveBeenCalledWith({
     color: '#4774d4',
+    description: '',
+    links: [
+      { description: 'Product docs', id: '1', url: 'https://example.com/docs' },
+      { description: 'Web app', url: 'https://github.com/acme/web' },
+    ],
     name: 'Product team',
     newKey: 'product-team',
     oldKey: 'product',
+    saved: { description: '', links: pageData.links },
   })
   expect(onUpdated).toHaveBeenCalledWith('product-team')
+})
+
+it('saves a removed link and ignores an empty new row', async () => {
+  const save = vi.fn<SpaceSettingsPageDeps['save']>(async () => {})
+
+  await mount(createDeps({ save }))
+  await page.getByRole('button', { name: 'Remove' }).click()
+  await page.getByRole('button', { name: 'Add link' }).click()
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  expect(save).toHaveBeenCalledWith(expect.objectContaining({ links: [] }))
 })
 
 it('deletes the space after confirmation', async () => {
@@ -79,13 +93,13 @@ it('deletes the space after confirmation', async () => {
   expect(onDeleted).toHaveBeenCalledTimes(1)
 })
 
-it('shows a validation message and stays on the page when updating fails', async () => {
-  const update = vi
-    .fn<SpaceSettingsPageDeps['update']>()
+it('shows a validation message and stays on the page when saving fails', async () => {
+  const save = vi
+    .fn<SpaceSettingsPageDeps['save']>()
     .mockRejectedValue(new ApiError(400, 'Key is already taken.'))
   const onUpdated = vi.fn<(spaceKey: string) => void>()
 
-  await mount(createDeps({ update }), vi.fn<() => void>(), onUpdated)
+  await mount(createDeps({ save }), vi.fn<() => void>(), onUpdated)
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   await expect.element(page.getByText('Key is already taken.')).toBeInTheDocument()
@@ -102,6 +116,8 @@ it('hides unavailable settings actions', async () => {
   await mount(createDeps({ view }))
 
   await expect.element(page.getByLabelText('Name')).toBeDisabled()
+  await expect.element(page.getByLabelText('URL')).toBeDisabled()
+  await expect.element(page.getByRole('button', { name: 'Add link' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Save changes' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Delete space' })).not.toBeInTheDocument()
 })
