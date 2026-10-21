@@ -31,7 +31,8 @@
             class="space-about-link"
             :href="link.url"
             rel="noopener noreferrer"
-            target="_blank">
+            target="_blank"
+            :title="link.url">
             <IconExternalLink />
             <span>{{ displayUrl(link.url) }}</span>
           </a>
@@ -157,43 +158,87 @@ const displayUrl = (url: string): string => url.replace(/^https?:\/\//, '').repl
 
 .space-about-links {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+/* Drawn like the issue page's links: a plain row that highlights on hover, not a blue underlined link. */
 .space-about-link {
   align-items: center;
-  display: inline-flex;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  display: flex;
   font-weight: var(--font-weight-medium);
   gap: var(--space-2);
-  overflow-wrap: anywhere;
+  margin: 0 calc(-1 * var(--space-2));
+  min-width: 0;
+  padding: var(--space-1) var(--space-2);
+  text-decoration: none;
+}
+
+.space-about-link:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
 }
 
 .space-about-link > svg {
+  color: var(--color-muted);
   flex: none;
   height: 14px;
   width: 14px;
 }
 
+.space-about-link > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Lined up under the URL, past the icon. */
 .space-about-link-description {
   font-size: var(--font-size-small);
-  margin-top: var(--space-1);
+  padding-left: calc(14px + var(--space-2));
 }
 
 .space-about-edit {
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
   font-size: var(--font-size-small);
   justify-self: start;
+  text-decoration: none;
+}
+
+.space-about-edit:is(:hover, :focus-visible) {
+  color: var(--color-text);
+}
+
+.space-about-edit:focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .space-about-link:hover {
+    background: var(--color-row-hover);
+  }
 }
 
 .space-about-empty {
   align-items: center;
+  border-radius: var(--radius-control);
   color: var(--color-muted);
   display: flex;
   font-size: var(--font-size-small);
   gap: var(--space-2);
   margin: var(--space-4);
+  text-decoration: none;
+}
+
+.space-about-empty:is(:hover, :focus-visible) {
+  color: var(--color-text);
 }
 
 .space-about-empty > svg {
