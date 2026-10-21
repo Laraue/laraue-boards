@@ -4619,8 +4619,6 @@ export interface components {
             description: string;
         };
         SpaceLinkRequest: {
-            /** Format: int64 */
-            id?: null | number | string;
             /** Format: uri */
             url: string;
             description: string;

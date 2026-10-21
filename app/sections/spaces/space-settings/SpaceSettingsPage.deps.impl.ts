@@ -17,7 +17,6 @@ export const createSpaceSettingsPageDeps = (client: ApiClient): SpaceSettingsPag
           description,
           links: links.map((link) => ({
             description: link.description,
-            id: link.id ? Number(link.id) : null,
             url: link.url,
           })),
           name,

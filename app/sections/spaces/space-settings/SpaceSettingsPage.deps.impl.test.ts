@@ -65,8 +65,8 @@ test('saves the settings, description and links in one request', async () => {
     color: '#000',
     description: 'About',
     links: [
-      { description: 'Docs', id: 1, url: 'https://example.com/docs' },
-      { description: 'New', id: null, url: 'https://example.com/new' },
+      { description: 'Docs', url: 'https://example.com/docs' },
+      { description: 'New', url: 'https://example.com/new' },
     ],
     name: 'Product',
     newKey: 'PRD',

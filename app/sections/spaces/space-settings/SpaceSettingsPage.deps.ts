@@ -7,6 +7,7 @@ export type SpaceLinkItem = {
 // A link as edited on the page: without an id until it's saved.
 export type SpaceLinkDraft = {
   description: string
+  // The saved link's id, only to key its row in the form.
   id?: string
   url: string
 }
