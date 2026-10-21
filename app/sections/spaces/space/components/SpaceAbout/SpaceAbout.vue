@@ -33,13 +33,9 @@
             rel="noopener noreferrer"
             target="_blank">
             <IconExternalLink />
-            <span>{{ displayUrl(link.url) }}</span>
+            <!-- eslint-disable-next-line vue/no-v-html -- plain text, escaped by renderMarkdownAsText -->
+            <span v-html="renderMarkdownAsText(link.description)" />
           </a>
-          <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
-          <div
-            class="markdown muted space-about-link-description"
-            v-html="renderMarkdown(link.description)" />
-          <!-- eslint-enable vue/no-v-html -->
         </li>
       </ul>
       <NuxtLink
@@ -63,7 +59,7 @@
 import { IconChevronDown, IconExternalLink, IconInfoCircle } from '@tabler/icons-vue'
 import type { RouteLocationRaw } from 'vue-router'
 
-import { renderMarkdown } from '~/utils/renderMarkdown'
+import { renderMarkdown, renderMarkdownAsText } from '~/utils/renderMarkdown'
 
 import type { SpaceAboutViewModel } from './SpaceAbout.types'
 
@@ -99,9 +95,6 @@ const toggle = (): void => {
   state.collapsed = !state.collapsed
   collapsedCookie.value = state.collapsed ? 'collapsed' : undefined
 }
-
-// The host and path are what tell links apart; the scheme is noise.
-const displayUrl = (url: string): string => url.replace(/^https?:\/\//, '').replace(/\/$/, '')
 </script>
 
 <style scoped>
@@ -157,7 +150,7 @@ const displayUrl = (url: string): string => url.replace(/^https?:\/\//, '').repl
 
 .space-about-links {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-1);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -194,12 +187,6 @@ const displayUrl = (url: string): string => url.replace(/^https?:\/\//, '').repl
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* Lined up under the URL, past the icon. */
-.space-about-link-description {
-  font-size: var(--font-size-small);
-  padding-left: calc(14px + var(--space-2));
 }
 
 .space-about-edit {

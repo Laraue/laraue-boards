@@ -1,6 +1,6 @@
 import { assert, test } from 'vitest'
 
-import { renderMarkdown } from '~/utils/renderMarkdown'
+import { renderMarkdown, renderMarkdownAsText } from '~/utils/renderMarkdown'
 
 test('renders markdown to html', () => {
   assert.include(renderMarkdown('# Title'), '<h1>Title</h1>')
@@ -27,4 +27,15 @@ test('opens web links in a new tab', () => {
 
 test('strips javascript: urls', () => {
   assert.notInclude(renderMarkdown('[click](javascript:alert(1))'), 'javascript:')
+})
+
+test('renders markdown as one line of escaped text', () => {
+  assert.equal(
+    renderMarkdownAsText('The **web** app\n\n- board & issues'),
+    'The web app board &amp; issues',
+  )
+  assert.equal(
+    renderMarkdownAsText('<img src=x onerror="alert(1)">[docs](https://example.com)'),
+    'docs',
+  )
 })

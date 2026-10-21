@@ -24,3 +24,13 @@ export const renderMarkdown = (markdown: string): string =>
       gfm: true,
     }),
   )
+
+// Markdown as plain text, for a place that shows one line of it (e.g. inside a link). Still HTML-escaped: render it
+// with v-html.
+export const renderMarkdownAsText = (markdown: string): string =>
+  sanitize(marked.parse(markdown, { async: false, gfm: true }), {
+    ALLOWED_TAGS: [],
+    KEEP_CONTENT: true,
+  })
+    .replace(/\s+/g, ' ')
+    .trim()

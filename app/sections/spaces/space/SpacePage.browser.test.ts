@@ -110,9 +110,8 @@ it('shows what the space is about, and folds it away on request', async () => {
 
   await expect.element(page.getByText('The product tracker.')).toBeInTheDocument()
   await expect
-    .element(page.getByRole('link', { name: 'github.com/Laraue/laraue-boards' }))
+    .element(page.getByRole('link', { name: 'Nuxt web app' }))
     .toHaveAttribute('href', 'https://github.com/Laraue/laraue-boards')
-  await expect.element(page.getByText('Nuxt web app')).toBeInTheDocument()
 
   await page.getByRole('button', { name: 'About this space' }).click()
 
