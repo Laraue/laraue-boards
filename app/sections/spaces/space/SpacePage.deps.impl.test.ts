@@ -58,7 +58,6 @@ test('maps the space and its board summaries', async () => {
     ['Backlog', 'New', 'Middle', 'Old'],
   )
   assert.deepEqual(about, {
-    canEdit: true,
     description: 'The **web** app.',
     links: [{ description: 'Nuxt app', id: '5', url: 'https://github.com/Laraue/laraue-boards' }],
   })

@@ -38,26 +38,12 @@
           </a>
         </li>
       </ul>
-      <NuxtLink
-        v-if="about.canEdit"
-        class="space-about-edit"
-        :to="settingsTo">
-        {{ t('edit') }}
-      </NuxtLink>
     </div>
   </section>
-  <NuxtLink
-    v-else-if="about.canEdit"
-    class="space-about-empty"
-    :to="settingsTo">
-    <IconInfoCircle />
-    {{ t('describe') }}
-  </NuxtLink>
 </template>
 
 <script setup lang="ts">
 import { IconChevronDown, IconExternalLink, IconInfoCircle } from '@tabler/icons-vue'
-import type { RouteLocationRaw } from 'vue-router'
 
 import { renderMarkdown, renderMarkdownAsText } from '~/utils/renderMarkdown'
 
@@ -65,20 +51,15 @@ import type { SpaceAboutViewModel } from './SpaceAbout.types'
 
 const props = defineProps<{
   about: SpaceAboutViewModel
-  settingsTo: RouteLocationRaw
   spaceKey: string
 }>()
 
 const { t } = useI18n({
   en: {
     about: 'About this space',
-    describe: 'Describe this space and link its repositories and docs',
-    edit: 'Edit description and links',
   },
   ru: {
     about: 'Об этом разделе',
-    describe: 'Опишите раздел и добавьте ссылки на его репозитории и документацию',
-    edit: 'Изменить описание и ссылки',
   },
 })
 
@@ -189,46 +170,9 @@ const toggle = (): void => {
   white-space: nowrap;
 }
 
-.space-about-edit {
-  border-radius: var(--radius-control);
-  color: var(--color-muted);
-  font-size: var(--font-size-small);
-  justify-self: start;
-  text-decoration: none;
-}
-
-.space-about-edit:is(:hover, :focus-visible) {
-  color: var(--color-text);
-}
-
-.space-about-edit:focus-visible {
-  box-shadow: var(--shadow-focus);
-  outline: none;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .space-about-link:hover {
     background: var(--color-row-hover);
   }
-}
-
-.space-about-empty {
-  align-items: center;
-  border-radius: var(--radius-control);
-  color: var(--color-muted);
-  display: flex;
-  font-size: var(--font-size-small);
-  gap: var(--space-2);
-  margin: var(--space-4);
-  text-decoration: none;
-}
-
-.space-about-empty:is(:hover, :focus-visible) {
-  color: var(--color-text);
-}
-
-.space-about-empty > svg {
-  height: var(--icon-size);
-  width: var(--icon-size);
 }
 </style>

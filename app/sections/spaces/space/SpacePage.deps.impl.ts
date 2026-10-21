@@ -22,7 +22,6 @@ export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
     }
     return {
       about: {
-        canEdit: about.canEdit,
         description: about.description ?? null,
         links: about.links.map((link) => ({
           description: link.description,

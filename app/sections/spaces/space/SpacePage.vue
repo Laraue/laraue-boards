@@ -40,7 +40,6 @@
         <section class="space-page">
           <SpaceAbout
             :about="page.about"
-            :settings-to="organizationRoutes.spaceSettings(spaceKey)"
             :space-key="spaceKey" />
           <NuxtLink
             v-if="backlog"

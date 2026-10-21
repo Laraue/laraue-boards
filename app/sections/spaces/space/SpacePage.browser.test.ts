@@ -8,7 +8,7 @@ import type { SpacePageData, SpacePageDeps } from './SpacePage.deps'
 import SpacePage from './SpacePage.vue'
 
 const pageData: SpacePageData = {
-  about: { canEdit: true, description: null, links: [] },
+  about: { description: null, links: [] },
   boards: [
     {
       color: '#111',
@@ -94,7 +94,6 @@ it('shows what the space is about, and folds it away on request', async () => {
   const view = vi.fn<SpacePageDeps['view']>(async () => ({
     ...pageData,
     about: {
-      canEdit: false,
       description: 'The **product** tracker.',
       links: [
         {
@@ -118,10 +117,11 @@ it('shows what the space is about, and folds it away on request', async () => {
   await expect.element(page.getByText('Nuxt web app')).not.toBeInTheDocument()
 })
 
-it('invites an editor to describe an empty space', async () => {
+it('shows nothing about an empty space', async () => {
   await mount(vi.fn<SpacePageDeps['view']>(async () => pageData))
 
+  await expect.element(page.getByRole('link', { name: 'Create board' })).toBeInTheDocument()
   await expect
-    .element(page.getByRole('link', { name: /Describe this space/ }))
-    .toHaveAttribute('href', '/organizations/acme-ab12/spaces/product/settings')
+    .element(page.getByRole('button', { name: 'About this space' }))
+    .not.toBeInTheDocument()
 })

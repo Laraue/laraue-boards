@@ -5,7 +5,6 @@ export type SpaceLinkViewModel = {
 }
 
 export type SpaceAboutViewModel = {
-  canEdit: boolean
   // Markdown, or null when the space has none.
   description: null | string
   links: SpaceLinkViewModel[]
