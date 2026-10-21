@@ -23,7 +23,9 @@
       <template #default="{ data: page }">
         <section class="space-settings-page">
           <BaseSectionHeader :title="t('general')" />
-          <form @submit.prevent="update">
+          <form
+            class="space-settings-form"
+            @submit.prevent="save">
             <BaseFieldGroup>
               <BaseField
                 id="space-settings-name"
@@ -52,17 +54,21 @@
                   :disabled="!page.canUpdate || submitting" />
               </BaseField>
             </BaseFieldGroup>
+            <SpaceAboutFields
+              v-model:description="form.description"
+              v-model:links="form.links"
+              :disabled="!page.canUpdate || submitting" />
             <p
-              v-if="updateMessage || removeMessage"
+              v-if="saveMessage || removeMessage"
               class="form-error">
-              {{ updateMessage || removeMessage }}
+              {{ saveMessage || removeMessage }}
             </p>
             <div
               v-if="page.canUpdate"
               class="form-actions">
               <BaseButton
                 :disabled="removing"
-                :loading="updating"
+                :loading="saving"
                 type="submit"
                 variant="primary">
                 {{ t('saveChanges') }}
@@ -91,7 +97,11 @@
 import { IconSettings } from '@tabler/icons-vue'
 
 import { SpaceIcon } from '~/constants/icons'
-import type { SpaceSettingsPageDeps } from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
+import SpaceAboutFields from '~/sections/spaces/space-settings/components/SpaceAboutFields/SpaceAboutFields.vue'
+import type {
+  SpaceLinkDraft,
+  SpaceSettingsPageDeps,
+} from '~/sections/spaces/space-settings/SpaceSettingsPage.deps'
 
 const props = defineProps<{
   deps: SpaceSettingsPageDeps
@@ -130,11 +140,22 @@ const { t } = useI18n({
   },
 })
 
-const form = reactive({
+const form = reactive<{
+  color: string
+  description: string
+  key: string
+  links: SpaceLinkDraft[]
+  name: string
+}>({
   color: '',
+  description: '',
   key: '',
+  links: [],
   name: '',
 })
+
+// Set once saved, so leaving for the space page doesn't ask about changes that were just saved.
+const state = reactive({ saved: false })
 
 const organizationRoutes = useOrganizationRoutes()
 
@@ -150,28 +171,57 @@ watch(
       return
     }
     form.color = value.color
+    form.description = value.description
     form.key = props.spaceKey
+    form.links = value.links.map((link) => ({ ...link }))
     form.name = value.name
   },
   { immediate: true },
 )
 
-const {
-  execute: updateSpace,
-  message: updateMessage,
-  pending: updating,
-} = useApiAction(props.deps.update)
+const { execute: saveSpace, message: saveMessage, pending: saving } = useApiAction(props.deps.save)
 const {
   execute: removeSpace,
   message: removeMessage,
   pending: removing,
 } = useApiAction(props.deps.remove)
-const submitting = computed(() => updating.value || removing.value)
+const submitting = computed(() => saving.value || removing.value)
 
-const update = async (): Promise<void> => {
+// Rows left empty aren't links.
+const filledLinks = (): SpaceLinkDraft[] =>
+  form.links
+    .map((link) => ({ ...link, description: link.description.trim(), url: link.url.trim() }))
+    .filter((link) => link.url || link.description)
+
+const dirty = computed(() => {
+  const loaded = data.value
+  if (!loaded || state.saved) {
+    return false
+  }
+  return (
+    form.name !== loaded.name ||
+    form.color !== loaded.color ||
+    form.key.trim() !== props.spaceKey ||
+    form.description.trim() !== loaded.description.trim() ||
+    JSON.stringify(filledLinks()) !==
+      JSON.stringify(loaded.links.map(({ description, id, url }) => ({ description, id, url })))
+  )
+})
+
+useUnsavedChangesWarning(dirty)
+
+const save = async (): Promise<void> => {
   const key = form.key.trim()
-  const input = { color: form.color, name: form.name, newKey: key, oldKey: props.spaceKey }
-  if (await updateSpace(input)) {
+  const saved = await saveSpace({
+    color: form.color,
+    description: form.description,
+    links: filledLinks(),
+    name: form.name,
+    newKey: key,
+    oldKey: props.spaceKey,
+  })
+  if (saved) {
+    state.saved = true
     await props.onUpdated(key)
   }
 }
@@ -187,6 +237,11 @@ const remove = async (): Promise<void> => {
 </script>
 
 <style scoped>
+.space-settings-form {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .space-settings-page {
   display: grid;
   gap: var(--space-5);

@@ -3034,6 +3034,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/spaces/{key}/about": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["SpaceAboutDto"];
+                        "application/json": components["schemas"]["SpaceAboutDto"];
+                        "text/json": components["schemas"]["SpaceAboutDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/statuses": {
         parameters: {
             query?: never;
@@ -4563,10 +4602,26 @@ export interface components {
         };
         /** @enum {unknown} */
         SortingDirection: "Ascending" | "Descending";
+        SpaceAboutDto: {
+            description?: null | string;
+            links: components["schemas"]["SpaceLinkDto"][];
+            canEdit: boolean;
+        };
         SpaceDetailsDto: {
             canCreateEpics: boolean;
             canUpdate: boolean;
             canDelete: boolean;
+        };
+        SpaceLinkDto: {
+            /** Format: int64 */
+            id: number | string;
+            url: string;
+            description: string;
+        };
+        SpaceLinkRequest: {
+            /** Format: uri */
+            url: string;
+            description: string;
         };
         SpaceListDto: {
             name: string;
@@ -4677,6 +4732,8 @@ export interface components {
             name: string;
             color: string;
             newKey: string;
+            description?: null | string;
+            links?: null | components["schemas"]["SpaceLinkRequest"][];
         };
         UserDetails: {
             /** Format: uuid */

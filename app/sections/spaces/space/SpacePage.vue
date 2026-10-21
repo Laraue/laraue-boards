@@ -35,9 +35,12 @@
       :message="message"
       :on-retry="refresh"
       :pending="pending">
-      <template #default>
+      <template #default="{ data: page }">
         <!-- A data list, as the issue list: rows on the page itself, no box around them. -->
         <section class="space-page">
+          <SpaceAbout
+            :about="page.about"
+            :space-key="spaceKey" />
           <NuxtLink
             v-if="backlog"
             class="space-row"
@@ -116,6 +119,7 @@ import {
 
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
+import SpaceAbout from '~/sections/spaces/space/components/SpaceAbout/SpaceAbout.vue'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
 const props = defineProps<{ deps: SpacePageDeps; spaceKey: string }>()

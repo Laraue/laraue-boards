@@ -13,6 +13,13 @@ test('maps the space and its board summaries', async () => {
     if (path === '/api/spaces/WEB') {
       return { canCreateEpics: true, canDelete: true, canUpdate: true }
     }
+    if (path === '/api/spaces/WEB/about') {
+      return {
+        canEdit: true,
+        description: 'The **web** app.',
+        links: [{ description: 'Nuxt app', id: 5, url: 'https://github.com/Laraue/laraue-boards' }],
+      }
+    }
     if (path === '/api/spaces/WEB/epics') {
       return [
         {
@@ -42,7 +49,7 @@ test('maps the space and its board summaries', async () => {
     ]
   })
 
-  const { boards } = await createSpacePageDeps(client).view({ spaceKey: 'WEB' })
+  const { about, boards } = await createSpacePageDeps(client).view({ spaceKey: 'WEB' })
 
   assert.equal(boards[0]?.kind, 'backlog')
   assert.equal(boards[0]?.issueCount, 2)
@@ -50,4 +57,8 @@ test('maps the space and its board summaries', async () => {
     boards.map((board) => board.name),
     ['Backlog', 'New', 'Middle', 'Old'],
   )
+  assert.deepEqual(about, {
+    description: 'The **web** app.',
+    links: [{ description: 'Nuxt app', id: '5', url: 'https://github.com/Laraue/laraue-boards' }],
+  })
 })
