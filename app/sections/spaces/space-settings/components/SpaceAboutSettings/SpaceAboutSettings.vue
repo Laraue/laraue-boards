@@ -190,7 +190,7 @@ const { t } = useI18n({
     linkDescriptionPlaceholder: 'For example: Nuxt web app; run pnpm pre-commit before committing',
     links: 'Links',
     linksHint:
-      "The space's repositories, docs, designs and dashboards. The agent works in the repositories it finds on your machine.",
+      "Where the space's work lives - repositories, docs, designs, dashboards - with what each is for. Shown to everyone on the space page and given to agents as context.",
     loadError: 'Could not load the description and links',
     loading: 'Loading…',
     noLinks: 'No links yet.',
@@ -215,7 +215,7 @@ const { t } = useI18n({
       'Например: веб-приложение на Nuxt; перед коммитом запускайте pnpm pre-commit',
     links: 'Ссылки',
     linksHint:
-      'Репозитории, документация, дизайн и дашборды раздела. Агент работает в тех репозиториях, которые найдёт на вашем компьютере.',
+      'Где находится работа раздела - репозитории, документация, дизайн, дашборды - и для чего каждая ссылка. Видны всем на странице раздела и передаются агентам как контекст.',
     loadError: 'Не удалось загрузить описание и ссылки',
     loading: 'Загрузка…',
     noLinks: 'Ссылок пока нет.',
