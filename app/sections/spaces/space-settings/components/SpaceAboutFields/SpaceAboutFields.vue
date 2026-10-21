@@ -2,11 +2,16 @@
   <section class="space-about-fields">
     <BaseSectionHeader :title="t('about')" />
     <p class="muted hint">{{ t('aboutHint') }}</p>
-    <MarkdownEditor
-      v-model="description"
-      :disabled="disabled"
-      :label="t('description')"
-      :placeholder="t('descriptionPlaceholder')" />
+    <!-- Framed like the other fields: the editor itself draws no box. -->
+    <div
+      class="space-description"
+      :class="{ disabled }">
+      <MarkdownEditor
+        v-model="description"
+        :disabled="disabled"
+        :label="t('description')"
+        :placeholder="t('descriptionPlaceholder')" />
+    </div>
 
     <BaseSectionHeader :title="t('links')" />
     <p class="muted hint">{{ t('linksHint') }}</p>
@@ -147,6 +152,29 @@ const remove = (index: number): void => {
 
 .hint {
   margin: 0;
+}
+
+.space-description {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  cursor: text;
+  min-height: 6rem;
+  padding: var(--space-2) var(--space-3);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.space-description:hover:not(.disabled, :focus-within) {
+  border-color: var(--color-border-hover);
+}
+
+.space-description:focus-within {
+  border-color: var(--color-focus);
+}
+
+.space-description.disabled {
+  background: var(--color-soft);
+  cursor: not-allowed;
 }
 
 .space-links {
