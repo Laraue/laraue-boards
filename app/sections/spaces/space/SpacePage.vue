@@ -148,6 +148,7 @@ const props = defineProps<{ deps: SpacePageDeps; spaceKey: string }>()
 
 const { t, tp } = useI18n({
   en: {
+    allBoards: 'All boards',
     backlog: 'Backlog',
     boards: 'Boards',
     createBoard: 'Create board',
@@ -155,10 +156,9 @@ const { t, tp } = useI18n({
     emptyHint:
       "A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it.",
     emptyTitle: 'No boards yet',
+    finished: 'Finished',
     inProgress: 'In progress',
     issues: 'issue | issues',
-    allBoards: 'All boards',
-    finished: 'Finished',
     loadError: 'Could not load space',
     loading: 'Loading space…',
     name: 'Name',
@@ -175,6 +175,7 @@ const { t, tp } = useI18n({
     spaceSettings: 'Space settings',
   },
   ru: {
+    allBoards: 'Все доски',
     backlog: 'Бэклог',
     boards: 'Доски',
     createBoard: 'Создать доску',
@@ -182,10 +183,9 @@ const { t, tp } = useI18n({
     emptyHint:
       'Доска показывает задачи раздела в виде колонок. Перемещайте задачи перетаскиванием от «К выполнению» до «Готово».',
     emptyTitle: 'Досок пока нет',
+    finished: 'Завершённые',
     inProgress: 'В работе',
     issues: 'задача | задачи | задач',
-    allBoards: 'Все доски',
-    finished: 'Завершённые',
     loadError: 'Не удалось загрузить раздел',
     loading: 'Загрузка раздела…',
     name: 'По названию',

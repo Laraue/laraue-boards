@@ -1,5 +1,6 @@
-<!-- The issue's agent run: its state, "Hand to agent", and a remove-style × beside an open run's badge to
-     cancel it, for anyone who can edit the issue. Whether the user can hand the issue off, and why not, comes
+<!-- The issue's agent run: its state, "Hand to agent" or "Send back to agent" (an issue the agent already worked
+     on, with what's wrong), and a remove-style × beside an open run's badge to cancel it, for anyone who can edit the
+     issue. Whether the user can hand the issue off, and why not, comes
      decided from the backend (handOff) - this only shows it. A run is open while it is ready or working, and
      the issue's fields are locked meanwhile. -->
 <template>
@@ -18,6 +19,7 @@
       class="issue-agent-run-row">
       <AgentRunBadge
         v-if="badgeShown && run"
+        :in-review="inReview"
         :state="run.state"
         tooltip />
       <span
@@ -35,6 +37,14 @@
         @click="cancel(run.id)">
         <IconX />
       </BaseIconButton>
+      <BaseButton
+        v-else-if="handOff.canSendBack"
+        size="small"
+        variant="ghost"
+        @click="sendBackDialog?.open()">
+        <IconArrowBackUp />
+        {{ t('sendBack') }}
+      </BaseButton>
       <BaseButton
         v-else-if="handOff.available"
         :loading="pending"
@@ -80,7 +90,7 @@
         {{ run.failureReason ?? t('failedNoReason') }}
       </p>
       <p
-        v-if="handOff.blocker === 'issueStarted'"
+        v-if="handOff.blocker === 'issueStarted' && !handOff.canSendBack"
         class="issue-agent-run-failure-hint">
         {{ t('retryAfterMove') }}
       </p>
@@ -96,16 +106,51 @@
       {{ t('waitsFor', { keys: blockedBy.join(', ') }) }}
     </p>
     <p
-      v-if="message"
+      v-if="message && !sendingBack"
       class="form-error issue-agent-run-error"
       role="alert">
       {{ message }}
     </p>
+    <BaseDialog
+      ref="sendBackDialog"
+      :close-label="t('close')"
+      :description="t('sendBackDescription')"
+      :title="t('sendBack')"
+      @close="sendingBack = false"
+      @submit="sendBack">
+      <BaseField
+        v-slot="{ id }"
+        :label="t('whatsWrong')">
+        <textarea
+          :id="id"
+          v-model="sendBackComment"
+          class="issue-agent-run-comment"
+          :maxlength="4096"
+          :placeholder="t('whatsWrongPlaceholder')"
+          required
+          rows="5" />
+      </BaseField>
+      <p
+        v-if="message && sendingBack"
+        class="form-error"
+        role="alert">
+        {{ message }}
+      </p>
+      <template #actions>
+        <BaseButton @click="sendBackDialog?.close()">{{ t('cancelSendBack') }}</BaseButton>
+        <BaseButton
+          :loading="pending"
+          type="submit"
+          variant="primary">
+          {{ t('send') }}
+        </BaseButton>
+      </template>
+    </BaseDialog>
   </section>
 </template>
 
 <script setup lang="ts">
-import { IconRobot, IconX } from '@tabler/icons-vue'
+import { IconArrowBackUp, IconRobot, IconX } from '@tabler/icons-vue'
 
 import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
 import DocsHelpLink from '~/components/docs-help-link/DocsHelpLink.vue'
@@ -125,6 +170,8 @@ const props = defineProps<{
   deps: IssueAgentRunDeps
   // Whether the user can hand the issue off now, and why not - as the backend decided.
   handOff: AgentHandOffViewModel
+  // The issue is in a Review status: a done run's badge then asks for a review.
+  inReview: boolean
   issueKey: string
   onChanged: () => Promise<void> | void
   run: IssueAgentRunViewModel | null
@@ -137,6 +184,8 @@ const { t } = useI18n({
       'To hand issues to the agent, add statuses for these stages to the board: {statuses}.',
     cancel: 'Cancel run',
     cancelConfirm: 'Stop the agent on this issue?',
+    cancelSendBack: 'Cancel',
+    close: 'Close',
     created: 'Not started',
     failedNoReason: 'The agent gave up.',
     handOff: 'Hand to agent',
@@ -147,8 +196,15 @@ const { t } = useI18n({
     none: 'Not handed off',
     retryAfterMove: 'To try again, move the issue back to a not started status.',
     review: 'In review',
+    send: 'Send to agent',
+    sendBack: 'Send back to agent',
+    sendBackDescription:
+      'Your comment is added to the issue, which moves back to not started and goes to the agent again. It continues on the same branch.',
     stop: 'Stop agent',
     waitsFor: 'Blocked by {keys}: the agent starts once they are completed.',
+    whatsWrong: "What's wrong",
+    whatsWrongPlaceholder:
+      'For example: the button is still blue - make it match the other primary buttons.',
   },
   ru: {
     agent: 'Агент',
@@ -156,6 +212,8 @@ const { t } = useI18n({
       'Чтобы передавать задачи агенту, добавьте на доску статусы для этапов: {statuses}.',
     cancel: 'Отменить запуск',
     cancelConfirm: 'Остановить агента на этой задаче?',
+    cancelSendBack: 'Отмена',
+    close: 'Закрыть',
     created: 'Не начато',
     failedNoReason: 'Агент не справился.',
     handOff: 'Передать агенту',
@@ -166,8 +224,15 @@ const { t } = useI18n({
     none: 'Не передана',
     retryAfterMove: 'Чтобы попробовать снова, верните задачу в не начатый статус.',
     review: 'На проверке',
+    send: 'Отправить агенту',
+    sendBack: 'Вернуть агенту',
+    sendBackDescription:
+      'Ваш комментарий добавится к задаче, она вернётся в не начатый статус и снова уйдёт агенту. Он продолжит на той же ветке.',
     stop: 'Остановить',
     waitsFor: 'Заблокирована задачами {keys}: агент начнёт, когда они будут завершены.',
+    whatsWrong: 'Что не так',
+    whatsWrongPlaceholder:
+      'Например: кнопка всё ещё синяя — сделайте её как остальные основные кнопки.',
   },
 })
 
@@ -177,8 +242,8 @@ const { formatDateTime, formatRecent } = useFormatters()
 const headingId = useId()
 
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
-// Only an open run gets a badge here; a failed one shows its reason instead.
-const badgeShown = computed(() => open.value)
+// Every run has a badge here except a failed one, which shows its reason instead.
+const badgeShown = computed(() => !!props.run && props.run.state !== 'failed')
 
 const CATEGORY_KEYS = {
   Completed: null,
@@ -202,7 +267,8 @@ const unavailableReason = computed(() => {
           .join(', '),
       })
     case 'issueStarted':
-      return t('issueStarted')
+      // Sending back moves the issue to not started itself.
+      return props.handOff.canSendBack ? null : t('issueStarted')
     default:
       return null
   }
@@ -218,7 +284,12 @@ const noneShown = computed(
 )
 
 const rowShown = computed(
-  () => badgeShown.value || props.handOff.available || !!unavailableReason.value || noneShown.value,
+  () =>
+    badgeShown.value ||
+    props.handOff.available ||
+    props.handOff.canSendBack ||
+    !!unavailableReason.value ||
+    noneShown.value,
 )
 // A working run already started; for any other state the blockers decide when the agent can start.
 const waitsForBlockers = computed(
@@ -229,6 +300,25 @@ const { execute, message, pending } = useApiAction((action: () => Promise<void>)
 
 const startHandOff = async () => {
   if (await execute(() => props.deps.handOff({ issueKey: props.issueKey }))) {
+    await props.onChanged()
+  }
+}
+
+const sendBackDialog = useTemplateRef('sendBackDialog')
+const sendBackComment = ref('')
+// The send back dialog shows its own error; the section's line is for the other actions.
+const sendingBack = ref(false)
+
+const sendBack = async () => {
+  sendingBack.value = true
+  const comment = sendBackComment.value.trim()
+  if (
+    comment &&
+    (await execute(() => props.deps.sendBack({ comment, issueKey: props.issueKey })))
+  ) {
+    sendingBack.value = false
+    sendBackComment.value = ''
+    sendBackDialog.value?.close()
     await props.onChanged()
   }
 }
@@ -244,6 +334,11 @@ const cancel = async (runId: string) => {
 </script>
 
 <style scoped>
+.issue-agent-run-comment {
+  resize: vertical;
+  width: 100%;
+}
+
 /* A section of its own under Links, shaped the same way. */
 .issue-agent-run {
   display: grid;

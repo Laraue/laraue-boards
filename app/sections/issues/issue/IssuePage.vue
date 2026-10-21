@@ -248,6 +248,7 @@
                   :can-edit="issue.canEdit"
                   :deps="deps.agentRun"
                   :hand-off="issue.agentHandOff"
+                  :in-review="issue.statusCategory === 'Review'"
                   :issue-key="issue.issueKey"
                   :on-changed="refreshAfterChange"
                   :run="issue.agentRun" />

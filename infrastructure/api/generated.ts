@@ -500,6 +500,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/agent-runs/send-back": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SendBackAgentRunRequest"];
+                    "text/json": components["schemas"]["SendBackAgentRunRequest"];
+                    "application/*+json": components["schemas"]["SendBackAgentRunRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AgentRunDto"];
+                        "application/json": components["schemas"]["AgentRunDto"];
+                        "text/json": components["schemas"]["AgentRunDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/agent-runs/{id}/cancel": {
         parameters: {
             query?: never;
@@ -3601,6 +3644,7 @@ export interface components {
         AgentHandOffBlocker: "NotAllowed" | "RunOpen" | "NoApiKey" | "BoardNotReady" | "IssueStarted" | null;
         AgentHandOffDto: {
             available: boolean;
+            canSendBack: boolean;
             blocker: null | components["schemas"]["AgentHandOffBlocker"];
             missingStatusCategories: components["schemas"]["StatusCategory"][];
         };
@@ -4515,6 +4559,10 @@ export interface components {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
             };
             sorting?: null | components["schemas"]["IssueSorting"];
+        };
+        SendBackAgentRunRequest: {
+            issueKey: string;
+            comment: string;
         };
         SendFeedbackRequest: {
             type: null | components["schemas"]["FeedbackType"];

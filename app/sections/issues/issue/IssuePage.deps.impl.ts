@@ -89,9 +89,10 @@ const mapAgentHandOff = (handOff: Schemas['AgentHandOffDto'] | undefined): Agent
     ? {
         available: handOff.available,
         blocker: handOff.blocker ? AGENT_HAND_OFF_BLOCKERS[handOff.blocker] : null,
+        canSendBack: handOff.canSendBack,
         missingStatusCategories: handOff.missingStatusCategories,
       }
-    : { available: false, blocker: 'notAllowed', missingStatusCategories: [] }
+    : { available: false, blocker: 'notAllowed', canSendBack: false, missingStatusCategories: [] }
 
 const mapIssue = (
   issue: Schemas['IssueDetailDto'],

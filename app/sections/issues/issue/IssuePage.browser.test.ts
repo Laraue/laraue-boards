@@ -10,7 +10,7 @@ import type { IssuePageDeps, IssuePageViewModel } from './IssuePage.deps'
 import IssuePage from './IssuePage.vue'
 
 const issue: IssuePageViewModel = {
-  agentHandOff: { available: true, blocker: null, missingStatusCategories: [] },
+  agentHandOff: { available: true, blocker: null, canSendBack: false, missingStatusCategories: [] },
   agentRun: null,
   assignee: 'Ada Lovelace',
   assigneeColor: '#111',
@@ -46,6 +46,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   agentRun: {
     cancel: vi.fn<IssuePageDeps['agentRun']['cancel']>(async () => {}),
     handOff: vi.fn<IssuePageDeps['agentRun']['handOff']>(async () => {}),
+    sendBack: vi.fn<IssuePageDeps['agentRun']['sendBack']>(async () => {}),
   },
   assigneeSelect: {
     loadAssignees: vi.fn<IssuePageDeps['assigneeSelect']['loadAssignees']>(async () => [
@@ -408,7 +409,12 @@ it('hides the hand-off when the backend does not allow it', async () => {
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+        agentHandOff: {
+          available: false,
+          blocker: 'notAllowed',
+          canSendBack: false,
+          missingStatusCategories: [],
+        },
       })),
     }),
   )
@@ -422,7 +428,12 @@ it('locks the fields but still lets anyone who can edit cancel the run', async (
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+        agentHandOff: {
+          available: false,
+          blocker: 'notAllowed',
+          canSendBack: false,
+          missingStatusCategories: [],
+        },
         agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'ready' },
       })),
     }),
@@ -447,6 +458,7 @@ it('disables the hand-off and says which statuses the board lacks', async () => 
         agentHandOff: {
           available: false,
           blocker: 'boardNotReady',
+          canSendBack: false,
           missingStatusCategories: ['InProgress', 'Review'],
         },
       })),
@@ -468,7 +480,12 @@ it('disables the hand-off until the user has an API key for the runner', async (
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        agentHandOff: { available: false, blocker: 'noApiKey', missingStatusCategories: [] },
+        agentHandOff: {
+          available: false,
+          blocker: 'noApiKey',
+          canSendBack: false,
+          missingStatusCategories: [],
+        },
       })),
     }),
   )
@@ -488,7 +505,12 @@ it('disables the hand-off of a started issue and says why', async () => {
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        agentHandOff: { available: false, blocker: 'issueStarted', missingStatusCategories: [] },
+        agentHandOff: {
+          available: false,
+          blocker: 'issueStarted',
+          canSendBack: false,
+          missingStatusCategories: [],
+        },
       })),
     }),
   )
@@ -527,7 +549,12 @@ it('shows why a failed run gave up and how to try again', async () => {
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        agentHandOff: { available: false, blocker: 'issueStarted', missingStatusCategories: [] },
+        agentHandOff: {
+          available: false,
+          blocker: 'issueStarted',
+          canSendBack: false,
+          missingStatusCategories: [],
+        },
         agentRun: {
           failureReason: 'Timed out after 60 min',
           finishedAt: '2026-01-02T10:00:00Z',
@@ -543,6 +570,81 @@ it('shows why a failed run gave up and how to try again', async () => {
   await expect
     .element(page.getByText(/To try again, move the issue back to a not started status\./))
     .toBeInTheDocument()
+})
+
+it('asks for a review when the agent is done and sends the issue back with a comment', async () => {
+  const deps = createDeps({
+    view: vi.fn<IssuePageDeps['view']>(async () => ({
+      ...issue,
+      agentHandOff: {
+        available: false,
+        blocker: 'issueStarted',
+        canSendBack: true,
+        missingStatusCategories: [],
+      },
+      agentRun: { failureReason: null, finishedAt: '2026-01-02T10:00:00Z', id: '5', state: 'done' },
+      statusCategory: 'Review',
+    })),
+  })
+  await mount(deps)
+
+  await expect.element(page.getByText('Agent done · review')).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).not.toBeInTheDocument()
+
+  await page.getByRole('button', { name: 'Send back to agent' }).click()
+  await page.getByLabelText("What's wrong").fill('  The button is still blue.  ')
+  await page.getByRole('button', { name: 'Send to agent' }).click()
+
+  await vi.waitFor(() =>
+    expect(deps.agentRun.sendBack).toHaveBeenCalledWith({
+      comment: 'The button is still blue.',
+      issueKey: 'ISS-1',
+    }),
+  )
+})
+
+it('keeps the agent badge once the issue moved on or the run was cancelled', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: {
+          available: false,
+          blocker: 'issueStarted',
+          canSendBack: true,
+          missingStatusCategories: [],
+        },
+        agentRun: {
+          failureReason: null,
+          finishedAt: '2026-01-02T10:00:00Z',
+          id: '5',
+          state: 'done',
+        },
+        statusCategory: 'Completed',
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Done by agent')).toBeInTheDocument()
+})
+
+it('shows a cancelled run as cancelled', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentRun: {
+          failureReason: null,
+          finishedAt: '2026-01-02T10:00:00Z',
+          id: '5',
+          state: 'cancelled',
+        },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Agent cancelled')).toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Hand to agent' })).toBeEnabled()
 })
 
 it('says the agent waits for the open blockers', async () => {
@@ -582,7 +684,12 @@ it('hides the agent actions when the issue cannot be edited', async () => {
     createDeps({
       view: vi.fn<IssuePageDeps['view']>(async () => ({
         ...issue,
-        agentHandOff: { available: false, blocker: 'notAllowed', missingStatusCategories: [] },
+        agentHandOff: {
+          available: false,
+          blocker: 'notAllowed',
+          canSendBack: false,
+          missingStatusCategories: [],
+        },
         canEdit: false,
       })),
     }),
