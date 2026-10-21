@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-08-05
+updatedAt: 2026-10-21
 ---
 
 A Space is a label that groups related boards together. If you work on multiple products, clients, or areas, spaces keep your navigation clean by letting you focus on one context at a time.
@@ -43,9 +43,17 @@ Moving a board between spaces is possible, but only for an admin, from **Setting
 
 Moving a board to a different space changes the key of every issue on it, since keys are numbered per space. Any link or quoted key someone already shared for those issues — in a Telegram chat, a doc, anywhere — will point at the old key and no longer resolve. Move a board only when you're prepared for that.
 
+## Description and links
+
+A space can say what it is about: a description, and links to where its work lives — repositories, docs, designs, dashboards — each with a short note on what it is. Add them in the space's settings, under **About** and **Links**.
+
+They're shown to everyone who can open the space, in **About this space** at the top of the space page. Fold it away with its arrow; it stays folded for you. The description supports Markdown.
+
+They're also context for AI agents: [Claude over MCP](/en/documentation/integrations/mcp) can read them, and an agent you [hand an issue to](/en/documentation/integrations/agent-hand-off) gets them with every issue of the space — and works in the repositories the links point to. A URL can be in a space once; the same URL can be in other spaces, with their own notes.
+
 ## Editing and deleting a space
 
-Open the space, then its settings, to edit its name, key, or color, or to delete it.
+Open the space, then its settings, to edit its name, key, color, description and links — all saved together with **Save changes** — or to delete it.
 
 ![The Edit space screen, with Name, Key, and Color fields, and Save changes and Delete space buttons](https://laraue.com/static/images/blog/docs/laraue-boards/edit-space.jpg)
 
