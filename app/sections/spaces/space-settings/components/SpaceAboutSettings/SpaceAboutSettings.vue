@@ -187,7 +187,7 @@ const { t } = useI18n({
     descriptionPlaceholder: 'For example: the backend and web app of our tracker…',
     edit: 'Edit',
     linkDescription: 'What it is',
-    linkDescriptionPlaceholder: 'For example: Nuxt web app; run pnpm pre-commit before committing',
+    linkDescriptionPlaceholder: 'For example: the web app - board, issue and settings pages',
     links: 'Links',
     linksHint:
       "Where the space's work lives - repositories, docs, designs, dashboards - with what each is for. Shown to everyone on the space page and given to agents as context.",
@@ -212,7 +212,7 @@ const { t } = useI18n({
     edit: 'Изменить',
     linkDescription: 'Что это',
     linkDescriptionPlaceholder:
-      'Например: веб-приложение на Nuxt; перед коммитом запускайте pnpm pre-commit',
+      'Например: веб-приложение - страницы досок, задач и настроек',
     links: 'Ссылки',
     linksHint:
       'Где находится работа раздела - репозитории, документация, дизайн, дашборды - и для чего каждая ссылка. Видны всем на странице раздела и передаются агентам как контекст.',
