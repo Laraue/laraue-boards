@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 8
 createdAt: 2026-10-18
-updatedAt: 2026-10-21
+updatedAt: 2026-10-22
 ---
 You can hand an issue to an AI coding agent — Claude Code or OpenAI Codex on your own machine, with your repositories and your settings. The agent takes the issue, works on it, reports progress in comments, and moves it to review for you to check.
 
@@ -14,10 +14,10 @@ You can hand an issue to an AI coding agent — Claude Code or OpenAI Codex on y
 
 1. **You hand the issue off.** In the **Agent** section of the issue page, click **Hand to agent**. The card on the board shows **For agent**.
 2. **Your agent takes it.** A runner on your machine — [boards-agent](https://github.com/Laraue/boards-agent), see [below](#set-up-the-runner) — signs in with your [API key](/en/documentation/integrations/api-keys), picks up the issues handed off to you, puts the work on a branch named after the issue in the space's repositories, and moves the issue to in progress. The card shows **Agent working**.
-3. **The agent works.** It writes progress comments and a summary, then moves the issue to a review status.
-4. **You review.** Move the issue to done, or send it back: move it to a not started status, add a comment, and hand it off again.
+3. **The agent works.** It writes progress comments and a summary, then moves the issue to a review status. The card shows **Agent done · review**, and your computer shows a notification.
+4. **You review.** Move the issue to done, or click **Send back to agent** in the Agent section and write what's wrong: your comment is added, the issue moves back to not started and goes to the agent again, which continues on the same branch.
 
-If the agent gives up, the card shows **Agent failed**. On the issue page the reason and when it happened are in a red box in the Agent section, and the runner leaves a comment with the details.
+The badge stays on the card once an issue was handed off: after review it shows **Done by agent**, and a cancelled run **Agent cancelled**. If the agent gives up, the card shows **Agent failed**. On the issue page the reason and when it happened are in a red box in the Agent section, and the runner leaves a comment with the details.
 
 ## Who can hand an issue off
 
@@ -61,9 +61,10 @@ The setup:
 2. Opens Boards in your browser. Check that the code matches the one in your terminal, choose the organization and click **Allow**. Boards creates an [API key](/en/documentation/integrations/api-keys) named after the agent and your computer, e.g. "Claude Code agent (MacBook)", and the runner keeps it in the Keychain or Credential Manager — you never copy it anywhere.
 3. Asks which folder your repositories are cloned under — type it or choose it in Finder or Explorer — and shows which repositories it found for each space ([see below](#which-repositories-the-agent-works-in)).
 4. Asks [where the agent should work](#where-the-agent-works).
-5. Offers to keep the runner running in the background, also after a restart, so there's nothing to start by hand.
+5. Asks what happens to the agent's branch when it's done: nothing, push it, or push it and open a pull request ([see below](#when-the-agent-is-done)).
+6. Offers to keep the runner running in the background, also after a restart, so there's nothing to start by hand.
 
-Run the install command again to update; running `boards-agent setup` again changes the answers. The [README](https://github.com/Laraue/boards-agent#readme) has the details.
+To update, run the install command again: it replaces boards-agent and restarts it, without asking the questions again. Run `boards-agent setup` to change the answers. The [README](https://github.com/Laraue/boards-agent#readme) has the details.
 
 ## Which repositories the agent works in
 
@@ -82,7 +83,12 @@ The setup asks which of two ways you prefer:
 
   Before switching a clone that has uncommitted changes or isn't on its main branch — for example, it's still on the previous issue's branch while you review it — the runner asks first, in a dialog. **Continue** switches it; your uncommitted changes are never touched, so it asks again until you commit or stash them. **Not now** leaves the issue waiting and asks again in 10 minutes.
 
-Either way, the agent runs with a fixed list of allowed commands and never pushes — you review the branch and push it yourself.
+Either way, the agent runs with a fixed list of allowed commands and can't push.
+
+## When the agent is done
+
+- **Notifications.** Your computer shows a notification from **laraue-boards-agent** when the agent starts, when the issue is ready for review, and if it fails or is cancelled. Click it to open the issue. On a Mac, the first one may ask whether laraue-boards-agent may send notifications.
+- **The branch.** By default it stays on your computer, for you to review and push. If you chose so in setup, boards-agent itself pushes it after the agent is done — in each repository the agent changed — and can also open a pull request, with the [GitHub CLI](https://cli.github.com) signed in. The links are in boards-agent's comment on the issue and in the notification. The agent never pushes on its own.
 
 ## For runner authors
 
