@@ -211,10 +211,6 @@ const dirty = computed(() => {
 useUnsavedChangesWarning(dirty)
 
 const save = async (): Promise<void> => {
-  const loaded = data.value
-  if (!loaded) {
-    return
-  }
   const key = form.key.trim()
   const saved = await saveSpace({
     color: form.color,
@@ -223,14 +219,10 @@ const save = async (): Promise<void> => {
     name: form.name,
     newKey: key,
     oldKey: props.spaceKey,
-    saved: { description: loaded.description, links: loaded.links },
   })
   if (saved) {
     state.saved = true
     await props.onUpdated(key)
-  } else {
-    // Part of it may be saved by now: show what is, with the error.
-    await refresh()
   }
 }
 

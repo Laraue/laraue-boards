@@ -8,58 +8,23 @@ export const createSpaceSettingsPageDeps = (client: ApiClient): SpaceSettingsPag
     await request(client.DELETE('/api/spaces/{key}', { params: { path: { key: spaceKey } } }))
   },
 
-  // Everything under the old key first: removed links before new ones, so a URL can move to a new row; the space
-  // itself last, since a new key moves it.
-  save: async ({ color, description, links, name, newKey, oldKey, saved }) => {
-    const path = { key: oldKey }
-    const kept = new Set(links.map((link) => link.id).filter(Boolean))
-
-    for (const link of saved.links.filter((item) => !kept.has(item.id))) {
-      await request(
-        client.DELETE('/api/spaces/{key}/links/{id}', {
-          params: { path: { ...path, id: Number(link.id) } },
-        }),
-      )
-    }
-
-    for (const link of links) {
-      const before = saved.links.find((item) => item.id === link.id)
-      if (
-        link.id &&
-        before &&
-        (before.url !== link.url || before.description !== link.description)
-      ) {
-        await request(
-          client.PUT('/api/spaces/{key}/links/{id}', {
-            body: { description: link.description, url: link.url },
-            params: { path: { ...path, id: Number(link.id) } },
-          }),
-        )
-      }
-    }
-
-    for (const link of links.filter((item) => !item.id)) {
-      await request(
-        client.POST('/api/spaces/{key}/links', {
-          body: { description: link.description, url: link.url },
-          params: { path },
-        }),
-      )
-    }
-
-    if (description.trim() !== saved.description.trim()) {
-      await request(
-        client.PUT('/api/spaces/{key}/description', {
-          body: { description: description.trim() || null },
-          params: { path },
-        }),
-      )
-    }
-
+  // One request: the settings, description and links are saved together or not at all.
+  save: async ({ color, description, links, name, newKey, oldKey }) => {
     await request(
       client.PUT('/api/spaces/{key}', {
-        body: { color, name, newKey, oldKey },
-        params: { path },
+        body: {
+          color,
+          description,
+          links: links.map((link) => ({
+            description: link.description,
+            id: link.id ? Number(link.id) : null,
+            url: link.url,
+          })),
+          name,
+          newKey,
+          oldKey,
+        },
+        params: { path: { key: oldKey } },
       }),
     )
   },

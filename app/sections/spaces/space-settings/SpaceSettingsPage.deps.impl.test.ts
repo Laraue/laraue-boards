@@ -41,37 +41,35 @@ test('fails with 404 when the space is not in the list', async () => {
   ).rejects.toMatchObject({ status: 404 })
 })
 
-test('saves only what changed, links before the space whose key may change', async () => {
+test('saves the settings, description and links in one request', async () => {
   const { client, requests } = createTestApiClient(() => new Response(null))
 
   await createSpaceSettingsPageDeps(client).save({
     color: '#000',
-    description: 'Same',
+    description: 'About',
     links: [
-      { description: 'Docs v2', id: '1', url: 'https://example.com/docs' },
-      { description: 'Kept', id: '2', url: 'https://example.com/kept' },
+      { description: 'Docs', id: '1', url: 'https://example.com/docs' },
       { description: 'New', url: 'https://example.com/new' },
     ],
     name: 'Product',
     newKey: 'PRD',
     oldKey: 'product',
-    saved: {
-      description: 'Same',
-      links: [
-        { description: 'Docs', id: '1', url: 'https://example.com/docs' },
-        { description: 'Kept', id: '2', url: 'https://example.com/kept' },
-        { description: 'Gone', id: '9', url: 'https://example.com/gone' },
-      ],
-    },
   })
 
-  assert.deepEqual(
-    requests.map((request) => `${request.method} ${new URL(request.url).pathname}`),
-    [
-      'DELETE /api/spaces/product/links/9',
-      'PUT /api/spaces/product/links/1',
-      'POST /api/spaces/product/links',
-      'PUT /api/spaces/product',
-    ],
+  assert.equal(requests.length, 1)
+  assert.equal(
+    `${requests[0]!.method} ${new URL(requests[0]!.url).pathname}`,
+    'PUT /api/spaces/product',
   )
+  assert.deepEqual(await requests[0]!.json(), {
+    color: '#000',
+    description: 'About',
+    links: [
+      { description: 'Docs', id: 1, url: 'https://example.com/docs' },
+      { description: 'New', id: null, url: 'https://example.com/new' },
+    ],
+    name: 'Product',
+    newKey: 'PRD',
+    oldKey: 'product',
+  })
 })

@@ -27,8 +27,6 @@ export type SaveSpaceSettingsInput = {
   name: string
   newKey: string
   oldKey: string
-  // What was loaded, to save only what changed.
-  saved: Pick<SpaceSettingsPageData, 'description' | 'links'>
 }
 
 export type SpaceSettingsPageDeps = {

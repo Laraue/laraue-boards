@@ -3073,154 +3073,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/spaces/{key}/description": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["UpdateSpaceDescriptionRequest"];
-                    "text/json": components["schemas"]["UpdateSpaceDescriptionRequest"];
-                    "application/*+json": components["schemas"]["UpdateSpaceDescriptionRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/spaces/{key}/links": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["SpaceLinkRequest"];
-                    "text/json": components["schemas"]["SpaceLinkRequest"];
-                    "application/*+json": components["schemas"]["SpaceLinkRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["SpaceLinkDto"];
-                        "application/json": components["schemas"]["SpaceLinkDto"];
-                        "text/json": components["schemas"]["SpaceLinkDto"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/spaces/{key}/links/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: string;
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["SpaceLinkRequest"];
-                    "text/json": components["schemas"]["SpaceLinkRequest"];
-                    "application/*+json": components["schemas"]["SpaceLinkRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        post?: never;
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    key: string;
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/statuses": {
         parameters: {
             query?: never;
@@ -4767,6 +4619,8 @@ export interface components {
             description: string;
         };
         SpaceLinkRequest: {
+            /** Format: int64 */
+            id?: null | number | string;
             /** Format: uri */
             url: string;
             description: string;
@@ -4874,15 +4728,14 @@ export interface components {
             familyName?: null | string;
             displayName: string;
         };
-        UpdateSpaceDescriptionRequest: {
-            description?: null | string;
-        };
         UpdateSpaceRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             oldKey?: string;
             name: string;
             color: string;
             newKey: string;
+            description?: null | string;
+            links?: null | components["schemas"]["SpaceLinkRequest"][];
         };
         UserDetails: {
             /** Format: uuid */

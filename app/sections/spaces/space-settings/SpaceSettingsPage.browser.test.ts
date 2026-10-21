@@ -65,7 +65,6 @@ it('saves the settings, description and links with one button and reports the tr
     name: 'Product team',
     newKey: 'product-team',
     oldKey: 'product',
-    saved: { description: '', links: pageData.links },
   })
   expect(onUpdated).toHaveBeenCalledWith('product-team')
 })
