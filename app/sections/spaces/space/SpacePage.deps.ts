@@ -6,6 +6,8 @@ export type SpaceBoardStatus = 'Active' | 'Done' | 'New'
 
 export type SpaceBoardSummary = {
   color: string
+  // ISO date, for sorting by creation.
+  createdAt: string
   id: string
   issueCount: number
   kind: 'backlog' | 'board'

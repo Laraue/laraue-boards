@@ -29,24 +29,22 @@ export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
           url: link.url,
         })),
       },
-      // Newest first; the backlog is the default board and keeps the space's own color.
-      boards: boards
-        .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt))
-        .map((board) => ({
-          color: board.color ?? (board.isDefault ? space.color : COLORS.gray),
-          id: String(board.id),
-          issueCount: board.columns.reduce((sum, column) => sum + Number(column.count), 0),
-          kind: board.isDefault ? 'backlog' : 'board',
-          name: board.isDefault ? 'Backlog' : board.name,
-          status:
-            boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
-          statuses: board.columns.map((column) => ({
-            category: column.category,
-            color: column.color ?? COLORS.gray,
-            count: Number(column.count),
-            name: column.name,
-          })),
+      // The backlog is the default board and keeps the space's own color. The page sorts them.
+      boards: boards.map((board) => ({
+        color: board.color ?? (board.isDefault ? space.color : COLORS.gray),
+        createdAt: board.createdAt,
+        id: String(board.id),
+        issueCount: board.columns.reduce((sum, column) => sum + Number(column.count), 0),
+        kind: board.isDefault ? 'backlog' : 'board',
+        name: board.isDefault ? 'Backlog' : board.name,
+        status: boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
+        statuses: board.columns.map((column) => ({
+          category: column.category,
+          color: column.color ?? COLORS.gray,
+          count: Number(column.count),
+          name: column.name,
         })),
+      })),
       canCreateBoards: details.canCreateEpics,
       canManage: details.canUpdate || details.canDelete,
       color: space.color,
