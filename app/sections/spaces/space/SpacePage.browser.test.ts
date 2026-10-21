@@ -12,6 +12,7 @@ const pageData: SpacePageData = {
   boards: [
     {
       color: '#111',
+      createdAt: '2026-01-01T00:00:00Z',
       id: '8',
       issueCount: 2,
       kind: 'backlog',
@@ -21,6 +22,7 @@ const pageData: SpacePageData = {
     },
     {
       color: '#222',
+      createdAt: '2026-02-01T00:00:00Z',
       id: '9',
       issueCount: 3,
       kind: 'board',
@@ -124,4 +126,81 @@ it('shows nothing about an empty space', async () => {
   await expect
     .element(page.getByRole('button', { name: 'About this space' }))
     .not.toBeInTheDocument()
+})
+
+const boardsData: SpacePageData = {
+  ...pageData,
+  boards: [
+    ...pageData.boards,
+    {
+      color: '#444',
+      createdAt: '2026-01-15T00:00:00Z',
+      id: '10',
+      issueCount: 1,
+      kind: 'board',
+      name: 'Archive',
+      status: 'Done',
+      statuses: [],
+    },
+    {
+      color: '#555',
+      createdAt: '2026-03-01T00:00:00Z',
+      id: '11',
+      issueCount: 0,
+      kind: 'board',
+      name: 'Launch',
+      status: 'New',
+      statuses: [],
+    },
+  ],
+}
+
+// The backlog row comes first; boards follow in the order they are shown.
+const boardRow = (index: number) => page.getByRole('link', { name: /issues?$/ }).nth(index + 1)
+
+it('lists the newest boards first, and sorts them by name or age on request', async () => {
+  await mount(vi.fn<SpacePageDeps['view']>(async () => boardsData))
+
+  await expect.element(boardRow(0)).toHaveTextContent('Launch')
+  await expect.element(boardRow(2)).toHaveTextContent('Archive')
+
+  await page.getByRole('combobox', { name: 'Sort by' }).click()
+  await page.getByRole('option', { name: 'Name' }).click()
+
+  await expect.element(boardRow(0)).toHaveTextContent('Archive')
+  await expect.element(boardRow(1)).toHaveTextContent('Launch')
+  await expect.element(boardRow(2)).toHaveTextContent('Roadmap')
+
+  await page.getByRole('combobox', { name: 'Sort by' }).click()
+  await page.getByRole('option', { name: 'Oldest first' }).click()
+
+  await expect.element(boardRow(0)).toHaveTextContent('Archive')
+  await expect.element(boardRow(2)).toHaveTextContent('Launch')
+})
+
+it('shows only the boards matching the quick filter', async () => {
+  await mount(vi.fn<SpacePageDeps['view']>(async () => boardsData))
+
+  await page.getByRole('combobox', { name: 'Show' }).click()
+  await page.getByRole('option', { name: 'Not finished' }).click()
+
+  await expect.element(page.getByRole('link', { name: /Archive/ })).not.toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Roadmap/ })).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Launch/ })).toBeInTheDocument()
+
+  await page.getByRole('combobox', { name: 'Show' }).click()
+  await page.getByRole('option', { exact: true, name: 'Finished' }).click()
+
+  await expect.element(page.getByRole('link', { name: /Archive/ })).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Roadmap/ })).not.toBeInTheDocument()
+})
+
+it('says no boards match when the filter hides them all', async () => {
+  await mount(vi.fn<SpacePageDeps['view']>(async () => pageData))
+
+  await page.getByRole('combobox', { name: 'Show' }).click()
+  await page.getByRole('option', { exact: true, name: 'Finished' }).click()
+
+  await expect.element(page.getByText('No boards match')).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Backlog/ })).toBeInTheDocument()
 })

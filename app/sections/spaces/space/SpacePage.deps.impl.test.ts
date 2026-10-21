@@ -54,8 +54,13 @@ test('maps the space and its board summaries', async () => {
   assert.equal(boards[0]?.kind, 'backlog')
   assert.equal(boards[0]?.issueCount, 2)
   assert.deepEqual(
-    boards.map((board) => board.name),
-    ['Backlog', 'New', 'Middle', 'Old'],
+    boards.map((board) => [board.name, board.createdAt]),
+    [
+      ['Backlog', '2026-04-01T00:00:00Z'],
+      ['Old', '2026-01-01T00:00:00Z'],
+      ['New', '2026-03-01T00:00:00Z'],
+      ['Middle', '2026-02-01T00:00:00Z'],
+    ],
   )
   assert.deepEqual(about, {
     description: 'The **web** app.',

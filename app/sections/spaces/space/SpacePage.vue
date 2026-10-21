@@ -53,14 +53,32 @@
             <IconChevronRight class="space-row-chevron" />
           </NuxtLink>
 
-          <h2 class="space-group">
-            {{ t('boards') }}
-            <span class="muted">{{ regularBoards.length }}</span>
-          </h2>
+          <div class="space-group">
+            <h2 class="space-group-title">
+              {{ t('boards') }}
+              <span class="muted">{{ visibleBoards.length }}</span>
+            </h2>
+            <div
+              v-if="regularBoards.length"
+              class="space-group-controls">
+              <BaseSelect
+                :aria-label="t('show')"
+                :model-value="state.filter"
+                :options="filterOptions"
+                variant="inline"
+                @update:model-value="changeFilter" />
+              <BaseSelect
+                :aria-label="t('sortBy')"
+                :model-value="state.sort"
+                :options="sortOptions"
+                variant="inline"
+                @update:model-value="changeSort" />
+            </div>
+          </div>
 
-          <template v-if="regularBoards.length">
+          <template v-if="visibleBoards.length">
             <NuxtLink
-              v-for="board in regularBoards"
+              v-for="board in visibleBoards"
               :key="board.id"
               class="space-row"
               :to="organizationRoutes.board(spaceKey, board.id)">
@@ -100,6 +118,10 @@
             </NuxtLink>
           </template>
           <BaseEmptyState
+            v-else-if="regularBoards.length"
+            :hint="t('noMatchHint')"
+            :title="t('noMatchTitle')" />
+          <BaseEmptyState
             v-else
             :hint="t('emptyHint')"
             :title="t('emptyTitle')" />
@@ -120,7 +142,7 @@ import {
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import SpaceAbout from '~/sections/spaces/space/components/SpaceAbout/SpaceAbout.vue'
-import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
+import type { SpaceBoardSummary, SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
 const props = defineProps<{ deps: SpacePageDeps; spaceKey: string }>()
 
@@ -135,10 +157,20 @@ const { t, tp } = useI18n({
     emptyTitle: 'No boards yet',
     inProgress: 'In progress',
     issues: 'issue | issues',
+    allBoards: 'All boards',
+    finished: 'Finished',
     loadError: 'Could not load space',
     loading: 'Loading space…',
+    name: 'Name',
     new: 'New',
+    newest: 'Newest first',
+    noMatchHint: 'Show all boards to see the rest.',
+    noMatchTitle: 'No boards match',
+    notFinished: 'Not finished',
+    oldest: 'Oldest first',
     settings: 'Settings',
+    show: 'Show',
+    sortBy: 'Sort by',
     space: 'Space',
     spaceSettings: 'Space settings',
   },
@@ -152,10 +184,20 @@ const { t, tp } = useI18n({
     emptyTitle: 'Досок пока нет',
     inProgress: 'В работе',
     issues: 'задача | задачи | задач',
+    allBoards: 'Все доски',
+    finished: 'Завершённые',
     loadError: 'Не удалось загрузить раздел',
     loading: 'Загрузка раздела…',
+    name: 'По названию',
     new: 'Новая',
+    newest: 'Сначала новые',
+    noMatchHint: 'Покажите все доски, чтобы увидеть остальные.',
+    noMatchTitle: 'Подходящих досок нет',
+    notFinished: 'Незавершённые',
+    oldest: 'Сначала старые',
     settings: 'Настройки',
+    show: 'Показать',
+    sortBy: 'Сортировка',
     space: 'Раздел',
     spaceSettings: 'Настройки раздела',
   },
@@ -173,6 +215,46 @@ const boards = computed(() => data.value?.boards ?? [])
 const backlog = computed(() => boards.value.find((board) => board.kind === 'backlog'))
 
 const regularBoards = computed(() => boards.value.filter((board) => board.kind === 'board'))
+
+const boardFilters = ['all', 'notFinished', 'finished'] as const
+type BoardFilter = (typeof boardFilters)[number]
+
+const boardSorts = ['newest', 'oldest', 'name'] as const
+type BoardSort = (typeof boardSorts)[number]
+
+const state = reactive<{ filter: BoardFilter; sort: BoardSort }>({ filter: 'all', sort: 'newest' })
+
+const filterOptions = computed(() => [
+  { label: t('allBoards'), value: 'all' },
+  { label: t('notFinished'), value: 'notFinished' },
+  { label: t('finished'), value: 'finished' },
+])
+
+const sortOptions = computed(() => boardSorts.map((sort) => ({ label: t(sort), value: sort })))
+
+const changeFilter = (value: string): void => {
+  state.filter = boardFilters.find((filter) => filter === value) ?? 'all'
+}
+
+const changeSort = (value: string): void => {
+  state.sort = boardSorts.find((sort) => sort === value) ?? 'newest'
+}
+
+const matchesFilter: Record<BoardFilter, (board: SpaceBoardSummary) => boolean> = {
+  all: () => true,
+  finished: (board) => board.status === 'Done',
+  notFinished: (board) => board.status !== 'Done',
+}
+
+const compareBoards: Record<BoardSort, (a: SpaceBoardSummary, b: SpaceBoardSummary) => number> = {
+  name: (a, b) => a.name.localeCompare(b.name),
+  newest: (a, b) => b.createdAt.localeCompare(a.createdAt),
+  oldest: (a, b) => a.createdAt.localeCompare(b.createdAt),
+}
+
+const visibleBoards = computed(() =>
+  regularBoards.value.filter(matchesFilter[state.filter]).toSorted(compareBoards[state.sort]),
+)
 
 const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
@@ -289,16 +371,31 @@ const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' 
   width: var(--icon-size);
 }
 
-/* A group inside the list: a quiet label, no fill, so it never reads as a hovered row. */
+/* A group inside the list: a quiet label, no fill, so it never reads as a hovered row. Its filter and
+   sort sit at the end of the same line. */
 .space-group {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: space-between;
+  margin: var(--space-6) 0 0;
+  padding: var(--space-2) var(--space-4);
+}
+
+.space-group-title {
   align-items: center;
   color: var(--color-muted);
   display: flex;
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-medium);
   gap: var(--space-2);
-  margin: var(--space-6) 0 0;
-  padding: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.space-group-controls {
+  display: flex;
+  gap: var(--space-1);
 }
 
 /* Under 1100px the one-line row would cut the legend: the progress goes under the name, the count
