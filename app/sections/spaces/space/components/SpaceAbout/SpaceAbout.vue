@@ -61,6 +61,7 @@
 
 <script setup lang="ts">
 import { IconChevronDown, IconExternalLink, IconInfoCircle } from '@tabler/icons-vue'
+import type { RouteLocationRaw } from 'vue-router'
 
 import { renderMarkdown } from '~/utils/renderMarkdown'
 
@@ -68,7 +69,7 @@ import type { SpaceAboutViewModel } from './SpaceAbout.types'
 
 const props = defineProps<{
   about: SpaceAboutViewModel
-  settingsTo: string
+  settingsTo: RouteLocationRaw
   spaceKey: string
 }>()
 

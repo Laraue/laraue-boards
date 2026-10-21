@@ -119,8 +119,8 @@ import {
 } from '@tabler/icons-vue'
 
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
-import SpaceAbout from '~/sections/spaces/space/components/SpaceAbout/SpaceAbout.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
+import SpaceAbout from '~/sections/spaces/space/components/SpaceAbout/SpaceAbout.vue'
 import type { SpacePageDeps } from '~/sections/spaces/space/SpacePage.deps'
 
 const props = defineProps<{ deps: SpacePageDeps; spaceKey: string }>()

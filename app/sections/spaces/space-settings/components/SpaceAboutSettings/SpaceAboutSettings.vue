@@ -169,9 +169,9 @@ import MarkdownEditor from '~/components/markdown-editor/MarkdownEditor.vue'
 import type { SpaceAboutSettingsDeps } from './SpaceAboutSettings.deps'
 import type { SpaceLinkItem } from './SpaceAboutSettings.types'
 
-const MAX_LINK_DESCRIPTION_LENGTH = 1024
-
 const props = defineProps<{ deps: SpaceAboutSettingsDeps; spaceKey: string }>()
+
+const MAX_LINK_DESCRIPTION_LENGTH = 1024
 
 const confirm = useConfirm()
 const { t } = useI18n({
@@ -211,7 +211,8 @@ const { t } = useI18n({
     descriptionPlaceholder: 'Например: бэкенд и веб-приложение нашего трекера…',
     edit: 'Изменить',
     linkDescription: 'Что это',
-    linkDescriptionPlaceholder: 'Например: веб-приложение на Nuxt; перед коммитом запускайте pnpm pre-commit',
+    linkDescriptionPlaceholder:
+      'Например: веб-приложение на Nuxt; перед коммитом запускайте pnpm pre-commit',
     links: 'Ссылки',
     linksHint:
       'Репозитории, документация, дизайн и дашборды раздела. Агент работает в тех репозиториях, которые найдёт на вашем компьютере.',
@@ -274,7 +275,9 @@ const {
 } = useApiAction(props.deps.deleteLink)
 
 const busy = computed(() => creatingLink.value || updatingLink.value || deletingLink.value)
-const linkMessage = computed(() => createMessage.value || updateMessage.value || deleteMessage.value)
+const linkMessage = computed(
+  () => createMessage.value || updateMessage.value || deleteMessage.value,
+)
 
 const saveDescription = async (): Promise<void> => {
   await executeSaveDescription({ description: state.description, spaceKey: props.spaceKey })

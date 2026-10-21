@@ -1,4 +1,8 @@
-import type { SpaceAboutSettingsData, SpaceLinkInput, SpaceLinkItem } from './SpaceAboutSettings.types'
+import type {
+  SpaceAboutSettingsData,
+  SpaceLinkInput,
+  SpaceLinkItem,
+} from './SpaceAboutSettings.types'
 
 export type SpaceAboutSettingsDeps = {
   createLink: (input: SpaceLinkInput & { spaceKey: string }) => Promise<SpaceLinkItem>

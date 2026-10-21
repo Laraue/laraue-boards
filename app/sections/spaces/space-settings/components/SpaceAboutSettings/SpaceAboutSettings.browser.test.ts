@@ -38,7 +38,10 @@ it('adds a link with what it is', async () => {
   const deps = depsOf()
 
   await mount(deps)
-  await page.getByRole('textbox', { name: 'URL' }).last().fill('https://github.com/Laraue/laraue-boards')
+  await page
+    .getByRole('textbox', { name: 'URL' })
+    .last()
+    .fill('https://github.com/Laraue/laraue-boards')
   await page.getByRole('textbox', { name: 'What it is' }).last().fill('Nuxt web app')
   await page.getByRole('button', { name: 'Add link' }).click()
 
