@@ -13,9 +13,9 @@ You can hand an issue to an AI coding agent — Claude Code or OpenAI Codex on y
 ## How it works
 
 1. **You hand the issue off.** In the **Agent** section of the issue page, click **Hand to agent**. The card on the board shows **For agent**.
-2. **Your agent takes it.** A runner on your machine — [boards-agent](https://github.com/Laraue/boards-agent), see [below](#set-up-the-runner) — signs in with your [API key](/en/documentation/integrations/api-keys), picks up the issues handed off to you, puts the work on a branch named after the issue in the space's repositories, and moves the issue to in progress. The card shows **Agent working**.
+2. **Your agent takes it.** A runner on your machine — [laraue-boards-agent](https://github.com/Laraue/boards-agent) (`lba` for short), see [below](#set-up-the-runner) — signs in with your [API key](/en/documentation/integrations/api-keys), picks up the issues handed off to you, puts the work on a branch named after the issue in the space's repositories, and moves the issue to in progress. The card shows **Agent working**.
 3. **The agent works.** It writes progress comments and a summary, then moves the issue to a review status. The card shows **Agent done · review**, and your computer shows a notification.
-4. **You review.** Move the issue to done, or click **Send back to agent** in the Agent section and write what's wrong: your comment is added, the issue moves back to not started and goes to the agent again, which continues on the same branch.
+4. **You review.** Move the issue to done, or ask for changes: [right on your computer](#ask-for-changes) with `lba continue`, or with **Send back to agent** in the Agent section.
 
 The badge stays on the card once an issue was handed off: after review it shows **Done by agent**, and a cancelled run **Agent cancelled**. If the agent gives up, the card shows **Agent failed**. On the issue page the reason and when it happened are in a red box in the Agent section, and the runner leaves a comment with the details.
 
@@ -41,7 +41,7 @@ You can hand off a [blocked issue](/en/documentation/features/issue-links). It w
 
 ## Set up the runner
 
-[boards-agent](https://github.com/Laraue/boards-agent) is the runner: a single program on your computer, for macOS, Windows and Linux. It's in beta. You need git and a coding agent — [Claude Code](https://claude.com/claude-code) or [Codex](https://developers.openai.com/codex/cli).
+[laraue-boards-agent](https://github.com/Laraue/boards-agent) — `lba` for short — is the runner: a single program on your computer, for macOS, Windows and Linux. It's in beta. You need git and a coding agent — [Claude Code](https://claude.com/claude-code) or [Codex](https://developers.openai.com/codex/cli).
 
 Install it with one command. It downloads the newest release and starts the setup:
 
@@ -64,7 +64,7 @@ The setup:
 5. Asks what happens to the agent's branch when it's done: nothing, push it, or push it and open a pull request ([see below](#when-the-agent-is-done)).
 6. Offers to keep the runner running in the background, also after a restart, so there's nothing to start by hand.
 
-To update, run the install command again: it replaces boards-agent and restarts it, without asking the questions again. Run `boards-agent setup` to change the answers. The [README](https://github.com/Laraue/boards-agent#readme) has the details.
+To update, run the install command again: it replaces laraue-boards-agent and restarts it, without asking the questions again. Run `lba setup` to change the answers. The [README](https://github.com/Laraue/boards-agent#readme) has the details.
 
 ## Which repositories the agent works in
 
@@ -89,6 +89,20 @@ Either way, the agent runs with a fixed list of allowed commands and can't push.
 
 - **Notifications.** Your computer shows a notification from **laraue-boards-agent** when the agent starts, when the issue is ready for review, and if it fails or is cancelled. Click it to open the issue. On a Mac, the first one may ask whether laraue-boards-agent may send notifications.
 - **The branch.** By default it stays on your computer, for you to review and push. If you chose so in setup, boards-agent itself pushes it after the agent is done — in each repository the agent changed — and can also open a pull request, with the [GitHub CLI](https://cli.github.com) signed in. The links are in boards-agent's comment on the issue and in the notification. The agent never pushes on its own.
+
+## Ask for changes
+
+**On your computer: `lba continue`.** The agent's work is on your computer, so the quickest way to ask for a change is there. In a terminal, run:
+
+```bash
+lba continue WEB-42
+```
+
+It opens the agent's own session of that issue — the same conversation, with everything it knew, in the same repositories and on the issue's branch. Tell it what's wrong ("the button is still blue", "add a test for the empty list"), watch the changes and run the app right away: nothing moves in Boards and nothing waits for the runner. When you exit, one comment with the new commits goes to the issue. To hand over a single change without staying in the conversation, add it in quotes: `lba continue WEB-42 "make the button red"`.
+
+Only the computer that ran the issue has its session. In checkout mode your clones are switched back to the issue's branch first, asking about uncommitted changes, as before a run.
+
+**From Boards: Send back to agent.** In the Agent section of an issue under review, **Send back to agent** asks what's wrong; your comment is added, the issue moves back to not started and goes to the agent again. It continues on the same branch — its comment says "continuing … (N commits so far)". Handy when you're away from the computer.
 
 ## For runner authors
 
