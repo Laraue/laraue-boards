@@ -95,12 +95,19 @@ Either way, the agent runs with a fixed list of allowed commands and can't push.
 **On your computer: `lba continue`.** The agent's work is on your computer, so the quickest way to ask for a change is there. In a terminal, run:
 
 ```bash
-lba continue WEB-42
+lba continue
 ```
 
-It opens the agent's own session of that issue — the same conversation, with everything it knew, in the same repositories and on the issue's branch. Tell it what's wrong ("the button is still blue", "add a test for the empty list"), watch the changes and run the app right away: nothing moves in Boards and nothing waits for the runner. When you exit, one comment with the new commits goes to the issue. To hand over a single change without staying in the conversation, add it in quotes: `lba continue WEB-42 "make the button red"`.
+It opens the agent's own session — the same conversation, with everything it knew, in the same repositories and on the issue's branch. Without an issue key it takes the issue of the branch you're on, or else the one your agent worked on last, and says which. Tell it what's wrong ("the button is still blue", "add a test for the empty list"), watch the changes and run the app right away: nothing moves in Boards and nothing waits for the runner. When you exit, one comment with the new commits goes to the issue.
 
-Only the computer that ran the issue has its session. In checkout mode your clones are switched back to the issue's branch first, asking about uncommitted changes, as before a run.
+To hand over a single change without staying in the conversation, write it after the command — quotes are optional. The agent does it on its own and prints its answer:
+
+```bash
+lba continue WEB-42 make the button red like the other primary buttons
+lba continue WEB-42 print the Grafana dashboard JSON for the new metrics
+```
+
+Only the computer that ran the issue has its session. In checkout mode your clones are switched back to the issue's branch first, asking only about uncommitted changes.
 
 **From Boards: Send back to agent.** In the Agent section of an issue under review, **Send back to agent** asks what's wrong; your comment is added, the issue moves back to not started and goes to the agent again. It continues on the same branch — its comment says "continuing … (N commits so far)". Handy when you're away from the computer.
 
