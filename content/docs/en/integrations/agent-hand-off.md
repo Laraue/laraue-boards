@@ -78,7 +78,7 @@ An issue in a space with no repository on your computer stays waiting, for anoth
 
 The setup asks which of two ways you prefer:
 
-- **A separate worktree per issue** (the default). The agent works in its own copy of each repository, on a branch named after the issue, e.g. `agent/WEB-42`. Your clones aren't touched, so you can keep working in them meanwhile.
+- **A separate worktree per issue** (the default). The agent works in its own copy of each repository, on a branch named after the issue, e.g. `agent/WEB-42-fix-export`. Your clones aren't touched, so you can keep working in them meanwhile.
 - **Your own clones, one issue at a time.** The runner fetches each repository's main branch and switches your clone to a new branch from it. When the agent is done, the branch stays checked out: open it in your editor, run the app, and review the way you always do. Clones the agent didn't change go back to the branch they were on.
 
   A clean clone is switched without asking, whatever branch it's on — say, the previous issue's, while you review it; its commits stay on that branch. Only a clone with uncommitted changes makes the runner ask first, in a dialog, since switching could carry them along or clash with them. **Continue** checks again; your uncommitted changes are never touched, so it asks until you commit or stash them. **Not now** leaves the issue waiting and asks again in 10 minutes.

@@ -17,4 +17,4 @@ updatedAt: 2026-10-22
 
 - [Бэклог для разработки с ИИ: Claude Code и Cursor](/ru/documentation/use-cases/ai-agent-backlog) — пусть ИИ-агент для разработки читает ваш бэклог, заводит баги и переносит issues по ходу работы.
 
-- [Передайте задачи ИИ-агенту и проверяйте его работу](/ru/documentation/use-cases/delegate-issues-to-ai-agent) — отдайте понятные задачи Claude Code или Codex на вашем компьютере, проверяйте ветку там, где работаете, и просите изменений командой `lba continue`.
+- [Передайте задачи ИИ-агенту и проверяйте его работу](/ru/documentation/use-cases/delegate-issues-to-ai-agent) — передавайте понятные задачи Claude Code или Codex на вашем компьютере, проверяйте результат там, где работаете, и просите доработку командой `lba continue`.
