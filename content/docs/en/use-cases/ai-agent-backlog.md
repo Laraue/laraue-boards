@@ -6,9 +6,11 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-10-01
-updatedAt: 2026-10-01
+updatedAt: 2026-10-22
 ---
 An AI coding agent works on your code, but the list of what to build usually lives somewhere else — so you end up copying bug reports into the chat and status updates back out. Laraue Boards removes that step: the agent reads your backlog, creates cards and moves them while it works.
+
+This page is about working **with** the agent, in a conversation. To hand issues off and let the agent work on them on its own while you do something else, see [Delegate issues to a coding agent and review its work](/en/documentation/use-cases/delegate-issues-to-ai-agent).
 
 ## What is an MCP server?
 
@@ -59,6 +61,7 @@ Adjust the space key and the statuses to your own board.
 
 ## Related pages
 
+- [Delegate issues to a coding agent and review its work](/en/documentation/use-cases/delegate-issues-to-ai-agent)
 - [Connecting Claude and other AI agents via MCP](/en/documentation/integrations/mcp)
 - [API keys — connecting your own tools to Boards](/en/documentation/integrations/api-keys)
 - [Permissions management](/en/documentation/working-in-a-team/permissions)

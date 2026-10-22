@@ -6,9 +6,11 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-10-01
-updatedAt: 2026-10-01
+updatedAt: 2026-10-22
 ---
 ИИ-агент для разработки работает с кодом, а список того, что нужно сделать, обычно лежит в другом месте — и вы вручную переносите баги в чат и статусы обратно. Laraue Boards убирает этот шаг: агент читает бэклог, создаёт карточки и переносит их по ходу работы.
+
+Эта страница — о работе **вместе** с агентом, в диалоге. Если вы хотите передавать задачи агенту, чтобы он делал их сам, пока вы заняты другим, см. [Передайте задачи ИИ-агенту и проверяйте его работу](/ru/documentation/use-cases/delegate-issues-to-ai-agent).
 
 ## Что такое MCP-сервер?
 
@@ -59,6 +61,7 @@ updatedAt: 2026-10-01
 
 ## См. также
 
+- [Передайте задачи ИИ-агенту и проверяйте его работу](/ru/documentation/use-cases/delegate-issues-to-ai-agent)
 - [Подключение Claude и других AI-агентов через MCP](/ru/documentation/integrations/mcp)
 - [API-ключи — подключение ваших инструментов к Boards](/ru/documentation/integrations/api-keys)
 - [Управление правами](/ru/documentation/working-in-a-team/permissions)
