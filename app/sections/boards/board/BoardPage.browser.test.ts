@@ -3,6 +3,8 @@ import { afterEach, expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import type { LocationQueryRaw } from 'vue-router'
 
+import { ApiError } from '#infrastructure/api/request'
+
 import type { BoardPageDeps, BoardPageViewModel } from './BoardPage.deps'
 import BoardPage from './BoardPage.vue'
 
@@ -18,23 +20,27 @@ const board: BoardPageViewModel = {
   issueCount: 0,
   spaceColor: '#4774d4',
   spaceName: 'Product',
+  status: 'New',
   title: 'Roadmap',
 }
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
 const mount = async ({
+  changeBoardStatus = vi.fn<BoardPageDeps['changeBoardStatus']>(async () => {}),
   data = board,
   moveIssueToBacklog = vi.fn<BoardPageDeps['moveIssueToBacklog']>(),
   onCreateIssue = vi.fn<(statusId: string) => void>(),
   onReplaceQuery = vi.fn<(query: LocationQueryRaw) => void>(),
 }: {
+  changeBoardStatus?: BoardPageDeps['changeBoardStatus']
   data?: BoardPageViewModel
   moveIssueToBacklog?: BoardPageDeps['moveIssueToBacklog']
   onCreateIssue?: (statusId: string) => void
   onReplaceQuery?: (query: LocationQueryRaw) => void
 } = {}) => {
   const deps: BoardPageDeps = {
+    changeBoardStatus,
     issueDialog: {} as BoardPageDeps['issueDialog'],
     loadMoreBoardIssues: vi.fn<BoardPageDeps['loadMoreBoardIssues']>(),
     moveBoardIssue: vi.fn<BoardPageDeps['moveBoardIssue']>(),
@@ -74,6 +80,43 @@ it('puts a typed board search into the route query', async () => {
   await page.getByLabelText('Search issues').fill('bug')
 
   await vi.waitFor(() => expect(onReplaceQuery).toHaveBeenLastCalledWith({ search: 'bug' }))
+})
+
+it('changes the board status from the header', async () => {
+  const changeBoardStatus = vi.fn<BoardPageDeps['changeBoardStatus']>(async () => {})
+
+  await mount({ changeBoardStatus })
+  await page.getByRole('button', { name: 'Board status: New. Change' }).click()
+  await page.getByRole('menuitem', { name: 'In progress' }).click()
+
+  expect(changeBoardStatus).toHaveBeenCalledWith({ boardId: '12', status: 'Active' })
+  await expect
+    .element(page.getByRole('button', { name: 'Board status: In progress. Change' }))
+    .toBeInTheDocument()
+})
+
+it('puts the previous board status back when saving it fails', async () => {
+  const changeBoardStatus = vi.fn<BoardPageDeps['changeBoardStatus']>(async () => {
+    throw new ApiError(400)
+  })
+
+  await mount({ changeBoardStatus })
+  await page.getByRole('button', { name: 'Board status: New. Change' }).click()
+  await page.getByRole('menuitem', { name: 'Done' }).click()
+
+  await expect.element(page.getByRole('alert')).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { name: 'Board status: New. Change' }))
+    .toBeInTheDocument()
+})
+
+it('shows the board status read-only to someone who cannot update the board', async () => {
+  await mount({ data: { ...board, canUpdate: false, status: 'Done' } })
+
+  await expect.element(page.getByText('Done', { exact: true })).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { name: /^Board status/ }))
+    .not.toBeInTheDocument()
 })
 
 it('requests issue creation in the selected column', async () => {
