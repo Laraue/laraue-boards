@@ -1,17 +1,15 @@
-<!-- The board's own status in the page header: a menu to change it for an editor, a plain badge
-     for everyone else. -->
+<!-- The board's own status in the page header: a menu to change it for an editor, a plain label
+     for everyone else. Colored like a badge, but as big as the header's controls, so the color
+     fills the whole button. -->
 <template>
-  <BaseMenu
-    v-if="canUpdate"
-    align="end">
+  <BaseMenu v-if="canUpdate">
     <template #trigger>
       <BaseButton
         :aria-label="t('changeStatus', { status: statusLabel(status) })"
-        class="board-status-trigger"
-        :loading="saving"
-        size="small"
-        variant="ghost">
-        <BaseBadge :variant="statusVariant[status]">{{ statusLabel(status) }}</BaseBadge>
+        class="board-status"
+        :class="statusClass[status]"
+        :loading="saving">
+        {{ statusLabel(status) }}
         <IconChevronDown class="board-status-chevron" />
       </BaseButton>
     </template>
@@ -25,11 +23,12 @@
       {{ statusLabel(option) }}
     </BaseMenuItem>
   </BaseMenu>
-  <BaseBadge
+  <span
     v-else
-    :variant="statusVariant[status]">
+    class="board-status"
+    :class="statusClass[status]">
     {{ statusLabel(status) }}
-  </BaseBadge>
+  </span>
 </template>
 
 <script setup lang="ts">
@@ -61,7 +60,7 @@ const { t } = useI18n({
 
 const statusOptions: BoardStatus[] = ['New', 'Active', 'Done']
 // The same words and colors as the boards list of the space page.
-const statusVariant = { Active: 'warning', Done: 'success', New: 'neutral' } as const
+const statusClass = { Active: 'warning', Done: 'success', New: 'neutral' } as const
 
 const statusLabel = (status: BoardStatus) =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
@@ -74,12 +73,34 @@ const select = (status: BoardStatus) => {
 </script>
 
 <style scoped>
-.board-status-trigger {
+.board-status {
+  align-items: center;
+  background: var(--color-soft);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: inline-flex;
+  flex: none;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
   gap: var(--space-1);
+  height: var(--control-height);
+  justify-content: center;
+  padding: 0 var(--space-3);
+  white-space: nowrap;
+}
+
+.board-status.warning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.board-status.success {
+  background: var(--color-success-soft);
+  color: var(--color-success);
 }
 
 .board-status-chevron {
-  color: var(--color-muted);
   height: 0.75rem;
   width: 0.75rem;
 }

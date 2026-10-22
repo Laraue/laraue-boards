@@ -18,6 +18,11 @@
         <template
           v-if="viewModel"
           #tools>
+          <BoardStatusMenu
+            :can-update="viewModel.canUpdate"
+            :on-change="changeBoardStatus"
+            :saving="changingBoardStatus"
+            :status="viewModel.status" />
           <input
             :aria-label="t('searchIssues')"
             :placeholder="t('searchIssues')"
@@ -33,11 +38,6 @@
         <template
           v-if="viewModel"
           #actions>
-          <BoardStatusMenu
-            :can-update="viewModel.canUpdate"
-            :on-change="changeBoardStatus"
-            :saving="changingBoardStatus"
-            :status="viewModel.status" />
           <BaseButton
             v-if="viewModel.canUpdate || viewModel.canDelete"
             :aria-label="t('boardSettings')"

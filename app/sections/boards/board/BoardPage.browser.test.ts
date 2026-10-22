@@ -114,9 +114,7 @@ it('shows the board status read-only to someone who cannot update the board', as
   await mount({ data: { ...board, canUpdate: false, status: 'Done' } })
 
   await expect.element(page.getByText('Done', { exact: true })).toBeInTheDocument()
-  await expect
-    .element(page.getByRole('button', { name: /^Board status/ }))
-    .not.toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: /^Board status/ })).not.toBeInTheDocument()
 })
 
 it('requests issue creation in the selected column', async () => {
