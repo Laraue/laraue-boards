@@ -81,13 +81,13 @@ The setup asks which of two ways you prefer:
 - **A separate worktree per issue** (the default). The agent works in its own copy of each repository, on a branch named after the issue, e.g. `agent/WEB-42`. Your clones aren't touched, so you can keep working in them meanwhile.
 - **Your own clones, one issue at a time.** The runner fetches each repository's main branch and switches your clone to a new branch from it. When the agent is done, the branch stays checked out: open it in your editor, run the app, and review the way you always do. Clones the agent didn't change go back to the branch they were on.
 
-  Before switching a clone that has uncommitted changes or isn't on its main branch — for example, it's still on the previous issue's branch while you review it — the runner asks first, in a dialog. **Continue** switches it; your uncommitted changes are never touched, so it asks again until you commit or stash them. **Not now** leaves the issue waiting and asks again in 10 minutes.
+  A clean clone is switched without asking, whatever branch it's on — say, the previous issue's, while you review it; its commits stay on that branch. Only a clone with uncommitted changes makes the runner ask first, in a dialog, since switching could carry them along or clash with them. **Continue** checks again; your uncommitted changes are never touched, so it asks until you commit or stash them. **Not now** leaves the issue waiting and asks again in 10 minutes.
 
 Either way, the agent runs with a fixed list of allowed commands and can't push.
 
 ## When the agent is done
 
-- **Notifications.** Your computer shows a notification from **laraue-boards-agent** when the agent starts, when the issue is ready for review, and if it fails or is cancelled. Click it to open the issue. On a Mac, the first one may ask whether laraue-boards-agent may send notifications.
+- **Notifications.** Your computer shows a notification from **laraue-boards-agent**, with the Laraue logo, when the agent starts, when the issue is ready for review, and if it fails or is cancelled. Click it to open the issue. On a Mac, the first one may ask whether laraue-boards-agent may send notifications.
 - **The branch.** By default it stays on your computer, for you to review and push. If you chose so in setup, boards-agent itself pushes it after the agent is done — in each repository the agent changed — and can also open a pull request, with the [GitHub CLI](https://cli.github.com) signed in. The links are in boards-agent's comment on the issue and in the notification. The agent never pushes on its own.
 
 ## Ask for changes
