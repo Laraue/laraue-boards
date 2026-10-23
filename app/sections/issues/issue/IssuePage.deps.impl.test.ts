@@ -27,17 +27,30 @@ test('maps issue detail', async () => {
           attachments: [
             {
               fileName: 'image.png',
+              fileSize: 1000,
               id: 'image',
+              mimeType: 'image/png',
               originalFileId: 'original',
               previewFileId: 'preview',
               type: 'Image',
             },
             {
               fileName: 'video.mp4',
+              fileSize: null,
               id: 'file',
+              mimeType: 'video/mp4',
               originalFileId: 'file',
               previewFileId: 'file',
               type: 'Video',
+            },
+            {
+              fileName: 'spec.pdf',
+              fileSize: 2048,
+              id: 'document',
+              mimeType: 'application/pdf',
+              originalFileId: 'pdf',
+              previewFileId: null,
+              type: 'Document',
             },
           ],
           attributeValues: [
@@ -159,8 +172,16 @@ test('maps issue detail', async () => {
   assert.deepEqual(result.attachments, [
     {
       id: 'image',
+      kind: 'image',
       originalUrl: 'https://api.test/api/files/original',
       previewUrl: 'https://api.test/api/files/preview',
+    },
+    {
+      fileName: 'spec.pdf',
+      fileSize: 2048,
+      id: 'document',
+      kind: 'document',
+      url: 'https://api.test/api/files/pdf',
     },
   ])
   assert.deepEqual(paths(), ['/api/issues/ISS-1', '/api/spaces/product/epics'])

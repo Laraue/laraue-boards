@@ -1,4 +1,7 @@
+import type { IssueAttachmentViewModel } from '~/components/issue-attachments/IssueAttachments.types'
+
 export type IssueCommentViewModel = {
+  attachments: IssueAttachmentViewModel[]
   canModify: boolean
   createdAt: string
   id: string

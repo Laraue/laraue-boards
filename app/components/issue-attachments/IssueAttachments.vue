@@ -2,7 +2,7 @@
   <div class="issue-attachments">
     <input
       ref="inputEl"
-      accept="image/png,image/jpeg,.png,.jpg,.jpeg"
+      :accept="ATTACHMENT_ACCEPT"
       aria-hidden="true"
       class="issue-attachment-input"
       :disabled="disabled"
@@ -17,10 +17,10 @@
       {{ attachmentError }}
     </span>
     <div
-      v-if="visibleAttachments.length || pendingPreviews.length"
+      v-if="visibleImages.length || pendingImages.length"
       class="issue-attachment-gallery">
       <div
-        v-for="(attachment, index) in visibleAttachments"
+        v-for="(attachment, index) in visibleImages"
         :key="attachment.id"
         class="issue-attachment-preview">
         <button
@@ -41,7 +41,7 @@
         </BaseIconButton>
       </div>
       <div
-        v-for="(preview, index) in pendingPreviews"
+        v-for="preview in pendingImages"
         :key="preview.url"
         class="issue-attachment-preview">
         <button
@@ -59,7 +59,7 @@
           v-if="!disabled"
           class="issue-attachment-remove"
           :label="`${t('remove')} ${preview.file.name}`"
-          @click="removeFile(index)">
+          @click="removeFile(preview.file)">
           <IconX />
         </BaseIconButton>
         <div
@@ -71,6 +71,58 @@
         </div>
       </div>
     </div>
+    <!-- Documents have no preview: a file with its name and size, opened as a download. -->
+    <ul
+      v-if="visibleDocuments.length || pendingDocuments.length"
+      class="issue-attachment-files">
+      <li
+        v-for="attachment in visibleDocuments"
+        :key="attachment.id"
+        class="issue-attachment-file">
+        <a
+          class="issue-attachment-file-link"
+          download
+          :href="attachment.url"
+          rel="noopener">
+          <IconFileText />
+          <span class="issue-attachment-file-name">{{ attachment.fileName || t('document') }}</span>
+          <span
+            v-if="attachment.fileSize !== undefined"
+            class="issue-attachment-file-size">
+            {{ formatFileSize(attachment.fileSize) }}
+          </span>
+        </a>
+        <BaseIconButton
+          v-if="onRemoveAttachment && !disabled"
+          class="issue-attachment-file-remove"
+          :label="`${t('remove')} ${attachment.fileName || t('document')}`"
+          @click="onRemoveAttachment(attachment.id)">
+          <IconX />
+        </BaseIconButton>
+      </li>
+      <li
+        v-for="file in pendingDocuments"
+        :key="`${file.name}-${file.size}-${file.lastModified}`"
+        class="issue-attachment-file">
+        <span class="issue-attachment-file-link">
+          <IconLoader
+            v-if="disabled"
+            :aria-label="t('uploading')"
+            class="issue-attachment-file-uploading"
+            role="status" />
+          <IconFileText v-else />
+          <span class="issue-attachment-file-name">{{ file.name }}</span>
+          <span class="issue-attachment-file-size">{{ formatFileSize(file.size) }}</span>
+        </span>
+        <BaseIconButton
+          v-if="!disabled"
+          class="issue-attachment-file-remove"
+          :label="`${t('remove')} ${file.name}`"
+          @click="removeFile(file)">
+          <IconX />
+        </BaseIconButton>
+      </li>
+    </ul>
     <DialogRoot
       :open="activeAttachment !== null"
       @update:open="(open) => !open && closeLightbox()">
@@ -110,7 +162,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconLoader, IconX } from '@tabler/icons-vue'
+import { IconFileText, IconLoader, IconX } from '@tabler/icons-vue'
 import {
   DialogContent,
   DialogOverlay,
@@ -120,15 +172,22 @@ import {
   VisuallyHidden,
 } from 'reka-ui'
 
-import { MAX_IMAGE_SIZE } from '~/constants/attachments'
+import {
+  ATTACHMENT_ACCEPT,
+  DOCUMENT_EXTENSIONS,
+  IMAGE_TYPES,
+  MAX_DOCUMENT_SIZE,
+  MAX_IMAGE_SIZE,
+} from '~/constants/attachments'
 
 import type { IssueAttachmentViewModel } from './IssueAttachments.types'
 
 const props = defineProps<{
   attachments: IssueAttachmentViewModel[]
   disabled: boolean
-  files: File[]
-  onChange: (files: File[]) => void
+  // Without onChange the attachments are only shown (a comment's): nothing is picked or pasted.
+  files?: File[]
+  onChange?: (files: File[]) => void
   onRemoveAttachment?: (id: string) => void
   removedAttachmentIds?: string[]
 }>()
@@ -138,24 +197,35 @@ const { t } = useI18n({
     attachment: 'Attachment',
     attachmentPreview: 'Attachment preview',
     closePreview: 'Close attachment preview',
+    document: 'Document',
+    kilobytes: '{size} KB',
     loadingPreview: 'Loading attachment preview',
+    megabytes: '{size} MB',
     open: 'Open',
     openAttachment: 'Open attachment',
     remove: 'Remove',
     removeAttachment: 'Remove attachment',
-    tooLarge: 'Some images were not added because they are larger than 3 MB.',
+    tooLarge: 'Some files were not added: images are limited to 3 MB, documents to 10 MB.',
+    unsupported:
+      'Some files were not added: only images (JPEG, PNG, WebP, GIF) and documents (PDF, DOCX, DOC, Markdown, TXT, JSON) can be attached.',
     uploading: 'Uploading attachment',
   },
   ru: {
     attachment: 'Вложение',
     attachmentPreview: 'Предпросмотр вложения',
     closePreview: 'Закрыть предпросмотр вложения',
+    document: 'Документ',
+    kilobytes: '{size} КБ',
     loadingPreview: 'Загрузка предпросмотра вложения',
+    megabytes: '{size} МБ',
     open: 'Открыть',
     openAttachment: 'Открыть вложение',
     remove: 'Удалить',
     removeAttachment: 'Удалить вложение',
-    tooLarge: 'Некоторые изображения не добавлены: их размер превышает 3 МБ.',
+    tooLarge:
+      'Некоторые файлы не добавлены: изображения — не больше 3 МБ, документы — не больше 10 МБ.',
+    unsupported:
+      'Некоторые файлы не добавлены: прикрепить можно только изображения (JPEG, PNG, WebP, GIF) и документы (PDF, DOCX, DOC, Markdown, TXT, JSON).',
     uploading: 'Загрузка вложения',
   },
 })
@@ -164,51 +234,97 @@ const activeAttachment = ref<null | { alt: string; url: string }>(null)
 const attachmentError = ref('')
 const inputEl = useTemplateRef('inputEl')
 const lightboxLoading = ref(false)
-const pendingPreviews = ref<Array<{ file: File; url: string }>>([])
-const supportedImageTypes = new Set(['image/jpeg', 'image/png'])
+const pendingImages = ref<Array<{ file: File; url: string }>>([])
 const visibleAttachments = computed(() =>
   props.attachments.filter((attachment) => !props.removedAttachmentIds?.includes(attachment.id)),
 )
+const visibleImages = computed(() =>
+  visibleAttachments.value.flatMap((attachment) => (attachment.kind === 'image' ? [attachment] : [])),
+)
+const visibleDocuments = computed(() =>
+  visibleAttachments.value.flatMap((attachment) =>
+    attachment.kind === 'document' ? [attachment] : [],
+  ),
+)
+const pendingDocuments = computed(() =>
+  (props.files ?? []).filter((file) => getFileKind(file) === 'document'),
+)
+
+const extensionOf = (file: File) => {
+  const dot = file.name.lastIndexOf('.')
+  return dot === -1 ? '' : file.name.slice(dot).toLowerCase()
+}
+
+const includes = (values: readonly string[], value: string) => values.includes(value)
+
+const getFileKind = (file: File) => {
+  if (
+    includes(IMAGE_TYPES.mimeTypes, file.type) ||
+    includes(IMAGE_TYPES.extensions, extensionOf(file))
+  ) {
+    return 'image'
+  }
+  return includes(DOCUMENT_EXTENSIONS, extensionOf(file)) ? 'document' : null
+}
+
+const maxSizeOf = (kind: 'document' | 'image') =>
+  kind === 'image' ? MAX_IMAGE_SIZE : MAX_DOCUMENT_SIZE
 
 const changeFiles = (event: Event) => {
   const input = event.target as HTMLInputElement
-  const files = getSupportedImages(input.files ?? [])
+  const files = getSupportedFiles(input.files ?? [])
   input.value = ''
   if (files.length) {
-    props.onChange(files)
+    props.onChange?.(files)
   }
 }
 
 const pasteFiles = (event: ClipboardEvent) => {
-  if (props.disabled) {
+  if (props.disabled || !props.onChange) {
     return
   }
-  const pastedImages = getSupportedImages(event.clipboardData?.files ?? [])
-  if (!pastedImages.length) {
+  const pastedFiles = getSupportedFiles(event.clipboardData?.files ?? [])
+  if (!pastedFiles.length) {
     return
   }
   event.preventDefault()
   if (inputEl.value) {
     inputEl.value.value = ''
   }
-  props.onChange([...props.files, ...pastedImages])
+  props.onChange([...(props.files ?? []), ...pastedFiles])
 }
 
-const getSupportedImages = (files: File[] | FileList) => {
-  const images = Array.from(files).filter((file) => supportedImageTypes.has(file.type))
-  attachmentError.value = images.some((file) => file.size > MAX_IMAGE_SIZE) ? t('tooLarge') : ''
-  return images.filter((file) => file.size <= MAX_IMAGE_SIZE)
+const getSupportedFiles = (files: File[] | FileList) => {
+  const all = Array.from(files)
+  const supported = all.flatMap((file) => {
+    const kind = getFileKind(file)
+    return kind ? [{ file, kind }] : []
+  })
+  const fitting = supported.filter(({ file, kind }) => file.size <= maxSizeOf(kind))
+  attachmentError.value =
+    supported.length < all.length
+      ? t('unsupported')
+      : fitting.length < supported.length
+        ? t('tooLarge')
+        : ''
+  return fitting.map(({ file }) => file)
 }
 
-const removeFile = (index: number) => {
+// Decimal units, like the limits.
+const formatFileSize = (size: number) =>
+  size < 1_000_000
+    ? t('kilobytes', { size: Math.max(1, Math.round(size / 1_000)) })
+    : t('megabytes', { size: (size / 1_000_000).toFixed(1) })
+
+const removeFile = (file: File) => {
   if (inputEl.value) {
     inputEl.value.value = ''
   }
-  props.onChange(props.files.filter((_, fileIndex) => fileIndex !== index))
+  props.onChange?.((props.files ?? []).filter((pending) => pending !== file))
 }
 
 const revokePreviews = () => {
-  for (const preview of pendingPreviews.value) {
+  for (const preview of pendingImages.value) {
     URL.revokeObjectURL(preview.url)
   }
 }
@@ -242,15 +358,22 @@ watch(
   () => props.files,
   (files) => {
     revokePreviews()
-    pendingPreviews.value = files.map((file) => ({
-      file,
-      url: URL.createObjectURL(file),
-    }))
+    pendingImages.value = (files ?? [])
+      .filter((file) => getFileKind(file) === 'image')
+      .map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+      }))
   },
   { immediate: true },
 )
 
-onMounted(() => window.addEventListener('paste', pasteFiles))
+// Only where files can be added: shown attachments (a comment's) mustn't take the page's pastes.
+onMounted(() => {
+  if (props.onChange) {
+    window.addEventListener('paste', pasteFiles)
+  }
+})
 onBeforeUnmount(() => {
   revokePreviews()
   window.removeEventListener('paste', pasteFiles)
@@ -262,7 +385,9 @@ defineExpose({ pick: () => inputEl.value?.click() })
 
 <style scoped>
 /* Only a hidden input until there is something to show. */
-.issue-attachments:not(:has(.issue-attachment-gallery, .issue-attachment-error)) {
+.issue-attachments:not(
+    :has(.issue-attachment-gallery, .issue-attachment-files, .issue-attachment-error)
+  ) {
   display: none;
 }
 
@@ -319,6 +444,67 @@ defineExpose({ pick: () => inputEl.value?.click() })
   position: absolute;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.issue-attachment-files {
+  display: grid;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.issue-attachment-file {
+  align-items: center;
+  background: var(--color-feed);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-control);
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-inline-end: var(--space-1);
+}
+
+.issue-attachment-file-link {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  flex: 1;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  text-decoration: none;
+}
+
+a.issue-attachment-file-link:hover .issue-attachment-file-name {
+  text-decoration: underline;
+}
+
+.issue-attachment-file-link svg {
+  color: var(--color-muted);
+  flex: none;
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.issue-attachment-file-link .issue-attachment-file-uploading {
+  animation: var(--animation-spin);
+}
+
+.issue-attachment-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issue-attachment-file-size {
+  color: var(--color-muted);
+  flex: none;
+  font-size: var(--font-size-caption);
+}
+
+:deep(.issue-attachment-file-remove) {
+  --icon-btn-size: var(--icon-btn-size-small);
 }
 
 .issue-attachment-uploading {

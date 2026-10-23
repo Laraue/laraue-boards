@@ -105,6 +105,11 @@
             class="markdown"
             v-html="renderMarkdown(comment.text)" />
           <!-- eslint-enable vue/no-v-html -->
+          <!-- Only shown: the form adds none yet, MCP clients (agents) do. -->
+          <IssueAttachments
+            v-if="comment.attachments.length"
+            :attachments="comment.attachments"
+            :disabled="false" />
         </div>
       </article>
     </div>
@@ -158,6 +163,7 @@ import {
   IconX,
 } from '@tabler/icons-vue'
 
+import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vue'
 import MarkdownEditor from '~/components/markdown-editor/MarkdownEditor.vue'
 import { renderMarkdown } from '~/utils/renderMarkdown'
 

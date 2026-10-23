@@ -10,6 +10,7 @@ import IssueComments from './IssueComments.vue'
 
 const comments: IssueCommentViewModel[] = [
   {
+    attachments: [],
     canModify: true,
     createdAt: '2026-01-01T00:00:00Z',
     id: '12',

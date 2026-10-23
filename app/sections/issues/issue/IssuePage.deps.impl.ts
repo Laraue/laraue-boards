@@ -7,6 +7,7 @@ import { createSpaceSelectDeps } from '~/components/space-select/SpaceSelect.dep
 import { createStatusSelectDeps } from '~/components/status-select/StatusSelect.deps.impl'
 import { COLORS, DEFAULT_COLOR } from '~/constants/colors'
 import { mapAgentRunState } from '~/sections/issues/shared/api/agentRun'
+import { mapIssueAttachments } from '~/sections/issues/shared/api/issueAttachments'
 import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttributes'
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
@@ -58,22 +59,6 @@ const mapAttribute = (
       return assertNever(attribute.type)
   }
 }
-const mapAttachments = (
-  attachments: Schemas['AttachmentData'][],
-  baseUrl: string,
-): IssuePageViewModel['attachments'] =>
-  attachments.flatMap((attachment) => {
-    if (attachment.type !== 'Image') {
-      return []
-    }
-    const originalId = attachment.originalFileId
-    const previewId = attachment.previewFileId ?? originalId
-    if (!previewId) {
-      return []
-    }
-    const fileUrl = (id: string) => new URL(`/api/files/${encodeURIComponent(id)}`, baseUrl).href
-    return [{ id: attachment.id, originalUrl: fileUrl(originalId), previewUrl: fileUrl(previewId) }]
-  })
 
 const AGENT_HAND_OFF_BLOCKERS = {
   BoardNotReady: 'boardNotReady',
@@ -113,7 +98,7 @@ const mapIssue = (
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assignee.initials,
   assigneeIsCurrentUser: issue.assignee.isCurrentUser,
-  attachments: mapAttachments(issue.attachments, baseUrl),
+  attachments: mapIssueAttachments(issue.attachments, baseUrl),
   attributes: issue.attributeValues.map(mapAttribute),
   boardColor: issue.epicColor ?? DEFAULT_COLOR,
   boardId: String(issue.epicId),

@@ -9,6 +9,17 @@ test('maps the comments of an issue', async () => {
     data: [
       {
         apiKeyName: null,
+        attachments: [
+          {
+            fileName: 'report.md',
+            fileSize: 1200,
+            id: 'report',
+            mimeType: 'text/markdown',
+            originalFileId: 'file',
+            previewFileId: null,
+            type: 'Document',
+          },
+        ],
         canModify: true,
         createdAt: '2026-01-03T00:00:00Z',
         id: 8,
@@ -24,6 +35,15 @@ test('maps the comments of an issue', async () => {
 
   assert.deepEqual(await createIssueCommentsDeps(client).load({ issueKey: 'ISS-1' }), [
     {
+      attachments: [
+        {
+          fileName: 'report.md',
+          fileSize: 1200,
+          id: 'report',
+          kind: 'document',
+          url: 'https://api.test/api/files/file',
+        },
+      ],
       canModify: true,
       createdAt: '2026-01-03T00:00:00Z',
       id: '8',

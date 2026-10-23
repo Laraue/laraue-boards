@@ -3696,6 +3696,9 @@ export interface components {
         AttachmentData: {
             /** Format: uuid */
             id: string;
+            mimeType: null | string;
+            /** Format: int64 */
+            fileSize: null | number | string;
             /** Format: uuid */
             previewFileId: null | string;
             /** Format: uuid */
@@ -3704,7 +3707,7 @@ export interface components {
             fileName: null | string;
         };
         /** @enum {unknown} */
-        AttachmentType: "Image" | "Video";
+        AttachmentType: "Image" | "Video" | "Document";
         AttributeDto: {
             /** Format: int64 */
             id: number | string;

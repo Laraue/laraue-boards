@@ -1,12 +1,12 @@
 ---
-title: Media attachments — photos and videos in issues
-description: How photos and videos from Telegram messages are stored and displayed in Laraue Boards issues. Originals stream from Telegram; you can also add or remove attachments yourself.
-keywords: [telegram photo task, video attachment kanban, media in project management, photo issue tracker, telegram video task board]
+title: Attachments — photos, videos and documents in issues
+description: How photos, videos and documents are attached to Laraue Boards issues, stored and displayed. Originals stream from Telegram; you can add images and documents (PDF, DOCX, Markdown, TXT, JSON) yourself.
+keywords: [telegram photo task, video attachment kanban, media in project management, photo issue tracker, telegram video task board, attach pdf to task, document attachment issue tracker]
 type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-08-26
+updatedAt: 2026-10-23
 ---
 When you capture a Telegram message that contains photos or videos, those files become part of the issue.
 
@@ -16,13 +16,26 @@ There are no thumbnails on the board card — media is only visible once you ope
 
 ![The Attachments section on an issue's detail page](https://laraue.com/static/images/blog/docs/laraue-boards/issue-attachments.jpg)
 
-From the same section you can add more images yourself — **Choose other images**, or paste one directly with **Ctrl+V** — and remove any attachment with the **×** on its thumbnail.
+From the same section you can add more files yourself — with the paperclip by the description, or by pasting directly with **Ctrl+V** — and remove any attachment with its **×**.
+
+## What you can attach
+
+| Kind | Formats | Size limit |
+|---|---|---|
+| Images | JPEG, PNG, WebP, GIF | 3 MB per file |
+| Documents | PDF, Word (DOCX, DOC), Markdown, TXT, JSON | 10 MB per file |
+
+A file's type is checked by its content, not its name: a renamed file is rejected if it isn't what it claims to be. SVG images, HEIC/AVIF photos and other formats aren't accepted — convert an iPhone photo to JPEG first.
+
+Documents have no preview: they're listed under the images with an icon, their name and size. Tap one to download it — documents are never opened inside the page.
+
+Comments can carry attachments too. Today they're added through the [MCP server](/en/documentation/integrations/mcp) — for example, a report or config an AI agent attaches to its comment — and shown under the comment the same way.
 
 ## How storage works
 
 Original files are not stored on Laraue Boards — they're streamed from Telegram each time you open them, in their original quality. Preview thumbnails are cached on our server, so the small previews load quickly without hitting Telegram every time.
 
-This is also true for images you add yourself through the interface, not just ones forwarded from a chat. When you upload an image directly, our bot actually sends it into a private chat that only the bot can access — that's where it's stored, the same way as any other file from Telegram. This is why attachment storage stays free.
+This is also true for images and documents you add yourself through the interface, not just ones forwarded from a chat. When you upload a file directly, our bot actually sends it into a private chat that only the bot can access — that's where it's stored, the same way as any other file from Telegram. This is why attachment storage stays free.
 
 We're planning to add the option to store files directly on our own servers, for people who don't want to depend on Telegram as storage. That option will be paid, since it's a real storage cost on our side rather than Telegram's.
 

@@ -154,8 +154,9 @@ const { t } = useI18n({
     adding: 'Adding…',
     addIssue: 'Add issue',
     assignee: 'Assignee',
-    attachImages: 'Attach images',
-    attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
+    attachImages: 'Attach files',
+    attachImagesHint:
+      'Attach images (up to 3 MB) or documents — PDF, DOCX, Markdown, TXT, JSON (up to 10 MB) — or paste them with Ctrl+V',
     board: 'Board',
     properties: 'Properties',
     space: 'Space',
@@ -167,8 +168,9 @@ const { t } = useI18n({
     adding: 'Добавление…',
     addIssue: 'Добавить задачу',
     assignee: 'Исполнитель',
-    attachImages: 'Прикрепить изображения',
-    attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',
+    attachImages: 'Прикрепить файлы',
+    attachImagesHint:
+      'Прикрепите изображения (до 3 МБ) или документы — PDF, DOCX, Markdown, TXT, JSON (до 10 МБ) — либо вставьте их через Ctrl+V',
     board: 'Доска',
     properties: 'Свойства',
     space: 'Раздел',

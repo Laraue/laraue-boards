@@ -11,7 +11,19 @@ const mount = async (onRemoveAttachment = vi.fn<(id: string) => void>()) => {
     attachTo: document.body,
     props: {
       attachments: [
-        { id: '1', originalUrl: 'https://example.com/original.png', previewUrl: '/preview.png' },
+        {
+          id: '1',
+          kind: 'image',
+          originalUrl: 'https://example.com/original.png',
+          previewUrl: '/preview.png',
+        },
+        {
+          fileName: 'spec.pdf',
+          fileSize: 2_500_000,
+          id: '2',
+          kind: 'document',
+          url: 'https://example.com/spec.pdf',
+        },
       ],
       disabled: false,
       files: [],
@@ -48,4 +60,21 @@ it('removes an existing attachment when requested', async () => {
   await page.getByRole('button', { name: 'Remove attachment 1' }).click()
 
   expect(onRemoveAttachment).toHaveBeenCalledWith('1')
+})
+
+it('shows a document as a download with its name and size', async () => {
+  await mount()
+
+  const link = page.getByRole('link', { name: /spec\.pdf/ })
+  await expect.element(link).toHaveAttribute('href', 'https://example.com/spec.pdf')
+  await expect.element(link).toHaveAttribute('download')
+  await expect.element(link).toHaveTextContent('2.5 MB')
+})
+
+it('removes an existing document when requested', async () => {
+  const onRemoveAttachment = await mount()
+
+  await page.getByRole('button', { name: 'Remove spec.pdf' }).click()
+
+  expect(onRemoveAttachment).toHaveBeenCalledWith('2')
 })
