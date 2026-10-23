@@ -239,7 +239,9 @@ const visibleAttachments = computed(() =>
   props.attachments.filter((attachment) => !props.removedAttachmentIds?.includes(attachment.id)),
 )
 const visibleImages = computed(() =>
-  visibleAttachments.value.flatMap((attachment) => (attachment.kind === 'image' ? [attachment] : [])),
+  visibleAttachments.value.flatMap((attachment) =>
+    attachment.kind === 'image' ? [attachment] : [],
+  ),
 )
 const visibleDocuments = computed(() =>
   visibleAttachments.value.flatMap((attachment) =>
@@ -257,7 +259,7 @@ const extensionOf = (file: File) => {
 
 const includes = (values: readonly string[], value: string) => values.includes(value)
 
-const getFileKind = (file: File) => {
+const getFileKind = (file: File): 'document' | 'image' | null => {
   if (
     includes(IMAGE_TYPES.mimeTypes, file.type) ||
     includes(IMAGE_TYPES.extensions, extensionOf(file))
@@ -386,8 +388,8 @@ defineExpose({ pick: () => inputEl.value?.click() })
 <style scoped>
 /* Only a hidden input until there is something to show. */
 .issue-attachments:not(
-    :has(.issue-attachment-gallery, .issue-attachment-files, .issue-attachment-error)
-  ) {
+  :has(.issue-attachment-gallery, .issue-attachment-files, .issue-attachment-error)
+) {
   display: none;
 }
 

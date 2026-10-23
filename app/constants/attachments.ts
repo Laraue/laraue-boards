@@ -9,7 +9,15 @@ export const IMAGE_TYPES = {
 } as const
 
 // Browsers often send no mime type for .md or .json, so documents go by extension.
-export const DOCUMENT_EXTENSIONS = ['.doc', '.docx', '.json', '.markdown', '.md', '.pdf', '.txt'] as const
+export const DOCUMENT_EXTENSIONS = [
+  '.doc',
+  '.docx',
+  '.json',
+  '.markdown',
+  '.md',
+  '.pdf',
+  '.txt',
+] as const
 
 export const ATTACHMENT_ACCEPT = [
   ...IMAGE_TYPES.mimeTypes,
