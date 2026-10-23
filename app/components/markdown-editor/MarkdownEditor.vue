@@ -300,9 +300,11 @@ watch(model, (markdown) => {
   }
 })
 
+// Without an update: Tiptap emits one by default, which would write the editor's own markdown (e.g. "- " for
+// "* " bullets) back as if the text was edited - locking an issue for the agent made its page look unsaved.
 watch(
   () => props.disabled,
-  (disabled) => editor.value?.setEditable(!disabled),
+  (disabled) => editor.value?.setEditable(!disabled, false),
 )
 
 // Safari's keyboard changes the visual viewport without resizing the page layout.

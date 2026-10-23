@@ -375,12 +375,68 @@ it('hands the issue to the agent and shows the new run', async () => {
   await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeInTheDocument()
 })
 
-it('cancels the open agent run after confirmation', async () => {
+// Bullets the editor writes back as "- ": any write-back while nothing was edited would mark the page dirty.
+const unnormalizedIssue: IssuePageViewModel = { ...issue, content: '* First\n* Second' }
+
+it('does not mark an untouched issue dirty when it is handed to the agent', async () => {
+  const onDirtyChange = vi.fn<(dirty: boolean) => void>()
+  const view = vi
+    .fn<IssuePageDeps['view']>()
+    .mockResolvedValueOnce(unnormalizedIssue)
+    .mockResolvedValue({
+      ...unnormalizedIssue,
+      agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'ready' },
+    })
+  await mount(createDeps({ view }), undefined, onDirtyChange)
+
+  await page.getByRole('button', { name: 'Hand to agent' }).click()
+
+  await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeInTheDocument()
+  expect(onDirtyChange).not.toHaveBeenCalledWith(true)
+})
+
+it('does not mark an untouched issue dirty when it is sent back to the agent', async () => {
+  const onDirtyChange = vi.fn<(dirty: boolean) => void>()
+  const view = vi
+    .fn<IssuePageDeps['view']>()
+    .mockResolvedValueOnce({
+      ...unnormalizedIssue,
+      agentHandOff: {
+        available: false,
+        blocker: 'issueStarted',
+        canSendBack: true,
+        missingStatusCategories: [],
+      },
+      agentRun: { failureReason: null, finishedAt: '2026-01-02T10:00:00Z', id: '5', state: 'done' },
+      statusCategory: 'Review',
+    })
+    .mockResolvedValue({
+      ...unnormalizedIssue,
+      agentRun: { failureReason: null, finishedAt: null, id: '6', state: 'ready' },
+    })
+  await mount(createDeps({ view }), undefined, onDirtyChange)
+
+  await page.getByRole('button', { name: 'Send back to agent' }).click()
+  await page.getByLabelText("What's wrong").fill('The button is still blue.')
+  await page.getByRole('button', { name: 'Send to agent' }).click()
+
+  await expect.element(page.getByRole('button', { name: 'Cancel run' })).toBeInTheDocument()
+  expect(onDirtyChange).not.toHaveBeenCalledWith(true)
+})
+
+it('cancels the open agent run after confirmation, leaving the untouched issue not dirty', async () => {
+  const onDirtyChange = vi.fn<(dirty: boolean) => void>()
   const deps = createDeps({
-    view: vi.fn<IssuePageDeps['view']>(async () => ({
-      ...issue,
-      agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'working' },
-    })),
+    view: vi
+      .fn<IssuePageDeps['view']>()
+      .mockResolvedValueOnce({
+        ...unnormalizedIssue,
+        agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'working' },
+      })
+      .mockResolvedValue({
+        ...unnormalizedIssue,
+        agentRun: { failureReason: null, finishedAt: null, id: '5', state: 'cancelled' },
+      }),
   })
   // The confirmation is drawn by the app layout's host, which a bare page mount doesn't have.
   const PageWithConfirmHost = defineComponent({
@@ -390,7 +446,7 @@ it('cancels the open agent run after confirmation', async () => {
         deps,
         issueKey: 'ISS-1',
         onBack: vi.fn<() => void>(),
-        onDirtyChange: vi.fn<(dirty: boolean) => void>(),
+        onDirtyChange,
       }),
     ],
   })
@@ -403,6 +459,8 @@ it('cancels the open agent run after confirmation', async () => {
   await page.getByRole('alertdialog').getByRole('button', { name: 'Stop agent' }).click()
 
   await vi.waitFor(() => expect(deps.agentRun.cancel).toHaveBeenCalledWith({ runId: '5' }))
+  await expect.element(page.getByText('Agent cancelled')).toBeInTheDocument()
+  expect(onDirtyChange).not.toHaveBeenCalledWith(true)
 })
 
 it('hides the hand-off when the backend does not allow it', async () => {
