@@ -54,3 +54,43 @@ test('maps the comments of an issue', async () => {
   ])
   assert.deepEqual(paths(), ['/api/issues/ISS-1/comments'])
 })
+
+test('sends the files of a new comment', async () => {
+  const { client, requests } = createTestApiClient(() => 1)
+  const report = new File(['# Report'], 'report.md', { type: 'text/markdown' })
+
+  await createIssueCommentsDeps(client).create({
+    files: [report],
+    issueKey: 'ISS-1',
+    text: 'See the report',
+  })
+
+  const form = await requests[0]!.formData()
+  assert.equal(form.get('IssueKey'), 'ISS-1')
+  assert.equal(form.get('Text'), 'See the report')
+  assert.deepEqual(
+    form.getAll('Files').map((file) => (file as File).name),
+    ['report.md'],
+  )
+})
+
+test('sends the added and removed attachments of an edited comment', async () => {
+  const { client, paths, requests } = createTestApiClient()
+  const config = new File(['{}'], 'config.json', { type: 'application/json' })
+
+  await createIssueCommentsDeps(client).update({
+    files: [config],
+    id: '8',
+    removeAttachmentIds: ['old', 'older'],
+    text: 'Updated',
+  })
+
+  const form = await requests[0]!.formData()
+  assert.equal(form.get('Text'), 'Updated')
+  assert.deepEqual(
+    form.getAll('AddFiles').map((file) => (file as File).name),
+    ['config.json'],
+  )
+  assert.deepEqual(form.getAll('RemoveAttachmentIds'), ['old', 'older'])
+  assert.deepEqual(paths(), ['/api/issues/comments/8'])
+})

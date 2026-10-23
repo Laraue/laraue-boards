@@ -189,6 +189,8 @@ const props = defineProps<{
   files?: File[]
   onChange?: (files: File[]) => void
   onRemoveAttachment?: (id: string) => void
+  // Pastes come only through the exposed paste() (a comment's, from its own editor), not the whole page.
+  pasteFromParent?: boolean
   removedAttachmentIds?: string[]
 }>()
 
@@ -282,7 +284,8 @@ const changeFiles = (event: Event) => {
 }
 
 const pasteFiles = (event: ClipboardEvent) => {
-  if (props.disabled || !props.onChange) {
+  // Already taken by a comment's attachments, whose editor is inside the page.
+  if (props.disabled || !props.onChange || event.defaultPrevented) {
     return
   }
   const pastedFiles = getSupportedFiles(event.clipboardData?.files ?? [])
@@ -372,7 +375,7 @@ watch(
 
 // Only where files can be added: shown attachments (a comment's) mustn't take the page's pastes.
 onMounted(() => {
-  if (props.onChange) {
+  if (props.onChange && !props.pasteFromParent) {
     window.addEventListener('paste', pasteFiles)
   }
 })
@@ -382,7 +385,7 @@ onBeforeUnmount(() => {
 })
 
 // The page has the button for it (a paperclip by the description).
-defineExpose({ pick: () => inputEl.value?.click() })
+defineExpose({ paste: pasteFiles, pick: () => inputEl.value?.click() })
 </script>
 
 <style scoped>

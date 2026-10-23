@@ -29,7 +29,7 @@ A file's type is checked by its content, not its name: a renamed file is rejecte
 
 Documents have no preview: they're listed under the images with an icon, their name and size. Tap one to download it — documents are never opened inside the page.
 
-Comments can carry attachments too. Today they're added through the [MCP server](/en/documentation/integrations/mcp) — for example, a report or config an AI agent attaches to its comment — and shown under the comment the same way.
+Comments can carry attachments too, with the same types and limits. Attach them with the paperclip under the comment box, or paste a file while typing the comment: a file pasted into the comment goes to the comment, and one pasted elsewhere on the page goes to the issue. When you edit your comment, you can remove its attachments or add more. AI agents attach files to their comments through the [MCP server](/en/documentation/integrations/mcp), for example a report or a config.
 
 ## How storage works
 

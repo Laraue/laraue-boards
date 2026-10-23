@@ -24,17 +24,19 @@ const mapComment = (
 })
 
 // Comments are sent as forms, the way the backend takes them with attachments.
-const formOf = (fields: Record<string, string>) => {
+const formOf = (fields: Record<string, string | string[] | File[]>) => {
   const body = new FormData()
   for (const [name, value] of Object.entries(fields)) {
-    body.set(name, value)
+    for (const item of Array.isArray(value) ? value : [value]) {
+      body.append(name, item)
+    }
   }
   return body
 }
 
 export const createIssueCommentsDeps = (client: ApiClient): IssueCommentsDeps => ({
-  create: async ({ issueKey, text }) => {
-    const body = formOf({ IssueKey: issueKey, Text: text })
+  create: async ({ files, issueKey, text }) => {
+    const body = formOf({ Files: files, IssueKey: issueKey, Text: text })
     await request(client.POST('/api/issues/comments', { body: {}, bodySerializer: () => body }))
   },
 
@@ -58,8 +60,8 @@ export const createIssueCommentsDeps = (client: ApiClient): IssueCommentsDeps =>
   summarizeContent: async ({ content }) =>
     (await request(client.POST('/api/issues/summarize', { body: { content } }))).content,
 
-  update: async ({ id, text }) => {
-    const body = formOf({ Text: text })
+  update: async ({ files, id, removeAttachmentIds, text }) => {
+    const body = formOf({ AddFiles: files, RemoveAttachmentIds: removeAttachmentIds, Text: text })
     await request(
       client.PUT('/api/issues/comments/{id}', {
         body: {},

@@ -67,8 +67,74 @@ it('creates a comment', async () => {
   await expect.element(page.getByRole('button', { name: 'Add comment' })).toBeEnabled()
   await page.getByRole('button', { name: 'Add comment' }).click()
 
-  expect(create).toHaveBeenCalledWith({ issueKey: 'ISS-1', text: 'New comment' })
+  expect(create).toHaveBeenCalledWith({ files: [], issueKey: 'ISS-1', text: 'New comment' })
   expect(load).toHaveBeenCalledTimes(2)
+})
+
+const pasteFile = (target: Element, file: File) => {
+  const clipboardData = new DataTransfer()
+  clipboardData.items.add(file)
+  const event = new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData })
+  target.dispatchEvent(event)
+  return event
+}
+
+it('attaches a file pasted into the comment to the comment', async () => {
+  const create = vi.fn<IssueCommentsDeps['create']>(async () => {})
+  await mount(createDeps({ create }))
+  const report = new File(['# Report'], 'report.md', { type: 'text/markdown' })
+
+  await page.getByLabelText('Write a comment').fill('See the report')
+  const event = pasteFile(page.getByLabelText('Write a comment').element(), report)
+  await expect.element(page.getByText('report.md')).toBeInTheDocument()
+  await page.getByRole('button', { name: 'Add comment' }).click()
+
+  // Taken by the comment: the issue's attachments skip a paste already handled.
+  expect(event.defaultPrevented).toBe(true)
+  expect(create).toHaveBeenCalledWith({
+    files: [report],
+    issueKey: 'ISS-1',
+    text: 'See the report',
+  })
+  await expect.element(page.getByText('report.md')).not.toBeInTheDocument()
+})
+
+it('removes and adds attachments when editing a comment', async () => {
+  const update = vi.fn<IssueCommentsDeps['update']>(async () => {})
+  await mount(
+    createDeps({
+      load: vi.fn<IssueCommentsDeps['load']>(async () => [
+        {
+          ...comments[0]!,
+          attachments: [
+            {
+              fileName: 'old.txt',
+              fileSize: 10,
+              id: 'old',
+              kind: 'document',
+              url: 'https://api.test/api/files/old',
+            },
+          ],
+        },
+      ]),
+      update,
+    }),
+  )
+  const config = new File(['{}'], 'config.json', { type: 'application/json' })
+
+  await page.getByRole('button', { name: 'Actions for the comment by Ada Lovelace' }).click()
+  await page.getByRole('menuitem', { name: 'Edit' }).click()
+  await page.getByRole('button', { name: 'Remove old.txt' }).click()
+  pasteFile(page.getByLabelText('Edit comment by Ada Lovelace').element(), config)
+  await expect.element(page.getByText('config.json')).toBeInTheDocument()
+  await page.getByRole('button', { name: 'Save' }).click()
+
+  expect(update).toHaveBeenCalledWith({
+    files: [config],
+    id: '12',
+    removeAttachmentIds: ['old'],
+    text: 'Initial comment',
+  })
 })
 
 it('keeps the text and shows a validation error when creating a comment fails', async () => {
@@ -98,6 +164,11 @@ it('edits and deletes a comment', async () => {
   await actions.click()
   await page.getByRole('menuitem', { name: 'Delete' }).click()
 
-  expect(update).toHaveBeenCalledWith({ id: '12', text: 'Updated' })
+  expect(update).toHaveBeenCalledWith({
+    files: [],
+    id: '12',
+    removeAttachmentIds: [],
+    text: 'Updated',
+  })
   expect(remove).toHaveBeenCalledWith({ id: '12' })
 })

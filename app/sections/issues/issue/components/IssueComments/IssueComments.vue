@@ -63,14 +63,32 @@
           </div>
           <div
             v-if="state.editingId === comment.id"
-            class="issue-comment-composer">
+            class="issue-comment-composer"
+            @paste="editAttachments?.[0]?.paste($event)">
             <MarkdownEditor
               v-model="state.editText"
               :disabled="!!state.pendingId || summarizing"
               :label="`${t('editCommentBy')} ${comment.owner.name}`"
               @submit="update(comment.id)"
               @update:model-value="clearMessage" />
+            <IssueAttachments
+              ref="editAttachments"
+              :attachments="comment.attachments"
+              :disabled="!!state.pendingId || summarizing"
+              :files="state.editFiles"
+              :on-change="(files) => (state.editFiles = files)"
+              :on-remove-attachment="(id) => state.editRemovedAttachmentIds.push(id)"
+              paste-from-parent
+              :removed-attachment-ids="state.editRemovedAttachmentIds" />
             <div class="issue-comment-form-actions">
+              <BaseIconButton
+                class="issue-comment-attach"
+                :disabled="!!state.pendingId || summarizing"
+                :label="t('attachFiles')"
+                :tooltip="t('attachFilesHint')"
+                @click="editAttachments?.[0]?.pick()">
+                <IconPaperclip />
+              </BaseIconButton>
               <BaseButton
                 v-if="state.editText.trim()"
                 :disabled="!!state.pendingId || summarizing"
@@ -105,18 +123,20 @@
             class="markdown"
             v-html="renderMarkdown(comment.text)" />
           <!-- eslint-enable vue/no-v-html -->
-          <!-- Only shown: the form adds none yet, MCP clients (agents) do. -->
+          <!-- Only shown: they're changed while editing the comment. -->
           <IssueAttachments
-            v-if="comment.attachments.length"
+            v-if="state.editingId !== comment.id && comment.attachments.length"
             :attachments="comment.attachments"
             :disabled="false" />
         </div>
       </article>
     </div>
     <!-- Only once loaded, as the history: a comment written before would land out of place. -->
+    <!-- A file pasted here goes to the comment; elsewhere on the page, to the issue. -->
     <div
       v-if="comments"
-      class="issue-comment-composer">
+      class="issue-comment-composer"
+      @paste="newAttachments?.paste($event)">
       <MarkdownEditor
         v-model="state.newText"
         :disabled="!!state.pendingId || summarizing"
@@ -124,7 +144,22 @@
         :placeholder="t('writeCommentPlaceholder')"
         @submit="create"
         @update:model-value="clearMessage" />
+      <IssueAttachments
+        ref="newAttachments"
+        :attachments="[]"
+        :disabled="!!state.pendingId || summarizing"
+        :files="state.newFiles"
+        :on-change="(files) => (state.newFiles = files)"
+        paste-from-parent />
       <div class="issue-comment-form-actions">
+        <BaseIconButton
+          class="issue-comment-attach"
+          :disabled="!!state.pendingId || summarizing"
+          :label="t('attachFiles')"
+          :tooltip="t('attachFilesHint')"
+          @click="newAttachments?.pick()">
+          <IconPaperclip />
+        </BaseIconButton>
         <BaseButton
           v-if="state.newText.trim()"
           :disabled="!!state.pendingId || summarizing"
@@ -157,6 +192,7 @@ import {
   IconDots,
   IconKey,
   IconLoader2,
+  IconPaperclip,
   IconPencil,
   IconSparkles,
   IconTrash,
@@ -180,6 +216,9 @@ const { t } = useI18n({
     actionsFor: 'Actions for the comment by',
     addComment: 'Add comment',
     addCommentShortcut: 'Add comment (Ctrl+Enter)',
+    attachFiles: 'Attach files to the comment',
+    attachFilesHint:
+      'Attach images (up to 3 MB) or documents — PDF, DOCX, Markdown, TXT, JSON (up to 10 MB) — or paste them into the comment with Ctrl+V',
     cancel: 'Cancel',
     comments: 'Comments',
     delete: 'Delete',
@@ -200,6 +239,9 @@ const { t } = useI18n({
     actionsFor: 'Действия с комментарием пользователя',
     addComment: 'Добавить комментарий',
     addCommentShortcut: 'Добавить комментарий (Ctrl+Enter)',
+    attachFiles: 'Прикрепить файлы к комментарию',
+    attachFilesHint:
+      'Прикрепите изображения (до 3 МБ) или документы — PDF, DOCX, Markdown, TXT, JSON (до 10 МБ) — либо вставьте их в комментарий через Ctrl+V',
     cancel: 'Отмена',
     comments: 'Комментарии',
     delete: 'Удалить',
@@ -232,12 +274,20 @@ const {
 )
 
 const state = reactive({
+  editFiles: [] as File[],
   editingId: '',
+  editRemovedAttachmentIds: [] as string[],
   editText: '',
+  newFiles: [] as File[],
   newText: '',
   pendingId: '',
   summarizingId: '',
 })
+
+const newAttachments = useTemplateRef<InstanceType<typeof IssueAttachments>>('newAttachments')
+// In the comment list, so an array: only the comment being edited has one.
+const editAttachments =
+  useTemplateRef<InstanceType<typeof IssueAttachments>[]>('editAttachments')
 
 const {
   execute: summarizeContent,
@@ -266,24 +316,35 @@ const run = async (pendingId: string, action: () => Promise<void>) => {
 
 const create = async () => {
   const text = state.newText.trim()
-  if (text && (await run('new', () => props.deps.create({ issueKey: props.issueKey, text })))) {
+  const files = state.newFiles
+  if (
+    text &&
+    (await run('new', () => props.deps.create({ files, issueKey: props.issueKey, text })))
+  ) {
+    state.newFiles = []
     state.newText = ''
   }
 }
 
 const startEdit = (comment: IssueCommentViewModel) => {
+  state.editFiles = []
   state.editingId = comment.id
+  state.editRemovedAttachmentIds = []
   state.editText = comment.text
 }
 
 const cancelEdit = () => {
+  state.editFiles = []
   state.editingId = ''
+  state.editRemovedAttachmentIds = []
   state.editText = ''
 }
 
 const update = async (id: string) => {
   const text = state.editText.trim()
-  if (text && (await run(id, () => props.deps.update({ id, text })))) {
+  const files = state.editFiles
+  const removeAttachmentIds = state.editRemovedAttachmentIds
+  if (text && (await run(id, () => props.deps.update({ files, id, removeAttachmentIds, text })))) {
     cancelEdit()
   }
 }
@@ -402,6 +463,11 @@ const remove = async (id: string) => {
   flex-wrap: wrap;
   gap: var(--space-2);
   justify-content: flex-end;
+}
+
+/* The other actions are on the right, by the send button. */
+.issue-comment-attach {
+  margin-inline-end: auto;
 }
 
 .issue-comment-composer {
