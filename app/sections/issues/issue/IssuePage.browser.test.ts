@@ -172,6 +172,7 @@ it('formats selected description text', async () => {
 
 it('shows comments loaded after creating one', async () => {
   const comment = {
+    attachments: [],
     canModify: true,
     createdAt: '2026-01-03T00:00:00Z',
     id: '12',

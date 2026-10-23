@@ -335,8 +335,9 @@ const confirm = useConfirm()
 const { t } = useI18n({
   en: {
     assignee: 'Assignee',
-    attachImages: 'Attach images',
-    attachImagesHint: 'Attach PNG or JPG images, or paste them with Ctrl+V',
+    attachImages: 'Attach files',
+    attachImagesHint:
+      'Attach images (up to 3 MB) or documents — PDF, DOCX, Markdown, TXT, JSON (up to 10 MB) — or paste them with Ctrl+V',
     board: 'Board',
     comments: 'Comments',
     copied: 'Copied',
@@ -362,8 +363,9 @@ const { t } = useI18n({
   },
   ru: {
     assignee: 'Исполнитель',
-    attachImages: 'Прикрепить изображения',
-    attachImagesHint: 'Прикрепите PNG или JPG либо вставьте их через Ctrl+V',
+    attachImages: 'Прикрепить файлы',
+    attachImagesHint:
+      'Прикрепите изображения (до 3 МБ) или документы — PDF, DOCX, Markdown, TXT, JSON (до 10 МБ) — либо вставьте их через Ctrl+V',
     board: 'Доска',
     comments: 'Комментарии',
     copied: 'Скопировано',

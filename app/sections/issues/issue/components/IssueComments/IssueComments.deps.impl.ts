@@ -1,10 +1,15 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { request } from '#infrastructure/api/request'
+import { mapIssueAttachments } from '~/sections/issues/shared/api/issueAttachments'
 
 import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.deps'
 
-const mapComment = (comment: components['schemas']['CommentDto']): IssueCommentViewModel => ({
+const mapComment = (
+  comment: components['schemas']['CommentDto'],
+  baseUrl: string,
+): IssueCommentViewModel => ({
+  attachments: mapIssueAttachments(comment.attachments, baseUrl),
   canModify: comment.canModify ?? false,
   createdAt: comment.createdAt ?? '',
   id: String(comment.id),
@@ -47,7 +52,7 @@ export const createIssueCommentsDeps = (client: ApiClient): IssueCommentsDeps =>
         signal,
       }),
     )
-    return comments.data.map(mapComment)
+    return comments.data.map((comment) => mapComment(comment, client.baseUrl))
   },
 
   summarizeContent: async ({ content }) =>

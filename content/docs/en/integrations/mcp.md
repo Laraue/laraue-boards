@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 7
 createdAt: 2026-09-23
-updatedAt: 2026-10-21
+updatedAt: 2026-10-23
 ---
 Laraue Boards runs a remote **MCP** (Model Context Protocol) server, so an AI agent like Claude can work with your issues directly — listing them, opening one, moving it between statuses, or leaving a comment — without you copying anything back and forth by hand.
 
@@ -62,9 +62,9 @@ Once connected, see [A backlog for AI-assisted development](/en/documentation/us
 Every action runs with your own permissions, live — Claude can't do anything in an organization that you couldn't do yourself there, and it can't act at all once the API key behind it is revoked.
 
 - **Issues** — list and filter issues, view one in full detail, create a new one (with a title), edit its title, content or assignee, move it to a different status, or delete it
-- **Comments** — add a comment to an issue, or edit one you wrote
+- **Comments** — add a comment to an issue, or edit one you wrote, with files attached (e.g. a report or config)
 - **Organization structure** — look up spaces (with a space's [description and links](/en/documentation/concepts/spaces#description-and-links)), statuses, custom attributes, and members, so Claude can resolve names to the right ids on its own
-- **Attachments** — download an image attached to an issue
+- **Attachments** — attach images and documents to issues and comments, and read them back: an image as an image, Markdown, TXT and JSON as text, PDF and Word as a file — see [Attachments](/en/documentation/features/media#what-you-can-attach) for formats and limits
 - **Issue links** — link issues (blocks, relates to, duplicates), remove a link, and leave blocked issues out when looking for work to start — see [Issue links](/en/documentation/features/issue-links)
 - **Agent runs** — hand an issue to your coding agent, and, for a runner, pick up and finish the issues handed off to you — see [Hand issues to an AI agent](/en/documentation/integrations/agent-hand-off)
 
