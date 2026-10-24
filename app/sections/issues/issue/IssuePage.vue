@@ -144,7 +144,8 @@
                     <IssueComments
                       :key="issue.issueKey"
                       :deps="deps.comments"
-                      :issue-key="issue.issueKey" />
+                      :issue-key="issue.issueKey"
+                      :reload-token="state.commentsReloadToken" />
                   </template>
                   <template #history>
                     <IssueHistory
@@ -400,6 +401,7 @@ const state = reactive({
   assigneeId: '',
   attributeValues: {} as Record<string, string>,
   boardId: '',
+  commentsReloadToken: 0,
   content: '',
   copied: false,
   dirty: false,
@@ -493,9 +495,10 @@ const openBlockers = (issue: IssuePageViewModel) =>
     .filter((link) => link.relation === 'blockedBy' && link.statusCategory !== 'Completed')
     .map((link) => link.issueKey)
 
-// Agent run and link changes also show in the history, which loads separately.
+// Agent run and link changes also show in the comments (send back posts one) and the history, which load separately.
 const refreshAfterChange = async () => {
   await refresh()
+  state.commentsReloadToken++
   void history.value?.refresh()
 }
 
