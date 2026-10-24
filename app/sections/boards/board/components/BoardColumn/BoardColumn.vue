@@ -30,6 +30,7 @@
         v-for="(issue, index) in viewModel.issues"
         :key="issue.issueKey"
         :column-id="viewModel.id"
+        :completed="viewModel.category === 'Completed'"
         :disabled="!canMoveIssues || movingIssueKeys.has(issue.issueKey)"
         :in-review="viewModel.category === 'Review'"
         :index="index"

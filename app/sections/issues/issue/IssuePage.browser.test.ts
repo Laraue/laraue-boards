@@ -631,6 +631,32 @@ it('shows why a failed run gave up and how to try again', async () => {
     .toBeInTheDocument()
 })
 
+it('shows a failed run of a completed issue as finished without the agent', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        agentHandOff: {
+          available: false,
+          blocker: 'issueStarted',
+          canSendBack: false,
+          missingStatusCategories: [],
+        },
+        agentRun: {
+          failureReason: 'The runner was stopped',
+          finishedAt: '2026-01-02T10:00:00Z',
+          id: '5',
+          state: 'failed',
+        },
+        statusCategory: 'Completed',
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Finished without agent')).toBeInTheDocument()
+  await expect.element(page.getByText(/The runner was stopped/)).not.toBeInTheDocument()
+})
+
 it('asks for a review when the agent is done and sends the issue back with a comment', async () => {
   const deps = createDeps({
     view: vi.fn<IssuePageDeps['view']>(async () => ({

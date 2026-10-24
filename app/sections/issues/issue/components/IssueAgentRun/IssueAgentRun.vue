@@ -19,6 +19,7 @@
       class="issue-agent-run-row">
       <AgentRunBadge
         v-if="badgeShown && run"
+        :completed="completed"
         :in-review="inReview"
         :state="run.state"
         tooltip />
@@ -75,9 +76,10 @@
       </BaseTooltip>
     </div>
     <!-- A failed run is its reason in a red frame - no "Agent failed" badge on top of it; the card on the board
-         has that. Said in the open: a hover hint isn't found, nor shown on touch screens. -->
+         has that. Said in the open: a hover hint isn't found, nor shown on touch screens. Once the issue is completed
+         there's nothing to act on: the grey "Finished without agent" badge instead, the reason stays in the history. -->
     <div
-      v-if="run?.state === 'failed'"
+      v-if="failureShown && run"
       class="issue-agent-run-failure"
       role="status">
       <p class="issue-agent-run-failure-reason">
@@ -167,6 +169,8 @@ const props = defineProps<{
   blockedBy: string[]
   // Who can cancel an open run: anyone who can edit the issue.
   canEdit: boolean
+  // The issue is in a Completed status: a failed run then shows as finished without the agent, not as a failure.
+  completed: boolean
   deps: IssueAgentRunDeps
   // Whether the user can hand the issue off now, and why not - as the backend decided.
   handOff: AgentHandOffViewModel
@@ -242,8 +246,9 @@ const { formatDateTime, formatRecent } = useFormatters()
 const headingId = useId()
 
 const open = computed(() => props.run?.state === 'ready' || props.run?.state === 'working')
-// Every run has a badge here except a failed one, which shows its reason instead.
-const badgeShown = computed(() => !!props.run && props.run.state !== 'failed')
+// A failed run shows its reason instead of a badge - until the issue is completed without it.
+const failureShown = computed(() => props.run?.state === 'failed' && !props.completed)
+const badgeShown = computed(() => !!props.run && !failureShown.value)
 
 const CATEGORY_KEYS = {
   Completed: null,
@@ -280,7 +285,7 @@ const noneShown = computed(
     !badgeShown.value &&
     !props.handOff.available &&
     !unavailableReason.value &&
-    props.run?.state !== 'failed',
+    !failureShown.value,
 )
 
 const rowShown = computed(

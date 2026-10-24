@@ -17,7 +17,7 @@ You can hand an issue to an AI coding agent — Claude Code or OpenAI Codex on y
 3. **The agent works.** It writes progress comments and a summary, then moves the issue to a review status. The card shows **Agent done · review**, and your computer shows a notification.
 4. **You review.** Move the issue to done, or ask for changes: [right on your computer](#ask-for-changes) with `lba continue`, or with **Send back to agent** in the Agent section.
 
-The badge stays on the card once an issue was handed off: after review it shows **Done by agent**, and a cancelled run **Agent cancelled**. If the agent gives up, the card shows **Agent failed**. On the issue page the reason and when it happened are in a red box in the Agent section, and the runner leaves a comment with the details.
+The badge stays on the card once an issue was handed off: after review it shows **Done by agent**, and a cancelled run **Agent cancelled**. If the agent gives up, the card shows **Agent failed**. On the issue page the reason and when it happened are in a red box in the Agent section, and the runner leaves a comment with the details. Once you finish such an issue yourself, the badge turns grey: **Finished without agent**.
 
 ## Who can hand an issue off
 
