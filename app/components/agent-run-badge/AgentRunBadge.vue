@@ -1,5 +1,6 @@
 <!-- The issue's agent run, once the issue was ever handed off - the badge stays: waiting for a runner, being
-     worked on, failed, done and waiting for review (while the issue is in a Review status), done, or cancelled. -->
+     worked on, failed, done and waiting for review (while the issue is in a Review status), done, cancelled, or
+     failed but the issue completed without it (no alarm left once there's nothing to do). -->
 <template>
   <!-- What the state means, as a tooltip (reachable by keyboard) where there's one badge, or as a native title
        on board cards, which render too many for tooltip components. -->
@@ -32,6 +33,8 @@ import { IconRobot } from '@tabler/icons-vue'
 import type { AgentRunState } from './AgentRunBadge.types'
 
 const props = defineProps<{
+  // The issue is in a Completed status: a failed run then no longer needs attention.
+  completed?: boolean
   // The issue is in a Review status: a done run then asks the person to check it.
   inReview?: boolean
   state: AgentRunState
@@ -47,6 +50,8 @@ const { t } = useI18n({
     doneHint: 'The agent worked on this issue.',
     failed: 'Agent failed',
     failedHint: "The agent couldn't finish. Open the issue to see why.",
+    finishedWithout: 'Finished without agent',
+    finishedWithoutHint: "The agent couldn't finish; the issue was completed without it.",
     ready: 'For agent',
     readyHint: "Handed to the agent: waits for the assignee's runner to pick it up.",
     review: 'Agent done · review',
@@ -61,6 +66,8 @@ const { t } = useI18n({
     doneHint: 'Агент работал над этой задачей.',
     failed: 'Агент не справился',
     failedHint: 'Агент не смог закончить. Причина — на странице задачи.',
+    finishedWithout: 'Сделано без агента',
+    finishedWithoutHint: 'Агент не смог закончить — задачу завершили без него.',
     ready: 'Для агента',
     readyHint: 'Передана агенту: ждёт, пока её заберёт раннер исполнителя.',
     review: 'Агент готов · проверьте',
@@ -71,12 +78,13 @@ const { t } = useI18n({
   },
 })
 
-type Shown = 'cancelled' | 'done' | 'failed' | 'ready' | 'review' | 'working'
+type Shown = 'cancelled' | 'done' | 'failed' | 'finishedWithout' | 'ready' | 'review' | 'working'
 
 const HINT_KEYS = {
   cancelled: 'cancelledHint',
   done: 'doneHint',
   failed: 'failedHint',
+  finishedWithout: 'finishedWithoutHint',
   ready: 'readyHint',
   review: 'reviewHint',
   working: 'workingHint',
@@ -86,6 +94,7 @@ const VARIANTS = {
   cancelled: 'neutral',
   done: 'success',
   failed: 'danger',
+  finishedWithout: 'neutral',
   ready: 'neutral',
   review: 'warning',
   working: 'accent',
@@ -94,6 +103,9 @@ const VARIANTS = {
 const shown = computed((): Shown => {
   if (props.state === 'done') {
     return props.inReview ? 'review' : 'done'
+  }
+  if (props.state === 'failed' && props.completed) {
+    return 'finishedWithout'
   }
 
   return props.state

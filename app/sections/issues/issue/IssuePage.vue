@@ -247,6 +247,7 @@
                   :key="`agent-${issue.issueKey}`"
                   :blocked-by="openBlockers(issue)"
                   :can-edit="issue.canEdit"
+                  :completed="issue.statusCategory === 'Completed'"
                   :deps="deps.agentRun"
                   :hand-off="issue.agentHandOff"
                   :in-review="issue.statusCategory === 'Review'"

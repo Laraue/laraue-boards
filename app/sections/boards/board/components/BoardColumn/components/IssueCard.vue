@@ -34,6 +34,7 @@
           <span class="task-assignee">{{ viewModel.assigneeName }}</span>
           <AgentRunBadge
             v-if="viewModel.agentRunState"
+            :completed="completed"
             :in-review="inReview"
             :state="viewModel.agentRunState" />
           <!-- A native title: a board renders hundreds of cards, too many for tooltip components. -->
@@ -62,6 +63,8 @@ import type { IssueCardViewModel } from './IssueCard.types'
 
 const props = defineProps<{
   columnId: string
+  // The card's column is a Completed status.
+  completed: boolean
   disabled: boolean
   // The card's column is a Review status.
   index: number
