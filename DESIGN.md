@@ -97,8 +97,8 @@ check a design change there and add new components and variants to it.
   board, a space, an attribute, an organization, or a settings form) submits at the end of the form,
   above its danger zone, and a list inside it gets its add-row button under its rows, not in a
   header.
-- Every view with server data is refreshed by the one `AppRefreshButton`, which `PageHeader` and
-  the standalone header show first among their actions while a view on screen has called
+- Every view with server data is refreshed by the one `AppRefreshButton`, which `PageHeader` and the
+  standalone header show first among their actions while a view on screen has called
   `useViewRefresh(refresh)`. Don't add a refresh button of a view's own; a part with its own query
   (comments, history) registers it too. A refresh keeps the view mounted (`QueryState` shows its
   loading state only before the first answer).
