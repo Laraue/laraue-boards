@@ -189,6 +189,9 @@ const state = reactive({ scheduled: false })
 
 const filtering = computed(() => state.scheduled || searching.value)
 
+// The search results replace the first load's issues once they exist, so they reload too.
+useViewRefresh(() => Promise.all([refresh(), searchResult.value ? runSearch() : undefined]))
+
 const searchIssues = async () => {
   scheduleSearch.cancel()
   state.scheduled = false

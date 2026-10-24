@@ -232,6 +232,7 @@ const {
   (signal) => props.deps.load({ issueKey: props.issueKey, signal }),
   { lazy: true },
 )
+useViewRefresh(refreshComments)
 
 watch(
   () => props.reloadToken,

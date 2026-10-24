@@ -78,6 +78,7 @@ const load = async (replace = false) => {
 const refresh = () => load(true)
 
 onMounted(load)
+useViewRefresh(refresh)
 defineExpose({ refresh })
 </script>
 

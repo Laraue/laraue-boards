@@ -12,6 +12,7 @@
         <span>Laraue Boards</span>
       </NuxtLink>
       <div class="app-header-actions">
+        <AppRefreshButton />
         <AppHeaderPreferences />
         <slot name="actions" />
       </div>

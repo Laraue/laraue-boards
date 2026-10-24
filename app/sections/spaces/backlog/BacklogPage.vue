@@ -166,6 +166,9 @@ const state = reactive({ scheduled: false })
 
 const filtering = computed(() => state.scheduled || searching.value)
 
+// The search results replace the first load's issues once they exist, so they reload too.
+useViewRefresh(() => Promise.all([refresh(), searchResult.value ? runSearch() : undefined]))
+
 const updateFilters = (value: Required<Pick<IssueFiltersValue, 'attributes'>>) => {
   void props.onUpdateQuery(
     withIssueAttributeFilters(props.routeQuery, value.attributes, attributes.value),

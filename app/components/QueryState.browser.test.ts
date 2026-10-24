@@ -77,6 +77,13 @@ it('omits the retry button when no retry is provided', async () => {
   await expect.element(page.getByRole('button', { name: 'Try again' })).not.toBeInTheDocument()
 })
 
+it('keeps the loaded content on screen while it refreshes', async () => {
+  await mount({ data: { name: 'Priority' }, loadingText: 'Loading attributes…', pending: true })
+
+  await expect.element(page.getByText('Loaded Priority')).toBeInTheDocument()
+  await expect.element(page.getByText('Loading attributes…')).not.toBeInTheDocument()
+})
+
 it('prefers the loading state over an error left from a previous attempt', async () => {
   await mount({ message: 'Server error. Try again.', pending: true })
 

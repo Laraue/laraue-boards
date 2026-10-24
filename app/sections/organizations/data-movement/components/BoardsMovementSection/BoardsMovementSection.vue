@@ -56,7 +56,7 @@
       :current-organization-name="currentOrganizationName"
       :deps="deps.dialog"
       :ids="state.dialogIds"
-      :on-moved="onMoved" />
+      :on-moved="afterMove" />
   </section>
 </template>
 
@@ -120,6 +120,12 @@ const toggle = (id: string) => {
 const openDialog = (ids: string[]) => {
   state.dialogIds = ids
   dialog.value?.open()
+}
+
+// A board moved within the organization stays in the list, so it would stay selected.
+const afterMove = async () => {
+  state.selected.clear()
+  await props.onMoved()
 }
 </script>
 

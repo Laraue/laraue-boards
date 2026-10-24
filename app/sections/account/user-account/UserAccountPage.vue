@@ -88,6 +88,7 @@ useHead({ title: t('yourAccount') })
 const { data, message, pending, refresh } = await useApiQuery('user-account', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 const { execute: executeLogout, pending: loggingOut } = useApiAction(props.deps.logout)
 

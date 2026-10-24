@@ -147,6 +147,7 @@ const {
   pending,
   refresh,
 } = await useApiQuery('account-connected-accounts', (signal) => props.deps.view({ signal }))
+useViewRefresh(refresh)
 
 const onConnected = async (provider: Provider, outcome: ConnectOutcome): Promise<void> => {
   state.provider = provider

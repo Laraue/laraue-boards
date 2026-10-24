@@ -196,6 +196,7 @@ const {
   () => `account-api-keys:${page.value}:${showRevoked.value}`,
   (signal) => props.deps.view({ includeRevoked: showRevoked.value, page: page.value, signal }),
 )
+useViewRefresh(refresh)
 
 const {
   execute: create,

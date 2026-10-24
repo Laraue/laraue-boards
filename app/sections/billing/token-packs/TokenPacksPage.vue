@@ -122,6 +122,7 @@ const state = reactive({ pack: undefined as BillingTokenPackViewModel | undefine
 const { data, message, pending, refresh } = await useApiQuery('token-packs-summary', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 // The packs are a bonus on the page: when they cannot be loaded the page just says there are none.
 const { data: packOptions } = await useApiQuery('billing-token-packs', (signal) =>

@@ -96,6 +96,7 @@ const { t } = useI18n({
 const { data, message, pending, refresh } = await useApiQuery('member-profile', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 const state = reactive({ color: '', displayName: '', saved: false })
 
