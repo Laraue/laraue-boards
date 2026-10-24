@@ -8,7 +8,7 @@ order: 3
 createdAt: 2026-04-22
 updatedAt: 2026-10-23
 ---
-When you capture a Telegram message that contains photos or videos, those files become part of the issue.
+When you capture a Telegram message that contains photos, videos or documents, those files become part of the issue.
 
 ## Where media appears
 
@@ -26,6 +26,8 @@ From the same section you can add more files yourself — with the paperclip by 
 | Documents | PDF, Word (DOCX, DOC), Markdown, TXT, JSON | 10 MB per file |
 
 A file's type is checked by its content, not its name: a renamed file is rejected if it isn't what it claims to be. SVG images, HEIC/AVIF photos and other formats aren't accepted — convert an iPhone photo to JPEG first.
+
+The same list and limits apply to files sent or forwarded to the bot as documents. A file of another type, or over its limit, is skipped: the issue is saved without it (its text and other attachments are kept), and the bot tells you which file was left out and why — see [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages#files-that-arent-saved).
 
 Documents have no preview: they're listed under the images with an icon, their name and size. Tap one to download it — documents are never opened inside the page.
 
