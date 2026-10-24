@@ -116,6 +116,7 @@ useHead({ title: t('organizations') })
 const { data, message, pending, refresh } = await useApiQuery('organization-picker', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 useOrganizationTour(data, props.deps.tour)
 

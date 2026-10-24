@@ -101,6 +101,7 @@ useHead({ title: t('attributes') })
 const { data, message, pending, refresh } = await useApiQuery('organization-attributes', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 </script>
 
 <style scoped>

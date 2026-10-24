@@ -158,6 +158,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `attribute:${props.attributeId}`,
   (signal) => props.deps.view({ attributeId: props.attributeId, signal }),
 )
+useViewRefresh(refresh)
 
 useHead({
   title: computed(() => (data.value ? `${data.value.name} ${t('attribute')}` : t('editAttribute'))),

@@ -1,6 +1,8 @@
 <template>
+  <!-- Only a first load replaces the content: a refresh keeps it on screen, with its scroll,
+       filters and unsaved edits. -->
   <slot
-    v-if="pending"
+    v-if="pending && data === undefined"
     name="loading">
     <section class="page-state">
       <span class="icon-badge loading">

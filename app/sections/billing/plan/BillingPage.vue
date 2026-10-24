@@ -160,6 +160,7 @@ const { formatDate, formatNumber } = useFormatters()
 const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 // "Resets on 6 Nov" for a Free plan, whose allowance starts over, "Active until 6 Nov" for a paid one.
 const periodText = (page: BillingPageData) =>

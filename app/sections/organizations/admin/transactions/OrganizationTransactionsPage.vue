@@ -104,6 +104,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `billing-admin-transactions:${page.value}:${userId.value}`,
   (signal) => props.deps.view({ page: page.value, signal, userId: userId.value || undefined }),
 )
+useViewRefresh(refresh)
 
 const tableLabels = computed(() => ({
   date: t('date'),

@@ -55,6 +55,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   'organization-data-movement',
   (signal) => props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 const onSpacesMoved = async () => {
   await Promise.all([refresh(), props.onSpacesMoved()])

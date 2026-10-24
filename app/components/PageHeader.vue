@@ -69,6 +69,7 @@
       <slot name="tools" />
     </div>
     <div class="page-header-actions">
+      <AppRefreshButton />
       <span
         v-if="$slots.actions"
         class="page-header-page-actions">

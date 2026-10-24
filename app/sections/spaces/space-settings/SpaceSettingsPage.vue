@@ -163,6 +163,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `space-settings:${props.spaceKey}`,
   (signal) => props.deps.view({ signal, spaceKey: props.spaceKey }),
 )
+useViewRefresh(refresh)
 
 watch(
   data,

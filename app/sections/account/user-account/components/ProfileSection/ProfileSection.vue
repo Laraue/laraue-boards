@@ -112,6 +112,7 @@ const {
   pending,
   refresh,
 } = await useApiQuery('account-global-profile', (signal) => props.deps.view({ signal }))
+useViewRefresh(refresh)
 
 const state = reactive({ displayName: '', familyName: '', givenName: '', saved: false })
 

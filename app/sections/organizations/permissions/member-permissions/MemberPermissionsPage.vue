@@ -66,6 +66,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `member-permissions:${props.memberId}`,
   (signal) => props.deps.view({ memberId: props.memberId, signal }),
 )
+useViewRefresh(refresh)
 
 useHead({
   title: computed(() =>

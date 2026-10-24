@@ -58,8 +58,9 @@
         </template>
       </PageHeader>
     </template>
+    <!-- The previous board's view model stays until the next one loads; it isn't this board's. -->
     <QueryState
-      :data="viewModel"
+      :data="viewModel?.id === boardId ? viewModel : undefined"
       :error-title="t('loadError')"
       :loading-text="t('loading')"
       :message="message"
@@ -437,7 +438,11 @@ const searchIssues = async () => {
   }
 }
 
-const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
+// `takes` asks for more issues than a column shows now, e.g. as many as it had before a refresh.
+const refreshLoadedIssues = async (
+  statusIds: ReadonlySet<string>,
+  takes?: ReadonlyMap<string, number>,
+) => {
   const current = viewModel.value
   if (!current || statusIds.size === 0) {
     return
@@ -454,7 +459,7 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
             offset: 0,
             search: search.value,
             statusId: column.id,
-            take: Math.max(LOAD_MORE_TAKE, column.issues.length),
+            take: Math.max(LOAD_MORE_TAKE, takes?.get(column.id) ?? column.issues.length),
           }),
         })),
     ),
@@ -482,6 +487,27 @@ const refreshLoadedIssues = async (statusIds: ReadonlySet<string>) => {
   }
   viewModel.value = mergeRefreshedBoard(latest, refreshedColumns, summary?.value)
 }
+
+// Reloads the board with its search and filters, keeping as many issues in each column as were
+// loaded with "load more", so the columns don't shrink under the user.
+const refreshBoard = async () => {
+  const loadedCounts = new Map(
+    viewModel.value?.columns.map((column) => [column.id, column.issues.length]),
+  )
+  await refresh()
+  const board = data.value
+  if (!board) {
+    return
+  }
+  viewModel.value = board
+  const shrunkColumnIds = new Set(
+    board.columns
+      .filter((column) => (loadedCounts.get(column.id) ?? 0) > column.issues.length)
+      .map((column) => column.id),
+  )
+  await refreshLoadedIssues(shrunkColumnIds, loadedCounts)
+}
+useViewRefresh(refreshBoard)
 
 const moveIssue = async (input: {
   index: number

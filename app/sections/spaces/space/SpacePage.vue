@@ -209,6 +209,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `space:${props.spaceKey}`,
   (signal) => props.deps.view({ signal, spaceKey: props.spaceKey }),
 )
+useViewRefresh(refresh)
 
 const boards = computed(() => data.value?.boards ?? [])
 

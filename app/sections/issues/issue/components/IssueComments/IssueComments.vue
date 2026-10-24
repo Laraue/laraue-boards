@@ -230,6 +230,7 @@ const {
   (signal) => props.deps.load({ issueKey: props.issueKey, signal }),
   { lazy: true },
 )
+useViewRefresh(refreshComments)
 
 const state = reactive({
   editingId: '',

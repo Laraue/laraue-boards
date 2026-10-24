@@ -148,6 +148,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `retros:${page.value}`,
   (signal) => props.deps.view({ page: page.value, signal }),
 )
+useViewRefresh(refresh)
 
 const { execute: startRetro, pending: starting } = useApiAction(props.deps.startRetro)
 const { execute: removeRetro, pending: removing } = useApiAction(props.deps.removeRetro)

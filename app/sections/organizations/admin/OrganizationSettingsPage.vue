@@ -126,6 +126,7 @@ const { t } = useI18n({
 const { data, message, pending, refresh } = await useApiQuery('organization-settings', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 const state = reactive({ color: '', name: '', saved: false })
 

@@ -127,6 +127,7 @@ const requestFilters = computed(() => ({
 const { data, message, pending, refresh } = await useApiQuery('organization-history', (signal) =>
   props.deps.loadInitial({ ...requestFilters.value, signal }),
 )
+useViewRefresh(refresh)
 
 const { execute: executePage, pending: pagePending } = useApiAction(props.deps.loadPage)
 

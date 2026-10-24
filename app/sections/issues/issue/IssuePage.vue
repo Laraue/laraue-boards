@@ -430,6 +430,8 @@ const {
   (signal) => props.deps.view({ issueKey: props.issueKey, signal }),
   { lazy: props.lazy },
 )
+// Unsaved edits stay: syncState leaves a dirty form alone. Comments and history register their own.
+useViewRefresh(refresh)
 
 // The page header names the issue on its own page.
 if (props.inDialog) {

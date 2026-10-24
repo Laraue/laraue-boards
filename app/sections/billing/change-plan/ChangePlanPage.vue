@@ -132,6 +132,7 @@ const state = reactive({ plan: undefined as BillingPlanViewModel | undefined })
 const { data, message, pending, refresh } = await useApiQuery('change-plan-summary', (signal) =>
   props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 // The plans are a bonus on the page: when they cannot be loaded the page just says there are none.
 const { data: planOptions } = await useApiQuery('billing-plans', (signal) =>

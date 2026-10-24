@@ -115,6 +115,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `board-settings:${props.boardId}`,
   (signal) => props.deps.view({ boardId: props.boardId, signal, spaceKey: props.spaceKey }),
 )
+useViewRefresh(refresh)
 
 const {
   execute: saveSettings,

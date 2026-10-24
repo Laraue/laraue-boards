@@ -135,6 +135,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   'organization-permissions',
   (signal) => props.deps.view({ signal }),
 )
+useViewRefresh(refresh)
 
 const state = reactive({
   copied: false,
