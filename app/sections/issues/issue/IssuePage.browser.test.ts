@@ -662,6 +662,32 @@ it('asks for a review when the agent is done and sends the issue back with a com
   )
 })
 
+it('reloads the issue and its comments after sending it back', async () => {
+  const deps = createDeps({
+    view: vi.fn<IssuePageDeps['view']>(async () => ({
+      ...issue,
+      agentHandOff: {
+        available: false,
+        blocker: 'issueStarted',
+        canSendBack: true,
+        missingStatusCategories: [],
+      },
+      agentRun: { failureReason: null, finishedAt: '2026-01-02T10:00:00Z', id: '5', state: 'done' },
+      statusCategory: 'Review',
+    })),
+  })
+  await mount(deps)
+  await vi.waitFor(() => expect(deps.comments.load).toHaveBeenCalledTimes(1))
+  const viewCalls = vi.mocked(deps.view).mock.calls.length
+
+  await page.getByRole('button', { name: 'Send back to agent' }).click()
+  await page.getByLabelText("What's wrong").fill('The button is still blue.')
+  await page.getByRole('button', { name: 'Send to agent' }).click()
+
+  await vi.waitFor(() => expect(deps.comments.load).toHaveBeenCalledTimes(2))
+  expect(vi.mocked(deps.view).mock.calls.length).toBeGreaterThan(viewCalls)
+})
+
 it('keeps the agent badge once the issue moved on or the run was cancelled', async () => {
   await mount(
     createDeps({
