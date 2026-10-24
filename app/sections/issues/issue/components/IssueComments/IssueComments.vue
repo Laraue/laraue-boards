@@ -172,6 +172,8 @@ import type { IssueCommentsDeps, IssueCommentViewModel } from './IssueComments.d
 const props = defineProps<{
   deps: IssueCommentsDeps
   issueKey: string
+  /** Changes when something else may have posted a comment (sending the issue back to the agent), to reload them. */
+  reloadToken?: number
 }>()
 
 const confirm = useConfirm()
@@ -231,6 +233,11 @@ const {
   { lazy: true },
 )
 useViewRefresh(refreshComments)
+
+watch(
+  () => props.reloadToken,
+  () => refreshComments(),
+)
 
 const state = reactive({
   editingId: '',
