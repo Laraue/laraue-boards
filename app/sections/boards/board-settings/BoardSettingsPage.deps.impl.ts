@@ -44,15 +44,6 @@ export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPag
       }),
     )
 
-    if (input.status !== input.originalStatus) {
-      await request(
-        client.POST('/api/epics/{id}/status', {
-          body: { id: input.boardId, status: input.status },
-          params: { path },
-        }),
-      )
-    }
-
     const changes = getColumnChanges(input.originalColumns, input.columns)
     const createdIds: string[] = []
     for (const { category, color, name } of changes.created) {
@@ -112,7 +103,6 @@ export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPag
       name: board.name,
       spaceColor: space?.color ?? DEFAULT_COLOR,
       spaceName: space?.name ?? spaceKey,
-      status: board.status,
     }
   },
 })

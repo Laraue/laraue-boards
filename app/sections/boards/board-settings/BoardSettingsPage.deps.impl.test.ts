@@ -21,34 +21,31 @@ test('saves board and column changes', async () => {
       { category: 'Created', color: '#000', id: '2', name: 'Todo' },
       { category: 'InProgress', color: '#333', id: '3', name: 'Later' },
     ],
-    originalStatus: 'New',
-    status: 'Done',
   })
 
   assert.deepEqual(
     requests.map((request) => [request.method, new URL(request.url).pathname]),
     [
       ['PUT', '/api/epics/7'],
-      ['POST', '/api/epics/7/status'],
       ['POST', '/api/statuses'],
       ['PUT', '/api/statuses/2'],
       ['DELETE', '/api/statuses/3'],
       ['POST', '/api/epics/7/reorder-statuses'],
     ],
   )
-  assert.deepEqual(await requests[2]!.json(), {
+  assert.deepEqual(await requests[1]!.json(), {
     category: 'Completed',
     color: '#444',
     epicId: '7',
     name: 'Done',
   })
-  assert.deepEqual(await requests[3]!.json(), {
+  assert.deepEqual(await requests[2]!.json(), {
     category: 'InProgress',
     color: '#222',
     id: '2',
     name: 'Doing',
   })
-  assert.deepEqual(await requests[5]!.json(), { 2: 1, 9: 2 })
+  assert.deepEqual(await requests[4]!.json(), { 2: 1, 9: 2 })
 })
 
 test('updates a column when only its category changed', async () => {
@@ -61,8 +58,6 @@ test('updates a column when only its category changed', async () => {
     columns: [{ ...column, category: 'Completed' }],
     name: 'Roadmap',
     originalColumns: [{ ...column, category: 'InProgress' }],
-    originalStatus: 'New',
-    status: 'New',
   })
 
   assert.deepEqual(
@@ -113,6 +108,5 @@ test('maps board settings and sorts columns', async () => {
     name: 'Roadmap',
     spaceColor: '#4774d4',
     spaceName: 'Product',
-    status: 'Active',
   })
 })

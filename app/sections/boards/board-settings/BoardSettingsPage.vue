@@ -132,7 +132,6 @@ const save = async (page: BoardSettingsPageData, input: BoardSettingsFormInput):
   const saved = await saveSettings({
     boardId: props.boardId,
     originalColumns: page.columns,
-    originalStatus: page.status,
     ...input,
   })
   if (saved) {

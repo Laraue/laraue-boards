@@ -35,15 +35,6 @@ const sortByOrder = <Item extends { sortOrder?: number | string }>(items: Item[]
   items.toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
 
 export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
-  changeBoardStatus: async ({ boardId, status }) => {
-    await request(
-      client.POST('/api/epics/{id}/status', {
-        body: { id: boardId, status },
-        params: { path: { id: Number(boardId) } },
-      }),
-    )
-  },
-
   issueDialog: createIssuePageDeps(client),
 
   loadMoreBoardIssues: async ({ filters, offset, search, statusId, take }) => {
@@ -171,7 +162,6 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       issueCount: issues.issueCount,
       spaceColor: space?.color ?? DEFAULT_COLOR,
       spaceName: space?.name ?? spaceKey,
-      status: board.status,
       title: board.name,
     }
   },

@@ -18,11 +18,6 @@
         <template
           v-if="viewModel"
           #tools>
-          <BoardStatusMenu
-            :can-update="viewModel.canUpdate"
-            :on-change="changeBoardStatus"
-            :saving="changingBoardStatus"
-            :status="viewModel.status" />
           <input
             :aria-label="t('searchIssues')"
             :placeholder="t('searchIssues')"
@@ -73,12 +68,6 @@
             class="form-error"
             role="alert">
             {{ moveBoardIssueMessage }}
-          </p>
-          <p
-            v-if="changeBoardStatusMessage"
-            class="form-error"
-            role="alert">
-            {{ changeBoardStatusMessage }}
           </p>
 
           <DragDropProvider
@@ -175,8 +164,6 @@ import { BoardIcon, SpaceIcon } from '~/constants/icons'
 import type { BoardPageDeps, BoardPageFilterValue } from '~/sections/boards/board/BoardPage.deps'
 import BoardColumn from '~/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '~/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
-import type { BoardStatus } from '~/sections/boards/board/components/BoardStatusMenu/BoardStatusMenu.types'
-import BoardStatusMenu from '~/sections/boards/board/components/BoardStatusMenu/BoardStatusMenu.vue'
 import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.deps'
 import {
   getIssueAttributeFilterInput,
@@ -281,11 +268,6 @@ watch(
 const { execute: executeMoveBoardIssue, message: moveBoardIssueMessage } = useApiAction(
   props.deps.moveBoardIssue,
 )
-const {
-  execute: executeChangeBoardStatus,
-  message: changeBoardStatusMessage,
-  pending: changingBoardStatus,
-} = useApiAction(props.deps.changeBoardStatus)
 const { execute: searchBoardIssues } = useApiAction(props.deps.searchBoardIssues)
 const { execute: loadMoreBoardIssues } = useApiAction(props.deps.loadMoreBoardIssues)
 const issueAttributes = computed(() => viewModel.value?.attributes ?? [])
@@ -314,21 +296,6 @@ const updateSearch = (value: string) => {
     delete routeQuery.search
   }
   void props.onReplaceQuery(routeQuery)
-}
-
-// Shown at once; a failed save puts the previous status back.
-const changeBoardStatus = async (status: BoardStatus) => {
-  const current = viewModel.value
-  if (!current || changingBoardStatus.value) {
-    return
-  }
-
-  const previous = current.status
-  viewModel.value = { ...current, status }
-  const result = await executeChangeBoardStatus({ boardId: current.id, status })
-  if (!result && viewModel.value) {
-    viewModel.value = { ...viewModel.value, status: previous }
-  }
 }
 
 const openIssue = (issueKey: string) => {
