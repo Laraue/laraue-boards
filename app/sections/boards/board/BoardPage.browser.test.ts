@@ -18,6 +18,7 @@ const board: BoardPageViewModel = {
   issueCount: 0,
   spaceColor: '#4774d4',
   spaceName: 'Product',
+  status: 'New',
   title: 'Roadmap',
 }
 
@@ -74,6 +75,12 @@ it('puts a typed board search into the route query', async () => {
   await page.getByLabelText('Search issues').fill('bug')
 
   await vi.waitFor(() => expect(onReplaceQuery).toHaveBeenLastCalledWith({ search: 'bug' }))
+})
+
+it('shows the board status as a label after the board name', async () => {
+  await mount({ data: { ...board, status: 'Active' } })
+
+  await expect.element(page.getByText('In progress', { exact: true })).toBeInTheDocument()
 })
 
 it('requests issue creation in the selected column', async () => {

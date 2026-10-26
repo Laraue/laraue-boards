@@ -17,6 +17,13 @@
         :title="viewModel?.title ?? t('board')">
         <template
           v-if="viewModel"
+          #title-actions>
+          <BaseBadge :variant="boardStatusVariant[viewModel.status]">
+            {{ statusLabel(viewModel.status) }}
+          </BaseBadge>
+        </template>
+        <template
+          v-if="viewModel"
           #tools>
           <input
             :aria-label="t('searchIssues')"
@@ -161,7 +168,11 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import IssueFilters from '~/components/issue-filters/IssueFilters.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
-import type { BoardPageDeps, BoardPageFilterValue } from '~/sections/boards/board/BoardPage.deps'
+import type {
+  BoardPageDeps,
+  BoardPageFilterValue,
+  BoardStatus,
+} from '~/sections/boards/board/BoardPage.deps'
 import BoardColumn from '~/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '~/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
 import type { IssuePageSavedIssue } from '~/sections/issues/issue/IssuePage.deps'
@@ -192,19 +203,30 @@ const { t } = useI18n({
     addIssue: 'Add issue',
     board: 'Board',
     boardSettings: 'Board settings',
+    done: 'Done',
+    inProgress: 'In progress',
     loadError: 'Could not load board',
     loading: 'Loading board…',
+    new: 'New',
     searchIssues: 'Search issues',
   },
   ru: {
     addIssue: 'Добавить задачу',
     board: 'Доска',
     boardSettings: 'Настройки доски',
+    done: 'Готово',
+    inProgress: 'В работе',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
+    new: 'Новая',
     searchIssues: 'Поиск задач',
   },
 })
+
+// The same words and colors as the boards list of the space page.
+const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' } as const
+const statusLabel = (status: BoardStatus) =>
+  ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
 
 const IssueDialog = defineAsyncComponent(
   () => import('~/sections/boards/board/components/IssueDialog/IssueDialog.vue'),

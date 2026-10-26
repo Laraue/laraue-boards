@@ -162,6 +162,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       issueCount: issues.issueCount,
       spaceColor: space?.color ?? DEFAULT_COLOR,
       spaceName: space?.name ?? spaceKey,
+      status: board.status,
       title: board.name,
     }
   },

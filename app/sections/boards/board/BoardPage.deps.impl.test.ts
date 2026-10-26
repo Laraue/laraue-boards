@@ -104,6 +104,7 @@ test('maps board columns in status order with their issues', async () => {
       issueCount: 2,
       spaceColor: '#555',
       spaceName: 'Product',
+      status: 'Active',
       title: 'Roadmap',
     },
   )

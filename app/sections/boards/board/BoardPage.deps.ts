@@ -23,8 +23,12 @@ export type BoardPageViewModel = {
   // The key while the space isn't among the user's spaces.
   spaceColor: string
   spaceName: string
+  // Derived by the backend from the board's issues, so shown read-only.
+  status: BoardStatus
   title: string
 }
+
+export type BoardStatus = 'Active' | 'Done' | 'New'
 
 export type LoadMoreBoardIssuesResult = {
   hasNext: boolean
