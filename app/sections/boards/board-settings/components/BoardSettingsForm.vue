@@ -26,18 +26,6 @@
             :aria-labelledby="labelId"
             :disabled="!viewModel.canUpdate || submitting" />
         </BaseField>
-        <BaseField
-          id="board-settings-status"
-          :label="t('boardStatus')">
-          <div class="settings-status">
-            <BaseSelect
-              id="board-settings-status"
-              :disabled="!viewModel.canUpdate || submitting"
-              :model-value="state.status"
-              :options="statusOptions"
-              @update:model-value="updateStatus" />
-          </div>
-        </BaseField>
       </BaseFieldGroup>
     </section>
     <section
@@ -114,49 +102,27 @@ const props = defineProps<BoardSettingsFormProps>()
 const { t } = useI18n({
   en: {
     addColumn: 'Add column',
-    boardStatus: 'Board status',
     color: 'Color',
     columns: 'Columns',
     columnsHint: 'Column order and logical statuses.',
-    done: 'Done',
     general: 'General',
-    inProgress: 'In progress',
     logicalStatus: 'Logical status',
     name: 'Name',
-    new: 'New',
     newColumn: 'New column',
   },
   ru: {
     addColumn: 'Добавить колонку',
-    boardStatus: 'Статус доски',
     color: 'Цвет',
     columns: 'Колонки',
     columnsHint: 'Порядок и логические статусы колонок.',
-    done: 'Готово',
     general: 'Основные настройки',
-    inProgress: 'В работе',
     logicalStatus: 'Логический статус',
     name: 'Название',
-    new: 'Новая',
     newColumn: 'Новая колонка',
   },
 })
 
 const idPrefix = useId()
-const statusOptions = [
-  { label: t('new'), value: 'New' },
-  { label: t('inProgress'), value: 'Active' },
-  { label: t('done'), value: 'Done' },
-] satisfies Array<{
-  label: string
-  value: BoardSettingsPageData['status']
-}>
-const updateStatus = (value: string) => {
-  const option = statusOptions.find((candidate) => candidate.value === value)
-  if (option) {
-    state.status = option.value
-  }
-}
 const toDraftColumns = (columns: BoardSettingsPageData['columns']) =>
   columns.map((column) => ({
     ...column,
@@ -168,13 +134,11 @@ const state = reactive<{
   columns: BoardSettingsFormColumnDraft[]
   name: string
   newColumnId: number
-  status: BoardSettingsPageData['status']
 }>({
   color: props.viewModel.color,
   columns: toDraftColumns(props.viewModel.columns),
   name: props.viewModel.name,
   newColumnId: 0,
-  status: props.viewModel.status,
 })
 const sensors = [
   PointerSensor.configure({
@@ -217,7 +181,6 @@ const submit = () => {
     color: state.color,
     columns: state.columns.map(({ category, color, id, name }) => ({ category, color, id, name })),
     name: state.name,
-    status: state.status,
   })
 }
 
@@ -227,7 +190,6 @@ watch(
     state.name = value.name
     state.color = value.color
     state.columns = toDraftColumns(value.columns)
-    state.status = value.status
   },
 )
 </script>

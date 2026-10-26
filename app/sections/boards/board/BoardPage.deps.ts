@@ -3,7 +3,6 @@ import type { IssuePageDeps } from '~/sections/issues/issue/IssuePage.deps'
 
 import type { BoardColumnViewModel } from './components/BoardColumn/BoardColumn.types'
 import type { IssueCardViewModel } from './components/BoardColumn/components/IssueCard.types'
-import type { BoardStatus } from './components/BoardStatusMenu/BoardStatusMenu.types'
 
 export type BoardPageAttributeViewModel = IssueAttributeField
 
@@ -24,9 +23,12 @@ export type BoardPageViewModel = {
   // The key while the space isn't among the user's spaces.
   spaceColor: string
   spaceName: string
+  // Derived by the backend from the board's issues, so shown read-only.
   status: BoardStatus
   title: string
 }
+
+export type BoardStatus = 'Active' | 'Done' | 'New'
 
 export type LoadMoreBoardIssuesResult = {
   hasNext: boolean
@@ -52,7 +54,6 @@ export type IssueFilter =
   | { attributeId: string; type: 'list'; valueIds: string[] }
 
 export type BoardPageDeps = {
-  changeBoardStatus: (input: { boardId: string; status: BoardStatus }) => Promise<void>
   issueDialog: IssuePageDeps
   loadMoreBoardIssues: (input: {
     filters: IssueFilter[]

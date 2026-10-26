@@ -110,15 +110,6 @@ test('maps board columns in status order with their issues', async () => {
   )
 })
 
-test('saves the board status', async () => {
-  const { client, paths, requests } = createTestApiClient(() => new Response(null, { status: 204 }))
-
-  await createBoardPageDeps(client).changeBoardStatus({ boardId: '7', status: 'Done' })
-
-  assert.deepEqual(paths(), ['/api/epics/7/status'])
-  assert.deepEqual(await requests[0]!.json(), { id: '7', status: 'Done' })
-})
-
 test('maps the latest agent run of a card to its badge state', async () => {
   const { client } = createTestApiClient((_request, path) => {
     if (path === '/api/issues/board') {
