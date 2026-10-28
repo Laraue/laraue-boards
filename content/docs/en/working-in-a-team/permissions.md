@@ -6,13 +6,13 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-04-22
-updatedAt: 2026-08-20
+updatedAt: 2026-10-28
 ---
-**Settings → Permissions** in the sidebar is where you see everyone who has access to your organization, share the invite link, and configure what each member can do.
+**Admin → Permissions** in the sidebar is where you see everyone who has access to your organization, share the invite link, and configure what each member can do.
 
 ## Viewing members
 
-The Members list shows every current member with a role label — **Owner**, **Admin**, or **Member**. It isn't something you assign directly. **Owner** is fixed to whoever created the organization. **Admin** is shown for any member who holds at least one administrative permission. Everyone else shows as **Member**.
+The Members list labels the owner **Owner** and administrators **Admin**; other members have no label. It isn't something you assign directly. **Owner** is fixed to whoever created the organization. **Admin** is shown for any member who holds at least one administrative permission.
 
 ![The Members list, showing each member with a role label](https://laraue.com/static/images/blog/docs/laraue-boards/organization-members.jpg)
 
@@ -35,9 +35,10 @@ Checkboxes for organization-level management tools:
 - Delete organization
 - Move spaces and boards
 - Manage attributes
-- Link chats
 
 Checking any one of these is what makes a member show up with the **Admin** label in the member list.
+
+There is no checkbox for linking Telegram chats: right now only the organization owner holds that right — see [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking).
 
 ## Organization access
 
