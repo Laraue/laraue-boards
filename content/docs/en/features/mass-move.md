@@ -6,9 +6,9 @@ type: documentation
 project: boards
 order: 5
 createdAt: 2026-05-16
-updatedAt: 2026-08-07
+updatedAt: 2026-10-28
 ---
-**Settings → Data movement** in the sidebar lets you move a space or a board out of the current organization. Moving something takes everything inside it along — a space brings all its boards and their issues; a board brings all its issues.
+**Admin → Data movement** in the sidebar lets you move a space or a board out of the current organization. Moving something takes everything inside it along — a space brings all its boards and their issues; a board brings all its issues.
 
 ![The Data movement page, with separate Spaces and Boards sections](https://laraue.com/static/images/blog/docs/laraue-boards/data-movement.jpg)
 
