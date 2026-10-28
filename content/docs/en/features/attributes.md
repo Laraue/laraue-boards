@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-08-07
+updatedAt: 2026-10-28
 ---
 Attributes are custom fields you can attach to issues — priority, type, or anything else your workflow needs. They're defined at the **organization level**, so the same attributes are available across every board in the organization.
 
@@ -25,7 +25,7 @@ Attributes are custom fields you can attach to issues — priority, type, or any
 
 ## Managing attributes
 
-Open **Settings → Attributes** in the sidebar. Tap **+ New attribute**, give it a name, pick a color, and choose the type.
+Open **Admin → Attributes** in the sidebar. Tap **+ New attribute**, give it a name, pick a color, and choose the type.
 
 ![The Create attribute form, with Name, Color, and Type fields](https://laraue.com/static/images/blog/docs/laraue-boards/create-attribute.jpg)
 
