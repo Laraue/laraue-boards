@@ -22,7 +22,7 @@
     <!-- eslint-disable-next-line vue/no-v-html -->
     <div
       class="content"
-      @click="openInternalLink"
+      @click="handleContentClick"
       v-html="page.html"></div>
     <nav
       v-if="page.previous || page.next"
@@ -93,6 +93,34 @@ const updated = computed(() =>
     new Date(props.page.meta.updatedAt),
   ),
 )
+
+// A video poster from markdown (see renderDocMarkdown) becomes YouTube's player only when pressed:
+// the privacy-enhanced youtube-nocookie.com one, started right away since the reader asked for it.
+const playVideo = (poster: HTMLElement): void => {
+  const id = poster.dataset.youtubeId
+  if (!id) {
+    return
+  }
+
+  const player = document.createElement('iframe')
+  player.className = 'doc-video'
+  player.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`
+  player.title = poster.getAttribute('aria-label') ?? ''
+  player.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture'
+  player.allowFullscreen = true
+  poster.replaceWith(player)
+  player.focus()
+}
+
+const handleContentClick = async (event: MouseEvent): Promise<void> => {
+  const poster = (event.target as HTMLElement).closest<HTMLElement>('.doc-video[data-youtube-id]')
+  if (poster) {
+    playVideo(poster)
+    return
+  }
+
+  await openInternalLink(event)
+}
 
 // Links inside the text are plain `<a>` from markdown: move between docs pages without a reload.
 const openInternalLink = async (event: MouseEvent): Promise<void> => {
@@ -244,6 +272,63 @@ const openInternalLink = async (event: MouseEvent): Promise<void> => {
   height: auto;
   margin: 20px 0;
   max-width: 100%;
+}
+
+/* A video's poster and, once pressed, its player take the same 16:9 box. */
+.content :deep(.doc-video) {
+  aspect-ratio: 16 / 9;
+  background: var(--color-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  display: block;
+  margin: 20px 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: 100%;
+}
+
+.content :deep(button.doc-video) {
+  cursor: pointer;
+}
+
+.content :deep(button.doc-video:focus-visible) {
+  border-color: var(--color-focus);
+  outline: none;
+}
+
+.content :deep(.doc-video img) {
+  border: 0;
+  border-radius: 0;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  width: 100%;
+}
+
+.content :deep(.doc-video-play) {
+  align-items: center;
+  background: var(--color-accent);
+  border-radius: var(--radius-card);
+  color: var(--color-on-action);
+  display: flex;
+  height: 3.5rem;
+  inset: 0;
+  justify-content: center;
+  margin: auto;
+  position: absolute;
+  transition: background 120ms ease;
+  width: 5rem;
+}
+
+.content :deep(.doc-video-play svg) {
+  height: 2rem;
+  width: 2rem;
+}
+
+.content :deep(button.doc-video:hover .doc-video-play),
+.content :deep(button.doc-video:focus-visible .doc-video-play) {
+  background: var(--color-accent-hover);
 }
 
 .content :deep(table) {

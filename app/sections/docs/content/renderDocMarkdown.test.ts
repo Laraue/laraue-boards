@@ -40,6 +40,32 @@ test('loads images lazily and escapes their attributes', () => {
   )
 })
 
+test('turns an image of a YouTube link into a poster that plays the video', () => {
+  const { html } = renderDocMarkdown('![Video: replying "/save"](https://youtu.be/mpRBfDMMuNg)')
+
+  assert.include(
+    html,
+    '<button type="button" class="doc-video" data-youtube-id="mpRBfDMMuNg" aria-label="Video: replying &quot;/save&quot;">',
+  )
+  assert.include(html, '<img src="https://i.ytimg.com/vi/mpRBfDMMuNg/maxresdefault.jpg" alt=""')
+  assert.notInclude(html, 'youtube.com/embed')
+})
+
+test('reads the video id from a youtube.com watch link too', () => {
+  const { html } = renderDocMarkdown('![Video](https://www.youtube.com/watch?v=mpRBfDMMuNg&t=5)')
+
+  assert.include(html, 'data-youtube-id="mpRBfDMMuNg"')
+})
+
+test('keeps an image whose link only looks like a video as an image', () => {
+  const { html } = renderDocMarkdown('![Logo](https://youtu.be.example.com/logo.png)')
+
+  assert.include(
+    html,
+    '<img src="https://youtu.be.example.com/logo.png" alt="Logo" loading="lazy">',
+  )
+})
+
 test('lists the text of a heading as written, not as escaped in the HTML', () => {
   const { headings, html } = renderDocMarkdown(`## Who it's for\n\n## Q&A "quotes"`)
 
