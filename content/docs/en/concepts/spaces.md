@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-10-21
+updatedAt: 2026-10-28
 ---
 
 A Space is a label that groups related boards together. If you work on multiple products, clients, or areas, spaces keep your navigation clean by letting you focus on one context at a time.
@@ -39,7 +39,7 @@ Whether you see every space or only some of them depends on your access: with gl
 
 A board's space is set when it is created and stays fixed after that — day to day, there is no "move this board to another space" action.
 
-Moving a board between spaces is possible, but only for an admin, from **Settings → Data movement**.
+Moving a board between spaces is possible, but only for an admin, from **Admin → Data movement**.
 
 Moving a board to a different space changes the key of every issue on it, since keys are numbered per space. Any link or quoted key someone already shared for those issues — in a Telegram chat, a doc, anywhere — will point at the old key and no longer resolve. Move a board only when you're prepared for that.
 
