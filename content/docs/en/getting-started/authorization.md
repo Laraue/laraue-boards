@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-08-06
+updatedAt: 2026-10-28
 ---
 
 Laraue Boards uses your existing Telegram account as your identity. There is no separate registration, no password to remember, and no email to verify.
@@ -23,11 +23,13 @@ This is the recommended way to use Laraue Boards on mobile.
 
 ### In the browser
 
-Open [boards.laraue.com/login](https://boards.laraue.com/login) in any browser. You will see the login screen with a **Log in with Telegram** button. Clicking it opens a Telegram authorization popup — approve it and you are redirected back to the app.
+Open [boards.laraue.com/login](https://boards.laraue.com/login) in any browser. You will see the login screen with a **Continue with Telegram** button. Clicking it opens a Telegram authorization popup — approve it and you are redirected back to the app.
 
-![The web login screen with the Log in with Telegram button](https://laraue.com/static/images/blog/docs/laraue-boards/web-login.jpg)
+![The web login screen with the Telegram sign-in button](https://laraue.com/static/images/blog/docs/laraue-boards/web-login.jpg)
 
 The browser version requires that your Telegram account is accessible on the same device, or via the Telegram web client.
+
+The same screen has a Google sign-in button. Signing in with Google for the first time creates a new account. To sign in with Google to the account you already use through Telegram, connect Google in your **Personal profile** (the user menu at the bottom of the sidebar), under **Sign-in methods** — and the other way round: Telegram can be connected to an account created with Google. The bot recognizes you only when Telegram is connected to your account.
 
 ## What data is used
 
