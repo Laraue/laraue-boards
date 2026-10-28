@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-10-01
-updatedAt: 2026-10-01
+updatedAt: 2026-10-28
 ---
 Telegram is where you read interesting links, get ideas and receive requests — and Saved Messages is where they disappear: easy to save, hard to find. This guide turns what you forward into a board you can search and sort, so a link saved today is still easy to find in three months.
 
@@ -36,6 +36,8 @@ Everything starts in the Backlog, so saving stays instant and sorting can wait. 
 ## Clean up a rambling note
 
 If your private chat is linked in manual mode, reply to a long, messy note with `/aisave`. It rewrites the text into a clean title and a bullet-point description. It runs on tokens, and every user gets a free allowance each month. See [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes).
+
+![Video: /aisave in a team chat turns a long, messy note into a card with a short title and a list](https://youtu.be/9yocHJU1j2c)
 
 ## Why not just Saved Messages?
 
