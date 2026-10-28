@@ -71,8 +71,8 @@ const { t } = useI18n({
     issues: 'Задачи',
     notAllowed: 'Недоступно',
     resource: 'Ресурс',
-    space: 'Раздел',
-    spaces: 'Разделы',
+    space: 'Пространство',
+    spaces: 'Пространства',
     update: 'Изменение',
   },
 })

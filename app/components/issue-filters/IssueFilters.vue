@@ -106,8 +106,8 @@ const { t } = useI18n({
   ru: {
     boardStatus: 'Статус доски',
     issueFilters: 'Фильтры задач',
-    space: 'Раздел',
-    spaces: 'Разделы',
+    space: 'Пространство',
+    spaces: 'Пространства',
   },
 })
 

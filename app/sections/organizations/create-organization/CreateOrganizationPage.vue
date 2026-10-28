@@ -80,7 +80,7 @@ const { t } = useI18n({
   ru: {
     backToOrganizations: 'Назад к организациям',
     color: 'Цвет',
-    createDescription: 'Создайте новое рабочее пространство для своей команды.',
+    createDescription: 'Создайте новую организацию для своей команды.',
     createOrganization: 'Создать организацию',
     name: 'Название',
     slug: 'Идентификатор',
