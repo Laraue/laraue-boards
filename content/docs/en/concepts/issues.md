@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-10-01
+updatedAt: 2026-10-28
 ---
 An issue is the core unit of work in Laraue Boards. Every task, request, bug report, or action item is an issue. What makes Laraue Boards different is where issues come from: most of them start as Telegram messages.
 
@@ -51,7 +51,7 @@ Linking a chat — a group, a supergroup, or even your own private chat with the
 
 **Manually** — tap **+ Add issue**. It's available from anywhere in the app, not just from inside a board. Open it from a board and the space and board are already filled in for you; open it from the organization level and every field starts empty, so you choose the space, board, and status yourself.
 
-The **Title** is optional. Leave it empty and an AI writes a short title from the description when you save; if that isn't possible (the AI is unavailable, or your organization is out of AI credits) you're asked to type one. The **Clean up and title with AI** button in the description toolbar goes further: it fixes the grammar and structure of the description and writes the title, and you review both before pressing Save.
+The **Title** is optional. Leave it empty and an AI writes a short title from the description when you save; if that isn't possible (the AI is unavailable, or your organization is out of AI credits) you're asked to type one. The **Improve with AI** button under the description goes further: it fixes the grammar and structure of the description and writes the title, and you review both before pressing Save. The button appears once the description has text.
 
 ![The Add issue form](https://laraue.com/static/images/blog/docs/laraue-boards/create-issue.jpg)
 
