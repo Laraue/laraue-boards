@@ -25,7 +25,9 @@ const decodeEntities = (value: string): string =>
 
 // The id of a YouTube video link: https://youtu.be/<id> or https://www.youtube.com/watch?v=<id>.
 const youTubeVideoId = (href: string): string | undefined =>
-  /^https:\/\/(?:youtu\.be\/|(?:www\.)?youtube\.com\/watch\?v=)([\w-]{11})(?:[?&#]|$)/.exec(href)?.[1]
+  /^https:\/\/(?:youtu\.be\/|(?:www\.)?youtube\.com\/watch\?v=)([\w-]{11})(?:[?&#]|$)/.exec(
+    href,
+  )?.[1]
 
 const playIcon =
   '<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>'
