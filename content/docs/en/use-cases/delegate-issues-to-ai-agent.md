@@ -6,9 +6,11 @@ type: documentation
 project: boards
 order: 4
 createdAt: 2026-10-22
-updatedAt: 2026-10-22
+updatedAt: 2026-10-28
 ---
 You have a board of small, clear issues — a bug fix, a missing test, a settings page tweak — and no time to do them one by one. Hand them to a coding agent that runs on your own computer: it takes each issue, does the work on a branch, and tells you when it's ready for you to look at. You stay the reviewer.
+
+![Video: an issue handed to the agent is fixed in the background and comes back for review, then is sent back with a comment](https://youtu.be/SizkYAO0PZ8)
 
 This is different from [chatting with an agent about your backlog](/en/documentation/use-cases/ai-agent-backlog): there you sit in the conversation; here you hand work off and come back to review it.
 

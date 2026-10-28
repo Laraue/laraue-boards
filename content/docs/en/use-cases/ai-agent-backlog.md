@@ -6,9 +6,11 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-10-01
-updatedAt: 2026-10-22
+updatedAt: 2026-10-28
 ---
 An AI coding agent works on your code, but the list of what to build usually lives somewhere else — so you end up copying bug reports into the chat and status updates back out. Laraue Boards removes that step: the agent reads your backlog, creates cards and moves them while it works.
+
+![Video: Claude Code reads the board over MCP, adds a bug and moves an issue to In progress](https://youtu.be/EaVeKYbpRJk)
 
 This page is about working **with** the agent, in a conversation. To hand issues off and let the agent work on them on its own while you do something else, see [Delegate issues to a coding agent and review its work](/en/documentation/use-cases/delegate-issues-to-ai-agent).
 
