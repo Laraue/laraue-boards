@@ -23,6 +23,22 @@ const decodeEntities = (value: string): string =>
     // Last, so that "&amp;lt;" becomes "&lt;" and not "<".
     .replaceAll('&amp;', '&')
 
+// The id of a YouTube video link: https://youtu.be/<id> or https://www.youtube.com/watch?v=<id>.
+const youTubeVideoId = (href: string): string | undefined =>
+  /^https:\/\/(?:youtu\.be\/|(?:www\.)?youtube\.com\/watch\?v=)([\w-]{11})(?:[?&#]|$)/.exec(href)?.[1]
+
+const playIcon =
+  '<svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></svg>'
+
+// A video is written like an image of its YouTube link, ![Video: what it shows](https://youtu.be/<id>),
+// and becomes its poster with a play button. DocsArticle swaps in the player on click, so the page
+// loads nothing from YouTube's player until the reader asks for it.
+const renderVideo = (id: string, title: string): string =>
+  `<button type="button" class="doc-video" data-youtube-id="${id}" aria-label="${escapeHtml(title)}">` +
+  `<img src="https://i.ytimg.com/vi/${id}/maxresdefault.jpg" alt="" loading="lazy">` +
+  `<span class="doc-video-play">${playIcon}</span>` +
+  '</button>'
+
 const slugify = (value: string): string =>
   value
     .toLowerCase()
@@ -54,6 +70,11 @@ export const renderDocMarkdown = (body: string): { headings: DocHeading[]; html:
         return `<h${depth} id="${id}">${content}</h${depth}>\n`
       },
       image({ href, text, title }) {
+        const videoId = youTubeVideoId(href)
+        if (videoId) {
+          return renderVideo(videoId, text)
+        }
+
         const titleAttribute = title ? ` title="${escapeHtml(title)}"` : ''
 
         return `<img src="${escapeHtml(href)}" alt="${escapeHtml(text)}"${titleAttribute} loading="lazy">`
