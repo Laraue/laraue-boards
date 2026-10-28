@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-10-23
+updatedAt: 2026-10-28
 ---
 The core idea behind Laraue Boards is that work is already happening in Telegram. A client request, a bug report, a photo of something that needs fixing — these are all issues, they just haven't been structured yet. Laraue Boards captures them directly.
 
@@ -28,7 +28,7 @@ This works for text messages, photos, videos, documents, and albums.
 When you forward a message, Laraue Boards saves:
 
 - The **text content** of the message (up to 4096 characters)
-- **Photos** and **videos** — shown as thumbnails on the issue card, fetched from Telegram in original quality when you open them
+- **Photos** and **videos** — shown as thumbnails on the issue page, fetched from Telegram in original quality when you open them
 - **Documents** — PDF, Word (DOCX, DOC), Markdown, TXT and JSON files, and images sent as a file, attached to the issue for download (see [Attachments](/en/documentation/features/media#what-you-can-attach) for formats and limits)
 - **Sender name** — shown on the card for context
 - **Timestamp** — when the original message was sent
@@ -49,11 +49,11 @@ There are no thumbnails on the board card — media only shows up once you open 
 
 ![The Attachments section on an issue's detail page](https://laraue.com/static/images/blog/docs/laraue-boards/issue-attachments.jpg)
 
-From here you can also add more images yourself — **Choose other images**, or paste one directly with **Ctrl+V** — and remove any attachment with the **×** on its thumbnail.
+From here you can also add more images yourself — with **Attach files** (the paperclip), or paste one directly with **Ctrl+V** — and remove any attachment with the **×** on its thumbnail.
 
 ## Text-only issues
 
-A message does not need text to become an issue. A photo with no caption becomes a media-only issue — the card shows the thumbnail strip without any text below the header, and its title is generated from the kind of media, the time and the chat, like `image-20260930-101500-Chat name`. A document with no caption takes its file name as the title, like `contract.pdf`.
+A message does not need text to become an issue. A photo with no caption becomes a media-only issue — the issue page shows the thumbnails with an empty description, and its title is generated from the kind of media, the time and the chat, like `image-20260930-101500-Chat name`. A document with no caption takes its file name as the title, like `contract.pdf`.
 
 ## Manually created issues
 

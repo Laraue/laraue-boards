@@ -44,7 +44,7 @@ const { t } = useI18n({
   },
   ru: {
     loadingOrganizations: 'Загрузка организаций…',
-    loadingWorkspace: 'Загрузка рабочего пространства…',
+    loadingWorkspace: 'Загрузка организации…',
   },
 })
 const query = await useAsyncData(

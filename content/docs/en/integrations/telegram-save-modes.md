@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 4
 createdAt: 2026-08-19
-updatedAt: 2026-10-01
+updatedAt: 2026-10-28
 ---
 **Save mode** is the last step of [linking a chat](/en/documentation/integrations/telegram-linking), and it decides *when* a message in that chat turns into an issue: automatically, or only when someone asks for it.
 
@@ -77,9 +77,9 @@ A lookalike link on a different domain is never treated as one of these. For eac
 
 If the message has no recognized issue link, `/info` falls back to looking up whether the message itself is a tracked card. If it isn't, the reply now also shows a sample of the expected link format.
 
-## /delete — remove a message and its issue
+## /delete — remove a message's issue
 
-Reply to a message with `/delete` to remove it. This only does anything if both are true: the message actually has an issue created from it, and you hold the **Delete** permission for that issue. If either isn't the case, nothing happens.
+Reply to a message with `/delete` to delete the issue saved from it. The bot first shows the issue and asks you to confirm with **🗑 Delete** (or **✖ Cancel**); only then is the issue deleted, and the bot replies "🗑 Card deleted." The Telegram message itself stays. If the message has no issue yet, or you don't hold the **Delete** permission for it, the bot tells you so and nothing is deleted.
 
 ## Permissions
 

@@ -112,7 +112,7 @@ const { t } = useI18n({
     properties: 'Свойства',
     save: 'Сохранить',
     saveChanges: 'Сохранить изменения',
-    space: 'Раздел',
+    space: 'Пространство',
     status: 'Статус',
     updated: 'Изменена',
   },

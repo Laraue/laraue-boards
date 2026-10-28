@@ -553,7 +553,7 @@ it('disables the hand-off until the user has an API key for the runner', async (
   await expect
     .element(
       page.getByRole('note', {
-        name: 'Hand to agent: Create an API key for your agent runner first: Account → API keys.',
+        name: 'Hand to agent: Create an API key for your agent runner first: Organization profile → API keys.',
       }),
     )
     .toBeInTheDocument()

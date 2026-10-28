@@ -59,7 +59,7 @@ const { t } = useI18n({
     about: 'About this space',
   },
   ru: {
-    about: 'Об этом разделе',
+    about: 'Об этом пространстве',
   },
 })
 

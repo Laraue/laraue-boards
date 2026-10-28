@@ -75,7 +75,7 @@ const { t } = useI18n({
   },
   ru: {
     color: 'Цвет',
-    createSpace: 'Создать раздел',
+    createSpace: 'Создать пространство',
     key: 'Ключ',
     name: 'Название',
   },

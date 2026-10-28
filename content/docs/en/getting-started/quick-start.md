@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-04-22
-updatedAt: 2026-10-01
+updatedAt: 2026-10-28
 ---
 This guide will help you get familiar with Laraue Boards. There's nothing to set up beforehand — your first board is already waiting for you the moment you log in.
 
@@ -16,9 +16,9 @@ This guide will help you get familiar with Laraue Boards. There's nothing to set
 
 ![The Mini App launch button next to the bot's chat](https://laraue.com/static/images/blog/docs/laraue-boards/message-board-bot-launch-mini-app-button.jpg)
 
-**In the browser** — visit [boards.laraue.com/login](https://boards.laraue.com/login) and tap **Log in with Telegram**.
+**In the browser** — visit [boards.laraue.com/login](https://boards.laraue.com/login) and tap **Continue with Telegram**.
 
-![The web login screen with the Log in with Telegram button](https://laraue.com/static/images/blog/docs/laraue-boards/web-login.jpg)
+![The web login screen with the Telegram sign-in button](https://laraue.com/static/images/blog/docs/laraue-boards/web-login.jpg)
 
 For more on what data login uses, and on switching between accounts and organizations, see [Authorization](/en/documentation/getting-started/authorization).
 

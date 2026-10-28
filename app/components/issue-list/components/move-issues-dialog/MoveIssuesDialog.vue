@@ -95,7 +95,7 @@ const { t, tp } = useI18n({
     move: 'Переместить',
     moving: 'Перемещение…',
     selectStatus: 'Выберите статус',
-    space: 'Раздел',
+    space: 'Пространство',
     status: 'Статус',
   },
 })

@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 4
 createdAt: 2026-04-22
-updatedAt: 2026-08-05
+updatedAt: 2026-10-28
 ---
 
 An organization is a shared workspace in Laraue Boards. When you work inside an organization, boards and spaces are visible to members according to the permissions they have been given.
@@ -37,13 +37,13 @@ You are automatically assigned as the **Owner**.
 
 ## Inviting members and managing permissions
 
-Open **Settings → Permissions** in the sidebar. This one page holds both the invite link and your member list.
+Open **Admin → Permissions** in the sidebar. This one page holds both the invite link and your member list.
 
 ![The Permissions settings page, showing the invite link and a list of members with their roles](https://laraue.com/static/images/blog/docs/laraue-boards/organization-members.jpg)
 
 **Invite people** — copy the link shown at the top and send it to your teammate in Telegram. When they open it and accept, they join the organization. **Create a new link** revokes all pending invitations without removing existing members.
 
-**Members** — every member is listed with a role label — **Owner**, **Admin**, or **Member** — rather than something you assign directly: any member holding at least one administrative permission shows up as **Admin**. Tap a member to open their permissions page.
+**Members** — the owner is labeled **Owner** and administrators **Admin**; other members have no label. The label isn't something you assign directly: any member holding at least one administrative permission shows up as **Admin**. Tap a member to open their permissions page.
 
 A member with no permissions at all can't see anything in the organization — access is opt-in, not opt-out. There is no way to revoke a member's access yet; that's planned for a future version.
 
@@ -53,7 +53,7 @@ Tapping a member opens a dedicated page for their access, with three sections.
 
 ![A member's permissions page, showing Administration, Organization access, and Direct space access](https://laraue.com/static/images/blog/docs/laraue-boards/user-permissions.jpg)
 
-**Administration** controls organization-level management tools — checkboxes for things like managing members and permissions, editing or deleting the organization, moving spaces and boards, managing attributes, and linking Telegram chats. Checking any of these is what makes someone show up as an Admin in the member list.
+**Administration** controls organization-level management tools — checkboxes for things like managing members and permissions, editing or deleting the organization, moving spaces and boards, and managing attributes. Checking any of these is what makes someone show up as an Admin in the member list.
 
 **Organization access** applies across every space at once. A **Read organization** toggle controls whether the member can see everything, and below it a table lets you grant **Create / Update / Delete** separately for **Spaces**, **Boards**, and **Issues**.
 
@@ -61,7 +61,7 @@ Tapping a member opens a dedicated page for their access, with three sections.
 
 ## Editing or deleting an organization
 
-Open **Settings → General**. From there you can rename the organization, change its slug or color, or delete it.
+Open **Admin → General**. From there you can rename the organization, change its slug or color, or delete it.
 
 Changing the slug breaks any existing links built around the old one. Change it only when you're prepared for that.
 

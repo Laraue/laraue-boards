@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-08-19
-updatedAt: 2026-08-20
+updatedAt: 2026-10-28
 ---
 A message sent to the `@msgboard_bot` bot initially lands in `Default Space` -> `Backlog`. **Linking** lets you change this behavior by choosing the board that messages from this chat will be sent to.
 
@@ -18,7 +18,7 @@ Send `/link` in the chat to start.
 
 ![Sending /link in a Telegram chat to start linking it](https://laraue.com/static/images/blog/docs/laraue-boards/link-chat-link-command.jpg)
 
-In a group or supergroup, only a Telegram **chat admin** can run `/link` (or `/unlink`) — anyone else gets a "You need to be an admin of this chat" message. Your private chat with the bot has no separate admin concept, so this check doesn't apply there.
+In a group or supergroup, only a Telegram **chat admin** can run `/link` (or `/unlink`) — anyone else gets a "User should be group admin" message. Your private chat with the bot has no separate admin concept, so this check doesn't apply there.
 
 The bot then walks you through several steps to create the link:
 
@@ -52,7 +52,7 @@ Send `/unlink` (same admin requirement as `/link`), or tap **Unlink** from the a
 
 ## Who can link a chat
 
-Being able to link a chat is its own admin permission, separate from being able to save issues in it. Only organizations where you hold the *Link chats* administrative permission appear in the `/link` picker — see [Permissions management](/en/documentation/working-in-a-team/permissions) for how to grant it to a teammate.
+Being able to link a chat is its own admin permission, separate from being able to save issues in it. Only organizations where you hold the *Link chats* administrative permission appear in the `/link` picker. Right now the organization owner holds it, and the permissions page can't grant it to other members — so the owner links a team chat.
 
 ## Related pages
 

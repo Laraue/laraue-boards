@@ -26,6 +26,6 @@ defineProps<{ change: HistorySpaceChangeViewModel }>()
 
 const { t } = useI18n({
   en: { none: 'None', space: 'Space' },
-  ru: { none: 'Нет', space: 'Раздел' },
+  ru: { none: 'Нет', space: 'Пространство' },
 })
 </script>

@@ -18,7 +18,7 @@ export const useOrganizationTour = (
     },
     ru: {
       personalDescription: 'Используйте личную организацию для своих проектов и задач.',
-      personalTitle: 'Ваше личное рабочее пространство',
+      personalTitle: 'Ваша личная организация',
       teamDescription: 'Создайте организацию, чтобы работать вместе с командой.',
       teamTitle: 'Объедините команду',
     },

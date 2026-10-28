@@ -126,7 +126,7 @@ const { t } = useI18n({
     expiredTitle: 'This sign-in link has expired',
     heading: 'Connect {client}',
     keyNote:
-      'It gets an API key named “{keyName}”, with the same access as you. You can revoke it any time under Account → API keys.',
+      'It gets an API key named “{keyName}”, with the same access as you. You can revoke it any time under Organization profile → API keys.',
     organization: 'Organization',
     signingIn: 'Opening the sign-in page…',
     title: 'Connect an agent',
@@ -146,7 +146,7 @@ const { t } = useI18n({
     expiredTitle: 'Ссылка для входа устарела',
     heading: 'Подключение: {client}',
     keyNote:
-      'Он получит API-ключ «{keyName}» с теми же правами, что у вас. Отозвать его можно в любой момент: Аккаунт → API-ключи.',
+      'Он получит API-ключ «{keyName}» с теми же правами, что у вас. Отозвать его можно в любой момент: Профиль в организации → API-ключи.',
     organization: 'Организация',
     signingIn: 'Открываем страницу входа…',
     title: 'Подключение агента',

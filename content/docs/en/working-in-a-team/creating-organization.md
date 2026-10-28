@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-08-07
+updatedAt: 2026-10-28
 ---
 An organization lets multiple people share boards and collaborate on the same issues. Setting one up takes under two minutes.
 
@@ -33,7 +33,7 @@ Tap the organization on the selection screen, or pick it from the sidebar dropdo
 
 ## Step 3 — Share the invite link
 
-Open **Settings → Permissions** in the sidebar. The invite link is already there, generated when you created the organization — there's nothing to set up.
+Open **Admin → Permissions** in the sidebar. The invite link is already there, generated when you created the organization — there's nothing to set up.
 
 ![The Invite people card with the invite link](https://laraue.com/static/images/blog/docs/laraue-boards/invite-link.jpg)
 
@@ -41,7 +41,7 @@ Copy the link and send it to your teammate in Telegram, or however you prefer. W
 
 ## Step 4 — Configure their access
 
-A new member starts with **no permissions at all** — they can't see anything in the organization until you grant access. Open **Settings → Permissions**, find them in the member list, and tap through to their permissions page to set up what they can do. See [Permissions management](/en/documentation/working-in-a-team/permissions) for the full breakdown.
+A new member starts with **no permissions at all** — they can't see anything in the organization until you grant access. Open **Admin → Permissions**, find them in the member list, and tap through to their permissions page to set up what they can do. See [Permissions management](/en/documentation/working-in-a-team/permissions) for the full breakdown.
 
 ## Managing the invite link
 

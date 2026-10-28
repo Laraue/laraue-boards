@@ -1,12 +1,12 @@
 ---
 title: API keys — connecting your own tools to Boards
-description: Create a long-lived API key from your Account page to let scripts, CI, or AI agents like Claude authenticate as you. Covers creating, naming, and revoking keys.
+description: Create a long-lived API key from your organization profile to let scripts, CI, or AI agents like Claude authenticate as you. Covers creating, naming, and revoking keys.
 keywords: [boards api key, boards personal access token, boards api authentication, boards mcp api key, revoke api key]
 type: documentation
 project: boards
 order: 6
 createdAt: 2026-09-23
-updatedAt: 2026-10-21
+updatedAt: 2026-10-28
 ---
 An **API key** is a long-lived credential that lets something other than the web app or the Telegram bot act as you — a script, a CI job, or an AI agent like Claude connecting over [MCP](/en/documentation/integrations/mcp). No password, no login flow — just a key in a header.
 
@@ -14,11 +14,11 @@ A key isn't a separate, weaker identity. It can do exactly what you can do by ha
 
 ## Creating a key
 
-Open **Account → API keys**. Type a name that reminds you what the key is for — "CI", "Claude MCP" — and click **Create key**.
+Open **Organization profile → API keys**. Type a name that reminds you what the key is for — "CI", "Claude MCP" — and click **Create key**.
 
 The raw key is shown once, right after creation. Copy it now: Boards only ever stores its hash, so there's no way to reveal it again later. If you lose it, revoke it and create a new one.
 
-![The API keys tab on the Account page, showing existing keys and the create key form](https://laraue.com/static/images/blog/docs/laraue-boards/api-keys.jpg)
+![The API keys tab of the organization profile, showing existing keys and the create key form](https://laraue.com/static/images/blog/docs/laraue-boards/api-keys.jpg)
 
 ## Managing your keys
 

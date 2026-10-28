@@ -5,7 +5,7 @@ keywords: [laraue boards getting started, how to use laraue boards, telegram kan
 type: sectionDefinition
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-08-05
+updatedAt: 2026-10-28
 ---
 This section covers everything you need to go from zero to a working board with your first task on it.
 
@@ -17,7 +17,7 @@ This section covers everything you need to go from zero to a working board with 
 
 ## Before you begin
 
-You need a Telegram account. That's it. There is no separate sign-up, no email to verify, and no credit card required.
+You need a Telegram account. That's it. There is no separate sign-up, no email to verify, and no credit card required. In the browser you can also sign in with Google, but the bot works only with Telegram.
 
 The moment you log in, you already have a personal organization with a default space, a board, and a Backlog set up — there's nothing to configure before you can start. Send a message to the bot and it becomes an issue right away, no setup required first.
 

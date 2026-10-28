@@ -81,7 +81,7 @@ const { t } = useI18n({
     moveBoards: 'Переместить доски',
     moving: 'Перемещение…',
     organization: 'Организация',
-    space: 'Раздел',
+    space: 'Пространство',
   },
 })
 
