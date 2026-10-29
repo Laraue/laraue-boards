@@ -26,7 +26,7 @@ Create an organization, copy its invite link and send it to your teammates. [Cre
 
 ### 2. Link the group chat to a board
 
-Add [@msgboard_bot](https://t.me/msgboard_bot) to the group, then send `/link` in it. Only a chat admin can do this, and you need the *Link chats* permission in the organization. The bot walks you through the destination: organization, space, epic and status. At the last step, choose **Only via /save** — the manual mode, built for busy chats.
+Add [@msgboard_bot](https://t.me/msgboard_bot) to the group, then send `/link` in it. Only a chat admin can do this, and you need the *Link Telegram chats* permission in the organization — the owner has it, and an admin can grant it to you on your permissions page. The bot walks you through the destination: organization, space, epic and status. At the last step, choose **Only via /save** — the manual mode, built for busy chats.
 
 ![The linked chat, showing the destination breadcrumb and the chosen save mode](https://laraue.com/static/images/blog/docs/laraue-boards/link-chat-linked.jpg)
 

@@ -1,5 +1,6 @@
 export type AdminPermissions = {
   canDeleteOrganization: boolean
+  canLinkChats: boolean
   canManageAttributes: boolean
   canManageMembers: boolean
   canMoveData: boolean

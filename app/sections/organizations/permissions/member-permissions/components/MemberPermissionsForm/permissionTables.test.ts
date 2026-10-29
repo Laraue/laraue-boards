@@ -48,6 +48,7 @@ const spaces: MemberPermissionsPageData['spaces'] = [
 const permissionsOf = (overrides: Partial<MemberPermissions> = {}): MemberPermissions => ({
   admin: {
     canDeleteOrganization: false,
+    canLinkChats: false,
     canManageAttributes: false,
     canManageMembers: false,
     canMoveData: false,

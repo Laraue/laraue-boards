@@ -22,7 +22,7 @@ In a group or supergroup, only a Telegram **chat admin** can run `/link` (or `/u
 
 The bot then walks you through several steps to create the link:
 
-1. **Organization** — only organizations where you hold the *Link chats* admin permission are offered. If none qualify, the bot tells you so and stops.
+1. **Organization** — only organizations where you hold the *Link Telegram chats* admin permission are offered. If none qualify, the bot tells you so and stops.
 2. **Space** — any space you can read within that organization.
 
    ![Choosing a space during the /link flow](https://laraue.com/static/images/blog/docs/laraue-boards/link-chat-choose-space.jpg)
@@ -52,7 +52,7 @@ Send `/unlink` (same admin requirement as `/link`), or tap **Unlink** from the a
 
 ## Who can link a chat
 
-Being able to link a chat is its own admin permission, separate from being able to save issues in it. Only organizations where you hold the *Link chats* administrative permission appear in the `/link` picker. Right now the organization owner holds it, and the permissions page can't grant it to other members — so the owner links a team chat.
+Being able to link a chat is its own admin permission, separate from being able to save issues in it. Only organizations where you hold the *Link Telegram chats* administrative permission appear in the `/link` picker. The organization owner holds it; an admin who manages permissions can grant it to other members on their permissions page, in the **Administration** block — see [Permissions management](/en/documentation/working-in-a-team/permissions).
 
 ## Related pages
 
