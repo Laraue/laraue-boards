@@ -15,12 +15,17 @@
 </template>
 
 <script setup lang="ts">
-import { useSeoMeta } from '#app'
+import { useHead, useSeoMeta } from '#app'
 import BrandLogo from '#layers/core/app/branding/BrandLogo.vue'
 
 import AppHeaderPreferences from './components/AppHeaderPreferences.vue'
 
 defineProps<{ homePath: string }>()
+
+// Telegram must read its signed launch hash before the router normalizes it.
+useHead({
+  script: [{ key: 'telegram-mini-app', src: 'https://telegram.org/js/telegram-web-app.js?61' }],
+})
 
 // The app's pages are private. The server already sends X-Robots-Tag (see the layer's
 // nuxt.config); the tag repeats it in the page for crawlers and tools that read only the HTML.
