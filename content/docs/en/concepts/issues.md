@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-10-28
+updatedAt: 2026-10-29
 ---
 An issue is the core unit of work in Laraue Boards. Every task, request, bug report, or action item is an issue. What makes Laraue Boards different is where issues come from: most of them start as Telegram messages.
 
@@ -16,7 +16,7 @@ Every issue has:
 
 - **Title** — a short one-line name. Lists, board cards, search results and history show it, so it's what you recognize an issue by
 - **Description** — the text of the message, or manually entered text
-- **Sender** — who sent the original Telegram message
+- **Source** — for an issue created from Telegram: the chat, who sent the message and when, and a link that opens the message in Telegram — see [Where the issue came from](/en/documentation/working-alone/telegram-messages#where-the-issue-came-from)
 - **Status** — which column on the board it currently sits in
 - **Issue key** — a unique identifier like `WRK-42`
 - **Assignee** — who the issue is assigned to
