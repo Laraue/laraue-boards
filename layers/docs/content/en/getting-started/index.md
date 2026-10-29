@@ -11,9 +11,9 @@ This section covers everything you need to go from zero to a working board with 
 
 ## In this section
 
-- [Authorization](/en/documentation/getting-started/authorization) — How to log in using your Telegram account, both inside the Mini App and in the browser. No password, no registration.
+- [Authorization](/documentation/getting-started/authorization) — How to log in using your Telegram account, both inside the Mini App and in the browser. No password, no registration.
 
-- [Quick start](/en/documentation/getting-started/quick-start) — A walkthrough of your first few minutes in Laraue Boards: send a message to the bot, watch it become an issue, and move it through statuses.
+- [Quick start](/documentation/getting-started/quick-start) — A walkthrough of your first few minutes in Laraue Boards: send a message to the bot, watch it become an issue, and move it through statuses.
 
 ## Before you begin
 
@@ -25,4 +25,4 @@ Open [@msgboard_bot](https://t.me/msgboard_bot) in Telegram to get started, or v
 
 ## Related pages
 
-- [Organizations](/en/documentation/concepts/organizations) — working with a team is covered in its own section, once you're past the basics.
+- [Organizations](/documentation/concepts/organizations) — working with a team is covered in its own section, once you're past the basics.

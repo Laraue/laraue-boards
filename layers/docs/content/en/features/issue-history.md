@@ -25,12 +25,12 @@ History tracks every kind of change an issue can go through:
 
 Simple value changes — a status, a board, an attribute — read as a plain **Field: Old → New** line. Text-heavy changes — editing the content or a comment — show a **word-level diff** instead: the entry shows how much was added and removed, and expanding it shows the text with removed words struck out and added words highlighted, so you see exactly what changed in the text, not just that it changed.
 
-Entries are grouped by day, with a **Today**, **Yesterday**, or date label above each group. Each entry shows the author's avatar with the time of the change under it; hover the avatar for the name. A change made through an [API key](/en/documentation/integrations/api-keys) — an AI agent, a script — has a small key on its avatar, and the hint reads like "John Kevin via API key Claude MCP".
+Entries are grouped by day, with a **Today**, **Yesterday**, or date label above each group. Each entry shows the author's avatar with the time of the change under it; hover the avatar for the name. A change made through an [API key](/documentation/integrations/api-keys) — an AI agent, a script — has a small key on its avatar, and the hint reads like "John Kevin via API key Claude MCP".
 
 A single entry can bundle more than one change at once — moving a board and updating its status in the same action shows up as one timestamped entry with both lines, not two separate ones.
 
 ## Related pages
 
-- [Issues — what they are](/en/documentation/concepts/issues)
-- [Comments](/en/documentation/features/comments)
-- [Organization history — the same log, combined across every issue](/en/documentation/features/organization-history)
+- [Issues — what they are](/documentation/concepts/issues)
+- [Comments](/documentation/features/comments)
+- [Organization history — the same log, combined across every issue](/documentation/features/organization-history)

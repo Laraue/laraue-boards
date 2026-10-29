@@ -16,12 +16,6 @@ import { createDocsPageDeps } from '#layers/docs/app/DocsPage.deps.impl'
 import DocsPage from '#layers/docs/app/DocsPage.vue'
 
 definePageMeta({
-  i18n: {
-    paths: {
-      en: '/en/documentation/[...path]',
-      ru: '/documentation/[...path]',
-    },
-  },
   key: (route) => route.path,
   layout: 'landing',
 })

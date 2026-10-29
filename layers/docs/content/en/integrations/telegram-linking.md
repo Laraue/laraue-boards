@@ -32,7 +32,7 @@ The bot then walks you through several steps to create the link:
    ![Choosing an epic during the /link flow](https://laraue.com/static/images/blog/docs/laraue-boards/link-chat-choose-epic.jpg)
 
 4. **Status** — every column in the epic you picked (skipped for the backlog).
-5. **Save mode** — the last step, and it's worth its own page: see [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes).
+5. **Save mode** — the last step, and it's worth its own page: see [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes).
 
    ![Choosing a save mode as the last step of /link](https://laraue.com/static/images/blog/docs/laraue-boards/link-chat-choose-save-mode.jpg)
 
@@ -52,11 +52,11 @@ Send `/unlink` (same admin requirement as `/link`), or tap **Unlink** from the a
 
 ## Who can link a chat
 
-Being able to link a chat is its own admin permission, separate from being able to save issues in it. Only organizations where you hold the *Link Telegram chats* administrative permission appear in the `/link` picker. The organization owner holds it; an admin who manages permissions can grant it to other members on their permissions page, in the **Administration** block — see [Permissions management](/en/documentation/working-in-a-team/permissions).
+Being able to link a chat is its own admin permission, separate from being able to save issues in it. Only organizations where you hold the *Link Telegram chats* administrative permission appear in the `/link` picker. The organization owner holds it; an admin who manages permissions can grant it to other members on their permissions page, in the **Administration** block — see [Permissions management](/documentation/working-in-a-team/permissions).
 
 ## Related pages
 
-- [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes) — what happens to messages once a chat is linked
-- [Searching issues from any Telegram chat](/en/documentation/integrations/telegram-inline-search)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
-- [Turn a Telegram group chat into a team task board](/en/documentation/use-cases/telegram-group-chat-task-board) — a start-to-finish guide
+- [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes) — what happens to messages once a chat is linked
+- [Searching issues from any Telegram chat](/documentation/integrations/telegram-inline-search)
+- [Permissions management](/documentation/working-in-a-team/permissions)
+- [Turn a Telegram group chat into a team task board](/documentation/use-cases/telegram-group-chat-task-board) — a start-to-finish guide

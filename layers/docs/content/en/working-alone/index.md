@@ -11,11 +11,11 @@ Laraue Boards works just as well for one person as it does for a team. Your pers
 
 ## In this section
 
-- [Personal boards](/en/documentation/working-alone/personal-boards) — How your personal organization works, typical solo workflows, and tips for keeping boards manageable.
+- [Personal boards](/documentation/working-alone/personal-boards) — How your personal organization works, typical solo workflows, and tips for keeping boards manageable.
 
-- [The Backlog](/en/documentation/working-alone/backlog) — The default board every space starts with. How to browse, search, and move issues off it.
+- [The Backlog](/documentation/working-alone/backlog) — The default board every space starts with. How to browse, search, and move issues off it.
 
-- [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages) — How to turn any Telegram message — text, photo, or video — into an issue with one forward.
+- [Capturing Telegram messages](/documentation/working-alone/telegram-messages) — How to turn any Telegram message — text, photo, or video — into an issue with one forward.
 
 ## The solo workflow in brief
 

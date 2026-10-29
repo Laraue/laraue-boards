@@ -12,7 +12,7 @@ Laraue Boards runs a remote **MCP** (Model Context Protocol) server, so an AI ag
 
 ## What you need
 
-An [API key](/en/documentation/integrations/api-keys) for the organization you want Claude to access. Create one from **Organization profile → API keys** before connecting.
+An [API key](/documentation/integrations/api-keys) for the organization you want Claude to access. Create one from **Organization profile → API keys** before connecting.
 
 ## Connecting in Claude
 
@@ -55,7 +55,7 @@ Add the server to `.cursor/mcp.json` in your project, or to `~/.cursor/mcp.json`
 
 Set `BOARDS_API_KEY` in your shell environment, so the key never sits in the file.
 
-Once connected, see [A backlog for AI-assisted development](/en/documentation/use-cases/ai-agent-backlog) for what to ask the agent.
+Once connected, see [A backlog for AI-assisted development](/documentation/use-cases/ai-agent-backlog) for what to ask the agent.
 
 ## What Claude can do
 
@@ -63,10 +63,10 @@ Every action runs with your own permissions, live — Claude can't do anything i
 
 - **Issues** — list and filter issues, view one in full detail, create a new one (with a title), edit its title, content or assignee, move it to a different status, or delete it
 - **Comments** — add a comment to an issue, or edit one you wrote, with files attached (e.g. a report or config)
-- **Organization structure** — look up spaces (with a space's [description and links](/en/documentation/concepts/spaces#description-and-links)), statuses, custom attributes, and members, so Claude can resolve names to the right ids on its own
-- **Attachments** — attach images and documents to issues and comments, and read them back: an image as an image, Markdown, TXT and JSON as text, PDF and Word as a file — see [Attachments](/en/documentation/features/media#what-you-can-attach) for formats and limits
-- **Issue links** — link issues (blocks, relates to, duplicates), remove a link, and leave blocked issues out when looking for work to start — see [Issue links](/en/documentation/features/issue-links)
-- **Agent runs** — hand an issue to your coding agent, and, for a runner, pick up and finish the issues handed off to you — see [Hand issues to an AI agent](/en/documentation/integrations/agent-hand-off)
+- **Organization structure** — look up spaces (with a space's [description and links](/documentation/concepts/spaces#description-and-links)), statuses, custom attributes, and members, so Claude can resolve names to the right ids on its own
+- **Attachments** — attach images and documents to issues and comments, and read them back: an image as an image, Markdown, TXT and JSON as text, PDF and Word as a file — see [Attachments](/documentation/features/media#what-you-can-attach) for formats and limits
+- **Issue links** — link issues (blocks, relates to, duplicates), remove a link, and leave blocked issues out when looking for work to start — see [Issue links](/documentation/features/issue-links)
+- **Agent runs** — hand an issue to your coding agent, and, for a runner, pick up and finish the issues handed off to you — see [Hand issues to an AI agent](/documentation/integrations/agent-hand-off)
 
 Claude only offers actions you're actually allowed to take — for example, it won't suggest deleting an issue in a space where you don't have delete permission.
 
@@ -76,6 +76,6 @@ Access is tied entirely to the API key. Revoke it from **Organization profile �
 
 ## Related pages
 
-- [A backlog for AI-assisted development](/en/documentation/use-cases/ai-agent-backlog) — connecting Claude Code or Cursor, and what to ask the agent
-- [API keys — connecting your own tools to Boards](/en/documentation/integrations/api-keys)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [A backlog for AI-assisted development](/documentation/use-cases/ai-agent-backlog) — connecting Claude Code or Cursor, and what to ask the agent
+- [API keys — connecting your own tools to Boards](/documentation/integrations/api-keys)
+- [Permissions management](/documentation/working-in-a-team/permissions)

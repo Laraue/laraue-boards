@@ -107,15 +107,16 @@ plain functions with explicit inputs. Small composables adapt these functions to
 genuinely shared UI concern. Locale and theme are not threaded through every component.
 
 `@nuxtjs/i18n` owns public routing with `prefix_except_default`: English `/...`, Russian `/ru/...`.
-Documentation keeps its published `/en/documentation/...` and `/ru/documentation/...` URLs through
-the page's `meta.i18n.paths`. The workspace layer's config marks all its pages with
-`meta.i18n: false` in the `pages:extend` hook, so they keep their unprefixed URLs and pages do not
-repeat the flag. Every site page exists in every language. The deprecated `defineI18nRoute` macro is
-not used. Workspace language comes from its preference; a public page's language comes from its URL.
-Use `useLocalePath` and `useSwitchLocalePath` for internal public links, not concatenated language
-prefixes. Public links resolve directly to canonical routes without legacy-address middleware. Only
-`/` lets the module choose the saved or browser language. The workspace's locale plugin restores the
-cookie or browser language through `i18n:beforeLocaleSwitch` on initial load of an unlocalized page.
+Documentation follows the same strategy: `/documentation/...` and `/ru/documentation/...`, without
+custom page paths. Its layer redirects legacy `/en/documentation/...` URLs with HTTP 301. The
+workspace layer's config marks all its pages with `meta.i18n: false` in the `pages:extend` hook, so
+they keep their unprefixed URLs and pages do not repeat the flag. Every site page exists in every
+language. The deprecated `defineI18nRoute` macro is not used. Workspace language comes from its
+preference; a public page's language comes from its URL. Use `useLocalePath` and
+`useSwitchLocalePath` for internal public links, not concatenated language prefixes. Public links
+resolve directly to canonical routes; legacy redirects use route rules. Only `/` lets the module
+choose the saved or browser language. The workspace's locale plugin restores the cookie or browser
+language through `i18n:beforeLocaleSwitch` on initial load of an unlocalized page.
 
 Language selectors use the module's configured `locales`, including their names. Public pages add
 the hreflang links with `useHead(useLocaleHead())`; every page, documentation articles included,

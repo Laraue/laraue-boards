@@ -13,9 +13,15 @@ test('localizes public routes while keeping workspace routes unprefixed', () => 
   expect(localePath('compare-linear', 'ru')).toBe('/ru/compare/linear')
   expect(localePath('compare-linear', 'en')).toBe('/compare/linear')
   expect(localePath({ hash: '#features', name: 'index' }, 'en')).toBe('/#features')
+  expect(localePath({ name: 'documentation-path', params: { path: [] } }, 'en')).toBe(
+    '/documentation',
+  )
+  expect(localePath({ name: 'documentation-path', params: { path: [] } }, 'ru')).toBe(
+    '/ru/documentation',
+  )
   expect(
     localePath({ name: 'documentation-path', params: { path: ['concepts', 'issues'] } }, 'en'),
-  ).toBe('/en/documentation/concepts/issues')
+  ).toBe('/documentation/concepts/issues')
   expect(
     localePath({ name: 'documentation-path', params: { path: ['concepts', 'issues'] } }, 'ru'),
   ).toBe('/ru/documentation/concepts/issues')
@@ -28,24 +34,31 @@ test('localizes public routes while keeping workspace routes unprefixed', () => 
   ).toBe(false)
 })
 
-test('the module generates localized SEO with the other language as an alternate', async () => {
-  const router = useRouter()
-  await router.push('/compare/linear')
-  useLocale().value = 'en'
-  const head = useLocaleHead({ seo: true })
-  expect(head.value.link).toContainEqual(
-    expect.objectContaining({
-      href: 'https://boards.laraue.com/compare/linear',
-      rel: 'canonical',
-    }),
-  )
-  expect(head.value.meta).toContainEqual(
-    expect.objectContaining({ content: 'en_US', property: 'og:locale' }),
-  )
-  expect(head.value.link).toContainEqual(
-    expect.objectContaining({
-      href: 'https://boards.laraue.com/ru/compare/linear',
-      rel: 'alternate',
-    }),
-  )
-})
+test.each([
+  ['/compare/linear', 'en', '/ru/compare/linear', 'en_US'],
+  ['/documentation/concepts/issues', 'en', '/ru/documentation/concepts/issues', 'en_US'],
+  ['/ru/documentation/concepts/issues', 'ru', '/documentation/concepts/issues', 'ru_RU'],
+] as const)(
+  'generates canonical and alternate URLs for %s',
+  async (path, locale, alternate, ogLocale) => {
+    const router = useRouter()
+    await router.push(path)
+    useLocale().value = locale
+    const head = useLocaleHead({ seo: true })
+    expect(head.value.link).toContainEqual(
+      expect.objectContaining({
+        href: `https://boards.laraue.com${path}`,
+        rel: 'canonical',
+      }),
+    )
+    expect(head.value.meta).toContainEqual(
+      expect.objectContaining({ content: ogLocale, property: 'og:locale' }),
+    )
+    expect(head.value.link).toContainEqual(
+      expect.objectContaining({
+        href: `https://boards.laraue.com${alternate}`,
+        rel: 'alternate',
+      }),
+    )
+  },
+)

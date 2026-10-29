@@ -29,7 +29,7 @@ When you forward a message, Laraue Boards saves:
 
 - The **text content** of the message (up to 4096 characters)
 - **Photos** and **videos** — shown as thumbnails on the issue page, fetched from Telegram in original quality when you open them
-- **Documents** — PDF, Word (DOCX, DOC), Markdown, TXT and JSON files, and images sent as a file, attached to the issue for download (see [Attachments](/en/documentation/features/media#what-you-can-attach) for formats and limits)
+- **Documents** — PDF, Word (DOCX, DOC), Markdown, TXT and JSON files, and images sent as a file, attached to the issue for download (see [Attachments](/documentation/features/media#what-you-can-attach) for formats and limits)
 - **Sender name** — shown, with the time, in the issue preview the bot sends in Telegram (`/save`, `/info`, inline search)
 - **Timestamp** — when the original message was sent
 
@@ -76,6 +76,6 @@ Issues created by tapping **+ Add issue** are not linked to any Telegram message
 
 ## Related pages
 
-- [Issues — what they are](/en/documentation/concepts/issues)
-- [The Backlog](/en/documentation/working-alone/backlog)
-- [Save links and ideas from Telegram — and find them later](/en/documentation/use-cases/save-links-and-ideas-from-telegram)
+- [Issues — what they are](/documentation/concepts/issues)
+- [The Backlog](/documentation/working-alone/backlog)
+- [Save links and ideas from Telegram — and find them later](/documentation/use-cases/save-links-and-ideas-from-telegram)

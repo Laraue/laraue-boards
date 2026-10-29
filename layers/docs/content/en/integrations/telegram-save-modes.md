@@ -8,7 +8,7 @@ order: 4
 createdAt: 2026-08-19
 updatedAt: 2026-10-28
 ---
-**Save mode** is the last step of [linking a chat](/en/documentation/integrations/telegram-linking), and it decides *when* a message in that chat turns into an issue: automatically, or only when someone asks for it.
+**Save mode** is the last step of [linking a chat](/documentation/integrations/telegram-linking), and it decides *when* a message in that chat turns into an issue: automatically, or only when someone asks for it.
 
 ## Every message (auto mode)
 
@@ -83,10 +83,10 @@ Reply to a message with `/delete` to delete the issue saved from it. The bot fir
 
 ## Permissions
 
-Every save checks whether you have create-issue permission in the destination epic. Linking a chat doesn't hand everyone in it permission to create cards there. See [Permissions management](/en/documentation/working-in-a-team/permissions) for how to grant it.
+Every save checks whether you have create-issue permission in the destination epic. Linking a chat doesn't hand everyone in it permission to create cards there. See [Permissions management](/documentation/working-in-a-team/permissions) for how to grant it.
 
 ## Related pages
 
-- [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking)
-- [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages) — forwarding messages without linking a chat
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking)
+- [Capturing Telegram messages](/documentation/working-alone/telegram-messages) — forwarding messages without linking a chat
+- [Permissions management](/documentation/working-in-a-team/permissions)

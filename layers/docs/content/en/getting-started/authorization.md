@@ -55,4 +55,4 @@ You can switch organizations at any time from the dropdown at the top of the sid
 
 ## Related pages
 
-- [Organizations](/en/documentation/concepts/organizations)
+- [Organizations](/documentation/concepts/organizations)

@@ -51,5 +51,5 @@ On its edit page, tap **Delete attribute**. Since attributes are defined at the 
 
 ## Related pages
 
-- [Epics — boards and columns](/en/documentation/concepts/epics)
-- [Issues](/en/documentation/concepts/issues)
+- [Epics — boards and columns](/documentation/concepts/epics)
+- [Issues](/documentation/concepts/issues)

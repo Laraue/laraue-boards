@@ -42,6 +42,6 @@ Laraue Boards requires an internet connection to sync with Telegram and load you
 
 ## Related pages
 
-- [The Backlog](/en/documentation/working-alone/backlog)
-- [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages)
-- [Spaces — organizing multiple boards](/en/documentation/concepts/spaces)
+- [The Backlog](/documentation/working-alone/backlog)
+- [Capturing Telegram messages](/documentation/working-alone/telegram-messages)
+- [Spaces — organizing multiple boards](/documentation/concepts/spaces)

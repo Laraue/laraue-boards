@@ -65,7 +65,7 @@ export const isAnalyticsBlockedCountry = (countryCode?: null | string): boolean 
 export const isConsentPage = (path: string): boolean =>
   path === '/' ||
   path === '/ru' ||
-  ['/en/documentation', '/ru/documentation'].some(
+  ['/documentation', '/ru/documentation'].some(
     (documentation) => path === documentation || path.startsWith(`${documentation}/`),
   )
 

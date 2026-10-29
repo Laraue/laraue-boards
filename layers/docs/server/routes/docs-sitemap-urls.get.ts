@@ -4,7 +4,7 @@ import { useDocsCatalog } from '../docs/useDocsCatalog'
 
 const locales = ['en', 'ru'] as const
 const docsPath = (locale: string, path: string[]): string =>
-  ['', locale, 'documentation', ...path].join('/')
+  [locale === 'en' ? '' : `/${locale}`, 'documentation', ...path].join('/')
 
 // The docs pages for the sitemap (see `sitemap.sources` in nuxt.config). Every page exists in both
 // languages (see content.test), so each one links to both.

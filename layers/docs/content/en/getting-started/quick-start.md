@@ -20,13 +20,13 @@ This guide will help you get familiar with Laraue Boards. There's nothing to set
 
 ![The web login screen with the Telegram sign-in button](https://laraue.com/static/images/blog/docs/laraue-boards/web-login.jpg)
 
-For more on what data login uses, and on switching between accounts and organizations, see [Authorization](/en/documentation/getting-started/authorization).
+For more on what data login uses, and on switching between accounts and organizations, see [Authorization](/documentation/getting-started/authorization).
 
 ## Step 2 — Add your first issue
 
 There are two ways to do this, and neither requires any setup first.
 
-**From Telegram** — go back to your chat with the bot and send it anything: a thought, a link, a task. The bot saves it to the **Backlog** of your default space and reacts with 👍. The destination can be changed — with [chat linking](/en/documentation/integrations/telegram-linking).
+**From Telegram** — go back to your chat with the bot and send it anything: a thought, a link, a task. The bot saves it to the **Backlog** of your default space and reacts with 👍. The destination can be changed — with [chat linking](/documentation/integrations/telegram-linking).
 
 **In the app** — if you'd rather not send anything to the bot at all, that's fine too. Telegram can be just your login method. Tap **+ Add issue** — it's available from anywhere in the app, not just from inside a board. Open it from a board and the space and board are already filled in for you; open it from the organization level and every field starts empty, so you choose the space, board, and status yourself. Give the issue a title, or leave it empty and an AI will write one from the description.
 
@@ -46,7 +46,7 @@ Every issue gets a key, like `WRK-1` — the first three letters come from your 
 
 ## What's next
 
-- Want more than one board? [Create a new one](/en/documentation/concepts/epics) whenever a project needs its own space to live in.
-- Add custom attributes to issues — [Custom attributes](/en/documentation/features/attributes)
-- Group your boards into spaces — [Spaces](/en/documentation/concepts/spaces)
-- Invite a teammate — [Organizations](/en/documentation/concepts/organizations)
+- Want more than one board? [Create a new one](/documentation/concepts/epics) whenever a project needs its own space to live in.
+- Add custom attributes to issues — [Custom attributes](/documentation/features/attributes)
+- Group your boards into spaces — [Spaces](/documentation/concepts/spaces)
+- Invite a teammate — [Organizations](/documentation/concepts/organizations)

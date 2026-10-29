@@ -35,7 +35,7 @@ Checkboxes for organization-level management tools:
 - Delete organization
 - Move spaces and boards
 - Manage attributes
-- Link Telegram chats — the organization is offered when the member sends `/link` to the bot, see [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking)
+- Link Telegram chats — the organization is offered when the member sends `/link` to the bot, see [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking)
 
 Checking any one of these is what makes a member show up with the **Admin** label in the member list.
 
@@ -69,5 +69,5 @@ A member who just joined via the invite link has no permissions at all — not e
 
 ## Related pages
 
-- [Organizations](/en/documentation/concepts/organizations)
-- [Creating an organization](/en/documentation/working-in-a-team/creating-organization)
+- [Organizations](/documentation/concepts/organizations)
+- [Creating an organization](/documentation/working-in-a-team/creating-organization)

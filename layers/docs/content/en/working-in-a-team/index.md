@@ -11,9 +11,9 @@ When you're ready to bring in teammates, Laraue Boards organizations give everyo
 
 ## In this section
 
-- [Creating an organization](/en/documentation/working-in-a-team/creating-organization) — Create the org, generate an invite link, and get your first teammate in.
+- [Creating an organization](/documentation/working-in-a-team/creating-organization) — Create the org, generate an invite link, and get your first teammate in.
 
-- [Permissions management](/en/documentation/working-in-a-team/permissions) — Viewing your member roster, understanding roles, and the permission model: administrative tools, organization-wide access, and per-space access.
+- [Permissions management](/documentation/working-in-a-team/permissions) — Viewing your member roster, understanding roles, and the permission model: administrative tools, organization-wide access, and per-space access.
 
 ## How quickly can a team get started?
 

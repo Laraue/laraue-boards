@@ -11,10 +11,10 @@ Each guide in this section starts from a goal and walks you through reaching it,
 
 ## In this section
 
-- [Turn a Telegram group chat into a team task board](/en/documentation/use-cases/telegram-group-chat-task-board) — Link a group chat to a shared board and turn any message into a card for the whole team with `/save`.
+- [Turn a Telegram group chat into a team task board](/documentation/use-cases/telegram-group-chat-task-board) — Link a group chat to a shared board and turn any message into a card for the whole team with `/save`.
 
-- [Save links and ideas from Telegram](/en/documentation/use-cases/save-links-and-ideas-from-telegram) — Forward links, notes and photos to the bot so they land on a board you can search, instead of getting lost in Saved Messages.
+- [Save links and ideas from Telegram](/documentation/use-cases/save-links-and-ideas-from-telegram) — Forward links, notes and photos to the bot so they land on a board you can search, instead of getting lost in Saved Messages.
 
-- [A backlog for AI-assisted development with Claude Code or Cursor](/en/documentation/use-cases/ai-agent-backlog) — Let an AI coding agent read your backlog, capture bugs and move issues as it works.
+- [A backlog for AI-assisted development with Claude Code or Cursor](/documentation/use-cases/ai-agent-backlog) — Let an AI coding agent read your backlog, capture bugs and move issues as it works.
 
-- [Delegate issues to a coding agent and review its work](/en/documentation/use-cases/delegate-issues-to-ai-agent) — Hand clear issues to Claude Code or Codex on your computer, review the branch where you work, and ask for changes with `lba continue`.
+- [Delegate issues to a coding agent and review its work](/documentation/use-cases/delegate-issues-to-ai-agent) — Hand clear issues to Claude Code or Codex on your computer, review the branch where you work, and ask for changes with `lba continue`.

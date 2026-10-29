@@ -26,10 +26,10 @@ Under **Boards**, boards are grouped by the space they currently belong to. Chec
 
 ## Who can do this
 
-Moving spaces and boards requires the **Move spaces and boards** administrative permission. See [Permissions management](/en/documentation/working-in-a-team/permissions).
+Moving spaces and boards requires the **Move spaces and boards** administrative permission. See [Permissions management](/documentation/working-in-a-team/permissions).
 
 ## Related pages
 
-- [Organizations](/en/documentation/concepts/organizations)
-- [Spaces](/en/documentation/concepts/spaces)
-- [Epics](/en/documentation/concepts/epics)
+- [Organizations](/documentation/concepts/organizations)
+- [Spaces](/documentation/concepts/spaces)
+- [Epics](/documentation/concepts/epics)

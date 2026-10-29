@@ -630,14 +630,14 @@ it('links the Links and Agent sections to their documentation', async () => {
         name: 'Links: how it works (opens the documentation in a new tab)',
       }),
     )
-    .toHaveAttribute('href', '/en/documentation/features/issue-links')
+    .toHaveAttribute('href', '/documentation/features/issue-links')
   await expect
     .element(
       page.getByRole('link', {
         name: 'Agent: how it works (opens the documentation in a new tab)',
       }),
     )
-    .toHaveAttribute('href', '/en/documentation/integrations/agent-hand-off')
+    .toHaveAttribute('href', '/documentation/integrations/agent-hand-off')
 })
 
 it('shows why a failed run gave up and how to try again', async () => {

@@ -72,7 +72,7 @@ Tap **🔗 Open issue** on a result to deep-link straight into the web app.
 
 ## Related pages
 
-- [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking)
-- [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes)
-- [Search — find issues on a board or in the Backlog](/en/documentation/features/search)
-- [Issue keys](/en/documentation/features/card-keys)
+- [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking)
+- [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes)
+- [Search — find issues on a board or in the Backlog](/documentation/features/search)
+- [Issue keys](/documentation/features/card-keys)

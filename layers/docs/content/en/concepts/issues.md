@@ -16,7 +16,7 @@ Every issue has:
 
 - **Title** — a short one-line name. Lists, board cards, search results and history show it, so it's what you recognize an issue by
 - **Description** — the text of the message, or manually entered text
-- **Created via** — how the issue was created, as an icon: in the web app, from Telegram, through MCP or by an AI agent (with the key's name for the last two). Board cards and issue lists show the same icon; hover it to see the source. For an issue from Telegram it's the chat, with a link that opens the message — see [Where the issue came from](/en/documentation/working-alone/telegram-messages#where-the-issue-came-from)
+- **Created via** — how the issue was created, as an icon: in the web app, from Telegram, through MCP or by an AI agent (with the key's name for the last two). Board cards and issue lists show the same icon; hover it to see the source. For an issue from Telegram it's the chat, with a link that opens the message — see [Where the issue came from](/documentation/working-alone/telegram-messages#where-the-issue-came-from)
 - **Status** — which column on the board it currently sits in
 - **Issue key** — a unique identifier like `WRK-42`
 - **Assignee** — who the issue is assigned to
@@ -47,7 +47,7 @@ Share the link when you want to take someone straight to the issue, rather than 
 
 **From a Telegram message** — forward any message to the Laraue Boards bot, or send it directly in a chat you've linked to Boards. Unless the chat is linked to a specific destination, the issue lands on the default board in your **personal organization**'s Backlog, and the bot reacts with 👍 to confirm. Its title is the first line of the message (just the first sentence, without markdown marks); a photo or video without a caption gets a name like `image-20260930-101500-Chat name`.
 
-Linking a chat — a group, a supergroup, or even your own private chat with the bot — points it at a specific organization, space, epic, and status instead, with a choice of saving every message automatically or only the ones you save yourself with `/save`. See [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking).
+Linking a chat — a group, a supergroup, or even your own private chat with the bot — points it at a specific organization, space, epic, and status instead, with a choice of saving every message automatically or only the ones you save yourself with `/save`. See [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking).
 
 **Manually** — tap **+ Add issue**. It's available from anywhere in the app, not just from inside a board. Open it from a board and the space and board are already filled in for you; open it from the organization level and every field starts empty, so you choose the space, board, and status yourself.
 
@@ -57,7 +57,7 @@ The **Title** is optional. Leave it empty and an AI writes a short title from th
 
 ## Moving an issue to a different board
 
-New issues from the bot land on the default board so saving stays effortless — you never have to pick a board before sending a message, unless the chat is [linked](/en/documentation/integrations/telegram-linking) to a different destination. If you want an issue somewhere else, open the **Backlog**, find the issue in the list, and change its board directly from the issue's detail view.
+New issues from the bot land on the default board so saving stays effortless — you never have to pick a board before sending a message, unless the chat is [linked](/documentation/integrations/telegram-linking) to a different destination. If you want an issue somewhere else, open the **Backlog**, find the issue in the list, and change its board directly from the issue's detail view.
 
 Moving an issue between boards **within the same space** keeps its issue key. Moving it to a **different space** gives it a new key, since keys are numbered per space — any link or quoted key already shared for that issue will point at the old one and stop working.
 
@@ -87,8 +87,8 @@ The History tab on an issue shows what changed, when, and who changed it — as 
 
 ## Related pages
 
-- [Epics — organizing issues into boards](/en/documentation/concepts/epics)
-- [Spaces](/en/documentation/concepts/spaces)
-- [Custom attributes](/en/documentation/features/attributes)
-- [Issue keys reference](/en/documentation/features/card-keys)
-- [Media attachments](/en/documentation/features/media)
+- [Epics — organizing issues into boards](/documentation/concepts/epics)
+- [Spaces](/documentation/concepts/spaces)
+- [Custom attributes](/documentation/features/attributes)
+- [Issue keys reference](/documentation/features/card-keys)
+- [Media attachments](/documentation/features/media)

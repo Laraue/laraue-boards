@@ -11,20 +11,20 @@ This section is the feature reference — detailed guides for each capability of
 
 ## In this section
 
-- [Custom attributes](/en/documentation/features/attributes) — Add custom fields to issues — text or a fixed list of options — and filter the board by them.
+- [Custom attributes](/documentation/features/attributes) — Add custom fields to issues — text or a fixed list of options — and filter the board by them.
 
-- [Search](/en/documentation/features/search) — Find issues on a board or in the Backlog.
+- [Search](/documentation/features/search) — Find issues on a board or in the Backlog.
 
-- [Media attachments](/en/documentation/features/media) — How photos and videos from Telegram messages are shown on issues, and how to add or remove your own.
+- [Media attachments](/documentation/features/media) — How photos and videos from Telegram messages are shown on issues, and how to add or remove your own.
 
-- [Issue keys](/en/documentation/features/card-keys) — Every issue gets a unique key like `WRK-42`, numbered within its space. How keys work, and how to link directly to an issue.
+- [Issue keys](/documentation/features/card-keys) — Every issue gets a unique key like `WRK-42`, numbered within its space. How keys work, and how to link directly to an issue.
 
-- [Comments](/en/documentation/features/comments) — Discuss an issue with your team, separate from its original message. Supports pasting images directly.
+- [Comments](/documentation/features/comments) — Discuss an issue with your team, separate from its original message. Supports pasting images directly.
 
-- [Change history](/en/documentation/features/issue-history) — A readable log of what changed on an issue, when, and who changed it.
+- [Change history](/documentation/features/issue-history) — A readable log of what changed on an issue, when, and who changed it.
 
-- [Organization history](/en/documentation/features/organization-history) — A combined activity feed across every board, scoped to the issues you have access to.
+- [Organization history](/documentation/features/organization-history) — A combined activity feed across every board, scoped to the issues you have access to.
 
-- [Data movement](/en/documentation/features/mass-move) — Move an entire space or a single board to a different organization.
+- [Data movement](/documentation/features/mass-move) — Move an entire space or a single board to a different organization.
 
-- [Issue links](/en/documentation/features/issue-links) — Show that one issue blocks another, relates to it, or duplicates it. Blocked issues are marked on the board.
+- [Issue links](/documentation/features/issue-links) — Show that one issue blocks another, relates to it, or duplicates it. Blocked issues are marked on the board.

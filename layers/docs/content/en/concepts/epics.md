@@ -36,7 +36,7 @@ Each column in a board represents a status. Issues move from left to right as wo
 
 There is no limit on the number of columns. A simple workflow might have three; a more complex one might have seven or eight.
 
-Each column also has a **status category** that says what the status means, whatever the column is called: **Not started**, **In progress**, **In review** (the work is done and waits for someone to check it) or **Done**. You pick it for each row in the board's settings, and the icon next to a status shows it. Only **Done** counts as finished; an issue in review is still open. The category lets the [MCP server](/en/documentation/integrations/mcp) find, for example, every issue in review across boards whose columns are named differently.
+Each column also has a **status category** that says what the status means, whatever the column is called: **Not started**, **In progress**, **In review** (the work is done and waits for someone to check it) or **Done**. You pick it for each row in the board's settings, and the icon next to a status shows it. Only **Done** counts as finished; an issue in review is still open. The category lets the [MCP server](/documentation/integrations/mcp) find, for example, every issue in review across boards whose columns are named differently.
 
 ## Board status
 
@@ -74,11 +74,11 @@ On touch screens, press and hold a card for a moment before dragging to distingu
 
 ## Moving issues between the Backlog and a board
 
-Every space has its own Backlog — the default board new issues from the bot land on, unless the chat is [linked](/en/documentation/integrations/telegram-linking) to a different epic. From the Backlog, open an issue and assign it to any other epic in the same space. You can also move an issue back to the Backlog from its detail view at any time.
+Every space has its own Backlog — the default board new issues from the bot land on, unless the chat is [linked](/documentation/integrations/telegram-linking) to a different epic. From the Backlog, open an issue and assign it to any other epic in the same space. You can also move an issue back to the Backlog from its detail view at any time.
 
 ## The Backlog
 
-Every space's Backlog is just a list of the issues currently on its default board — the same way any other board shows its issues, just without columns. New issues from the bot land here first, unless the chat is [linked](/en/documentation/integrations/telegram-linking) to a specific epic. When there is nothing in it, the Backlog is simply empty; there is no separate summary view.
+Every space's Backlog is just a list of the issues currently on its default board — the same way any other board shows its issues, just without columns. New issues from the bot land here first, unless the chat is [linked](/documentation/integrations/telegram-linking) to a specific epic. When there is nothing in it, the Backlog is simply empty; there is no separate summary view.
 
 ![The Backlog showing a list of issues](https://laraue.com/static/images/blog/docs/laraue-boards/backlog-view.jpg)
 
@@ -90,6 +90,6 @@ We're planning to add a step where you can choose a new epic — or a new space 
 
 ## Related pages
 
-- [Issues — turning messages into tasks](/en/documentation/concepts/issues)
-- [Spaces — grouping boards by project](/en/documentation/concepts/spaces)
-- [Custom attributes](/en/documentation/features/attributes)
+- [Issues — turning messages into tasks](/documentation/concepts/issues)
+- [Spaces — grouping boards by project](/documentation/concepts/spaces)
+- [Custom attributes](/documentation/features/attributes)

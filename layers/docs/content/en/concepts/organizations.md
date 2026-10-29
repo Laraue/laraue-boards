@@ -31,7 +31,7 @@ Tap **+ Create organization** and fill in:
 
 ![The Create organization form, with Name, Slug, and Color fields](https://laraue.com/static/images/blog/docs/laraue-boards/create-organization.jpg)
 
-The slug you enter isn't used as-is: a random postfix is appended to it to form the organization's actual key, so `laraue` becomes something like `laraue-HFP0`. This is deliberate — it keeps organization keys from being guessable, which matters since the key shows up in URLs like the [issue link](/en/documentation/concepts/issues).
+The slug you enter isn't used as-is: a random postfix is appended to it to form the organization's actual key, so `laraue` becomes something like `laraue-HFP0`. This is deliberate — it keeps organization keys from being guessable, which matters since the key shows up in URLs like the [issue link](/documentation/concepts/issues).
 
 You are automatically assigned as the **Owner**.
 
@@ -73,5 +73,5 @@ Tap the organization name in the dropdown at the top of the sidebar. It shows th
 
 ## Related pages
 
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
-- [Spaces — grouping boards](/en/documentation/concepts/spaces)
+- [Permissions management](/documentation/working-in-a-team/permissions)
+- [Spaces — grouping boards](/documentation/concepts/spaces)

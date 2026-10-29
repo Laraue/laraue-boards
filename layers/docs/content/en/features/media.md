@@ -27,11 +27,11 @@ From the same section you can add more files yourself — with the paperclip by 
 
 A file's type is checked by its content, not its name: a renamed file is rejected if it isn't what it claims to be. SVG images, HEIC/AVIF photos and other formats aren't accepted — convert an iPhone photo to JPEG first.
 
-The same list and limits apply to files sent or forwarded to the bot as documents. A file of another type, or over its limit, is skipped: the issue is saved without it (its text and other attachments are kept), and the bot tells you which file was left out and why — see [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages#files-that-arent-saved).
+The same list and limits apply to files sent or forwarded to the bot as documents. A file of another type, or over its limit, is skipped: the issue is saved without it (its text and other attachments are kept), and the bot tells you which file was left out and why — see [Capturing Telegram messages](/documentation/working-alone/telegram-messages#files-that-arent-saved).
 
 Documents have no preview: they're listed under the images with an icon, their name and size. Tap one to download it — documents are never opened inside the page.
 
-Comments can carry attachments too. Today they're added through the [MCP server](/en/documentation/integrations/mcp) — for example, a report or config an AI agent attaches to its comment — and shown under the comment the same way.
+Comments can carry attachments too. Today they're added through the [MCP server](/documentation/integrations/mcp) — for example, a report or config an AI agent attaches to its comment — and shown under the comment the same way.
 
 ## How storage works
 
@@ -51,5 +51,5 @@ Media files follow the same permission model as the issue they belong to. If you
 
 ## Related pages
 
-- [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages)
-- [Issues — what they contain](/en/documentation/concepts/issues)
+- [Capturing Telegram messages](/documentation/working-alone/telegram-messages)
+- [Issues — what they contain](/documentation/concepts/issues)

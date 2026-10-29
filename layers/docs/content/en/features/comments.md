@@ -26,5 +26,5 @@ The original Telegram message is the issue's content — editing it in Telegram 
 
 ## Related pages
 
-- [Issues — what they are](/en/documentation/concepts/issues)
-- [Change history](/en/documentation/features/issue-history)
+- [Issues — what they are](/documentation/concepts/issues)
+- [Change history](/documentation/features/issue-history)

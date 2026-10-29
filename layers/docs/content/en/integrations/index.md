@@ -11,16 +11,16 @@ Laraue Boards is built around Telegram, and also connects to AI agents like Clau
 
 ## In this section
 
-- [Telegram Mini App](/en/documentation/integrations/telegram-mini-app) — Using Laraue Boards natively inside Telegram. Automatic login, message capture from any chat, and mobile-first design.
+- [Telegram Mini App](/documentation/integrations/telegram-mini-app) — Using Laraue Boards natively inside Telegram. Automatic login, message capture from any chat, and mobile-first design.
 
-- [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking) — Point any chat — private or group — at an organization, space, epic, and status with `/link`.
+- [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking) — Point any chat — private or group — at an organization, space, epic, and status with `/link`.
 
-- [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes) — Choose whether messages in a linked chat become issues automatically or only the ones you save with `/save`.
+- [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes) — Choose whether messages in a linked chat become issues automatically or only the ones you save with `/save`.
 
-- [Searching issues from any Telegram chat](/en/documentation/integrations/telegram-inline-search) — Find issues from anywhere with `@msgboard_bot query`, using filters or free text.
+- [Searching issues from any Telegram chat](/documentation/integrations/telegram-inline-search) — Find issues from anywhere with `@msgboard_bot query`, using filters or free text.
 
-- [API keys](/en/documentation/integrations/api-keys) — Create a long-lived key so scripts, CI, or AI agents can authenticate as you.
+- [API keys](/documentation/integrations/api-keys) — Create a long-lived key so scripts, CI, or AI agents can authenticate as you.
 
-- [Connecting Claude and other AI agents via MCP](/en/documentation/integrations/mcp) — List, view, create, edit, delete, and comment on issues directly from Claude.
+- [Connecting Claude and other AI agents via MCP](/documentation/integrations/mcp) — List, view, create, edit, delete, and comment on issues directly from Claude.
 
-- [Handing issues to an AI agent](/en/documentation/integrations/agent-hand-off) — Hand an issue to your own coding agent: it takes the issue, works on it, and moves it to review while the issue stays locked.
+- [Handing issues to an AI agent](/documentation/integrations/agent-hand-off) — Hand an issue to your own coding agent: it takes the issue, works on it, and moves it to review while the issue stays locked.

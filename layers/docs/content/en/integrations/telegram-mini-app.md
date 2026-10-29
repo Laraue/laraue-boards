@@ -20,7 +20,7 @@ You can also pin the bot to your chat list for quick access.
 
 ## How login works in the Mini App
 
-When you open the Mini App inside Telegram, you are already logged in. Telegram passes your identity to the app automatically and securely — there is no login button, no widget, no redirect. You go directly to the organization selection screen, the same one described in [Authorization](/en/documentation/getting-started/authorization).
+When you open the Mini App inside Telegram, you are already logged in. Telegram passes your identity to the app automatically and securely — there is no login button, no widget, no redirect. You go directly to the organization selection screen, the same one described in [Authorization](/documentation/getting-started/authorization).
 
 ![The organization selection screen, listing Personal and a team organization, with a Create organization button](https://laraue.com/static/images/blog/docs/laraue-boards/login-organization.jpg)
 
@@ -54,5 +54,5 @@ The web app at [boards.laraue.com](https://boards.laraue.com) works independentl
 
 ## Related pages
 
-- [Authorization](/en/documentation/getting-started/authorization)
-- [Quick start guide](/en/documentation/getting-started/quick-start)
+- [Authorization](/documentation/getting-started/authorization)
+- [Quick start guide](/documentation/getting-started/quick-start)

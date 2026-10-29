@@ -24,12 +24,12 @@ On the issue page, click **Add link**, choose the link type, and type the other 
 
 You need edit access to the issue you add the link from, and to be able to see the other issue. Links to issues you can't see aren't shown to you.
 
-Adding or removing a link appears in the [change history](/en/documentation/features/issue-history) of both issues.
+Adding or removing a link appears in the [change history](/documentation/features/issue-history) of both issues.
 
 ## Blocked issues
 
 An issue is **blocked** while an issue that blocks it isn't finished yet — it's in a not started, in progress, or in review status. Only a done status releases it.
 
-Blocked issues get a small **Blocked** mark on their card on the board. An issue handed to the [agent](/en/documentation/integrations/agent-hand-off) waits while it's blocked and starts once every blocker is done.
+Blocked issues get a small **Blocked** mark on their card on the board. An issue handed to the [agent](/documentation/integrations/agent-hand-off) waits while it's blocked and starts once every blocker is done.
 
-AI agents connected [over MCP](/en/documentation/integrations/mcp) see the same links on each issue, and can leave blocked issues out when they look for work to start.
+AI agents connected [over MCP](/documentation/integrations/mcp) see the same links on each issue, and can leave blocked issues out when they look for work to start.

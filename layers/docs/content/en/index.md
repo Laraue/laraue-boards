@@ -47,6 +47,6 @@ Laraue Boards is a project management tool built around a single observation: **
 
 ## Where to go next
 
-- [Create your first board in 5 minutes](/en/documentation/getting-started/quick-start)
-- [Logging in with Telegram](/en/documentation/getting-started/authorization)
-- [Understanding Issues](/en/documentation/concepts/issues)
+- [Create your first board in 5 minutes](/documentation/getting-started/quick-start)
+- [Logging in with Telegram](/documentation/getting-started/authorization)
+- [Understanding Issues](/documentation/concepts/issues)

@@ -12,7 +12,7 @@ An AI coding agent works on your code, but the list of what to build usually liv
 
 ![Video: Claude Code reads the board over MCP, adds a bug and moves an issue to In progress](https://youtu.be/EaVeKYbpRJk)
 
-This page is about working **with** the agent, in a conversation. To hand issues off and let the agent work on them on its own while you do something else, see [Delegate issues to a coding agent and review its work](/en/documentation/use-cases/delegate-issues-to-ai-agent).
+This page is about working **with** the agent, in a conversation. To hand issues off and let the agent work on them on its own while you do something else, see [Delegate issues to a coding agent and review its work](/documentation/use-cases/delegate-issues-to-ai-agent).
 
 ## What is an MCP server?
 
@@ -22,7 +22,7 @@ Laraue Boards runs a **remote** MCP server, so there is nothing to install or ru
 
 ## Connect the agent first
 
-You need an [API key](/en/documentation/integrations/api-keys) and one setup step in your client. [Connecting Claude and other AI agents via MCP](/en/documentation/integrations/mcp) has the steps for Claude Code, Cursor, and Claude on desktop or the web. Consider a separate key for the agent, so you can revoke it on its own.
+You need an [API key](/documentation/integrations/api-keys) and one setup step in your client. [Connecting Claude and other AI agents via MCP](/documentation/integrations/mcp) has the steps for Claude Code, Cursor, and Claude on desktop or the web. Consider a separate key for the agent, so you can revoke it on its own.
 
 To check the connection, ask: *"List the spaces in my Boards organization."* If the agent answers with your spaces, you are connected.
 
@@ -34,7 +34,7 @@ Some things to ask once it is connected:
 - **Capture while you code.** *"Create a card for the flaky checkout test and paste the failing output into it."* The issue lands in the space's backlog, with a title and description.
 - **Triage.** *"Go through the Backlog and suggest five issues for this week."* Review the list, then say *"Move those to Doing."*
 - **Close the loop.** *"When you're done with WRK-42, comment what changed and move it to Done."*
-- **From chat to code.** Forward a bug report in Telegram and it becomes a card in the Backlog (see [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages)). Then ask the agent to pick it up.
+- **From chat to code.** Forward a bug report in Telegram and it becomes a card in the Backlog (see [Capturing Telegram messages](/documentation/working-alone/telegram-messages)). Then ask the agent to pick it up.
 
 ## Tell the agent how your board works
 
@@ -52,18 +52,18 @@ Adjust the space key and the statuses to your own board.
 ## Keep it under control
 
 - The agent acts **as you**. It cannot do anything in an organization that you could not do yourself, and it stops working the moment the key is revoked.
-- If you do not want the agent to delete issues, use a key from an account that has no delete permission in that space. See [Permissions management](/en/documentation/working-in-a-team/permissions).
+- If you do not want the agent to delete issues, use a key from an account that has no delete permission in that space. See [Permissions management](/documentation/working-in-a-team/permissions).
 - Changes made through an API key show up in the issue history with a key icon, so you can always tell what the agent did and what you did yourself.
 
 ## If something does not work
 
-- **It cannot connect.** Check the setup steps in [Connecting Claude and other AI agents via MCP](/en/documentation/integrations/mcp): the header must be named exactly `X-Api-Key`, and the key must not be revoked.
+- **It cannot connect.** Check the setup steps in [Connecting Claude and other AI agents via MCP](/documentation/integrations/mcp): the header must be named exactly `X-Api-Key`, and the key must not be revoked.
 - **It sees too little.** The agent only sees what your account can see. Check your permissions in that organization.
 - **It cannot find a status or a space.** Ask it to list them first; it can look up spaces, statuses and members by itself.
 
 ## Related pages
 
-- [Delegate issues to a coding agent and review its work](/en/documentation/use-cases/delegate-issues-to-ai-agent)
-- [Connecting Claude and other AI agents via MCP](/en/documentation/integrations/mcp)
-- [API keys — connecting your own tools to Boards](/en/documentation/integrations/api-keys)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Delegate issues to a coding agent and review its work](/documentation/use-cases/delegate-issues-to-ai-agent)
+- [Connecting Claude and other AI agents via MCP](/documentation/integrations/mcp)
+- [API keys — connecting your own tools to Boards](/documentation/integrations/api-keys)
+- [Permissions management](/documentation/working-in-a-team/permissions)

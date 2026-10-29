@@ -22,20 +22,20 @@ The card keeps the text (up to 4,096 characters), the media, the sender's name a
 
 1. Open the chat with the bot once and pin it, so it stays at the top of your chat list.
 2. When you see something worth keeping, long-press the message, tap **Forward** and choose the bot.
-3. Want a specific board instead of the Backlog? Send `/link` in your private chat with the bot and choose a board, then pick **Every message**. From then on, anything you send straight to the bot lands there. See [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking).
+3. Want a specific board instead of the Backlog? Send `/link` in your private chat with the bot and choose a board, then pick **Every message**. From then on, anything you send straight to the bot lands there. See [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking).
 
 ## Sort it when you have time
 
-Everything starts in the Backlog, so saving stays instant and sorting can wait. When you are ready, open an issue and move it to another board or status. Create a board per area — reading list, project ideas, one per client — and group boards into spaces when you have several. Cards in a Done column stay out of the way but remain searchable. See [The Backlog](/en/documentation/working-alone/backlog).
+Everything starts in the Backlog, so saving stays instant and sorting can wait. When you are ready, open an issue and move it to another board or status. Create a board per area — reading list, project ideas, one per client — and group boards into spaces when you have several. Cards in a Done column stay out of the way but remain searchable. See [The Backlog](/documentation/working-alone/backlog).
 
 ## Find anything later
 
 - **In the app.** Every board and the Backlog have a search box, and **All issues** searches across the whole organization.
-- **From any chat.** Type `@msgboard_bot` and a word from the link or note, and the results appear without leaving the conversation. See [Searching issues from any Telegram chat](/en/documentation/integrations/telegram-inline-search).
+- **From any chat.** Type `@msgboard_bot` and a word from the link or note, and the results appear without leaving the conversation. See [Searching issues from any Telegram chat](/documentation/integrations/telegram-inline-search).
 
 ## Clean up a rambling note
 
-If your private chat is linked in manual mode, reply to a long, messy note with `/aisave`. It rewrites the text into a clean title and a bullet-point description. It runs on tokens, and every user gets a free allowance each month. See [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes).
+If your private chat is linked in manual mode, reply to a long, messy note with `/aisave`. It rewrites the text into a clean title and a bullet-point description. It runs on tokens, and every user gets a free allowance each month. See [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes).
 
 ![Video: /aisave in a team chat turns a long, messy note into a card with a short title and a list](https://youtu.be/9yocHJU1j2c)
 
@@ -53,7 +53,7 @@ Open [@msgboard_bot](https://t.me/msgboard_bot) in Telegram and forward your fir
 
 ## Related pages
 
-- [Capturing Telegram messages](/en/documentation/working-alone/telegram-messages)
-- [Solo usage — personal boards without a team](/en/documentation/working-alone/personal-boards)
-- [The Backlog](/en/documentation/working-alone/backlog)
-- [Search — find issues on a board or in the Backlog](/en/documentation/features/search)
+- [Capturing Telegram messages](/documentation/working-alone/telegram-messages)
+- [Solo usage — personal boards without a team](/documentation/working-alone/personal-boards)
+- [The Backlog](/documentation/working-alone/backlog)
+- [Search — find issues on a board or in the Backlog](/documentation/features/search)

@@ -49,7 +49,7 @@ A space can say what it is about: a description, and links to where its work liv
 
 They're shown to everyone who can open the space, in **About this space** at the top of the space page. Fold it away with its arrow; it stays folded for you. The description supports Markdown.
 
-They're also context for AI agents: [Claude over MCP](/en/documentation/integrations/mcp) can read them, and an agent you [hand an issue to](/en/documentation/integrations/agent-hand-off) gets them with every issue of the space — and works in the repositories the links point to. A URL can be in a space once; the same URL can be in other spaces, with their own notes.
+They're also context for AI agents: [Claude over MCP](/documentation/integrations/mcp) can read them, and an agent you [hand an issue to](/documentation/integrations/agent-hand-off) gets them with every issue of the space — and works in the repositories the links point to. A URL can be in a space once; the same URL can be in other spaces, with their own notes.
 
 ## Editing and deleting a space
 
@@ -61,10 +61,10 @@ Deleting a space permanently deletes everything in it — every board and every 
 
 ## Spaces and organizations
 
-In a team context, spaces belong to an organization. Access to a space is controlled by permissions — configured at the organization level or separately per space — rather than every member automatically seeing every space. See [Permissions management](/en/documentation/working-in-a-team/permissions).
+In a team context, spaces belong to an organization. Access to a space is controlled by permissions — configured at the organization level or separately per space — rather than every member automatically seeing every space. See [Permissions management](/documentation/working-in-a-team/permissions).
 
 ## Related pages
 
-- [Epics — boards within a space](/en/documentation/concepts/epics)
-- [Organizations — sharing spaces with a team](/en/documentation/concepts/organizations)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Epics — boards within a space](/documentation/concepts/epics)
+- [Organizations — sharing spaces with a team](/documentation/concepts/organizations)
+- [Permissions management](/documentation/working-in-a-team/permissions)

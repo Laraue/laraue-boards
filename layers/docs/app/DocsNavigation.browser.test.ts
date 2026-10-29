@@ -50,10 +50,11 @@ test('switches docs EN → RU → EN and follows the landing section links', asy
   wrapper = await mountSuspended(NuxtPage, {
     attachTo: document.body,
     global: { components: { RouterLink } },
-    route: '/en/documentation',
+    route: '/documentation',
     scoped: true,
   })
   const header = page.getByRole('banner')
+  expect(useRouter().currentRoute.value.path).toBe('/documentation')
   await expect.element(page.getByRole('heading', { name: 'English docs' })).toBeInTheDocument()
 
   await header.getByRole('link', { exact: true, name: 'RU' }).click()
@@ -62,6 +63,7 @@ test('switches docs EN → RU → EN and follows the landing section links', asy
     .toBeInTheDocument()
   await header.getByRole('link', { exact: true, name: 'EN' }).click()
   await expect.element(page.getByRole('heading', { name: 'English docs' })).toBeInTheDocument()
+  expect(useRouter().currentRoute.value.path).toBe('/documentation')
 
   for (const [label, hash] of [
     ['Features', '#features'],

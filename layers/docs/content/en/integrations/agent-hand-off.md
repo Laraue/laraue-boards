@@ -13,7 +13,7 @@ You can hand an issue to an AI coding agent — Claude Code or OpenAI Codex on y
 ## How it works
 
 1. **You hand the issue off.** In the **Agent** section of the issue page, click **Hand to agent**. The card on the board shows **For agent**.
-2. **Your agent takes it.** A runner on your machine — [laraue-boards-agent](https://github.com/Laraue/boards-agent) (`lba` for short), see [below](#set-up-the-runner) — signs in with your [API key](/en/documentation/integrations/api-keys), picks up the issues handed off to you, puts the work on a branch named after the issue in the space's repositories, and moves the issue to in progress. The card shows **Agent working**.
+2. **Your agent takes it.** A runner on your machine — [laraue-boards-agent](https://github.com/Laraue/boards-agent) (`lba` for short), see [below](#set-up-the-runner) — signs in with your [API key](/documentation/integrations/api-keys), picks up the issues handed off to you, puts the work on a branch named after the issue in the space's repositories, and moves the issue to in progress. The card shows **Agent working**.
 3. **The agent works.** It writes progress comments and a summary, then moves the issue to a review status. The card shows **Agent done · review**, and your computer shows a notification.
 4. **You review.** Move the issue to done, or ask for changes: [right on your computer](#ask-for-changes) with `lba continue`, or with **Send back to agent** in the Agent section.
 
@@ -25,7 +25,7 @@ Only the issue's assignee, and only to their own agent: a runner works only on i
 
 The **Hand to agent** button is greyed out, with the reason in its hint, until:
 
-- you have an [API key](/en/documentation/integrations/api-keys) in the organization — your runner signs in with it, and setting the runner up creates one,
+- you have an [API key](/documentation/integrations/api-keys) in the organization — your runner signs in with it, and setting the runner up creates one,
 - the issue is in a not started status, and
 - its board has statuses for each stage the agent goes through — not started, in progress, and in review.
 
@@ -37,7 +37,7 @@ Anyone who can edit the issue can cancel the run with the **×** next to its bad
 
 ## Blocked issues
 
-You can hand off a [blocked issue](/en/documentation/features/issue-links). It waits — the agent doesn't take it — until every issue that blocks it is done.
+You can hand off a [blocked issue](/documentation/features/issue-links). It waits — the agent doesn't take it — until every issue that blocks it is done.
 
 ## Set up the runner
 
@@ -58,7 +58,7 @@ irm https://raw.githubusercontent.com/Laraue/boards-agent/main/install.ps1 | iex
 The setup:
 
 1. Picks the coding agent — the one you have installed, or asks when you have both.
-2. Opens Boards in your browser. Check that the code matches the one in your terminal, choose the organization and click **Allow**. Boards creates an [API key](/en/documentation/integrations/api-keys) named after the agent and your computer, e.g. "Claude Code agent (MacBook)", and the runner keeps it in the Keychain or Credential Manager — you never copy it anywhere.
+2. Opens Boards in your browser. Check that the code matches the one in your terminal, choose the organization and click **Allow**. Boards creates an [API key](/documentation/integrations/api-keys) named after the agent and your computer, e.g. "Claude Code agent (MacBook)", and the runner keeps it in the Keychain or Credential Manager — you never copy it anywhere.
 3. Asks which folder your repositories are cloned under — type it or choose it in Finder or Explorer — and shows which repositories it found for each space ([see below](#which-repositories-the-agent-works-in)).
 4. Asks [where the agent should work](#where-the-agent-works).
 5. Asks what happens to the agent's branch when it's done: nothing, push it, or push it and open a pull request ([see below](#when-the-agent-is-done)).
@@ -68,7 +68,7 @@ To update, run the install command again: it replaces laraue-boards-agent and re
 
 ## Which repositories the agent works in
 
-A space's repositories are its [links](/en/documentation/concepts/spaces#description-and-links): every link whose URL matches the git remote of a repository cloned on your computer. Add the repository's URL as a link in the space's settings, and the runner finds your clone by itself — nothing is mapped by hand, and a link added later counts from the next hand-off. Link only the repositories issues of that space change: each one cloned on your computer is part of every run.
+A space's repositories are its [links](/documentation/concepts/spaces#description-and-links): every link whose URL matches the git remote of a repository cloned on your computer. Add the repository's URL as a link in the space's settings, and the runner finds your clone by itself — nothing is mapped by hand, and a link added later counts from the next hand-off. Link only the repositories issues of that space change: each one cloned on your computer is part of every run.
 
 A space can have several repositories — say, a backend and a web app. The agent changes only the ones the issue needs, on the same branch in each. It also gets the space's description and its other links (docs, designs) as context, never as instructions.
 
@@ -113,4 +113,4 @@ Only the computer that ran the issue has its session. In checkout mode your clon
 
 ## For runner authors
 
-A runner uses these MCP tools: `list_agent_runs` (poll with `state: Ready`, your user id from `get_me` in `assigneeIds`, and `excludeBlocked: true`), `claim_agent_run` (true when you got it, false to skip), `finish_agent_run` (`Done` or `Failed` with a reason), `get_issue`, whose `latestAgentRun` shows whether the run was cancelled, and `get_space` for the space's description and links. Every change to a run is in the issue's [change history](/en/documentation/features/issue-history), with the API key that made it.
+A runner uses these MCP tools: `list_agent_runs` (poll with `state: Ready`, your user id from `get_me` in `assigneeIds`, and `excludeBlocked: true`), `claim_agent_run` (true when you got it, false to skip), `finish_agent_run` (`Done` or `Failed` with a reason), `get_issue`, whose `latestAgentRun` shows whether the run was cancelled, and `get_space` for the space's description and links. Every change to a run is in the issue's [change history](/documentation/features/issue-history), with the API key that made it.

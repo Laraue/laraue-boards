@@ -93,7 +93,14 @@ test('remembers the choice of a visitor who needs to consent', () => {
 })
 
 test('has analytics and the consent banner on the landing page and the documentation', () => {
-  for (const path of ['/', '/ru', '/en/documentation', '/ru/documentation/concepts/issues']) {
+  for (const path of [
+    '/',
+    '/ru',
+    '/documentation',
+    '/documentation/concepts/issues',
+    '/ru/documentation',
+    '/ru/documentation/concepts/issues',
+  ]) {
     assert.isTrue(isConsentPage(path), path)
   }
 })
@@ -105,7 +112,7 @@ test('has neither in the app', () => {
     '/organizations',
     '/organizations/acme/issues',
     '/join/abc',
-    '/documentation',
+    '/documentation-other',
     '/ru/organizations',
   ]) {
     assert.isFalse(isConsentPage(path), path)

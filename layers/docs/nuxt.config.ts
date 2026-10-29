@@ -11,6 +11,8 @@ export default defineNuxtConfig({
     serverAssets: [{ baseName: 'docs', dir: here('./content') }],
   },
   routeRules: {
+    '/en/documentation': { redirect: { statusCode: 301, to: '/documentation' } },
+    '/en/documentation/**': { redirect: { statusCode: 301, to: '/documentation/**' } },
     // Data for the pages and the sitemap, not pages themselves.
     '/docs-content/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/docs-sitemap-urls': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },

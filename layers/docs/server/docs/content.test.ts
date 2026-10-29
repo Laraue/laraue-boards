@@ -36,7 +36,7 @@ test('has every page in both languages', () => {
 test('links only to pages that exist', () => {
   const broken: string[] = []
   for (const [file, raw] of Object.entries(files)) {
-    for (const match of raw.matchAll(/\]\(\/(en|ru)\/documentation([^)#\s]*)[^)]*\)/g)) {
+    for (const match of raw.matchAll(/\]\(\/(?:(ru)\/)?documentation([^)#\s]*)[^)]*\)/g)) {
       const path = (match[2] ?? '').split('/').filter(Boolean)
       if (!catalog.page(match[1] === 'ru' ? 'ru' : 'en', path)) {
         broken.push(`${file}: ${match[0]}`)
@@ -50,8 +50,8 @@ test('links only to pages that exist', () => {
 test('links each page to the docs of its own language', () => {
   const foreign = Object.entries(files).flatMap(([file, raw]) => {
     const locale = file.split('/')[0]
-    return [...raw.matchAll(/\]\(\/(en|ru)\/documentation/g)]
-      .filter((match) => match[1] !== locale)
+    return [...raw.matchAll(/\]\(\/(?:(ru)\/)?documentation/g)]
+      .filter((match) => (match[1] ?? 'en') !== locale)
       .map(() => file)
   })
 
@@ -61,7 +61,7 @@ test('links each page to the docs of its own language', () => {
 test('has no leftovers of the old address', () => {
   assert.deepEqual(
     Object.entries(files)
-      .filter(([, raw]) => raw.includes('/blog/documentation'))
+      .filter(([, raw]) => /\/(?:blog|en)\/documentation/.test(raw))
       .map(([file]) => file),
     [],
   )

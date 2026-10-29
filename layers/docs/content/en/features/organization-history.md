@@ -14,7 +14,7 @@ updatedAt: 2026-10-01
 
 ## What shows up here
 
-Each row is one change: the issue's key, linking straight to it, followed by the issue's title; who made it (the author's avatar — hover for the name, with a small key on it when the change came through an [API key](/en/documentation/integrations/api-keys)); when it happened (the time sits under the avatar); and what changed — a status move, a board move, a reassignment, an attribute update, or a comment being created or updated. It's the same event types as an [issue's own History tab](/en/documentation/features/issue-history), just merged from every issue into one feed instead of one at a time.
+Each row is one change: the issue's key, linking straight to it, followed by the issue's title; who made it (the author's avatar — hover for the name, with a small key on it when the change came through an [API key](/documentation/integrations/api-keys)); when it happened (the time sits under the avatar); and what changed — a status move, a board move, a reassignment, an attribute update, or a comment being created or updated. It's the same event types as an [issue's own History tab](/documentation/features/issue-history), just merged from every issue into one feed instead of one at a time.
 
 Rows are grouped by day under a **Today**, **Yesterday**, or date label. An issue that was deleted has a red trash icon, its key and title struck through, and an **Issue deleted** line, so removals stand out.
 
@@ -31,10 +31,10 @@ Filters combine — pick a user and a date range together to see just their chan
 
 ## Scoped to what you can see
 
-This feed only includes issues you have read access to. If you only have access to a handful of spaces, or just one, you'll only see history for issues in those — the same access rule that governs the [All issues page](/en/documentation/features/search).
+This feed only includes issues you have read access to. If you only have access to a handful of spaces, or just one, you'll only see history for issues in those — the same access rule that governs the [All issues page](/documentation/features/search).
 
 ## Related pages
 
-- [Change history — an issue's own History tab](/en/documentation/features/issue-history)
-- [Search — the All issues page](/en/documentation/features/search)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Change history — an issue's own History tab](/documentation/features/issue-history)
+- [Search — the All issues page](/documentation/features/search)
+- [Permissions management](/documentation/working-in-a-team/permissions)

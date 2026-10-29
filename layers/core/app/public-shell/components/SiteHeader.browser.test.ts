@@ -29,7 +29,7 @@ test('updates public labels and links from the shared locale without locale prop
   const footer = page.getByRole('contentinfo')
   await expect
     .element(header.getByRole('link', { name: 'Documentation' }))
-    .toHaveAttribute('href', '/en/documentation')
+    .toHaveAttribute('href', '/documentation')
   await expect.element(footer.getByRole('link', { name: 'Boards vs Linear' })).toBeInTheDocument()
 
   locale.value = 'ru'
@@ -51,7 +51,8 @@ test('updates public labels and links from the shared locale without locale prop
 test.each([
   ['/?source=docs#pricing', 'en', 'RU', '/ru?source=docs'],
   ['/ru#features', 'ru', 'EN', '/'],
-  ['/en/documentation/concepts/issues#issue-keys', 'en', 'RU', '/ru/documentation/concepts/issues'],
+  ['/documentation/concepts/issues#issue-keys', 'en', 'RU', '/ru/documentation/concepts/issues'],
+  ['/ru/documentation/concepts/issues#issue-keys', 'ru', 'EN', '/documentation/concepts/issues'],
 ] as const)(
   'keeps the page and query, but not the anchor, in language links: %s',
   async (route, language, label, href) => {

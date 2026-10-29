@@ -12,7 +12,7 @@ You have a board of small, clear issues — a bug fix, a missing test, a setting
 
 ![Video: an issue handed to the agent is fixed in the background and comes back for review, then is sent back with a comment](https://youtu.be/SizkYAO0PZ8)
 
-This is different from [chatting with an agent about your backlog](/en/documentation/use-cases/ai-agent-backlog): there you sit in the conversation; here you hand work off and come back to review it.
+This is different from [chatting with an agent about your backlog](/documentation/use-cases/ai-agent-backlog): there you sit in the conversation; here you hand work off and come back to review it.
 
 ## When it fits
 
@@ -22,9 +22,9 @@ This is different from [chatting with an agent about your backlog](/en/documenta
 
 ## Set it up once
 
-1. **Install the runner** — one command, then click **Allow** in Boards. [Set up the runner](/en/documentation/integrations/agent-hand-off#set-up-the-runner) has the command for macOS, Linux and Windows.
-2. **Link the repositories to the space.** In the space's settings, add each repository's URL under **Links**, with a line on what it is ("the web app", "the API"). The runner finds your local clones by these links — nothing to map by hand. See [Description and links](/en/documentation/concepts/spaces#description-and-links).
-3. **Choose where the agent works.** If you review in your own editor, pick *your own clones* in setup: the agent's branch is then checked out right where you work. [Where the agent works](/en/documentation/integrations/agent-hand-off#where-the-agent-works) explains both options.
+1. **Install the runner** — one command, then click **Allow** in Boards. [Set up the runner](/documentation/integrations/agent-hand-off#set-up-the-runner) has the command for macOS, Linux and Windows.
+2. **Link the repositories to the space.** In the space's settings, add each repository's URL under **Links**, with a line on what it is ("the web app", "the API"). The runner finds your local clones by these links — nothing to map by hand. See [Description and links](/documentation/concepts/spaces#description-and-links).
+3. **Choose where the agent works.** If you review in your own editor, pick *your own clones* in setup: the agent's branch is then checked out right where you work. [Where the agent works](/documentation/integrations/agent-hand-off#where-the-agent-works) explains both options.
 4. Optionally, let the runner **push the branch and open a pull request** when the agent is done.
 
 ## Write issues the agent can finish
@@ -35,7 +35,7 @@ The agent works only from what the issue says, so write it like a short brief:
 - **Where to look** — the page, the endpoint, the file, if you know it.
 - **How to check it** — the test to add or the case to try.
 
-If one issue has to wait for another, link them with **blocked by** — the agent doesn't take a blocked issue until its blockers are done. See [Issue links](/en/documentation/features/issue-links).
+If one issue has to wait for another, link them with **blocked by** — the agent doesn't take a blocked issue until its blockers are done. See [Issue links](/documentation/features/issue-links).
 
 ## Hand off and get on with your day
 
@@ -64,7 +64,7 @@ It opens the agent's own session of the issue — the same conversation, on the 
 lba continue WEB-42 also hide the export button for read-only members
 ```
 
-When you're done, one comment with the new commits goes to the issue. Away from your computer? Use **Send back to agent** on the issue instead: write what's wrong, and the agent picks it up again on the same branch. [Ask for changes](/en/documentation/integrations/agent-hand-off#ask-for-changes) has the details.
+When you're done, one comment with the new commits goes to the issue. Away from your computer? Use **Send back to agent** on the issue instead: write what's wrong, and the agent picks it up again on the same branch. [Ask for changes](/documentation/integrations/agent-hand-off#ask-for-changes) has the details.
 
 ## Finish
 
@@ -80,7 +80,7 @@ Merge the branch or the pull request and move the issue to done. The card keeps 
 
 ## Related pages
 
-- [Hand issues to an AI agent](/en/documentation/integrations/agent-hand-off)
-- [A backlog for AI-assisted development with Claude Code or Cursor](/en/documentation/use-cases/ai-agent-backlog)
-- [Spaces: description and links](/en/documentation/concepts/spaces#description-and-links)
-- [Issue links](/en/documentation/features/issue-links)
+- [Hand issues to an AI agent](/documentation/integrations/agent-hand-off)
+- [A backlog for AI-assisted development with Claude Code or Cursor](/documentation/use-cases/ai-agent-backlog)
+- [Spaces: description and links](/documentation/concepts/spaces#description-and-links)
+- [Issue links](/documentation/features/issue-links)

@@ -41,7 +41,7 @@ Copy the link and send it to your teammate in Telegram, or however you prefer. W
 
 ## Step 4 — Configure their access
 
-A new member starts with **no permissions at all** — they can't see anything in the organization until you grant access. Open **Admin → Permissions**, find them in the member list, and tap through to their permissions page to set up what they can do. See [Permissions management](/en/documentation/working-in-a-team/permissions) for the full breakdown.
+A new member starts with **no permissions at all** — they can't see anything in the organization until you grant access. Open **Admin → Permissions**, find them in the member list, and tap through to their permissions page to set up what they can do. See [Permissions management](/documentation/working-in-a-team/permissions) for the full breakdown.
 
 ## Managing the invite link
 
@@ -49,5 +49,5 @@ The invite link does not expire. If you need to invalidate it — for example if
 
 ## Related pages
 
-- [Organizations overview](/en/documentation/concepts/organizations)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Organizations overview](/documentation/concepts/organizations)
+- [Permissions management](/documentation/working-in-a-team/permissions)

@@ -8,7 +8,7 @@ order: 6
 createdAt: 2026-09-23
 updatedAt: 2026-10-28
 ---
-An **API key** is a long-lived credential that lets something other than the web app or the Telegram bot act as you — a script, a CI job, or an AI agent like Claude connecting over [MCP](/en/documentation/integrations/mcp). No password, no login flow — just a key in a header.
+An **API key** is a long-lived credential that lets something other than the web app or the Telegram bot act as you — a script, a CI job, or an AI agent like Claude connecting over [MCP](/documentation/integrations/mcp). No password, no login flow — just a key in a header.
 
 A key isn't a separate, weaker identity. It can do exactly what you can do by hand, in the one organization it was created for — no more, no less. If you're later removed from that organization or lose a permission there, any key you made for it loses that access too, automatically.
 
@@ -31,7 +31,7 @@ The API keys list shows, for each key:
 
 You only see and manage your own keys — not keys other members of the organization created. Revoked keys are hidden; turn on **Show revoked keys** to see them too.
 
-A key can also be created for you: when you set up [boards-agent](/en/documentation/integrations/agent-hand-off#set-up-the-runner) and click **Allow** in the browser, Boards creates a key named after the agent and your computer, e.g. "Claude Code agent (MacBook)", and hands it straight to the runner. It's in the list like any other key; revoke it to disconnect that computer. Signing the runner in again replaces its key and revokes the old one.
+A key can also be created for you: when you set up [boards-agent](/documentation/integrations/agent-hand-off#set-up-the-runner) and click **Allow** in the browser, Boards creates a key named after the agent and your computer, e.g. "Claude Code agent (MacBook)", and hands it straight to the runner. It's in the list like any other key; revoke it to disconnect that computer. Signing the runner in again replaces its key and revokes the old one.
 
 ## Revoking a key
 
@@ -43,5 +43,5 @@ A key is scoped to the organization you were in when you created it. If you work
 
 ## Related pages
 
-- [Connecting Claude and other AI agents via MCP](/en/documentation/integrations/mcp)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Connecting Claude and other AI agents via MCP](/documentation/integrations/mcp)
+- [Permissions management](/documentation/working-in-a-team/permissions)

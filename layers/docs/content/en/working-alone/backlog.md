@@ -28,5 +28,5 @@ You can also open the issue itself and change its board or space from there, the
 
 ## Related pages
 
-- [Issues — what they are](/en/documentation/concepts/issues)
-- [Epics — boards and columns](/en/documentation/concepts/epics)
+- [Issues — what they are](/documentation/concepts/issues)
+- [Epics — boards and columns](/documentation/concepts/epics)

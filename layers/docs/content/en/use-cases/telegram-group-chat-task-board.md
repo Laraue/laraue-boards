@@ -22,7 +22,7 @@ In a busy group chat, a task is rarely where the work happens: someone asks for 
 
 ### 1. Create a team organization
 
-Create an organization, copy its invite link and send it to your teammates. [Creating an organization and inviting your team](/en/documentation/working-in-a-team/creating-organization) walks through it, and it takes about two minutes.
+Create an organization, copy its invite link and send it to your teammates. [Creating an organization and inviting your team](/documentation/working-in-a-team/creating-organization) walks through it, and it takes about two minutes.
 
 ### 2. Link the group chat to a board
 
@@ -30,11 +30,11 @@ Add [@msgboard_bot](https://t.me/msgboard_bot) to the group, then send `/link` i
 
 ![The linked chat, showing the destination breadcrumb and the chosen save mode](https://laraue.com/static/images/blog/docs/laraue-boards/link-chat-linked.jpg)
 
-See [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking) for every step.
+See [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking) for every step.
 
 ### 3. Let your teammates create cards
 
-A new member starts with no permissions at all, and linking a chat does not hand everyone in it the right to create cards. Give your teammates permission to create issues in that space. See [Permissions management](/en/documentation/working-in-a-team/permissions).
+A new member starts with no permissions at all, and linking a chat does not hand everyone in it the right to create cards. Give your teammates permission to create issues in that space. See [Permissions management](/documentation/working-in-a-team/permissions).
 
 ### 4. Save a message
 
@@ -54,12 +54,12 @@ For a rambling message, reply with `/aisave` instead. It rewrites the text into 
 
 - **Get a card's link.** Reply to a saved message with `/info` to see the card and an **Open issue** button.
 - **Update a card after an edit.** Run `/save` again on the message and the card is re-synced.
-- **Find a card from any chat.** Type `@msgboard_bot` and your query. See [Searching issues from any Telegram chat](/en/documentation/integrations/telegram-inline-search).
+- **Find a card from any chat.** Type `@msgboard_bot` and your query. See [Searching issues from any Telegram chat](/documentation/integrations/telegram-inline-search).
 - **Remove a card.** Reply with `/delete`, if you have the delete permission for it.
 
 ## When to save everything automatically
 
-Auto mode turns every message in the chat into a card, and keeps the card in sync when the message is edited. Use it for a small chat that exists only for requests, not for a busy group. To change the mode, unlink the chat with `/unlink` and link it again. See [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes).
+Auto mode turns every message in the chat into a card, and keeps the card in sync when the message is edited. Use it for a small chat that exists only for requests, not for a busy group. To change the mode, unlink the chat with `/unlink` and link it again. See [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes).
 
 ## Start now
 
@@ -67,7 +67,7 @@ Open [Laraue Boards](https://boards.laraue.com), create your organization, then 
 
 ## Related pages
 
-- [Linking a Telegram chat to Boards](/en/documentation/integrations/telegram-linking)
-- [Auto vs. manual save mode](/en/documentation/integrations/telegram-save-modes)
-- [Creating an organization and inviting your team](/en/documentation/working-in-a-team/creating-organization)
-- [Permissions management](/en/documentation/working-in-a-team/permissions)
+- [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking)
+- [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes)
+- [Creating an organization and inviting your team](/documentation/working-in-a-team/creating-organization)
+- [Permissions management](/documentation/working-in-a-team/permissions)

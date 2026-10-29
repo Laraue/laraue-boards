@@ -11,13 +11,13 @@ Before using Laraue Boards day-to-day, it helps to understand how the pieces fit
 
 ## In this section
 
-- [Issues](/en/documentation/concepts/issues) — The core unit of work. A task captured from a Telegram message or created manually, with a unique key like `WRK-42`.
+- [Issues](/documentation/concepts/issues) — The core unit of work. A task captured from a Telegram message or created manually, with a unique key like `WRK-42`.
 
-- [Epics](/en/documentation/concepts/epics) — A kanban board with custom status columns. Issues are organized inside epics and move through columns as work progresses.
+- [Epics](/documentation/concepts/epics) — A kanban board with custom status columns. Issues are organized inside epics and move through columns as work progresses.
 
-- [Spaces](/en/documentation/concepts/spaces) — A grouping layer above epics. Use spaces to separate client work, products, or departments.
+- [Spaces](/documentation/concepts/spaces) — A grouping layer above epics. Use spaces to separate client work, products, or departments.
 
-- [Organizations](/en/documentation/concepts/organizations) — A shared workspace for a team. Members of an organization can see and collaborate on the same epics and spaces.
+- [Organizations](/documentation/concepts/organizations) — A shared workspace for a team. Members of an organization can see and collaborate on the same epics and spaces.
 
 ## The hierarchy at a glance
 

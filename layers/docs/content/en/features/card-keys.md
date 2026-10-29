@@ -43,6 +43,6 @@ There's a link icon right next to the key on the issue itself — tap it to copy
 
 ## Related pages
 
-- [Issues — what they are](/en/documentation/concepts/issues)
-- [Spaces](/en/documentation/concepts/spaces)
-- [Search](/en/documentation/features/search)
+- [Issues — what they are](/documentation/concepts/issues)
+- [Spaces](/documentation/concepts/spaces)
+- [Search](/documentation/features/search)
