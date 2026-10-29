@@ -36,8 +36,10 @@ API clients receive an explicit unauthorized-response policy. Signed-in routes p
 
 The root `app.vue` explicitly starts the consent controller and applies changes in consent and
 route. Its dependency implementation adapts browser storage, country detection, and Google
-Analytics; no auto-registered consent plugin runs behind the root's back. The Telegram Mini App SDK
-is loaded and awaited by the dependencies that read Mini App data, not by the global shell.
+Analytics; no auto-registered consent plugin runs behind the root's back. The workspace shells
+include the Telegram Mini App SDK in the document head so it reads the signed launch hash before
+router normalization. The landing page and documentation do not include it. Dependencies that read
+Mini App data also await the SDK for client-side navigation into the workspace.
 
 The landing page computes schema.org offers from its tariff data and passes them to its SEO
 composable. Rendering the pricing component does not write shared state or change SEO.
