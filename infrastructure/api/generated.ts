@@ -3599,6 +3599,10 @@ export interface components {
             delta: number | string;
             error?: null | string;
         };
+        AgentDetails: {
+            clientName: string;
+            machineName: string;
+        };
         /** @enum {unknown} */
         AgentHandOffBlocker: "NotAllowed" | "RunOpen" | "NoApiKey" | "BoardNotReady" | "IssueStarted" | null;
         AgentHandOffDto: {
@@ -3776,6 +3780,8 @@ export interface components {
         AuthenticateViaStringInitDataRequest: {
             initData: string;
         };
+        /** @enum {unknown} */
+        AuthorKind: "User" | "Agent";
         BatchResultOfIssueListDto: {
             /** Format: int64 */
             offset: number | string;
@@ -3874,6 +3880,8 @@ export interface components {
             canModify: boolean;
             owner: components["schemas"]["UserDetails"];
             apiKeyName: null | string;
+            authorKind: components["schemas"]["AuthorKind"];
+            agent: null | components["schemas"]["AgentDetails"];
         };
         ConnectAccountResponse: {
             outcome: components["schemas"]["AccountLinkOutcome"];
@@ -4223,6 +4231,8 @@ export interface components {
             id: number | string;
             name: string;
         };
+        /** @enum {unknown} */
+        IssueCreatedVia: "Web" | "Telegram" | "Mcp" | "Agent";
         IssueDetailDto: {
             /** Format: int64 */
             id: number | string;
@@ -4255,6 +4265,8 @@ export interface components {
             attachments: components["schemas"]["AttachmentData"][];
             links: components["schemas"]["IssueLinkDto"][];
             source: null | components["schemas"]["IssueSourceDto"];
+            createdVia: components["schemas"]["IssueCreatedVia"];
+            createdByApiKeyName: null | string;
             latestAgentRun: null | components["schemas"]["AgentRunDto"];
             agentHandOff: components["schemas"]["AgentHandOffDto"];
         };
@@ -4293,6 +4305,8 @@ export interface components {
             statusId: number | string;
             spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
+            createdVia: components["schemas"]["IssueCreatedVia"];
+            createdByApiKeyName: null | string;
             isBlocked?: boolean;
             latestAgentRun?: null | components["schemas"]["IssueAgentRunShortDto"];
         };
@@ -4416,6 +4430,8 @@ export interface components {
             createdAt: string;
             owner: components["schemas"]["UserDetails"];
             apiKeyName: null | string;
+            authorKind: components["schemas"]["AuthorKind"];
+            agent: null | components["schemas"]["AgentDetails"];
             changes: components["schemas"]["HistoryItemChange"][];
             entityType: components["schemas"]["LogEntityType"];
             action: components["schemas"]["LogAction"];
@@ -4501,6 +4517,8 @@ export interface components {
             statusId: number | string;
             spaceKey: string;
             attributes?: components["schemas"]["IssueListAttributeDto"][];
+            createdVia: components["schemas"]["IssueCreatedVia"];
+            createdByApiKeyName: null | string;
             isBlocked?: boolean;
             latestAgentRun?: null | components["schemas"]["IssueAgentRunShortDto"];
         };

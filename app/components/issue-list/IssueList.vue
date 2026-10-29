@@ -30,6 +30,7 @@
       :quick-edit="deps.quickEdit"
       :selected="selected.has(issue.issueKey)"
       :selection-mode="selected.size > 0"
+      :source="issue.source"
       :space-color="issue.spaceColor"
       :space-key="issue.spaceKey"
       :space-name="issue.spaceName"

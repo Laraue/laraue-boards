@@ -28,6 +28,7 @@ const issue: IssuePageViewModel = {
   canEdit: true,
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
+  createdVia: null,
   issueKey: 'ISS-1',
   links: [],
   owner: 'Grace Hopper',

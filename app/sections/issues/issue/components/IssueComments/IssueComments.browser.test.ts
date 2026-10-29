@@ -57,6 +57,29 @@ it('names the API key a comment was written through', async () => {
   await expect.element(page.getByText('via boards-agent')).toBeInTheDocument()
 })
 
+it('shows a comment an agent wrote as written by the agent, for the person it acts for', async () => {
+  await mount(
+    createDeps({
+      load: vi.fn<IssueCommentsDeps['load']>(async () => [
+        {
+          ...comments[0]!,
+          owner: {
+            ...comments[0]!.owner,
+            agent: { clientName: 'Claude Code agent', machineName: 'dev-laptop' },
+            apiKeyName: 'Claude Code agent (dev-laptop)',
+          },
+        },
+      ]),
+    }),
+  )
+
+  await expect.element(page.getByText('Agent', { exact: true })).toBeInTheDocument()
+  await expect
+    .element(page.getByText(`${comments[0]!.owner.name} via Claude Code agent, dev-laptop`))
+    .toBeInTheDocument()
+  await expect.element(page.getByText('via Claude Code agent (dev-laptop)')).not.toBeInTheDocument()
+})
+
 it('creates a comment', async () => {
   const create = vi.fn<IssueCommentsDeps['create']>(async () => {})
   const load = vi.fn<IssueCommentsDeps['load']>(async () => comments)

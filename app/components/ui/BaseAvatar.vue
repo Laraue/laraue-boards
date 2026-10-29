@@ -5,7 +5,8 @@
     class="base-avatar"
     :class="[size, shape]"
     :style="{ background: color }">
-    {{ initials }}
+    <!-- An icon instead of initials, e.g. for an agent. -->
+    <slot>{{ initials }}</slot>
   </span>
 </template>
 
@@ -42,6 +43,11 @@ withDefaults(
 
 .base-avatar.sm {
   --avatar-size: 1.25rem;
+}
+
+.base-avatar :deep(.tabler-icon) {
+  height: 70%;
+  width: 70%;
 }
 
 .base-avatar.square {

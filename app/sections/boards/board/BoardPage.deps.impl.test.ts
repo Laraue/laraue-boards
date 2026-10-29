@@ -110,7 +110,7 @@ test('maps board columns in status order with their issues', async () => {
   )
 })
 
-test('maps the latest agent run of a card to its badge state', async () => {
+test('maps the latest agent run and the source of a card', async () => {
   const { client } = createTestApiClient((_request, path) => {
     if (path === '/api/issues/board') {
       return [
@@ -122,6 +122,8 @@ test('maps the latest agent run of a card to its badge state', async () => {
                 assigneeColor: '#444',
                 assigneeInitial: 'A',
                 content: null,
+                createdByApiKeyName: 'Claude Code agent (dev-laptop)',
+                createdVia: 'Agent',
                 epicId: 7,
                 id: 1,
                 key: 'ISS-1',
@@ -151,6 +153,10 @@ test('maps the latest agent run of a card to its badge state', async () => {
   })
 
   expect(result.columns[0]?.issues[0]?.agentRunState).toBe('working')
+  expect(result.columns[0]?.issues[0]?.source).toEqual({
+    keyName: 'Claude Code agent (dev-laptop)',
+    kind: 'agent',
+  })
 })
 
 test('searches the board with the filters read from the query', async () => {

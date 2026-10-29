@@ -258,30 +258,28 @@
                   <template v-if="issue.source">
                     <dt>{{ t('source') }}</dt>
                     <dd class="issue-source">
-                      <span>{{ sourceChatLabel(issue.source) }}</span>
-                      <span
-                        v-if="issue.source.sender"
-                        class="issue-source-sender">
-                        <BaseAvatar
-                          :color="issue.source.sender.color"
-                          :initials="issue.source.sender.initial"
-                          size="sm" />
-                        <span>{{ issue.source.sender.name }}</span>
+                      <IssueSourceIcon :source="TELEGRAM_SOURCE" />
+                      <span v-if="sourceChatLabel(issue.source)">
+                        {{ sourceChatLabel(issue.source) }}
                       </span>
-                      <time
-                        v-if="issue.source.sentAt"
-                        :datetime="issue.source.sentAt">
-                        {{ formatDateTime(issue.source.sentAt) }}
-                      </time>
                       <a
                         v-if="issue.source.messageUrl"
+                        :aria-label="t('openMessage')"
                         class="issue-source-link"
                         :href="issue.source.messageUrl"
                         rel="noopener noreferrer"
-                        target="_blank">
-                        {{ t('openMessage') }}
+                        target="_blank"
+                        :title="t('openMessage')">
                         <IconExternalLink />
                       </a>
+                    </dd>
+                  </template>
+                  <!-- The web app, or the key an MCP client or an agent created it with. -->
+                  <template v-else-if="issue.createdVia">
+                    <dt>{{ t('source') }}</dt>
+                    <dd class="issue-source">
+                      <IssueSourceIcon :source="issue.createdVia" />
+                      <span>{{ createdViaLabel(issue.createdVia) }}</span>
                     </dd>
                   </template>
                   <dt>{{ t('created') }}</dt>
@@ -336,9 +334,12 @@ import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import BoardSelect from '~/components/board-select/BoardSelect.vue'
 import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vue'
 import IssueAttributeFields from '~/components/issue-attribute-fields/IssueAttributeFields.vue'
+import type { IssueSource } from '~/components/issue-source-icon/IssueSourceIcon.types'
+import IssueSourceIcon from '~/components/issue-source-icon/IssueSourceIcon.vue'
 import SpaceSelect from '~/components/space-select/SpaceSelect.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
+import { assertNever } from '~/utils/assertNever'
 import { getIssueAttributeValueInput } from '~/utils/issueAttributeValues'
 
 import IssueAgentRun from './components/IssueAgentRun/IssueAgentRun.vue'
@@ -389,12 +390,14 @@ const { t } = useI18n({
     issueActivity: 'Issue activity',
     loadError: 'Could not load issue',
     loading: 'Loading issue…',
-    openMessage: 'Open message',
+    openMessage: 'Open message in Telegram',
     owner: 'Owner',
     properties: 'Properties',
     saveWarning: 'Changes were saved, but the issue could not be moved. Try again.',
-    source: 'Source',
+    source: 'Created via',
+    sourceAgent: 'Agent',
     sourcePrivateChat: 'private chat with the bot',
+    sourceWeb: 'Web app',
     space: 'Space',
     status: 'Status',
     title: 'Title',
@@ -420,12 +423,14 @@ const { t } = useI18n({
     issueActivity: 'Активность задачи',
     loadError: 'Не удалось загрузить задачу',
     loading: 'Загрузка задачи…',
-    openMessage: 'Открыть сообщение',
+    openMessage: 'Открыть сообщение в Telegram',
     owner: 'Владелец',
     properties: 'Свойства',
     saveWarning: 'Изменения сохранены, но задачу не удалось переместить. Повторите попытку.',
-    source: 'Источник',
+    source: 'Создана через',
+    sourceAgent: 'Агент',
     sourcePrivateChat: 'личный чат с ботом',
+    sourceWeb: 'Веб-приложение',
     space: 'Пространство',
     status: 'Статус',
     title: 'Заголовок',
@@ -439,9 +444,31 @@ const router = useRouter()
 const { formatDateTime } = useFormatters()
 
 // "Telegram · Team"; the private chat with the bot has no title of its own.
-const sourceChatLabel = (source: IssueSourceViewModel) => {
-  const chat = source.isPrivateChat ? t('sourcePrivateChat') : source.chatTitle
-  return chat ? `Telegram · ${chat}` : 'Telegram'
+// The Telegram icon says where it came from; the text is just the chat.
+const TELEGRAM_SOURCE: IssueSource = { keyName: null, kind: 'telegram' }
+
+const sourceChatLabel = (source: IssueSourceViewModel) =>
+  source.isPrivateChat ? t('sourcePrivateChat') : source.chatTitle
+
+// Next to the icon, which says how: the key's name for MCP and agents ("My laptop", "Claude Code agent
+// (dev-laptop)": an agent's key is named after its client and machine), else the source itself.
+const createdViaLabel = (createdVia: IssueSource) => {
+  if (createdVia.keyName) {
+    return createdVia.keyName
+  }
+
+  switch (createdVia.kind) {
+    case 'agent':
+      return t('sourceAgent')
+    case 'mcp':
+      return 'MCP'
+    case 'telegram':
+      return 'Telegram'
+    case 'web':
+      return t('sourceWeb')
+    default:
+      return assertNever(createdVia.kind)
+  }
 }
 
 const state = reactive({
@@ -830,22 +857,17 @@ watch(dirty, setDirty, { immediate: true })
 }
 
 .issue-source {
+  align-items: center;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
   line-height: var(--control-height-small);
   overflow-wrap: anywhere;
 }
 
-.issue-source-sender,
-.issue-source-link {
-  align-items: center;
-  display: inline-flex;
-  gap: var(--space-2);
-}
-
 .issue-source-link {
   color: var(--color-accent);
+  display: inline-flex;
+  flex-shrink: 0;
 }
 
 .issue-source-link svg {

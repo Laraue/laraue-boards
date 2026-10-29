@@ -26,6 +26,7 @@ const issue: IssuePageViewModel = {
   canEdit: true,
   content: 'Fix the bug',
   createdAt: '2026-01-01T00:00:00Z',
+  createdVia: null,
   issueKey: 'ISS-1',
   links: [],
   owner: 'Grace Hopper',
@@ -910,18 +911,16 @@ it('shows the Telegram message the issue was created from, with a link to it', a
           chatTitle: 'Team',
           isPrivateChat: false,
           messageUrl: 'https://t.me/team_chat/12',
-          sender: { color: '#333', initial: 'L', name: 'Linus Torvalds' },
-          sentAt: '2026-01-01T00:00:00Z',
         },
       })),
     }),
   )
 
-  await expect.element(page.getByText('Source', { exact: true })).toBeInTheDocument()
-  await expect.element(page.getByText('Telegram · Team')).toBeInTheDocument()
-  await expect.element(page.getByText('Linus Torvalds')).toBeInTheDocument()
+  await expect.element(page.getByText('Created via', { exact: true })).toBeInTheDocument()
+  await expect.element(page.getByText('Team', { exact: true })).toBeInTheDocument()
+  await expect.element(page.getByRole('img', { name: 'Created from Telegram' })).toBeInTheDocument()
   await expect
-    .element(page.getByRole('link', { name: 'Open message' }))
+    .element(page.getByRole('link', { name: 'Open message in Telegram' }))
     .toHaveAttribute('href', 'https://t.me/team_chat/12')
 })
 
@@ -934,15 +933,15 @@ it('shows the Telegram source without a link when Telegram has none', async () =
           chatTitle: 'Team',
           isPrivateChat: false,
           messageUrl: null,
-          sender: null,
-          sentAt: null,
         },
       })),
     }),
   )
 
-  await expect.element(page.getByText('Telegram · Team')).toBeInTheDocument()
-  await expect.element(page.getByRole('link', { name: 'Open message' })).not.toBeInTheDocument()
+  await expect.element(page.getByText('Team', { exact: true })).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('link', { name: 'Open message in Telegram' }))
+    .not.toBeInTheDocument()
 })
 
 it('names the private chat with the bot as the source', async () => {
@@ -954,19 +953,67 @@ it('names the private chat with the bot as the source', async () => {
           chatTitle: null,
           isPrivateChat: true,
           messageUrl: null,
-          sender: null,
-          sentAt: '2026-01-01T00:00:00Z',
         },
       })),
     }),
   )
 
-  await expect.element(page.getByText('Telegram · private chat with the bot')).toBeInTheDocument()
+  await expect.element(page.getByText('private chat with the bot')).toBeInTheDocument()
 })
 
-it('shows no source for an issue not created from Telegram', async () => {
+it('shows no source when the API sends none', async () => {
   await mount(createDeps())
 
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
-  await expect.element(page.getByText('Source', { exact: true })).not.toBeInTheDocument()
+  await expect.element(page.getByText('Created via', { exact: true })).not.toBeInTheDocument()
+})
+
+it('names the key an issue created through MCP was created with as its source', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        createdVia: { keyName: 'My laptop', kind: 'mcp' },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('My laptop', { exact: true })).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('img', { name: 'Created via MCP · My laptop' }))
+    .toBeInTheDocument()
+})
+
+it('names the agent an issue was created by as its source', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        createdVia: { keyName: 'Claude Code agent (dev-laptop)', kind: 'agent' },
+      })),
+    }),
+  )
+
+  await expect
+    .element(page.getByText('Claude Code agent (dev-laptop)', { exact: true }))
+    .toBeInTheDocument()
+  await expect
+    .element(page.getByRole('img', { name: 'Created by agent · Claude Code agent (dev-laptop)' }))
+    .toBeInTheDocument()
+})
+
+it('shows the web app as the source of an issue created there', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        createdVia: { keyName: null, kind: 'web' },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Web app', { exact: true })).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('img', { name: 'Created in the web app' }))
+    .toBeInTheDocument()
 })

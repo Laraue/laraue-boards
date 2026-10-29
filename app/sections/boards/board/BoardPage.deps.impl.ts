@@ -5,6 +5,7 @@ import { DEFAULT_COLOR } from '~/constants/colors'
 import { createIssuePageDeps } from '~/sections/issues/issue/IssuePage.deps.impl'
 import { mapAgentRunState } from '~/sections/issues/shared/api/agentRun'
 import { mapIssueFilters, mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
+import { issueSourceField } from '~/sections/issues/shared/api/issueSource'
 
 import type { BoardPageDeps, SearchBoardIssuesResult } from './BoardPage.deps'
 
@@ -12,6 +13,7 @@ type Schemas = components['schemas']
 
 const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
   ...(issue.latestAgentRun ? { agentRunState: mapAgentRunState(issue.latestAgentRun.state) } : {}),
+  ...issueSourceField(issue.createdVia, issue.createdByApiKeyName),
   assigneeColor: issue.assigneeColor,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,

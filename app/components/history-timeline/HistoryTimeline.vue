@@ -22,26 +22,36 @@
               class="history-avatar"
               role="img"
               :title="ownerHint(item.owner)">
+              <AgentAvatar
+                v-if="item.owner.agent"
+                aria-hidden="true" />
               <BaseAvatar
+                v-else
                 aria-hidden="true"
                 :color="item.owner.color"
                 :initials="item.owner.initials"
                 size="sm" />
               <span
-                v-if="item.owner.apiKeyName"
+                v-if="item.owner.apiKeyName && !item.owner.agent"
                 aria-hidden="true"
                 class="history-avatar-key">
                 <IconKey />
               </span>
             </span>
             <div class="history-aside">
-              <span class="history-owner">{{ item.owner.name }}</span>
-              <span
-                v-if="item.owner.apiKeyName"
-                class="history-key">
-                <IconKey />
-                {{ t('viaKey', { key: item.owner.apiKeyName }) }}
-              </span>
+              <template v-if="item.owner.agent">
+                <span class="history-owner">{{ t('agent') }}</span>
+                <span class="history-key">{{ agentFor(item.owner) }}</span>
+              </template>
+              <template v-else>
+                <span class="history-owner">{{ item.owner.name }}</span>
+                <span
+                  v-if="item.owner.apiKeyName"
+                  class="history-key">
+                  <IconKey />
+                  {{ t('viaKey', { key: item.owner.apiKeyName }) }}
+                </span>
+              </template>
               <time
                 class="history-time"
                 :datetime="item.createdAt"
@@ -133,6 +143,8 @@
 <script setup lang="ts">
 import { IconKey, IconTrash } from '@tabler/icons-vue'
 
+import AgentAvatar from '~/components/agent-avatar/AgentAvatar.vue'
+
 import HistoryAgentRunChange from './components/HistoryAgentRunChange.vue'
 import HistoryAssigneeChange from './components/HistoryAssigneeChange.vue'
 import HistoryAttachmentChange from './components/HistoryAttachmentChange.vue'
@@ -153,6 +165,8 @@ const props = defineProps<{
 
 const { t } = useI18n({
   en: {
+    agent: 'Agent',
+    agentFor: '{name} via {client}, {machine}',
     empty: 'No changes yet.',
     history: 'History',
     issueDeleted: 'Issue deleted',
@@ -162,6 +176,8 @@ const { t } = useI18n({
     yesterday: 'Yesterday',
   },
   ru: {
+    agent: 'Агент',
+    agentFor: '{name} через {client}, {machine}',
     empty: 'Изменений пока нет.',
     history: 'История',
     issueDeleted: 'Задача удалена',
@@ -242,8 +258,22 @@ const isIssueDeleted = (item: HistoryItemViewModel): boolean =>
   )
 
 // The author as a hint: "John Kevin", or "John Kevin via API key MCP" for a change made through a key.
-const ownerHint = (owner: HistoryItemViewModel['owner']): string =>
-  owner.apiKeyName ? t('viaApiKey', { key: owner.apiKeyName, name: owner.name }) : owner.name
+const agentFor = (owner: HistoryItemViewModel['owner']): string =>
+  owner.agent
+    ? t('agentFor', {
+        client: owner.agent.clientName,
+        machine: owner.agent.machineName,
+        name: owner.name,
+      })
+    : ''
+
+const ownerHint = (owner: HistoryItemViewModel['owner']): string => {
+  if (owner.agent) {
+    return `${t('agent')}: ${agentFor(owner)}`
+  }
+
+  return owner.apiKeyName ? t('viaApiKey', { key: owner.apiKeyName, name: owner.name }) : owner.name
+}
 </script>
 
 <style scoped>

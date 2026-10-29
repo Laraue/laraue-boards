@@ -29,6 +29,10 @@
         :title="t('blocked')">
         <IconLock aria-hidden="true" />
       </span>
+      <IssueSourceIcon
+        v-if="source"
+        class="issue-created-via"
+        :source="source" />
       {{ title }}
     </NuxtLink>
     <!-- Space and board; the space gives up room first, the full path is on hover. -->
@@ -162,6 +166,8 @@ import type { RouteLocationRaw } from 'vue-router'
 import type { components } from '#infrastructure/api/generated'
 import AssigneeSelect from '~/components/assignee-select/AssigneeSelect.vue'
 import type { IssueListQuickEditDeps } from '~/components/issue-list/IssueList.deps'
+import type { IssueSource } from '~/components/issue-source-icon/IssueSourceIcon.types'
+import IssueSourceIcon from '~/components/issue-source-icon/IssueSourceIcon.vue'
 import StatusIndicator from '~/components/status-select/StatusIndicator.vue'
 import StatusSelect from '~/components/status-select/StatusSelect.vue'
 import { BoardIcon, SpaceIcon } from '~/constants/icons'
@@ -185,6 +191,7 @@ const props = defineProps<{
   quickEdit?: IssueListQuickEditDeps
   selected: boolean
   selectionMode?: boolean
+  source?: IssueSource
   spaceColor?: string
   spaceKey?: string
   spaceName?: string
@@ -380,6 +387,11 @@ a.issue-location-board:hover {
   display: inline-flex;
   margin-right: var(--space-1);
   /* Centered on the title's lowercase letters, as an icon in a line of text. */
+  vertical-align: -0.125em;
+}
+
+.issue-created-via {
+  margin-right: var(--space-1);
   vertical-align: -0.125em;
 }
 

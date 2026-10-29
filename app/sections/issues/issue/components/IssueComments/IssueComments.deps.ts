@@ -5,8 +5,15 @@ export type IssueCommentViewModel = {
   canModify: boolean
   createdAt: string
   id: string
-  // apiKeyName: the API key the comment was written through (e.g. an agent's); absent when written in the app.
-  owner: { apiKeyName?: string; color: string; initials: string; name: string }
+  // apiKeyName: the API key the comment was written through; absent when written in the app.
+  // agent: set when that key was issued to a coding agent - the comment is the agent's, acting for the owner.
+  owner: {
+    agent?: { clientName: string; machineName: string }
+    apiKeyName?: string
+    color: string
+    initials: string
+    name: string
+  }
   text: string
   updatedAt: string
 }
