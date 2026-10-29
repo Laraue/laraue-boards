@@ -1319,47 +1319,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/epics/{id}/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ChangeEpicStatusRequest"];
-                    "text/json": components["schemas"]["ChangeEpicStatusRequest"];
-                    "application/*+json": components["schemas"]["ChangeEpicStatusRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/epics/{id}/reorder-statuses": {
         parameters: {
             query?: never;
@@ -3878,12 +3837,6 @@ export interface components {
             delta: number | string;
             error?: null | string;
         };
-        ChangeEpicStatusRequest: {
-            authData?: components["schemas"]["OrganizationAuthData"];
-            /** Format: int64 */
-            id?: number | string;
-            status: components["schemas"]["EpicStatus"];
-        };
         ChangesIssuesOrderRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             issueKeys: string[];
@@ -4301,6 +4254,7 @@ export interface components {
             attributeValues: components["schemas"]["DetailIssueAttributeDto"][];
             attachments: components["schemas"]["AttachmentData"][];
             links: components["schemas"]["IssueLinkDto"][];
+            source: null | components["schemas"]["IssueSourceDto"];
             latestAgentRun: null | components["schemas"]["AgentRunDto"];
             agentHandOff: components["schemas"]["AgentHandOffDto"];
         };
@@ -4357,6 +4311,14 @@ export interface components {
             $type?: "property";
             property: components["schemas"]["IssueProperty"];
             direction: components["schemas"]["SortingDirection"];
+        };
+        IssueSourceDto: {
+            isPrivateChat: boolean;
+            chatTitle: null | string;
+            sender: null | components["schemas"]["UserDetails"];
+            /** Format: date-time */
+            sentAt: null | string;
+            messageUrl: null | string;
         };
         LimitUsage: {
             /** Format: int64 */

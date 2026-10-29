@@ -49,6 +49,17 @@ export type IssuePageInput = {
   title: string
 }
 
+// The Telegram message an issue was created from.
+export type IssueSourceViewModel = {
+  // The group's title; null for the private chat with the bot or when unknown.
+  chatTitle: null | string
+  isPrivateChat: boolean
+  // A t.me link to the message; null where Telegram has none.
+  messageUrl: null | string
+  sender: null | { color: string; initial: string; name: string }
+  sentAt: null | string
+}
+
 export type IssuePageViewModel = {
   // Whether the user can hand the issue to the agent now, and if not, why - decided by the backend.
   agentHandOff: AgentHandOffViewModel
@@ -75,6 +86,8 @@ export type IssuePageViewModel = {
   owner: string
   ownerColor: string
   ownerInitial: string
+  // Null when the issue wasn't created from Telegram.
+  source: IssueSourceViewModel | null
   spaceColor: string
   spaceId: string
   spaceLabel: string

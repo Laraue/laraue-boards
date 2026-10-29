@@ -119,6 +119,21 @@ const mapIssue = (
   owner: issue.owner.displayName,
   ownerColor: issue.owner.color,
   ownerInitial: issue.owner.initials,
+  source: issue.source
+    ? {
+        chatTitle: issue.source.chatTitle,
+        isPrivateChat: issue.source.isPrivateChat,
+        messageUrl: issue.source.messageUrl,
+        sender: issue.source.sender
+          ? {
+              color: issue.source.sender.color,
+              initial: issue.source.sender.initials,
+              name: issue.source.sender.displayName,
+            }
+          : null,
+        sentAt: issue.source.sentAt,
+      }
+    : null,
   spaceColor: issue.spaceColor,
   spaceId: issue.spaceKey,
   spaceLabel: issue.spaceName,

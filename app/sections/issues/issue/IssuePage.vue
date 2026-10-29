@@ -255,6 +255,35 @@
                   :on-changed="refreshAfterChange"
                   :run="issue.agentRun" />
                 <dl class="issue-dates">
+                  <template v-if="issue.source">
+                    <dt>{{ t('source') }}</dt>
+                    <dd class="issue-source">
+                      <span>{{ sourceChatLabel(issue.source) }}</span>
+                      <span
+                        v-if="issue.source.sender"
+                        class="issue-source-sender">
+                        <BaseAvatar
+                          :color="issue.source.sender.color"
+                          :initials="issue.source.sender.initial"
+                          size="sm" />
+                        <span>{{ issue.source.sender.name }}</span>
+                      </span>
+                      <time
+                        v-if="issue.source.sentAt"
+                        :datetime="issue.source.sentAt">
+                        {{ formatDateTime(issue.source.sentAt) }}
+                      </time>
+                      <a
+                        v-if="issue.source.messageUrl"
+                        class="issue-source-link"
+                        :href="issue.source.messageUrl"
+                        rel="noopener noreferrer"
+                        target="_blank">
+                        {{ t('openMessage') }}
+                        <IconExternalLink />
+                      </a>
+                    </dd>
+                  </template>
                   <dt>{{ t('created') }}</dt>
                   <dd>
                     <time :datetime="issue.createdAt">{{ formatDateTime(issue.createdAt) }}</time>
@@ -295,6 +324,7 @@
 <script setup lang="ts">
 import {
   IconCheck,
+  IconExternalLink,
   IconHistory,
   IconLink,
   IconListDetails,
@@ -318,7 +348,12 @@ import IssueHistory from './components/IssueHistory/IssueHistory.vue'
 import IssueLinks from './components/IssueLinks/IssueLinks.vue'
 import IssuePageActions from './components/IssuePageActions.vue'
 import IssueSkeleton from './components/IssueSkeleton.vue'
-import type { IssuePageDeps, IssuePageSavedIssue, IssuePageViewModel } from './IssuePage.deps'
+import type {
+  IssuePageDeps,
+  IssuePageSavedIssue,
+  IssuePageViewModel,
+  IssueSourceViewModel,
+} from './IssuePage.deps'
 
 const props = defineProps<{
   deps: IssuePageDeps
@@ -354,9 +389,12 @@ const { t } = useI18n({
     issueActivity: 'Issue activity',
     loadError: 'Could not load issue',
     loading: 'Loading issue…',
+    openMessage: 'Open message',
     owner: 'Owner',
     properties: 'Properties',
     saveWarning: 'Changes were saved, but the issue could not be moved. Try again.',
+    source: 'Source',
+    sourcePrivateChat: 'private chat with the bot',
     space: 'Space',
     status: 'Status',
     title: 'Title',
@@ -382,9 +420,12 @@ const { t } = useI18n({
     issueActivity: 'Активность задачи',
     loadError: 'Не удалось загрузить задачу',
     loading: 'Загрузка задачи…',
+    openMessage: 'Открыть сообщение',
     owner: 'Владелец',
     properties: 'Свойства',
     saveWarning: 'Изменения сохранены, но задачу не удалось переместить. Повторите попытку.',
+    source: 'Источник',
+    sourcePrivateChat: 'личный чат с ботом',
     space: 'Пространство',
     status: 'Статус',
     title: 'Заголовок',
@@ -396,6 +437,12 @@ const { t } = useI18n({
 const organizationRoutes = useOrganizationRoutes()
 const router = useRouter()
 const { formatDateTime } = useFormatters()
+
+// "Telegram · Team"; the private chat with the bot has no title of its own.
+const sourceChatLabel = (source: IssueSourceViewModel) => {
+  const chat = source.isPrivateChat ? t('sourcePrivateChat') : source.chatTitle
+  return chat ? `Telegram · ${chat}` : 'Telegram'
+}
 
 const state = reactive({
   activeTab: 'comments' as 'comments' | 'history',
@@ -773,8 +820,37 @@ watch(dirty, setDirty, { immediate: true })
 
 .issue-dates {
   border-top: 1px solid var(--color-divider);
-  grid-auto-rows: var(--control-height-small);
+  grid-auto-rows: minmax(var(--control-height-small), auto);
   padding-top: var(--space-4);
+}
+
+.issue-dates dt {
+  align-self: start;
+  line-height: var(--control-height-small);
+}
+
+.issue-source {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  line-height: var(--control-height-small);
+  overflow-wrap: anywhere;
+}
+
+.issue-source-sender,
+.issue-source-link {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-2);
+}
+
+.issue-source-link {
+  color: var(--color-accent);
+}
+
+.issue-source-link svg {
+  height: 1em;
+  width: 1em;
 }
 
 .issue-dates dd {

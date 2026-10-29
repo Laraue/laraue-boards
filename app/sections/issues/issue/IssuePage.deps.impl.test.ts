@@ -103,6 +103,13 @@ test('maps issue detail', async () => {
             },
           ],
           owner: { color: '#333', displayName: 'Grace', initials: 'G' },
+          source: {
+            chatTitle: 'Team',
+            isPrivateChat: false,
+            messageUrl: 'https://t.me/team_chat/12',
+            sender: { color: '#444', displayName: 'Linus', initials: 'L' },
+            sentAt: '2025-12-31T23:00:00Z',
+          },
           spaceKey: 'product',
           spaceName: 'Product',
           statusCategory: 'Created',
@@ -120,6 +127,13 @@ test('maps issue detail', async () => {
   assert.equal(result.title, 'Fix it')
   assert.equal(result.assigneeIsCurrentUser, true)
   assert.equal(result.owner, 'Grace')
+  assert.deepEqual(result.source, {
+    chatTitle: 'Team',
+    isPrivateChat: false,
+    messageUrl: 'https://t.me/team_chat/12',
+    sender: { color: '#444', initial: 'L', name: 'Linus' },
+    sentAt: '2025-12-31T23:00:00Z',
+  })
   assert.equal(result.boardIsBacklog, true)
   assert.equal(result.statusCategory, 'Created')
   assert.deepEqual(result.agentHandOff, {
