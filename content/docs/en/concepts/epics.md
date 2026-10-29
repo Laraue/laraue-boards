@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-04-22
-updatedAt: 2026-10-16
+updatedAt: 2026-10-29
 ---
 An Epic is a kanban board — a named collection of status columns that group related issues together. In Laraue Boards the terms "board" and "epic" are used interchangeably. An epic works with an internal id only — it does not have its own key. Issue keys come from the space the epic belongs to, not from the epic itself.
 
@@ -37,6 +37,22 @@ Each column in a board represents a status. Issues move from left to right as wo
 There is no limit on the number of columns. A simple workflow might have three; a more complex one might have seven or eight.
 
 Each column also has a **status category** that says what the status means, whatever the column is called: **Not started**, **In progress**, **In review** (the work is done and waits for someone to check it) or **Done**. You pick it for each row in the board's settings, and the icon next to a status shows it. Only **Done** counts as finished; an issue in review is still open. The category lets the [MCP server](/en/documentation/integrations/mcp) find, for example, every issue in review across boards whose columns are named differently.
+
+## Board status
+
+Every board also has a status of its own, which says how far the work on the whole board has got:
+
+- **New** — the board has no issues yet, or all of them are in **Not started** columns.
+- **In progress** — work has started: at least one issue is past **Not started**, but not all of them are **Done**.
+- **Done** — every issue on the board is in a **Done** column.
+
+Nobody sets the board status by hand: it follows from the status categories of the columns the board's issues are in, whatever the columns are called. Laraue Boards recalculates it whenever something it depends on changes — an issue is created, moved to another column or board, or deleted, or a column's category is changed or the column is deleted. Deleted issues don't count. Since an issue in review is still open, a board whose last issues wait in review stays **In progress** until they are moved to **Done**.
+
+You see the board status in three places:
+
+- **The board's header** — a colored label after the board's name.
+- **The space page** — on each board in the boards list. **Show** → **Finished** leaves only the boards that are **Done**, **Not finished** the rest.
+- **All issues** — **Filters** → **Board status** shows only issues on boards with the chosen statuses.
 
 ## Sorting and filtering issues
 

@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-04-22
-updatedAt: 2026-10-01
+updatedAt: 2026-10-29
 ---
 Laraue Boards has a search box on every board and in the Backlog.
 
@@ -26,7 +26,7 @@ The Backlog header has the same search control, filtering the issue list in real
 
 ![The All issues page, listing issues from every space with a search box and Filters](https://laraue.com/static/images/blog/docs/laraue-boards/all-issues.jpg)
 
-It has its own search box and a **Filters** button for narrowing the list further.
+It has its own search box and a **Filters** button for narrowing the list further: by attribute, by space, or by **Board status** — only issues on boards that are New, In progress or Done (see [Board status](/en/documentation/concepts/epics)).
 
 ## Search and filters together
 
