@@ -1,0 +1,118 @@
+import { driver } from 'driver.js'
+import { nextTick, onMounted, onScopeDispose, ref, watch } from 'vue'
+
+import { useI18n } from '#layers/core/app/i18n/useI18n'
+
+export type TourStep = {
+  description: string
+  placement?: 'bottom' | 'left' | 'right' | 'top'
+  target?: string
+  title: string
+}
+
+export type TourStatus = 'completed' | 'dismissed'
+
+export type TourStateDeps = {
+  loadStatus: () => Promise<TourStatus | undefined>
+  saveStatus: (status: TourStatus) => Promise<void>
+}
+
+const animate = (): boolean => !matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** Driver renders a bare &times; glyph; the app uses Tabler icons everywhere else. */
+const renderCloseIcon = (popover: { closeButton: HTMLElement }): void => {
+  popover.closeButton.innerHTML =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M2 2 8 8M8 2 2 8"/></svg>'
+}
+
+export const useTour = ({
+  ready,
+  state,
+  steps,
+}: {
+  ready: () => boolean
+  state: TourStateDeps
+  steps: () => TourStep[]
+}): void => {
+  const { t } = useI18n({
+    en: {
+      back: 'Back',
+      next: 'Next',
+      progress: '{{current}} of {{total}}',
+      startWorking: 'Start working',
+    },
+    ru: {
+      back: 'Назад',
+      next: 'Далее',
+      progress: '{{current}} из {{total}}',
+      startWorking: 'Начать работу',
+    },
+  })
+  let activeTour: ReturnType<typeof driver> | undefined
+  let disposed = false
+  let started = false
+  const mounted = ref(false)
+
+  const startTour = (): Promise<TourStatus | undefined> =>
+    new Promise((resolve) => {
+      activeTour = driver({
+        animate: animate(),
+        disableActiveInteraction: true,
+        doneBtnText: t('startWorking'),
+        duration: 200,
+        nextBtnText: t('next'),
+        onDestroyed: () => resolve(disposed ? undefined : 'dismissed'),
+        onDoneClick: () => {
+          resolve('completed')
+          activeTour?.destroy()
+        },
+        onPopoverRender: renderCloseIcon,
+        popoverClass: 'product-tour',
+        popoverOffset: 24,
+        prevBtnText: t('back'),
+        progressText: t('progress'),
+        showProgress: true,
+        skipMissingElement: true,
+        smoothScroll: animate(),
+        stagePadding: 8,
+        stageRadius: 12,
+        steps: steps().map(({ description, placement, target, title }) => ({
+          element: target,
+          popover: { description, side: placement, title },
+        })),
+      })
+      activeTour.drive()
+    })
+
+  onMounted(() => (mounted.value = true))
+
+  watch(
+    [ready, mounted],
+    async ([isReady, isMounted]) => {
+      if (!import.meta.client || !isMounted || !isReady || started) {
+        return
+      }
+
+      started = true
+      if ((await state.loadStatus()) || disposed) {
+        return
+      }
+
+      await nextTick()
+      if (disposed) {
+        return
+      }
+
+      const status = await startTour()
+      if (status) {
+        await state.saveStatus(status)
+      }
+    },
+    { immediate: true },
+  )
+
+  onScopeDispose(() => {
+    disposed = true
+    activeTour?.destroy()
+  })
+}

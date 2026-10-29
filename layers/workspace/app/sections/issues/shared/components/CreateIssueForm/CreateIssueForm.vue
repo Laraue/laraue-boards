@@ -1,0 +1,359 @@
+<template>
+  <form
+    class="issue-form"
+    @submit.prevent="submit">
+    <div class="issue-form-main">
+      <div class="issue-head">
+        <textarea
+          :id="`${idPrefix}-title`"
+          :aria-label="t('title')"
+          class="issue-title-input"
+          :maxlength="256"
+          :placeholder="t('titlePlaceholder')"
+          rows="1"
+          :value="form.title"
+          @input="changeTitle"
+          @keydown.enter.prevent />
+        <IssueDescription
+          v-model="form.content"
+          v-model:title="form.title"
+          :deps="deps.description">
+          <template #actions>
+            <BaseIconButton
+              :disabled="pending"
+              :label="t('attachImages')"
+              :tooltip="t('attachImagesHint')"
+              @click="attachments?.pick()">
+              <IconPaperclip />
+            </BaseIconButton>
+          </template>
+        </IssueDescription>
+      </div>
+      <IssueAttachments
+        ref="attachments"
+        :attachments="[]"
+        :disabled="pending"
+        :files="form.files"
+        :on-change="changeFiles" />
+    </div>
+    <aside
+      :aria-label="t('properties')"
+      class="issue-form-side">
+      <h2>{{ t('properties') }}</h2>
+      <div class="issue-properties">
+        <template v-if="board">
+          <span class="issue-property-label">{{ t('space') }}</span>
+          <div class="selected-entity">
+            <SpaceIcon :style="{ color: board.spaceColor }" />
+            <span>{{ board.spaceName ?? board.spaceKey }}</span>
+          </div>
+          <span class="issue-property-label">{{ t('board') }}</span>
+          <div class="selected-entity">
+            <component
+              :is="board.isBacklog ? IconListDetails : BoardIcon"
+              :style="{ color: board.color }" />
+            <span>{{ board.name }}</span>
+          </div>
+        </template>
+        <template v-else>
+          <label :for="`${idPrefix}-space`">{{ t('space') }}</label>
+          <SpaceSelect
+            :id="`${idPrefix}-space`"
+            v-model="form.spaceKey"
+            :deps="selectDeps.spaceSelect"
+            variant="inline" />
+
+          <label :for="`${idPrefix}-board`">{{ t('board') }}</label>
+          <BoardSelect
+            :id="`${idPrefix}-board`"
+            v-model="form.boardId"
+            :deps="selectDeps.boardSelect"
+            :space-key="form.spaceKey"
+            variant="inline" />
+        </template>
+
+        <label :for="`${idPrefix}-status`">{{ t('status') }}</label>
+        <StatusSelect
+          :id="`${idPrefix}-status`"
+          v-model="form.statusId"
+          :board-id="boardId"
+          :deps="deps.statusSelect"
+          eager
+          select-first
+          variant="inline" />
+
+        <label :for="`${idPrefix}-assignee`">{{ t('assignee') }}</label>
+        <AssigneeSelect
+          :id="`${idPrefix}-assignee`"
+          v-model="form.assigneeId"
+          :deps="deps.assigneeSelect"
+          eager
+          select-current-user
+          :space-key="spaceKey"
+          variant="inline" />
+        <IssueAttributeFields
+          v-model="form.attributeValues"
+          :attributes="attributes"
+          select-variant="inline" />
+      </div>
+    </aside>
+    <div class="issue-actions">
+      <p
+        v-if="message"
+        class="form-error">
+        {{ message }}
+      </p>
+      <BaseButton
+        v-if="!hideSubmit"
+        :disabled="!canSubmit"
+        :loading="pending"
+        type="submit"
+        variant="primary">
+        {{ pending ? t('adding') : t('addIssue') }}
+      </BaseButton>
+    </div>
+  </form>
+</template>
+
+<script setup lang="ts">
+import { IconListDetails, IconPaperclip } from '@tabler/icons-vue'
+import { computed, reactive, useId, useTemplateRef } from 'vue'
+
+import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BoardSelect from '#layers/workspace/app/sections/boards/shared/components/BoardSelect/BoardSelect.vue'
+import StatusSelect from '#layers/workspace/app/sections/boards/shared/components/StatusSelect/StatusSelect.vue'
+import AssigneeSelect from '#layers/workspace/app/sections/issues/shared/components/AssigneeSelect/AssigneeSelect.vue'
+import IssueAttachments from '#layers/workspace/app/sections/issues/shared/components/IssueAttachments/IssueAttachments.vue'
+import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import IssueAttributeFields from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.vue'
+import IssueDescription from '#layers/workspace/app/sections/issues/shared/components/IssueDescription/IssueDescription.vue'
+import { getIssueAttributeValueInput } from '#layers/workspace/app/sections/issues/shared/model/issueAttributeValues'
+import SpaceSelect from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.vue'
+import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
+import { BoardIcon, SpaceIcon } from '#layers/workspace/app/shared/constants/icons'
+
+import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
+
+const props = defineProps<{
+  attributes: IssueAttributeField[]
+  // A fixed destination; without it the user picks the space and the board.
+  board?: {
+    color?: string
+    id: string
+    isBacklog?: boolean
+    name: string
+    spaceColor?: string
+    spaceKey: string
+    spaceName?: string
+  }
+  deps: CreateIssueFormDeps
+  hideSubmit?: boolean
+  initialStatusId?: string
+  onCreated: (issueKey: string) => Promise<void> | void
+}>()
+
+const { t } = useI18n({
+  en: {
+    adding: 'Adding…',
+    addIssue: 'Add issue',
+    assignee: 'Assignee',
+    attachImages: 'Attach files',
+    attachImagesHint:
+      'Attach images (up to 3 MB) or documents — PDF, DOCX, Markdown, TXT, JSON (up to 10 MB) — or paste them with Ctrl+V',
+    board: 'Board',
+    properties: 'Properties',
+    space: 'Space',
+    status: 'Status',
+    title: 'Title',
+    titlePlaceholder: 'Leave empty to generate it with AI',
+  },
+  ru: {
+    adding: 'Добавление…',
+    addIssue: 'Добавить задачу',
+    assignee: 'Исполнитель',
+    attachImages: 'Прикрепить файлы',
+    attachImagesHint:
+      'Прикрепите изображения (до 3 МБ) или документы — PDF, DOCX, Markdown, TXT, JSON (до 10 МБ) — либо вставьте их через Ctrl+V',
+    board: 'Доска',
+    properties: 'Свойства',
+    space: 'Пространство',
+    status: 'Статус',
+    title: 'Заголовок',
+    titlePlaceholder: 'Оставьте пустым, чтобы создать его с помощью ИИ',
+  },
+})
+
+const idPrefix = useId()
+const attachments = useTemplateRef<InstanceType<typeof IssueAttachments>>('attachments')
+const form = reactive({
+  assigneeId: '',
+  attributeValues: {} as Record<string, string>,
+  boardId: '',
+  content: '',
+  files: [] as File[],
+  spaceKey: '',
+  statusId: props.initialStatusId ?? '',
+  title: '',
+})
+const selectDeps = {
+  boardSelect: props.deps.boardSelect,
+  spaceSelect: props.deps.spaceSelect,
+}
+const boardId = computed(() => props.board?.id ?? form.boardId)
+const spaceKey = computed(() => props.board?.spaceKey ?? form.spaceKey)
+// An issue needs a title or content: a missing title is generated from the content.
+const hasText = computed(() => !!form.title.trim() || !!form.content.trim())
+const { execute: create, message, pending } = useApiAction(props.deps.create)
+const canSubmit = computed(
+  () => !pending.value && hasText.value && !!form.statusId && !!form.assigneeId,
+)
+
+const changeFiles = (files: File[]) => {
+  form.files = files
+}
+
+const changeTitle = (event: Event) => {
+  form.title = (event.target as HTMLTextAreaElement).value.replaceAll(/\s*\n\s*/g, ' ')
+}
+
+const submit = async (): Promise<void> => {
+  const created = await create({
+    assigneeId: form.assigneeId,
+    attributeValues: getIssueAttributeValueInput(form.attributeValues, props.attributes),
+    content: form.content,
+    files: form.files,
+    statusId: form.statusId,
+    title: form.title,
+  })
+  if (created) {
+    await props.onCreated(created.value)
+  }
+}
+defineExpose({ canSubmit, pending })
+</script>
+
+<style scoped>
+.issue-form {
+  align-items: start;
+  column-gap: var(--space-8);
+  display: grid;
+  grid-template-areas:
+    'main side'
+    'actions actions';
+  grid-template-columns: minmax(0, 1fr) 304px;
+  row-gap: var(--space-4);
+  width: 100%;
+}
+
+.issue-title-input {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--color-text);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: var(--line-height-heading);
+  max-height: none;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  resize: none;
+}
+
+.issue-title-input:is(:hover, :focus, :disabled) {
+  border: 0;
+  box-shadow: none;
+}
+
+.issue-head {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.issue-form-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  grid-area: main;
+  min-width: 0;
+  padding-right: var(--space-3);
+}
+
+.issue-form-side {
+  display: grid;
+  font-size: var(--font-size-body);
+  gap: var(--space-4);
+  grid-area: side;
+  min-width: 0;
+}
+
+.issue-form-side h2 {
+  font-size: inherit;
+  margin: 0;
+}
+
+.issue-properties {
+  align-items: center;
+  display: grid;
+  gap: var(--space-1) var(--space-3);
+  grid-auto-rows: var(--control-height);
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+
+.issue-properties :deep(label),
+.issue-property-label {
+  color: var(--color-muted);
+  font-weight: normal;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.selected-entity {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  min-width: 0;
+  padding: 0 var(--space-3);
+}
+
+.selected-entity > svg {
+  flex: none;
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.selected-entity > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issue-actions {
+  grid-area: actions;
+}
+
+.issue-actions .form-error {
+  margin: 0 0 var(--space-3);
+}
+
+@media (max-width: 767px) {
+  .issue-title-input {
+    font-size: var(--font-size-title);
+  }
+
+  .issue-form {
+    column-gap: 0;
+    grid-template-areas:
+      'main'
+      'side'
+      'actions';
+    grid-template-columns: 1fr;
+    row-gap: var(--space-5);
+  }
+}
+</style>

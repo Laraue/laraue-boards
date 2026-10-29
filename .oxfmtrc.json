@@ -4,7 +4,7 @@
     "infrastructure/api/generated.ts",
     "infrastructure/api/retro.generated.ts",
     "infrastructure/api/billing.generated.ts",
-    "content/docs"
+    "layers/docs/content"
   ],
   "arrowParens": "always",
   "bracketSameLine": true,

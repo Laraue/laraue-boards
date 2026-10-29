@@ -1,0 +1,257 @@
+<template>
+  <QueryState
+    :data="data"
+    :error-title="t('loadError')"
+    :loading-text="t('loading')"
+    :message="message"
+    :on-retry="refresh"
+    :pending="pending">
+    <template #default="{ data: page }">
+      <section class="change-plan-page">
+        <BaseSectionHeader :title="t('plans')">
+          <template #leading>
+            <AppBackLink
+              :label="t('back')"
+              :to="backTo" />
+          </template>
+        </BaseSectionHeader>
+
+        <BaseEmptyState
+          v-if="!plans(page).length"
+          :title="t('noPlans')" />
+        <template v-else>
+          <div class="plan-list">
+            <article
+              v-for="plan in plans(page)"
+              :key="plan.id"
+              class="plan-offer"
+              :data-current="isCurrent(page, plan) ? 'true' : null">
+              <div>
+                <strong class="plan-name">{{ plan.title }}</strong>
+                <p class="plan-price">
+                  {{ plan.formattedPrice }}
+                  <span class="muted">/ {{ t('perMonth') }}</span>
+                </p>
+              </div>
+              <ul class="plan-features muted">
+                <li>{{ t('tokensPerMonth', { count: formatNumber(plan.tokens) }) }}</li>
+                <li v-if="plan.issuesPerMonth">
+                  {{ t('issuesPerMonthLimit', { count: formatNumber(plan.issuesPerMonth) }) }}
+                </li>
+              </ul>
+              <BaseButton
+                v-if="isCurrent(page, plan)"
+                disabled>
+                {{ t('active') }}
+              </BaseButton>
+              <BaseButton
+                v-else-if="!plan.isFree"
+                :disabled="!page.canPay"
+                @click="select(plan)">
+                {{ t('select') }}
+              </BaseButton>
+            </article>
+          </div>
+
+          <p
+            v-if="!page.canPay"
+            class="muted">
+            {{ t('ownerOnly') }}
+          </p>
+        </template>
+        <PaymentDialog
+          ref="paymentDialog"
+          :conditions="dialogConditions"
+          :message="checkout.message.value"
+          :note="t('period')"
+          :on-confirm="pay"
+          :pending="checkout.pending.value"
+          :price="state.plan?.formattedPrice"
+          :price-note="`/ ${t('perMonth')}`"
+          :title="t('dialogTitle', { plan: state.plan?.title ?? '' })" />
+      </section>
+    </template>
+  </QueryState>
+</template>
+
+<script setup lang="ts">
+import { computed, reactive, useTemplateRef } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
+
+import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import BaseEmptyState from '#layers/core/app/ui/components/BaseEmptyState.vue'
+import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
+import type {
+  BillingPlanViewModel,
+  ChangePlanPageData,
+  ChangePlanPageDeps,
+} from '#layers/workspace/app/sections/billing/change-plan/ChangePlanPage.deps'
+import PaymentDialog from '#layers/workspace/app/sections/billing/components/PaymentDialog/PaymentDialog.vue'
+import AppBackLink from '#layers/workspace/app/shared/components/AppBackLink.vue'
+import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
+import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
+import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
+import { useFormatters } from '#layers/workspace/app/shared/composables/useFormatters'
+
+// `onPay` receives the provider's payment address: the page is outside the app, so leaving for it
+// is the page's navigation.
+const props = defineProps<{
+  backTo: RouteLocationRaw
+  deps: ChangePlanPageDeps
+  onPay: (url: string) => void
+}>()
+
+const { t } = useI18n({
+  en: {
+    active: 'This plan is active',
+    back: 'Back to the plan',
+    dialogTitle: 'Plan “{plan}”',
+    issuesPerMonthLimit: '{count} issues per month',
+    loadError: 'Could not load the plans',
+    loading: 'Loading the plans…',
+    noPlans: 'There are no plans to buy yet.',
+    ownerOnly: 'Only the organization owner can pay for the plan.',
+    period: 'Paid for one month, then the plan ends unless you extend it',
+    perMonth: 'month',
+    plans: 'Change plan',
+    select: 'Select this plan',
+    tokensPerMonth: '{count} tokens per month',
+  },
+  ru: {
+    active: 'Этот тариф активен',
+    back: 'Назад к тарифу',
+    dialogTitle: 'Тариф «{plan}»',
+    issuesPerMonthLimit: '{count} задач в месяц',
+    loadError: 'Не удалось загрузить тарифы',
+    loading: 'Загрузка тарифов…',
+    noPlans: 'Пока нет тарифов для покупки.',
+    ownerOnly: 'Оплатить тариф может только владелец организации.',
+    period: 'Оплата за один месяц, затем тариф закончится, если его не продлить',
+    perMonth: 'месяц',
+    plans: 'Сменить тариф',
+    select: 'Выбрать тариф',
+    tokensPerMonth: '{count} токенов в месяц',
+  },
+})
+
+const { formatNumber } = useFormatters()
+const paymentDialog = useTemplateRef('paymentDialog')
+const state = reactive({ plan: undefined as BillingPlanViewModel | undefined })
+
+const { data, message, pending, refresh } = await useApiQuery('change-plan-summary', (signal) =>
+  props.deps.view({ signal }),
+)
+
+// The plans are a bonus on the page: when they cannot be loaded the page just says there are none.
+const { data: planOptions } = await useApiQuery('billing-plans', (signal) =>
+  props.deps.getPlans({ signal }),
+)
+
+const checkout = useApiAction(props.deps.startCheckout)
+
+const dialogConditions = computed(() => {
+  const { plan } = state
+  if (!plan) {
+    return []
+  }
+  return [
+    t('tokensPerMonth', { count: formatNumber(plan.tokens) }),
+    ...(plan.issuesPerMonth
+      ? [t('issuesPerMonthLimit', { count: formatNumber(plan.issuesPerMonth) })]
+      : []),
+  ]
+})
+
+const plans = (page: ChangePlanPageData) =>
+  (page.kind === 'personal' ? planOptions.value?.personal : planOptions.value?.team) ?? []
+
+const isCurrent = (page: ChangePlanPageData, plan: BillingPlanViewModel) =>
+  plan.title === page.subscriptionCode
+
+const select = (plan: BillingPlanViewModel) => {
+  state.plan = plan
+  checkout.message.value = undefined
+  paymentDialog.value?.open()
+}
+
+const pay = async () => {
+  const { plan } = state
+  if (!plan) {
+    return
+  }
+  const result = await checkout.execute({
+    currencyCode: plan.currencyCode,
+    itemId: plan.id,
+    kind: 'Subscription',
+  })
+  if (result) {
+    props.onPay(result.value.url)
+  }
+}
+</script>
+
+<style scoped>
+.change-plan-page {
+  align-content: start;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.plan-list {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Price first, what it includes, then the choice at the bottom: the buttons of a row line up. */
+.plan-offer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+.plan-offer > .base-button {
+  margin-top: auto;
+}
+
+.plan-offer[data-current='true'] {
+  border-color: var(--color-accent);
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.plan-name {
+  display: block;
+  font-weight: var(--font-weight-medium);
+}
+
+.plan-price {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  margin: var(--space-1) 0 0;
+}
+
+.plan-price .muted {
+  font-size: var(--font-size-body);
+  font-weight: 400;
+}
+
+.plan-features {
+  align-content: start;
+  display: grid;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 767px) {
+  .plan-list {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

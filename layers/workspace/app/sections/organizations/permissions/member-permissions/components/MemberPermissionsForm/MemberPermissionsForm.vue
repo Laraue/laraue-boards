@@ -1,0 +1,417 @@
+<template>
+  <form
+    class="permissions-editor"
+    @submit.prevent="submit">
+    <fieldset :disabled="viewModel.member.isOwner">
+      <legend>{{ t('administration') }}</legend>
+      <p class="muted section-description">{{ t('administrationDescription') }}</p>
+      <div class="permission-card">
+        <div class="permission-grid">
+          <label
+            v-for="permission in ADMIN_PERMISSION_OPTIONS"
+            :key="permission.key"
+            class="permission-option">
+            <input
+              v-model="state.draft.admin[permission.key]"
+              type="checkbox" />
+            <span>{{ t(permission.label) }}</span>
+          </label>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset :disabled="viewModel.member.isOwner">
+      <legend>{{ t('organizationAccess') }}</legend>
+      <p class="muted section-description">{{ t('organizationAccessDescription') }}</p>
+      <div class="permission-card">
+        <div class="product-section">
+          <h3>{{ t('boards') }}</h3>
+          <div class="read-permission">
+            <strong>{{ t('read') }}</strong>
+            <label class="permission-option">
+              <input
+                :aria-label="t('readOrganization')"
+                :checked="state.draft.global.canRead || globalReadInherited"
+                :disabled="globalReadInherited"
+                :title="globalReadInherited ? t('inherited') : undefined"
+                type="checkbox"
+                @change="state.draft.global.canRead = !state.draft.global.canRead" />
+              <span>{{ t('readOrganization') }}</span>
+            </label>
+          </div>
+          <PermissionTable
+            :on-toggle="toggleGlobal"
+            :rows="globalPermissionRows" />
+        </div>
+        <div class="product-section">
+          <h3>{{ t('retro') }}</h3>
+          <div class="read-permission">
+            <strong>{{ t('access') }}</strong>
+            <label class="permission-option">
+              <input
+                v-model="state.draft.global.canManageRetros"
+                :aria-label="t('manageRetrosOrganization')"
+                type="checkbox" />
+              <span>{{ t('manageRetros') }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset :disabled="viewModel.member.isOwner">
+      <legend>{{ t('directSpaceAccess') }}</legend>
+      <p class="muted section-description">{{ t('directSpaceAccessDescription') }}</p>
+      <div class="permission-card">
+        <details
+          v-for="space in viewModel.spaces"
+          :key="space.id"
+          class="space-permissions">
+          <summary>
+            <IconChevronRight class="disclosure-icon" />
+            <SpaceIcon :style="{ color: space.color }" />
+            <strong>{{ space.name }}</strong>
+            <span
+              v-if="space.isDefault"
+              class="muted">
+              {{ t('default') }}
+            </span>
+          </summary>
+          <div class="direct-permissions">
+            <div class="product-section">
+              <h3>{{ t('boards') }}</h3>
+              <div class="read-permission">
+                <strong>{{ t('read') }}</strong>
+                <label class="permission-option">
+                  <input
+                    :aria-label="`${t('read')} ${space.name}`"
+                    :checked="
+                      state.draft.direct[space.id]!.canRead ||
+                      directPermissionTables[space.id]!.readInherited
+                    "
+                    :disabled="directPermissionTables[space.id]!.readInherited"
+                    :title="
+                      directPermissionTables[space.id]!.readInherited ? t('inherited') : undefined
+                    "
+                    type="checkbox"
+                    @change="
+                      state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
+                    " />
+                  <span>{{ t('readSpace') }}</span>
+                </label>
+              </div>
+              <PermissionTable
+                :label-suffix="` ${t('in')} ${space.name}`"
+                :on-toggle="(key) => toggleDirect(space.id, key)"
+                :rows="directPermissionTables[space.id]!.rows" />
+            </div>
+            <div class="product-section">
+              <h3>{{ t('retro') }}</h3>
+              <div class="read-permission">
+                <strong>{{ t('access') }}</strong>
+                <label class="permission-option">
+                  <input
+                    :aria-label="`${t('manageRetros')} ${t('in')} ${space.name}`"
+                    :checked="
+                      state.draft.direct[space.id]!.canManageRetros ||
+                      state.draft.global.canManageRetros
+                    "
+                    :disabled="state.draft.global.canManageRetros"
+                    :title="state.draft.global.canManageRetros ? t('inherited') : undefined"
+                    type="checkbox"
+                    @change="
+                      state.draft.direct[space.id]!.canManageRetros =
+                        !state.draft.direct[space.id]!.canManageRetros
+                    " />
+                  <span>{{ t('manageRetros') }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </fieldset>
+
+    <p
+      v-if="saved"
+      class="form-success">
+      {{ t('permissionsSaved') }}
+    </p>
+    <p
+      v-if="error"
+      class="form-error">
+      {{ error }}
+    </p>
+    <div
+      v-if="!viewModel.member.isOwner"
+      class="form-actions">
+      <BaseButton
+        :disabled="submitting"
+        type="submit"
+        variant="primary">
+        {{ submitting ? t('saving') : t('savePermissions') }}
+      </BaseButton>
+    </div>
+  </form>
+</template>
+
+<script setup lang="ts">
+import { IconChevronRight } from '@tabler/icons-vue'
+import { computed, reactive, toRaw, watch } from 'vue'
+
+import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import type {
+  DirectSpacePermissions,
+  GlobalPermissions,
+  MemberPermissions,
+  MemberPermissionsPageData,
+} from '#layers/workspace/app/sections/organizations/permissions/member-permissions/MemberPermissionsPage.deps'
+import { SpaceIcon } from '#layers/workspace/app/shared/constants/icons'
+
+import PermissionTable from './components/PermissionTable.vue'
+import {
+  ADMIN_PERMISSION_OPTIONS,
+  getDirectPermissionTables,
+  getGlobalPermissionRows,
+  isGlobalReadInherited,
+} from './permissionTables'
+
+const props = defineProps<{
+  error: null | string
+  onSubmit: (permissions: MemberPermissions) => Promise<void>
+  saved: boolean
+  submitting: boolean
+  viewModel: MemberPermissionsPageData
+}>()
+
+const { t } = useI18n({
+  en: {
+    access: 'Access',
+    administration: 'Administration',
+    administrationDescription: 'Controls organization-level management tools.',
+    boards: 'Boards',
+    default: 'Default',
+    deleteOrganization: 'Delete organization',
+    directSpaceAccess: 'Direct space access',
+    directSpaceAccessDescription: 'Adds permissions for individual spaces.',
+    in: 'in',
+    inherited: 'Inherited',
+    linkChats: 'Link Telegram chats',
+    manageAttributes: 'Manage attributes',
+    manageMembers: 'Manage members and permissions',
+    manageRetros: 'Manage retros',
+    manageRetrosOrganization: 'Manage retros in organization',
+    moveData: 'Move spaces and boards',
+    organizationAccess: 'Organization access',
+    organizationAccessDescription: 'These permissions apply to every space.',
+    permissionsSaved: 'Permissions saved.',
+    read: 'Read',
+    readOrganization: 'Read organization',
+    readSpace: 'Read space',
+    retro: 'Retro',
+    savePermissions: 'Save permissions',
+    saving: 'Saving…',
+    updateOrganization: 'Edit organization',
+  },
+  ru: {
+    access: 'Доступ',
+    administration: 'Администрирование',
+    administrationDescription: 'Управление инструментами организации.',
+    boards: 'Доски',
+    default: 'По умолчанию',
+    deleteOrganization: 'Удаление организации',
+    directSpaceAccess: 'Прямой доступ к пространствам',
+    directSpaceAccessDescription: 'Добавляет права для отдельных пространств.',
+    in: 'в',
+    inherited: 'Унаследовано',
+    linkChats: 'Привязка чатов Telegram',
+    manageAttributes: 'Управление атрибутами',
+    manageMembers: 'Управление участниками и правами',
+    manageRetros: 'Управление ретроспективами',
+    manageRetrosOrganization: 'Управление ретроспективами в организации',
+    moveData: 'Перемещение пространств и досок',
+    organizationAccess: 'Доступ к организации',
+    organizationAccessDescription: 'Эти права действуют для каждого пространства.',
+    permissionsSaved: 'Права сохранены.',
+    read: 'Чтение',
+    readOrganization: 'Чтение организации',
+    readSpace: 'Чтение пространства',
+    retro: 'Ретро',
+    savePermissions: 'Сохранить права',
+    saving: 'Сохранение…',
+    updateOrganization: 'Изменение организации',
+  },
+})
+
+const state = reactive({
+  draft: structuredClone(toRaw(props.viewModel.permissions)),
+})
+
+const globalPermissionRows = computed(() => getGlobalPermissionRows(state.draft.global))
+
+const globalReadInherited = computed(() => isGlobalReadInherited(globalPermissionRows.value))
+
+const directPermissionTables = computed(() =>
+  getDirectPermissionTables({
+    globalRows: globalPermissionRows.value,
+    permissions: state.draft,
+    spaces: props.viewModel.spaces,
+  }),
+)
+
+const toggleGlobal = (key: keyof GlobalPermissions) => {
+  state.draft.global[key] = !state.draft.global[key]
+}
+
+const toggleDirect = (spaceId: string, key: keyof DirectSpacePermissions) => {
+  const space = state.draft.direct[spaceId]
+  if (space) {
+    space[key] = !space[key]
+  }
+}
+
+const submit = async () => {
+  await props.onSubmit(structuredClone(toRaw(state.draft)))
+}
+
+watch(
+  () => props.viewModel.permissions,
+  (permissions) => {
+    state.draft = structuredClone(toRaw(permissions))
+  },
+)
+</script>
+
+<style scoped>
+.permissions-editor {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+/* A group: its name and description on the page, its controls in a card under them. The fieldset
+   stays for the owner's disabled state; it draws nothing itself. */
+fieldset {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+legend {
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-1);
+  padding: 0;
+}
+
+.section-description {
+  margin: 0 0 var(--space-3);
+}
+
+.permission-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+}
+
+.permission-grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.permission-option {
+  align-items: center;
+  display: flex;
+  font-weight: 400;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+/* A row like the table's under it: its name, then the switch. */
+.read-permission {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
+}
+
+.read-permission strong {
+  font-weight: 400;
+}
+
+.read-permission + .read-permission {
+  margin-top: var(--space-3);
+}
+
+.product-section + .product-section {
+  border-top: 1px solid var(--color-divider);
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+}
+
+.product-section h3 {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  margin: 0 0 var(--space-3);
+}
+
+.space-permissions {
+  border-bottom: 1px solid var(--color-divider);
+  padding: var(--space-3) 0;
+}
+
+.space-permissions:last-child {
+  border-bottom: 0;
+}
+
+.space-permissions summary {
+  align-items: center;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+  list-style: none;
+  padding: var(--space-2);
+}
+
+.space-permissions summary strong {
+  font-weight: var(--font-weight-medium);
+}
+
+.space-permissions summary:hover {
+  background: var(--color-soft);
+}
+
+.space-permissions summary::-webkit-details-marker {
+  display: none;
+}
+
+.space-permissions .disclosure-icon {
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.space-permissions[open] .disclosure-icon {
+  transform: rotate(90deg);
+}
+
+.direct-permissions {
+  padding: var(--space-4) 0 var(--space-1) var(--space-6);
+}
+
+@media (max-width: 767px) {
+  .permissions-editor {
+    margin-top: var(--space-4);
+  }
+
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .direct-permissions {
+    padding-left: 0;
+  }
+}
+</style>

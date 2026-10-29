@@ -1,0 +1,595 @@
+<template>
+  <div class="shell">
+    <aside :class="{ open: sidebarOpen }">
+      <BrandLogo :to="organizationRoutes.issues()" />
+      <div
+        class="organization"
+        @click="sidebarOpen = false">
+        <NuxtLink
+          :aria-label="`${t('switchOrganization')}. ${t('currentOrganization')}: ${viewModel.organization.name}`"
+          class="organization-select"
+          data-tour="organization-switcher"
+          :title="t('switchOrganization')"
+          to="/organizations">
+          <BaseAvatar
+            :color="viewModel.organization.color"
+            :initials="viewModel.organization.initial"
+            shape="square" />
+          <span class="organization-name">
+            {{ viewModel.organization.name }}
+          </span>
+          <IconSelector class="organization-switch-icon" />
+        </NuxtLink>
+      </div>
+      <nav
+        :aria-label="t('mainNavigation')"
+        @click="sidebarOpen = false">
+        <NuxtLink
+          :class="{
+            active: active('organizations-organizationKey-issues'),
+          }"
+          data-tour="all-issues"
+          :to="organizationRoutes.issues()">
+          <IconClipboardList />
+          {{ t('allIssues') }}
+        </NuxtLink>
+        <NuxtLink
+          :class="{ active: active('organizations-organizationKey-history') }"
+          :to="organizationRoutes.history()">
+          <IconHistory />
+          {{ t('history') }}
+        </NuxtLink>
+        <div
+          class="nav-title"
+          data-tour="spaces">
+          {{ t('spaces') }}
+        </div>
+        <p
+          v-if="viewModel.spaces.length === 0"
+          class="nav-hint">
+          {{ t('spaceHint') }}
+        </p>
+        <div
+          v-for="space in viewModel.spaces"
+          :key="space.key"
+          class="space-group">
+          <NuxtLink
+            :class="{ active: spaceActive(space) }"
+            :to="organizationRoutes.space(space.key)">
+            <SpaceIcon :style="{ color: space.color }" />
+            {{ space.name }}
+          </NuxtLink>
+        </div>
+        <NuxtLink
+          v-if="viewModel.organization.canCreateSpaces"
+          exact-active-class="active"
+          :to="organizationRoutes.newSpace()">
+          <IconPlus />
+          {{ t('createSpace') }}
+        </NuxtLink>
+        <div class="sidebar-bottom">
+          <NuxtLink
+            v-if="adminHome"
+            :class="{ active: within('organizations-organizationKey-admin') }"
+            data-tour="organization-settings"
+            :to="adminHome">
+            <IconSettings />
+            {{ t('admin') }}
+          </NuxtLink>
+          <NuxtLink
+            :class="{ active: within('organizations-organizationKey-retro') }"
+            :to="organizationRoutes.retros()">
+            <RetroIcon />
+            {{ t('retro') }}
+            <BaseBadge variant="outline">{{ t('alpha') }}</BaseBadge>
+          </NuxtLink>
+          <a
+            :aria-label="t('documentationNewTab')"
+            class="sidebar-documentation"
+            :href="localePath({ name: 'documentation-path', params: { path: [] } }, locale)"
+            rel="noopener noreferrer"
+            target="_blank">
+            <IconBook />
+            {{ t('documentation') }}
+          </a>
+          <button
+            type="button"
+            @click="openFeedback">
+            <IconMessageReport />
+            {{ t('feedback') }}
+          </button>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <BaseMenu
+          :align="narrow ? 'start' : 'end'"
+          class="sidebar-account"
+          :side="narrow ? 'top' : 'right'">
+          <template #trigger="{ open }">
+            <button
+              :aria-label="t('userMenu')"
+              class="sidebar-user"
+              :class="{ active: open }"
+              type="button">
+              <BaseAvatar
+                :color="viewModel.user.color"
+                :initials="viewModel.user.initials" />
+              <span class="sidebar-user-info">
+                <strong>{{ viewModel.user.name }}</strong>
+                <small class="muted">
+                  {{ viewModel.user.tariffName || t('tariffUnavailable') }}
+                </small>
+              </span>
+            </button>
+          </template>
+          <BaseMenuItem
+            to="/account"
+            @select="sidebarOpen = false">
+            <IconUserCircle />
+            {{ t('yourAccount') }}
+          </BaseMenuItem>
+          <BaseMenuItem
+            :to="organizationRoutes.account()"
+            @select="sidebarOpen = false">
+            <IconBuilding />
+            {{ t('organizationProfile') }}
+          </BaseMenuItem>
+          <BaseMenuSeparator />
+          <!-- Theme and language switch in place, so the menu stays open. -->
+          <BaseMenuItem
+            @select="
+              (event) => {
+                event.preventDefault()
+                setTheme(theme === 'dark' ? 'light' : 'dark')
+              }
+            ">
+            <IconSun v-if="theme === 'dark'" />
+            <IconMoon v-else />
+            {{ theme === 'dark' ? t('lightTheme') : t('darkTheme') }}
+          </BaseMenuItem>
+          <BaseMenuItem
+            v-for="language in availableLocales"
+            :key="language.code"
+            @select="
+              (event) => {
+                event.preventDefault()
+                return setLocale(language.code)
+              }
+            ">
+            <IconLanguage />
+            {{ language.name }}
+          </BaseMenuItem>
+          <BaseMenuSeparator />
+          <BaseMenuItem
+            :loading="loggingOut"
+            variant="danger"
+            @select="onLogout">
+            <IconLogout />
+            {{ t('logOut') }}
+          </BaseMenuItem>
+        </BaseMenu>
+      </div>
+    </aside>
+    <Transition name="fade">
+      <button
+        v-if="sidebarOpen"
+        :aria-label="t('closeMenu')"
+        class="scrim"
+        @click="sidebarOpen = false" />
+    </Transition>
+    <FeedbackDialog
+      ref="feedbackDialog"
+      :deps="feedbackDeps" />
+    <main>
+      <div class="app-layout-page">
+        <slot />
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup lang="ts">
+import {
+  IconBook,
+  IconBuilding,
+  IconClipboardList,
+  IconHistory,
+  IconLanguage,
+  IconLogout,
+  IconMessageReport,
+  IconMoon,
+  IconPlus,
+  IconSelector,
+  IconSettings,
+  IconSun,
+  IconUserCircle,
+} from '@tabler/icons-vue'
+import { Transition, computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
+
+import { useRoute } from '#app'
+import { NuxtLink } from '#components'
+import { useLocalePath } from '#imports'
+import BrandLogo from '#layers/core/app/branding/BrandLogo.vue'
+import { useAvailableLocales, useI18n } from '#layers/core/app/i18n/useI18n'
+import { useAppPreferences } from '#layers/core/app/preferences/useAppPreferences'
+import BaseAvatar from '#layers/core/app/ui/components/BaseAvatar.vue'
+import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
+import BaseMenu from '#layers/core/app/ui/components/BaseMenu.vue'
+import BaseMenuItem from '#layers/core/app/ui/components/BaseMenuItem.vue'
+import BaseMenuSeparator from '#layers/core/app/ui/components/BaseMenuSeparator.vue'
+import { useSidebarOpen } from '#layers/workspace/app/shared/composables/useSidebarOpen'
+import { RetroIcon, SpaceIcon } from '#layers/workspace/app/shared/constants/icons'
+import type {
+  OrganizationRouteName,
+  OrganizationRoutes,
+} from '#layers/workspace/app/shared/utils/organizationRoutes'
+import type { AppLayoutData } from '#layers/workspace/app/shells/organization/AppLayout.deps'
+import type { FeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps'
+import FeedbackDialog from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.vue'
+
+const props = defineProps<{
+  feedbackDeps: FeedbackDialogDeps
+  loggingOut: boolean
+  onLogout: () => Promise<void>
+  organizationRoutes: OrganizationRoutes
+  viewModel: AppLayoutData
+}>()
+const route = useRoute<OrganizationRouteName>()
+const localePath = useLocalePath()
+const sidebarOpen = useSidebarOpen()
+if (!sidebarOpen) {
+  throw new Error('AppLayoutContent requires the organization shell')
+}
+const feedbackDialog = useTemplateRef('feedbackDialog')
+const openFeedback = () => {
+  sidebarOpen.value = false
+  feedbackDialog.value?.open()
+}
+const { setLocale, setTheme, theme } = useAppPreferences()
+const availableLocales = useAvailableLocales()
+const { locale, t } = useI18n({
+  en: {
+    admin: 'Admin',
+    allIssues: 'All issues',
+    alpha: 'alpha',
+    closeMenu: 'Close menu',
+    createSpace: 'Create space',
+    currentOrganization: 'Current organization',
+    darkTheme: 'Dark theme',
+    documentation: 'Documentation',
+    documentationNewTab: 'Documentation (opens in a new tab)',
+    feedback: 'Send feedback',
+    history: 'History',
+    lightTheme: 'Light theme',
+    logOut: 'Log out',
+    mainNavigation: 'Main navigation',
+    organizationProfile: 'Organization profile',
+    retro: 'Retro',
+    spaceHint: 'A space groups the boards and issues of one project.',
+    spaces: 'Spaces',
+    switchOrganization: 'Switch organization',
+    tariffUnavailable: 'Tariff unavailable',
+    userMenu: 'User menu',
+    yourAccount: 'Personal profile',
+  },
+  ru: {
+    admin: 'Админка',
+    allIssues: 'Все задачи',
+    alpha: 'альфа',
+    closeMenu: 'Закрыть меню',
+    createSpace: 'Создать пространство',
+    currentOrganization: 'Текущая организация',
+    darkTheme: 'Тёмная тема',
+    documentation: 'Документация',
+    documentationNewTab: 'Документация (откроется в новой вкладке)',
+    feedback: 'Обратная связь',
+    history: 'История',
+    lightTheme: 'Светлая тема',
+    logOut: 'Выйти',
+    mainNavigation: 'Главная навигация',
+    organizationProfile: 'Профиль в организации',
+    retro: 'Ретро',
+    spaceHint: 'В пространстве собраны доски и задачи проекта.',
+    spaces: 'Пространства',
+    switchOrganization: 'Сменить организацию',
+    tariffUnavailable: 'Тариф недоступен',
+    userMenu: 'Меню пользователя',
+    yourAccount: 'Личный профиль',
+  },
+})
+const active = (name: OrganizationRouteName) => route.name === name
+const within = (name: OrganizationRouteName) =>
+  typeof route.name === 'string' && route.name.startsWith(name)
+const adminHome = computed(() => {
+  const organization = props.viewModel.organization
+  if (organization.canUpdate) {
+    return props.organizationRoutes.admin()
+  }
+  if (organization.canManage) {
+    return props.organizationRoutes.permissions()
+  }
+  if (organization.canManageAttributes) {
+    return props.organizationRoutes.attributes()
+  }
+  if (organization.canMassMove) {
+    return props.organizationRoutes.dataMovement()
+  }
+  if (organization.canViewBilling) {
+    return props.organizationRoutes.adminTransactions()
+  }
+  return undefined
+})
+// On a phone the sidebar fills the screen's side, so the account menu opens above its button.
+const narrow = ref(false)
+let phoneQuery: MediaQueryList | undefined
+const updateNarrow = () => (narrow.value = Boolean(phoneQuery?.matches))
+onMounted(() => {
+  phoneQuery = matchMedia('(max-width: 767px)')
+  updateNarrow()
+  phoneQuery.addEventListener('change', updateNarrow)
+})
+onBeforeUnmount(() => phoneQuery?.removeEventListener('change', updateNarrow))
+
+const spaceActive = (space: AppLayoutData['spaces'][number]) => {
+  // Not every organization route has a space key.
+  const params: Partial<Record<string, string | string[]>> = route.params
+  return within('organizations-organizationKey-spaces-spaceKey') && params.spaceKey === space.key
+}
+</script>
+
+<style scoped>
+.shell {
+  --layout-content-padding: var(--space-6);
+
+  align-items: start;
+  background: var(--color-background);
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+aside {
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-divider);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-3);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  /* Sticky makes the sidebar its own stacking context, so the user menu inside it can only be
+     above the page's own layers if the sidebar is. */
+  z-index: 30;
+}
+
+aside .logo {
+  padding: var(--space-1) var(--space-2) var(--space-5);
+}
+
+aside > nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+aside > nav a,
+aside > nav button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: flex;
+  gap: var(--space-2);
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+}
+
+aside > nav a:hover,
+aside > nav button:hover {
+  background: var(--color-soft);
+  color: var(--color-text);
+}
+
+aside > nav a.active,
+aside > nav button.active {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.nav-hint {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+  padding: 0 var(--space-3) var(--space-2);
+}
+
+.nav-title {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-5) var(--space-3) var(--space-2);
+}
+
+/* The page's own header (PageHeader) scrolls with it, so the page shows through it while it scrolls. */
+main {
+  display: grid;
+  grid-column: 2;
+  height: 100dvh;
+  min-width: 0;
+  overflow: auto;
+  position: relative;
+  scrollbar-gutter: stable;
+}
+
+main > :deep(*) {
+  min-width: 0;
+}
+
+.app-layout-page {
+  display: grid;
+  min-height: 0;
+  min-width: 0;
+  padding: var(--layout-content-padding);
+}
+
+.app-layout-page:has(> .app-page) {
+  padding: 0;
+}
+
+main :deep(.page-load-state) {
+  min-height: 0;
+  padding: 0;
+}
+
+.scrim {
+  background: #10182880;
+  border: 0;
+  border-radius: 0;
+  inset: 0;
+  position: fixed;
+  z-index: 29;
+}
+
+.sidebar-footer {
+  border-top: 1px solid var(--color-divider);
+  padding-top: var(--space-3);
+}
+
+.sidebar-account {
+  width: 100%;
+}
+
+.sidebar-user {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+}
+
+.sidebar-user.active {
+  background: var(--color-soft);
+}
+
+.sidebar-user:hover {
+  background: var(--color-soft);
+}
+
+/* Retro, the docs and feedback live together at the bottom, away from the settings block. */
+.sidebar-bottom {
+  display: grid;
+  gap: var(--space-1);
+  margin-top: auto;
+  padding-top: var(--space-6);
+}
+
+.sidebar-user-info {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-user small {
+  font-size: var(--font-size-caption);
+}
+
+.sidebar-user strong,
+.sidebar-user small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.organization {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  display: flex;
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  min-width: 0;
+  position: relative;
+  width: 100%;
+}
+
+.organization-select {
+  align-items: center;
+  border: 0;
+  border-radius: var(--radius-control);
+  color: inherit;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  text-decoration: none;
+  width: 100%;
+}
+
+.organization-select:hover {
+  background: var(--color-soft);
+}
+
+.organization-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.organization-switch-icon {
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .shell {
+    --layout-content-padding: var(--space-3);
+
+    display: block;
+  }
+
+  :global(body:has(aside.open)) {
+    overflow: hidden;
+  }
+
+  aside {
+    border-radius: 0;
+    height: 100dvh;
+    inset: 0 auto 0 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    position: fixed;
+    transform: translateX(-100%);
+    transition: transform var(--duration-base) var(--ease-standard);
+    width: 280px;
+    z-index: 30;
+  }
+
+  aside.open {
+    box-shadow: 0 0 40px #00000059;
+    transform: none;
+  }
+
+  main {
+    grid-column: auto;
+  }
+}
+</style>
