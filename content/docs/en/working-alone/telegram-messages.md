@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-10-28
+updatedAt: 2026-10-29
 ---
 The core idea behind Laraue Boards is that work is already happening in Telegram. A client request, a bug report, a photo of something that needs fixing — these are all issues, they just haven't been structured yet. Laraue Boards captures them directly.
 
@@ -30,7 +30,7 @@ When you forward a message, Laraue Boards saves:
 - The **text content** of the message (up to 4096 characters)
 - **Photos** and **videos** — shown as thumbnails on the issue page, fetched from Telegram in original quality when you open them
 - **Documents** — PDF, Word (DOCX, DOC), Markdown, TXT and JSON files, and images sent as a file, attached to the issue for download (see [Attachments](/en/documentation/features/media#what-you-can-attach) for formats and limits)
-- **Sender name** — shown on the card for context
+- **Sender name** — shown in the issue's **Source** (see [below](#where-the-issue-came-from))
 - **Timestamp** — when the original message was sent
 
 What is not captured: reactions, replies, forwarded-from attribution chains, voice message transcriptions, and files of other types.
@@ -51,13 +51,28 @@ There are no thumbnails on the board card — media only shows up once you open 
 
 From here you can also add more images yourself — with **Attach files** (the paperclip), or paste one directly with **Ctrl+V** — and remove any attachment with the **×** on its thumbnail.
 
+## Where the issue came from
+
+An issue created from Telegram has a **Source** row in the sidebar of its page, next to **Created**: the chat it came from, as **Telegram · Chat name**, who sent the message, and when.
+
+When Telegram can open the message, the row also has an **Open message ↗** link. Whether there is one depends on the chat:
+
+- **Public group** (it has an @username) — the link opens the message for anyone.
+- **Private group** — the link opens the message only for members of the group; everyone else gets an error from Telegram.
+- **Small group** (a basic group, not upgraded to a supergroup) — no link: Telegram has no links to messages there.
+- **Your private chat with the bot**, including messages you forward to it — shown as **Telegram · private chat with the bot**, with no link.
+
+Everyone who can see the issue sees the same row and link; Boards can't tell whether you're a member of the chat.
+
+When Telegram upgrades a small group to a supergroup (for example, when a group gets an @username or a lot of members), messages are numbered anew. Issues saved before the upgrade keep the Source row but have no link; issues saved after it link to their messages as usual.
+
 ## Text-only issues
 
 A message does not need text to become an issue. A photo with no caption becomes a media-only issue — the issue page shows the thumbnails with an empty description, and its title is generated from the kind of media, the time and the chat, like `image-20260930-101500-Chat name`. A document with no caption takes its file name as the title, like `contract.pdf`.
 
 ## Manually created issues
 
-Issues created by tapping **+ Add issue** are not linked to any Telegram message. They have the same fields (content, status, attributes) but no sender or media from Telegram.
+Issues created by tapping **+ Add issue** are not linked to any Telegram message. They have the same fields (content, status, attributes) but no sender or media from Telegram, and no **Source** row.
 
 ## Related pages
 

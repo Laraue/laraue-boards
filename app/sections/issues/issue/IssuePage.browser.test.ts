@@ -31,6 +31,7 @@ const issue: IssuePageViewModel = {
   owner: 'Grace Hopper',
   ownerColor: '#222',
   ownerInitial: 'G',
+  source: null,
   spaceColor: '#4774d4',
   spaceId: '7',
   spaceLabel: 'Product',
@@ -898,4 +899,74 @@ it('keeps the link fields open when no such issue is found', async () => {
 
   await expect.element(page.getByText('No issue ISS-404 that you can see')).toBeInTheDocument()
   await expect.element(page.getByRole('combobox', { name: 'Issue' })).toBeInTheDocument()
+})
+
+it('shows the Telegram message the issue was created from, with a link to it', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        source: {
+          chatTitle: 'Team',
+          isPrivateChat: false,
+          messageUrl: 'https://t.me/team_chat/12',
+          sender: { color: '#333', initial: 'L', name: 'Linus Torvalds' },
+          sentAt: '2026-01-01T00:00:00Z',
+        },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Source', { exact: true })).toBeInTheDocument()
+  await expect.element(page.getByText('Telegram · Team')).toBeInTheDocument()
+  await expect.element(page.getByText('Linus Torvalds')).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('link', { name: 'Open message' }))
+    .toHaveAttribute('href', 'https://t.me/team_chat/12')
+})
+
+it('shows the Telegram source without a link when Telegram has none', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        source: {
+          chatTitle: 'Team',
+          isPrivateChat: false,
+          messageUrl: null,
+          sender: null,
+          sentAt: null,
+        },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Telegram · Team')).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: 'Open message' })).not.toBeInTheDocument()
+})
+
+it('names the private chat with the bot as the source', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        source: {
+          chatTitle: null,
+          isPrivateChat: true,
+          messageUrl: null,
+          sender: null,
+          sentAt: '2026-01-01T00:00:00Z',
+        },
+      })),
+    }),
+  )
+
+  await expect.element(page.getByText('Telegram · private chat with the bot')).toBeInTheDocument()
+})
+
+it('shows no source for an issue not created from Telegram', async () => {
+  await mount(createDeps())
+
+  await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
+  await expect.element(page.getByText('Source', { exact: true })).not.toBeInTheDocument()
 })
