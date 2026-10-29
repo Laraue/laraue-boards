@@ -22,6 +22,7 @@ const pageData: MemberPermissionsPageData = {
   permissions: {
     admin: {
       canDeleteOrganization: false,
+      canLinkChats: false,
       canManageAttributes: false,
       canManageMembers: false,
       canMoveData: false,

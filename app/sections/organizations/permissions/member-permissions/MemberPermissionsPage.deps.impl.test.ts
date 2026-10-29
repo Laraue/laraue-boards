@@ -21,7 +21,7 @@ const spaces = [
 ]
 
 const permissions = {
-  admin: 'Manage, UpdateOrganization',
+  admin: 'Manage, UpdateOrganization, LinkChats',
   direct: { product: { canManageRetros: true, canRead: true, canUpdate: true } },
   global: { canCreateEpics: true, canManageRetros: true, canRead: true },
 }
@@ -51,6 +51,7 @@ test('maps member permissions response', async () => {
     permissions: {
       admin: {
         canDeleteOrganization: false,
+        canLinkChats: true,
         canManageAttributes: false,
         canManageMembers: true,
         canMoveData: false,
@@ -119,6 +120,7 @@ test('sends admin flags and renamed board permissions', async () => {
     permissions: {
       admin: {
         canDeleteOrganization: false,
+        canLinkChats: true,
         canManageAttributes: false,
         canManageMembers: true,
         canMoveData: false,
@@ -156,7 +158,7 @@ test('sends admin flags and renamed board permissions', async () => {
 
   const body = (await requests[0]!.json()) as { userPermissions: unknown }
   assert.deepEqual(body.userPermissions, {
-    admin: 'Manage',
+    admin: 'LinkChats, Manage',
     direct: {
       '11': {
         canCreateEpics: false,

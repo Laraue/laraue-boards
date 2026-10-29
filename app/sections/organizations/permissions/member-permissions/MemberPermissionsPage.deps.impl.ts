@@ -8,6 +8,7 @@ type ApiUserPermissions = components['schemas']['UserPermissions']
 
 const adminFlags = {
   canDeleteOrganization: 'DeleteOrganization',
+  canLinkChats: 'LinkChats',
   canManageAttributes: 'ManageAttributes',
   canManageMembers: 'Manage',
   canMoveData: 'MassMove',
@@ -24,7 +25,8 @@ const mapMemberPermissions = (
   return {
     admin: {
       canDeleteOrganization: admin.has(adminFlags.canDeleteOrganization) || admin.has('All'),
-      canManageAttributes: admin.has(adminFlags.canManageAttributes),
+      canLinkChats: admin.has(adminFlags.canLinkChats) || admin.has('All'),
+      canManageAttributes: admin.has(adminFlags.canManageAttributes) || admin.has('All'),
       canManageMembers: admin.has(adminFlags.canManageMembers) || admin.has('All'),
       canMoveData: admin.has(adminFlags.canMoveData) || admin.has('All'),
       canUpdateOrganization: admin.has(adminFlags.canUpdateOrganization) || admin.has('All'),

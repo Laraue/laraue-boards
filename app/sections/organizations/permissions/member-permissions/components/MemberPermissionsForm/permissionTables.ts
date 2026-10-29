@@ -27,6 +27,7 @@ export type DirectPermissionTable = {
 
 export type AdminPermissionLabelKey =
   | 'deleteOrganization'
+  | 'linkChats'
   | 'manageAttributes'
   | 'manageMembers'
   | 'moveData'
@@ -41,6 +42,7 @@ export const ADMIN_PERMISSION_OPTIONS: Array<{
   { key: 'canDeleteOrganization', label: 'deleteOrganization' },
   { key: 'canMoveData', label: 'moveData' },
   { key: 'canManageAttributes', label: 'manageAttributes' },
+  { key: 'canLinkChats', label: 'linkChats' },
 ]
 
 export const PERMISSION_COLUMNS = ['create', 'update', 'delete'] as const
