@@ -6,6 +6,7 @@ import type {
   IssueAttributeField,
   IssueAttributeValueInput,
 } from '~/components/issue-attribute-fields/IssueAttributeFields.types'
+import type { IssueSource } from '~/components/issue-source-icon/IssueSourceIcon.types'
 import type { SpaceSelectDeps } from '~/components/space-select/SpaceSelect.deps'
 import type { StatusSelectDeps } from '~/components/status-select/StatusSelect.deps'
 
@@ -56,8 +57,6 @@ export type IssueSourceViewModel = {
   isPrivateChat: boolean
   // A t.me link to the message; null where Telegram has none.
   messageUrl: null | string
-  sender: null | { color: string; initial: string; name: string }
-  sentAt: null | string
 }
 
 export type IssuePageViewModel = {
@@ -80,6 +79,8 @@ export type IssuePageViewModel = {
   canEdit: boolean
   content: string
   createdAt: string
+  // How the issue was created; null when the API sends none.
+  createdVia: IssueSource | null
   issueKey: string
   // Links to the issues the user can see.
   links: IssueLinkViewModel[]

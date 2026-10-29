@@ -53,6 +53,33 @@ it('shows the API key a change was made with', async () => {
   expect(wrapper.find('.history-avatar-key').exists()).toBe(true)
 })
 
+it('shows a change made by an agent as made by the agent, for the person it acts for', async () => {
+  const wrapper = await mountSuspended(HistoryTimeline, {
+    props: {
+      items: [
+        {
+          changes: [statusChange],
+          createdAt: '2026-08-04T10:56:20Z',
+          owner: {
+            agent: { clientName: 'Claude Code agent', machineName: 'dev-laptop' },
+            apiKeyName: 'Claude Code agent (dev-laptop)',
+            color: '#4774d4',
+            initials: 'WI',
+            name: 'win7user10',
+          },
+        },
+      ],
+    },
+  })
+
+  expect(wrapper.find('.history-owner').text()).toBe('Agent')
+  expect(wrapper.find('.history-key').text()).toBe('win7user10 via Claude Code agent, dev-laptop')
+  expect(wrapper.find('.history-avatar').attributes('title')).toBe(
+    'Agent: win7user10 via Claude Code agent, dev-laptop',
+  )
+  expect(wrapper.find('.history-avatar-key').exists()).toBe(false)
+})
+
 it('keeps changes made in the app and through an API key in separate entries', async () => {
   const wrapper = await mountSuspended(HistoryTimeline, {
     props: {

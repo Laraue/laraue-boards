@@ -24,14 +24,31 @@
         class="issue-comment">
         <div class="issue-comment-body">
           <div class="issue-comment-head">
-            <BaseAvatar
-              :color="comment.owner.color"
-              :initials="comment.owner.initials"
-              size="sm" />
-            <span class="issue-comment-name">{{ comment.owner.name }}</span>
-            <!-- Like the history: a comment an agent or a script wrote through an API key says which key. -->
+            <!-- An agent's comment is the agent's, not the person's: its own avatar and name, the person it acts
+                 for and where it runs on the second line. -->
+            <template v-if="comment.owner.agent">
+              <AgentAvatar />
+              <span class="issue-comment-name">{{ t('agent') }}</span>
+              <span class="issue-comment-key">
+                {{
+                  t('agentFor', {
+                    client: comment.owner.agent.clientName,
+                    machine: comment.owner.agent.machineName,
+                    name: comment.owner.name,
+                  })
+                }}
+              </span>
+            </template>
+            <template v-else>
+              <BaseAvatar
+                :color="comment.owner.color"
+                :initials="comment.owner.initials"
+                size="sm" />
+              <span class="issue-comment-name">{{ comment.owner.name }}</span>
+            </template>
+            <!-- Like the history: a comment a script wrote through an API key made by hand says which key. -->
             <span
-              v-if="comment.owner.apiKeyName"
+              v-if="comment.owner.apiKeyName && !comment.owner.agent"
               class="issue-comment-key">
               <IconKey />
               {{ t('viaKey', { key: comment.owner.apiKeyName }) }}
@@ -163,6 +180,7 @@ import {
   IconX,
 } from '@tabler/icons-vue'
 
+import AgentAvatar from '~/components/agent-avatar/AgentAvatar.vue'
 import IssueAttachments from '~/components/issue-attachments/IssueAttachments.vue'
 import MarkdownEditor from '~/components/markdown-editor/MarkdownEditor.vue'
 import { renderMarkdown } from '~/utils/renderMarkdown'
@@ -182,6 +200,8 @@ const { t } = useI18n({
     actionsFor: 'Actions for the comment by',
     addComment: 'Add comment',
     addCommentShortcut: 'Add comment (Ctrl+Enter)',
+    agent: 'Agent',
+    agentFor: '{name} via {client}, {machine}',
     cancel: 'Cancel',
     comments: 'Comments',
     delete: 'Delete',
@@ -202,6 +222,8 @@ const { t } = useI18n({
     actionsFor: 'Действия с комментарием пользователя',
     addComment: 'Добавить комментарий',
     addCommentShortcut: 'Добавить комментарий (Ctrl+Enter)',
+    agent: 'Агент',
+    agentFor: '{name} через {client}, {machine}',
     cancel: 'Отмена',
     comments: 'Комментарии',
     delete: 'Удалить',

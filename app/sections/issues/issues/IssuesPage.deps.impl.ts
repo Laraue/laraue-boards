@@ -6,6 +6,7 @@ import type { IssueListItem } from '~/components/issue-list/IssueList.types'
 import { COLORS } from '~/constants/colors'
 import { mapIssueFilters, mapRawIssueFilters } from '~/sections/issues/shared/api/issueAttributes'
 import { createdAtDescending } from '~/sections/issues/shared/api/issueSorting'
+import { issueSourceField } from '~/sections/issues/shared/api/issueSource'
 
 import type { IssueBoardStatus, IssuesPageDeps } from './IssuesPage.deps'
 
@@ -22,6 +23,7 @@ const mapIssue = (issue: Schemas['SearchIssueDto']): IssueListItem => ({
   boardName: issue.epic.name,
   canMove: issue.canEdit,
   issueKey: issue.key,
+  ...issueSourceField(issue.createdVia, issue.createdByApiKeyName),
   spaceColor: issue.space.color,
   spaceKey: issue.spaceKey,
   spaceName: issue.space.name,

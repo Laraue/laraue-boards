@@ -38,6 +38,10 @@
             :in-review="inReview"
             :state="viewModel.agentRunState" />
           <!-- A native title: a board renders hundreds of cards, too many for tooltip components. -->
+          <IssueSourceIcon
+            v-if="viewModel.source"
+            class="task-created-via"
+            :source="viewModel.source" />
           <time
             :datetime="viewModel.time"
             :title="`${t('created')} ${formatDateTime(viewModel.time)}`">
@@ -58,6 +62,7 @@ import { useSortable } from '@dnd-kit/vue/sortable'
 import { IconLoader, IconLock } from '@tabler/icons-vue'
 
 import AgentRunBadge from '~/components/agent-run-badge/AgentRunBadge.vue'
+import IssueSourceIcon from '~/components/issue-source-icon/IssueSourceIcon.vue'
 
 import type { IssueCardViewModel } from './IssueCard.types'
 
@@ -179,9 +184,18 @@ useSortable({
   min-width: 0;
 }
 
+/* The source icon goes to the right with the time, next to it. */
+.task-created-via {
+  margin-left: auto;
+}
+
 .task-source time {
   flex: none;
   margin-left: auto;
+}
+
+.task-created-via + time {
+  margin-left: 0;
 }
 
 .task-progress {

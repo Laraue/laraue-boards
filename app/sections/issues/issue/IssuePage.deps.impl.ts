@@ -12,6 +12,7 @@ import { mapIssueAttributeValues } from '~/sections/issues/shared/api/issueAttri
 import { toLocalIssueDateTime } from '~/sections/issues/shared/api/issueDateTime'
 import { updateIssueFormData } from '~/sections/issues/shared/api/issueFormData'
 import { mapIssueLinkRelation } from '~/sections/issues/shared/api/issueLinks'
+import { mapIssueSource } from '~/sections/issues/shared/api/issueSource'
 import { assertNever } from '~/utils/assertNever'
 
 import type {
@@ -107,6 +108,7 @@ const mapIssue = (
   canEdit: issue.canEdit,
   content: issue.content ?? '',
   createdAt: issue.time,
+  createdVia: mapIssueSource(issue.createdVia, issue.createdByApiKeyName),
   issueKey: issue.key,
   links: issue.links.map((link) => ({
     issueKey: link.key,
@@ -124,14 +126,6 @@ const mapIssue = (
         chatTitle: issue.source.chatTitle,
         isPrivateChat: issue.source.isPrivateChat,
         messageUrl: issue.source.messageUrl,
-        sender: issue.source.sender
-          ? {
-              color: issue.source.sender.color,
-              initial: issue.source.sender.initials,
-              name: issue.source.sender.displayName,
-            }
-          : null,
-        sentAt: issue.source.sentAt,
       }
     : null,
   spaceColor: issue.spaceColor,

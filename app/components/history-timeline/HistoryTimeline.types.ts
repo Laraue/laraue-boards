@@ -92,7 +92,10 @@ export type HistoryItemViewModel = {
     label: string
     to: RouteLocationRaw
   }
+  // agent: set when the change was made with a key issued to a coding agent - the change is the agent's, acting
+  // for the owner.
   owner: {
+    agent?: { clientName: string; machineName: string }
     apiKeyName?: string
     color: string
     initials: string

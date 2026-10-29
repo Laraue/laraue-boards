@@ -14,6 +14,7 @@ const mapComment = (
   createdAt: comment.createdAt ?? '',
   id: String(comment.id),
   owner: {
+    ...(comment.agent ? { agent: comment.agent } : {}),
     ...(comment.apiKeyName ? { apiKeyName: comment.apiKeyName } : {}),
     color: comment.owner.color,
     initials: comment.owner.initials,

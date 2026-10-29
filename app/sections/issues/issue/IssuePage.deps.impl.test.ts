@@ -131,8 +131,6 @@ test('maps issue detail', async () => {
     chatTitle: 'Team',
     isPrivateChat: false,
     messageUrl: 'https://t.me/team_chat/12',
-    sender: { color: '#444', initial: 'L', name: 'Linus' },
-    sentAt: '2025-12-31T23:00:00Z',
   })
   assert.equal(result.boardIsBacklog, true)
   assert.equal(result.statusCategory, 'Created')

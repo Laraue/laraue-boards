@@ -145,6 +145,7 @@ const mapHistoryPage = (
       ...(item.issueKey ? { issueKey: item.issueKey } : {}),
       ...(item.issueTitle ? { issueTitle: item.issueTitle } : {}),
       owner: {
+        ...(item.agent ? { agent: item.agent } : {}),
         ...(item.apiKeyName ? { apiKeyName: item.apiKeyName } : {}),
         color: item.owner.color,
         initials: item.owner.initials,

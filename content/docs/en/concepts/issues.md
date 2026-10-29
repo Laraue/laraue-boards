@@ -16,7 +16,7 @@ Every issue has:
 
 - **Title** — a short one-line name. Lists, board cards, search results and history show it, so it's what you recognize an issue by
 - **Description** — the text of the message, or manually entered text
-- **Source** — for an issue created from Telegram: the chat, who sent the message and when, and a link that opens the message in Telegram — see [Where the issue came from](/en/documentation/working-alone/telegram-messages#where-the-issue-came-from)
+- **Created via** — how the issue was created, as an icon: in the web app, from Telegram, through MCP or by an AI agent (with the key's name for the last two). Board cards and issue lists show the same icon; hover it to see the source. For an issue from Telegram it's the chat, with a link that opens the message — see [Where the issue came from](/en/documentation/working-alone/telegram-messages#where-the-issue-came-from)
 - **Status** — which column on the board it currently sits in
 - **Issue key** — a unique identifier like `WRK-42`
 - **Assignee** — who the issue is assigned to

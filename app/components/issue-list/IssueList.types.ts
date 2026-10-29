@@ -1,4 +1,5 @@
 import type { components } from '#infrastructure/api/generated'
+import type { IssueSource } from '~/components/issue-source-icon/IssueSourceIcon.types'
 
 export type IssueListItem = {
   assignee: string
@@ -12,6 +13,8 @@ export type IssueListItem = {
   blocked: boolean
   canMove: boolean
   issueKey: string
+  // How the issue was created; absent when the API sends none.
+  source?: IssueSource
   spaceColor?: string
   spaceKey?: string
   spaceName?: string
