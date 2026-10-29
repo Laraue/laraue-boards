@@ -1,0 +1,424 @@
+/* The UI kit's element defaults: page, form controls, dialogs, feedback and motion. Components of
+   the kit build on these; page and layout styles belong to their components and layers. */
+
+* {
+  box-sizing: border-box;
+  scrollbar-color: var(--color-scrollbar) transparent;
+  scrollbar-width: thin;
+}
+*::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar);
+  border-radius: var(--radius-full);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-hover);
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-body);
+  font-weight: 400;
+  line-height: var(--line-height-body);
+  margin: 0;
+  min-height: 100dvh;
+}
+
+/* Modal surfaces on Reka Dialog, rendered in a portal: BaseDialog, BaseAlertDialog, IssueDialog and
+   the attachment preview. A confirmation is above the rest. */
+
+.base-dialog-overlay {
+  animation: base-dialog-fade var(--duration-base) var(--ease-standard);
+  backdrop-filter: blur(1px);
+  background: #00000082;
+  inset: 0;
+  position: fixed;
+  z-index: 45;
+}
+
+/* Centred with margins, not a transform: a transformed parent would misplace the fixed popups
+   (selects, menus, tooltips) that open inside the dialog. */
+.base-dialog {
+  animation: base-dialog-enter var(--duration-base) var(--ease-standard);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-popover);
+  color: var(--color-text);
+  height: fit-content;
+  inset: 0;
+  margin: auto;
+  max-height: calc(100dvh - var(--space-8));
+  overflow: auto;
+  padding: var(--space-6);
+  position: fixed;
+  width: min(27.5rem, calc(100% - var(--space-8)));
+  z-index: 46;
+}
+
+/* A confirmation can open from any dialog (the issue's delete), so it is always the top layer. All
+   modals share <body>, where Teleport keeps the place it took at mount, so DOM order cannot decide. */
+.base-dialog-overlay.base-alert-dialog-overlay {
+  z-index: 49;
+}
+
+.base-dialog.base-alert-dialog {
+  z-index: 50;
+}
+
+.base-dialog:focus-visible {
+  outline: none;
+}
+
+.base-dialog-overlay[data-state='closed'] {
+  animation: base-dialog-fade var(--duration-fast) var(--ease-standard) reverse;
+}
+
+.base-dialog[data-state='closed'] {
+  animation: base-dialog-enter var(--duration-fast) var(--ease-standard) reverse;
+}
+
+@keyframes base-dialog-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes base-dialog-enter {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}
+
+.dialog-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+/* Typography and form controls */
+
+p {
+  margin: 0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+:where(a, button):focus-visible {
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.tabler-icon {
+  flex: none;
+  height: var(--icon-size);
+  vertical-align: middle;
+  width: var(--icon-size);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+strong {
+  font-weight: var(--font-weight-semibold);
+}
+label {
+  display: block;
+  font-weight: var(--font-weight-semibold);
+  margin: var(--space-5) 0 var(--space-2);
+}
+form > label:first-of-type,
+label:first-child {
+  margin-top: 0;
+}
+.field-label {
+  color: var(--color-muted);
+  font-weight: 400;
+  margin: 0;
+}
+:where(input:not([type='checkbox']):not([type='radio'])),
+select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  font-size: var(--font-size-body);
+  height: var(--control-height);
+  outline: none;
+  padding: 0 var(--space-3);
+  transition: box-shadow var(--duration-fast) var(--ease-standard);
+  width: 100%;
+}
+input[type='checkbox'] {
+  appearance: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  flex: none;
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+input[type='checkbox']:hover {
+  border-color: var(--color-border-hover);
+}
+input[type='checkbox']:checked {
+  background: var(--color-action)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E")
+    center/10px no-repeat;
+  border-color: var(--color-action);
+}
+input[type='checkbox']:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+input[type='checkbox']:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+textarea {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  /* grows with content where supported; rows="" stays the fallback */
+  field-sizing: content;
+  font-size: var(--font-size-body);
+  max-height: 400px;
+  min-height: var(--control-height);
+  outline: none;
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+  transition: box-shadow var(--duration-fast) var(--ease-standard);
+  width: 100%;
+}
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right var(--space-3) center;
+  background-repeat: no-repeat;
+  padding-right: var(--control-icon-padding);
+}
+:root[data-theme='dark'] select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+:where(input:not([type='checkbox']):not([type='radio']), select, textarea):hover:not(
+    :disabled,
+    :focus
+  ) {
+  border-color: var(--color-border-hover);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-focus);
+}
+/* Zero specificity: a field styled locally (an inline title) keeps its own look. */
+:where(input:not([type='checkbox']):not([type='radio']), select, textarea):where(:disabled) {
+  background: var(--color-soft);
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-muted);
+  opacity: 1;
+}
+
+input[type='search'] {
+  background: var(--color-surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E")
+    var(--space-3) center no-repeat;
+  max-width: 220px;
+  padding-left: var(--control-icon-padding);
+}
+
+@media (max-width: 767px) {
+  input[type='search'] {
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Tabs: BaseTabs switches panels, BaseNavTabs switches pages; both look the same.
+   A segmented control: a soft track, as wide as its tabs, with the active tab raised on it. */
+.base-tabs-list {
+  /* The quieter soft fill: on a white page the hover gray was the darkest patch on screen. */
+  background: var(--color-soft);
+  /* The tab radius plus the track padding, so the corners run parallel. */
+  border-radius: calc(var(--radius-control) + 3px);
+  display: flex;
+  gap: 2px;
+  height: var(--control-height);
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 3px;
+  scrollbar-width: none;
+  width: fit-content;
+}
+
+/* A tab: icon, name and count. */
+.base-tabs-tab {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  color: var(--color-muted);
+  display: inline-flex;
+  flex: none;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  gap: var(--space-2);
+  justify-content: center;
+  padding: 0 var(--space-3);
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.base-tabs-tab > svg {
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.base-tabs-tab:is([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* On the dark track the surface would sink; the active tab lightens instead. */
+:root[data-theme='dark']
+  .base-tabs-tab:is([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
+  background: color-mix(in srgb, var(--color-text) 10%, var(--color-hover));
+  border-color: var(--color-border);
+}
+
+.base-tabs-tab:focus-visible {
+  border-color: var(--color-focus);
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .base-tabs-tab:hover:not([data-state='active'], [aria-current='page'], [aria-pressed='true']) {
+    color: var(--color-text);
+  }
+}
+
+/* Form feedback */
+
+.form-error,
+.form-success {
+  animation: feedback-enter var(--duration-base) var(--ease-standard);
+  margin-top: var(--space-4);
+}
+
+.form-error {
+  color: var(--color-danger);
+  white-space: pre-line;
+}
+
+.form-success {
+  color: var(--color-success);
+}
+
+/* Transitions and motion preferences */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.pop-enter-active,
+.pop-leave-active {
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    scale var(--duration-fast) var(--ease-standard);
+}
+
+.pop-enter-from,
+.pop-leave-to {
+  opacity: 0;
+  scale: 0.95;
+}
+
+.icon-pop-enter-active,
+.icon-pop-leave-active {
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    rotate var(--duration-fast) var(--ease-standard),
+    scale var(--duration-fast) var(--ease-standard);
+}
+
+.icon-pop-enter-from,
+.icon-pop-leave-to {
+  opacity: 0;
+  rotate: -30deg;
+  scale: 0.6;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active,
+.list-enter-active,
+.list-leave-active,
+.list-move {
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to,
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--space-1)));
+}
+@keyframes feedback-enter {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--space-1)));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}

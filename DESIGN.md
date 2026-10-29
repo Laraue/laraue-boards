@@ -1,26 +1,30 @@
 # Interface design system
 
-The shared tokens live in `app/components/ui/styles/tokens.css`, the kit's element defaults in
-`ui/styles/base.css`; app-wide styles stay in `app/assets/css/main.css`. Component appearance
-belongs to the base component; page styles own layout. Extend the existing system before adding a
-component or variant. Every shared component and its states are on `/dev/ui` (development only);
-check a design change there and add new components and variants to it.
+The shared tokens live in `layers/core/app/ui/styles/tokens.css`, the kit's element defaults in
+`layers/core/app/ui/styles/base.css`; app-wide styles stay in `layers/core/app/assets/css/main.css`.
+Component appearance belongs to the base component; page styles own layout. Extend the existing
+system before adding a component or variant. Every shared component and its states are on `/dev/ui`
+(development only); check a design change there and add new components and variants to it.
 
 ## UI kit and app components
 
-- `app/components/ui/` is the UI kit that will move to its own library: generic `Base*` components
+- `layers/core/app/ui/` is the UI kit that will move to its own library: generic `Base*` components
   (Button, IconButton, Input, Select, Checkbox, Tabs, Tooltip, Card, Popover, Menu, Toasts,
-  EmptyState) and their composables (`ui/composables`, e.g. `useToast`). Nuxt registers them under
-  their own names.
-- The kit imports only from itself, Vue, Nuxt and third-party packages; ESLint blocks `~/`,
-  `#infrastructure` and imports out of `ui/`. It has no translations and no domain words: text comes
-  in through props or slots (e.g. `BaseToasts dismiss-label`). Auto-imported app composables such as
-  `useI18n` are off limits too, though lint cannot see them.
+  EmptyState) live in `components/`, with their composables in `composables/` (e.g. `useToast`).
+  Import each component and composable explicitly from its file.
+- The kit imports only from itself, Vue, Nuxt and third-party packages; ESLint resolves aliases and
+  relative paths and blocks imports out of `ui/`. It has no translations and no domain words: text
+  comes in through props or slots (e.g. `BaseToasts dismiss-label`). App composables such as
+  `useI18n` are off limits. Auto-imports are disabled throughout the project.
 - Buttons are `BaseButton` / `BaseIconButton` everywhere; the old `.primary`, `.secondary` and
   `.icon-btn` classes are gone from the app. The retro board page (retro-board/) lives apart and
-  keeps them in `sections/retro/retro-controls.css`, which nothing else may use.
-- Everything that knows about issues, boards, spaces, users or this app's copy is an app component
-  outside `ui/` (`App*` or a domain name). A generic need found in an app component moves into the
+  keeps them in `workspace/sections/retro/retro-controls.css`, which nothing else may use.
+- Workspace-wide components live in `layers/workspace/app/shared/components/`, page frames in
+  `layers/workspace/app/shells/`, and domain components in their page section or
+  `layers/workspace/app/sections/<domain>/shared/components/`. Landing components stay in
+  `layers/site/app/sections/landing/`; documentation components stay in `layers/docs/app/`. Only
+  cross-area components belong to their actual host concern; the common public header and footer
+  live in `layers/core/app/public-shell/`. A generic need found in an app component moves into the
   kit.
 
 - A kit component's root rule is written `:where(.base-x) { ... }` when consumers set its layout
@@ -98,10 +102,10 @@ check a design change there and add new components and variants to it.
   above its danger zone, and a list inside it gets its add-row button under its rows, not in a
   header.
 - Every view with server data is refreshed by the one `AppRefreshButton`, which `PageHeader` and the
-  standalone header show first among their actions while a view on screen has called
-  `useViewRefresh(refresh)`. Don't add a refresh button of a view's own; a part with its own query
-  (comments, history) registers it too. A refresh keeps the view mounted (`QueryState` shows its
-  loading state only before the first answer).
+  standalone header show first among their actions when their owner supplies `onRefresh`. Parents
+  explicitly combine their own reload with the required child refresh methods; there is no automatic
+  registration or global list. A refresh keeps the view mounted (`QueryState` shows its loading
+  state only before the first answer).
 - Use `BaseCheckbox` for labeled checkbox options and `BaseIconButton` for icon actions.
   `BaseIconButton` is `BaseButton icon` with a required accessible name and tooltip; style both in
   `BaseButton`.

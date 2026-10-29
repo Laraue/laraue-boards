@@ -1,0 +1,23 @@
+/* Workspace page defaults, fenced under its page and shell roots. */
+:where(.app-page, .standalone-shell, .shell) h1 {
+  font-size: var(--font-size-title);
+  letter-spacing: -0.02em;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:where(.app-page, .standalone-shell, .shell) .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+@media (max-width: 767px) {
+  :where(.app-page, .standalone-shell, .shell) h1 {
+    font-size: var(--font-size-2xl);
+  }
+}

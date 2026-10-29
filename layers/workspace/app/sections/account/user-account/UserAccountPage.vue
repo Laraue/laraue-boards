@@ -1,0 +1,128 @@
+<template>
+  <div class="user-account">
+    <BaseSectionHeader
+      :description="t('scope')"
+      :title="t('yourAccount')">
+      <template #leading>
+        <AppBackLink
+          :label="backPath ? t('back') : t('backToOrganizations')"
+          :to="backPath || '/organizations'" />
+      </template>
+      <template #actions>
+        <BaseButton
+          v-if="data"
+          :disabled="loggingOut"
+          variant="danger"
+          @click="logout">
+          <IconLogout />
+          {{ t('logOut') }}
+        </BaseButton>
+      </template>
+    </BaseSectionHeader>
+
+    <QueryState
+      :data="data"
+      :error-title="t('loadError')"
+      :loading-text="t('loading')"
+      :message="message"
+      :on-retry="refresh"
+      :pending="pending">
+      <template #default>
+        <div class="user-account-main">
+          <ProfileSection
+            :deps="deps.profile"
+            :on-updated="refresh" />
+
+          <ConnectedAccountsSection
+            :deps="deps.connectedAccounts"
+            :google-client-id="googleClientId"
+            :telegram-bot-id="telegramBotId" />
+
+          <InterfaceSection :deps="deps.interface" />
+        </div>
+      </template>
+    </QueryState>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { IconLogout } from '@tabler/icons-vue'
+
+import { useHead } from '#app'
+import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
+import AppBackLink from '#layers/workspace/app/shared/components/AppBackLink.vue'
+import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
+import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
+import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
+
+import ConnectedAccountsSection from './components/ConnectedAccountsSection/ConnectedAccountsSection.vue'
+import InterfaceSection from './components/InterfaceSection/InterfaceSection.vue'
+import ProfileSection from './components/ProfileSection/ProfileSection.vue'
+import type { UserAccountPageDeps } from './UserAccountPage.deps'
+
+const props = defineProps<{
+  /** Where the user came from in the app; direct visits go to the organization list. */
+  backPath?: string
+  deps: UserAccountPageDeps
+  googleClientId: string
+  onLoggedOut: () => Promise<void> | void
+  telegramBotId: string
+}>()
+
+const { t } = useI18n({
+  en: {
+    back: 'Back',
+    backToOrganizations: 'Back to organizations',
+    loadError: 'Could not load your account',
+    loading: 'Loading your account…',
+    logOut: 'Log out',
+    scope: 'One account for all Laraue apps',
+    yourAccount: 'Your Laraue account',
+  },
+  ru: {
+    back: 'Назад',
+    backToOrganizations: 'К организациям',
+    loadError: 'Не удалось загрузить аккаунт',
+    loading: 'Загрузка аккаунта…',
+    logOut: 'Выйти',
+    scope: 'Один аккаунт для всех приложений Laraue',
+    yourAccount: 'Ваш аккаунт Laraue',
+  },
+})
+
+useHead({ title: t('yourAccount') })
+
+const { data, message, pending, refresh } = await useApiQuery('user-account', (signal) =>
+  props.deps.view({ signal }),
+)
+
+const { execute: executeLogout, pending: loggingOut } = useApiAction(props.deps.logout)
+
+const logout = async (): Promise<void> => {
+  if (!loggingOut.value && (await executeLogout())) {
+    await props.onLoggedOut()
+  }
+}
+</script>
+
+<style scoped>
+.user-account {
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  width: min(var(--form-page-max-width), 100%);
+}
+
+.user-account-main {
+  display: grid;
+  gap: var(--space-8);
+  margin-top: var(--space-8);
+}
+
+/* A line between the sections, as between a settings form and its danger zone. */
+.user-account-main > * + * {
+  border-top: 1px solid var(--color-divider);
+  padding-top: var(--space-8);
+}
+</style>

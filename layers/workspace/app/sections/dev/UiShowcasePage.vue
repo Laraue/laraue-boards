@@ -1,0 +1,724 @@
+<!-- Every shared component in its variants and states, to check design changes in one place.
+     Switch the theme in the header to see both. -->
+<template>
+  <div class="showcase">
+    <h1>UI</h1>
+
+    <section>
+      <h2>Palette</h2>
+      <div
+        v-for="ramp in ramps"
+        :key="ramp.name"
+        class="ramp">
+        <code>{{ ramp.name }}</code>
+        <span
+          v-for="step in ramp.steps"
+          :key="step"
+          class="ramp-step"
+          :style="{ background: `var(--${ramp.name}-${step})` }"
+          :title="`--${ramp.name}-${step}`">
+          {{ step }}
+        </span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Semantic colors</h2>
+      <div class="swatches">
+        <div
+          v-for="color in colors"
+          :key="color"
+          class="swatch">
+          <span
+            class="swatch-sample"
+            :style="{ background: `var(${color})` }" />
+          <code>{{ color }}</code>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Typography</h2>
+      <BaseCard class="stack">
+        <p
+          v-for="size in fontSizes"
+          :key="size"
+          :style="{ fontSize: `var(--font-size-${size})` }">
+          {{ size }} — The quick brown fox
+        </p>
+      </BaseCard>
+      <BaseCard class="stack">
+        <p :style="{ fontSize: 'var(--font-size-title)', fontWeight: 600 }">Title 24 / 600</p>
+        <p :style="{ fontWeight: 500 }">Body 14 / 500 — buttons, row and card titles</p>
+        <p>Body 14 / 400 — text, menu rows, options</p>
+        <p class="muted">Muted 14 / 400 — secondary context</p>
+        <p :style="{ fontSize: 'var(--font-size-small)' }">Small 12 — metadata</p>
+        <p :style="{ fontSize: 'var(--font-size-caption)' }">Caption 11 — annotations</p>
+        <code>Mono — DEF-42</code>
+      </BaseCard>
+    </section>
+
+    <section>
+      <h2>Radius and spacing</h2>
+      <div class="row">
+        <div
+          v-for="radius in radii"
+          :key="radius"
+          class="radius-sample"
+          :style="{ borderRadius: `var(${radius})` }">
+          <code>{{ radius }}</code>
+        </div>
+      </div>
+      <div class="row">
+        <div
+          v-for="space in spaces"
+          :key="space"
+          class="space-sample">
+          <span :style="{ width: `var(${space})` }" />
+          <code>{{ space }}</code>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Shadows</h2>
+      <div class="row">
+        <div
+          v-for="shadow in shadows"
+          :key="shadow"
+          class="shadow-sample"
+          :style="{ boxShadow: `var(${shadow})` }">
+          <code>{{ shadow }}</code>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseButton</h2>
+      <div
+        v-for="variant in buttonVariants"
+        :key="variant"
+        class="row">
+        <BaseButton :variant="variant">{{ variant }}</BaseButton>
+        <BaseButton :variant="variant">
+          <IconPlus />
+          With icon
+        </BaseButton>
+        <BaseButton
+          size="small"
+          :variant="variant">
+          Small
+        </BaseButton>
+        <BaseButton
+          loading
+          :variant="variant">
+          Loading
+        </BaseButton>
+        <BaseButton
+          disabled
+          :variant="variant">
+          Disabled
+        </BaseButton>
+      </div>
+      <div class="row">
+        <BaseButton to="/dev/ui">Link button</BaseButton>
+        <BaseButton tooltip="A hint in the shared tooltip">With tooltip</BaseButton>
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseIconButton</h2>
+      <div class="row">
+        <BaseIconButton label="Ghost"><IconDots /></BaseIconButton>
+        <BaseIconButton
+          label="Primary"
+          variant="primary">
+          <IconPlus />
+        </BaseIconButton>
+        <BaseIconButton
+          label="Danger"
+          variant="danger">
+          <IconTrash />
+        </BaseIconButton>
+        <BaseIconButton
+          label="Loading"
+          loading>
+          <IconDots />
+        </BaseIconButton>
+        <BaseIconButton
+          disabled
+          label="Disabled">
+          <IconDots />
+        </BaseIconButton>
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseInput</h2>
+      <div class="grid">
+        <BaseInput
+          v-model="text"
+          placeholder="Default" />
+        <BaseInput
+          v-model="empty"
+          placeholder="Placeholder" />
+        <BaseInput
+          v-model="text"
+          variant="inline" />
+        <BaseInput
+          v-model="text"
+          disabled />
+      </div>
+    </section>
+
+    <section>
+      <h2>Textarea, search and form feedback</h2>
+      <div class="grid">
+        <textarea
+          v-model="longText"
+          rows="3" />
+        <input
+          v-model="query"
+          placeholder="Search"
+          type="search" />
+      </div>
+      <p class="form-error">Something went wrong. Try again.</p>
+      <p class="form-success">Saved.</p>
+    </section>
+
+    <section>
+      <h2>BaseField and BaseFieldGroup</h2>
+      <div class="grid">
+        <BaseFieldGroup>
+          <BaseField
+            v-slot="{ id, describedby }"
+            hint="Shown on the board and in links."
+            label="Name">
+            <BaseInput
+              :id="id"
+              v-model="text"
+              :aria-describedby="describedby" />
+          </BaseField>
+          <BaseField
+            v-slot="{ id, describedby }"
+            error="Enter a key of 2 to 10 letters."
+            label="Key">
+            <BaseInput
+              :id="id"
+              v-model="empty"
+              :aria-describedby="describedby"
+              aria-invalid="true" />
+          </BaseField>
+        </BaseFieldGroup>
+        <BaseFieldGroup>
+          <BaseField
+            v-slot="{ id }"
+            label="Name">
+            <BaseInput
+              :id="id"
+              v-model="text" />
+          </BaseField>
+          <BaseField
+            v-slot="{ id }"
+            label="Status">
+            <BaseSelect
+              :id="id"
+              v-model="option"
+              :options="options" />
+          </BaseField>
+        </BaseFieldGroup>
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseSelect</h2>
+      <div class="grid">
+        <BaseSelect
+          v-model="option"
+          :options="options" />
+        <BaseSelect
+          v-model="empty"
+          :options="options"
+          placeholder="Placeholder" />
+        <BaseSelect
+          v-model="option"
+          :options="options"
+          variant="inline" />
+        <BaseSelect
+          v-model="option"
+          disabled
+          :options="options" />
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseCombobox</h2>
+      <div class="grid">
+        <BaseCombobox
+          v-model="comboboxValue"
+          v-model:search="comboboxSearch"
+          :message="comboboxOptions.length ? undefined : 'Nothing found'"
+          :options="comboboxOptions"
+          placeholder="Type to search" />
+        <BaseCombobox
+          v-model="comboboxValue"
+          v-model:search="comboboxSearch"
+          disabled
+          :options="comboboxOptions"
+          placeholder="Disabled" />
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseCheckbox</h2>
+      <div class="row">
+        <BaseCheckbox v-model="checked">Checked</BaseCheckbox>
+        <BaseCheckbox v-model="unchecked">Unchecked</BaseCheckbox>
+        <BaseCheckbox
+          v-model="checked"
+          disabled>
+          Disabled
+        </BaseCheckbox>
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseAvatar</h2>
+      <div class="row">
+        <BaseAvatar
+          v-for="size in avatarSizes"
+          :key="size"
+          color="var(--color-accent)"
+          initials="NC"
+          :size="size" />
+        <BaseAvatar
+          color="var(--color-success)"
+          initials="T"
+          shape="square" />
+        <BaseAvatar initials="?" />
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseBadge</h2>
+      <div class="row">
+        <BaseBadge
+          v-for="variant in badgeVariants"
+          :key="variant"
+          :variant="variant">
+          {{ variant }}
+        </BaseBadge>
+        <BaseBadge>3</BaseBadge>
+      </div>
+    </section>
+
+    <section>
+      <h2>BaseTabs and BaseNavTabs</h2>
+      <BaseTabs
+        v-model="tab"
+        :items="tabs"
+        label="Tabs" />
+      <BaseNavTabs
+        :items="[
+          { exact: true, label: 'This page', to: '/dev/ui' },
+          { label: 'Home', to: '/' },
+        ]"
+        label="Pages" />
+    </section>
+
+    <section>
+      <h2>Popover, menu, tooltip and toast</h2>
+      <div class="row">
+        <BaseMenu>
+          <template #trigger>
+            <BaseButton>Open menu</BaseButton>
+          </template>
+          <BaseMenuItem>
+            <IconCheck />
+            Menu row
+          </BaseMenuItem>
+          <BaseMenuItem>
+            <IconArrowsLeftRight />
+            Another row
+          </BaseMenuItem>
+          <BaseMenuSeparator />
+          <BaseMenuItem variant="danger">
+            <IconTrash />
+            Danger row
+          </BaseMenuItem>
+        </BaseMenu>
+        <BasePopover>
+          <template #trigger="{ open, toggle }">
+            <BaseButton
+              :aria-expanded="open"
+              @click="toggle">
+              Open popover
+            </BaseButton>
+          </template>
+          <p class="showcase-popover">A panel with any content.</p>
+        </BasePopover>
+        <BaseTooltip text="Tooltip text">
+          <BaseButton>Hover for tooltip</BaseButton>
+        </BaseTooltip>
+        <BaseButton @click="showToast('Saved', 'success')">Success toast</BaseButton>
+        <BaseButton @click="showToast('Something went wrong')">Error toast</BaseButton>
+      </div>
+    </section>
+
+    <section>
+      <h2>Dialog</h2>
+      <div class="row">
+        <BaseButton @click="dialog?.open()">Open dialog</BaseButton>
+      </div>
+      <BaseDialog
+        ref="dialog"
+        description="A form on the native dialog: title, fields and actions."
+        title="Dialog title"
+        @submit="dialog?.close()">
+        <BaseField
+          v-slot="{ id }"
+          label="Name">
+          <BaseInput
+            :id="id"
+            v-model="text" />
+        </BaseField>
+        <template #actions>
+          <BaseButton @click="dialog?.close()">Cancel</BaseButton>
+          <BaseButton
+            type="submit"
+            variant="primary">
+            Confirm
+          </BaseButton>
+        </template>
+      </BaseDialog>
+    </section>
+
+    <section>
+      <h2>Confirmation (useConfirm)</h2>
+      <div class="row">
+        <BaseButton
+          variant="danger"
+          @click="askDelete">
+          Delete something
+        </BaseButton>
+        <BaseButton @click="askFinish">Finish something</BaseButton>
+      </div>
+    </section>
+
+    <section>
+      <h2>AppColorPicker</h2>
+      <div class="row">
+        <AppColorPicker v-model="color" />
+        <AppColorPicker
+          v-model="color"
+          compact />
+      </div>
+    </section>
+
+    <section>
+      <h2>TransactionsTable</h2>
+      <TransactionsTable
+        :labels="transactionLabels"
+        :rows="transactions"
+        show-owner />
+    </section>
+
+    <section>
+      <h2>BaseCard and BaseEmptyState</h2>
+      <BaseCard>
+        <BaseEmptyState
+          hint="A hint below the title."
+          title="Nothing here yet" />
+      </BaseCard>
+    </section>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { IconArrowsLeftRight, IconCheck, IconDots, IconPlus, IconTrash } from '@tabler/icons-vue'
+import { computed, ref, useTemplateRef } from 'vue'
+
+import BaseAvatar from '#layers/core/app/ui/components/BaseAvatar.vue'
+import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
+import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import BaseCard from '#layers/core/app/ui/components/BaseCard.vue'
+import BaseCheckbox from '#layers/core/app/ui/components/BaseCheckbox.vue'
+import BaseCombobox from '#layers/core/app/ui/components/BaseCombobox.vue'
+import BaseDialog from '#layers/core/app/ui/components/BaseDialog.vue'
+import BaseEmptyState from '#layers/core/app/ui/components/BaseEmptyState.vue'
+import BaseField from '#layers/core/app/ui/components/BaseField.vue'
+import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
+import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
+import BaseMenu from '#layers/core/app/ui/components/BaseMenu.vue'
+import BaseMenuItem from '#layers/core/app/ui/components/BaseMenuItem.vue'
+import BaseMenuSeparator from '#layers/core/app/ui/components/BaseMenuSeparator.vue'
+import BaseNavTabs from '#layers/core/app/ui/components/BaseNavTabs.vue'
+import BasePopover from '#layers/core/app/ui/components/BasePopover.vue'
+import BaseSelect from '#layers/core/app/ui/components/BaseSelect.vue'
+import BaseTabs from '#layers/core/app/ui/components/BaseTabs.vue'
+import BaseTooltip from '#layers/core/app/ui/components/BaseTooltip.vue'
+import { useConfirm } from '#layers/core/app/ui/composables/useConfirm'
+import { useToast } from '#layers/core/app/ui/composables/useToast'
+import AppColorPicker from '#layers/workspace/app/shared/components/AppColorPicker.vue'
+import TransactionsTable from '#layers/workspace/app/shared/components/TransactionsTable.vue'
+import { COLOR_PALETTE } from '#layers/workspace/app/shared/constants/colors'
+
+const colors = [
+  '--color-background',
+  '--color-workspace',
+  '--color-surface',
+  '--color-soft',
+  '--color-hover',
+  '--color-divider',
+  '--color-border',
+  '--color-muted',
+  '--color-text',
+  '--color-border-strong',
+  '--color-accent',
+  '--color-accent-soft',
+  '--color-action',
+  '--color-on-action',
+  '--color-focus',
+  '--color-danger',
+  '--color-danger-soft',
+  '--color-success',
+  '--color-success-soft',
+  '--color-warning',
+  '--color-warning-soft',
+]
+const twelve = Array.from({ length: 12 }, (_, index) => index + 1)
+const ramps = [
+  { name: 'gray', steps: twelve },
+  { name: 'blue', steps: twelve },
+  { name: 'red', steps: [3, 11] },
+  { name: 'green', steps: [3, 11] },
+  { name: 'amber', steps: [3, 11] },
+]
+const fontSizes = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl']
+const radii = [
+  '--radius-small',
+  '--radius-control',
+  '--radius-popover',
+  '--radius-card',
+  '--radius-full',
+]
+const spaces = [
+  '--space-1',
+  '--space-2',
+  '--space-3',
+  '--space-4',
+  '--space-5',
+  '--space-6',
+  '--space-8',
+]
+const buttonVariants = ['neutral', 'primary', 'danger', 'ghost'] as const
+const options = [
+  { label: 'To Do', value: 'todo' },
+  { label: 'In Progress', value: 'progress' },
+  { disabled: true, label: 'Disabled option', value: 'disabled' },
+]
+const tabs = [
+  { count: 3, label: 'Comments', value: 'comments' },
+  { label: 'History', value: 'history' },
+]
+
+const badgeVariants = ['neutral', 'accent', 'success', 'warning', 'danger', 'outline'] as const
+const avatarSizes = ['sm', 'md'] as const
+const confirm = useConfirm()
+const askDelete = async () => {
+  const confirmed = await confirm({
+    danger: true,
+    description: 'It goes away with everything in it.',
+    title: 'Delete this thing?',
+  })
+  showToast(confirmed ? 'Deleted' : 'Kept', confirmed ? 'success' : 'error')
+}
+const askFinish = async () => {
+  showToast((await confirm({ title: 'Finish this?' })) ? 'Finished' : 'Not finished', 'success')
+}
+const shadows = ['--shadow-popover']
+const { show: showToast } = useToast()
+const dialog = useTemplateRef('dialog')
+const longText = ref('A longer text that grows with its content.')
+const query = ref('')
+
+const text = ref('Text value')
+const empty = ref('')
+const option = ref('todo')
+// The combobox's consumer filters the options itself, as an API search would.
+const comboboxValue = ref('')
+const comboboxSearch = ref('')
+const comboboxOptions = computed(() =>
+  [
+    { description: 'Fix the login page', label: 'BRD-12', value: 'BRD-12' },
+    { description: 'Build the links API', label: 'BRD-13', value: 'BRD-13' },
+  ].filter((item) =>
+    `${item.label} ${item.description}`.toLowerCase().includes(comboboxSearch.value.toLowerCase()),
+  ),
+)
+const checked = ref(true)
+const unchecked = ref(false)
+const tab = ref('comments')
+const color = ref(COLOR_PALETTE[0]?.value ?? '')
+
+const transactionLabels = {
+  date: 'Date',
+  delta: 'Token change',
+  member: 'Member',
+  reason: 'Reason',
+  status: 'Status',
+}
+const transaction = (
+  id: string,
+  ownerName: string,
+  reason: string,
+  status: string,
+  delta: number,
+  error: null | string = null,
+) => ({
+  createdAt: '2026-10-09T10:15:00Z',
+  createdAtLabel: 'Oct 9, 2026, 10:15 AM',
+  delta,
+  deltaLabel: `${delta > 0 ? '+' : ''}${delta.toLocaleString('en')}`,
+  error,
+  id,
+  ownerName,
+  reason,
+  status,
+  statusClass: status.toLowerCase(),
+})
+const transactions = [
+  transaction('1', 'Ada Lovelace', 'Daily grant', 'Confirmed', 50000),
+  transaction('2', 'Grace Hopper', 'Purchase', 'Confirmed', 1000000),
+  transaction('3', 'Alan Turing', 'Spend', 'Started', -1840),
+  transaction('4', 'Ada Lovelace', 'Spend', 'Canceled', -2210, 'The model did not answer in time.'),
+  transaction('5', 'Grace Hopper', 'Expiry', 'Confirmed', -12000),
+]
+</script>
+
+<style scoped>
+.showcase {
+  display: grid;
+  gap: var(--space-8);
+  margin: 0 auto;
+  max-width: 960px;
+  padding: var(--space-6) var(--space-4);
+}
+
+section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+section > h2 {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.ramp {
+  align-items: center;
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 56px repeat(12, minmax(0, 1fr));
+}
+
+.ramp-step {
+  align-items: flex-end;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  color: var(--color-muted);
+  display: flex;
+  font-size: var(--font-size-caption);
+  height: 40px;
+  padding: 2px var(--space-1);
+}
+
+.swatches {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.swatch {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.swatch-sample {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  flex: none;
+  height: 32px;
+  width: 32px;
+}
+
+code {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-small);
+}
+
+.radius-sample {
+  align-items: flex-end;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  height: 64px;
+  padding: var(--space-2);
+  width: 140px;
+}
+
+.shadow-sample {
+  align-items: flex-end;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  display: flex;
+  height: 72px;
+  padding: var(--space-2) var(--space-3);
+  width: 180px;
+}
+
+.space-sample {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.space-sample > span {
+  background: var(--color-accent);
+  height: 16px;
+}
+
+.showcase-popover {
+  padding: var(--space-3) var(--space-4);
+}
+</style>

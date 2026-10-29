@@ -1,6 +1,17 @@
 import { fileURLToPath } from 'node:url'
 
+import { defineNuxtConfig } from 'nuxt/config'
+
+import { laraueLogoUrl } from './layers/core/app/branding/laraueIcons'
+import { githubRepositoryUrl } from './layers/core/app/constants/links'
+
+// Public origin of the site (override with NUXT_PUBLIC_SITE_URL): canonical, hreflang and sitemap
+// URLs are built from it.
+const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://boards.laraue.com'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// Host config. The areas are Nuxt layers in `layers/` (core, site, docs, workspace), registered
+// automatically.
 export default defineNuxtConfig({
   alias: {
     '#infrastructure': fileURLToPath(new URL('./infrastructure', import.meta.url)),
@@ -26,18 +37,8 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2025-07-15',
-  // The UI kit (components/ui) keeps its own names, BaseButton not UiBaseButton.
-  components: [
-    { path: '~/components/ui', pathPrefix: false },
-    { ignore: ['ui/**'], path: '~/components' },
-  ],
-  css: [
-    '~/components/ui/styles/tokens.css',
-    '~/components/ui/styles/base.css',
-    '~/assets/css/main.css',
-    '~/assets/css/markdown.css',
-    '~/assets/css/tours.css',
-  ],
+  // Project components use file imports; Nuxt's built-ins are explicitly imported from #components.
+  components: { dirs: [] },
   devtools: { enabled: true },
 
   experimental: {
@@ -47,69 +48,70 @@ export default defineNuxtConfig({
     enabled: process.env.NODE_ENV === 'production',
     id: 'G-RGM3JHLBGL',
     // The Google tag script is only added once analytics is allowed for the visitor (see
-    // plugins/consent-init.client.ts and CookieConsent) - never for visitors from countries where
-    // Google Analytics can't be used (see utils/consent.ts).
+    // app.vue and CookieConsent) - never for visitors from countries where
+    // Google Analytics can't be used (see layers/core/app/analytics/consent/decision.ts).
     initCommands: [['consent', 'default', { analytics_storage: 'denied' }]],
     initMode: 'manual',
   },
-  imports: {
-    dirs: ['components/ui/composables'],
-  },
-
-  modules: ['nuxt-gtag', '@nuxtjs/sitemap'],
-
-  // Public origin of the site (override with NUXT_PUBLIC_SITE_URL): canonical/hreflang URLs and the
-  // sitemap are built from it.
-  site: {
-    url: 'https://boards.laraue.com',
-  },
-
-  // Only the landing page is listed. The app's own pages are private, so the sitemap doesn't
-  // discover routes from the app and lists them explicitly.
-  sitemap: {
-    excludeAppSources: true,
-    // The docs pages come from the markdown files (see `server/routes/docs-sitemap-urls.get.ts`).
-    sources: ['/docs-sitemap-urls'],
-    urls: [
-      { en: '/', ru: '/ru' },
-      { en: '/terms', ru: '/ru/terms' },
-      { en: '/compare/trello', ru: '/ru/compare/trello' },
-    ]
-      .flatMap(({ en, ru }) =>
-        [en, ru].map((loc) => ({
-          alternatives: [
-            { href: en, hreflang: 'en' },
-            { href: ru, hreflang: 'ru' },
-            { href: en, hreflang: 'x-default' },
-          ],
-          loc,
-        })),
-      )
-      // Comparisons that exist in English only have no alternates.
-      .concat([{ alternatives: [], loc: '/compare/linear' }]),
-  },
-
-  // The documentation (`content/docs`) is bundled with the server and read by `server/utils/docsCatalog`.
-  nitro: {
-    serverAssets: [
-      { baseName: 'docs', dir: fileURLToPath(new URL('./content/docs', import.meta.url)) },
+  i18n: {
+    baseUrl: siteUrl,
+    defaultLocale: 'en',
+    detectBrowserLanguage: { cookieKey: 'locale', redirectOn: 'root', useCookie: true },
+    locales: [
+      {
+        code: 'en',
+        language: 'en-US',
+        name: 'English',
+      },
+      {
+        code: 'ru',
+        language: 'ru-RU',
+        name: 'Русский',
+      },
     ],
+    strategy: 'prefix_except_default',
+    vueI18n: fileURLToPath(new URL('./i18n.config.ts', import.meta.url)),
   },
 
-  // The app itself is private: keep it out of search results. Only the landing page is indexed.
-  routeRules: {
-    '/account': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    // The docs are per language; the address without one goes to the English docs.
-    '/documentation': { redirect: { statusCode: 301, to: '/en/documentation' } },
-    // Data for the pages and the sitemap, not pages themselves.
-    '/docs-content/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/docs-sitemap-urls': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/join/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/login': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/organizations': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/organizations/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    '/payment/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+  imports: {
+    autoImport: false,
+    scan: false,
   },
+
+  modules: ['@nuxtjs/i18n', 'nuxt-gtag', '@nuxtjs/sitemap', 'nuxt-seo-utils', 'nuxt-schema-org'],
+
+  // The organization behind the site, for every page's structured data (nuxt-schema-org adds it
+  // with the WebSite and WebPage nodes).
+  schemaOrg: {
+    identity: {
+      logo: laraueLogoUrl,
+      name: 'Laraue Software',
+      sameAs: [githubRepositoryUrl],
+      type: 'Organization',
+      url: 'https://laraue.com',
+    },
+  },
+
+  // nuxt-seo-utils adds canonical, og:url, og:site_name, og:locale, og and twitter titles, and the
+  // "Title · Laraue Boards" template. Pages without a title keep the plain site name.
+  nitro: {
+    compressPublicAssets: { brotli: true, gzip: true },
+    imports: false,
+  },
+
+  seo: {
+    automaticTwitterTags: false,
+    fallbackTitle: false,
+  },
+
+  site: {
+    name: 'Laraue Boards',
+    separator: '·',
+    url: siteUrl,
+  },
+
+  // The sitemap finds every page from the routes, with its languages. Each layer sets its own route
+  // rules and sitemap settings: workspace leaves its private pages out, docs adds its articles.
 
   runtimeConfig: {
     public: {

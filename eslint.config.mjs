@@ -1,7 +1,8 @@
-// Only Vue template style rules — oxlint can't lint Vue templates.
-// Everything else (correctness, perfectionist, formatting) is oxlint + oxfmt.
+// Vue templates and architectural import boundaries; general checks stay in oxlint + oxfmt.
 import tsParser from '@typescript-eslint/parser'
 import pluginVue from 'eslint-plugin-vue'
+
+import importBoundaries from './tools/eslint/import-boundaries.mjs'
 
 export default [
   {
@@ -47,31 +48,25 @@ export default [
       'vue/custom-event-name-casing': ['error', 'camelCase'],
       'vue/define-macros-order': [
         'error',
-        { defineExposeLast: true, order: ['defineProps', 'defineEmits'] },
+        // Async setup must expose its public API before the first await (enforced by oxlint).
+        { defineExposeLast: false, order: ['defineProps', 'defineEmits'] },
       ],
+      'vue/no-undef-components': 'error',
       'vue/v-on-event-hyphenation': ['error', 'always', { autofix: true }],
     },
   },
 
-  // The UI kit will move to its own library, so it must not reach into the app.
   {
-    files: ['app/components/ui/**/*.ts'],
+    files: ['{layers,server,infrastructure}/**/*.ts'],
     languageOptions: { parser: tsParser },
   },
   {
-    files: ['app/components/ui/**/*.{ts,vue}'],
+    files: ['{layers,server,infrastructure}/**/*.{ts,vue}'],
+    plugins: {
+      architecture: { rules: { 'import-boundaries': importBoundaries } },
+    },
     rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['~/*', '~~/*', '#infrastructure/*', '../../*'],
-              message: 'The UI kit imports only from itself and third-party packages.',
-            },
-          ],
-        },
-      ],
+      'architecture/import-boundaries': 'error',
     },
   },
 ]
