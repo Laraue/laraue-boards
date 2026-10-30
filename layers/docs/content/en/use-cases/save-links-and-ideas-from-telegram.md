@@ -37,7 +37,7 @@ Everything starts in the Backlog, so saving stays instant and sorting can wait. 
 
 If your private chat is linked in manual mode, reply to a long, messy note with `/aisave`. It rewrites the text into a clean title and a bullet-point description. It runs on tokens, and every user gets a free allowance each month. See [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes).
 
-![Video: /aisave in a team chat turns a long, messy note into a card with a short title and a list](https://youtu.be/9yocHJU1j2c)
+![Video: /aisave in a team chat turns a long, messy note into a card with a short title and a list](https://youtu.be/VqaltZjgO3k)
 
 ## Why not just Saved Messages?
 

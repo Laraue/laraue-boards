@@ -10,7 +10,7 @@ updatedAt: 2026-10-28
 ---
 In a busy group chat, a task is rarely where the work happens: someone asks for a fix on Tuesday, and by Friday it is buried under two hundred messages. This guide sets up a shared board that your group chat feeds. Anyone on the team replies `/save` to a message, it becomes a card everyone can see, and nobody has to leave Telegram.
 
-![Video: a /save reply in a Telegram group chat turns the message into a card on the team's board](https://youtu.be/mpRBfDMMuNg)
+![Video: a /save reply in a Telegram group chat turns the message into a card on the team's board](https://youtu.be/u_QVhW5ol48)
 
 ## What you get
 
