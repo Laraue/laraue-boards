@@ -27,6 +27,6 @@ it("shows the poster and loads YouTube's player only once it's pressed", async (
   await page.getByRole('button', { name: /Play the video/ }).click()
 
   const player = document.querySelector('iframe')
-  expect(player?.src).toBe('https://www.youtube-nocookie.com/embed/A_yg1Asvkq0?autoplay=1&rel=0')
+  expect(player?.src).toBe('https://www.youtube-nocookie.com/embed/2_myvbHysJc?autoplay=1&rel=0')
   expect(document.activeElement).toBe(player)
 })

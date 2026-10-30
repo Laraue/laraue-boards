@@ -41,20 +41,20 @@ test('loads images lazily and escapes their attributes', () => {
 })
 
 test('turns an image of a YouTube link into a poster that plays the video', () => {
-  const { html } = renderDocMarkdown('![Video: replying "/save"](https://youtu.be/mpRBfDMMuNg)')
+  const { html } = renderDocMarkdown('![Video: replying "/save"](https://youtu.be/u_QVhW5ol48)')
 
   assert.include(
     html,
-    '<button type="button" class="doc-video" data-youtube-id="mpRBfDMMuNg" aria-label="Video: replying &quot;/save&quot;">',
+    '<button type="button" class="doc-video" data-youtube-id="u_QVhW5ol48" aria-label="Video: replying &quot;/save&quot;">',
   )
-  assert.include(html, '<img src="https://i.ytimg.com/vi/mpRBfDMMuNg/maxresdefault.jpg" alt=""')
+  assert.include(html, '<img src="https://i.ytimg.com/vi/u_QVhW5ol48/maxresdefault.jpg" alt=""')
   assert.notInclude(html, 'youtube.com/embed')
 })
 
 test('reads the video id from a youtube.com watch link too', () => {
-  const { html } = renderDocMarkdown('![Video](https://www.youtube.com/watch?v=mpRBfDMMuNg&t=5)')
+  const { html } = renderDocMarkdown('![Video](https://www.youtube.com/watch?v=u_QVhW5ol48&t=5)')
 
-  assert.include(html, 'data-youtube-id="mpRBfDMMuNg"')
+  assert.include(html, 'data-youtube-id="u_QVhW5ol48"')
 })
 
 test('keeps an image whose link only looks like a video as an image', () => {

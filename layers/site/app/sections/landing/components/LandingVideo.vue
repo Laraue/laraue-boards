@@ -36,7 +36,7 @@ import poster960 from '#layers/site/app/assets/images/boards-demo-960.webp'
 import poster1280 from '#layers/site/app/assets/images/boards-demo-1280.webp'
 
 // The Product Hunt demo on the Laraue YouTube channel, made in laraue-boards-videos.
-const videoId = 'A_yg1Asvkq0'
+const videoId = '2_myvbHysJc'
 
 const playing = ref(false)
 const player = ref<HTMLIFrameElement>()
