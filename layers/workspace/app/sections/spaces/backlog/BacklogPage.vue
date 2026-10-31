@@ -110,7 +110,7 @@ const { t } = useI18n({
     addIssue: 'Add issue',
     backlog: 'Backlog',
     emptyHint:
-      'The backlog is where work waits. Park ideas and requests here, then move them onto a board when the team is ready to pick them up.',
+      'The backlog is where work waits. Park ideas and requests here, then move them onto a board when the team is ready to pick them up. Start with Add issue.',
     emptyTitle: 'The backlog is empty',
     loadError: 'Could not load backlog',
     loading: 'Loading backlog…',
@@ -120,7 +120,7 @@ const { t } = useI18n({
     addIssue: 'Добавить задачу',
     backlog: 'Бэклог',
     emptyHint:
-      'Бэклог — место, где ждут работы. Сохраняйте здесь идеи и запросы, а затем переносите их на доску, когда команда будет готова.',
+      'Бэклог — место, где ждут работы. Сохраняйте здесь идеи и запросы, а затем переносите их на доску, когда команда будет готова. Начните с кнопки «Добавить задачу».',
     emptyTitle: 'Бэклог пуст',
     loadError: 'Не удалось загрузить бэклог',
     loading: 'Загрузка бэклога…',

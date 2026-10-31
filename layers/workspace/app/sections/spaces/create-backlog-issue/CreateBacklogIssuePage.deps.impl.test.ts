@@ -7,7 +7,7 @@ import { createCreateBacklogIssuePageDeps } from './CreateBacklogIssuePage.deps.
 const createClient = (canCreateIssues: boolean) =>
   createTestApiClient((_request, path) => {
     if (path === '/api/spaces') {
-      return [{ color: '#123', isDefault: false, key: 'product-ABCD', name: 'Product' }]
+      return [{ color: '#123', key: 'product-ABCD', name: 'Product' }]
     }
     if (path === '/api/spaces/product-ABCD/epics') {
       return [{ id: 8, isDefault: true, name: 'Backlog' }]

@@ -7,7 +7,7 @@ import { createBacklogPageDeps } from './BacklogPage.deps.impl'
 test('maps backlog page data', async () => {
   const { client } = createTestApiClient((_request, path) => {
     if (path === '/api/spaces') {
-      return [{ color: '#123', isDefault: false, key: 'product', name: 'Product' }]
+      return [{ color: '#123', key: 'product', name: 'Product' }]
     }
     if (path === '/api/organizations/attributes') {
       return []

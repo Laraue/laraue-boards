@@ -174,7 +174,7 @@ const { t, tp } = useI18n({
     createBoard: 'Create board',
     done: 'Done',
     emptyHint:
-      "A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it.",
+      "A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it. Create the first one with Create board.",
     emptyTitle: 'No boards yet',
     finished: 'Finished',
     inProgress: 'In progress',
@@ -201,7 +201,7 @@ const { t, tp } = useI18n({
     createBoard: 'Создать доску',
     done: 'Готово',
     emptyHint:
-      'Доска показывает задачи пространства в виде колонок. Перемещайте задачи перетаскиванием от «К выполнению» до «Готово».',
+      'Доска показывает задачи пространства в виде колонок. Перемещайте задачи перетаскиванием от «К выполнению» до «Готово». Создайте первую кнопкой «Создать доску».',
     emptyTitle: 'Досок пока нет',
     finished: 'Завершённые',
     inProgress: 'В работе',

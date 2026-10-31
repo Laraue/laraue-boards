@@ -119,7 +119,7 @@ const { t } = useI18n({
     allIssues: 'All issues',
     done: 'Done',
     emptyHint:
-      'An issue is one piece of work — a task, a bug, an idea. It lives in a space, sits in a board column that shows its status, and can be assigned to someone.',
+      'An issue is one piece of work — a task, a bug, an idea. It lives in a space, sits in a board column that shows its status, and can be assigned to someone. Add the first one with Add issue, or forward a message to @msgboard_bot in Telegram.',
     emptyTitle: 'No issues yet',
     inProgress: 'In progress',
     loadError: 'Could not load issues',
@@ -132,7 +132,7 @@ const { t } = useI18n({
     allIssues: 'Все задачи',
     done: 'Готово',
     emptyHint:
-      'Задача — это отдельная работа: задача, ошибка или идея. Она находится в пространстве и колонке доски со своим статусом, а также может быть назначена исполнителю.',
+      'Задача — это отдельная работа: задача, ошибка или идея. Она находится в пространстве и колонке доски со своим статусом, а также может быть назначена исполнителю. Добавьте первую кнопкой «Добавить задачу» или перешлите сообщение боту @msgboard_bot в Telegram.',
     emptyTitle: 'Задач пока нет',
     inProgress: 'В работе',
     loadError: 'Не удалось загрузить задачи',

@@ -17,7 +17,7 @@ const adminFlags = {
 
 const mapMemberPermissions = (
   permissions: ApiUserPermissions,
-  spaces: Array<{ id: string; isDefault: boolean }>,
+  spaceIds: string[],
 ): MemberPermissions => {
   const admin = new Set((permissions.admin ?? 'None').split(', '))
   const global = permissions.global ?? {}
@@ -32,14 +32,14 @@ const mapMemberPermissions = (
       canUpdateOrganization: admin.has(adminFlags.canUpdateOrganization) || admin.has('All'),
     },
     direct: Object.fromEntries(
-      spaces.map((space) => {
-        const direct = permissions.direct?.[space.id]
+      spaceIds.map((spaceId) => {
+        const direct = permissions.direct?.[spaceId]
         return [
-          space.id,
+          spaceId,
           {
             canCreateBoards: direct?.canCreateEpics ?? false,
             canCreateIssues: direct?.canCreateIssues ?? false,
-            canDelete: space.isDefault ? false : (direct?.canDelete ?? false),
+            canDelete: direct?.canDelete ?? false,
             canDeleteBoards: direct?.canDeleteEpics ?? false,
             canDeleteIssues: direct?.canDeleteIssues ?? false,
             canManageRetros: direct?.canManageRetros ?? false,
@@ -143,12 +143,11 @@ export const createMemberPermissionsPageDeps = (client: ApiClient): MemberPermis
       },
       permissions: mapMemberPermissions(
         permissions,
-        spaces.map((space) => ({ id: space.key, isDefault: space.isDefault })),
+        spaces.map((space) => space.key),
       ),
       spaces: spaces.map((space) => ({
         color: space.color,
         id: space.key,
-        isDefault: space.isDefault,
         name: space.name,
       })),
     }

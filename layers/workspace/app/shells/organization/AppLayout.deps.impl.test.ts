@@ -31,7 +31,7 @@ test('loads the requested organization layout', async () => {
           },
         ]
       case '/api/spaces':
-        return [{ color: '#789', isDefault: false, key: 'DEV', name: 'Development' }]
+        return [{ color: '#789', key: 'DEV', name: 'Development' }]
       case '/api/billing/tariff':
         return { name: 'Free' }
       default:
@@ -134,4 +134,47 @@ test('selects the organization from the url when only the organization cookie is
 
   assert.equal(result.status, 'success')
   assert.include(paths(), '/api/organizations/login')
+})
+
+test('passes the setup window to the owner with the color of the space to name', async () => {
+  const { client } = createTestApiClient((_request, path) => {
+    switch (path) {
+      case '/api/organizations/current':
+        return {
+          canCreateSpaces: true,
+          canManage: true,
+          canManageAttributes: true,
+          canMassMove: false,
+          canViewBilling: true,
+          color: '#123',
+          id: 1,
+          memberProfile: { color: '#456', displayName: 'Ada Lovelace', initials: 'AL' },
+          name: 'Acme',
+          setup: { space: { issueCount: 3, key: 'DEF', name: 'Default Space' } },
+        }
+      case '/api/organizations':
+        return [
+          {
+            canUpdate: true,
+            id: 1,
+            isPersonal: false,
+            name: 'Acme',
+            slug: 'acme',
+            slugPostfix: 'AB12',
+          },
+        ]
+      case '/api/spaces':
+        return [{ color: '#789', key: 'DEF', name: 'Default Space' }]
+      case '/api/billing/tariff':
+        return { name: 'Free' }
+      default:
+        return new Response(null, { status: 404 })
+    }
+  })
+
+  const result = await createAppLayoutDeps(client).view({ organizationKey: 'acme-AB12' })
+
+  assert.deepEqual(result.status === 'success' ? result.data.setup : undefined, {
+    space: { color: '#789', issueCount: 3, key: 'DEF', name: 'Default Space' },
+  })
 })

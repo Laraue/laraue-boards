@@ -11,9 +11,9 @@ import type { SpacesMovementSectionDeps } from './SpacesMovementSection.deps'
 import SpacesMovementSection from './SpacesMovementSection.vue'
 
 const spaces: DataMovementPageData['spaces'] = [
-  { boards: [], color: '#aaa', isDefault: true, key: '9', name: 'Backlog' },
-  { boards: [], color: '#000', isDefault: false, key: '10', name: 'Development' },
-  { boards: [], color: '#fff', isDefault: false, key: '11', name: 'Product' },
+  { boards: [], color: '#aaa', key: '9', name: 'Default Space' },
+  { boards: [], color: '#000', key: '10', name: 'Development' },
+  { boards: [], color: '#fff', key: '11', name: 'Product' },
 ]
 
 const createDeps = (overrides: Partial<MoveSpacesDialogDeps> = {}): SpacesMovementSectionDeps => ({
@@ -57,19 +57,17 @@ afterEach(async () => {
   currentWrapper = undefined
 })
 
-it('hides the default space because it cannot be moved', async () => {
+it('lists every space, including the one created with the organization', async () => {
   await mount(createDeps())
 
+  await expect.element(page.getByLabelText('Select Default Space')).toBeInTheDocument()
   await expect.element(page.getByLabelText('Select Development')).toBeInTheDocument()
-  await expect.element(page.getByLabelText('Select Backlog')).not.toBeInTheDocument()
 })
 
-it('shows an empty state when only the default space exists', async () => {
-  await mount(createDeps(), vi.fn<() => void>(), [
-    { boards: [], color: '#aaa', isDefault: true, key: '9', name: 'Backlog' },
-  ])
+it('shows an empty state when the organization has no spaces', async () => {
+  await mount(createDeps(), vi.fn<() => void>(), [])
 
-  await expect.element(page.getByText('No movable spaces.')).toBeInTheDocument()
+  await expect.element(page.getByText('No spaces.')).toBeInTheDocument()
 })
 
 it('moves a single space through its row action without touching the selection', async () => {
