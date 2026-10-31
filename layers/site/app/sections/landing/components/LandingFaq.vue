@@ -48,7 +48,7 @@ import LandingHeading from './LandingHeading.vue'
 const { t } = useI18n({
   en: {
     faq1a:
-      'The Free plan is free forever. Paid tiers (Plus, Team, Business) with higher limits will be available soon — see the pricing section above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is listed in the pricing section.',
+      'The Free plan is free forever. Paid plans (Plus, Team, Business) have higher limits, and you can switch to one at any time in the app — see the pricing section above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is listed in the pricing section.',
     faq1q: 'Is it free?',
     faq2a:
       'Yes. Both the backend and the frontend are public on GitHub, so you can read exactly what happens to a message after you send it.',
@@ -85,7 +85,7 @@ const { t } = useI18n({
   },
   ru: {
     faq1a:
-      'Бесплатный тариф бесплатен навсегда. Платные тарифы (Plus, Team, Business) с более высокими лимитами скоро станут доступны — смотрите тарифы выше. Функция /aisave работает на токенах: каждому пользователю каждый месяц доступен бесплатный запас, а что входит в каждый тариф — смотрите в разделе тарифов.',
+      'Бесплатный тариф бесплатен навсегда. Платные тарифы (Plus, Team, Business) дают более высокие лимиты, перейти на них можно в любой момент в приложении — смотрите тарифы выше. Функция /aisave работает на токенах: каждому пользователю каждый месяц доступен бесплатный запас, а что входит в каждый тариф — смотрите в разделе тарифов.',
     faq1q: 'Это бесплатно?',
     faq2a:
       'Да. Бэкенд и фронтенд открыты на GitHub — можно прочитать, что именно происходит с сообщением после отправки.',
