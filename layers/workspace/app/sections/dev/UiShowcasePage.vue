@@ -368,11 +368,13 @@
     <section>
       <h2>Dialog</h2>
       <div class="row">
-        <BaseButton @click="dialog?.open()">Open dialog</BaseButton>
+        <BaseButton @click="openDialog('default')">Open dialog</BaseButton>
+        <BaseButton @click="openDialog('wide')">Open wide dialog</BaseButton>
       </div>
       <BaseDialog
         ref="dialog"
         description="A form on the native dialog: title, fields and actions."
+        :size="dialogSize"
         title="Dialog title"
         @submit="dialog?.close()">
         <BaseField
@@ -540,6 +542,11 @@ const askFinish = async () => {
 const shadows = ['--shadow-popover']
 const { show: showToast } = useToast()
 const dialog = useTemplateRef('dialog')
+const dialogSize = ref<'default' | 'wide'>('default')
+const openDialog = (size: 'default' | 'wide') => {
+  dialogSize.value = size
+  dialog.value?.open()
+}
 const longText = ref('A longer text that grows with its content.')
 const query = ref('')
 

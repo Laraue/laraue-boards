@@ -3,6 +3,7 @@ import { isApiError, request } from '#infrastructure/api/request'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import { getOrganizationKey } from '#layers/workspace/app/shared/utils/organizationKey'
 import { createFeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps.impl'
+import { createOrganizationSetupDialogDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetupDialog/OrganizationSetupDialog.deps.impl'
 
 import type { AppLayoutDeps, AppLayoutProblem, AppLayoutResult } from './AppLayout.deps'
 
@@ -60,6 +61,8 @@ const loadAppLayout = async (
     request(client.GET('/api/spaces', { signal })),
     request(client.GET('/api/billing/tariff', { signal })),
   ])
+  const setupSpace = organization.setup?.space
+  const setupSpaceColor = spaces.find((space) => space.key === setupSpace?.key)?.color
   return {
     data: {
       organization: {
@@ -74,6 +77,19 @@ const loadAppLayout = async (
         initial: organization.name[0] ?? '?',
         name: organization.name,
       },
+      // Only the owner of an organization that isn't set up gets it.
+      ...(organization.setup && {
+        setup: setupSpace
+          ? {
+              space: {
+                color: setupSpaceColor ?? DEFAULT_COLOR,
+                issueCount: Number(setupSpace.issueCount),
+                key: setupSpace.key,
+                name: setupSpace.name,
+              },
+            }
+          : {},
+      }),
       spaces: spaces.map((space) => ({ color: space.color, key: space.key, name: space.name })),
       // How the user is shown in this organization.
       user: {
@@ -92,6 +108,7 @@ export const createAppLayoutDeps = (client: ApiClient): AppLayoutDeps => ({
   logout: async () => {
     await request(client.POST('/api/user/logout')).catch(() => undefined)
   },
+  setup: createOrganizationSetupDialogDeps(client),
   // The tour is optional: a failure to load or save its state never reaches the layout.
   tour: {
     loadStatus: async () => {

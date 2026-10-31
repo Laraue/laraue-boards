@@ -71,11 +71,6 @@
             <IconChevronRight class="disclosure-icon" />
             <SpaceIcon :style="{ color: space.color }" />
             <strong>{{ space.name }}</strong>
-            <span
-              v-if="space.isDefault"
-              class="muted">
-              {{ t('default') }}
-            </span>
           </summary>
           <div class="direct-permissions">
             <div class="product-section">
@@ -191,7 +186,6 @@ const { t } = useI18n({
     administration: 'Administration',
     administrationDescription: 'Controls organization-level management tools.',
     boards: 'Boards',
-    default: 'Default',
     deleteOrganization: 'Delete organization',
     directSpaceAccess: 'Direct space access',
     directSpaceAccessDescription: 'Adds permissions for individual spaces.',
@@ -219,7 +213,6 @@ const { t } = useI18n({
     administration: 'Администрирование',
     administrationDescription: 'Управление инструментами организации.',
     boards: 'Доски',
-    default: 'По умолчанию',
     deleteOrganization: 'Удаление организации',
     directSpaceAccess: 'Прямой доступ к пространствам',
     directSpaceAccessDescription: 'Добавляет права для отдельных пространств.',

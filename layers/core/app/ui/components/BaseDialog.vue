@@ -1,14 +1,15 @@
 <!-- A modal form on Reka Dialog: a title, an optional description, the fields, the actions at the
      bottom and a close button in the corner. Reka traps focus, closes on Escape or a press on the
      backdrop, locks the page scroll and gives focus back on close. Open and close it through the
-     exposed open() and close(); the actions slot's submit button emits `submit`. -->
+     exposed open() and close(); the actions slot's submit button emits `submit`. `size="wide"` is for a form
+     with rows of several fields side by side. -->
 <template>
   <DialogRoot v-model:open="isOpen">
     <DialogPortal>
       <DialogOverlay class="base-dialog-overlay" />
       <DialogContent
         v-bind="description ? {} : { 'aria-describedby': undefined }"
-        class="base-dialog"
+        :class="['base-dialog', { 'base-dialog-wide': size === 'wide' }]"
         @open-auto-focus="focusInitial">
         <form
           ref="form"
@@ -56,10 +57,19 @@ import { ref, useTemplateRef, watch } from 'vue'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
 
 // The kit has no translations of its own: the app passes the close button's name.
-withDefaults(defineProps<{ closeLabel?: string; description?: string; title: string }>(), {
-  closeLabel: 'Close',
-  description: undefined,
-})
+withDefaults(
+  defineProps<{
+    closeLabel?: string
+    description?: string
+    size?: 'default' | 'wide'
+    title: string
+  }>(),
+  {
+    closeLabel: 'Close',
+    description: undefined,
+    size: 'default',
+  },
+)
 
 const emit = defineEmits<{ close: []; submit: [] }>()
 

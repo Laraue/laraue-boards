@@ -12,7 +12,7 @@ updatedAt: 2026-10-28
 
 ## Как это работает
 
-Перешлите любое сообщение боту [@msgboard_bot](https://t.me/msgboard_bot). Оно станет issue в вашей личной организации, в `Default Space` → `Backlog`, а бот поставит реакцию. Подходят текст, ссылки, фото, видео и альбомы.
+Перешлите любое сообщение боту [@msgboard_bot](https://t.me/msgboard_bot). Оно станет issue в вашей личной организации, в Бэклоге её первого пространства (`Default Space`, если вы его не переименовали), а бот поставит реакцию. Подходят текст, ссылки, фото, видео и альбомы.
 
 ![Пересланное сообщение в Telegram с реакцией бота, подтверждающей сохранение](https://laraue.com/static/images/blog/docs/laraue-boards/message-board-bot-processed-message.jpg)
 

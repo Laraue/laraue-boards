@@ -41,8 +41,8 @@ const noDirect = {
 }
 
 const spaces: MemberPermissionsPageData['spaces'] = [
-  { color: '#000', id: '10', isDefault: true, name: 'Backlog' },
-  { color: '#fff', id: '11', isDefault: false, name: 'Product' },
+  { color: '#000', id: '10', name: 'Default Space' },
+  { color: '#fff', id: '11', name: 'Product' },
 ]
 
 const permissionsOf = (overrides: Partial<MemberPermissions> = {}): MemberPermissions => ({
@@ -155,21 +155,19 @@ test('cascades a granted direct operation down to the rows below it', () => {
   ])
 })
 
-test('never allows deleting the default space', () => {
-  const permissions = permissionsOf({ global: { ...noGlobal, canDeleteSpaces: true } })
+test('allows deleting the space created with the organization', () => {
+  const permissions = permissionsOf()
   permissions.direct['10']!.canDelete = true
   const tables = getDirectPermissionTables({
     globalRows: getGlobalPermissionRows(permissions.global),
     permissions,
     spaces,
   })
-  const defaultSpaceDelete = tables['10']!.rows[0]!.cells[2]!
-  const otherSpaceDelete = tables['11']!.rows[0]!.cells[2]!
+  const firstSpaceDelete = tables['10']!.rows[0]!.cells[2]!
 
-  assert.equal(defaultSpaceDelete.checked, false)
-  assert.equal(defaultSpaceDelete.disabled, true)
-  assert.equal(defaultSpaceDelete.title, 'notAllowed')
-  assert.equal(otherSpaceDelete.checked, true)
+  assert.equal(firstSpaceDelete.checked, true)
+  assert.equal(firstSpaceDelete.disabled, false)
+  assert.equal(firstSpaceDelete.title, undefined)
 })
 
 const readInherited = (permissions: MemberPermissions) =>

@@ -12,7 +12,7 @@ Telegram is where you read interesting links, get ideas and receive requests —
 
 ## How it works
 
-Forward any message to [@msgboard_bot](https://t.me/msgboard_bot). It becomes an issue in your personal organization, in the Backlog of the Default Space, and the bot confirms it with a reaction. Text, links, photos, videos and albums all work.
+Forward any message to [@msgboard_bot](https://t.me/msgboard_bot). It becomes an issue in your personal organization, in the Backlog of its first space (the Default Space, unless you renamed it), and the bot confirms it with a reaction. Text, links, photos, videos and albums all work.
 
 ![A forwarded message in Telegram with the bot's reaction confirming it was saved](https://laraue.com/static/images/blog/docs/laraue-boards/message-board-bot-processed-message.jpg)
 

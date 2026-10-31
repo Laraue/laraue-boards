@@ -18,12 +18,31 @@
     error-text=""
     :loading="true"
     :loading-text="t('loadingOrganizations')" />
+  <!-- Finishing reloads every query, so the demo issues show on the page behind the window too. -->
+  <ClientOnly>
+    <OrganizationSetupDialog
+      v-if="data?.setup"
+      :deps="deps.setup"
+      :on-completed="() => refreshNuxtData()"
+      :on-space-renamed="refreshAppLayoutData"
+      :setup="data.setup"
+      :spaces="data.spaces" />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { provide, ref, computed, onUnmounted, watch } from 'vue'
 
-import { clearNuxtData, navigateTo, onNuxtReady, useAsyncData, useHead, useSeoMeta } from '#app'
+import {
+  clearNuxtData,
+  navigateTo,
+  onNuxtReady,
+  refreshNuxtData,
+  useAsyncData,
+  useHead,
+  useSeoMeta,
+} from '#app'
+import { ClientOnly } from '#components'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import PageLoadState from '#layers/workspace/app/shared/components/PageLoadState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
@@ -34,7 +53,11 @@ import type {
   RoutableProblem,
 } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 import AppLayoutContent from '#layers/workspace/app/shells/organization/components/AppLayoutContent.vue'
-import { appLayoutDataKey } from '#layers/workspace/app/shells/organization/useAppLayoutData'
+import OrganizationSetupDialog from '#layers/workspace/app/shells/organization/components/OrganizationSetupDialog/OrganizationSetupDialog.vue'
+import {
+  appLayoutDataKey,
+  refreshAppLayoutData,
+} from '#layers/workspace/app/shells/organization/useAppLayoutData'
 import { useAppLayoutTour } from '#layers/workspace/app/shells/organization/useAppLayoutTour'
 
 const props = defineProps<{

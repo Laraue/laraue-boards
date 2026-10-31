@@ -16,8 +16,8 @@ const members = [
 ]
 
 const spaces = [
-  { color: '#000', isDefault: true, key: 'backlog', name: 'Backlog' },
-  { color: '#fff', isDefault: false, key: 'product', name: 'Product' },
+  { color: '#000', key: 'backlog', name: 'Backlog' },
+  { color: '#fff', key: 'product', name: 'Product' },
 ]
 
 const permissions = {
@@ -98,8 +98,8 @@ test('maps member permissions response', async () => {
       },
     },
     spaces: [
-      { color: '#000', id: 'backlog', isDefault: true, name: 'Backlog' },
-      { color: '#fff', id: 'product', isDefault: false, name: 'Product' },
+      { color: '#000', id: 'backlog', name: 'Backlog' },
+      { color: '#fff', id: 'product', name: 'Product' },
     ],
   })
 })
