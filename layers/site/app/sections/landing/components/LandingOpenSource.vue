@@ -53,7 +53,7 @@ const { locale, t } = useI18n({
     os_sub: 'You can read the code — and you can read how it was written.',
     os_title: 'Open source, mistakes included',
     pr_note:
-      'The Free plan stays free forever. Paid tiers (Plus, Team, Business) will be available soon — see pricing above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is shown above.',
+      'The Free plan stays free forever. Paid plans (Plus, Team, Business) raise the limits when you need more. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is shown above.',
   },
   ru: {
     os_code_cta: 'Посмотреть на GitHub',
@@ -68,7 +68,7 @@ const { locale, t } = useI18n({
     os_sub: 'Можно прочитать код — и то, как он писался.',
     os_title: 'Открытый код, включая ошибки',
     pr_note:
-      'Бесплатный тариф остаётся бесплатным навсегда. Платные тарифы (Plus, Team, Business) скоро станут доступны — смотрите тарифы выше. Функция /aisave работает на токенах: каждому пользователю каждый месяц доступен бесплатный запас, а что входит в каждый тариф — показано выше.',
+      'Бесплатный тариф остаётся бесплатным навсегда. Платные тарифы (Plus, Team, Business) повышают лимиты, когда их не хватает. Функция /aisave работает на токенах: каждому пользователю каждый месяц доступен бесплатный запас, а что входит в каждый тариф — показано выше.',
   },
 })
 
