@@ -7,9 +7,6 @@ import { createSpacePageDeps } from './SpacePage.deps.impl'
 
 test('maps the space and its board summaries', async () => {
   const { client } = createTestApiClient((_request, path) => {
-    if (path === '/api/spaces') {
-      return [{ color: COLORS.blue, key: 'WEB', name: 'Web' }]
-    }
     if (path === '/api/spaces/WEB') {
       return { canCreateEpics: true, canDelete: true, canUpdate: true }
     }
@@ -49,7 +46,10 @@ test('maps the space and its board summaries', async () => {
     ]
   })
 
-  const { about, boards } = await createSpacePageDeps(client).view({ spaceKey: 'WEB' })
+  const { about, boards } = await createSpacePageDeps(client, () => ({
+    attributes: [],
+    spaces: [{ color: COLORS.blue, key: 'WEB', name: 'Web' }],
+  })).view({ spaceKey: 'WEB' })
 
   assert.equal(boards[0]?.kind, 'backlog')
   assert.equal(boards[0]?.issueCount, 2)

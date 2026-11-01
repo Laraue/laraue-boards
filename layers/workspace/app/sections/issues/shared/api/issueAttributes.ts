@@ -127,17 +127,11 @@ export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
   }) satisfies Schemas['AttributeValue'][]
 }
 
+// The attribute filters from the address, for an issue search.
 export const mapRawIssueFilters = (
   raw: Record<string, string[]>,
-  attributeDtos: IssueAttributeDto[],
-) => {
-  const attributes = mapIssueAttributes(attributeDtos)
-  const filters = getIssueAttributeFilterInput(
-    normalizeIssueAttributeFilters(raw, attributes),
-    attributes,
+  attributes: IssueAttributeField[],
+) =>
+  mapIssueFilters(
+    getIssueAttributeFilterInput(normalizeIssueAttributeFilters(raw, attributes), attributes),
   )
-  return {
-    attributes,
-    filters: mapIssueFilters(filters),
-  }
-}

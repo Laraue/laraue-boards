@@ -9,6 +9,7 @@ import {
 } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
 import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/api/issueSource'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { BoardPageDeps, SearchBoardIssuesResult } from './BoardPage.deps'
 
@@ -39,7 +40,10 @@ const mapBoardIssues = (columnIssues: Schemas['ColumnIssues'][]): SearchBoardIss
 const sortByOrder = <Item extends { sortOrder?: number | string }>(items: Item[]) =>
   items.toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
 
-export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
+export const createBoardPageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): BoardPageDeps => ({
   issueDialog: createIssuePageDeps(client),
 
   loadMoreBoardIssues: async ({ filters, offset, search, statusId, take }) => {
@@ -119,33 +123,28 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       ),
     ),
 
-  // The attributes come first: the filters in the query are read against them.
+  // The attributes and the space's name and color come from the layout.
   view: async ({ attributeQuery, boardId, search, signal, spaceKey }) => {
-    const attributes = mapRawIssueFilters(
-      attributeQuery,
-      await request(client.GET('/api/organizations/attributes', { signal })),
-    )
-    // The board doesn't carry its space's name and color; the spaces list does.
-    const [board, columnIssues, spaces] = await Promise.all([
+    const { attributes, spaces } = readCatalog()
+    const [board, columnIssues] = await Promise.all([
       request(client.GET('/api/epics/{id}', { params: { path: { id: boardId } }, signal })),
       request(
         client.POST('/api/issues/board', {
           body: {
             epicId: boardId,
-            filters: attributes.filters,
+            filters: mapRawIssueFilters(attributeQuery, attributes),
             searchString: search || undefined,
             take: 25,
           },
           signal,
         }),
       ),
-      request(client.GET('/api/spaces', { signal })),
     ])
     const issues = mapBoardIssues(columnIssues)
     const issuesByStatus = new Map(issues.columns.map((column) => [column.id, column]))
     const space = spaces.find((item) => item.key === spaceKey)
     return {
-      attributes: attributes.attributes,
+      attributes,
       canCreateIssues: board.canCreateIssues,
       canDelete: board.canDelete ?? false,
       canMoveIssues: board.canUpdateIssues,

@@ -10,6 +10,9 @@ test('fails with 403 when the user cannot create issues on the board', async () 
   )
 
   await expect(
-    createCreateBoardIssuePageDeps(client).view({ boardId: '7', spaceKey: 'product' }),
+    createCreateBoardIssuePageDeps(client, () => ({ attributes: [], spaces: [] })).view({
+      boardId: '7',
+      spaceKey: 'product',
+    }),
   ).rejects.toMatchObject({ status: 403 })
 })

@@ -4294,6 +4294,7 @@ export interface components {
             epicId: number | string;
             epicName: null | string;
             epicColor: null | string;
+            epicIsDefault: boolean;
             /** Format: int64 */
             statusId: number | string;
             statusName: null | string;

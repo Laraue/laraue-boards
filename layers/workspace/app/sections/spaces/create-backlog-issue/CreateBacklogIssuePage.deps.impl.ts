@@ -1,23 +1,21 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
-import { mapIssueAttributes } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
 import { createCreateIssueFormDeps } from '#layers/workspace/app/sections/issues/shared/components/CreateIssueForm/CreateIssueForm.deps.impl'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { CreateBacklogIssuePageDeps } from './CreateBacklogIssuePage.deps'
 
 export const createCreateBacklogIssuePageDeps = (
   client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
 ): CreateBacklogIssuePageDeps => ({
   form: createCreateIssueFormDeps(client),
 
   view: async ({ signal, spaceKey }) => {
-    const [spaces, attributes, boards] = await Promise.all([
-      request(client.GET('/api/spaces', { signal })),
-      request(client.GET('/api/organizations/attributes', { signal })),
-      request(
-        client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
-      ),
-    ])
+    const { attributes, spaces } = readCatalog()
+    const boards = await request(
+      client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
+    )
     const space = spaces.find((item) => item.key === spaceKey)
     const backlog = boards.find((board) => board.isDefault)
     if (!space || !backlog) {
@@ -30,7 +28,7 @@ export const createCreateBacklogIssuePageDeps = (
       throw new ApiError(403)
     }
     return {
-      attributes: mapIssueAttributes(attributes),
+      attributes,
       boardId: String(backlog.id),
       boardName: backlog.name,
       spaceColor: space.color,

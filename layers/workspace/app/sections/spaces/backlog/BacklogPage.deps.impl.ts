@@ -10,6 +10,7 @@ import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/a
 import { createIssueListDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.deps.impl'
 import type { IssueListItem } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.types'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { BacklogPageDeps } from './BacklogPage.deps'
 
@@ -35,7 +36,10 @@ const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem
   title: issue.title,
 })
 
-export const createBacklogPageDeps = (client: ApiClient): BacklogPageDeps => ({
+export const createBacklogPageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): BacklogPageDeps => ({
   issueList: createIssueListDeps(client),
 
   // The page counts from 1, the API from 0.
@@ -56,24 +60,20 @@ export const createBacklogPageDeps = (client: ApiClient): BacklogPageDeps => ({
   },
 
   view: async ({ attributeQuery, page, search, signal, spaceKey }) => {
-    const [spaces, attributes, boards] = await Promise.all([
-      request(client.GET('/api/spaces', { signal })),
-      request(client.GET('/api/organizations/attributes', { signal })),
-      request(
-        client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
-      ),
-    ])
+    const { attributes, spaces } = readCatalog()
+    const boards = await request(
+      client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
+    )
     const space = spaces.find((item) => item.key === spaceKey)
     const backlog = boards.find((board) => board.isDefault)
     if (!space || !backlog) {
       throw new ApiError(404)
     }
-    const attributeData = mapRawIssueFilters(attributeQuery, attributes)
     const issues = await request(
       client.POST('/api/issues/search', {
         body: {
           epicIds: [backlog.id],
-          filters: attributeData.filters,
+          filters: mapRawIssueFilters(attributeQuery, attributes),
           page: page - 1,
           perPage: PER_PAGE,
           searchString: search || undefined,
@@ -83,7 +83,7 @@ export const createBacklogPageDeps = (client: ApiClient): BacklogPageDeps => ({
       }),
     )
     return {
-      attributes: attributeData.attributes,
+      attributes,
       backlogBoardId: String(backlog.id),
       hasNextPage: issues.hasNextPage,
       issues: issues.data.map(mapIssue),

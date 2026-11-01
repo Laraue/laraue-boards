@@ -80,11 +80,7 @@ const mapAgentHandOff = (handOff: Schemas['AgentHandOffDto'] | undefined): Agent
       }
     : { available: false, blocker: 'notAllowed', canSendBack: false, missingStatusCategories: [] }
 
-const mapIssue = (
-  issue: Schemas['IssueDetailDto'],
-  baseUrl: string,
-  boardIsBacklog: boolean,
-): IssuePageViewModel => ({
+const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageViewModel => ({
   agentHandOff: mapAgentHandOff(issue.agentHandOff),
   agentRun: issue.latestAgentRun
     ? {
@@ -103,7 +99,7 @@ const mapIssue = (
   attributes: issue.attributeValues.map(mapAttribute),
   boardColor: issue.epicColor ?? DEFAULT_COLOR,
   boardId: String(issue.epicId),
-  boardIsBacklog,
+  boardIsBacklog: issue.epicIsDefault,
   boardLabel: issue.epicName ?? '',
   canEdit: issue.canEdit,
   content: issue.content ?? '',
@@ -217,12 +213,6 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
     const issue = await request(
       client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
     )
-    // ponytail: a second round trip only to tell the backlog from a board for the path; an
-    // epicIsDefault on IssueDetailDto would make it one.
-    const boards = await request(
-      client.GET('/api/spaces/{key}/epics', { params: { path: { key: issue.spaceKey } }, signal }),
-    )
-    const board = boards.find((item) => String(item.id) === String(issue.epicId))
-    return mapIssue(issue, client.baseUrl, board?.isDefault ?? false)
+    return mapIssue(issue, client.baseUrl)
   },
 })

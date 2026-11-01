@@ -1,6 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type {
   BoardSettingsColumn,
@@ -30,7 +31,10 @@ const getColumnChanges = (
   }
 }
 
-export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPageDeps => ({
+export const createBoardSettingsPageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): BoardSettingsPageDeps => ({
   remove: async ({ boardId }) => {
     await request(client.DELETE('/api/epics/{id}', { params: { path: { id: Number(boardId) } } }))
   },
@@ -82,12 +86,11 @@ export const createBoardSettingsPageDeps = (client: ApiClient): BoardSettingsPag
   },
 
   view: async ({ boardId, signal, spaceKey }) => {
-    // The board doesn't carry its space's name; the spaces list does.
-    const [board, spaces] = await Promise.all([
-      request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
-      request(client.GET('/api/spaces', { signal })),
-    ])
-    const space = spaces.find((item) => item.key === spaceKey)
+    // The board doesn't carry its space's name; the layout's spaces list does.
+    const board = await request(
+      client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal }),
+    )
+    const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     return {
       canDelete: board.canDelete ?? false,
       canUpdate: board.canUpdate ?? false,

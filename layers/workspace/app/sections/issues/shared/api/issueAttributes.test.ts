@@ -67,10 +67,13 @@ test('maps issue attributes, filters, and values to API models', () => {
       8: { $type: 'datetime', from: utcDateTime, to: undefined },
     },
   )
-  assert.deepEqual(mapRawIssueFilters({ 1: ['ABC'], 2: ['3', '4', '99'] }, attributeDtos).filters, {
-    1: { $type: 'string', searchString: 'ABC' },
-    2: { $type: 'enum', ids: ['3', '4'] },
-  })
+  assert.deepEqual(
+    mapRawIssueFilters({ 1: ['ABC'], 2: ['3', '4', '99'] }, mapIssueAttributes(attributeDtos)),
+    {
+      1: { $type: 'string', searchString: 'ABC' },
+      2: { $type: 'enum', ids: ['3', '4'] },
+    },
+  )
   assert.deepEqual(
     mapIssueAttributeValues([
       { attributeId: '1', type: 'text', value: 'ABC' },

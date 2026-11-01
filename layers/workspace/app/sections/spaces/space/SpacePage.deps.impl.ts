@@ -1,14 +1,17 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { SpacePageDeps } from './SpacePage.deps'
 
-export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
+export const createSpacePageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): SpacePageDeps => ({
   view: async ({ signal, spaceKey }) => {
     const path = { key: spaceKey }
-    const [spaces, details, boards, boardStatuses, about] = await Promise.all([
-      request(client.GET('/api/spaces', { signal })),
+    const [details, boards, boardStatuses, about] = await Promise.all([
       request(client.GET('/api/spaces/{key}', { params: { path }, signal })),
       request(
         client.GET('/api/issues/summary', { params: { query: { SpaceKey: spaceKey } }, signal }),
@@ -16,7 +19,7 @@ export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
       request(client.GET('/api/spaces/{key}/epics', { params: { path }, signal })),
       request(client.GET('/api/spaces/{key}/about', { params: { path }, signal })),
     ])
-    const space = spaces.find((item) => item.key === spaceKey)
+    const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     if (!space) {
       throw new ApiError(404)
     }

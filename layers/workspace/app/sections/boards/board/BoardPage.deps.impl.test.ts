@@ -4,14 +4,13 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createBoardPageDeps } from './BoardPage.deps.impl'
 
+const catalog = () => ({
+  attributes: [],
+  spaces: [{ color: '#555', key: 'product', name: 'Product' }],
+})
+
 test('maps board columns in status order with their issues', async () => {
-  const { client } = createTestApiClient((_request, path) => {
-    if (path === '/api/organizations/attributes') {
-      return []
-    }
-    if (path === '/api/spaces') {
-      return [{ color: '#555', key: 'product', name: 'Product' }]
-    }
+  const { client, paths } = createTestApiClient((_request, path) => {
     if (path === '/api/epics/7') {
       return {
         canCreateIssues: true,
@@ -57,7 +56,7 @@ test('maps board columns in status order with their issues', async () => {
   })
 
   assert.deepEqual(
-    await createBoardPageDeps(client).view({
+    await createBoardPageDeps(client, catalog).view({
       attributeQuery: {},
       boardId: '7',
       search: '',
@@ -108,6 +107,8 @@ test('maps board columns in status order with their issues', async () => {
       title: 'Roadmap',
     },
   )
+  // The attributes and spaces come from the layout; the board and its issues load together.
+  assert.sameMembers(paths(), ['/api/epics/7', '/api/issues/board'])
 })
 
 test('maps the latest agent run and the source of a card', async () => {
@@ -145,7 +146,7 @@ test('maps the latest agent run and the source of a card', async () => {
     return []
   })
 
-  const result = await createBoardPageDeps(client).searchBoardIssues({
+  const result = await createBoardPageDeps(client, catalog).searchBoardIssues({
     boardId: '7',
     filters: [],
     search: '',
@@ -161,16 +162,16 @@ test('maps the latest agent run and the source of a card', async () => {
 
 test('searches the board with the filters read from the query', async () => {
   const { client, requests } = createTestApiClient((_request, path) => {
-    if (path === '/api/organizations/attributes') {
-      return [{ color: '#111', id: 3, listValues: [], name: 'Priority', type: 'Text' }]
-    }
     if (path === '/api/epics/7') {
       return { canCreateIssues: true, canUpdateIssues: true, name: 'Roadmap', statuses: [] }
     }
     return []
   })
 
-  await createBoardPageDeps(client).view({
+  await createBoardPageDeps(client, () => ({
+    attributes: [{ color: '#111', id: '3', name: 'Priority', type: 'text' }],
+    spaces: [],
+  })).view({
     attributeQuery: { 3: ['urgent'] },
     boardId: '7',
     search: 'bug',
@@ -188,7 +189,7 @@ test('searches the board with the filters read from the query', async () => {
 
 test('rejects an empty destination and moves to a selected status', async () => {
   const { client, paths, requests } = createTestApiClient(() => new Response(null, { status: 204 }))
-  const { moveBoardIssue } = createBoardPageDeps(client)
+  const { moveBoardIssue } = createBoardPageDeps(client, catalog)
 
   await expect(
     moveBoardIssue({ issueKey: 'ISS-1', statusId: '', updateStatus: true }),
@@ -201,7 +202,7 @@ test('rejects an empty destination and moves to a selected status', async () => 
 test('orders an issue inside its column without touching the status', async () => {
   const { client, paths, requests } = createTestApiClient(() => new Response(null, { status: 204 }))
 
-  await createBoardPageDeps(client).moveBoardIssue({
+  await createBoardPageDeps(client, catalog).moveBoardIssue({
     issueKey: 'ISS-1',
     statusId: '3',
     target: { issueKey: 'ISS-2', position: 'Before' },
@@ -218,7 +219,7 @@ test('orders an issue inside its column without touching the status', async () =
 test('changes the status and then the order when dropped into another column', async () => {
   const { client, paths, requests } = createTestApiClient(() => new Response(null, { status: 204 }))
 
-  await createBoardPageDeps(client).moveBoardIssue({
+  await createBoardPageDeps(client, catalog).moveBoardIssue({
     issueKey: 'ISS-1',
     statusId: '3',
     target: { issueKey: 'ISS-2', position: 'After' },
@@ -236,7 +237,7 @@ test('skips the order request when the status request fails', async () => {
   const { client, paths } = createTestApiClient(() => new Response(null, { status: 500 }))
 
   await expect(
-    createBoardPageDeps(client).moveBoardIssue({
+    createBoardPageDeps(client, catalog).moveBoardIssue({
       issueKey: 'ISS-1',
       statusId: '3',
       target: { issueKey: 'ISS-2', position: 'After' },
@@ -270,7 +271,7 @@ test('finds the first backlog status and moves the issue there', async () => {
     return new Response(null, { status: 204 })
   })
 
-  await createBoardPageDeps(client).moveIssueToBacklog({
+  await createBoardPageDeps(client, catalog).moveIssueToBacklog({
     boardId: '7',
     issueKey: 'ISS-1',
     spaceKey: 'product',

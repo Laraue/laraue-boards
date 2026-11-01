@@ -15,12 +15,13 @@ import CreateBoardPage from '#layers/workspace/app/sections/boards/create-board/
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { useOrganizationCatalog } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-boards-new')
 const spaceKey = computed(() => String(route.params.spaceKey))
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createCreateBoardPageDeps(client)
+const deps = createCreateBoardPageDeps(client, useOrganizationCatalog())
 const onCreated = async (boardId: string): Promise<void> => {
   await navigateTo(organizationRoutes.board(spaceKey.value, boardId))
 }
