@@ -193,8 +193,7 @@ test('maps issue detail', async () => {
       url: 'https://api.test/api/files/pdf',
     },
   ])
-  // The comments start together with the issue.
-  assert.sameMembers(paths(), ['/api/issues/ISS-1', '/api/issues/ISS-1/comments'])
+  assert.deepEqual(paths(), ['/api/issues/ISS-1'])
 })
 
 test('returns the new issue key after moving it to another space', async () => {

@@ -33,66 +33,40 @@ const formOf = (fields: Record<string, string>) => {
   return body
 }
 
-const loadComments = async (client: ApiClient, issueKey: string, signal?: AbortSignal) => {
-  const comments = await request(
-    client.POST('/api/issues/{key}/comments', {
-      body: { pagination: { page: 0, perPage: 100 } },
-      params: { path: { key: issueKey } },
-      signal,
-    }),
-  )
-  return comments.data.map((comment) => mapComment(comment, client.baseUrl))
-}
+export const createIssueCommentsDeps = (client: ApiClient): IssueCommentsDeps => ({
+  create: async ({ issueKey, text }) => {
+    const body = formOf({ IssueKey: issueKey, Text: text })
+    await request(client.POST('/api/issues/comments', { body: {}, bodySerializer: () => body }))
+  },
 
-export const createIssueCommentsDeps = (
-  client: ApiClient,
-): IssueCommentsDeps & { prefetch: (issueKey: string) => void } => {
-  // Comments the issue page started loading together with the issue; the comments section mounts
-  // only after the issue, so its first load takes this one over instead of asking again. Only the
-  // first open of an issue starts one: a later one could outlive a change and show old comments.
-  const prefetched = new Map<string, Promise<IssueCommentViewModel[]>>()
-  const started = new Set<string>()
-  return {
-    create: async ({ issueKey, text }) => {
-      const body = formOf({ IssueKey: issueKey, Text: text })
-      await request(client.POST('/api/issues/comments', { body: {}, bodySerializer: () => body }))
-    },
+  delete: async ({ id }) => {
+    await request(
+      client.DELETE('/api/issues/comments/{id}', { params: { path: { id: Number(id) } } }),
+    )
+  },
 
-    delete: async ({ id }) => {
-      await request(
-        client.DELETE('/api/issues/comments/{id}', { params: { path: { id: Number(id) } } }),
-      )
-    },
+  load: async ({ issueKey, signal }) => {
+    const comments = await request(
+      client.POST('/api/issues/{key}/comments', {
+        body: { pagination: { page: 0, perPage: 100 } },
+        params: { path: { key: issueKey } },
+        signal,
+      }),
+    )
+    return comments.data.map((comment) => mapComment(comment, client.baseUrl))
+  },
 
-    load: ({ issueKey, signal }) => {
-      const ahead = prefetched.get(issueKey)
-      prefetched.delete(issueKey)
-      return ahead ?? loadComments(client, issueKey, signal)
-    },
+  summarizeContent: async ({ content }) =>
+    (await request(client.POST('/api/issues/summarize', { body: { content } }))).content,
 
-    prefetch: (issueKey) => {
-      if (started.has(issueKey)) {
-        return
-      }
-      started.add(issueKey)
-      const comments = loadComments(client, issueKey)
-      // Read only if the comments section mounts; a failure then shows there.
-      comments.catch(() => undefined)
-      prefetched.set(issueKey, comments)
-    },
-
-    summarizeContent: async ({ content }) =>
-      (await request(client.POST('/api/issues/summarize', { body: { content } }))).content,
-
-    update: async ({ id, text }) => {
-      const body = formOf({ Text: text })
-      await request(
-        client.PUT('/api/issues/comments/{id}', {
-          body: {},
-          bodySerializer: () => body,
-          params: { path: { id: Number(id) } },
-        }),
-      )
-    },
-  }
-}
+  update: async ({ id, text }) => {
+    const body = formOf({ Text: text })
+    await request(
+      client.PUT('/api/issues/comments/{id}', {
+        body: {},
+        bodySerializer: () => body,
+        params: { path: { id: Number(id) } },
+      }),
+    )
+  },
+})
