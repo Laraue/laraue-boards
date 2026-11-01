@@ -8,7 +8,7 @@ const respond =
   (spaceKey = 'product') =>
   (_request: Request, path: string) => {
     if (path === '/api/spaces') {
-      return [{ color: '#fff', isDefault: false, key: spaceKey, name: 'Product' }]
+      return [{ color: '#fff', key: spaceKey, name: 'Product' }]
     }
     if (path.endsWith('/about')) {
       return {

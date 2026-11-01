@@ -82,7 +82,9 @@ export const useAppLayoutTour = (
   }
 
   useTour({
-    ready: () => import.meta.client && data.value !== undefined && innerWidth > 760,
+    // The setup window comes first: the tour shows what it made.
+    ready: () =>
+      import.meta.client && data.value !== undefined && !data.value.setup && innerWidth > 760,
     state: deps,
     steps: () => buildSteps(data.value),
   })

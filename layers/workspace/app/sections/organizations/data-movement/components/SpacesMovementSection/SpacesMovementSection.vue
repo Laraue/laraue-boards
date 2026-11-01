@@ -9,9 +9,9 @@
       :count="selectedIds.length"
       :on-action="() => openDialog(selectedIds)"
       :on-clear="() => state.selected.clear()" />
-    <BaseList v-if="movableSpaces.length">
+    <BaseList v-if="spaces.length">
       <BaseListRow
-        v-for="space in movableSpaces"
+        v-for="space in spaces"
         :key="space.key">
         <template #leading>
           <input
@@ -70,7 +70,7 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     description: 'Move spaces to another organization.',
-    empty: 'No movable spaces.',
+    empty: 'No spaces.',
     move: 'Move',
     moveSpace: 'Move space',
     moveSpaces: 'Move spaces',
@@ -79,7 +79,7 @@ const { t } = useI18n({
   },
   ru: {
     description: 'Перемещайте пространства в другую организацию.',
-    empty: 'Нет доступных для перемещения пространств.',
+    empty: 'Нет пространств.',
     move: 'Переместить',
     moveSpace: 'Переместить пространство',
     moveSpaces: 'Переместить пространства',
@@ -95,10 +95,8 @@ const state = reactive({
   selected: new Set<string>(),
 })
 
-const movableSpaces = computed(() => props.spaces.filter((space) => !space.isDefault))
-
 const selectedIds = computed(() =>
-  movableSpaces.value.map(({ key }) => key).filter((key) => state.selected.has(key)),
+  props.spaces.map(({ key }) => key).filter((key) => state.selected.has(key)),
 )
 
 const toggle = (id: string) => {

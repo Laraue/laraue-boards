@@ -18,7 +18,6 @@ const pageData: DataMovementPageData = {
     {
       boards: [{ color: '#f00', id: '21', name: 'Board' }],
       color: '#000',
-      isDefault: false,
       key: '10',
       name: 'Development',
     },
@@ -93,7 +92,7 @@ it('refreshes the page and notifies the layout after spaces moved', async () => 
   await dialog().getByRole('option', { name: 'Target' }).click()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  await expect.element(page.getByText('No movable spaces.')).toBeInTheDocument()
+  await expect.element(page.getByText('No spaces.')).toBeInTheDocument()
   expect(onSpacesMoved).toHaveBeenCalledTimes(1)
 })
 

@@ -8,7 +8,7 @@ order: 3
 createdAt: 2026-08-19
 updatedAt: 2026-10-28
 ---
-A message sent to the `@msgboard_bot` bot initially lands in `Default Space` -> `Backlog`. **Linking** lets you change this behavior by choosing the board that messages from this chat will be sent to.
+A message sent to the `@msgboard_bot` bot initially lands in the Backlog of your personal organization's first space (`Default Space`, unless you renamed it). **Linking** lets you change this behavior by choosing the board that messages from this chat will be sent to.
 
 Linking works both in team and personal modes. Any chat can be linked — your own private 1:1 with the bot, a group, or a supergroup — with any organization you have permission for.
 

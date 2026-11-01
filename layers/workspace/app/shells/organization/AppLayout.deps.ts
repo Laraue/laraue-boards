@@ -1,5 +1,6 @@
 import type { TourStateDeps } from '#layers/workspace/app/shared/composables/useTour'
 import type { FeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps'
+import type { OrganizationSetupDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetup/OrganizationSetup.deps'
 
 export type AppLayoutData = {
   organization: {
@@ -13,6 +14,11 @@ export type AppLayoutData = {
     id: string
     initial: string
     name: string
+  }
+  // The setup window to show the owner until the organization is set up (BRD-293).
+  setup?: {
+    // The space sign-up created, to name; absent when the organization has no space.
+    space?: { color: string; issueCount: number; key: string; name: string }
   }
   spaces: Array<{
     color: string
@@ -47,6 +53,7 @@ export type ViewAppLayout = (input: {
 export type AppLayoutDeps = {
   feedback: FeedbackDialogDeps
   logout: () => Promise<void>
+  setup: OrganizationSetupDeps
   tour: TourStateDeps
   view: ViewAppLayout
 }

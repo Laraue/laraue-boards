@@ -19,7 +19,7 @@ This section covers everything you need to go from zero to a working board with 
 
 You need a Telegram account. That's it. There is no separate sign-up, no email to verify, and no credit card required. In the browser you can also sign in with Google, but the bot works only with Telegram.
 
-The moment you log in, you already have a personal organization with a default space, a board, and a Backlog set up — there's nothing to configure before you can start. Send a message to the bot and it becomes an issue right away, no setup required first.
+The moment you log in, you already have a personal organization with a default space, a board, and a Backlog set up — there's nothing to configure before you can start. Send a message to the bot and it becomes an issue right away, no setup required first. The first time you open the organization in the browser, Boards offers to name that space and add a few demo issues to show how things work; you can skip it.
 
 Open [@msgboard_bot](https://t.me/msgboard_bot) in Telegram to get started, or visit [boards.laraue.com](https://boards.laraue.com) in your browser.
 

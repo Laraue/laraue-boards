@@ -57,7 +57,7 @@ const pageData: MemberPermissionsPageData = {
       canUpdateSpaces: false,
     },
   },
-  spaces: [{ color: '#000', id: '10', isDefault: true, name: 'Backlog' }],
+  spaces: [{ color: '#000', id: '10', name: 'Backlog' }],
 }
 
 const ownerPageData: MemberPermissionsPageData = {

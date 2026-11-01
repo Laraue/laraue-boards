@@ -53,7 +53,6 @@ export type MemberPermissionsPageData = {
   spaces: Array<{
     color: string
     id: string
-    isDefault: boolean
     name: string
   }>
 }

@@ -38,7 +38,6 @@ export const createDataMovementPageDeps = (client: ApiClient): DataMovementPageD
           name: board.name,
         })),
         color: space.color,
-        isDefault: space.isDefault,
         key: space.key,
         name: space.name,
       })),

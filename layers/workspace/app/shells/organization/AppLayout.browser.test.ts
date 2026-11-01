@@ -36,6 +36,19 @@ const createTourDeps = () => ({
 const createDeps = (overrides: Partial<AppLayoutDeps> = {}): AppLayoutDeps => ({
   feedback: { send: vi.fn<AppLayoutDeps['feedback']['send']>(async () => undefined) },
   logout: vi.fn<AppLayoutDeps['logout']>(async () => undefined),
+  setup: {
+    demoDataDialog: {
+      addDemoData: vi.fn<AppLayoutDeps['setup']['demoDataDialog']['addDemoData']>(
+        async () => undefined,
+      ),
+      complete: vi.fn<AppLayoutDeps['setup']['demoDataDialog']['complete']>(async () => undefined),
+    },
+    spaceDialog: {
+      renameSpace: vi.fn<AppLayoutDeps['setup']['spaceDialog']['renameSpace']>(
+        async () => undefined,
+      ),
+    },
+  },
   tour: createTourDeps(),
   view: vi.fn<AppLayoutDeps['view']>(async () => ({ data, status: 'success' })),
   ...overrides,

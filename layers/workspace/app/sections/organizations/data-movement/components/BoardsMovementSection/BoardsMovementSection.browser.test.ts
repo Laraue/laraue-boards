@@ -18,7 +18,6 @@ const spaces: DataMovementPageData['spaces'] = [
       { color: '#0f0', id: '22', name: 'Support' },
     ],
     color: '#000',
-    isDefault: false,
     key: '10',
     name: 'Development',
   },
@@ -78,7 +77,7 @@ afterEach(async () => {
 
 it('shows an empty state when no space has boards', async () => {
   await mount(createDeps(), vi.fn<() => void>(), [
-    { boards: [], color: '#000', isDefault: false, key: '10', name: 'Development' },
+    { boards: [], color: '#000', key: '10', name: 'Development' },
   ])
 
   await expect.element(page.getByText('No movable boards.')).toBeInTheDocument()

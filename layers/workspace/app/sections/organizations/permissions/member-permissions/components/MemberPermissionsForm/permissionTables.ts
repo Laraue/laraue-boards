@@ -10,7 +10,7 @@ export type PermissionCell<Key extends string> = {
   checked: boolean
   disabled: boolean
   key: Key
-  title: 'inherited' | 'notAllowed' | undefined
+  title: 'inherited' | undefined
 }
 
 export type PermissionLabelKey = 'boards' | 'issues' | 'space' | 'spaces'
@@ -118,15 +118,14 @@ export const getDirectPermissionTables = ({
             if (!key) {
               return null
             }
-            const unavailable = space.isDefault && key === 'canDelete'
             const isInherited = globalRows[rowIndex]!.cells[index]!.checked || inherited[index]!
-            const checked = !unavailable && ((direct?.[key] ?? false) || isInherited)
+            const checked = (direct?.[key] ?? false) || isInherited
             inherited[index] = checked
             return {
               checked,
-              disabled: unavailable || isInherited,
+              disabled: isInherited,
               key,
-              title: unavailable ? 'notAllowed' : isInherited ? 'inherited' : undefined,
+              title: isInherited ? 'inherited' : undefined,
             }
           },
         ),

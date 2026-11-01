@@ -2690,6 +2690,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organizations/current/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CompleteOrganizationSetupRequest"];
+                    "text/json": components["schemas"]["CompleteOrganizationSetupRequest"];
+                    "application/*+json": components["schemas"]["CompleteOrganizationSetupRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organizations/history": {
         parameters: {
             query?: never;
@@ -3883,6 +3922,10 @@ export interface components {
             authorKind: components["schemas"]["AuthorKind"];
             agent: null | components["schemas"]["AgentDetails"];
         };
+        CompleteOrganizationSetupRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            demoDataAdded?: boolean;
+        };
         ConnectAccountResponse: {
             outcome: components["schemas"]["AccountLinkOutcome"];
         };
@@ -4424,6 +4467,7 @@ export interface components {
             slugPostfix: string;
             preferences?: components["schemas"]["UserOrganizationPreferencesResponse"];
             memberProfile: components["schemas"]["MemberProfileDto"];
+            setup?: null | components["schemas"]["OrganizationSetupDto"];
         };
         OrganizationHistoryItem: {
             /** Format: date-time */
@@ -4462,6 +4506,15 @@ export interface components {
             isOwner: boolean;
             adminAccessLevel: components["schemas"]["AdminAccessLevel"];
         };
+        OrganizationSetupDto: {
+            space: null | components["schemas"]["OrganizationSetupSpaceDto"];
+        };
+        OrganizationSetupSpaceDto: {
+            key: string;
+            name: string;
+            /** Format: int32 */
+            issueCount: number | string;
+        };
         PaginationData: {
             /** Format: int32 */
             page?: number | string;
@@ -4472,7 +4525,6 @@ export interface components {
             key: string;
             name: string;
             color: string;
-            isDefault: boolean;
         };
         PollAgentSignInRequest: {
             deviceCode: string;
@@ -4658,7 +4710,6 @@ export interface components {
             name: string;
             color: string;
             key: string;
-            isDefault: boolean;
         };
         SpaceMember: {
             /** Format: uuid */

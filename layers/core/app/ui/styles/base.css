@@ -61,8 +61,13 @@ body {
   overflow: auto;
   padding: var(--space-6);
   position: fixed;
+  transition: width var(--duration-base) var(--ease-standard);
   width: min(27.5rem, calc(100% - var(--space-8)));
   z-index: 46;
+}
+
+.base-dialog.base-dialog-wide {
+  width: min(40rem, calc(100% - var(--space-8)));
 }
 
 /* A confirmation can open from any dialog (the issue's delete), so it is always the top layer. All
