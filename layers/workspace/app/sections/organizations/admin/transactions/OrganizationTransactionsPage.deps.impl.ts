@@ -23,9 +23,9 @@ export const createTransactionsPageDeps = (
       // A transaction without its owner's name takes it from the member list.
       transactions: result.data.map((transaction) => ({
         createdAt: transaction.createdAt,
-        delta: Number(transaction.delta),
-        error: transaction.error ?? null,
-        finishedAt: transaction.finishedAt ?? null,
+        delta: transaction.delta,
+        error: transaction.error,
+        finishedAt: transaction.finishedAt,
         id: transaction.id,
         ownerName:
           transaction.ownerDisplayName ??

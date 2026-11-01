@@ -180,7 +180,7 @@ test('searches the board with the filters read from the query', async () => {
 
   const search = requests.find((value) => new URL(value.url).pathname === '/api/issues/board')
   assert.deepEqual(await search?.json(), {
-    epicId: '7',
+    epicId: 7,
     filters: { '3': { $type: 'string', searchString: 'urgent' } },
     searchString: 'bug',
     take: 25,

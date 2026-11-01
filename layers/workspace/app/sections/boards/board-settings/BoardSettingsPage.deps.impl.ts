@@ -43,7 +43,7 @@ export const createBoardSettingsPageDeps = (
     const path = { id: Number(input.boardId) }
     await request(
       client.PUT('/api/epics/{id}', {
-        body: { color: input.color, id: input.boardId, name: input.name },
+        body: { color: input.color, id: Number(input.boardId), name: input.name },
         params: { path },
       }),
     )
@@ -52,7 +52,9 @@ export const createBoardSettingsPageDeps = (
     const createdIds: string[] = []
     for (const { category, color, name } of changes.created) {
       const id = await request(
-        client.POST('/api/statuses', { body: { category, color, epicId: input.boardId, name } }),
+        client.POST('/api/statuses', {
+          body: { category, color, epicId: Number(input.boardId), name },
+        }),
       )
       createdIds.push(String(id))
     }
@@ -60,7 +62,7 @@ export const createBoardSettingsPageDeps = (
     for (const { category, color, id, name } of changes.updated) {
       await request(
         client.PUT('/api/statuses/{id}', {
-          body: { category, color, id, name },
+          body: { category, color, id: Number(id), name },
           params: { path: { id: Number(id) } },
         }),
       )
@@ -92,11 +94,11 @@ export const createBoardSettingsPageDeps = (
     )
     const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     return {
-      canDelete: board.canDelete ?? false,
-      canUpdate: board.canUpdate ?? false,
+      canDelete: board.canDelete,
+      canUpdate: board.canUpdate,
       color: board.color ?? DEFAULT_COLOR,
-      columns: (board.statuses ?? [])
-        .toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
+      columns: board.statuses
+        .toSorted((left, right) => left.sortOrder - right.sortOrder)
         .map((status) => ({
           category: status.category,
           color: status.color ?? DEFAULT_COLOR,

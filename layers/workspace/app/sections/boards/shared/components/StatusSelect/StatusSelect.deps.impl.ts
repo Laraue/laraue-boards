@@ -13,8 +13,8 @@ export const createStatusSelectDeps = (client: ApiClient): StatusSelectDeps => (
     const board = await request(
       client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal }),
     )
-    return (board.statuses ?? [])
-      .toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
+    return board.statuses
+      .toSorted((left, right) => left.sortOrder - right.sortOrder)
       .map((status) => ({
         category: status.category,
         color: status.color ?? COLORS.gray,

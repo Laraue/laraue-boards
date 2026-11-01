@@ -21,7 +21,7 @@ const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
   assigneeColor: issue.assigneeColor,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,
-  blocked: issue.isBlocked ?? false,
+  blocked: issue.isBlocked,
   issueKey: issue.key,
   time: issue.time,
   title: issue.title,
@@ -29,16 +29,16 @@ const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
 
 const mapBoardIssues = (columnIssues: Schemas['ColumnIssues'][]): SearchBoardIssuesResult => ({
   columns: columnIssues.map((column) => ({
-    hasNext: column.items.hasNext ?? false,
+    hasNext: column.items.hasNext,
     id: String(column.statusId),
-    issueCount: Number(column.items.totalCount ?? 0),
+    issueCount: column.items.totalCount,
     issues: column.items.data.map(mapIssueListItem),
   })),
-  issueCount: columnIssues.reduce((sum, column) => sum + Number(column.items.totalCount ?? 0), 0),
+  issueCount: columnIssues.reduce((sum, column) => sum + column.items.totalCount, 0),
 })
 
-const sortByOrder = <Item extends { sortOrder?: number | string }>(items: Item[]) =>
-  items.toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
+const sortByOrder = <Item extends { sortOrder: number }>(items: Item[]) =>
+  items.toSorted((left, right) => left.sortOrder - right.sortOrder)
 
 export const createBoardPageDeps = (
   client: ApiClient,
@@ -58,7 +58,7 @@ export const createBoardPageDeps = (
         params: { path: { statusId: Number(statusId) } },
       }),
     )
-    return { hasNext: page.hasNext ?? false, issues: page.data.map(mapIssueListItem) }
+    return { hasNext: page.hasNext, issues: page.data.map(mapIssueListItem) }
   },
 
   // Dropped into another column changes the status first, then the order next to `target`.
@@ -98,13 +98,13 @@ export const createBoardPageDeps = (
     const backlogBoard = await request(
       client.GET('/api/epics/{id}', { params: { path: { id: Number(backlog.id) } } }),
     )
-    const [status] = sortByOrder(backlogBoard.statuses ?? [])
+    const [status] = sortByOrder(backlogBoard.statuses)
     if (!status) {
       throw new ApiError(500)
     }
     await request(
       client.POST('/api/issues/status', {
-        body: { issueKeys: [issueKey], statusId: Number(status.id) },
+        body: { issueKeys: [issueKey], statusId: status.id },
       }),
     )
   },
@@ -114,7 +114,7 @@ export const createBoardPageDeps = (
       await request(
         client.POST('/api/issues/board', {
           body: {
-            epicId: boardId,
+            epicId: Number(boardId),
             filters: mapIssueFilters(filters),
             searchString: search || undefined,
             take,
@@ -127,11 +127,11 @@ export const createBoardPageDeps = (
   view: async ({ attributeQuery, boardId, search, signal, spaceKey }) => {
     const { attributes, spaces } = readCatalog()
     const [board, columnIssues] = await Promise.all([
-      request(client.GET('/api/epics/{id}', { params: { path: { id: boardId } }, signal })),
+      request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
       request(
         client.POST('/api/issues/board', {
           body: {
-            epicId: boardId,
+            epicId: Number(boardId),
             filters: mapRawIssueFilters(attributeQuery, attributes),
             searchString: search || undefined,
             take: 25,
@@ -146,15 +146,15 @@ export const createBoardPageDeps = (
     return {
       attributes,
       canCreateIssues: board.canCreateIssues,
-      canDelete: board.canDelete ?? false,
+      canDelete: board.canDelete,
       canMoveIssues: board.canUpdateIssues,
-      canUpdate: board.canUpdate ?? false,
-      color: board.color ?? null,
-      columns: sortByOrder(board.statuses ?? []).map((status) => {
+      canUpdate: board.canUpdate,
+      color: board.color,
+      columns: sortByOrder(board.statuses).map((status) => {
         const column = issuesByStatus.get(String(status.id))
         return {
           category: status.category,
-          color: status.color ?? null,
+          color: status.color,
           hasNext: column?.hasNext ?? false,
           id: String(status.id),
           issueCount: column?.issueCount ?? 0,

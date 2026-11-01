@@ -22,6 +22,6 @@ export const createUserAccountPageDeps = (
 
   view: async ({ signal }) => {
     const user = await request(client.GET('/api/user', { signal }))
-    return { initials: user.initials ?? null }
+    return { initials: user.initials }
   },
 })

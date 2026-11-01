@@ -21,7 +21,7 @@ const mapIssue = (issue: Schemas['SearchIssueDto']): IssueListItem => ({
   assigneeColor: issue.assigneeColor,
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
-  blocked: issue.isBlocked ?? false,
+  blocked: issue.isBlocked,
   boardColor: issue.epic.color,
   boardId: String(issue.epicId),
   boardName: issue.epic.name,

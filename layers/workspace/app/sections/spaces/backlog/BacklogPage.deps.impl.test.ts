@@ -63,7 +63,7 @@ test('maps backlog search request and response', async () => {
 
   assert.equal(result.issues[0]?.issueKey, 'ISS-1')
   assert.deepEqual(await requests[0]!.json(), {
-    epicIds: ['8'],
+    epicIds: [8],
     filters: {},
     page: 1,
     perPage: 10,

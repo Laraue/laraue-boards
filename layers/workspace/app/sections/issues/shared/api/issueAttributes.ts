@@ -106,19 +106,39 @@ export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
   return values.map((value) => {
     switch (value.type) {
       case 'text':
-        return { $type: 'string' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'string' as const,
+          attributeId: Number(value.attributeId),
+          value: value.value,
+        }
       case 'list':
-        return { $type: 'enum' as const, attributeId: value.attributeId, valueId: value.valueId }
+        return {
+          $type: 'enum' as const,
+          attributeId: Number(value.attributeId),
+          valueId: Number(value.valueId),
+        }
       case 'integer':
-        return { $type: 'integer' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'integer' as const,
+          attributeId: Number(value.attributeId),
+          value: Number(value.value),
+        }
       case 'decimal':
-        return { $type: 'decimal' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'decimal' as const,
+          attributeId: Number(value.attributeId),
+          value: Number(value.value),
+        }
       case 'date':
-        return { $type: 'date' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'date' as const,
+          attributeId: Number(value.attributeId),
+          value: value.value,
+        }
       case 'dateTime':
         return {
           $type: 'datetime' as const,
-          attributeId: value.attributeId,
+          attributeId: Number(value.attributeId),
           value: toUtcIssueDateTime(value.value),
         }
       default:

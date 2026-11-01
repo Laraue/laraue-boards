@@ -25,7 +25,7 @@ export const mapIssueAttachments = (
         return [
           {
             fileName: attachment.fileName ?? '',
-            ...(attachment.fileSize === null ? {} : { fileSize: Number(attachment.fileSize) }),
+            ...(attachment.fileSize === null ? {} : { fileSize: attachment.fileSize }),
             id: attachment.id,
             kind: 'document',
             url: fileUrl(attachment.originalFileId, baseUrl),

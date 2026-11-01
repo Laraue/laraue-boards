@@ -38,6 +38,7 @@ const response = () => ({
       content: null,
       epic: { color: '#666', name: 'Backlog board' },
       epicId: 8,
+      isBlocked: false,
       key: 'ISS-2',
       space: { color: '#777', name: 'Product' },
       spaceKey: 'product',

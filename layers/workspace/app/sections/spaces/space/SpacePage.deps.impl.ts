@@ -25,7 +25,7 @@ export const createSpacePageDeps = (
     }
     return {
       about: {
-        description: about.description ?? null,
+        description: about.description,
         links: about.links.map((link) => ({
           description: link.description,
           id: String(link.id),
@@ -37,14 +37,14 @@ export const createSpacePageDeps = (
         color: board.color ?? (board.isDefault ? space.color : COLORS.gray),
         createdAt: board.createdAt,
         id: String(board.id),
-        issueCount: board.columns.reduce((sum, column) => sum + Number(column.count), 0),
+        issueCount: board.columns.reduce((sum, column) => sum + column.count, 0),
         kind: board.isDefault ? 'backlog' : 'board',
         name: board.isDefault ? 'Backlog' : board.name,
         status: boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
         statuses: board.columns.map((column) => ({
           category: column.category,
           color: column.color ?? COLORS.gray,
-          count: Number(column.count),
+          count: column.count,
           name: column.name,
         })),
       })),

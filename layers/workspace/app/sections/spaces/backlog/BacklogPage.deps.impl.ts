@@ -21,7 +21,7 @@ const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem
   assigneeColor: issue.assigneeColor,
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
-  blocked: issue.isBlocked ?? false,
+  blocked: issue.isBlocked,
   boardColor: issue.epic.color,
   boardId: String(issue.epicId),
   boardName: issue.epic.name,
@@ -47,7 +47,7 @@ export const createBacklogPageDeps = (
     const issues = await request(
       client.POST('/api/issues/search', {
         body: {
-          epicIds: [backlogBoardId],
+          epicIds: [Number(backlogBoardId)],
           filters: mapIssueFilters(filters),
           page: page - 1,
           perPage: PER_PAGE,

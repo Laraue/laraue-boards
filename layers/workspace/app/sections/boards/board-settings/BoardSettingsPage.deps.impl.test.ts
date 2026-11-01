@@ -41,13 +41,13 @@ test('saves board and column changes', async () => {
   assert.deepEqual(await requests[1]!.json(), {
     category: 'Completed',
     color: '#444',
-    epicId: '7',
+    epicId: 7,
     name: 'Done',
   })
   assert.deepEqual(await requests[2]!.json(), {
     category: 'InProgress',
     color: '#222',
-    id: '2',
+    id: 2,
     name: 'Doing',
   })
   assert.deepEqual(await requests[4]!.json(), { 2: 1, 9: 2 })
@@ -76,7 +76,7 @@ test('updates a column when only its category changed', async () => {
   assert.deepEqual(await requests[1]!.json(), {
     category: 'Completed',
     color: '#222',
-    id: '2',
+    id: 2,
     name: 'Doing',
   })
 })

@@ -84,12 +84,12 @@ test('maps issue attributes, filters, and values to API models', () => {
       { attributeId: '8', type: 'dateTime', value: '2026-08-22T12:30' },
     ]),
     [
-      { $type: 'string', attributeId: '1', value: 'ABC' },
-      { $type: 'enum', attributeId: '2', valueId: '3' },
-      { $type: 'decimal', attributeId: '6', value: '12.5' },
-      { $type: 'integer', attributeId: '5', value: '42' },
-      { $type: 'date', attributeId: '7', value: '2026-08-23' },
-      { $type: 'datetime', attributeId: '8', value: utcDateTime },
+      { $type: 'string', attributeId: 1, value: 'ABC' },
+      { $type: 'enum', attributeId: 2, valueId: 3 },
+      { $type: 'decimal', attributeId: 6, value: 12.5 },
+      { $type: 'integer', attributeId: 5, value: 42 },
+      { $type: 'date', attributeId: 7, value: '2026-08-23' },
+      { $type: 'datetime', attributeId: 8, value: utcDateTime },
     ],
   )
 })
