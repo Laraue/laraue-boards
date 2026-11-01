@@ -88,7 +88,6 @@ useSeoMeta({
   articleModifiedTime: updatedAt,
   articlePublishedTime: createdAt,
   description,
-  ogImageAlt: title,
   ogType: kind === 'page' ? 'article' : 'website',
   title,
 })

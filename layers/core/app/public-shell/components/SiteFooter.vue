@@ -14,6 +14,9 @@
           <NuxtLink :to="docsHref">{{ t('documentation') }}</NuxtLink>
         </li>
         <li>
+          <a :href="`mailto:${sellerDetails.email}`">{{ t('support') }}</a>
+        </li>
+        <li>
           <a
             :href="githubRepositoryUrl"
             rel="noopener"
@@ -79,6 +82,7 @@ const { locale, t } = useI18n({
     footer_privacy: 'Privacy policy',
     footer_terms: 'Public offer',
     inn: 'INN',
+    support: 'Support',
   },
   ru: {
     compare_linear: 'Boards и Linear',
@@ -87,6 +91,7 @@ const { locale, t } = useI18n({
     footer_privacy: 'Политика конфиденциальности',
     footer_terms: 'Публичная оферта',
     inn: 'ИНН',
+    support: 'Поддержка',
   },
 })
 

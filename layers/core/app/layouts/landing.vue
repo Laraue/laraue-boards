@@ -6,19 +6,24 @@
 
 <script setup lang="ts">
 import { useSeoMeta } from '#app'
-import { previewImageUrl } from '#layers/core/app/constants/links'
+import { previewImageAlt, previewImageUrl } from '#layers/core/app/constants/links'
 import { useLocale } from '#layers/core/app/i18n/useI18n'
 
 const locale = useLocale()
 
 // What every public page shares: it is indexed, it can be zoomed (the app's own viewport forbids it,
-// so iOS does not zoom into focused inputs), and its preview image is the one of its language.
+// so iOS does not zoom into focused inputs), and its preview image is the one of its language. X
+// shows the image large only with its own card tag; the title and description it takes from og.
 useSeoMeta({
   ogImage: () => previewImageUrl[locale.value],
+  ogImageAlt: () => previewImageAlt[locale.value],
   ogImageHeight: 630,
   ogImageType: 'image/png',
   ogImageWidth: 1200,
   robots: 'index, follow, max-image-preview:large',
+  twitterCard: 'summary_large_image',
+  twitterImage: () => previewImageUrl[locale.value],
+  twitterImageAlt: () => previewImageAlt[locale.value],
   viewport: 'width=device-width, initial-scale=1',
 })
 </script>

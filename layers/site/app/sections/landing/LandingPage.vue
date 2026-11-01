@@ -90,7 +90,6 @@ const offers = computed(() =>
 useHead(useLocaleHead())
 useSeoMeta({
   description: t('seoDescription'),
-  ogImageAlt: t('seoTitle'),
   title: t('seoTitle'),
   // The title already names the product.
   titleTemplate: '%s',

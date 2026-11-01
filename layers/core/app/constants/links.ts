@@ -9,6 +9,12 @@ export const previewImageUrl: Record<Locale, string> = {
   ru: 'https://laraue.com/static/images/boards-og-ru.png',
 }
 
+// What the preview image says, for its alt text: the same image on every public page, so the same alt.
+export const previewImageAlt: Record<Locale, string> = {
+  en: 'Laraue Boards — a task board for Telegram chats and AI agents',
+  ru: 'Laraue Boards — доска задач для Telegram-чатов и ИИ-агентов',
+}
+
 // A page of laraue.com, the company's separate website. It is not part of this Nuxt app, so
 // `useLocalePath` cannot build it; laraue.com uses the same convention: English at the root,
 // Russian under /ru.
