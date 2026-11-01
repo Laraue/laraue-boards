@@ -3,7 +3,7 @@ import { assert, test } from 'vitest'
 import { createTestApiClient } from '#infrastructure/api/testApiClient'
 import { COLORS, DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 
-import { createOrganizationSetupDialogDeps } from './OrganizationSetupDialog.deps.impl'
+import { createSetupDemoDataDialogDeps } from './SetupDemoDataDialog.deps.impl'
 
 const members = [
   { isCurrentUser: false, userId: 'other-user' },
@@ -39,7 +39,7 @@ test('creates the board and puts each issue in its status, assigned to the curre
     return 'DEF-1'
   })
 
-  await createOrganizationSetupDialogDeps(client).addDemoData({
+  await createSetupDemoDataDialogDeps(client).addDemoData({
     boardName: 'Getting started',
     issues: [
       { statusIndex: 1, title: 'Second column' },
@@ -89,7 +89,7 @@ test('puts every issue in the backlog status without creating a board', async ()
     return 'MAR-1'
   })
 
-  await createOrganizationSetupDialogDeps(client).addDemoData({
+  await createSetupDemoDataDialogDeps(client).addDemoData({
     boardName: 'Ignored',
     issues: [
       { statusIndex: 3, title: 'An idea' },
@@ -108,14 +108,11 @@ test('puts every issue in the backlog status without creating a board', async ()
   )
 })
 
-test('renames the space with its color and completes the setup', async () => {
+test('completes the setup, telling whether demo data was added', async () => {
   const { client, paths, requests } = createTestApiClient(() => ({}))
-  const deps = createOrganizationSetupDialogDeps(client)
 
-  await deps.renameSpace({ color: '#123', key: 'DEF', name: 'Marketing', newKey: 'MAR' })
-  await deps.complete({ demoDataAdded: true })
+  await createSetupDemoDataDialogDeps(client).complete({ demoDataAdded: true })
 
-  assert.deepEqual(paths(), ['/api/spaces/DEF', '/api/organizations/current/setup'])
-  assert.deepEqual(await requests[0]!.json(), { color: '#123', name: 'Marketing', newKey: 'MAR' })
-  assert.deepEqual(await requests[1]!.json(), { demoDataAdded: true })
+  assert.deepEqual(paths(), ['/api/organizations/current/setup'])
+  assert.deepEqual(await requests[0]!.json(), { demoDataAdded: true })
 })

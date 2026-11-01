@@ -20,7 +20,7 @@
     :loading-text="t('loadingOrganizations')" />
   <!-- Finishing reloads every query, so the demo issues show on the page behind the window too. -->
   <ClientOnly>
-    <OrganizationSetupDialog
+    <OrganizationSetup
       v-if="data?.setup"
       :deps="deps.setup"
       :on-completed="() => refreshNuxtData()"
@@ -53,7 +53,7 @@ import type {
   RoutableProblem,
 } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 import AppLayoutContent from '#layers/workspace/app/shells/organization/components/AppLayoutContent.vue'
-import OrganizationSetupDialog from '#layers/workspace/app/shells/organization/components/OrganizationSetupDialog/OrganizationSetupDialog.vue'
+import OrganizationSetup from '#layers/workspace/app/shells/organization/components/OrganizationSetup/OrganizationSetup.vue'
 import {
   appLayoutDataKey,
   refreshAppLayoutData,

@@ -3,7 +3,7 @@ import { isApiError, request } from '#infrastructure/api/request'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import { getOrganizationKey } from '#layers/workspace/app/shared/utils/organizationKey'
 import { createFeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps.impl'
-import { createOrganizationSetupDialogDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetupDialog/OrganizationSetupDialog.deps.impl'
+import { createOrganizationSetupDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetup/OrganizationSetup.deps.impl'
 
 import type { AppLayoutDeps, AppLayoutProblem, AppLayoutResult } from './AppLayout.deps'
 
@@ -108,7 +108,7 @@ export const createAppLayoutDeps = (client: ApiClient): AppLayoutDeps => ({
   logout: async () => {
     await request(client.POST('/api/user/logout')).catch(() => undefined)
   },
-  setup: createOrganizationSetupDialogDeps(client),
+  setup: createOrganizationSetupDeps(client),
   // The tour is optional: a failure to load or save its state never reaches the layout.
   tour: {
     loadStatus: async () => {

@@ -3,7 +3,7 @@ import { ApiError, request } from '#infrastructure/api/request'
 import type { StatusCategory } from '#layers/workspace/app/sections/boards/shared/components/StatusCategorySelect/StatusCategorySelect.types'
 import { COLORS, DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 
-import type { DemoData, OrganizationSetupDialogDeps } from './OrganizationSetupDialog.deps'
+import type { DemoData, SetupDemoDataDialogDeps } from './SetupDemoDataDialog.deps'
 
 // Status colors by meaning, so a board made in the window reads like the rest of the app.
 const STATUS_COLORS: Record<StatusCategory, string> = {
@@ -65,9 +65,7 @@ const loadCurrentUserId = async (client: ApiClient, spaceKey: string): Promise<s
   return current.userId
 }
 
-export const createOrganizationSetupDialogDeps = (
-  client: ApiClient,
-): OrganizationSetupDialogDeps => ({
+export const createSetupDemoDataDialogDeps = (client: ApiClient): SetupDemoDataDialogDeps => ({
   addDemoData: async (input) => {
     const [statusIds, assigneeId] = await Promise.all([
       input.target === 'board'
@@ -92,14 +90,5 @@ export const createOrganizationSetupDialogDeps = (
 
   complete: async ({ demoDataAdded }) => {
     await request(client.POST('/api/organizations/current/setup', { body: { demoDataAdded } }))
-  },
-
-  renameSpace: async ({ color, key, name, newKey }) => {
-    await request(
-      client.PUT('/api/spaces/{key}', {
-        body: { color, name, newKey },
-        params: { path: { key } },
-      }),
-    )
   },
 })

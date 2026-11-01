@@ -1,6 +1,6 @@
 import type { TourStateDeps } from '#layers/workspace/app/shared/composables/useTour'
 import type { FeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps'
-import type { OrganizationSetupDialogDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetupDialog/OrganizationSetupDialog.deps'
+import type { OrganizationSetupDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetup/OrganizationSetup.deps'
 
 export type AppLayoutData = {
   organization: {
@@ -53,7 +53,7 @@ export type ViewAppLayout = (input: {
 export type AppLayoutDeps = {
   feedback: FeedbackDialogDeps
   logout: () => Promise<void>
-  setup: OrganizationSetupDialogDeps
+  setup: OrganizationSetupDeps
   tour: TourStateDeps
   view: ViewAppLayout
 }

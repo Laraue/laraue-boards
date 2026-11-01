@@ -12,15 +12,9 @@ export type DemoData = {
   target: DemoDataTarget
 }
 
-export type OrganizationSetupDialogDeps = {
+export type SetupDemoDataDialogDeps = {
   // Creates the board (for `board`) and the issues through the regular endpoints. They count toward the plan's
   // monthly issues like any other.
   addDemoData: (input: DemoData) => Promise<void>
   complete: (input: { demoDataAdded: boolean }) => Promise<void>
-  renameSpace: (input: {
-    color: string
-    key: string
-    name: string
-    newKey: string
-  }) => Promise<void>
 }
