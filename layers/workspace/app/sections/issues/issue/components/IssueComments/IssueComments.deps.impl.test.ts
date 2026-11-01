@@ -54,3 +54,17 @@ test('maps the comments of an issue', async () => {
   ])
   assert.deepEqual(paths(), ['/api/issues/ISS-1/comments'])
 })
+
+test('takes over the comments started with the issue, only on its first open', async () => {
+  const { client, paths } = createTestApiClient(() => ({ data: [], hasNextPage: false }))
+  const deps = createIssueCommentsDeps(client)
+
+  deps.prefetch('ISS-1')
+  await deps.load({ issueKey: 'ISS-1' })
+  assert.deepEqual(paths(), ['/api/issues/ISS-1/comments'])
+
+  // A later open (e.g. the issue reloaded after a save) starts nothing; the next load asks again.
+  deps.prefetch('ISS-1')
+  await deps.load({ issueKey: 'ISS-1' })
+  assert.deepEqual(paths(), ['/api/issues/ISS-1/comments', '/api/issues/ISS-1/comments'])
+})

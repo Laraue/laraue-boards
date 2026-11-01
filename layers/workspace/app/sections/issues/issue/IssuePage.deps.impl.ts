@@ -135,84 +135,89 @@ const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssuePageV
   updatedAt: issue.updatedAt,
 })
 
-export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
-  agentRun: createIssueAgentRunDeps(client),
-  assigneeSelect: createAssigneeSelectDeps(client),
-  boardSelect: createBoardSelectDeps(client),
-  comments: createIssueCommentsDeps(client),
+export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => {
+  const comments = createIssueCommentsDeps(client)
+  return {
+    agentRun: createIssueAgentRunDeps(client),
+    assigneeSelect: createAssigneeSelectDeps(client),
+    boardSelect: createBoardSelectDeps(client),
+    comments,
 
-  deleteIssue: async ({ issueKey }) => {
-    await request(client.DELETE('/api/issues/{key}', { params: { path: { key: issueKey } } }))
-  },
+    deleteIssue: async ({ issueKey }) => {
+      await request(client.DELETE('/api/issues/{key}', { params: { path: { key: issueKey } } }))
+    },
 
-  description: createIssueDescriptionDeps(client),
-  history: createIssueHistoryDeps(client),
-  links: createIssueLinksDeps(client),
+    description: createIssueDescriptionDeps(client),
+    history: createIssueHistoryDeps(client),
+    links: createIssueLinksDeps(client),
 
-  // Saving and moving to another status are two requests: when only the move fails, the
-  // save still stands and the issue stays where it was.
-  saveIssue: async (input) => {
-    if (!input.fieldsLocked) {
-      await request(
-        client.PUT('/api/issues/{key}', {
-          body: {},
-          bodySerializer: () =>
-            updateIssueFormData({
-              ...input,
-              attributeValues: mapIssueAttributeValues(input.attributeValues),
-            }),
-          params: { path: { key: input.issueKey } },
-        }),
-      )
-    }
-    const saved = {
-      boardId: input.boardId,
-      complete: true,
-      content: input.content,
-      issueKey: input.issueKey,
-      previousBoardId: input.previousBoardId,
-      previousIssueKey: input.issueKey,
-      previousStatusId: input.previousStatusId,
-      spaceKey: input.previousSpaceKey,
-      statusId: input.statusId,
-      title: input.title,
-    }
-    if (input.statusId === input.previousStatusId) {
-      return saved
-    }
-    let movedKeys: Record<string, string>
-    try {
-      movedKeys = await request(
-        client.POST('/api/issues/status', {
-          body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
-        }),
-      )
-    } catch (error) {
-      if (!isApiError(error)) {
-        throw error
+    // Saving and moving to another status are two requests: when only the move fails, the
+    // save still stands and the issue stays where it was.
+    saveIssue: async (input) => {
+      if (!input.fieldsLocked) {
+        await request(
+          client.PUT('/api/issues/{key}', {
+            body: {},
+            bodySerializer: () =>
+              updateIssueFormData({
+                ...input,
+                attributeValues: mapIssueAttributeValues(input.attributeValues),
+              }),
+            params: { path: { key: input.issueKey } },
+          }),
+        )
       }
-      return {
-        ...saved,
-        boardId: input.previousBoardId,
-        complete: false,
-        statusId: input.previousStatusId,
+      const saved = {
+        boardId: input.boardId,
+        complete: true,
+        content: input.content,
+        issueKey: input.issueKey,
+        previousBoardId: input.previousBoardId,
+        previousIssueKey: input.issueKey,
+        previousStatusId: input.previousStatusId,
+        spaceKey: input.previousSpaceKey,
+        statusId: input.statusId,
+        title: input.title,
       }
-    }
-    // Moving to another space gives the issue a new key.
-    const issueKey = movedKeys[input.issueKey]
-    if (!issueKey) {
-      throw new ApiError(0)
-    }
-    return { ...saved, issueKey, spaceKey: input.spaceKey }
-  },
+      if (input.statusId === input.previousStatusId) {
+        return saved
+      }
+      let movedKeys: Record<string, string>
+      try {
+        movedKeys = await request(
+          client.POST('/api/issues/status', {
+            body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
+          }),
+        )
+      } catch (error) {
+        if (!isApiError(error)) {
+          throw error
+        }
+        return {
+          ...saved,
+          boardId: input.previousBoardId,
+          complete: false,
+          statusId: input.previousStatusId,
+        }
+      }
+      // Moving to another space gives the issue a new key.
+      const issueKey = movedKeys[input.issueKey]
+      if (!issueKey) {
+        throw new ApiError(0)
+      }
+      return { ...saved, issueKey, spaceKey: input.spaceKey }
+    },
 
-  spaceSelect: createSpaceSelectDeps(client),
-  statusSelect: createStatusSelectDeps(client),
+    spaceSelect: createSpaceSelectDeps(client),
+    statusSelect: createStatusSelectDeps(client),
 
-  view: async ({ issueKey, signal }) => {
-    const issue = await request(
-      client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
-    )
-    return mapIssue(issue, client.baseUrl)
-  },
-})
+    // The comments start loading with the issue, not after it.
+    view: async ({ issueKey, signal }) => {
+      comments.prefetch(issueKey)
+      const issue = await request(
+        client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
+      )
+      return mapIssue(issue, client.baseUrl)
+    },
+  }
+}
