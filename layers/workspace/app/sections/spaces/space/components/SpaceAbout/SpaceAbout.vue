@@ -1,20 +1,17 @@
 <template>
-  <section
+  <!-- Next to the space's name: the description is read now and then, not on every visit. -->
+  <BasePopover
     v-if="hasContent"
-    class="space-about"
-    :class="{ collapsed: state.collapsed }">
-    <button
-      :aria-expanded="!state.collapsed"
-      class="space-about-toggle"
-      type="button"
-      @click="toggle">
-      <IconInfoCircle />
-      <span>{{ t('about') }}</span>
-      <IconChevronDown class="space-about-chevron" />
-    </button>
-    <div
-      v-if="!state.collapsed"
-      class="space-about-body">
+    class="space-about">
+    <template #trigger="{ open, toggle }">
+      <BaseIconButton
+        :aria-expanded="open"
+        :label="t('about')"
+        @click="toggle">
+        <IconInfoCircle />
+      </BaseIconButton>
+    </template>
+    <div class="space-about-body">
       <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
       <div
         v-if="about.description"
@@ -39,15 +36,16 @@
         </li>
       </ul>
     </div>
-  </section>
+  </BasePopover>
 </template>
 
 <script setup lang="ts">
-import { IconChevronDown, IconExternalLink, IconInfoCircle } from '@tabler/icons-vue'
-import { computed, reactive } from 'vue'
+import { IconExternalLink, IconInfoCircle } from '@tabler/icons-vue'
+import { computed } from 'vue'
 
-import { useCookie } from '#app'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BasePopover from '#layers/core/app/ui/components/BasePopover.vue'
 import {
   renderMarkdown,
   renderMarkdownAsText,
@@ -57,7 +55,6 @@ import type { SpaceAboutViewModel } from './SpaceAbout.types'
 
 const props = defineProps<{
   about: SpaceAboutViewModel
-  spaceKey: string
 }>()
 
 const { t } = useI18n({
@@ -69,70 +66,18 @@ const { t } = useI18n({
   },
 })
 
-// Remembered per person and space, in a cookie so the page renders the same on the server.
-const collapsedCookie = useCookie<string | undefined>(`space-about-${props.spaceKey}`, {
-  maxAge: 60 * 60 * 24 * 365,
-})
-
-const state = reactive({ collapsed: collapsedCookie.value === 'collapsed' })
-
 const hasContent = computed(() => !!props.about.description || props.about.links.length > 0)
-
-const toggle = (): void => {
-  state.collapsed = !state.collapsed
-  collapsedCookie.value = state.collapsed ? 'collapsed' : undefined
-}
 </script>
 
 <style scoped>
 .space-about {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  margin: var(--space-4);
-}
-
-.space-about-toggle {
-  align-items: center;
-  background: none;
-  border: 0;
-  color: var(--color-text);
-  cursor: pointer;
-  display: flex;
-  font: inherit;
-  font-weight: var(--font-weight-medium);
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  text-align: left;
-  width: 100%;
-}
-
-.space-about-toggle:focus-visible {
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-focus);
-  outline: none;
-}
-
-.space-about-toggle > svg {
-  color: var(--color-muted);
-  flex: none;
-  height: var(--icon-size);
-  width: var(--icon-size);
-}
-
-.space-about-chevron {
-  margin-left: auto;
-  transition: transform 0.15s ease;
-}
-
-.collapsed .space-about-chevron {
-  transform: rotate(-90deg);
+  --base-popover-width: 26rem;
 }
 
 .space-about-body {
   display: grid;
   gap: var(--space-4);
-  padding: 0 var(--space-4) var(--space-4);
+  padding: var(--space-4);
 }
 
 .space-about-links {

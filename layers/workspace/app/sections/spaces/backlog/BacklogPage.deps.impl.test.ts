@@ -66,7 +66,7 @@ test('maps backlog search request and response', async () => {
     epicIds: [8],
     filters: {},
     page: 1,
-    perPage: 10,
+    perPage: 20,
     searchString: 'bug',
     sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
   })

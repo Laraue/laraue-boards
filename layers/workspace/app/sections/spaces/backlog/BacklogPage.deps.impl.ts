@@ -14,7 +14,7 @@ import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organ
 
 import type { BacklogPageDeps } from './BacklogPage.deps'
 
-const PER_PAGE = 10
+const PER_PAGE = 20
 
 const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem => ({
   assignee: issue.assignee,
