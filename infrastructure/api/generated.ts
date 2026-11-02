@@ -341,9 +341,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": number | string;
-                        "application/json": number | string;
-                        "text/json": number | string;
+                        "text/plain": number;
+                        "application/json": number;
+                        "text/json": number;
                     };
                 };
             };
@@ -1162,7 +1162,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
-                    id: number | string;
+                    id: number;
                 };
                 cookie?: never;
             };
@@ -1263,9 +1263,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": number | string;
-                        "application/json": number | string;
-                        "text/json": number | string;
+                        "text/plain": number;
+                        "application/json": number;
+                        "text/json": number;
                     };
                 };
             };
@@ -1340,13 +1340,13 @@ export interface paths {
             requestBody: {
                 content: {
                     "application/json": {
-                        [key: string]: number | string;
+                        [key: string]: number;
                     };
                     "text/json": {
-                        [key: string]: number | string;
+                        [key: string]: number;
                     };
                     "application/*+json": {
-                        [key: string]: number | string;
+                        [key: string]: number;
                     };
                 };
             };
@@ -1497,17 +1497,17 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    "AuthData.OrganizationId"?: number | string;
+                    "AuthData.OrganizationId"?: number;
                     "AuthData.UserId"?: string;
                     "AuthData.ApiKeyId"?: string;
-                    StatusId?: number | string;
+                    StatusId?: number;
                     SearchString?: string;
                     Filters?: {
                         [key: string]: components["schemas"]["AttributeFilterValue"];
                     };
                     "Sorting.Direction"?: components["schemas"]["SortingDirection"];
-                    Skip?: number | string;
-                    Take?: number | string;
+                    Skip?: number;
+                    Take?: number;
                 };
                 header?: never;
                 path: {
@@ -1629,7 +1629,7 @@ export interface paths {
                 content: {
                     "multipart/form-data": {
                         /** Format: int64 */
-                        "AuthData.OrganizationId"?: number | string;
+                        "AuthData.OrganizationId"?: number;
                         /** Format: uuid */
                         "AuthData.UserId"?: string;
                         /** Format: uuid */
@@ -1745,13 +1745,13 @@ export interface paths {
                 content: {
                     "multipart/form-data": {
                         /** Format: int64 */
-                        "AuthData.OrganizationId"?: number | string;
+                        "AuthData.OrganizationId"?: number;
                         /** Format: uuid */
                         "AuthData.UserId"?: string;
                         /** Format: uuid */
                         "AuthData.ApiKeyId"?: string;
                         /** Format: int64 */
-                        StatusId?: number | string;
+                        StatusId?: number;
                         /** Format: uuid */
                         AssigneeId?: string;
                         Content?: string;
@@ -1833,7 +1833,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    "AuthData.OrganizationId"?: number | string;
+                    "AuthData.OrganizationId"?: number;
                     "AuthData.UserId"?: string;
                     "AuthData.ApiKeyId"?: string;
                     SpaceKey?: string;
@@ -1885,7 +1885,7 @@ export interface paths {
                 content: {
                     "multipart/form-data": {
                         /** Format: int64 */
-                        "AuthData.OrganizationId"?: number | string;
+                        "AuthData.OrganizationId"?: number;
                         /** Format: uuid */
                         "AuthData.UserId"?: string;
                         /** Format: uuid */
@@ -1903,9 +1903,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": number | string;
-                        "application/json": number | string;
-                        "text/json": number | string;
+                        "text/plain": number;
+                        "application/json": number;
+                        "text/json": number;
                     };
                 };
             };
@@ -1937,13 +1937,13 @@ export interface paths {
                 content: {
                     "multipart/form-data": {
                         /** Format: int64 */
-                        "AuthData.OrganizationId"?: number | string;
+                        "AuthData.OrganizationId"?: number;
                         /** Format: uuid */
                         "AuthData.UserId"?: string;
                         /** Format: uuid */
                         "AuthData.ApiKeyId"?: string;
                         /** Format: int64 */
-                        CommentId?: number | string;
+                        CommentId?: number;
                         Text?: string;
                         RemoveAttachmentIds?: string[];
                         AddFiles?: components["schemas"]["IFormFile"][];
@@ -3124,10 +3124,10 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
-                    "AuthData.OrganizationId"?: number | string;
+                    "AuthData.OrganizationId"?: number;
                     "AuthData.UserId"?: string;
                     "AuthData.ApiKeyId"?: string;
-                    EpicId?: number | string;
+                    EpicId?: number;
                 };
                 header?: never;
                 path?: never;
@@ -3170,9 +3170,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": number | string;
-                        "application/json": number | string;
-                        "text/json": number | string;
+                        "text/plain": number;
+                        "application/json": number;
+                        "text/json": number;
                     };
                 };
             };
@@ -3627,16 +3627,16 @@ export interface components {
             id: string;
             /** Format: uuid */
             ownerUserId: string;
-            ownerDisplayName?: null | string;
+            ownerDisplayName: null | string;
             status: components["schemas"]["TokenTransactionStatus"];
             reason: components["schemas"]["TokenTransactionReason"];
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
-            finishedAt?: null | string;
+            finishedAt: null | string;
             /** Format: int64 */
-            delta: number | string;
-            error?: null | string;
+            delta: number;
+            error: null | string;
         };
         AgentDetails: {
             clientName: string;
@@ -3652,7 +3652,7 @@ export interface components {
         };
         AgentRunDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             state: components["schemas"]["AgentRunState"];
             /** Format: date-time */
             createdAt: string;
@@ -3685,13 +3685,13 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
-            lastUsedAt?: null | string;
+            lastUsedAt: null | string;
             /** Format: date-time */
-            revokedAt?: null | string;
+            revokedAt: null | string;
         };
         ApproveAgentSignInRequest: {
             /** Format: int64 */
-            organizationId: number | string;
+            organizationId: number;
         };
         /** @enum {unknown} */
         AttachmentAction: "Created" | "Deleted";
@@ -3700,7 +3700,7 @@ export interface components {
             id: string;
             mimeType: null | string;
             /** Format: int64 */
-            fileSize: null | number | string;
+            fileSize: null | number;
             /** Format: uuid */
             previewFileId: null | string;
             /** Format: uuid */
@@ -3712,7 +3712,7 @@ export interface components {
         AttachmentType: "Image" | "Video" | "Document";
         AttributeDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: string;
             type: components["schemas"]["AttributeType"];
@@ -3739,22 +3739,22 @@ export interface components {
             /** @enum {string} */
             $type?: "decimal";
             /** Format: double */
-            min?: null | number | string;
+            min?: null | number;
             /** Format: double */
-            max?: null | number | string;
+            max?: null | number;
         };
         AttributeFilterValueEnumAttributeFilterValue: {
             /** @enum {string} */
             $type?: "enum";
-            ids: (number | string)[];
+            ids: number[];
         };
         AttributeFilterValueIntegerAttributeFilterValue: {
             /** @enum {string} */
             $type?: "integer";
             /** Format: int64 */
-            min?: null | number | string;
+            min?: null | number;
             /** Format: int64 */
-            max?: null | number | string;
+            max?: null | number;
         };
         AttributeFilterValueStringAttributeFilterValue: {
             /** @enum {string} */
@@ -3763,7 +3763,7 @@ export interface components {
         };
         AttributeListValueDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
         };
         /** @enum {unknown} */
@@ -3775,7 +3775,7 @@ export interface components {
             /** Format: date */
             value: string;
             /** Format: int64 */
-            attributeId: number | string;
+            attributeId: number;
         };
         AttributeValueDateTimeAttributeValue: {
             /** @enum {string} */
@@ -3783,38 +3783,38 @@ export interface components {
             /** Format: date-time */
             value: string;
             /** Format: int64 */
-            attributeId: number | string;
+            attributeId: number;
         };
         AttributeValueDecimalAttributeValue: {
             /** @enum {string} */
             $type?: "decimal";
             /** Format: double */
-            value: number | string;
+            value: number;
             /** Format: int64 */
-            attributeId: number | string;
+            attributeId: number;
         };
         AttributeValueEnumAttributeValue: {
             /** @enum {string} */
             $type?: "enum";
             /** Format: int64 */
-            valueId: number | string;
+            valueId: number;
             /** Format: int64 */
-            attributeId: number | string;
+            attributeId: number;
         };
         AttributeValueIntegerAttributeValue: {
             /** @enum {string} */
             $type?: "integer";
             /** Format: int64 */
-            value: number | string;
+            value: number;
             /** Format: int64 */
-            attributeId: number | string;
+            attributeId: number;
         };
         AttributeValueStringAttributeValue: {
             /** @enum {string} */
             $type?: "string";
             value: string;
             /** Format: int64 */
-            attributeId: number | string;
+            attributeId: number;
         };
         AuthenticateViaStringInitDataRequest: {
             initData: string;
@@ -3823,7 +3823,7 @@ export interface components {
         AuthorKind: "User" | "Agent";
         BatchResultOfIssueListDto: {
             /** Format: int64 */
-            offset: number | string;
+            offset: number;
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
@@ -3833,41 +3833,41 @@ export interface components {
         BillingSummaryPersonalBillingSummary: {
             /** @enum {string} */
             $type?: "personal";
-            freeTeamOrganizations?: null | components["schemas"]["LimitUsage"];
+            freeTeamOrganizations: null | components["schemas"]["LimitUsage"];
             subscriptionCode: string;
             canPay: boolean;
-            issuesPerMonth?: null | components["schemas"]["LimitUsage"];
+            issuesPerMonth: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
             /** Format: int64 */
-            purchasedTokensCount?: number | string;
+            purchasedTokensCount: number;
             /** Format: date-time */
-            purchasedTokensExpireAt?: null | string;
+            purchasedTokensExpireAt: null | string;
             /** Format: int64 */
-            purchasedTokensExpiringCount?: number | string;
+            purchasedTokensExpiringCount: number;
             /** Format: date-time */
-            periodEndsAt?: null | string;
-            periodResets?: boolean;
+            periodEndsAt: null | string;
+            periodResets: boolean;
             /** Format: date-time */
-            issuesResetAt?: null | string;
+            issuesResetAt: null | string;
         };
         BillingSummaryTeamBillingSummary: {
             /** @enum {string} */
             $type?: "team";
             subscriptionCode: string;
             canPay: boolean;
-            issuesPerMonth?: null | components["schemas"]["LimitUsage"];
+            issuesPerMonth: null | components["schemas"]["LimitUsage"];
             tokens: components["schemas"]["LimitUsage"];
             /** Format: int64 */
-            purchasedTokensCount?: number | string;
+            purchasedTokensCount: number;
             /** Format: date-time */
-            purchasedTokensExpireAt?: null | string;
+            purchasedTokensExpireAt: null | string;
             /** Format: int64 */
-            purchasedTokensExpiringCount?: number | string;
+            purchasedTokensExpiringCount: number;
             /** Format: date-time */
-            periodEndsAt?: null | string;
-            periodResets?: boolean;
+            periodEndsAt: null | string;
+            periodResets: boolean;
             /** Format: date-time */
-            issuesResetAt?: null | string;
+            issuesResetAt: null | string;
         };
         BillingTransaction: {
             /** Format: uuid */
@@ -3877,10 +3877,10 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
-            finishedAt?: null | string;
+            finishedAt: null | string;
             /** Format: int64 */
-            delta: number | string;
-            error?: null | string;
+            delta: number;
+            error: null | string;
         };
         ChangesIssuesOrderRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -3895,21 +3895,21 @@ export interface components {
         };
         ColumnIssues: {
             /** Format: int64 */
-            statusId: number | string;
+            statusId: number;
             items: components["schemas"]["InitialBatchResultOfIssueListDto"];
         };
         ColumnSummary: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: null | string;
             category: components["schemas"]["StatusCategory"];
             /** Format: int32 */
-            count: number | string;
+            count: number;
         };
         CommentDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             text: string;
             attachments: components["schemas"]["AttachmentData"][];
             /** Format: date-time */
@@ -3979,7 +3979,7 @@ export interface components {
         };
         CreateOrganizationResponse: {
             /** Format: int64 */
-            id?: number | string;
+            id?: number;
             slug: string;
             slugPostfix: string;
         };
@@ -3994,7 +3994,7 @@ export interface components {
             name: string;
             color: string;
             /** Format: int64 */
-            epicId: number | string;
+            epicId: number;
             category: components["schemas"]["StatusCategory"];
         };
         DestinationSpace: {
@@ -4004,7 +4004,7 @@ export interface components {
         };
         DetailIssueAttributeDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             type: components["schemas"]["AttributeType"];
             name: string;
             value: string;
@@ -4025,7 +4025,7 @@ export interface components {
         };
         EditOrganizationRequest: {
             /** Format: int64 */
-            id?: number | string;
+            id?: number;
             /** Format: uuid */
             userId?: string;
             name: string;
@@ -4035,7 +4035,7 @@ export interface components {
         EditStatusRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            id?: number | string;
+            id?: number;
             color: string;
             name: string;
             category: components["schemas"]["StatusCategory"];
@@ -4043,17 +4043,17 @@ export interface components {
         EpicDto: {
             name: string;
             color: null | string;
-            statuses?: components["schemas"]["StatusDto"][];
+            statuses: components["schemas"]["StatusDto"][];
             canCreateIssues: boolean;
             canDeleteIssues: boolean;
             canUpdateIssues: boolean;
-            canUpdate?: boolean;
-            canDelete?: boolean;
+            canUpdate: boolean;
+            canDelete: boolean;
             status: components["schemas"]["EpicStatus"];
         };
         EpicListDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: null | string;
             /** Format: date-time */
@@ -4065,14 +4065,14 @@ export interface components {
         EpicStatus: "New" | "Active" | "Done";
         EpicStatusesDto: {
             /** Format: int64 */
-            epicId: number | string;
+            epicId: number;
             epicName: string;
             epicColor: null | string;
             statuses: components["schemas"]["StatusDto"][];
         };
         EpicSummary: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: null | string;
             columns: components["schemas"]["ColumnSummary"][];
@@ -4102,9 +4102,9 @@ export interface components {
         GetBoardRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            epicId: number | string;
+            epicId: number;
             /** Format: int32 */
-            take: number | string;
+            take: number;
             searchString?: null | string;
             filters?: {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
@@ -4124,19 +4124,19 @@ export interface components {
         GetIssuesRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            statusId?: number | string;
+            statusId?: number;
             searchString?: null | string;
             filters?: {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
             };
             sorting?: null | components["schemas"]["IssueSorting"];
             /** Format: int32 */
-            skip?: number | string;
+            skip?: number;
             /** Format: int32 */
-            take: number | string;
+            take: number;
         };
         GetOnboardingStatusResponse: {
-            status?: null | components["schemas"]["OnboardingStatus"];
+            status: null | components["schemas"]["OnboardingStatus"];
         };
         GetOrganizationHistoryRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -4171,7 +4171,7 @@ export interface components {
             /** @enum {string} */
             $type?: "agentRun";
             /** Format: int64 */
-            runId: number | string;
+            runId: number;
             oldState: null | components["schemas"]["AgentRunState"];
             newState: components["schemas"]["AgentRunState"];
         };
@@ -4250,15 +4250,15 @@ export interface components {
         IFormFile: string;
         InitialBatchResultOfIssueListDto: {
             /** Format: int64 */
-            totalCount: number | string;
+            totalCount: number;
             /** Format: int64 */
-            offset: number | string;
+            offset: number;
             hasNext: boolean;
             data: components["schemas"]["IssueListDto"][];
         };
         IssueAgentRunShortDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             state: components["schemas"]["AgentRunState"];
         };
         IssueAssigneeDetails: {
@@ -4271,14 +4271,14 @@ export interface components {
         };
         IssueAttributeListValueDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
         };
         /** @enum {unknown} */
         IssueCreatedVia: "Web" | "Telegram" | "Mcp" | "Agent";
         IssueDetailDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             /** Format: uuid */
             assigneeId: string;
             assignee: components["schemas"]["IssueAssigneeDetails"];
@@ -4291,11 +4291,12 @@ export interface components {
             isTitleSetExplicitly: boolean;
             content: null | string;
             /** Format: int64 */
-            epicId: number | string;
+            epicId: number;
             epicName: null | string;
             epicColor: null | string;
+            epicIsDefault: boolean;
             /** Format: int64 */
-            statusId: number | string;
+            statusId: number;
             statusName: null | string;
             statusColor: null | string;
             statusCategory: components["schemas"]["StatusCategory"];
@@ -4331,27 +4332,27 @@ export interface components {
         };
         IssueListDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             /** Format: date-time */
             time: string;
             assignee: string;
             /** Format: uuid */
             assigneeId: string;
             key: string;
-            assigneeInitial?: null | string;
+            assigneeInitial: null | string;
             assigneeColor: string;
             title: string;
             content: null | string;
             /** Format: int64 */
-            epicId: number | string;
+            epicId: number;
             /** Format: int64 */
-            statusId: number | string;
+            statusId: number;
             spaceKey: string;
-            attributes?: components["schemas"]["IssueListAttributeDto"][];
+            attributes: components["schemas"]["IssueListAttributeDto"][];
             createdVia: components["schemas"]["IssueCreatedVia"];
             createdByApiKeyName: null | string;
-            isBlocked?: boolean;
-            latestAgentRun?: null | components["schemas"]["IssueAgentRunShortDto"];
+            isBlocked: boolean;
+            latestAgentRun: null | components["schemas"]["IssueAgentRunShortDto"];
         };
         /** @enum {unknown} */
         IssueProperty: "Content" | "CreatedAt" | "UpdatedAt" | "Title";
@@ -4360,7 +4361,7 @@ export interface components {
             /** @enum {string} */
             $type?: "attribute";
             /** Format: int64 */
-            attributeId: number | string;
+            attributeId: number;
             direction: components["schemas"]["SortingDirection"];
         };
         IssueSortingByPropertyIssueSorting: {
@@ -4379,11 +4380,11 @@ export interface components {
         };
         LimitUsage: {
             /** Format: int64 */
-            limit: number | string;
+            limit: number;
             /** Format: int64 */
-            used: number | string;
+            used: number;
             /** Format: int64 */
-            remaining: number | string;
+            remaining: number;
         };
         /** @enum {unknown} */
         LogAction: "Create" | "Update" | "Delete";
@@ -4393,7 +4394,7 @@ export interface components {
             /** Format: uuid */
             userId?: string;
             /** Format: int64 */
-            organizationId?: number | string;
+            organizationId?: number;
         };
         MemberProfileDto: {
             displayName: string;
@@ -4402,16 +4403,16 @@ export interface components {
         };
         MessageStatusDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: null | string;
             category: components["schemas"]["StatusCategory"];
             /** Format: int32 */
-            count: number | string;
+            count: number;
         };
         MiniAppUser: {
             /** Format: int64 */
-            id?: number | string;
+            id?: number;
             username?: null | string;
             languageCode?: null | string;
             firstName?: null | string;
@@ -4420,17 +4421,17 @@ export interface components {
         MoveEpicRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            sourceEpicId?: number | string;
+            sourceEpicId?: number;
             newSpaceKey: string;
             /** Format: int64 */
-            newOrganizationId: number | string;
+            newOrganizationId: number;
         };
         MoveSpaceEpicsRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             sourceSpaceKey: string;
             newSpaceKey: string;
             /** Format: int64 */
-            newOrganizationId: number | string;
+            newOrganizationId: number;
         };
         NameAndColor: {
             name: string;
@@ -4447,7 +4448,7 @@ export interface components {
         OrderTargetType: "After" | "Before";
         OrganizationAuthData: {
             /** Format: int64 */
-            organizationId?: number | string;
+            organizationId?: number;
             /** Format: uuid */
             userId?: string;
             /** Format: uuid */
@@ -4455,7 +4456,7 @@ export interface components {
         };
         OrganizationDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: null | string;
             canCreateSpaces: boolean;
@@ -4467,7 +4468,7 @@ export interface components {
             slugPostfix: string;
             preferences?: components["schemas"]["UserOrganizationPreferencesResponse"];
             memberProfile: components["schemas"]["MemberProfileDto"];
-            setup?: null | components["schemas"]["OrganizationSetupDto"];
+            setup: null | components["schemas"]["OrganizationSetupDto"];
         };
         OrganizationHistoryItem: {
             /** Format: date-time */
@@ -4484,7 +4485,7 @@ export interface components {
         };
         OrganizationListDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: null | string;
             canUpdate: boolean;
@@ -4497,7 +4498,7 @@ export interface components {
         };
         OrganizationMember: {
             /** Format: int64 */
-            organizationUserId?: number | string;
+            organizationUserId: number;
             /** Format: uuid */
             userId: string;
             displayName: string;
@@ -4513,13 +4514,13 @@ export interface components {
             key: string;
             name: string;
             /** Format: int32 */
-            issueCount: number | string;
+            issueCount: number;
         };
         PaginationData: {
             /** Format: int32 */
-            page?: number | string;
+            page?: number;
             /** Format: int32 */
-            perPage?: number | string;
+            perPage?: number;
         };
         PermittableSpace: {
             key: string;
@@ -4535,7 +4536,7 @@ export interface components {
             /** Format: uuid */
             apiKeyId?: null | string;
             /** Format: int64 */
-            organizationId?: null | number | string;
+            organizationId?: null | number;
             organizationName?: null | string;
             /** Format: uuid */
             userId?: null | string;
@@ -4552,27 +4553,27 @@ export interface components {
             space: components["schemas"]["NameAndColor"];
             canEdit: boolean;
             /** Format: int64 */
-            id: number | string;
+            id: number;
             /** Format: date-time */
             time: string;
             assignee: string;
             /** Format: uuid */
             assigneeId: string;
             key: string;
-            assigneeInitial?: null | string;
+            assigneeInitial: null | string;
             assigneeColor: string;
             title: string;
             content: null | string;
             /** Format: int64 */
-            epicId: number | string;
+            epicId: number;
             /** Format: int64 */
-            statusId: number | string;
+            statusId: number;
             spaceKey: string;
-            attributes?: components["schemas"]["IssueListAttributeDto"][];
+            attributes: components["schemas"]["IssueListAttributeDto"][];
             createdVia: components["schemas"]["IssueCreatedVia"];
             createdByApiKeyName: null | string;
-            isBlocked?: boolean;
-            latestAgentRun?: null | components["schemas"]["IssueAgentRunShortDto"];
+            isBlocked: boolean;
+            latestAgentRun: null | components["schemas"]["IssueAgentRunShortDto"];
         };
         SearchIssueStatusDto: {
             category: components["schemas"]["StatusCategory"];
@@ -4581,15 +4582,15 @@ export interface components {
         };
         SearchRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
-            epicIds?: (number | string)[];
+            epicIds?: number[];
             epicStatuses?: components["schemas"]["EpicStatus"][];
             statusCategories?: components["schemas"]["StatusCategory"][];
             spaceKeys?: string[];
             searchString?: null | string;
             /** Format: int32 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             filters?: {
                 [key: string]: components["schemas"]["AttributeFilterValue"];
             };
@@ -4609,7 +4610,7 @@ export interface components {
         };
         SendFeedbackResponse: {
             /** Format: int64 */
-            feedbackId: number | string;
+            feedbackId: number;
         };
         SetOnboardingStatusRequest: {
             status: components["schemas"]["OnboardingStatus"];
@@ -4617,68 +4618,68 @@ export interface components {
         SetPermissionsRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            organizationUserId?: number | string;
+            organizationUserId?: number;
             userPermissions: components["schemas"]["UserPermissions"];
         };
         ShortPaginatedResultOfAdminBillingTransaction: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             data: components["schemas"]["AdminBillingTransaction"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfApiKeyDto: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             data: components["schemas"]["ApiKeyDto"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfBillingTransaction: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             data: components["schemas"]["BillingTransaction"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfCommentDto: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             data: components["schemas"]["CommentDto"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfEpicStatusesDto: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             data: components["schemas"]["EpicStatusesDto"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfOrganizationHistoryItem: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             data: components["schemas"]["OrganizationHistoryItem"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
         };
         ShortPaginatedResultOfSearchIssueDto: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             data: components["schemas"]["SearchIssueDto"][];
             hasNextPage: boolean;
             hasPreviousPage?: boolean;
@@ -4686,7 +4687,7 @@ export interface components {
         /** @enum {unknown} */
         SortingDirection: "Ascending" | "Descending";
         SpaceAboutDto: {
-            description?: null | string;
+            description: null | string;
             links: components["schemas"]["SpaceLinkDto"][];
             canEdit: boolean;
         };
@@ -4697,7 +4698,7 @@ export interface components {
         };
         SpaceLinkDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             url: string;
             description: string;
         };
@@ -4731,17 +4732,17 @@ export interface components {
             /** Format: date-time */
             expiresAt: string;
             /** Format: int32 */
-            intervalSeconds: number | string;
+            intervalSeconds: number;
         };
         /** @enum {unknown} */
         StatusCategory: "Created" | "InProgress" | "Completed" | "Review";
         StatusDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: null | string;
             /** Format: int32 */
-            sortOrder: number | string;
+            sortOrder: number;
             category: components["schemas"]["StatusCategory"];
         };
         SummarizedContentDto: {
@@ -4758,13 +4759,13 @@ export interface components {
         };
         TelegramWidgetAuthRequest: {
             /** Format: int64 */
-            id?: number | string;
+            id?: number;
             first_name?: string;
             last_name?: null | string;
             username?: null | string;
             photo_url?: null | string;
             /** Format: int64 */
-            auth_date?: number | string;
+            auth_date?: number;
             hash?: string;
         };
         /** @enum {unknown} */
@@ -4773,13 +4774,13 @@ export interface components {
         TokenTransactionStatus: "Started" | "Canceled" | "Confirmed";
         UpdateAttributeListValueDto: {
             /** Format: int64 */
-            id?: null | number | string;
+            id?: null | number;
             name: string;
         };
         UpdateAttributeRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            id?: number | string;
+            id?: number;
             name: string;
             color: string;
             listValues: null | components["schemas"]["UpdateAttributeListValueDto"][];
@@ -4787,7 +4788,7 @@ export interface components {
         UpdateEpicRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
-            id?: number | string;
+            id?: number;
             name: string;
             color: string;
         };
@@ -4795,7 +4796,7 @@ export interface components {
             authData?: components["schemas"]["OrganizationAuthData"];
             issueKeys: string[];
             /** Format: int64 */
-            statusId: number | string;
+            statusId: number;
             comment?: null | string;
         };
         UpdateMemberProfileRequest: {
@@ -4826,14 +4827,14 @@ export interface components {
         };
         UserDto: {
             /** Format: int64 */
-            telegramId?: null | number | string;
-            hasGoogleAccount?: boolean;
-            initials?: null | string;
+            telegramId: null | number;
+            hasGoogleAccount: boolean;
+            initials: null | string;
             palette: string[];
         };
         UserOrganizationPreferencesResponse: {
             /** Format: int64 */
-            selectedSpaceId?: null | number | string;
+            selectedSpaceId?: null | number;
         };
         UserPermissions: {
             global?: components["schemas"]["GlobalAccessLevels"];
@@ -4843,9 +4844,9 @@ export interface components {
             admin?: components["schemas"]["AdminAccessLevel"];
         };
         UserProfileDto: {
-            userName?: null | string;
-            givenName?: null | string;
-            familyName?: null | string;
+            userName: null | string;
+            givenName: null | string;
+            familyName: null | string;
             displayName: string;
             initials: string;
         };

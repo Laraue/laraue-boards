@@ -16,13 +16,16 @@ import SpaceSettingsPage from '#layers/workspace/app/sections/spaces/space-setti
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
-import { refreshAppLayoutData } from '#layers/workspace/app/shells/organization/useAppLayoutData'
+import {
+  refreshAppLayoutData,
+  useOrganizationCatalog,
+} from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-settings')
 const spaceKey = computed(() => String(route.params.spaceKey))
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createSpaceSettingsPageDeps(client)
+const deps = createSpaceSettingsPageDeps(client, useOrganizationCatalog())
 const onDeleted = async (): Promise<void> => {
   await refreshAppLayoutData()
   await navigateTo(organizationRoutes.issues())

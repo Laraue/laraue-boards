@@ -4,14 +4,13 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createBacklogPageDeps } from './BacklogPage.deps.impl'
 
+const catalog = () => ({
+  attributes: [],
+  spaces: [{ color: '#123', key: 'product', name: 'Product' }],
+})
+
 test('maps backlog page data', async () => {
   const { client } = createTestApiClient((_request, path) => {
-    if (path === '/api/spaces') {
-      return [{ color: '#123', key: 'product', name: 'Product' }]
-    }
-    if (path === '/api/organizations/attributes') {
-      return []
-    }
     if (path === '/api/spaces/product/epics') {
       return [{ id: 8, isDefault: true, name: 'Backlog' }]
     }
@@ -19,7 +18,7 @@ test('maps backlog page data', async () => {
   })
 
   assert.deepEqual(
-    await createBacklogPageDeps(client).view({
+    await createBacklogPageDeps(client, catalog).view({
       attributeQuery: {},
       page: 1,
       search: '',
@@ -55,7 +54,7 @@ test('maps backlog search request and response', async () => {
     hasNextPage: false,
   }))
 
-  const result = await createBacklogPageDeps(client).search({
+  const result = await createBacklogPageDeps(client, catalog).search({
     backlogBoardId: '8',
     filters: [],
     page: 2,
@@ -64,10 +63,10 @@ test('maps backlog search request and response', async () => {
 
   assert.equal(result.issues[0]?.issueKey, 'ISS-1')
   assert.deepEqual(await requests[0]!.json(), {
-    epicIds: ['8'],
+    epicIds: [8],
     filters: {},
     page: 1,
-    perPage: 10,
+    perPage: 20,
     searchString: 'bug',
     sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
   })

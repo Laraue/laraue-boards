@@ -1,10 +1,14 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { CreateBoardPageDeps } from './CreateBoardPage.deps'
 
-export const createCreateBoardPageDeps = (client: ApiClient): CreateBoardPageDeps => ({
+export const createCreateBoardPageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): CreateBoardPageDeps => ({
   create: async ({ color, name, spaceKey, statuses }) =>
     String(
       await request(
@@ -16,16 +20,13 @@ export const createCreateBoardPageDeps = (client: ApiClient): CreateBoardPageDep
     ),
 
   view: async ({ signal, spaceKey }) => {
-    const [boards, spaces] = await Promise.all([
-      request(
-        client.POST('/api/epics/get-with-statuses', {
-          body: { pagination: { page: 0, perPage: 100 }, spaceKey },
-          signal,
-        }),
-      ),
-      request(client.GET('/api/spaces', { signal })),
-    ])
-    const space = spaces.find((item) => item.key === spaceKey)
+    const boards = await request(
+      client.POST('/api/epics/get-with-statuses', {
+        body: { pagination: { page: 0, perPage: 100 }, spaceKey },
+        signal,
+      }),
+    )
+    const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     return {
       boards: boards.data.map((board) => ({
         label: board.epicName,

@@ -4,12 +4,17 @@ import { createTestApiClient } from '#infrastructure/api/testApiClient'
 
 import { createBoardSettingsPageDeps } from './BoardSettingsPage.deps.impl'
 
+const catalog = () => ({
+  attributes: [],
+  spaces: [{ color: '#4774d4', key: 'product', name: 'Product' }],
+})
+
 test('saves board and column changes', async () => {
   const { client, requests } = createTestApiClient((request, path) =>
     request.method === 'POST' && path === '/api/statuses' ? 9 : new Response(null, { status: 200 }),
   )
 
-  await createBoardSettingsPageDeps(client).save({
+  await createBoardSettingsPageDeps(client, catalog).save({
     boardId: '7',
     color: '#111',
     columns: [
@@ -36,13 +41,13 @@ test('saves board and column changes', async () => {
   assert.deepEqual(await requests[1]!.json(), {
     category: 'Completed',
     color: '#444',
-    epicId: '7',
+    epicId: 7,
     name: 'Done',
   })
   assert.deepEqual(await requests[2]!.json(), {
     category: 'InProgress',
     color: '#222',
-    id: '2',
+    id: 2,
     name: 'Doing',
   })
   assert.deepEqual(await requests[4]!.json(), { 2: 1, 9: 2 })
@@ -52,7 +57,7 @@ test('updates a column when only its category changed', async () => {
   const { client, requests } = createTestApiClient(() => new Response(null, { status: 200 }))
   const column = { color: '#222', id: '2', name: 'Doing' }
 
-  await createBoardSettingsPageDeps(client).save({
+  await createBoardSettingsPageDeps(client, catalog).save({
     boardId: '7',
     color: '#111',
     columns: [{ ...column, category: 'Completed' }],
@@ -71,29 +76,25 @@ test('updates a column when only its category changed', async () => {
   assert.deepEqual(await requests[1]!.json(), {
     category: 'Completed',
     color: '#222',
-    id: '2',
+    id: 2,
     name: 'Doing',
   })
 })
 
 test('maps board settings and sorts columns', async () => {
-  const { client } = createTestApiClient((_request, path) =>
-    path === '/api/spaces'
-      ? [{ key: 'product', name: 'Product' }]
-      : {
-          canDelete: true,
-          canUpdate: true,
-          color: '#111',
-          name: 'Roadmap',
-          status: 'Active',
-          statuses: [
-            { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
-            { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
-          ],
-        },
-  )
+  const { client } = createTestApiClient(() => ({
+    canDelete: true,
+    canUpdate: true,
+    color: '#111',
+    name: 'Roadmap',
+    status: 'Active',
+    statuses: [
+      { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
+      { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
+    ],
+  }))
 
-  const view = await createBoardSettingsPageDeps(client).view({
+  const view = await createBoardSettingsPageDeps(client, catalog).view({
     boardId: '12',
     spaceKey: 'product',
   })

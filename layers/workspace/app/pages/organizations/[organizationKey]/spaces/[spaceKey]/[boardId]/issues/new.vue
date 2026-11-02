@@ -17,13 +17,14 @@ import CreateBoardIssuePage from '#layers/workspace/app/sections/boards/create-i
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { useOrganizationCatalog } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-boardId-issues-new')
 const boardId = computed(() => String(route.params.boardId))
 const spaceKey = computed(() => String(route.params.spaceKey))
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createCreateBoardIssuePageDeps(client)
+const deps = createCreateBoardIssuePageDeps(client, useOrganizationCatalog())
 const initialStatusId = computed(() =>
   typeof route.query.statusId === 'string' ? route.query.statusId : undefined,
 )

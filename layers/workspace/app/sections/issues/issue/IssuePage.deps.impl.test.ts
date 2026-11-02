@@ -7,119 +7,116 @@ import { COLORS } from '#layers/workspace/app/shared/constants/colors'
 import { createIssuePageDeps } from './IssuePage.deps.impl'
 
 test('maps issue detail', async () => {
-  const { client, paths } = createTestApiClient((_request, path) =>
-    path === '/api/spaces/product/epics'
-      ? [{ id: 7, isDefault: true, name: 'Backlog' }]
-      : {
-          agentHandOff: {
-            available: false,
-            blocker: 'BoardNotReady',
-            canSendBack: false,
-            missingStatusCategories: ['Review'],
-          },
-          assignee: {
-            color: '#111',
-            displayName: 'Ada',
-            initials: 'A',
-            isCurrentUser: true,
-          },
-          assigneeId: '9',
-          attachments: [
-            {
-              fileName: 'image.png',
-              fileSize: 1000,
-              id: 'image',
-              mimeType: 'image/png',
-              originalFileId: 'original',
-              previewFileId: 'preview',
-              type: 'Image',
-            },
-            {
-              fileName: 'video.mp4',
-              fileSize: null,
-              id: 'file',
-              mimeType: 'video/mp4',
-              originalFileId: 'file',
-              previewFileId: 'file',
-              type: 'Video',
-            },
-            {
-              fileName: 'spec.pdf',
-              fileSize: 2048,
-              id: 'document',
-              mimeType: 'application/pdf',
-              originalFileId: 'pdf',
-              previewFileId: null,
-              type: 'Document',
-            },
-          ],
-          attributeValues: [
-            {
-              color: '#222',
-              id: 3,
-              listValues: [{ id: 4, name: 'High' }],
-              name: 'Priority',
-              type: 'List',
-              value: '4',
-            },
-            {
-              color: '#555',
-              id: 6,
-              listValues: [],
-              name: 'Starts',
-              type: 'DateTime',
-              value: '2026-08-22T12:30:00Z',
-            },
-            {
-              color: '#666',
-              id: 7,
-              listValues: [],
-              name: 'Estimate',
-              type: 'Decimal',
-              value: 1,
-            },
-            {
-              color: '#777',
-              id: 8,
-              listValues: [],
-              name: 'Points',
-              type: 'Integer',
-              value: 2,
-            },
-          ],
-          canEdit: true,
-          content: null,
-          epicId: 7,
-          epicName: null,
-          key: 'ISS-1',
-          links: [
-            {
-              key: 'ISS-2',
-              relation: 'DuplicatedBy',
-              statusCategory: 'Completed',
-              statusColor: null,
-              statusName: null,
-              title: 'Same bug',
-            },
-          ],
-          owner: { color: '#333', displayName: 'Grace', initials: 'G' },
-          source: {
-            chatTitle: 'Team',
-            isPrivateChat: false,
-            messageUrl: 'https://t.me/team_chat/12',
-            sender: { color: '#444', displayName: 'Linus', initials: 'L' },
-            sentAt: '2025-12-31T23:00:00Z',
-          },
-          spaceKey: 'product',
-          spaceName: 'Product',
-          statusCategory: 'Created',
-          statusId: 5,
-          statusName: null,
-          time: '2026-01-01T00:00:00Z',
-          title: 'Fix it',
-          updatedAt: '2026-01-02T00:00:00Z',
-        },
-  )
+  const { client, paths } = createTestApiClient(() => ({
+    agentHandOff: {
+      available: false,
+      blocker: 'BoardNotReady',
+      canSendBack: false,
+      missingStatusCategories: ['Review'],
+    },
+    assignee: {
+      color: '#111',
+      displayName: 'Ada',
+      initials: 'A',
+      isCurrentUser: true,
+    },
+    assigneeId: '9',
+    attachments: [
+      {
+        fileName: 'image.png',
+        fileSize: 1000,
+        id: 'image',
+        mimeType: 'image/png',
+        originalFileId: 'original',
+        previewFileId: 'preview',
+        type: 'Image',
+      },
+      {
+        fileName: 'video.mp4',
+        fileSize: null,
+        id: 'file',
+        mimeType: 'video/mp4',
+        originalFileId: 'file',
+        previewFileId: 'file',
+        type: 'Video',
+      },
+      {
+        fileName: 'spec.pdf',
+        fileSize: 2048,
+        id: 'document',
+        mimeType: 'application/pdf',
+        originalFileId: 'pdf',
+        previewFileId: null,
+        type: 'Document',
+      },
+    ],
+    attributeValues: [
+      {
+        color: '#222',
+        id: 3,
+        listValues: [{ id: 4, name: 'High' }],
+        name: 'Priority',
+        type: 'List',
+        value: '4',
+      },
+      {
+        color: '#555',
+        id: 6,
+        listValues: [],
+        name: 'Starts',
+        type: 'DateTime',
+        value: '2026-08-22T12:30:00Z',
+      },
+      {
+        color: '#666',
+        id: 7,
+        listValues: [],
+        name: 'Estimate',
+        type: 'Decimal',
+        value: 1,
+      },
+      {
+        color: '#777',
+        id: 8,
+        listValues: [],
+        name: 'Points',
+        type: 'Integer',
+        value: 2,
+      },
+    ],
+    canEdit: true,
+    content: null,
+    epicId: 7,
+    epicIsDefault: true,
+    epicName: null,
+    key: 'ISS-1',
+    links: [
+      {
+        key: 'ISS-2',
+        relation: 'DuplicatedBy',
+        statusCategory: 'Completed',
+        statusColor: null,
+        statusName: null,
+        title: 'Same bug',
+      },
+    ],
+    owner: { color: '#333', displayName: 'Grace', initials: 'G' },
+    source: {
+      chatTitle: 'Team',
+      isPrivateChat: false,
+      messageUrl: 'https://t.me/team_chat/12',
+      sender: { color: '#444', displayName: 'Linus', initials: 'L' },
+      sentAt: '2025-12-31T23:00:00Z',
+    },
+    spaceKey: 'product',
+    spaceName: 'Product',
+    statusCategory: 'Created',
+    statusId: 5,
+    statusName: null,
+    time: '2026-01-01T00:00:00Z',
+    title: 'Fix it',
+    updatedAt: '2026-01-02T00:00:00Z',
+  }))
 
   const result = await createIssuePageDeps(client).view({ issueKey: 'ISS-1' })
 
@@ -196,7 +193,7 @@ test('maps issue detail', async () => {
       url: 'https://api.test/api/files/pdf',
     },
   ])
-  assert.deepEqual(paths(), ['/api/issues/ISS-1', '/api/spaces/product/epics'])
+  assert.deepEqual(paths(), ['/api/issues/ISS-1'])
 })
 
 test('returns the new issue key after moving it to another space', async () => {

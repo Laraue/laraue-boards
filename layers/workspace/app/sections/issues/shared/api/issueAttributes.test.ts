@@ -67,10 +67,13 @@ test('maps issue attributes, filters, and values to API models', () => {
       8: { $type: 'datetime', from: utcDateTime, to: undefined },
     },
   )
-  assert.deepEqual(mapRawIssueFilters({ 1: ['ABC'], 2: ['3', '4', '99'] }, attributeDtos).filters, {
-    1: { $type: 'string', searchString: 'ABC' },
-    2: { $type: 'enum', ids: ['3', '4'] },
-  })
+  assert.deepEqual(
+    mapRawIssueFilters({ 1: ['ABC'], 2: ['3', '4', '99'] }, mapIssueAttributes(attributeDtos)),
+    {
+      1: { $type: 'string', searchString: 'ABC' },
+      2: { $type: 'enum', ids: ['3', '4'] },
+    },
+  )
   assert.deepEqual(
     mapIssueAttributeValues([
       { attributeId: '1', type: 'text', value: 'ABC' },
@@ -81,12 +84,12 @@ test('maps issue attributes, filters, and values to API models', () => {
       { attributeId: '8', type: 'dateTime', value: '2026-08-22T12:30' },
     ]),
     [
-      { $type: 'string', attributeId: '1', value: 'ABC' },
-      { $type: 'enum', attributeId: '2', valueId: '3' },
-      { $type: 'decimal', attributeId: '6', value: '12.5' },
-      { $type: 'integer', attributeId: '5', value: '42' },
-      { $type: 'date', attributeId: '7', value: '2026-08-23' },
-      { $type: 'datetime', attributeId: '8', value: utcDateTime },
+      { $type: 'string', attributeId: 1, value: 'ABC' },
+      { $type: 'enum', attributeId: 2, valueId: 3 },
+      { $type: 'decimal', attributeId: 6, value: 12.5 },
+      { $type: 'integer', attributeId: 5, value: 42 },
+      { $type: 'date', attributeId: 7, value: '2026-08-23' },
+      { $type: 'datetime', attributeId: 8, value: utcDateTime },
     ],
   )
 })

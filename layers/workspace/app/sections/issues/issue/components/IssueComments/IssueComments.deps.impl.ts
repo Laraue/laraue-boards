@@ -10,8 +10,8 @@ const mapComment = (
   baseUrl: string,
 ): IssueCommentViewModel => ({
   attachments: mapIssueAttachments(comment.attachments, baseUrl),
-  canModify: comment.canModify ?? false,
-  createdAt: comment.createdAt ?? '',
+  canModify: comment.canModify,
+  createdAt: comment.createdAt,
   id: String(comment.id),
   owner: {
     ...(comment.agent ? { agent: comment.agent } : {}),
@@ -21,7 +21,7 @@ const mapComment = (
     name: comment.owner.displayName,
   },
   text: comment.text,
-  updatedAt: comment.updatedAt ?? comment.createdAt ?? '',
+  updatedAt: comment.updatedAt,
 })
 
 // Comments are sent as forms, the way the backend takes them with attachments.

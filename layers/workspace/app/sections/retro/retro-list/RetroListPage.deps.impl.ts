@@ -29,12 +29,12 @@ export const createRetroListPageDeps = (client: RetroApiClient): RetroListPageDe
       hasNextPage: result.hasNextPage,
       retros: result.data.map((retro) => ({
         canManage: retro.canManage,
-        cardCount: Number(retro.cardCount),
+        cardCount: retro.cardCount,
         createdAt: retro.createdAt,
         finished: retro.finishedAt !== null,
         id: String(retro.id),
         name: retro.name,
-        openActionCount: Number(retro.openActionCount),
+        openActionCount: retro.openActionCount,
       })),
     }
   },

@@ -970,12 +970,12 @@ export interface components {
     schemas: {
         CreateRetroCardRequest: {
             /** Format: int64 */
-            sectionId: number | string;
+            sectionId: number;
             text: string;
             /** Format: double */
-            x: number | string;
+            x: number;
             /** Format: double */
-            y: number | string;
+            y: number;
         };
         CreateRetroCardResponse: {
             /** Format: uuid */
@@ -984,15 +984,15 @@ export interface components {
         CreateRetroRequest: {
             name: string;
             /** Format: int64 */
-            basedOnRetroId?: null | number | string;
+            basedOnRetroId?: null | number;
         };
         CreateRetroResponse: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
         };
         GetRetroResponse: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: string;
             phase: components["schemas"]["RetroPhase"];
@@ -1001,9 +1001,9 @@ export interface components {
             /** Format: date-time */
             finishedAt: null | string;
             /** Format: int32 */
-            votesPerUser: number | string;
+            votesPerUser: number;
             /** Format: int32 */
-            myVotes: number | string;
+            myVotes: number;
             /** Format: date-time */
             phaseEndsAt: null | string;
             canManage: boolean;
@@ -1019,9 +1019,9 @@ export interface components {
         };
         GetRetrosResponse: {
             /** Format: int64 */
-            page: number | string;
+            page: number;
             /** Format: int32 */
-            perPage: number | string;
+            perPage: number;
             hasNextPage: boolean;
             data: components["schemas"]["RetroListItem"][];
             canCreate: boolean;
@@ -1030,40 +1030,40 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: double */
-            x: number | string;
+            x: number;
             /** Format: double */
-            y: number | string;
+            y: number;
         };
         GroupRetroCardsRequest: {
             cards: components["schemas"]["GroupRetroCardRequest"][];
         };
         GroupRetroCardsResponse: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
         };
         MoveRetroCardRequest: {
             /** Format: int64 */
-            sectionId: number | string;
+            sectionId: number;
             /** Format: double */
-            x: number | string;
+            x: number;
             /** Format: double */
-            y: number | string;
+            y: number;
             /** Format: int64 */
-            groupId?: null | number | string;
+            groupId?: null | number;
         };
         MoveRetroGroupRequest: {
             /** Format: int64 */
-            sectionId: number | string;
+            sectionId: number;
             /** Format: double */
-            deltaX: number | string;
+            deltaX: number;
             /** Format: double */
-            deltaY: number | string;
+            deltaY: number;
         };
         PaginationData: {
             /** Format: int32 */
-            page?: number | string;
+            page?: number;
             /** Format: int32 */
-            perPage?: number | string;
+            perPage?: number;
         };
         RenameRetroRequest: {
             name: string;
@@ -1072,38 +1072,38 @@ export interface components {
             /** Format: uuid */
             id: string;
             /** Format: int64 */
-            sectionId: number | string;
+            sectionId: number;
             text: string;
             /** Format: double */
-            x: number | string;
+            x: number;
             /** Format: double */
-            y: number | string;
+            y: number;
             /** Format: int32 */
-            stackOrder: number | string;
+            stackOrder: number;
             done: boolean;
             hidden: boolean;
             revealed: boolean;
             isMine: boolean;
             assignee: null | components["schemas"]["RetroUser"];
             /** Format: int64 */
-            groupId: null | number | string;
+            groupId: null | number;
             /** Format: int32 */
-            votes: number | string;
+            votes: number;
             votedByMe: boolean;
             author: components["schemas"]["RetroUser"];
         };
         RetroCardGroupDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             title: string;
             cardIds: string[];
             /** Format: int32 */
-            votes: number | string;
+            votes: number;
             votedByMe: boolean;
         };
         RetroListItem: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             /** Format: date-time */
             createdAt: string;
@@ -1111,19 +1111,19 @@ export interface components {
             finishedAt: null | string;
             canManage: boolean;
             /** Format: int32 */
-            cardCount: number | string;
+            cardCount: number;
             /** Format: int32 */
-            openActionCount: number | string;
+            openActionCount: number;
         };
         /** @enum {unknown} */
         RetroPhase: "Collect" | "Vote" | "Discuss" | "Group" | "Actions";
         RetroSectionDto: {
             /** Format: int64 */
-            id: number | string;
+            id: number;
             name: string;
             color: string;
             /** Format: int32 */
-            sortOrder: number | string;
+            sortOrder: number;
         };
         RetroUser: {
             /** Format: uuid */
@@ -1157,7 +1157,7 @@ export interface components {
         };
         SetRetroTimerRequest: {
             /** Format: int32 */
-            minutes: null | number | string;
+            minutes: null | number;
         };
         TransferRetroOwnershipRequest: {
             /** Format: uuid */
@@ -1169,7 +1169,7 @@ export interface components {
         UpdateRetroSettingsRequest: {
             phase: components["schemas"]["RetroPhase"];
             /** Format: int32 */
-            votesPerUser: number | string;
+            votesPerUser: number;
         };
     };
     responses: never;

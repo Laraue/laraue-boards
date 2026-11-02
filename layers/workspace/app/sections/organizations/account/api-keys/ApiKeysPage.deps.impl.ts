@@ -23,9 +23,9 @@ export const createApiKeysPageDeps = (client: ApiClient): ApiKeysPageDeps => ({
         createdAt: key.createdAt,
         id: key.id,
         keyPrefix: key.keyPrefix,
-        lastUsedAt: key.lastUsedAt ?? null,
+        lastUsedAt: key.lastUsedAt,
         name: key.name,
-        revokedAt: key.revokedAt ?? null,
+        revokedAt: key.revokedAt,
       })),
     }
   },

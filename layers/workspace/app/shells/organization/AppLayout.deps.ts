@@ -1,3 +1,4 @@
+import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
 import type { TourStateDeps } from '#layers/workspace/app/shared/composables/useTour'
 import type { FeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps'
 import type { OrganizationSetupDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetup/OrganizationSetup.deps'
@@ -20,6 +21,8 @@ export type AppLayoutData = {
     // The space sign-up created, to name; absent when the organization has no space.
     space?: { color: string; issueCount: number; key: string; name: string }
   }
+  // The organization's issue attributes, for the pages that filter or fill them in.
+  attributes: IssueAttributeField[]
   spaces: Array<{
     color: string
     key: string
@@ -27,6 +30,12 @@ export type AppLayoutData = {
   }>
   user: { color: string; initials: string; name: string; tariffName: string }
 }
+
+/** The spaces and attributes the layout loaded once for the organization (BRD-301). Pages read
+ * them instead of asking the API again; the pages that change them refresh the layout. */
+export type OrganizationCatalog = Pick<AppLayoutData, 'attributes' | 'spaces'>
+
+export type ReadOrganizationCatalog = () => OrganizationCatalog
 
 export type AppLayoutProblem =
   | { code: number; kind: 'load-failed' }

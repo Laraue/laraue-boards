@@ -12,11 +12,13 @@ import CreateAttributePage from '#layers/workspace/app/sections/organizations/at
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { refreshAppLayoutData } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
 const deps = createCreateAttributePageDeps(client)
 const organizationRoutes = useOrganizationRoutes()
 const onCreated = async (): Promise<void> => {
+  await refreshAppLayoutData()
   await navigateTo(organizationRoutes.attributes())
 }
 </script>

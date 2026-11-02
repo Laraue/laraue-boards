@@ -17,8 +17,8 @@ const loadStatusIds = async (client: ApiClient, boardId: string): Promise<string
   const board = await request(
     client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } } }),
   )
-  return [...(board.statuses ?? [])]
-    .sort((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
+  return board.statuses
+    .toSorted((left, right) => left.sortOrder - right.sortOrder)
     .map((status) => String(status.id))
 }
 

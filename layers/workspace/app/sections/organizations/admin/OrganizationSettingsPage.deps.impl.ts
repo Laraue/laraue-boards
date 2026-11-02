@@ -16,7 +16,7 @@ export const createOrganizationSettingsPageDeps = (
   updateOrganization: async ({ color, id, name, slug }) => {
     await request(
       client.PUT('/api/admin/organizations/{id}', {
-        body: { color, id, name, slug },
+        body: { color, id: Number(id), name, slug },
         params: { path: { id: Number(id) } },
       }),
     )

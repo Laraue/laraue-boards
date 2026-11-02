@@ -17,12 +17,13 @@ import IssuesPage from '#layers/workspace/app/sections/issues/issues/IssuesPage.
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { useOrganizationCatalog } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-issues')
 const organizationKey = computed(() => String(route.params.organizationKey))
 const router = useRouter()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createIssuesPageDeps(client)
+const deps = createIssuesPageDeps(client, useOrganizationCatalog())
 const onUpdateQuery = async (query: LocationQueryRaw): Promise<void> => {
   await router.replace({ query })
 }

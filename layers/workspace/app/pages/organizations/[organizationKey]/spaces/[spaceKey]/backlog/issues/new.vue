@@ -15,12 +15,13 @@ import CreateBacklogIssuePage from '#layers/workspace/app/sections/spaces/create
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { useOrganizationCatalog } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-backlog-issues-new')
 const spaceKey = computed(() => String(route.params.spaceKey))
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createCreateBacklogIssuePageDeps(client)
+const deps = createCreateBacklogIssuePageDeps(client, useOrganizationCatalog())
 const onCreated = async (): Promise<void> => {
   await navigateTo(organizationRoutes.backlog(spaceKey.value))
 }

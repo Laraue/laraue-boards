@@ -61,8 +61,10 @@ const { data, message, pending, refresh } = await useApiQuery(
   (signal) => props.deps.view({ signal }),
 )
 
+// The page reads the spaces from the layout, so the layout is refreshed first.
 const onSpacesMoved = async () => {
-  await Promise.all([refresh(), props.onSpacesMoved()])
+  await props.onSpacesMoved()
+  await refresh()
 }
 </script>
 

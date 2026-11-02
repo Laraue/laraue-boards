@@ -10,6 +10,7 @@ import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/a
 import { createIssueListDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.deps.impl'
 import type { IssueListItem } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.types'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { IssueBoardStatus, IssuesPageDeps } from './IssuesPage.deps'
 
@@ -20,7 +21,7 @@ const mapIssue = (issue: Schemas['SearchIssueDto']): IssueListItem => ({
   assigneeColor: issue.assigneeColor,
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
-  blocked: issue.isBlocked ?? false,
+  blocked: issue.isBlocked,
   boardColor: issue.epic.color,
   boardId: String(issue.epicId),
   boardName: issue.epic.name,
@@ -54,7 +55,10 @@ const searchBody = (input: {
   spaceKeys: input.spaceIds.length ? input.spaceIds : undefined,
 })
 
-export const createIssuesPageDeps = (client: ApiClient): IssuesPageDeps => ({
+export const createIssuesPageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): IssuesPageDeps => ({
   issueList: createIssueListDeps(client),
 
   searchIssues: async (input) => {
@@ -66,21 +70,17 @@ export const createIssuesPageDeps = (client: ApiClient): IssuesPageDeps => ({
     return { hasNextPage: issues.hasNextPage, issues: issues.data.map(mapIssue) }
   },
 
-  // The attribute filters in the address need the attributes before the search can run.
+  // One request: the attributes and spaces come from the layout.
   view: async ({ attributeQuery, signal, ...input }) => {
-    const [attributes, spaces] = await Promise.all([
-      request(client.GET('/api/organizations/attributes', { signal })),
-      request(client.GET('/api/spaces', { signal })),
-    ])
-    const attributeData = mapRawIssueFilters(attributeQuery, attributes)
+    const { attributes, spaces } = readCatalog()
     const issues = await request(
       client.POST('/api/issues/search', {
-        body: searchBody({ ...input, filters: attributeData.filters }),
+        body: searchBody({ ...input, filters: mapRawIssueFilters(attributeQuery, attributes) }),
         signal,
       }),
     )
     return {
-      attributes: attributeData.attributes,
+      attributes,
       hasNextPage: issues.hasNextPage,
       issues: issues.data.map(mapIssue),
       spaces: spaces.map((space) => ({ label: space.name, value: space.key })),

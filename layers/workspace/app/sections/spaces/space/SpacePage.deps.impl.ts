@@ -1,14 +1,17 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { SpacePageDeps } from './SpacePage.deps'
 
-export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
+export const createSpacePageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): SpacePageDeps => ({
   view: async ({ signal, spaceKey }) => {
     const path = { key: spaceKey }
-    const [spaces, details, boards, boardStatuses, about] = await Promise.all([
-      request(client.GET('/api/spaces', { signal })),
+    const [details, boards, boardStatuses, about] = await Promise.all([
       request(client.GET('/api/spaces/{key}', { params: { path }, signal })),
       request(
         client.GET('/api/issues/summary', { params: { query: { SpaceKey: spaceKey } }, signal }),
@@ -16,13 +19,13 @@ export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
       request(client.GET('/api/spaces/{key}/epics', { params: { path }, signal })),
       request(client.GET('/api/spaces/{key}/about', { params: { path }, signal })),
     ])
-    const space = spaces.find((item) => item.key === spaceKey)
+    const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     if (!space) {
       throw new ApiError(404)
     }
     return {
       about: {
-        description: about.description ?? null,
+        description: about.description,
         links: about.links.map((link) => ({
           description: link.description,
           id: String(link.id),
@@ -34,14 +37,14 @@ export const createSpacePageDeps = (client: ApiClient): SpacePageDeps => ({
         color: board.color ?? (board.isDefault ? space.color : COLORS.gray),
         createdAt: board.createdAt,
         id: String(board.id),
-        issueCount: board.columns.reduce((sum, column) => sum + Number(column.count), 0),
+        issueCount: board.columns.reduce((sum, column) => sum + column.count, 0),
         kind: board.isDefault ? 'backlog' : 'board',
         name: board.isDefault ? 'Backlog' : board.name,
         status: boardStatuses.find((item) => String(item.id) === String(board.id))?.status ?? 'New',
         statuses: board.columns.map((column) => ({
           category: column.category,
           color: column.color ?? COLORS.gray,
-          count: Number(column.count),
+          count: column.count,
           name: column.name,
         })),
       })),

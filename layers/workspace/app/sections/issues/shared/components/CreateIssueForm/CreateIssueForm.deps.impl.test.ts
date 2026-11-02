@@ -28,8 +28,8 @@ test('sends the new issue as a form and resolves with its key', async () => {
   assert.equal(form.get('Content'), 'Issue')
   assert.equal(form.get('Title'), 'Issue title')
   assert.deepEqual(JSON.parse(String(form.get('AttributeValues'))), [
-    { $type: 'string', attributeId: '3', value: 'Details' },
-    { $type: 'enum', attributeId: '4', valueId: '11' },
+    { $type: 'string', attributeId: 3, value: 'Details' },
+    { $type: 'enum', attributeId: 4, valueId: 11 },
   ])
   assert.deepEqual(
     form.getAll('Files').map((file) => (file as File).name),

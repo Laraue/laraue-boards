@@ -9,6 +9,7 @@ import {
 } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
 import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/api/issueSource'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { BoardPageDeps, SearchBoardIssuesResult } from './BoardPage.deps'
 
@@ -20,7 +21,7 @@ const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
   assigneeColor: issue.assigneeColor,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,
-  blocked: issue.isBlocked ?? false,
+  blocked: issue.isBlocked,
   issueKey: issue.key,
   time: issue.time,
   title: issue.title,
@@ -28,18 +29,21 @@ const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
 
 const mapBoardIssues = (columnIssues: Schemas['ColumnIssues'][]): SearchBoardIssuesResult => ({
   columns: columnIssues.map((column) => ({
-    hasNext: column.items.hasNext ?? false,
+    hasNext: column.items.hasNext,
     id: String(column.statusId),
-    issueCount: Number(column.items.totalCount ?? 0),
+    issueCount: column.items.totalCount,
     issues: column.items.data.map(mapIssueListItem),
   })),
-  issueCount: columnIssues.reduce((sum, column) => sum + Number(column.items.totalCount ?? 0), 0),
+  issueCount: columnIssues.reduce((sum, column) => sum + column.items.totalCount, 0),
 })
 
-const sortByOrder = <Item extends { sortOrder?: number | string }>(items: Item[]) =>
-  items.toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
+const sortByOrder = <Item extends { sortOrder: number }>(items: Item[]) =>
+  items.toSorted((left, right) => left.sortOrder - right.sortOrder)
 
-export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
+export const createBoardPageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): BoardPageDeps => ({
   issueDialog: createIssuePageDeps(client),
 
   loadMoreBoardIssues: async ({ filters, offset, search, statusId, take }) => {
@@ -54,7 +58,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
         params: { path: { statusId: Number(statusId) } },
       }),
     )
-    return { hasNext: page.hasNext ?? false, issues: page.data.map(mapIssueListItem) }
+    return { hasNext: page.hasNext, issues: page.data.map(mapIssueListItem) }
   },
 
   // Dropped into another column changes the status first, then the order next to `target`.
@@ -94,13 +98,13 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
     const backlogBoard = await request(
       client.GET('/api/epics/{id}', { params: { path: { id: Number(backlog.id) } } }),
     )
-    const [status] = sortByOrder(backlogBoard.statuses ?? [])
+    const [status] = sortByOrder(backlogBoard.statuses)
     if (!status) {
       throw new ApiError(500)
     }
     await request(
       client.POST('/api/issues/status', {
-        body: { issueKeys: [issueKey], statusId: Number(status.id) },
+        body: { issueKeys: [issueKey], statusId: status.id },
       }),
     )
   },
@@ -110,7 +114,7 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       await request(
         client.POST('/api/issues/board', {
           body: {
-            epicId: boardId,
+            epicId: Number(boardId),
             filters: mapIssueFilters(filters),
             searchString: search || undefined,
             take,
@@ -119,43 +123,38 @@ export const createBoardPageDeps = (client: ApiClient): BoardPageDeps => ({
       ),
     ),
 
-  // The attributes come first: the filters in the query are read against them.
+  // The attributes and the space's name and color come from the layout.
   view: async ({ attributeQuery, boardId, search, signal, spaceKey }) => {
-    const attributes = mapRawIssueFilters(
-      attributeQuery,
-      await request(client.GET('/api/organizations/attributes', { signal })),
-    )
-    // The board doesn't carry its space's name and color; the spaces list does.
-    const [board, columnIssues, spaces] = await Promise.all([
-      request(client.GET('/api/epics/{id}', { params: { path: { id: boardId } }, signal })),
+    const { attributes, spaces } = readCatalog()
+    const [board, columnIssues] = await Promise.all([
+      request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
       request(
         client.POST('/api/issues/board', {
           body: {
-            epicId: boardId,
-            filters: attributes.filters,
+            epicId: Number(boardId),
+            filters: mapRawIssueFilters(attributeQuery, attributes),
             searchString: search || undefined,
             take: 25,
           },
           signal,
         }),
       ),
-      request(client.GET('/api/spaces', { signal })),
     ])
     const issues = mapBoardIssues(columnIssues)
     const issuesByStatus = new Map(issues.columns.map((column) => [column.id, column]))
     const space = spaces.find((item) => item.key === spaceKey)
     return {
-      attributes: attributes.attributes,
+      attributes,
       canCreateIssues: board.canCreateIssues,
-      canDelete: board.canDelete ?? false,
+      canDelete: board.canDelete,
       canMoveIssues: board.canUpdateIssues,
-      canUpdate: board.canUpdate ?? false,
-      color: board.color ?? null,
-      columns: sortByOrder(board.statuses ?? []).map((status) => {
+      canUpdate: board.canUpdate,
+      color: board.color,
+      columns: sortByOrder(board.statuses).map((status) => {
         const column = issuesByStatus.get(String(status.id))
         return {
           category: status.category,
-          color: status.color ?? null,
+          color: status.color,
           hasNext: column?.hasNext ?? false,
           id: String(status.id),
           issueCount: column?.issueCount ?? 0,
