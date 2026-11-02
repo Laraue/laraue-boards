@@ -9,9 +9,9 @@ type Schemas = components['schemas']
 const mapUsage = (usage: null | Schemas['LimitUsage'] | undefined): BillingUsageViewModel | null =>
   usage
     ? {
-        limit: Number(usage.limit),
-        remaining: Number(usage.remaining),
-        used: Number(usage.used),
+        limit: usage.limit,
+        remaining: usage.remaining,
+        used: usage.used,
       }
     : null
 
@@ -21,13 +21,13 @@ export const createBillingPageDeps = (client: ApiClient): BillingPageDeps => ({
     const common = {
       canPay: summary.canPay,
       issuesPerMonth: mapUsage(summary.issuesPerMonth),
-      issuesResetAt: summary.issuesResetAt ?? null,
-      periodEndsAt: summary.periodEndsAt ?? null,
-      periodResets: summary.periodResets ?? false,
+      issuesResetAt: summary.issuesResetAt,
+      periodEndsAt: summary.periodEndsAt,
+      periodResets: summary.periodResets,
       purchasedTokens: {
-        count: Number(summary.purchasedTokensCount ?? 0),
-        expireAt: summary.purchasedTokensExpireAt ?? null,
-        expiringCount: Number(summary.purchasedTokensExpiringCount ?? 0),
+        count: summary.purchasedTokensCount,
+        expireAt: summary.purchasedTokensExpireAt,
+        expiringCount: summary.purchasedTokensExpiringCount,
       },
       subscriptionCode: summary.subscriptionCode,
       tokens: mapUsage(summary.tokens)!,

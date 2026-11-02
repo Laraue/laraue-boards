@@ -45,6 +45,9 @@ export default defineConfig({
         root: process.cwd(),
         test: {
           browser: {
+            // Below Windows' dynamic port range: Hyper-V/WSL reserve blocks there after a reboot,
+            // and the default 63315 can land in one (EACCES). IPv4, where Chromium looks for it.
+            api: { host: '127.0.0.1', port: 43315 },
             enabled: true,
             headless: true,
             instances: [

@@ -12,6 +12,7 @@ import type { AppLayoutData, AppLayoutDeps, RoutableProblem } from './AppLayout.
 import AppLayout from './AppLayout.vue'
 
 const data: AppLayoutData = {
+  attributes: [],
   organization: {
     canCreateSpaces: true,
     canManage: true,

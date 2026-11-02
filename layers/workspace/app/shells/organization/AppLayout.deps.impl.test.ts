@@ -32,6 +32,8 @@ test('loads the requested organization layout', async () => {
         ]
       case '/api/spaces':
         return [{ color: '#789', key: 'DEV', name: 'Development' }]
+      case '/api/organizations/attributes':
+        return []
       case '/api/billing/tariff':
         return { name: 'Free' }
       default:
@@ -41,6 +43,7 @@ test('loads the requested organization layout', async () => {
 
   assert.deepEqual(await createAppLayoutDeps(client).view({ organizationKey: 'acme-AB12' }), {
     data: {
+      attributes: [],
       organization: {
         canCreateSpaces: true,
         canManage: true,
@@ -123,6 +126,8 @@ test('selects the organization from the url when only the organization cookie is
         return new Response('ok')
       case '/api/spaces':
         return []
+      case '/api/organizations/attributes':
+        return []
       case '/api/billing/tariff':
         return { name: 'Free' }
       default:
@@ -165,6 +170,8 @@ test('passes the setup window to the owner with the color of the space to name',
         ]
       case '/api/spaces':
         return [{ color: '#789', key: 'DEF', name: 'Default Space' }]
+      case '/api/organizations/attributes':
+        return []
       case '/api/billing/tariff':
         return { name: 'Free' }
       default:

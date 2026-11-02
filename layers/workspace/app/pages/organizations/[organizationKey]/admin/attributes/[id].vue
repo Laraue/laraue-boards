@@ -15,6 +15,7 @@ import AttributePage from '#layers/workspace/app/sections/organizations/attribut
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { refreshAppLayoutData } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-admin-attributes-id')
 const attributeId = computed(() => String(route.params.id))
@@ -22,6 +23,7 @@ const client = useApiClient({ onUnauthorized: useSignInRedirect() })
 const deps = createAttributePageDeps(client)
 const organizationRoutes = useOrganizationRoutes()
 const onFinished = async (): Promise<void> => {
+  await refreshAppLayoutData()
   await navigateTo(organizationRoutes.attributes())
 }
 </script>

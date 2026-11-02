@@ -1,9 +1,13 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
+import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
 
-export const createSpaceSettingsPageDeps = (client: ApiClient): SpaceSettingsPageDeps => ({
+export const createSpaceSettingsPageDeps = (
+  client: ApiClient,
+  readCatalog: ReadOrganizationCatalog,
+): SpaceSettingsPageDeps => ({
   remove: async ({ spaceKey }) => {
     await request(client.DELETE('/api/spaces/{key}', { params: { path: { key: spaceKey } } }))
   },
@@ -28,16 +32,15 @@ export const createSpaceSettingsPageDeps = (client: ApiClient): SpaceSettingsPag
     )
   },
 
-  // The name and color live in the space list, the permissions in the space itself, the description and links in
-  // its about.
+  // The name and color live in the layout's space list, the permissions in the space itself, the
+  // description and links in its about.
   view: async ({ signal, spaceKey }) => {
     const path = { key: spaceKey }
-    const [spaces, details, about] = await Promise.all([
-      request(client.GET('/api/spaces', { signal })),
+    const [details, about] = await Promise.all([
       request(client.GET('/api/spaces/{key}', { params: { path }, signal })),
       request(client.GET('/api/spaces/{key}/about', { params: { path }, signal })),
     ])
-    const space = spaces.find((item) => item.key === spaceKey)
+    const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     if (!space) {
       throw new ApiError(404)
     }

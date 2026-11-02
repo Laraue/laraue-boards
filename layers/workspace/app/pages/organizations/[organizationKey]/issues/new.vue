@@ -12,10 +12,11 @@ import CreateIssuePage from '#layers/workspace/app/sections/issues/create-issue/
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { useOrganizationCatalog } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createCreateIssuePageDeps(client)
+const deps = createCreateIssuePageDeps(client, useOrganizationCatalog())
 const onCreated = async (): Promise<void> => {
   await navigateTo(organizationRoutes.issues(), { replace: true })
 }

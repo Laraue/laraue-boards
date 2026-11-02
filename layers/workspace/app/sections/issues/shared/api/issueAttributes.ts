@@ -106,19 +106,39 @@ export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
   return values.map((value) => {
     switch (value.type) {
       case 'text':
-        return { $type: 'string' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'string' as const,
+          attributeId: Number(value.attributeId),
+          value: value.value,
+        }
       case 'list':
-        return { $type: 'enum' as const, attributeId: value.attributeId, valueId: value.valueId }
+        return {
+          $type: 'enum' as const,
+          attributeId: Number(value.attributeId),
+          valueId: Number(value.valueId),
+        }
       case 'integer':
-        return { $type: 'integer' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'integer' as const,
+          attributeId: Number(value.attributeId),
+          value: Number(value.value),
+        }
       case 'decimal':
-        return { $type: 'decimal' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'decimal' as const,
+          attributeId: Number(value.attributeId),
+          value: Number(value.value),
+        }
       case 'date':
-        return { $type: 'date' as const, attributeId: value.attributeId, value: value.value }
+        return {
+          $type: 'date' as const,
+          attributeId: Number(value.attributeId),
+          value: value.value,
+        }
       case 'dateTime':
         return {
           $type: 'datetime' as const,
-          attributeId: value.attributeId,
+          attributeId: Number(value.attributeId),
           value: toUtcIssueDateTime(value.value),
         }
       default:
@@ -127,17 +147,11 @@ export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
   }) satisfies Schemas['AttributeValue'][]
 }
 
+// The attribute filters from the address, for an issue search.
 export const mapRawIssueFilters = (
   raw: Record<string, string[]>,
-  attributeDtos: IssueAttributeDto[],
-) => {
-  const attributes = mapIssueAttributes(attributeDtos)
-  const filters = getIssueAttributeFilterInput(
-    normalizeIssueAttributeFilters(raw, attributes),
-    attributes,
+  attributes: IssueAttributeField[],
+) =>
+  mapIssueFilters(
+    getIssueAttributeFilterInput(normalizeIssueAttributeFilters(raw, attributes), attributes),
   )
-  return {
-    attributes,
-    filters: mapIssueFilters(filters),
-  }
-}

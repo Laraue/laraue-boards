@@ -78,7 +78,7 @@ test('sends list values for a list attribute', async () => {
   assert.deepEqual(await requests[0]!.json(), {
     color: '#fff',
     id: 7,
-    listValues: [{ id: '1', name: 'Low' }],
+    listValues: [{ id: 1, name: 'Low' }],
     name: 'Severity',
   })
 })

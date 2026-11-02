@@ -34,9 +34,9 @@ const mapRetro = (retro: RetroResponse): RetroBoardViewModel => {
     sectionId: String(card.sectionId),
     text: card.text,
     votedByMe: card.votedByMe,
-    votes: Number(card.votes),
-    x: Number(card.x),
-    y: Number(card.y),
+    votes: card.votes,
+    x: card.x,
+    y: card.y,
   }))
   return {
     canManage: retro.canManage,
@@ -48,24 +48,24 @@ const mapRetro = (retro: RetroResponse): RetroBoardViewModel => {
       id: String(group.id),
       title: group.title,
       votedByMe: group.votedByMe,
-      votes: Number(group.votes),
+      votes: group.votes,
     })),
     id: String(retro.id),
     me: toMember(retro.currentUser),
-    myVotes: Number(retro.myVotes),
+    myVotes: retro.myVotes,
     name: retro.name,
     owner: toMember(retro.owner),
     participants: retro.participants.map((participant): RetroMember => toMember(participant)),
     phase: retro.phase,
     phaseEndsAt: retro.phaseEndsAt,
     sections: retro.sections
-      .toSorted((left, right) => Number(left.sortOrder) - Number(right.sortOrder))
+      .toSorted((left, right) => left.sortOrder - right.sortOrder)
       .map((section) => ({
         color: section.color,
         id: String(section.id),
         name: section.name,
       })),
-    votesPerUser: Number(retro.votesPerUser),
+    votesPerUser: retro.votesPerUser,
   }
 }
 

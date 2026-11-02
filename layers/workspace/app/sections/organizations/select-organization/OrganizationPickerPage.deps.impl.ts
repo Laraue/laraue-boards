@@ -18,7 +18,10 @@ export const createOrganizationPickerPageDeps = (
 
   select: async ({ organizationId }) => {
     await request(
-      client.POST('/api/organizations/login', { body: { organizationId }, parseAs: 'text' }),
+      client.POST('/api/organizations/login', {
+        body: { organizationId: Number(organizationId) },
+        parseAs: 'text',
+      }),
     )
   },
 

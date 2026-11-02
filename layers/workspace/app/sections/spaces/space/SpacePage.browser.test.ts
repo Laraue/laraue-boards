@@ -113,7 +113,7 @@ it('reloads the space when the failed request is retried', async () => {
   await expect.element(page.getByRole('heading', { name: 'Product' })).toBeInTheDocument()
 })
 
-it('shows what the space is about, and folds it away on request', async () => {
+it('shows what the space is about from the button next to its name', async () => {
   const view = vi.fn<SpacePageDeps['view']>(async () => ({
     ...pageData,
     about: {
@@ -130,14 +130,14 @@ it('shows what the space is about, and folds it away on request', async () => {
 
   await mount(view)
 
+  await expect.element(page.getByText('The product tracker.')).not.toBeInTheDocument()
+
+  await page.getByRole('button', { name: 'About this space' }).click()
+
   await expect.element(page.getByText('The product tracker.')).toBeInTheDocument()
   await expect
     .element(page.getByRole('link', { name: 'Nuxt web app' }))
     .toHaveAttribute('href', 'https://github.com/Laraue/laraue-boards')
-
-  await page.getByRole('button', { name: 'About this space' }).click()
-
-  await expect.element(page.getByText('Nuxt web app')).not.toBeInTheDocument()
 })
 
 it('shows nothing about an empty space', async () => {

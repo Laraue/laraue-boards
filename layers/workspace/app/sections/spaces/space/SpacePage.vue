@@ -8,6 +8,11 @@
         :title="data?.name ?? t('space')">
         <template
           v-if="data"
+          #title-actions>
+          <SpaceAbout :about="data.about" />
+        </template>
+        <template
+          v-if="data"
           #actions>
           <BaseButton
             v-if="data.canManage"
@@ -39,9 +44,6 @@
       <template #default="{ data: page }">
         <!-- A data list, as the issue list: rows on the page itself, no box around them. -->
         <section class="space-page">
-          <SpaceAbout
-            :about="page.about"
-            :space-key="spaceKey" />
           <NuxtLink
             v-if="backlog"
             class="space-row"

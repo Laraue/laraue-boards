@@ -27,6 +27,7 @@ import { useApiClient } from '#layers/workspace/app/shared/composables/useApiCli
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
 import { useUnsavedChangesWarning } from '#layers/workspace/app/shared/composables/useUnsavedChangesWarning'
+import { useOrganizationCatalog } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-boardId')
 const boardId = computed(() => String(route.params.boardId))
@@ -39,7 +40,7 @@ onBeforeRouteUpdate(
   (to) => (to.path === route.path && to.query.issue === issueKey.value) || confirmUnsavedChanges(),
 )
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createBoardPageDeps(client)
+const deps = createBoardPageDeps(client, useOrganizationCatalog())
 const router = useRouter()
 const onBack = () => router.back()
 const organizationRoutes = useOrganizationRoutes()

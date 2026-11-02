@@ -1,5 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { isApiError, request } from '#infrastructure/api/request'
+import { mapIssueAttributes } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import { getOrganizationKey } from '#layers/workspace/app/shared/utils/organizationKey'
 import { createFeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps.impl'
@@ -57,14 +58,18 @@ const loadAppLayout = async (
     }
   }
 
-  const [spaces, tariff] = await Promise.all([
+  // Asked only once the session is in the organization: without one these answer 401, which
+  // the client takes for signing out.
+  const [spaces, tariff, attributes] = await Promise.all([
     request(client.GET('/api/spaces', { signal })),
     request(client.GET('/api/billing/tariff', { signal })),
+    request(client.GET('/api/organizations/attributes', { signal })),
   ])
   const setupSpace = organization.setup?.space
   const setupSpaceColor = spaces.find((space) => space.key === setupSpace?.key)?.color
   return {
     data: {
+      attributes: mapIssueAttributes(attributes),
       organization: {
         canCreateSpaces: organization.canCreateSpaces,
         canManage: organization.canManage,

@@ -17,13 +17,14 @@ import BoardSettingsPage from '#layers/workspace/app/sections/boards/board-setti
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
+import { useOrganizationCatalog } from '#layers/workspace/app/shells/organization/useAppLayoutData'
 
 const route = useRoute('organizations-organizationKey-spaces-spaceKey-boardId-settings')
 const boardId = computed(() => String(route.params.boardId))
 const spaceKey = computed(() => String(route.params.spaceKey))
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createBoardSettingsPageDeps(client)
+const deps = createBoardSettingsPageDeps(client, useOrganizationCatalog())
 const onDeleted = async (): Promise<void> => {
   await navigateTo(organizationRoutes.space(spaceKey.value))
 }

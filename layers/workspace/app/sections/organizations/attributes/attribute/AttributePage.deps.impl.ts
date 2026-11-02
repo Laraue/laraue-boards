@@ -51,7 +51,10 @@ export const createAttributePageDeps = (client: ApiClient): AttributePageDeps =>
           id: Number(id),
           listValues:
             data.type === 'list'
-              ? data.listValues.map((option) => ({ id: option.id, name: option.name }))
+              ? data.listValues.map((option) => ({
+                  id: option.id === null ? null : Number(option.id),
+                  name: option.name,
+                }))
               : null,
           name,
         },

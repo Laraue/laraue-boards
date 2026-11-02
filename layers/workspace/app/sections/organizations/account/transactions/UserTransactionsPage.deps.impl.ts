@@ -15,9 +15,9 @@ export const createTransactionsPageDeps = (client: ApiClient): UserTransactionsP
       hasNextPage: result.hasNextPage,
       transactions: result.data.map((transaction) => ({
         createdAt: transaction.createdAt,
-        delta: Number(transaction.delta),
-        error: transaction.error ?? null,
-        finishedAt: transaction.finishedAt ?? null,
+        delta: transaction.delta,
+        error: transaction.error,
+        finishedAt: transaction.finishedAt,
         id: transaction.id,
         ownerName: null,
         reason: transaction.reason,

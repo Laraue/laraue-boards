@@ -38,7 +38,7 @@ export const createConnectedAccountsSectionDeps = (
   view: async ({ signal }) => {
     const user = await request(client.GET('/api/user', { signal }))
     return {
-      google: user.hasGoogleAccount ?? false,
+      google: user.hasGoogleAccount,
       telegram: user.telegramId !== null && user.telegramId !== undefined,
     }
   },
