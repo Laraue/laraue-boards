@@ -16,6 +16,10 @@
         <NuxtLink :to="localePath('terms', locale)">{{ t('terms_link') }}</NuxtLink>
         .
       </p>
+      <p class="pricing-note">
+        {{ t('tokens_note') }}
+        <NuxtLink :to="tokensDocsHref">{{ t('tokens_link') }}</NuxtLink>
+      </p>
       <div
         v-for="group in groups.filter((item) => item.tariffs.length > 0)"
         :key="group.key"
@@ -104,6 +108,9 @@ const { locale, t } = useI18n({
       'Paid plans are priced per seat, and their included tokens are per seat, combined across your whole team. The Free plan is per organization.',
     terms_link: 'public offer',
     terms_note: 'Paying for a plan means you accept the',
+    tokens_link: 'How tokens work',
+    tokens_note:
+      'Tokens pay for the AI features: /aisave in Telegram and the AI in the web app. Everything else does not use them.',
   },
   ru: {
     billing_label_forever: 'навсегда',
@@ -131,9 +138,18 @@ const { locale, t } = useI18n({
       'Платные тарифы оплачиваются за место, а включённые токены указаны за одно место и суммируются по всей команде. Бесплатный тариф — на организацию.',
     terms_link: 'публичной офертой',
     terms_note: 'Оплата тарифа означает, что вы согласны с',
+    tokens_link: 'Как работают токены',
+    tokens_note:
+      'Токенами оплачиваются функции ИИ: /aisave в Telegram и ИИ в веб-приложении. Всё остальное их не тратит.',
   },
 })
 const localePath = useLocalePath()
+const tokensDocsHref = computed(() =>
+  localePath(
+    { name: 'documentation-path', params: { path: ['features', 'tokens'] } },
+    locale.value,
+  ),
+)
 const groups = computed(() => {
   if (!props.tariffs) {
     return []

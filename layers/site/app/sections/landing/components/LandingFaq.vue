@@ -41,6 +41,7 @@ import { IconPlus } from '@tabler/icons-vue'
 import { computed, ref } from 'vue'
 
 import { defineQuestion, defineWebPage, useSchemaOrg } from '#imports'
+import { sellerDetails } from '#layers/core/app/constants/sellerDetails'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 
 import LandingHeading from './LandingHeading.vue'
@@ -48,7 +49,7 @@ import LandingHeading from './LandingHeading.vue'
 const { t } = useI18n({
   en: {
     faq1a:
-      'The Free plan is free forever. Paid plans (Plus, Team, Business) have higher limits, and you can switch to one at any time in the app — see the pricing section above. /aisave runs on tokens: every user gets a free allowance each month, and what each plan includes is listed in the pricing section.',
+      'The Free plan is free forever. Paid plans (Plus, Team, Business) have higher limits, and you can switch to one at any time in the app — see the pricing section above. The AI features (/aisave and the AI in the web app) run on tokens: the Free plan includes 25,000 a month, each paid plan includes more, and the documentation explains how they are spent.',
     faq1q: 'Is it free?',
     faq2a:
       'Yes. Both the backend and the frontend are public on GitHub, so you can read exactly what happens to a message after you send it.',
@@ -80,12 +81,15 @@ const { t } = useI18n({
     faq11a:
       "Yes — Laraue Boards has a remote MCP (Model Context Protocol) server. Create a personal API key from your organization's settings, add it as a custom connector in Claude (or any MCP client), and the agent can list, view, create, edit and move issues, and attach or download files, scoped to your own permissions.",
     faq11q: 'Can I connect Claude or another AI agent to my boards?',
+    faq12a:
+      'In the app, open Send feedback at the bottom of the sidebar to report a bug, suggest an idea or ask a question — it goes straight to the team. Not signed in, or prefer email? Write to {email}. Step-by-step guides are in the documentation.',
+    faq12q: 'How do I get help or send feedback?',
     faq_label: 'Questions',
     faq_title: 'Common questions',
   },
   ru: {
     faq1a:
-      'Бесплатный тариф бесплатен навсегда. Платные тарифы (Plus, Team, Business) дают более высокие лимиты, перейти на них можно в любой момент в приложении — смотрите тарифы выше. Функция /aisave работает на токенах: каждому пользователю каждый месяц доступен бесплатный запас, а что входит в каждый тариф — смотрите в разделе тарифов.',
+      'Бесплатный тариф бесплатен навсегда. Платные тарифы (Plus, Team, Business) дают более высокие лимиты, перейти на них можно в любой момент в приложении — смотрите тарифы выше. Функции ИИ (/aisave и ИИ в веб-приложении) работают на токенах: бесплатный тариф даёт 25 000 в месяц, каждый платный — больше, а как они тратятся, описано в документации.',
     faq1q: 'Это бесплатно?',
     faq2a:
       'Да. Бэкенд и фронтенд открыты на GitHub — можно прочитать, что именно происходит с сообщением после отправки.',
@@ -117,6 +121,9 @@ const { t } = useI18n({
     faq11a:
       'Да — у Laraue Boards есть удалённый MCP-сервер (Model Context Protocol). Создайте персональный API-ключ в настройках организации, добавьте его как кастомный коннектор в Claude (или любой другой MCP-клиент) — и агент сможет просматривать, создавать, редактировать и перемещать issues, а также прикладывать и скачивать файлы, в рамках ваших прав доступа.',
     faq11q: 'Можно ли подключить Claude или другого ИИ-агента к моим доскам?',
+    faq12a:
+      'В приложении нажмите «Обратная связь» внизу боковой панели, чтобы сообщить об ошибке, предложить идею или задать вопрос, — сообщение сразу попадёт к команде. Если вы не вошли или удобнее почта, пишите на {email}. Пошаговые руководства есть в документации.',
+    faq12q: 'Как получить помощь или оставить отзыв?',
     faq_label: 'Вопросы',
     faq_title: 'Частые вопросы',
   },
@@ -125,8 +132,8 @@ const { t } = useI18n({
 type FaqKey = Parameters<typeof t>[0]
 
 const items = computed(() =>
-  Array.from({ length: 11 }, (_, index) => ({
-    answer: t(`faq${index + 1}a` as FaqKey),
+  Array.from({ length: 12 }, (_, index) => ({
+    answer: t(`faq${index + 1}a` as FaqKey, { email: sellerDetails.email }),
     question: t(`faq${index + 1}q` as FaqKey),
   })),
 )

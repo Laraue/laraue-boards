@@ -5,7 +5,7 @@ keywords: [laraue boards features, kanban features telegram, project management 
 type: sectionDefinition
 order: 5
 createdAt: 2026-04-22
-updatedAt: 2026-08-07
+updatedAt: 2026-11-01
 ---
 This section is the feature reference — detailed guides for each capability of Laraue Boards.
 
@@ -28,3 +28,5 @@ This section is the feature reference — detailed guides for each capability of
 - [Data movement](/documentation/features/mass-move) — Move an entire space or a single board to a different organization.
 
 - [Issue links](/documentation/features/issue-links) — Show that one issue blocks another, relates to it, or duplicates it. Blocked issues are marked on the board.
+
+- [Tokens](/documentation/features/tokens) — What the AI features spend, how many tokens each plan includes, and how to buy more.

@@ -5,7 +5,7 @@ keywords: [функции laraue boards, kanban функции telegram, спи�
 type: sectionDefinition
 order: 5
 createdAt: 2026-04-27
-updatedAt: 2026-10-28
+updatedAt: 2026-11-01
 ---
 Этот раздел — справочник: подробные руководства по каждой возможности Laraue Boards.
 
@@ -28,3 +28,5 @@ updatedAt: 2026-10-28
 - [Перенос данных](/ru/documentation/features/mass-move) — перенесите целое пространство или отдельную доску в другую организацию.
 
 - [Связи issues](/ru/documentation/features/issue-links) — покажите, что один issue блокирует другой, связан с ним или дублирует его. Заблокированные issues отмечены на доске.
+
+- [Токены](/ru/documentation/features/tokens) — что тратят функции ИИ, сколько токенов входит в каждый тариф и как докупить ещё.
