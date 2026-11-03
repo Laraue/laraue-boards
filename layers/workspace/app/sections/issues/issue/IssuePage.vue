@@ -455,7 +455,7 @@ const { t } = useI18n({
     issueActivity: 'Активность задачи',
     loadError: 'Не удалось загрузить задачу',
     loading: 'Загрузка задачи…',
-    notUsedOnBoard: 'Не используются на этой доске',
+    notUsedOnBoard: 'Не используется на этой доске',
     openMessage: 'Открыть сообщение в Telegram',
     owner: 'Владелец',
     properties: 'Свойства',

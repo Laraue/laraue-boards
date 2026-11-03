@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-04-22
-updatedAt: 2026-10-29
+updatedAt: 2026-11-03
 ---
 An issue is the core unit of work in Laraue Boards. Every task, request, bug report, or action item is an issue. What makes Laraue Boards different is where issues come from: most of them start as Telegram messages.
 
@@ -20,7 +20,7 @@ Every issue has:
 - **Status** — which column on the board it currently sits in
 - **Issue key** — a unique identifier like `WRK-42`
 - **Assignee** — who the issue is assigned to
-- **Attributes** — any custom fields you have defined for the board
+- **Attributes** — the custom fields the issue's board uses
 - **Media** — attached photos, videos, or albums from the original message
 
 ![The issue detail view in Laraue Boards, showing content, status, issue key, a custom attribute](https://laraue.com/static/images/blog/docs/laraue-boards/issue-details.jpg)
@@ -58,6 +58,8 @@ The **Title** is optional. Leave it empty and an AI writes a short title from th
 ## Moving an issue to a different board
 
 New issues from the bot land on the default board so saving stays effortless — you never have to pick a board before sending a message, unless the chat is [linked](/documentation/integrations/telegram-linking) to a different destination. If you want an issue somewhere else, open the **Backlog**, find the issue in the list, and change its board directly from the issue's detail view.
+
+If the new board doesn't use some of the issue's attributes, you're asked whether to keep or drop those values — see [Custom attributes](/documentation/features/attributes#moving-issues).
 
 Moving an issue between boards **within the same space** keeps its issue key. Moving it to a **different space** gives it a new key, since keys are numbered per space — any link or quoted key already shared for that issue will point at the old one and stop working.
 

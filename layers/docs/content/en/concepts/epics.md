@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-04-22
-updatedAt: 2026-10-29
+updatedAt: 2026-11-03
 ---
 An Epic is a kanban board — a named collection of status columns that group related issues together. In Laraue Boards the terms "board" and "epic" are used interchangeably. An epic works with an internal id only — it does not have its own key. Issue keys come from the space the epic belongs to, not from the epic itself.
 
@@ -60,7 +60,7 @@ Each board has controls in the header for sorting and filtering:
 
 **Sorting** — right now, cards are ordered manually: drag a card to reorder it within a column. Sorting by other criteria, like time or sender, is being worked on and will be added soon.
 
-**Filter by attribute** — if you have added custom attributes to the board, filter chips appear in the filter bar. Tap a chip to show only issues with that attribute value.
+**Filter by attribute** — filter chips for the custom attributes the board uses appear in the filter bar. Tap a chip to show only issues with that attribute value. Which attributes a board uses is set in its settings — see [Custom attributes](/documentation/features/attributes#attributes-in-a-space-or-board).
 
 ![Filter chips for custom attributes in the board's filter bar](https://laraue.com/static/images/blog/docs/laraue-boards/filters-bar.jpg)
 

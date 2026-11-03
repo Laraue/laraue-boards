@@ -38,7 +38,9 @@
       </span>
       <IssueCardAttributes
         v-if="attributes?.length"
-        :attributes="attributes" />
+        :attributes="attributes"
+        class="issue-attributes"
+        :max="2" />
     </NuxtLink>
     <!-- Space and board; the space gives up room first, the full path is on hover. -->
     <span
@@ -386,21 +388,28 @@ a.issue-location-board:hover {
   flex-shrink: 0;
 }
 
+/* The labels follow the title on its line, so a row with them is as tall as one without; the title
+   gives up room first. */
 .issue-content {
-  display: grid;
-  gap: var(--space-1);
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
   min-width: 0;
 }
 
 .issue-title {
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
   font-weight: var(--font-weight-medium);
-  -webkit-line-clamp: 1;
   line-height: 1.4;
   margin: 0;
   min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issue-attributes {
+  flex: none;
+  flex-wrap: nowrap;
 }
 
 .issue-blocked {

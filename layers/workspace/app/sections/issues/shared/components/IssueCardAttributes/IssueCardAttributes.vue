@@ -1,27 +1,41 @@
 <!-- The attribute values on an issue card, as small labels tinted with the attribute's color; the
-     attribute's name is in the native title - a board renders too many cards for tooltip components. -->
+     attribute's name is in the native title - a board renders too many cards for tooltip components.
+     With `max`, the labels past it collapse into a "+N" one that lists them in its title. -->
 <template>
   <ul
     v-if="attributes.length"
     class="card-attributes">
     <li
-      v-for="attribute in attributes"
+      v-for="attribute in visible"
       :key="attribute.name"
       class="card-attribute"
       :style="{ '--attribute-color': attribute.color }"
-      :title="`${attribute.name}: ${display(attribute)}`">
+      :title="describe(attribute)">
       {{ display(attribute) }}
+    </li>
+    <li
+      v-if="hidden.length"
+      class="card-attribute card-attribute-more"
+      :title="hidden.map(describe).join('\n')">
+      +{{ hidden.length }}
     </li>
   </ul>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import type { IssueCardAttribute } from '#layers/workspace/app/sections/issues/shared/components/IssueCardAttributes/IssueCardAttributes.types'
 import { useFormatters } from '#layers/workspace/app/shared/composables/useFormatters'
 
-defineProps<{ attributes: IssueCardAttribute[] }>()
+const props = defineProps<{ attributes: IssueCardAttribute[]; max?: number }>()
+
+const visible = computed(() => props.attributes.slice(0, props.max ?? props.attributes.length))
+const hidden = computed(() => props.attributes.slice(visible.value.length))
 
 const { formatDate, formatDateTime } = useFormatters()
+
+const describe = (attribute: IssueCardAttribute) => `${attribute.name}: ${display(attribute)}`
 
 const display = (attribute: IssueCardAttribute) => {
   switch (attribute.kind) {
@@ -59,5 +73,10 @@ const display = (attribute: IssueCardAttribute) => {
   padding: 1px var(--space-2);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.card-attribute-more {
+  background: var(--color-soft);
+  color: var(--color-muted);
 }
 </style>
