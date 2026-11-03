@@ -63,7 +63,7 @@ Every action runs with your own permissions, live — Claude can't do anything i
 
 - **Issues** — list and filter issues, view one in full detail, create a new one (with a title), edit its title, content or assignee, move it to a different status (keeping or dropping the values of attributes the new board doesn't use), or delete it
 - **Comments** — add a comment to an issue, or edit one you wrote, with files attached (e.g. a report or config)
-- **Organization structure** — look up spaces (with a space's [description and links](/documentation/concepts/spaces#description-and-links)), statuses, custom attributes (all of them, or only those a space or board uses), and members, so Claude can resolve names to the right ids on its own
+- **Organization structure** — look up spaces (with a space's [description and links](/documentation/concepts/spaces#description-and-links)), statuses, custom attributes (all of them, or only those a board uses), and members, so Claude can resolve names to the right ids on its own
 - **Attachments** — attach images and documents to issues and comments, and read them back: an image as an image, Markdown, TXT and JSON as text, PDF and Word as a file — see [Attachments](/documentation/features/media#what-you-can-attach) for formats and limits
 - **Issue links** — link issues (blocks, relates to, duplicates), remove a link, and leave blocked issues out when looking for work to start — see [Issue links](/documentation/features/issue-links)
 - **Agent runs** — hand an issue to your coding agent, and, for a runner, pick up and finish the issues handed off to you — see [Hand issues to an AI agent](/documentation/integrations/agent-hand-off)
