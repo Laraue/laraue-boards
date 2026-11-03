@@ -1,4 +1,5 @@
 import type { AgentRunState } from '#layers/workspace/app/sections/issues/shared/components/AgentRunBadge/AgentRunBadge.types'
+import type { IssueCardAttribute } from '#layers/workspace/app/sections/issues/shared/components/IssueCardAttributes/IssueCardAttributes.types'
 import type { IssueSource } from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 
 export type IssueCardViewModel = {
@@ -7,6 +8,8 @@ export type IssueCardViewModel = {
   assigneeColor: string
   assigneeInitial: string
   assigneeName: string
+  // The values the issue's board shows on cards.
+  attributes?: IssueCardAttribute[]
   // An issue the user can read blocks this one and isn't completed yet.
   blocked: boolean
   issueKey: string

@@ -51,6 +51,7 @@ const createDeps = (overrides: Partial<BacklogPageDeps> = {}): BacklogPageDeps =
       statusSelect: {
         loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => []),
       },
+      unusedAttributes: vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => []),
     },
   },
   search: vi.fn<BacklogPageDeps['search']>(async () => ({

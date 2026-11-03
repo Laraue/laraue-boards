@@ -1,5 +1,9 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
+import {
+  mapAttributeSettingsView,
+  toAttributeSettingsUpdate,
+} from '#layers/workspace/app/shared/components/AttributeSettings/attributeSettingsApi'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
@@ -12,11 +16,12 @@ export const createSpaceSettingsPageDeps = (
     await request(client.DELETE('/api/spaces/{key}', { params: { path: { key: spaceKey } } }))
   },
 
-  // One request: the settings, description and links are saved together or not at all.
-  save: async ({ color, description, links, name, newKey, oldKey }) => {
+  // One request: the settings, description, links and attribute settings are saved together or not at all.
+  save: async ({ attributeSettings, color, description, links, name, newKey, oldKey }) => {
     await request(
       client.PUT('/api/spaces/{key}', {
         body: {
+          attributeSettings: toAttributeSettingsUpdate(attributeSettings),
           color,
           description,
           links: links.map((link) => ({
@@ -36,15 +41,17 @@ export const createSpaceSettingsPageDeps = (
   // description and links in its about.
   view: async ({ signal, spaceKey }) => {
     const path = { key: spaceKey }
-    const [details, about] = await Promise.all([
+    const [details, about, attributeSettings] = await Promise.all([
       request(client.GET('/api/spaces/{key}', { params: { path }, signal })),
       request(client.GET('/api/spaces/{key}/about', { params: { path }, signal })),
+      request(client.GET('/api/spaces/{key}/attribute-settings', { params: { path }, signal })),
     ])
     const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     if (!space) {
       throw new ApiError(404)
     }
     return {
+      attributeSettings: mapAttributeSettingsView(attributeSettings),
       canDelete: details.canDelete,
       canUpdate: details.canUpdate,
       color: space.color,

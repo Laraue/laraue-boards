@@ -37,6 +37,13 @@
                 :aria-labelledby="labelId" />
             </BaseField>
           </BaseFieldGroup>
+          <fieldset>
+            <legend>{{ t('usage') }}</legend>
+            <BaseCheckbox v-model="draft.isEnabled">{{ t('enabled') }}</BaseCheckbox>
+            <p class="usage-hint muted">{{ t('enabledHint') }}</p>
+            <BaseCheckbox v-model="draft.showOnCard">{{ t('showOnCard') }}</BaseCheckbox>
+            <p class="usage-hint muted">{{ t('showOnCardHint') }}</p>
+          </fieldset>
           <fieldset v-if="draft.data.type === 'list'">
             <legend>{{ t('options') }}</legend>
             <TransitionGroup
@@ -104,6 +111,7 @@ import { TransitionGroup, computed, ref, watch } from 'vue'
 import { useHead } from '#app'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import BaseCheckbox from '#layers/core/app/ui/components/BaseCheckbox.vue'
 import BaseDangerZone from '#layers/core/app/ui/components/BaseDangerZone.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
@@ -141,6 +149,9 @@ const { t } = useI18n({
     deleteAttribute: 'Delete attribute',
     deleteDescription: 'Removes the field and its values from every issue.',
     editAttribute: 'Edit attribute',
+    enabled: 'Available',
+    enabledHint:
+      'Available in spaces and epics that follow the organization’s settings. When off, the attribute stays in the organization and keeps its values; a space or epic can still turn it on in its own settings.',
     loadError: 'Could not load attribute',
     loading: 'Loading attribute…',
     name: 'Name',
@@ -149,6 +160,9 @@ const { t } = useI18n({
     removeOption: 'Remove option',
     saveChanges: 'Save changes',
     saving: 'Saving…',
+    showOnCard: 'Shown on cards',
+    showOnCardHint: 'Its value appears on issue cards where the organization’s settings apply.',
+    usage: 'By default',
   },
   ru: {
     addOption: 'Добавить вариант',
@@ -158,6 +172,9 @@ const { t } = useI18n({
     deleteAttribute: 'Удалить атрибут',
     deleteDescription: 'Удаляет поле и его значения из всех задач.',
     editAttribute: 'Изменить атрибут',
+    enabled: 'Доступен',
+    enabledHint:
+      'Доступен в пространствах и эпиках, которые следуют настройкам организации. Если выключить, атрибут остаётся в организации и сохраняет значения; пространство или эпик может включить его в своих настройках.',
     loadError: 'Не удалось загрузить атрибут',
     loading: 'Загрузка атрибута…',
     name: 'Название',
@@ -166,6 +183,9 @@ const { t } = useI18n({
     removeOption: 'Удалить вариант',
     saveChanges: 'Сохранить изменения',
     saving: 'Сохранение…',
+    showOnCard: 'На карточках',
+    showOnCardHint: 'Значение видно на карточках задач там, где действуют настройки организации.',
+    usage: 'По умолчанию',
   },
 })
 
@@ -195,7 +215,13 @@ const submitting = computed(() => updating.value || deleting.value)
 let nextOptionKey = 0
 
 const toDraft = (attribute: Attribute): AttributeDraft => {
-  const base = { color: attribute.color, id: attribute.id, name: attribute.name }
+  const base = {
+    color: attribute.color,
+    id: attribute.id,
+    isEnabled: attribute.isEnabled,
+    name: attribute.name,
+    showOnCard: attribute.showOnCard,
+  }
   switch (attribute.data.type) {
     case 'text':
       return { ...base, data: { type: 'text' } }
@@ -243,7 +269,9 @@ const toInput = ({
   color,
   data: attributeData,
   id,
+  isEnabled,
   name,
+  showOnCard,
 }: AttributeDraft): UpdateAttributeInput => {
   switch (attributeData.type) {
     case 'list':
@@ -257,14 +285,16 @@ const toInput = ({
           type: 'list',
         },
         id,
+        isEnabled,
         name,
+        showOnCard,
       }
     case 'text':
     case 'integer':
     case 'decimal':
     case 'date':
     case 'dateTime':
-      return { color, data: { type: attributeData.type }, id, name }
+      return { color, data: { type: attributeData.type }, id, isEnabled, name, showOnCard }
     default:
       return assertNever(attributeData)
   }
@@ -313,5 +343,10 @@ const remove = async (attribute: Attribute) => {
 
 .add-option {
   margin-top: var(--space-2);
+}
+
+.usage-hint {
+  font-size: var(--font-size-sm);
+  margin: 0 0 var(--space-2) calc(var(--space-2) + var(--space-5));
 }
 </style>

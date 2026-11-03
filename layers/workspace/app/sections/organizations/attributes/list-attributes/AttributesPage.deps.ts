@@ -1,11 +1,14 @@
-export type AttributeListItem =
-  | { color: string; id: string; name: string; type: 'date' }
-  | { color: string; id: string; name: string; type: 'dateTime' }
-  | { color: string; id: string; name: string; type: 'decimal' }
-  | { color: string; id: string; name: string; type: 'integer' }
-  | { color: string; id: string; name: string; type: 'list' }
-  | { color: string; id: string; name: string; type: 'text' }
+export type AttributeListItem = {
+  color: string
+  id: string
+  // The organization's default: off means spaces and epics following its settings don't use it.
+  isEnabled: boolean
+  name: string
+  type: 'date' | 'dateTime' | 'decimal' | 'integer' | 'list' | 'text'
+}
 
 export type AttributesPageDeps = {
+  // Every attribute of the organization, in the new order.
+  reorder: (input: { attributeIds: string[] }) => Promise<void>
   view: (input: { signal?: AbortSignal }) => Promise<AttributeListItem[]>
 }

@@ -50,6 +50,7 @@ const createDeps = (overrides: Partial<MoveIssuesDialogDeps> = {}): IssueListDep
         { label: 'Done', value: '4' },
       ]),
     },
+    unusedAttributes: vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => []),
     ...overrides,
   },
 })
@@ -157,7 +158,11 @@ it('moves a single issue through its row action without touching the selection',
   await chooseDestination()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  expect(moveIssues).toHaveBeenCalledWith({ issueKeys: ['ISS-1'], statusId: '3' })
+  expect(moveIssues).toHaveBeenCalledWith({
+    dropUnusedAttributeValues: false,
+    issueKeys: ['ISS-1'],
+    statusId: '3',
+  })
   expect(onMoved).toHaveBeenCalledTimes(1)
 })
 
@@ -172,8 +177,32 @@ it('moves every selected issue and clears the selection afterwards', async () =>
   await chooseDestination()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  expect(moveIssues).toHaveBeenCalledWith({ issueKeys: ['ISS-1', 'ISS-2'], statusId: '3' })
+  expect(moveIssues).toHaveBeenCalledWith({
+    dropUnusedAttributeValues: false,
+    issueKeys: ['ISS-1', 'ISS-2'],
+    statusId: '3',
+  })
   await expect.element(page.getByText('2 selected')).not.toBeInTheDocument()
+})
+
+it('drops the values of attributes the board does not use when the user chooses so', async () => {
+  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => {})
+  const unusedAttributes = vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => ['Priority'])
+  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+  await mount(createDeps({ moveIssues, unusedAttributes }))
+
+  await rowAction(0, 'Move to board')
+  await chooseDestination()
+  await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
+
+  expect(unusedAttributes).toHaveBeenCalledWith({ issueKeys: ['ISS-1'], statusId: '3' })
+  expect(confirm).toHaveBeenCalledTimes(1)
+  expect(moveIssues).toHaveBeenCalledWith({
+    dropUnusedAttributeValues: true,
+    issueKeys: ['ISS-1'],
+    statusId: '3',
+  })
 })
 
 it('keeps the dialog open and shows the message when moving fails', async () => {

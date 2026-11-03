@@ -19,21 +19,26 @@
     <NuxtLink
       class="issue-content"
       :to="to">
-      <!-- Before the title, so the one-line clamp cuts the title and not the mark. A native title: a
-           list renders many rows, too many for tooltip components. -->
-      <span
-        v-if="blocked"
-        :aria-label="t('blocked')"
-        class="issue-blocked"
-        role="img"
-        :title="t('blocked')">
-        <IconLock aria-hidden="true" />
+      <span class="issue-title">
+        <!-- Before the title, so the one-line clamp cuts the title and not the mark. A native title: a
+             list renders many rows, too many for tooltip components. -->
+        <span
+          v-if="blocked"
+          :aria-label="t('blocked')"
+          class="issue-blocked"
+          role="img"
+          :title="t('blocked')">
+          <IconLock aria-hidden="true" />
+        </span>
+        <IssueSourceIcon
+          v-if="source"
+          class="issue-created-via"
+          :source="source" />
+        {{ title }}
       </span>
-      <IssueSourceIcon
-        v-if="source"
-        class="issue-created-via"
-        :source="source" />
-      {{ title }}
+      <IssueCardAttributes
+        v-if="attributes?.length"
+        :attributes="attributes" />
     </NuxtLink>
     <!-- Space and board; the space gives up room first, the full path is on hover. -->
     <span
@@ -174,6 +179,8 @@ import BaseMenuItem from '#layers/core/app/ui/components/BaseMenuItem.vue'
 import StatusIndicator from '#layers/workspace/app/sections/boards/shared/components/StatusSelect/StatusIndicator.vue'
 import StatusSelect from '#layers/workspace/app/sections/boards/shared/components/StatusSelect/StatusSelect.vue'
 import AssigneeSelect from '#layers/workspace/app/sections/issues/shared/components/AssigneeSelect/AssigneeSelect.vue'
+import type { IssueCardAttribute } from '#layers/workspace/app/sections/issues/shared/components/IssueCardAttributes/IssueCardAttributes.types'
+import IssueCardAttributes from '#layers/workspace/app/sections/issues/shared/components/IssueCardAttributes/IssueCardAttributes.vue'
 import type { IssueListQuickEditDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.deps'
 import type { IssueSource } from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 import IssueSourceIcon from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.vue'
@@ -186,6 +193,7 @@ const props = defineProps<{
   assigneeColor: string
   assigneeId?: string
   assigneeInitial: string
+  attributes?: IssueCardAttribute[]
   blocked: boolean
   boardColor: string
   boardId?: string
@@ -379,9 +387,14 @@ a.issue-location-board:hover {
 }
 
 .issue-content {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.issue-title {
   -webkit-box-orient: vertical;
   display: -webkit-box;
-  flex: 1;
   font-weight: var(--font-weight-medium);
   -webkit-line-clamp: 1;
   line-height: 1.4;

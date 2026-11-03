@@ -12,6 +12,14 @@ import type { SpaceSettingsPageData, SpaceSettingsPageDeps } from './SpaceSettin
 import SpaceSettingsPage from './SpaceSettingsPage.vue'
 
 const pageData: SpaceSettingsPageData = {
+  attributeSettings: {
+    attributes: [{ color: '#555', id: '5', isEnabled: true, name: 'Type', showOnCard: true }],
+    inherited: {
+      attributes: [{ color: '#555', id: '5', isEnabled: true, name: 'Type', showOnCard: true }],
+      source: 'organization',
+    },
+    source: 'organization',
+  },
   canDelete: true,
   canUpdate: true,
   color: '#4774d4',
@@ -89,6 +97,7 @@ it('saves the settings, description and links with one button and reports the tr
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   expect(save).toHaveBeenCalledWith({
+    attributeSettings: null,
     color: '#4774d4',
     description: '',
     links: [
@@ -164,4 +173,22 @@ it('reloads settings when the failed request is retried', async () => {
   await page.getByRole('button', { name: 'Try again' }).click()
 
   await expect.element(page.getByLabelText('Name')).toHaveValue('Product')
+})
+
+it('saves own attribute settings of the space with the rest of its settings', async () => {
+  const save = vi.fn<SpaceSettingsPageDeps['save']>(async () => {})
+
+  await mount(createDeps({ save }), vi.fn<() => void>(), vi.fn<(spaceKey: string) => void>())
+  await page.getByRole('button', { name: 'Override' }).click()
+  await page.getByRole('checkbox', { name: 'Shown on cards' }).click()
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      attributeSettings: {
+        overridden: true,
+        settings: [{ id: '5', isEnabled: true, showOnCard: false }],
+      },
+    }),
+  )
 })

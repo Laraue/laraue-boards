@@ -1,11 +1,14 @@
 import type { components } from '#infrastructure/api/generated'
+import type { IssueCardAttribute } from '#layers/workspace/app/sections/issues/shared/components/IssueCardAttributes/IssueCardAttributes.types'
 import type { IssueSource } from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 
 export type IssueListItem = {
   assignee: string
+  // The values the issue's board shows on cards; absent where the list doesn't show them.
   assigneeColor: string
   assigneeId?: string
   assigneeInitial: string
+  attributes?: IssueCardAttribute[]
   boardColor: string
   boardId?: string
   boardName: string

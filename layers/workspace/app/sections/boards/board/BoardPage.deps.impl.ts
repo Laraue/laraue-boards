@@ -4,6 +4,8 @@ import { ApiError, request } from '#infrastructure/api/request'
 import { createIssuePageDeps } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps.impl'
 import { mapAgentRunState } from '#layers/workspace/app/sections/issues/shared/api/agentRun'
 import {
+  mapCardAttributes,
+  mapIssueAttributes,
   mapIssueFilters,
   mapRawIssueFilters,
 } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
@@ -21,6 +23,7 @@ const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
   assigneeColor: issue.assigneeColor,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,
+  attributes: mapCardAttributes(issue.attributes),
   blocked: issue.isBlocked,
   issueKey: issue.key,
   time: issue.time,
@@ -123,11 +126,18 @@ export const createBoardPageDeps = (
       ),
     ),
 
-  // The attributes and the space's name and color come from the layout.
+  // The space's name and color come from the layout; so do the organization's attributes, to read the
+  // filters in the address. The filters offer only the attributes the board uses (BRD-179).
   view: async ({ attributeQuery, boardId, search, signal, spaceKey }) => {
     const { attributes, spaces } = readCatalog()
-    const [board, columnIssues] = await Promise.all([
+    const [board, boardAttributes, columnIssues] = await Promise.all([
       request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
+      request(
+        client.GET('/api/epics/{id}/attributes', {
+          params: { path: { id: Number(boardId) } },
+          signal,
+        }),
+      ),
       request(
         client.POST('/api/issues/board', {
           body: {
@@ -144,7 +154,7 @@ export const createBoardPageDeps = (
     const issuesByStatus = new Map(issues.columns.map((column) => [column.id, column]))
     const space = spaces.find((item) => item.key === spaceKey)
     return {
-      attributes,
+      attributes: mapIssueAttributes(boardAttributes),
       canCreateIssues: board.canCreateIssues,
       canDelete: board.canDelete,
       canMoveIssues: board.canUpdateIssues,

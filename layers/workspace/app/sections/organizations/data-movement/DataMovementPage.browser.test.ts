@@ -41,6 +41,7 @@ const createDeps = (view?: DataMovementPageDeps['view']): DataMovementPageDeps =
           { label: 'Development', value: '10' },
         ]),
       },
+      unusedAttributes: vi.fn<MoveBoardsDialogDeps['unusedAttributes']>(async () => []),
     },
   },
   spacesMovementSection: {

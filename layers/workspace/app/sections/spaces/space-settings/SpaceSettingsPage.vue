@@ -59,6 +59,12 @@
               v-model:description="form.description"
               v-model:links="form.links"
               :disabled="!page.canUpdate || submitting" />
+            <AttributeSettings
+              v-model="form.attributeSettings"
+              :can-edit="page.canUpdate"
+              :disabled="submitting"
+              owner="space"
+              :view="page.attributeSettings" />
             <p
               v-if="saveMessage || removeMessage"
               class="form-error">
@@ -113,6 +119,12 @@ import type {
 } from '#layers/workspace/app/sections/spaces/space-settings/SpaceSettingsPage.deps'
 import AppColorPicker from '#layers/workspace/app/shared/components/AppColorPicker.vue'
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
+import type { AttributeSettingsDraft } from '#layers/workspace/app/shared/components/AttributeSettings/AttributeSettings.types'
+import AttributeSettings from '#layers/workspace/app/shared/components/AttributeSettings/AttributeSettings.vue'
+import {
+  toAttributeSettingsDraft,
+  toAttributeSettingsSave,
+} from '#layers/workspace/app/shared/components/AttributeSettings/attributeSettingsDraft'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
@@ -160,12 +172,14 @@ const { t } = useI18n({
 })
 
 const form = reactive<{
+  attributeSettings: AttributeSettingsDraft
   color: string
   description: string
   key: string
   links: SpaceLinkDraft[]
   name: string
 }>({
+  attributeSettings: { attributes: [], overridden: false },
   color: '',
   description: '',
   key: '',
@@ -187,6 +201,7 @@ watch(
     if (!value) {
       return
     }
+    form.attributeSettings = toAttributeSettingsDraft(value.attributeSettings, 'space')
     form.color = value.color
     form.description = value.description
     form.key = props.spaceKey
@@ -221,15 +236,25 @@ const dirty = computed(() => {
     form.key.trim() !== props.spaceKey ||
     form.description.trim() !== loaded.description.trim() ||
     JSON.stringify(filledLinks()) !==
-      JSON.stringify(loaded.links.map(({ description, id, url }) => ({ description, id, url })))
+      JSON.stringify(loaded.links.map(({ description, id, url }) => ({ description, id, url }))) ||
+    toAttributeSettingsSave(loaded.attributeSettings, 'space', form.attributeSettings) !== null
   )
 })
 
 useUnsavedChangesWarning(dirty)
 
 const save = async (): Promise<void> => {
+  const loaded = data.value
+  if (!loaded) {
+    return
+  }
   const key = form.key.trim()
   const saved = await saveSpace({
+    attributeSettings: toAttributeSettingsSave(
+      loaded.attributeSettings,
+      'space',
+      form.attributeSettings,
+    ),
     color: form.color,
     description: form.description,
     links: filledLinks(),

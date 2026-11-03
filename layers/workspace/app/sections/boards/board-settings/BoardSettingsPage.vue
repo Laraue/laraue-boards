@@ -35,6 +35,13 @@
             :on-update="(input) => save(page, input)"
             :submitting="saving || removing"
             :view-model="page" />
+          <AttributeSettings
+            v-if="!page.isDefault"
+            v-model="state.attributeSettings"
+            :can-edit="page.canUpdate"
+            :disabled="saving || removing"
+            owner="board"
+            :view="page.attributeSettings" />
           <!-- The form is the component above; the button submits it through its id. -->
           <div
             v-if="page.canUpdate"
@@ -68,7 +75,7 @@
 
 <script setup lang="ts">
 import { IconSettings } from '@tabler/icons-vue'
-import { useId } from 'vue'
+import { reactive, useId, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
@@ -81,6 +88,12 @@ import type {
 import type { BoardSettingsFormInput } from '#layers/workspace/app/sections/boards/board-settings/components/BoardSettingsForm.types'
 import BoardSettingsForm from '#layers/workspace/app/sections/boards/board-settings/components/BoardSettingsForm.vue'
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
+import type { AttributeSettingsDraft } from '#layers/workspace/app/shared/components/AttributeSettings/AttributeSettings.types'
+import AttributeSettings from '#layers/workspace/app/shared/components/AttributeSettings/AttributeSettings.vue'
+import {
+  toAttributeSettingsDraft,
+  toAttributeSettingsSave,
+} from '#layers/workspace/app/shared/components/AttributeSettings/attributeSettingsDraft'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
@@ -123,9 +136,23 @@ const { t } = useI18n({
 
 const formId = `board-settings-${useId()}`
 
+const state = reactive<{ attributeSettings: AttributeSettingsDraft }>({
+  attributeSettings: { attributes: [], overridden: false },
+})
+
 const { data, message, pending, refresh } = await useApiQuery(
   () => `board-settings:${props.boardId}`,
   (signal) => props.deps.view({ boardId: props.boardId, signal, spaceKey: props.spaceKey }),
+)
+
+watch(
+  data,
+  (value) => {
+    if (value) {
+      state.attributeSettings = toAttributeSettingsDraft(value.attributeSettings, 'board')
+    }
+  },
+  { immediate: true },
 )
 
 const {
@@ -141,15 +168,15 @@ const {
 
 const save = async (page: BoardSettingsPageData, input: BoardSettingsFormInput): Promise<void> => {
   const saved = await saveSettings({
+    // The backlog always follows its space.
+    attributeSettings: page.isDefault
+      ? null
+      : toAttributeSettingsSave(page.attributeSettings, 'board', state.attributeSettings),
     boardId: props.boardId,
-    originalColumns: page.columns,
     ...input,
   })
   if (saved) {
     await props.onSaved()
-  } else {
-    // A failed save may have applied some of the changes already.
-    await refresh()
   }
 }
 

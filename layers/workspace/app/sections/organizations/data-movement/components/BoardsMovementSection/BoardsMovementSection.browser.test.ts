@@ -37,6 +37,7 @@ const createDeps = (overrides: Partial<MoveBoardsDialogDeps> = {}): BoardsMoveme
         { label: 'Development', value: '10' },
       ]),
     },
+    unusedAttributes: vi.fn<MoveBoardsDialogDeps['unusedAttributes']>(async () => []),
     ...overrides,
   },
 })
@@ -99,6 +100,7 @@ it('moves a single board through its row action without touching the selection',
     boardIds: ['21'],
     destinationOrganizationId: '1',
     destinationSpaceKey: '10',
+    dropUnusedAttributeValues: false,
   })
   expect(onMoved).toHaveBeenCalledTimes(1)
 })
@@ -118,6 +120,7 @@ it('moves every selected board through the bulk action', async () => {
     boardIds: ['21', '22'],
     destinationOrganizationId: '1',
     destinationSpaceKey: '10',
+    dropUnusedAttributeValues: false,
   })
 })
 

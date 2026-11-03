@@ -8,6 +8,14 @@ import type { BoardSettingsPageData, BoardSettingsPageDeps } from './BoardSettin
 import BoardSettingsPage from './BoardSettingsPage.vue'
 
 const board: BoardSettingsPageData = {
+  attributeSettings: {
+    attributes: [{ color: '#555', id: '5', isEnabled: true, name: 'Type', showOnCard: true }],
+    inherited: {
+      attributes: [{ color: '#555', id: '5', isEnabled: true, name: 'Type', showOnCard: true }],
+      source: 'space',
+    },
+    source: 'space',
+  },
   canDelete: true,
   canUpdate: true,
   color: '#4774d4',
@@ -15,6 +23,7 @@ const board: BoardSettingsPageData = {
     { category: 'Created', color: '#4774d4', id: '1', name: 'To do' },
     { category: 'Completed', color: '#d65f63', id: '2', name: 'Done' },
   ],
+  isDefault: false,
   name: 'Roadmap',
   spaceColor: '#4774d4',
   spaceName: 'Product',
@@ -58,11 +67,11 @@ it('saves the board name edited by the user', async () => {
   await page.getByRole('button', { name: 'Save changes' }).click()
 
   expect(save).toHaveBeenCalledWith({
+    attributeSettings: null,
     boardId: '12',
     color: '#4774d4',
     columns: board.columns,
     name: 'Planning',
-    originalColumns: board.columns,
   })
   expect(onSaved).toHaveBeenCalledOnce()
 })
@@ -142,4 +151,44 @@ it('reorders columns through keyboard drag and drop before saving', async () => 
       ],
     }),
   )
+})
+
+it('saves own attribute settings of the board with the rest of its settings', async () => {
+  const save = vi.fn<BoardSettingsPageDeps['save']>(async () => {})
+
+  await mount(
+    {
+      remove: vi.fn<BoardSettingsPageDeps['remove']>(),
+      save,
+      view: vi.fn<BoardSettingsPageDeps['view']>(async () => board),
+    },
+    vi.fn<() => void>(),
+  )
+  await expect.element(page.getByText('follows its space’s attribute settings')).toBeInTheDocument()
+  await page.getByRole('button', { name: 'Override' }).click()
+  await page.getByRole('checkbox', { name: 'Available' }).click()
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      attributeSettings: {
+        overridden: true,
+        settings: [{ id: '5', isEnabled: false, showOnCard: false }],
+      },
+    }),
+  )
+})
+
+it('shows no attribute settings on the backlog, which follows its space', async () => {
+  await mount(
+    {
+      remove: vi.fn<BoardSettingsPageDeps['remove']>(),
+      save: vi.fn<BoardSettingsPageDeps['save']>(async () => {}),
+      view: vi.fn<BoardSettingsPageDeps['view']>(async () => ({ ...board, isDefault: true })),
+    },
+    vi.fn<() => void>(),
+  )
+
+  await expect.element(page.getByText('Roadmap').first()).toBeInTheDocument()
+  await expect.element(page.getByRole('heading', { name: 'Attributes' })).not.toBeInTheDocument()
 })

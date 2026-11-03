@@ -1,35 +1,13 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
+import {
+  mapAttributeSettingsView,
+  toAttributeSettingsUpdate,
+} from '#layers/workspace/app/shared/components/AttributeSettings/attributeSettingsApi'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
-import type {
-  BoardSettingsColumn,
-  BoardSettingsColumnDraft,
-  BoardSettingsPageDeps,
-} from './BoardSettingsPage.deps'
-
-const getColumnChanges = (
-  originalColumns: BoardSettingsColumn[],
-  columns: BoardSettingsColumnDraft[],
-) => {
-  const currentIds = new Set(columns.flatMap((column) => (column.id === null ? [] : [column.id])))
-  return {
-    created: columns.filter((column) => column.id === null),
-    deleted: originalColumns.filter((column) => !currentIds.has(column.id)),
-    updated: columns.filter((column): column is BoardSettingsColumn => {
-      if (column.id === null) {
-        return false
-      }
-      const original = originalColumns.find((item) => item.id === column.id)
-      return (
-        original?.name !== column.name ||
-        original.color !== column.color ||
-        original.category !== column.category
-      )
-    }),
-  }
-}
+import type { BoardSettingsPageDeps } from './BoardSettingsPage.deps'
 
 export const createBoardSettingsPageDeps = (
   client: ApiClient,
@@ -39,61 +17,37 @@ export const createBoardSettingsPageDeps = (
     await request(client.DELETE('/api/epics/{id}', { params: { path: { id: Number(boardId) } } }))
   },
 
-  save: async (input) => {
-    const path = { id: Number(input.boardId) }
+  // One request: the name, color, columns and attribute settings are saved together or not at all.
+  save: async ({ attributeSettings, boardId, color, columns, name }) => {
     await request(
       client.PUT('/api/epics/{id}', {
-        body: { color: input.color, id: Number(input.boardId), name: input.name },
-        params: { path },
+        body: {
+          attributeSettings: toAttributeSettingsUpdate(attributeSettings),
+          color,
+          columns: columns.map((column) => ({
+            category: column.category,
+            color: column.color,
+            id: column.id === null ? null : Number(column.id),
+            name: column.name,
+          })),
+          id: Number(boardId),
+          name,
+        },
+        params: { path: { id: Number(boardId) } },
       }),
     )
-
-    const changes = getColumnChanges(input.originalColumns, input.columns)
-    const createdIds: string[] = []
-    for (const { category, color, name } of changes.created) {
-      const id = await request(
-        client.POST('/api/statuses', {
-          body: { category, color, epicId: Number(input.boardId), name },
-        }),
-      )
-      createdIds.push(String(id))
-    }
-
-    for (const { category, color, id, name } of changes.updated) {
-      await request(
-        client.PUT('/api/statuses/{id}', {
-          body: { category, color, id: Number(id), name },
-          params: { path: { id: Number(id) } },
-        }),
-      )
-    }
-
-    for (const column of changes.deleted) {
-      await request(
-        client.DELETE('/api/statuses/{id}', { params: { path: { id: Number(column.id) } } }),
-      )
-    }
-
-    // New columns get their ids in the order they were created.
-    let createdIndex = 0
-    const columnIds = input.columns.map((column) => column.id ?? createdIds[createdIndex++]!)
-    if (columnIds.length > 0) {
-      await request(
-        client.POST('/api/epics/{id}/reorder-statuses', {
-          body: Object.fromEntries(columnIds.map((id, index) => [id, index + 1])),
-          params: { path },
-        }),
-      )
-    }
   },
 
   view: async ({ boardId, signal, spaceKey }) => {
     // The board doesn't carry its space's name; the layout's spaces list does.
-    const board = await request(
-      client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal }),
-    )
+    const path = { id: Number(boardId) }
+    const [board, attributeSettings] = await Promise.all([
+      request(client.GET('/api/epics/{id}', { params: { path }, signal })),
+      request(client.GET('/api/epics/{id}/attribute-settings', { params: { path }, signal })),
+    ])
     const space = readCatalog().spaces.find((item) => item.key === spaceKey)
     return {
+      attributeSettings: mapAttributeSettingsView(attributeSettings),
       canDelete: board.canDelete,
       canUpdate: board.canUpdate,
       color: board.color ?? DEFAULT_COLOR,
@@ -105,6 +59,7 @@ export const createBoardSettingsPageDeps = (
           id: String(status.id),
           name: status.name,
         })),
+      isDefault: board.isDefault,
       name: board.name,
       spaceColor: space?.color ?? DEFAULT_COLOR,
       spaceName: space?.name ?? spaceKey,

@@ -36,7 +36,8 @@ defineProps<{ description?: string; id?: string; title: string }>()
 .base-section-header-main {
   align-items: center;
   display: flex;
-  gap: var(--space-4);
+  /* Room enough that a description running up to the actions doesn't read as part of them. */
+  gap: var(--space-8);
   justify-content: space-between;
   min-height: var(--control-height);
 }

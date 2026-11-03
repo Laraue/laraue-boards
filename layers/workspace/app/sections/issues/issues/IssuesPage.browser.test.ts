@@ -50,6 +50,7 @@ const createDeps = (overrides: Partial<IssuesPageDeps> = {}): IssuesPageDeps => 
       statusSelect: {
         loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => []),
       },
+      unusedAttributes: vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => []),
     },
   },
   searchIssues: vi.fn<IssuesPageDeps['searchIssues']>(async () => ({

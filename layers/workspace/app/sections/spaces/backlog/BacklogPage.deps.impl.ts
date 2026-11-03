@@ -2,6 +2,8 @@ import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
 import {
+  mapCardAttributes,
+  mapIssueAttributes,
   mapIssueFilters,
   mapRawIssueFilters,
 } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
@@ -21,6 +23,7 @@ const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem
   assigneeColor: issue.assigneeColor,
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
+  attributes: mapCardAttributes(issue.attributes),
   blocked: issue.isBlocked,
   boardColor: issue.epic.color,
   boardId: String(issue.epicId),
@@ -69,21 +72,28 @@ export const createBacklogPageDeps = (
     if (!space || !backlog) {
       throw new ApiError(404)
     }
-    const issues = await request(
-      client.POST('/api/issues/search', {
-        body: {
-          epicIds: [backlog.id],
-          filters: mapRawIssueFilters(attributeQuery, attributes),
-          page: page - 1,
-          perPage: PER_PAGE,
-          searchString: search || undefined,
-          sorting: createdAtDescending,
-        },
-        signal,
-      }),
-    )
+    // The organization's attributes read the filters in the address; the filters offer only those the
+    // backlog uses (BRD-179).
+    const [issues, backlogAttributes] = await Promise.all([
+      request(
+        client.POST('/api/issues/search', {
+          body: {
+            epicIds: [backlog.id],
+            filters: mapRawIssueFilters(attributeQuery, attributes),
+            page: page - 1,
+            perPage: PER_PAGE,
+            searchString: search || undefined,
+            sorting: createdAtDescending,
+          },
+          signal,
+        }),
+      ),
+      request(
+        client.GET('/api/epics/{id}/attributes', { params: { path: { id: backlog.id } }, signal }),
+      ),
+    ])
     return {
-      attributes,
+      attributes: mapIssueAttributes(backlogAttributes),
       backlogBoardId: String(backlog.id),
       hasNextPage: issues.hasNextPage,
       issues: issues.data.map(mapIssue),

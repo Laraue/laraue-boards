@@ -6,27 +6,47 @@ import { createAttributePageDeps } from './AttributePage.deps.impl'
 
 test('maps a text attribute', async () => {
   const { client } = createTestApiClient(() => [
-    { color: '#fff', id: 7, name: 'Priority', type: 'Text' },
+    {
+      color: '#fff',
+      id: 7,
+      isEnabled: true,
+      listValues: [],
+      name: 'Priority',
+      showOnCard: false,
+      type: 'Text',
+    },
   ])
 
   assert.deepEqual(await createAttributePageDeps(client).view({ attributeId: '7' }), {
     color: '#fff',
     data: { type: 'text' },
     id: '7',
+    isEnabled: true,
     name: 'Priority',
+    showOnCard: false,
   })
 })
 
 test('maps a date-time attribute', async () => {
   const { client } = createTestApiClient(() => [
-    { color: '#fff', id: 7, listValues: [], name: 'Starts', type: 'DateTime' },
+    {
+      color: '#fff',
+      id: 7,
+      isEnabled: false,
+      listValues: [],
+      name: 'Starts',
+      showOnCard: false,
+      type: 'DateTime',
+    },
   ])
 
   assert.deepEqual(await createAttributePageDeps(client).view({ attributeId: '7' }), {
     color: '#fff',
     data: { type: 'dateTime' },
     id: '7',
+    isEnabled: false,
     name: 'Starts',
+    showOnCard: false,
   })
 })
 
@@ -35,11 +55,13 @@ test('maps a list attribute', async () => {
     {
       color: '#fff',
       id: 7,
+      isEnabled: true,
       listValues: [
         { id: 1, name: 'Low' },
         { id: 2, name: 'High' },
       ],
       name: 'Severity',
+      showOnCard: true,
       type: 'List',
     },
   ])
@@ -54,7 +76,9 @@ test('maps a list attribute', async () => {
       type: 'list',
     },
     id: '7',
+    isEnabled: true,
     name: 'Severity',
+    showOnCard: true,
   })
 })
 
@@ -73,13 +97,17 @@ test('sends list values for a list attribute', async () => {
     color: '#fff',
     data: { listValues: [{ id: '1', name: 'Low' }], type: 'list' },
     id: '7',
+    isEnabled: false,
     name: 'Severity',
+    showOnCard: true,
   })
   assert.deepEqual(await requests[0]!.json(), {
     color: '#fff',
     id: 7,
+    isEnabled: false,
     listValues: [{ id: 1, name: 'Low' }],
     name: 'Severity',
+    showOnCard: true,
   })
 })
 
@@ -98,7 +126,9 @@ test('sends null listValues for scalar attributes', async () => {
       color: '#fff',
       data: { type: value.type },
       id: '7',
+      isEnabled: true,
       name: value.name,
+      showOnCard: true,
     })
   }
 
@@ -107,8 +137,10 @@ test('sends null listValues for scalar attributes', async () => {
     values.map((value) => ({
       color: '#fff',
       id: 7,
+      isEnabled: true,
       listValues: null,
       name: value.name,
+      showOnCard: true,
     })),
   )
 })

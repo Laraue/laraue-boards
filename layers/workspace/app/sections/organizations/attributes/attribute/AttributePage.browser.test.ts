@@ -13,7 +13,9 @@ const textAttribute: Attribute = {
   color: COLORS.blue,
   data: { type: 'text' },
   id: '7',
+  isEnabled: true,
   name: 'Priority',
+  showOnCard: true,
 }
 
 const listAttribute: Attribute = {
@@ -26,7 +28,9 @@ const listAttribute: Attribute = {
     type: 'list',
   },
   id: '7',
+  isEnabled: true,
   name: 'Severity',
+  showOnCard: true,
 }
 
 const createDeps = (
@@ -92,9 +96,30 @@ it('submits the edited name and color', async () => {
     color: COLORS.teal,
     data: { type: 'text' },
     id: '7',
+    isEnabled: true,
     name: 'Severity',
+    showOnCard: true,
   })
   expect(onFinished).toHaveBeenCalledTimes(1)
+})
+
+it('submits the organization defaults when they are switched off', async () => {
+  const update = vi.fn<AttributePageDeps['update']>(async () => {})
+
+  await mount(createDeps({ update }), vi.fn<() => void>())
+
+  await page.getByRole('checkbox', { name: 'Available' }).click()
+  await page.getByRole('checkbox', { name: 'Shown on cards' }).click()
+  await page.getByRole('button', { name: 'Save changes' }).click()
+
+  expect(update).toHaveBeenCalledWith({
+    color: COLORS.blue,
+    data: { type: 'text' },
+    id: '7',
+    isEnabled: false,
+    name: 'Priority',
+    showOnCard: false,
+  })
 })
 
 it('submits edited options keeping the id of the existing ones', async () => {
@@ -118,7 +143,9 @@ it('submits edited options keeping the id of the existing ones', async () => {
       type: 'list',
     },
     id: '7',
+    isEnabled: true,
     name: 'Severity',
+    showOnCard: true,
   })
 })
 
@@ -138,7 +165,9 @@ it('removes an option and keeps the last one undeletable', async () => {
     color: COLORS.amber,
     data: { listValues: [{ id: '1', name: 'Low' }], type: 'list' },
     id: '7',
+    isEnabled: true,
     name: 'Severity',
+    showOnCard: true,
   })
 })
 

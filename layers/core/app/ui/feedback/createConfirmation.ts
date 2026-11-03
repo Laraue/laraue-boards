@@ -3,6 +3,9 @@ import { shallowRef } from 'vue'
 export type ConfirmOptions = {
   // The confirm button's text; defaults to the host's confirm or danger label.
   action?: string
+  // The other button's text, when declining is a choice of its own rather than "never mind"; defaults
+  // to the host's cancel label.
+  cancel?: string
   // A destructive action: a danger confirm button.
   danger?: boolean
   description?: string

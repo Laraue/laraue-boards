@@ -10,15 +10,54 @@
       <section class="attributes-page">
         <BaseSectionHeader :title="t('attributes')">
           <template #actions>
-            <BaseButton
-              :to="organizationRoutes.newAttribute()"
-              variant="primary">
-              <IconPlus />
-              {{ t('newAttribute') }}
-            </BaseButton>
+            <template v-if="state.order">
+              <BaseButton
+                :disabled="reordering"
+                @click="state.order = undefined">
+                {{ t('cancel') }}
+              </BaseButton>
+              <BaseButton
+                :disabled="reordering"
+                variant="primary"
+                @click="saveOrder">
+                {{ reordering ? t('saving') : t('saveOrder') }}
+              </BaseButton>
+            </template>
+            <template v-else>
+              <BaseButton
+                v-if="attributes.length > 1"
+                @click="state.order = [...attributes]">
+                <IconArrowsSort />
+                {{ t('changeOrder') }}
+              </BaseButton>
+              <BaseButton
+                :to="organizationRoutes.newAttribute()"
+                variant="primary">
+                <IconPlus />
+                {{ t('newAttribute') }}
+              </BaseButton>
+            </template>
           </template>
         </BaseSectionHeader>
-        <BaseList v-if="attributes.length">
+        <template v-if="state.order">
+          <p class="muted order-hint">{{ t('orderHint') }}</p>
+          <DragDropProvider
+            :plugins="defaultPreset.plugins"
+            :sensors="sensors"
+            @drag-end="handleDragEnd">
+            <BaseList>
+              <AttributeOrderRow
+                v-for="(attribute, index) in state.order"
+                :id="attribute.id"
+                :key="attribute.id"
+                :color="attribute.color"
+                :disabled="reordering"
+                :index="index"
+                :name="attribute.name" />
+            </BaseList>
+          </DragDropProvider>
+        </template>
+        <BaseList v-else-if="attributes.length">
           <BaseListRow
             v-for="attribute in attributes"
             :key="attribute.id"
@@ -28,6 +67,11 @@
             </template>
             {{ attribute.name }}
             <template #trailing>
+              <BaseBadge
+                v-if="!attribute.isEnabled"
+                variant="outline">
+                {{ t('off') }}
+              </BaseBadge>
               <span class="muted">{{ typeLabels[attribute.type] }}</span>
             </template>
           </BaseListRow>
@@ -42,10 +86,17 @@
 </template>
 
 <script setup lang="ts">
-import { IconPlus } from '@tabler/icons-vue'
+import { defaultPreset, PointerActivationConstraints } from '@dnd-kit/dom'
+import { arrayMove } from '@dnd-kit/helpers'
+import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
+import type { DragEndEvent } from '@dnd-kit/vue'
+import { isSortable } from '@dnd-kit/vue/sortable'
+import { IconArrowsSort, IconPlus } from '@tabler/icons-vue'
+import { reactive } from 'vue'
 
 import { useHead } from '#app'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseEmptyState from '#layers/core/app/ui/components/BaseEmptyState.vue'
 import BaseList from '#layers/core/app/ui/components/BaseList.vue'
@@ -55,7 +106,9 @@ import type {
   AttributeListItem,
   AttributesPageDeps,
 } from '#layers/workspace/app/sections/organizations/attributes/list-attributes/AttributesPage.deps'
+import AttributeOrderRow from '#layers/workspace/app/sections/organizations/attributes/list-attributes/components/AttributeOrderRow/AttributeOrderRow.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
+import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
 import { AttributeIcon } from '#layers/workspace/app/shared/constants/icons'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
@@ -68,6 +121,8 @@ const props = defineProps<{
 const { t } = useI18n({
   en: {
     attributes: 'Attributes',
+    cancel: 'Cancel',
+    changeOrder: 'Change order',
     date: 'Date',
     dateTime: 'Date and time',
     decimal: 'Decimal',
@@ -79,10 +134,16 @@ const { t } = useI18n({
     loadError: 'Could not load attributes',
     loading: 'Loading attributes…',
     newAttribute: 'New attribute',
+    off: 'Off',
+    orderHint: 'Forms, cards and filters show attributes in this order, in every space and epic.',
+    saveOrder: 'Save order',
+    saving: 'Saving…',
     text: 'Text',
   },
   ru: {
     attributes: 'Атрибуты',
+    cancel: 'Отмена',
+    changeOrder: 'Изменить порядок',
     date: 'Дата',
     dateTime: 'Дата и время',
     decimal: 'Десятичное число',
@@ -94,6 +155,11 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить атрибуты',
     loading: 'Загрузка атрибутов…',
     newAttribute: 'Новый атрибут',
+    off: 'Выключен',
+    orderHint:
+      'В этом порядке атрибуты показываются в формах, на карточках и в фильтрах во всех пространствах и эпиках.',
+    saveOrder: 'Сохранить порядок',
+    saving: 'Сохранение…',
     text: 'Текст',
   },
 })
@@ -112,10 +178,47 @@ useHead({ title: t('attributes') })
 const { data, message, pending, refresh } = await useApiQuery('organization-attributes', (signal) =>
   props.deps.view({ signal }),
 )
+
+// The attributes in the order being edited; undefined while the list is just shown.
+const state = reactive<{ order: AttributeListItem[] | undefined }>({ order: undefined })
+
+const { execute: reorder, pending: reordering } = useApiAction(props.deps.reorder)
+
+const sensors = [
+  PointerSensor.configure({
+    activationConstraints: (event) =>
+      event.pointerType === 'touch'
+        ? [new PointerActivationConstraints.Delay({ tolerance: 5, value: 250 })]
+        : [new PointerActivationConstraints.Distance({ value: 6 })],
+    preventActivation: () => false,
+  }),
+  KeyboardSensor,
+]
+
+const handleDragEnd = (event: DragEndEvent) => {
+  const source = event.operation.source
+  if (state.order && !event.canceled && isSortable(source)) {
+    state.order = arrayMove(state.order, source.initialIndex, source.index)
+  }
+}
+
+const saveOrder = async () => {
+  if (
+    state.order &&
+    (await reorder({ attributeIds: state.order.map((attribute) => attribute.id) }))
+  ) {
+    state.order = undefined
+    await refresh()
+  }
+}
 </script>
 
 <style scoped>
 .attributes-page > .base-section-header {
   margin-bottom: var(--space-4);
+}
+
+.order-hint {
+  margin: 0 0 var(--space-3);
 }
 </style>

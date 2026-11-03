@@ -88,6 +88,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   statusSelect: {
     loadStatuses: vi.fn<IssuePageDeps['statusSelect']['loadStatuses']>(),
   },
+  unusedAttributes: vi.fn<IssuePageDeps['unusedAttributes']>(async () => []),
   view: vi.fn<IssuePageDeps['view']>(async () => issue),
   ...overrides,
 })

@@ -19,6 +19,7 @@ test('waits for every board move before reporting a failure', async () => {
       boardIds: ['21', '22'],
       destinationOrganizationId: '2',
       destinationSpaceKey: 'product',
+      dropUnusedAttributeValues: false,
     })
     .catch((error: unknown) => error)
     .finally(() => (settled = true))
@@ -41,6 +42,7 @@ test('rejects moving boards without a selection', async () => {
       boardIds: [],
       destinationOrganizationId: '',
       destinationSpaceKey: '',
+      dropUnusedAttributeValues: false,
     }),
   ).rejects.toMatchObject({ status: 400 })
   assert.equal(requests.length, 0)
@@ -53,11 +55,36 @@ test('moves every selected board to the space', async () => {
     boardIds: ['21', '22'],
     destinationOrganizationId: '2',
     destinationSpaceKey: 'product',
+    dropUnusedAttributeValues: true,
   })
 
   assert.deepEqual(paths(), ['/api/movement/move-epic', '/api/movement/move-epic'])
   assert.deepEqual(await Promise.all(requests.map((request) => request.json())), [
-    { newOrganizationId: 2, newSpaceKey: 'product', sourceEpicId: 21 },
-    { newOrganizationId: 2, newSpaceKey: 'product', sourceEpicId: 22 },
+    {
+      dropUnusedAttributeValues: true,
+      newOrganizationId: 2,
+      newSpaceKey: 'product',
+      sourceEpicId: 21,
+    },
+    {
+      dropUnusedAttributeValues: true,
+      newOrganizationId: 2,
+      newSpaceKey: 'product',
+      sourceEpicId: 22,
+    },
   ])
+})
+
+test('lists each unused attribute once across the boards', async () => {
+  const { client } = createTestApiClient((request) =>
+    request.url.endsWith('/unused-attributes') ? [{ id: 3, name: 'Priority' }] : {},
+  )
+
+  const names = await createMoveBoardsDialogDeps(client).unusedAttributes({
+    boardIds: ['21', '22'],
+    destinationOrganizationId: '2',
+    destinationSpaceKey: 'product',
+  })
+
+  assert.deepEqual(names, ['Priority'])
 })

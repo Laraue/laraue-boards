@@ -26,6 +26,10 @@
           <span class="task-key">{{ viewModel.issueKey }}</span>
           {{ viewModel.title }}
         </p>
+        <IssueCardAttributes
+          v-if="viewModel.attributes?.length"
+          :attributes="viewModel.attributes"
+          class="task-attributes" />
         <div class="task-source">
           <BaseAvatar
             :color="viewModel.assigneeColor"
@@ -66,6 +70,7 @@ import { NuxtLink } from '#components'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseAvatar from '#layers/core/app/ui/components/BaseAvatar.vue'
 import AgentRunBadge from '#layers/workspace/app/sections/issues/shared/components/AgentRunBadge/AgentRunBadge.vue'
+import IssueCardAttributes from '#layers/workspace/app/sections/issues/shared/components/IssueCardAttributes/IssueCardAttributes.vue'
 import IssueSourceIcon from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.vue'
 import { useFormatters } from '#layers/workspace/app/shared/composables/useFormatters'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
@@ -201,6 +206,11 @@ useSortable({
 
 .task-created-via + time {
   margin-left: 0;
+}
+
+/* Labels sit a little closer to the title than to the row below. */
+.task-attributes {
+  margin: calc(var(--space-1) * -1) 0 var(--space-3);
 }
 
 .task-progress {

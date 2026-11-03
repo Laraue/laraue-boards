@@ -22,6 +22,9 @@ import type { IssueHistoryDeps } from './components/IssueHistory/IssueHistory.de
 import type { IssueLinksDeps } from './components/IssueLinks/IssueLinks.deps'
 
 type IssuePageAttributeViewModel = IssueAttributeField & {
+  // Switched off on the issue's board, but the issue still has a value for it - e.g. from before a
+  // move: it can be changed or cleared, not set anew.
+  inactive: boolean
   value: string
 }
 
@@ -112,6 +115,8 @@ export type IssuePageDeps = {
   // Resolves `complete: false` when the issue was saved but could not be moved to the new status.
   saveIssue: (
     input: IssuePageInput & {
+      // Moving to another board: whether the issue loses its values of attributes that board doesn't use.
+      dropUnusedAttributeValues?: boolean
       // The issue is handed to the agent: only the status move is saved, its fields are locked.
       fieldsLocked?: boolean
       issueKey: string
@@ -122,5 +127,7 @@ export type IssuePageDeps = {
   ) => Promise<IssuePageSavedIssue>
   spaceSelect: SpaceSelectDeps
   statusSelect: StatusSelectDeps
+  // The names of the attributes the issue has values for that the status's board doesn't use.
+  unusedAttributes: (input: { issueKey: string; statusId: string }) => Promise<string[]>
   view: (input: { issueKey: string; signal?: AbortSignal }) => Promise<IssuePageViewModel>
 }

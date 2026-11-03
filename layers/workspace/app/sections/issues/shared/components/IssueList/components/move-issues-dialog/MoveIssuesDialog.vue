@@ -41,9 +41,9 @@
       </BaseField>
     </BaseFieldGroup>
     <p
-      v-if="message"
+      v-if="message || unusedMessage"
       class="form-error">
-      {{ message }}
+      {{ message || unusedMessage }}
     </p>
     <template #actions>
       <BaseButton
@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, useId, useTemplateRef, watch } from 'vue'
+import { computed, reactive, useId, useTemplateRef, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
@@ -74,6 +74,7 @@ import BoardSelect from '#layers/workspace/app/sections/boards/shared/components
 import StatusSelect from '#layers/workspace/app/sections/boards/shared/components/StatusSelect/StatusSelect.vue'
 import SpaceSelect from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
+import { useAttributeValuesChoice } from '#layers/workspace/app/shared/composables/useAttributeValuesChoice'
 
 import type { MoveIssuesDialogDeps } from './MoveIssuesDialog.deps'
 
@@ -119,7 +120,14 @@ const state = reactive({
   statusId: '',
 })
 
-const { execute: moveIssues, message, pending: moving } = useApiAction(props.deps.moveIssues)
+const { execute: moveIssues, message, pending: movingIssues } = useApiAction(props.deps.moveIssues)
+const {
+  execute: findUnusedAttributes,
+  message: unusedMessage,
+  pending: checking,
+} = useApiAction(props.deps.unusedAttributes)
+const chooseAttributeValues = useAttributeValuesChoice()
+const moving = computed(() => movingIssues.value || checking.value)
 
 const open = (issueKeys: string[]) => {
   message.value = undefined
@@ -128,7 +136,13 @@ const open = (issueKeys: string[]) => {
 }
 
 const move = async (): Promise<void> => {
-  if (await moveIssues({ issueKeys: state.issueKeys, statusId: state.statusId })) {
+  const target = { issueKeys: state.issueKeys, statusId: state.statusId }
+  const unused = await findUnusedAttributes(target)
+  if (!unused) {
+    return
+  }
+  const dropUnusedAttributeValues = await chooseAttributeValues(unused.value)
+  if (await moveIssues({ ...target, dropUnusedAttributeValues })) {
     dialog.value?.close()
     await props.onMoved()
   }

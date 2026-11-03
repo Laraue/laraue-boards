@@ -14,6 +14,19 @@ test('maps backlog page data', async () => {
     if (path === '/api/spaces/product/epics') {
       return [{ id: 8, isDefault: true, name: 'Backlog' }]
     }
+    if (path === '/api/epics/8/attributes') {
+      return [
+        {
+          color: '#999',
+          id: 3,
+          isEnabled: true,
+          listValues: [],
+          name: 'Priority',
+          showOnCard: true,
+          type: 'Text',
+        },
+      ]
+    }
     return { data: [], hasNextPage: false }
   })
 
@@ -25,7 +38,7 @@ test('maps backlog page data', async () => {
       spaceKey: 'product',
     }),
     {
-      attributes: [],
+      attributes: [{ color: '#999', id: '3', name: 'Priority', type: 'text' }],
       backlogBoardId: '8',
       hasNextPage: false,
       issues: [],
@@ -43,6 +56,7 @@ test('maps backlog search request and response', async () => {
         assignee: 'Ada',
         assigneeColor: '#111',
         assigneeInitial: 'A',
+        attributes: [],
         canEdit: true,
         content: 'Fix the bug',
         epic: { color: '#222', name: 'Backlog' },

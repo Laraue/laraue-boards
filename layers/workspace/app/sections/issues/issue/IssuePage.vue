@@ -237,6 +237,12 @@
                     v-model="state.attributeValues"
                     :attributes="issue.attributes"
                     :disabled="!canEditFields(issue)"
+                    :muted-hint="t('notUsedOnBoard')"
+                    :muted-ids="
+                      issue.attributes
+                        .filter((attribute) => attribute.inactive)
+                        .map((attribute) => attribute.id)
+                    "
                     select-variant="inline" />
                 </div>
                 <IssueLinks
@@ -297,12 +303,13 @@
                 </dl>
               </aside>
             </div>
-            <div v-if="saveMessage || deleteMessage || (inDialog && issue.canEdit)">
+            <div
+              v-if="saveMessage || deleteMessage || unusedMessage || (inDialog && issue.canEdit)">
               <p
-                v-if="saveMessage || deleteMessage"
+                v-if="saveMessage || deleteMessage || unusedMessage"
                 class="form-error"
                 role="alert">
-                {{ saveMessage || deleteMessage }}
+                {{ saveMessage || deleteMessage || unusedMessage }}
               </p>
               <footer
                 v-if="inDialog && issue.canEdit"
@@ -358,6 +365,7 @@ import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
+import { useAttributeValuesChoice } from '#layers/workspace/app/shared/composables/useAttributeValuesChoice'
 import { useFormatters } from '#layers/workspace/app/shared/composables/useFormatters'
 import { BoardIcon, SpaceIcon } from '#layers/workspace/app/shared/constants/icons'
 import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
@@ -413,6 +421,7 @@ const { t } = useI18n({
     issueActivity: 'Issue activity',
     loadError: 'Could not load issue',
     loading: 'Loading issue…',
+    notUsedOnBoard: 'Not used on this board',
     openMessage: 'Open message in Telegram',
     owner: 'Owner',
     properties: 'Properties',
@@ -446,6 +455,7 @@ const { t } = useI18n({
     issueActivity: 'Активность задачи',
     loadError: 'Не удалось загрузить задачу',
     loading: 'Загрузка задачи…',
+    notUsedOnBoard: 'Не используются на этой доске',
     openMessage: 'Открыть сообщение в Telegram',
     owner: 'Владелец',
     properties: 'Свойства',
@@ -632,10 +642,27 @@ const {
   pending: deleting,
 } = useApiAction(props.deps.deleteIssue)
 
+const { execute: findUnusedAttributes, message: unusedMessage } = useApiAction(
+  props.deps.unusedAttributes,
+)
+const chooseAttributeValues = useAttributeValuesChoice()
+
 const save = async () => {
   const issue = currentIssue.value
   if (!issue || !canSave.value) {
     return
+  }
+  // Moving to another board: ask about the values of attributes it doesn't use, if there are any.
+  let dropUnusedAttributeValues = false
+  if (state.boardId !== issue.boardId && state.statusId) {
+    const unused = await findUnusedAttributes({
+      issueKey: issue.issueKey,
+      statusId: state.statusId,
+    })
+    if (!unused) {
+      return
+    }
+    dropUnusedAttributeValues = await chooseAttributeValues(unused.value)
   }
   const saved = await saveIssue({
     assigneeId: state.assigneeId,
@@ -645,6 +672,7 @@ const save = async () => {
     ),
     boardId: state.boardId,
     content: state.content,
+    dropUnusedAttributeValues,
     fieldsLocked: fieldsLocked(issue),
     files: state.files,
     issueKey: issue.issueKey,
@@ -842,6 +870,11 @@ const refreshPage = () =>
 
 .issue-properties {
   grid-auto-rows: var(--control-height);
+}
+
+/* Labels of the attributes the issue's board doesn't use: a step quieter than the other labels. */
+.issue-properties :deep(label.attribute-label-muted) {
+  color: color-mix(in srgb, var(--color-muted) 70%, var(--color-background));
 }
 
 .issue-properties,

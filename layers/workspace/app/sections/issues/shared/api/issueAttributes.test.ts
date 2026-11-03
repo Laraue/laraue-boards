@@ -12,21 +12,63 @@ import { COLORS } from '#layers/workspace/app/shared/constants/colors'
 import { toLocalIssueDateTime, toUtcIssueDateTime } from './issueDateTime'
 
 const attributeDtos: IssueAttributeDto[] = [
-  { color: COLORS.gray, id: 1, listValues: [], name: 'Reference', type: 'Text' },
+  {
+    color: COLORS.gray,
+    id: 1,
+    isEnabled: true,
+    listValues: [],
+    name: 'Reference',
+    showOnCard: true,
+    type: 'Text',
+  },
   {
     color: COLORS.amber,
     id: 2,
+    isEnabled: true,
     listValues: [
       { id: 3, name: 'High' },
       { id: 4, name: 'Low' },
     ],
     name: 'Priority',
+    showOnCard: true,
     type: 'List',
   },
-  { color: COLORS.blue, id: 5, listValues: [], name: 'Estimate', type: 'Integer' },
-  { color: COLORS.green, id: 6, listValues: [], name: 'Cost', type: 'Decimal' },
-  { color: COLORS.red, id: 7, listValues: [], name: 'Due', type: 'Date' },
-  { color: COLORS.purple, id: 8, listValues: [], name: 'Starts', type: 'DateTime' },
+  {
+    color: COLORS.blue,
+    id: 5,
+    isEnabled: true,
+    listValues: [],
+    name: 'Estimate',
+    showOnCard: true,
+    type: 'Integer',
+  },
+  {
+    color: COLORS.green,
+    id: 6,
+    isEnabled: true,
+    listValues: [],
+    name: 'Cost',
+    showOnCard: true,
+    type: 'Decimal',
+  },
+  {
+    color: COLORS.red,
+    id: 7,
+    isEnabled: true,
+    listValues: [],
+    name: 'Due',
+    showOnCard: true,
+    type: 'Date',
+  },
+  {
+    color: COLORS.purple,
+    id: 8,
+    isEnabled: true,
+    listValues: [],
+    name: 'Starts',
+    showOnCard: true,
+    type: 'DateTime',
+  },
 ]
 
 test('maps issue attributes, filters, and values to API models', () => {

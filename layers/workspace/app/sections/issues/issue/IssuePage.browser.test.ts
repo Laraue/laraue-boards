@@ -107,6 +107,7 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
       { label: 'To do', value: '3' },
     ]),
   },
+  unusedAttributes: vi.fn<IssuePageDeps['unusedAttributes']>(async () => []),
   view: vi.fn<IssuePageDeps['view']>(async () => issue),
   ...overrides,
 })
@@ -147,6 +148,33 @@ it('shows the loaded issue', async () => {
   )
 
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
+})
+
+it('marks kept values of attributes the board does not use', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        attributes: [
+          {
+            color: '#222',
+            id: '3',
+            inactive: false,
+            name: 'Priority',
+            type: 'text',
+            value: 'High',
+          },
+          { color: '#333', id: '4', inactive: true, name: 'Client', type: 'text', value: 'Acme' },
+        ],
+      })),
+    }),
+  )
+
+  await expect
+    .element(page.getByRole('img', { name: 'Not used on this board' }))
+    .toBeInTheDocument()
+  await expect.element(page.getByLabelText('Client')).toHaveValue('Acme')
+  await expect.element(page.getByLabelText('Priority')).toHaveValue('High')
 })
 
 it('refreshes the issue and its mounted comments through the page callback', async () => {
