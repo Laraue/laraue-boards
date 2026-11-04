@@ -17,10 +17,10 @@
           <BaseButton
             v-if="data.canManage"
             :aria-label="t('spaceSettings')"
-            icon-on-mobile
-            :to="organizationRoutes.spaceSettings(spaceKey)">
+            icon
+            :to="organizationRoutes.spaceSettings(spaceKey)"
+            :tooltip="t('spaceSettings')">
             <IconSettings />
-            <template #label>{{ t('settings') }}</template>
           </BaseButton>
           <BaseButton
             v-if="data.canCreateBoards"

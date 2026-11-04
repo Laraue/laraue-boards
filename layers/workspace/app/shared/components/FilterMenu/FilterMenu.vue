@@ -8,11 +8,14 @@
       <BaseButton
         :aria-expanded="open"
         aria-haspopup="dialog"
+        :aria-label="activeCount ? `${t('filters')} (${activeCount})` : t('filters')"
+        class="filter-trigger"
+        :data-active="activeCount > 0 || undefined"
+        icon
         :loading="loading"
+        :tooltip="t('filters')"
         @click="toggle">
         <IconFilter v-if="!loading" />
-        {{ t('filters') }}
-        <span v-if="activeCount">({{ activeCount }})</span>
       </BaseButton>
     </template>
     <div class="filter-menu">
@@ -106,6 +109,22 @@ const activeId = ref<string>()
   min-width: 0;
   padding: var(--space-1);
   width: 100%;
+}
+
+/* The accessible name includes the number of active filters. */
+.filter-trigger[data-active]::after {
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+  content: '';
+  height: var(--space-1);
+  position: absolute;
+  right: var(--space-1);
+  top: var(--space-1);
+  width: var(--space-1);
+}
+
+.filter-trigger {
+  position: relative;
 }
 
 .filter-menu-header {

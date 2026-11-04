@@ -18,7 +18,7 @@
           <BaseField
             id="profile-given-name"
             :label="t('givenName')">
-            <input
+            <BaseInput
               id="profile-given-name"
               v-model="state.givenName"
               autocomplete="given-name"
@@ -27,7 +27,7 @@
           <BaseField
             id="profile-family-name"
             :label="t('familyName')">
-            <input
+            <BaseInput
               id="profile-family-name"
               v-model="state.familyName"
               autocomplete="family-name"
@@ -37,7 +37,7 @@
           <BaseField
             id="profile-display-name"
             :label="t('displayName')">
-            <input
+            <BaseInput
               id="profile-display-name"
               v-model="state.displayName"
               maxlength="257"
@@ -76,6 +76,7 @@ import { reactive, watch } from 'vue'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'

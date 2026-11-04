@@ -53,7 +53,8 @@
           <component
             :is="contextOnly ? 'p' : 'h1'"
             v-if="title"
-            class="page-header-title">
+            class="page-header-title"
+            :title="title">
             <component
               :is="icon"
               v-if="icon"
@@ -134,17 +135,45 @@ const { t } = useI18n({
   backdrop-filter: none;
   background: var(--color-background);
   border-bottom: 1px solid var(--color-divider);
-  box-sizing: content-box;
-  display: flex;
+  box-sizing: border-box;
+  display: grid;
   flex: none;
-  gap: var(--space-3);
-  height: 55px;
+  gap: var(--space-2);
+  grid-template-areas: 'start actions';
+  grid-template-columns: minmax(0, 1fr) max-content;
   justify-content: space-between;
+  min-height: 49px;
   min-width: 0;
   padding: 0 var(--layout-content-padding, var(--space-6));
+  padding-block: var(--space-2);
   position: sticky;
   top: 0;
   z-index: 20;
+}
+
+.page-header.has-tools {
+  grid-template-areas: 'start tools actions';
+  grid-template-columns: minmax(0, 1fr) max-content max-content;
+}
+
+.page-header.has-tools:not(:has(.page-header-actions)) {
+  grid-template-areas: 'start tools';
+  grid-template-columns: minmax(0, 1fr) max-content;
+}
+
+@container app-page (max-width: 44rem) {
+  .page-header.has-tools,
+  .page-header.has-tools:not(:has(.page-header-actions)) {
+    grid-template-areas:
+      'start actions'
+      'tools tools';
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .page-header-tools :deep(.page-header-search) {
+    flex: 1;
+    width: 100%;
+  }
 }
 
 /* The path and title take the free room, so the view tools sit on the right with the page's
@@ -152,8 +181,8 @@ const { t } = useI18n({
 .page-header-start {
   align-items: center;
   display: flex;
-  flex: 1;
   gap: var(--space-2);
+  grid-area: start;
   min-width: 0;
 }
 
@@ -233,8 +262,13 @@ const { t } = useI18n({
   min-width: 0;
 }
 
+.page-header-title-row :deep(.base-button) {
+  min-width: var(--control-height-small);
+}
+
 .page-header-actions {
   flex: none;
+  grid-area: actions;
   margin-left: auto;
 }
 
@@ -243,6 +277,7 @@ const { t } = useI18n({
   display: flex;
   flex: none;
   gap: var(--space-2);
+  grid-area: tools;
   min-width: 0;
 }
 
@@ -254,33 +289,43 @@ const { t } = useI18n({
   display: none;
 }
 
-@media (max-width: 1199px) {
-  .page-header.has-tools {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: 55px;
-    padding-block: var(--space-3);
-    row-gap: var(--space-2);
+@media (max-width: 767px) {
+  .page-header.has-tools,
+  .page-header.has-tools:not(:has(.page-header-actions)) {
+    grid-template-areas:
+      'start actions'
+      'tools tools';
+    grid-template-columns: minmax(0, 1fr) max-content;
   }
 
-  .page-header-tools {
-    flex-basis: 100%;
-    order: 3;
-  }
-
-  .page-header.has-tools .page-header-start {
+  .page-header-tools :deep(.page-header-search) {
     flex: 1;
+    width: 100%;
+  }
+
+  .page-header-start,
+  .page-header-title-row {
+    gap: 0;
+  }
+
+  .page-header-context {
+    flex: 1;
+  }
+
+  .page-header-actions,
+  .page-header-tools {
+    gap: var(--space-1);
+  }
+
+  .page-header-path,
+  .page-header-separator {
+    display: none;
   }
 }
 
 @media (max-width: 767px) {
   .page-header-start :deep(:is(.page-header-menu, .page-header-back)) {
     display: inline-flex;
-  }
-
-  .page-header-path,
-  .page-header-separator {
-    display: none;
   }
 }
 </style>

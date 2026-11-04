@@ -315,7 +315,7 @@ const pickYear = (year: DateValue | DateValue[] | undefined) => {
   font-variant-numeric: tabular-nums;
   height: var(--control-height);
   min-width: 0;
-  padding: 0 var(--space-1) 0 var(--space-3);
+  padding: 0 var(--space-1) 0 var(--space-2);
 }
 
 .base-date-picker:hover:not([data-disabled], :focus-within) {

@@ -1,15 +1,17 @@
 <template>
-  <input
+  <BaseInput
     :id="id"
     :disabled="disabled"
     inputmode="numeric"
+    :model-value="model"
     pattern="-?[0-9]+"
     type="text"
-    :value="model"
     @input="update" />
 </template>
 
 <script setup lang="ts">
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
+
 defineProps<{ disabled: boolean; id: string }>()
 const model = defineModel<string>({ required: true })
 const update = (event: Event) => {

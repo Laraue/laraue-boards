@@ -387,8 +387,7 @@ const remove = async (id: string) => {
 }
 
 /* White blocks on the page, like the kit's lists and cards. */
-.issue-comment-body,
-.issue-comment-composer {
+.issue-comment-body {
   background: var(--color-surface);
   border: 1px solid var(--color-border-surface);
   border-radius: var(--radius-card);
@@ -447,9 +446,13 @@ const remove = async (id: string) => {
 }
 
 .issue-comment-composer {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-control);
   display: grid;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2);
+  transition: border-color var(--duration-fast) var(--ease-standard);
 }
 
 /* Editing happens in the comment's own card, without a second frame. */

@@ -171,7 +171,7 @@ const selected = computed({
   height: var(--control-height);
   max-width: 100%;
   min-width: 0;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
   text-align: left;
   transition: border-color var(--duration-fast) var(--ease-standard);
   width: 100%;

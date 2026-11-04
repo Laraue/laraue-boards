@@ -386,7 +386,7 @@ aside > nav button {
   display: flex;
   gap: var(--space-2);
   height: var(--control-height);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
   text-align: left;
   text-decoration: none;
   width: 100%;
@@ -408,14 +408,14 @@ aside > nav button.active {
   color: var(--color-muted);
   font-size: var(--font-size-small);
   line-height: 1.4;
-  padding: 0 var(--space-3) var(--space-2);
+  padding: 0 var(--space-2) var(--space-2);
 }
 
 .nav-title {
   color: var(--color-muted);
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-medium);
-  padding: var(--space-5) var(--space-3) var(--space-2);
+  padding: var(--space-5) var(--space-2) var(--space-2);
 }
 
 /* The page's own header (PageHeader) scrolls with it, so the page shows through it while it scrolls. */

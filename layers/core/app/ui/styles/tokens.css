@@ -118,7 +118,7 @@
   --icon-btn-size: var(--control-height-small);
   --icon-btn-size-small: 1.5rem; /* 24px */
   --icon-size: 1rem; /* 16px */
-  --control-icon-padding: calc(var(--icon-size) + var(--space-5));
+  --control-icon-padding: calc(var(--space-2) + var(--icon-size) + var(--space-2));
 
   /* Type scale, then the roles most text needs. Headings pick from the scale directly. */
   --font-size-xs: 0.6875rem; /* 11px */

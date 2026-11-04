@@ -101,30 +101,29 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .board-scroll-map {
-  align-self: flex-end;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
-  flex: none;
-  height: var(--control-height-small);
-  margin-bottom: var(--space-2);
+  bottom: var(--space-4);
+  height: 44px;
   padding: var(--space-1);
-  position: relative;
-  width: 104px;
+  position: absolute;
+  right: var(--space-2);
+  width: 96px;
   z-index: 2;
   --scroll-map-thumb-width: 0;
 }
 
 .columns {
   display: grid;
-  gap: var(--space-1);
+  gap: 2px;
   height: 100%;
 }
 
 .columns span {
   background: var(--color-soft);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-small);
+  border-radius: 2px;
 }
 
 input {

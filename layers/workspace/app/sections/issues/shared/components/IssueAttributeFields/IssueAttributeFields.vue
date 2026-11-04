@@ -153,7 +153,7 @@ const update = (id: string, value: string) => {
 }
 
 .attribute-icon {
-  left: calc(var(--space-3) + 1px);
+  left: calc(var(--space-2) + 1px);
   pointer-events: none;
   position: absolute;
   top: 50%;
@@ -162,6 +162,6 @@ const update = (id: string, value: string) => {
 }
 
 .attribute-field :deep(:is(input, .base-select, .base-date-picker)) {
-  padding-left: calc(var(--space-3) + var(--icon-size) + var(--space-2));
+  padding-left: var(--control-icon-padding);
 }
 </style>

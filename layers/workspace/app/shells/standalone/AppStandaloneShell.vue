@@ -38,13 +38,11 @@ useSeoMeta({ robots: 'noindex, nofollow' })
   backdrop-filter: blur(12px);
   background: color-mix(in srgb, var(--color-surface) 85%, transparent);
   border-bottom: 1px solid var(--color-divider);
-  /* 55px plus the border, like SiteHeader: on a scaled screen the border is less than 1px, and
-     the logo has to land on the same spot in both. */
-  box-sizing: content-box;
+  box-sizing: border-box;
   display: flex;
   gap: var(--space-3);
-  height: 55px;
   justify-content: space-between;
+  min-height: 49px;
   padding: 0 var(--space-6);
   position: sticky;
   top: 0;

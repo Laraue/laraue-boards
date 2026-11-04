@@ -97,10 +97,10 @@ it('puts a typed board search into the route query', async () => {
   await vi.waitFor(() => expect(onReplaceQuery).toHaveBeenLastCalledWith({ search: 'bug' }))
 })
 
-it('shows the board status as a label after the board name', async () => {
+it('keeps the board status out of the header', async () => {
   await mount({ data: { ...board, status: 'Active' } })
 
-  await expect.element(page.getByText('In progress', { exact: true })).toBeInTheDocument()
+  await expect.element(page.getByText('In progress', { exact: true })).not.toBeInTheDocument()
 })
 
 it('requests issue creation in the selected column', async () => {

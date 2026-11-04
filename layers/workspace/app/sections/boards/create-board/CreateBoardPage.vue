@@ -23,7 +23,7 @@
           <BaseField
             id="create-board-name"
             :label="t('name')">
-            <input
+            <BaseInput
               id="create-board-name"
               v-model="form.name"
               required />
@@ -56,7 +56,7 @@
             :key="status.id"
             class="status-row">
             <AppColorPicker v-model="status.color" />
-            <input
+            <BaseInput
               v-model="status.name"
               :aria-label="t('statusName')"
               required />
@@ -103,6 +103,7 @@ import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseSelect from '#layers/core/app/ui/components/BaseSelect.vue'
 import type { CreateBoardPageDeps } from '#layers/workspace/app/sections/boards/create-board/CreateBoardPage.deps'
 import type { StatusCategory } from '#layers/workspace/app/sections/boards/shared/components/StatusCategorySelect/StatusCategorySelect.types'

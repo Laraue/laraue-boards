@@ -905,7 +905,7 @@ const refreshPage = () =>
   display: flex;
   gap: var(--space-2);
   min-height: var(--control-height);
-  padding: 0 var(--space-3);
+  padding: 0 calc(var(--space-2) + 1px);
 }
 
 .issue-dates {

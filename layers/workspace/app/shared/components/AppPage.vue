@@ -17,6 +17,7 @@ withDefaults(defineProps<{ contained?: boolean; padded?: boolean }>(), { padded:
 
 <style scoped>
 .app-page {
+  container: app-page / inline-size;
   display: flex;
   flex-direction: column;
   min-height: min-content;

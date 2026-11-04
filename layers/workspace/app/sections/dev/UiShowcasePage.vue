@@ -177,7 +177,7 @@
         <textarea
           v-model="longText"
           rows="3" />
-        <input
+        <BaseInput
           v-model="query"
           placeholder="Search"
           type="search" />

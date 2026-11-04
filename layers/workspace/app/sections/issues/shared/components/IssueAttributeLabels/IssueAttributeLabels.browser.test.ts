@@ -28,9 +28,9 @@ it('collapses the labels past the limit into one that lists them', async () => {
   await expect.element(page.getByText('Bug')).toBeInTheDocument()
   await expect.element(page.getByText('High')).toBeInTheDocument()
   await expect.element(page.getByText('Acme')).not.toBeInTheDocument()
-  await expect
-    .element(page.getByText('+2'))
-    .toHaveAttribute('aria-label', 'Client: Acme, Context: Web')
+  expect(currentWrapper.get('.attribute-label-more').attributes('aria-label')).toBe(
+    'Client: Acme, Context: Web',
+  )
 })
 
 it('shows every label without a limit', async () => {
@@ -54,9 +54,8 @@ it('summarizes attributes and opens every named value on click or keyboard', asy
   await expect.element(page.getByText('Bug', { exact: true })).not.toBeInTheDocument()
   await trigger.click()
   await expect.element(page.getByRole('dialog').getByText('Type', { exact: true })).toBeVisible()
-  await expect
-    .element(page.getByRole('dialog').getByText('Bug', { exact: true }))
-    .toHaveClass('attribute-label')
+  expect(currentWrapper.get('.attribute-details .attribute-label').text()).toBe('Bug')
+  expect(currentWrapper.find('.attribute-details .attribute-label svg').exists()).toBe(true)
   await expect.element(page.getByRole('dialog').getByText('Acme', { exact: true })).toBeVisible()
   await page.getByRole('dialog').getByText('Acme', { exact: true }).click()
   await userEvent.keyboard('{Escape}')

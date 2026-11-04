@@ -92,6 +92,7 @@ const homePath = computed(() => localePath('index', locale.value))
   background: color-mix(in srgb, var(--color-surface) 85%, transparent);
   border-bottom: 1px solid var(--color-divider);
   left: 0;
+  min-height: 49px;
   position: fixed;
   right: 0;
   top: 0;
@@ -102,12 +103,12 @@ const homePath = computed(() => localePath('index', locale.value))
   align-items: center;
   display: flex;
   gap: 24px;
-  /* Plus the header's border, like the app's header. */
-  height: 55px;
   margin: 0 auto;
   /* The width of the docs' content. The header has the same width on every page, so it does not
      change size when moving between the landing page and the docs. */
   max-width: 1360px;
+  /* The outer header adds its bottom border. */
+  min-height: 48px;
   padding: 0 24px;
 }
 

@@ -23,7 +23,7 @@
               <BaseField
                 id="organization-settings-name"
                 :label="t('name')">
-                <input
+                <BaseInput
                   id="organization-settings-name"
                   v-model="state.name"
                   :disabled="!page.canUpdate"
@@ -87,6 +87,7 @@ import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseDangerZone from '#layers/core/app/ui/components/BaseDangerZone.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
 import { useConfirm } from '#layers/core/app/ui/composables/useConfirm'
 import type {

@@ -3,23 +3,23 @@
     <BaseField
       :id="`${id}-from`"
       :label="t('minimum')">
-      <input
+      <BaseInput
         :id="`${id}-from`"
         autofocus
+        :model-value="model[0] ?? ''"
         step="any"
         type="number"
-        :value="model[0] ?? ''"
-        @input="update(0, $event)" />
+        @update:model-value="update(0, $event)" />
     </BaseField>
     <BaseField
       :id="`${id}-to`"
       :label="t('maximum')">
-      <input
+      <BaseInput
         :id="`${id}-to`"
+        :model-value="model[1] ?? ''"
         step="any"
         type="number"
-        :value="model[1] ?? ''"
-        @input="update(1, $event)" />
+        @update:model-value="update(1, $event)" />
     </BaseField>
   </div>
 </template>
@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 
 defineProps<{ id: string }>()
 
@@ -37,9 +38,9 @@ const { t } = useI18n({
 
 const model = defineModel<string[]>({ required: true })
 
-const update = (index: number, event: Event) => {
+const update = (index: number, val: string) => {
   const value = [...model.value]
-  value[index] = (event.target as HTMLInputElement).value
+  value[index] = val
   model.value = [value[0] ?? '', value[1] ?? '']
 }
 </script>
@@ -50,7 +51,7 @@ const update = (index: number, event: Event) => {
   gap: var(--space-3);
 }
 
-input {
+.range-filter :deep(.base-input) {
   max-width: none;
 }
 </style>

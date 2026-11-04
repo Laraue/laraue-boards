@@ -136,9 +136,6 @@ const display = (attribute: IssueAttributeLabel) => {
 }
 
 .attribute-label-more {
-  background: var(--color-soft);
-  color: var(--color-muted);
   cursor: default;
-  display: block;
 }
 </style>

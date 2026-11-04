@@ -17,7 +17,7 @@
           <BaseField
             id="create-organization-name"
             :label="t('name')">
-            <input
+            <BaseInput
               id="create-organization-name"
               v-model="form.name"
               required />
@@ -25,7 +25,7 @@
           <BaseField
             id="create-organization-slug"
             :label="t('slug')">
-            <input
+            <BaseInput
               id="create-organization-slug"
               v-model="form.slug"
               pattern="[a-z0-9-]+"
@@ -68,6 +68,7 @@ import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
 import type { CreateOrganizationPageDeps } from '#layers/workspace/app/sections/organizations/create-organization/CreateOrganizationPage.deps'
 import AppBackLink from '#layers/workspace/app/shared/components/AppBackLink.vue'

@@ -18,7 +18,7 @@
               v-slot="{ describedby }"
               :hint="t('nameHint')"
               :label="t('name')">
-              <input
+              <BaseInput
                 id="member-profile-name"
                 v-model="state.displayName"
                 :aria-describedby="describedby"
@@ -67,6 +67,7 @@ import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
 import AppColorPicker from '#layers/workspace/app/shared/components/AppColorPicker.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'

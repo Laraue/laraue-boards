@@ -1,5 +1,5 @@
 <template>
-  <input
+  <BaseInput
     :id="id"
     v-model="model"
     :aria-label="t('value')"
@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 
 defineProps<{ id: string }>()
 
@@ -22,7 +23,7 @@ const model = defineModel<string>({ required: true })
 </script>
 
 <style scoped>
-input {
+:deep(.base-input) {
   max-width: none;
 }
 </style>

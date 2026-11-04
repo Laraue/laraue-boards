@@ -16,12 +16,10 @@
         <template
           v-if="data"
           #tools>
-          <input
-            :aria-label="t('searchIssues')"
-            :placeholder="t('searchIssues')"
-            type="search"
-            :value="request.search"
-            @input="updateSearch(($event.target as HTMLInputElement).value)" />
+          <PageHeaderSearch
+            :label="t('searchIssues')"
+            :model-value="request.search"
+            @update:model-value="updateSearch" />
           <IssueFilters
             :attributes="data.attributes"
             :loading="filtering"
@@ -94,6 +92,7 @@ import {
 import type { BacklogPageDeps } from '#layers/workspace/app/sections/spaces/backlog/BacklogPage.deps'
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
 import { SpaceIcon } from '#layers/workspace/app/shared/constants/icons'

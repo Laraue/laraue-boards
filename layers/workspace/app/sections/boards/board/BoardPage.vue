@@ -18,20 +18,11 @@
         :title="viewModel?.title ?? t('board')">
         <template
           v-if="viewModel"
-          #title-actions>
-          <BaseBadge :variant="boardStatusVariant[viewModel.status]">
-            {{ statusLabel(viewModel.status) }}
-          </BaseBadge>
-        </template>
-        <template
-          v-if="viewModel"
           #tools>
-          <input
-            :aria-label="t('searchIssues')"
-            :placeholder="t('searchIssues')"
-            type="search"
-            :value="search"
-            @input="updateSearch(($event.target as HTMLInputElement).value)" />
+          <PageHeaderSearch
+            :label="t('searchIssues')"
+            :model-value="search"
+            @update:model-value="updateSearch" />
           <IssueFilters
             :attributes="viewModel.attributes"
             :loading="state.filtering"
@@ -44,10 +35,10 @@
           <BaseButton
             v-if="viewModel.canUpdate || viewModel.canDelete"
             :aria-label="t('boardSettings')"
-            icon-on-mobile
-            :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)">
+            icon
+            :to="organizationRoutes.boardSettings(spaceKey, viewModel.id)"
+            :tooltip="t('boardSettings')">
             <IconSettings />
-            <template #label>{{ t('boardSettings') }}</template>
           </BaseButton>
           <BaseButton
             v-if="viewModel.canCreateIssues"
@@ -183,12 +174,10 @@ import {
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
-import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import type {
   BoardPageDeps,
   BoardPageFilterValue,
-  BoardStatus,
 } from '#layers/workspace/app/sections/boards/board/BoardPage.deps'
 import BoardColumn from '#layers/workspace/app/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '#layers/workspace/app/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
@@ -202,6 +191,7 @@ import {
 } from '#layers/workspace/app/sections/issues/shared/model/issueAttributeFilters'
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
@@ -229,30 +219,19 @@ const { t } = useI18n({
     addIssue: 'Add issue',
     board: 'Board',
     boardSettings: 'Settings',
-    done: 'Done',
-    inProgress: 'In progress',
     loadError: 'Could not load board',
     loading: 'Loading board…',
-    new: 'New',
     searchIssues: 'Search issues',
   },
   ru: {
     addIssue: 'Добавить задачу',
     board: 'Доска',
     boardSettings: 'Настройки',
-    done: 'Готово',
-    inProgress: 'В работе',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
-    new: 'Новая',
     searchIssues: 'Поиск задач',
   },
 })
-
-// The same words and colors as the boards list of the space page.
-const boardStatusVariant = { Active: 'warning', Done: 'success', New: 'neutral' } as const
-const statusLabel = (status: BoardStatus) =>
-  ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
 
 const IssueDialog = defineAsyncComponent(
   () =>
@@ -859,8 +838,7 @@ const refreshPage = () => Promise.all([refreshBoard(), issueDialog.value?.refres
 .board {
   display: grid;
   flex: 1;
-  /* The columns are bands of their own now; a tighter gap keeps them one board, as Jira's. */
-  gap: var(--space-3);
+  gap: var(--space-2);
   grid-auto-columns: 320px;
   grid-auto-flow: column;
   grid-template-columns: none;
@@ -871,7 +849,6 @@ const refreshPage = () => Promise.all([refreshBoard(), issueDialog.value?.refres
 
 @media (max-width: 767px) {
   .board {
-    gap: var(--space-2);
     grid-auto-columns: 100%;
     grid-auto-flow: column;
     grid-template-columns: none;
