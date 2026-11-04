@@ -85,6 +85,7 @@
             :loading="pending"
             type="submit"
             variant="primary">
+            <IconLayoutGridAdd />
             {{ t('createBoard') }}
           </BaseButton>
         </div>

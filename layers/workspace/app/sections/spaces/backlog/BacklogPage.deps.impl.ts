@@ -2,8 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
 import {
-  mapCardAttributes,
-  mapIssueAttributes,
+  mapAttributeLabels,
   mapIssueFilters,
   mapRawIssueFilters,
 } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
@@ -23,7 +22,7 @@ const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem
   assigneeColor: issue.assigneeColor,
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
-  attributes: mapCardAttributes(issue.attributes),
+  attributes: mapAttributeLabels(issue.attributes),
   blocked: issue.isBlocked,
   boardColor: issue.epic.color,
   boardId: String(issue.epicId),
@@ -36,6 +35,7 @@ const mapIssue = (issue: components['schemas']['SearchIssueDto']): IssueListItem
   statusCategory: issue.status?.category,
   statusColor: issue.status?.color ?? COLORS.gray,
   statusId: String(issue.statusId),
+  time: issue.time,
   title: issue.title,
 })
 
@@ -72,28 +72,22 @@ export const createBacklogPageDeps = (
     if (!space || !backlog) {
       throw new ApiError(404)
     }
-    // The organization's attributes read the filters in the address; the filters offer only those the
-    // backlog uses (BRD-179).
-    const [issues, backlogAttributes] = await Promise.all([
-      request(
-        client.POST('/api/issues/search', {
-          body: {
-            epicIds: [backlog.id],
-            filters: mapRawIssueFilters(attributeQuery, attributes),
-            page: page - 1,
-            perPage: PER_PAGE,
-            searchString: search || undefined,
-            sorting: createdAtDescending,
-          },
-          signal,
-        }),
-      ),
-      request(
-        client.GET('/api/epics/{id}/attributes', { params: { path: { id: backlog.id } }, signal }),
-      ),
-    ])
+    // Filters offer every attribute of the organization: kept values of unused ones still match.
+    const issues = await request(
+      client.POST('/api/issues/search', {
+        body: {
+          epicIds: [backlog.id],
+          filters: mapRawIssueFilters(attributeQuery, attributes),
+          page: page - 1,
+          perPage: PER_PAGE,
+          searchString: search || undefined,
+          sorting: createdAtDescending,
+        },
+        signal,
+      }),
+    )
     return {
-      attributes: mapIssueAttributes(backlogAttributes),
+      attributes,
       backlogBoardId: String(backlog.id),
       hasNextPage: issues.hasNextPage,
       issues: issues.data.map(mapIssue),

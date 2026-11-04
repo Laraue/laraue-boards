@@ -220,4 +220,8 @@ const filterItems = computed<FilterItem[]>(() => [
   min-width: 0;
   padding: 0;
 }
+
+.filter-options :deep(.base-checkbox) {
+  padding-inline: var(--space-2);
+}
 </style>

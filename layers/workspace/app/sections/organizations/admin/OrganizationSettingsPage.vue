@@ -7,8 +7,7 @@
     :on-retry="refresh"
     :pending="pending">
     <template #default="{ data: page }">
-      <section class="form-page">
-        <BaseSectionHeader :title="t('general')" />
+      <section class="settings-page">
         <form
           @submit.prevent="
             submitForm({
@@ -18,25 +17,28 @@
               slug: page.slug,
             })
           ">
-          <BaseFieldGroup>
-            <BaseField
-              id="organization-settings-name"
-              :label="t('name')">
-              <input
+          <section class="settings-section">
+            <BaseSectionHeader :title="t('general')" />
+            <BaseFieldGroup>
+              <BaseField
                 id="organization-settings-name"
-                v-model="state.name"
-                :disabled="!page.canUpdate"
-                required />
-            </BaseField>
-            <BaseField
-              v-slot="{ labelId }"
-              :label="t('color')">
-              <AppColorPicker
-                v-model="state.color"
-                :aria-labelledby="labelId"
-                :disabled="!page.canUpdate" />
-            </BaseField>
-          </BaseFieldGroup>
+                :label="t('name')">
+                <input
+                  id="organization-settings-name"
+                  v-model="state.name"
+                  :disabled="!page.canUpdate"
+                  required />
+              </BaseField>
+              <BaseField
+                v-slot="{ labelId }"
+                :label="t('color')">
+                <AppColorPicker
+                  v-model="state.color"
+                  :aria-labelledby="labelId"
+                  :disabled="!page.canUpdate" />
+              </BaseField>
+            </BaseFieldGroup>
+          </section>
           <p
             v-if="state.saved"
             class="form-success">
@@ -53,7 +55,8 @@
               :disabled="busy"
               type="submit"
               variant="primary">
-              {{ submitting ? t('saving') : t('saveChanges') }}
+              <IconCheck />
+              {{ submitting ? t('saving') : t('saveSettings') }}
             </BaseButton>
           </div>
         </form>
@@ -65,6 +68,7 @@
             :disabled="busy"
             variant="danger"
             @click="remove(page.id)">
+            <IconTrash />
             {{ removing ? t('deleting') : t('deleteOrganization') }}
           </BaseButton>
         </BaseDangerZone>
@@ -74,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconCheck, IconTrash } from '@tabler/icons-vue'
 import { computed, reactive, watch } from 'vue'
 
 import { useHead } from '#app'
@@ -114,7 +119,7 @@ const { t } = useI18n({
     loadError: 'Could not load settings',
     loading: 'Loading settings…',
     name: 'Name',
-    saveChanges: 'Save changes',
+    saveSettings: 'Save settings',
     saving: 'Saving…',
     settings: 'settings',
   },
@@ -131,7 +136,7 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить настройки',
     loading: 'Загрузка настроек…',
     name: 'Название',
-    saveChanges: 'Сохранить изменения',
+    saveSettings: 'Сохранить настройки',
     saving: 'Сохранение…',
     settings: 'настройки',
   },
@@ -185,11 +190,3 @@ const remove = async (id: string): Promise<void> => {
   }
 }
 </script>
-
-<style scoped>
-.form-page {
-  align-content: start;
-  display: grid;
-  gap: var(--space-5);
-}
-</style>

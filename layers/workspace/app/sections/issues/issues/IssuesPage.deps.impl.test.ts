@@ -28,6 +28,7 @@ const response = () => ({
       spaceKey: 'product',
       status: { category: 'Created', color: '#444', name: 'Todo' },
       statusId: 6,
+      time: '2026-01-01T10:00:00Z',
       title: 'Fix search',
     },
     {
@@ -46,6 +47,7 @@ const response = () => ({
       spaceKey: 'product',
       status: null,
       statusId: 9,
+      time: '2026-01-02T10:00:00Z',
       title: '',
     },
   ],
@@ -107,6 +109,7 @@ test('maps searched issues', async () => {
           statusCategory: 'Created',
           statusColor: '#444',
           statusId: '6',
+          time: '2026-01-01T10:00:00Z',
           title: 'Fix search',
         },
         {
@@ -128,6 +131,7 @@ test('maps searched issues', async () => {
           statusCategory: undefined,
           statusColor: COLORS.gray,
           statusId: '9',
+          time: '2026-01-02T10:00:00Z',
           title: '',
         },
       ],

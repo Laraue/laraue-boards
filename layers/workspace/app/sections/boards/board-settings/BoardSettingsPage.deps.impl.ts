@@ -3,7 +3,7 @@ import { request } from '#infrastructure/api/request'
 import {
   mapAttributeSettingsView,
   toAttributeSettingsUpdate,
-} from '#layers/workspace/app/shared/components/AttributeSettings/attributeSettingsApi'
+} from '#layers/workspace/app/shared/components/AttributeSettings/api/attributeSettings'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
@@ -17,7 +17,6 @@ export const createBoardSettingsPageDeps = (
     await request(client.DELETE('/api/epics/{id}', { params: { path: { id: Number(boardId) } } }))
   },
 
-  // One request: the name, color, columns and attribute settings are saved together or not at all.
   save: async ({ attributeSettings, boardId, color, columns, name }) => {
     await request(
       client.PUT('/api/epics/{id}', {

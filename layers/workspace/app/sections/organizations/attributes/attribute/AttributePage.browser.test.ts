@@ -90,7 +90,7 @@ it('submits the edited name and color', async () => {
   await page.getByLabelText('Name').fill('Severity')
   await page.getByRole('button', { name: 'Color' }).click()
   await page.getByRole('option', { name: 'Teal' }).click()
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save attribute' }).click()
 
   expect(update).toHaveBeenCalledWith({
     color: COLORS.teal,
@@ -110,7 +110,7 @@ it('submits the organization defaults when they are switched off', async () => {
 
   await page.getByRole('checkbox', { name: 'Available' }).click()
   await page.getByRole('checkbox', { name: 'Shown on cards' }).click()
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save attribute' }).click()
 
   expect(update).toHaveBeenCalledWith({
     color: COLORS.blue,
@@ -130,7 +130,7 @@ it('submits edited options keeping the id of the existing ones', async () => {
   await page.getByRole('textbox', { name: 'Option 1' }).fill('Lowest')
   await page.getByRole('button', { name: 'Add option' }).click()
   await page.getByRole('textbox', { name: 'Option 3' }).fill('Critical')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save attribute' }).click()
 
   expect(update).toHaveBeenCalledWith({
     color: COLORS.amber,
@@ -159,7 +159,7 @@ it('removes an option and keeps the last one undeletable', async () => {
   await expect.element(page.getByRole('textbox', { name: 'Option 2' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Remove option 1' })).toBeDisabled()
 
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save attribute' }).click()
 
   expect(update).toHaveBeenCalledWith({
     color: COLORS.amber,
@@ -191,7 +191,7 @@ it('keeps the form open and shows the validation message returned by the backend
 
   await mount(createDeps({ update }), onFinished)
 
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save attribute' }).click()
 
   await expect.element(page.getByText('Name is already taken.')).toBeInTheDocument()
   expect(onFinished).not.toHaveBeenCalled()

@@ -193,21 +193,26 @@
                     }"
                     :space-key="state.pickedSpaceId"
                     variant="inline" />
-                  <label for="issue-status">{{ t('status') }}</label>
-                  <StatusSelect
-                    id="issue-status"
-                    :key="`status-${issue.issueKey}`"
-                    v-model="state.statusId"
-                    :board-id="state.boardId"
-                    :deps="deps.statusSelect"
-                    :disabled="!issue.canEdit"
-                    :initial-option="{
-                      color: issue.statusColor,
-                      category: issue.statusCategory,
-                      label: issue.statusLabel || t('currentStatus'),
-                      value: issue.statusId,
-                    }"
-                    variant="inline" />
+                  <!-- v-show, not v-if: the select must stay mounted to clear the status on a board change. -->
+                  <div
+                    v-show="!statusHidden(issue)"
+                    class="issue-property-row">
+                    <label for="issue-status">{{ t('status') }}</label>
+                    <StatusSelect
+                      id="issue-status"
+                      :key="`status-${issue.issueKey}`"
+                      v-model="state.statusId"
+                      :board-id="state.boardId"
+                      :deps="deps.statusSelect"
+                      :disabled="!issue.canEdit"
+                      :initial-option="{
+                        color: issue.statusColor,
+                        category: issue.statusCategory,
+                        label: issue.statusLabel || t('currentStatus'),
+                        value: issue.statusId,
+                      }"
+                      variant="inline" />
+                  </div>
                   <label for="issue-assignee">{{ t('assignee') }}</label>
                   <AssigneeSelect
                     id="issue-assignee"
@@ -233,17 +238,15 @@
                     <span>{{ issue.owner }}</span>
                   </div>
                   <IssueAttributeFields
-                    v-if="issue.attributes.length"
+                    v-if="activeAttributes(issue).length"
                     v-model="state.attributeValues"
-                    :attributes="issue.attributes"
+                    :attributes="activeAttributes(issue)"
                     :disabled="!canEditFields(issue)"
-                    :muted-hint="t('notUsedOnBoard')"
-                    :muted-ids="
-                      issue.attributes
-                        .filter((attribute) => attribute.inactive)
-                        .map((attribute) => attribute.id)
-                    "
                     select-variant="inline" />
+                  <IssueUnusedAttributes
+                    v-model="state.attributeValues"
+                    :attributes="inactiveAttributes(issue)"
+                    :disabled="!canEditFields(issue)" />
                 </div>
                 <IssueLinks
                   :key="`links-${issue.issueKey}`"
@@ -303,13 +306,12 @@
                 </dl>
               </aside>
             </div>
-            <div
-              v-if="saveMessage || deleteMessage || unusedMessage || (inDialog && issue.canEdit)">
+            <div v-if="saveMessage || deleteMessage || (inDialog && issue.canEdit)">
               <p
-                v-if="saveMessage || deleteMessage || unusedMessage"
+                v-if="saveMessage || deleteMessage"
                 class="form-error"
                 role="alert">
-                {{ saveMessage || deleteMessage || unusedMessage }}
+                {{ saveMessage || deleteMessage }}
               </p>
               <footer
                 v-if="inDialog && issue.canEdit"
@@ -365,7 +367,6 @@ import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
-import { useAttributeValuesChoice } from '#layers/workspace/app/shared/composables/useAttributeValuesChoice'
 import { useFormatters } from '#layers/workspace/app/shared/composables/useFormatters'
 import { BoardIcon, SpaceIcon } from '#layers/workspace/app/shared/constants/icons'
 import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
@@ -376,6 +377,7 @@ import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
 import IssueLinks from './components/IssueLinks/IssueLinks.vue'
 import IssuePageActions from './components/IssuePageActions.vue'
+import IssueUnusedAttributes from './components/IssueUnusedAttributes/IssueUnusedAttributes.vue'
 import type {
   IssuePageDeps,
   IssuePageSavedIssue,
@@ -421,7 +423,6 @@ const { t } = useI18n({
     issueActivity: 'Issue activity',
     loadError: 'Could not load issue',
     loading: 'Loading issue…',
-    notUsedOnBoard: 'Not used on this board',
     openMessage: 'Open message in Telegram',
     owner: 'Owner',
     properties: 'Properties',
@@ -455,7 +456,6 @@ const { t } = useI18n({
     issueActivity: 'Активность задачи',
     loadError: 'Не удалось загрузить задачу',
     loading: 'Загрузка задачи…',
-    notUsedOnBoard: 'Не используется на этой доске',
     openMessage: 'Открыть сообщение в Telegram',
     owner: 'Владелец',
     properties: 'Свойства',
@@ -599,6 +599,23 @@ const fieldsLocked = (issue?: IssuePageViewModel | null) =>
 
 const canEditFields = (issue: IssuePageViewModel) => issue.canEdit && !fieldsLocked(issue)
 
+const activeAttributes = (issue: IssuePageViewModel) =>
+  issue.attributes.filter((attribute) => !attribute.inactive)
+const inactiveAttributes = (issue: IssuePageViewModel) =>
+  issue.attributes.filter((attribute) => attribute.inactive)
+const statusHidden = (issue: IssuePageViewModel) =>
+  issue.boardIsBacklog && state.boardId === issue.boardId
+// The status select clears the status on every board change; restore it after that (flush: post).
+watch(
+  () => state.boardId,
+  (boardId) => {
+    if (currentIssue.value && boardId === currentIssue.value.boardId) {
+      state.statusId = currentIssue.value.statusId
+    }
+  },
+  { flush: 'post' },
+)
+
 const openBlockers = (issue: IssuePageViewModel) =>
   issue.links
     .filter((link) => link.relation === 'blockedBy' && link.statusCategory !== 'Completed')
@@ -642,27 +659,10 @@ const {
   pending: deleting,
 } = useApiAction(props.deps.deleteIssue)
 
-const { execute: findUnusedAttributes, message: unusedMessage } = useApiAction(
-  props.deps.unusedAttributes,
-)
-const chooseAttributeValues = useAttributeValuesChoice()
-
 const save = async () => {
   const issue = currentIssue.value
   if (!issue || !canSave.value) {
     return
-  }
-  // Moving to another board: ask about the values of attributes it doesn't use, if there are any.
-  let dropUnusedAttributeValues = false
-  if (state.boardId !== issue.boardId && state.statusId) {
-    const unused = await findUnusedAttributes({
-      issueKey: issue.issueKey,
-      statusId: state.statusId,
-    })
-    if (!unused) {
-      return
-    }
-    dropUnusedAttributeValues = await chooseAttributeValues(unused.value)
   }
   const saved = await saveIssue({
     assigneeId: state.assigneeId,
@@ -672,7 +672,6 @@ const save = async () => {
     ),
     boardId: state.boardId,
     content: state.content,
-    dropUnusedAttributeValues,
     fieldsLocked: fieldsLocked(issue),
     files: state.files,
     issueKey: issue.issueKey,
@@ -872,18 +871,17 @@ const refreshPage = () =>
   grid-auto-rows: var(--control-height);
 }
 
-/* Labels of the attributes the issue's board doesn't use: a step quieter than the other labels. */
-.issue-properties :deep(label.attribute-label-muted) {
-  color: color-mix(in srgb, var(--color-muted) 70%, var(--color-background));
-}
-
 .issue-properties,
 .issue-dates {
   align-items: center;
   display: grid;
   gap: var(--space-1) var(--space-3);
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns: fit-content(128px) minmax(0, 1fr);
   margin: 0;
+}
+
+.issue-property-row {
+  display: contents;
 }
 
 .issue-properties :deep(label),
@@ -892,7 +890,14 @@ const refreshPage = () =>
   color: var(--color-muted);
   font-weight: normal;
   margin: 0;
-  overflow-wrap: anywhere;
+  min-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issue-properties :deep(label) {
+  pointer-events: none;
 }
 
 .issue-person {

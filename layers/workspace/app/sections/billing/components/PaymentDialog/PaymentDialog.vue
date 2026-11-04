@@ -51,6 +51,7 @@
         :loading="pending"
         type="submit"
         variant="primary">
+        <IconCreditCard />
         {{ t('pay', { price: price ?? '' }) }}
       </BaseButton>
     </template>
@@ -58,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck } from '@tabler/icons-vue'
+import { IconCheck, IconCreditCard } from '@tabler/icons-vue'
 import { computed, ref, useTemplateRef } from 'vue'
 
 import { NuxtLink } from '#components'

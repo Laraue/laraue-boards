@@ -18,7 +18,21 @@
             to: organizationRoutes.board(spaceKey, boardId),
           },
         ]"
-        :title="t('settings')" />
+        :title="t('settings')">
+        <template
+          v-if="data?.canUpdate"
+          #actions>
+          <BaseButton
+            :disabled="removing"
+            :form="formId"
+            :loading="saving"
+            type="submit"
+            variant="primary">
+            <IconCheck />
+            {{ t('save') }}
+          </BaseButton>
+        </template>
+      </PageHeader>
     </template>
     <QueryState
       :data="data"
@@ -28,7 +42,7 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default="{ data: page }">
-        <section class="board-settings-page">
+        <section class="settings-page">
           <BoardSettingsForm
             :id="formId"
             :error="saveMessage || removeMessage || null"
@@ -39,22 +53,9 @@
             v-if="!page.isDefault"
             v-model="state.attributeSettings"
             :can-edit="page.canUpdate"
+            :description="attributesDescription(page)"
             :disabled="saving || removing"
-            owner="board"
             :view="page.attributeSettings" />
-          <!-- The form is the component above; the button submits it through its id. -->
-          <div
-            v-if="page.canUpdate"
-            class="form-actions">
-            <BaseButton
-              :disabled="removing"
-              :form="formId"
-              :loading="saving"
-              type="submit"
-              variant="primary">
-              {{ t('saveChanges') }}
-            </BaseButton>
-          </div>
           <BaseDangerZone
             v-if="page.canDelete"
             :description="t('deleteDescription')"
@@ -64,6 +65,7 @@
               :loading="removing"
               variant="danger"
               @click="remove">
+              <IconTrash />
               {{ t('deleteBoard') }}
             </BaseButton>
           </BaseDangerZone>
@@ -74,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconSettings } from '@tabler/icons-vue'
+import { IconCheck, IconSettings, IconTrash } from '@tabler/icons-vue'
 import { reactive, useId, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
@@ -113,28 +115,43 @@ const props = defineProps<{
 const confirm = useConfirm()
 const { t } = useI18n({
   en: {
+    attributesFollowOrganization: 'Same as the organization.',
+    attributesFollowSpace: 'Same as the space.',
+    attributesOwn: 'Changes in the space and the organization don’t apply here.',
     board: 'Board',
     deleteBoard: 'Delete board',
     deleteConfirm: 'Delete this board?',
     deleteDescription: 'Deletes the board for every member. This cannot be undone.',
     loadError: 'Could not load board',
     loading: 'Loading board…',
-    saveChanges: 'Save changes',
+    save: 'Save',
     settings: 'Board settings',
   },
   ru: {
+    attributesFollowOrganization: 'Как в организации.',
+    attributesFollowSpace: 'Как в пространстве.',
+    attributesOwn: 'Изменения в пространстве и организации сюда не доходят.',
     board: 'Доска',
     deleteBoard: 'Удалить доску',
     deleteConfirm: 'Удалить эту доску?',
     deleteDescription: 'Удаляет доску для всех участников. Отменить нельзя.',
     loadError: 'Не удалось загрузить доску',
     loading: 'Загрузка доски…',
-    saveChanges: 'Сохранить изменения',
+    save: 'Сохранить',
     settings: 'Настройки доски',
   },
 })
 
 const formId = `board-settings-${useId()}`
+
+const attributesDescription = (page: BoardSettingsPageData) => {
+  if (state.attributeSettings.overridden) {
+    return t('attributesOwn')
+  }
+  return page.attributeSettings.inherited.source === 'space'
+    ? t('attributesFollowSpace')
+    : t('attributesFollowOrganization')
+}
 
 const state = reactive<{ attributeSettings: AttributeSettingsDraft }>({
   attributeSettings: { attributes: [], overridden: false },
@@ -189,13 +206,3 @@ const remove = async (): Promise<void> => {
   }
 }
 </script>
-
-<style scoped>
-.board-settings-page {
-  display: grid;
-  gap: var(--space-5);
-  margin-inline: auto;
-  max-width: 768px;
-  width: 100%;
-}
-</style>

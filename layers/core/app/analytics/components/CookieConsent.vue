@@ -17,6 +17,7 @@
       <BaseButton
         variant="primary"
         @click="onChoice('granted')">
+        <IconCheck />
         {{ t('accept') }}
       </BaseButton>
     </div>
@@ -24,6 +25,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconCheck } from '@tabler/icons-vue'
 import { useId } from 'vue'
 
 import type { ConsentChoice } from '#layers/core/app/analytics/consent/decision'

@@ -6,12 +6,7 @@ import { createSpaceSelectDeps } from '#layers/workspace/app/sections/spaces/sha
 import type { MoveBoardsDialogDeps } from './MoveBoardsDialog.deps'
 
 export const createMoveBoardsDialogDeps = (client: ApiClient): MoveBoardsDialogDeps => ({
-  moveBoards: async ({
-    boardIds,
-    destinationOrganizationId,
-    destinationSpaceKey,
-    dropUnusedAttributeValues,
-  }) => {
+  moveBoards: async ({ boardIds, destinationOrganizationId, destinationSpaceKey }) => {
     if (!boardIds.length || !destinationOrganizationId || !destinationSpaceKey) {
       throw new ApiError(400)
     }
@@ -20,7 +15,6 @@ export const createMoveBoardsDialogDeps = (client: ApiClient): MoveBoardsDialogD
         request(
           client.POST('/api/movement/move-epic', {
             body: {
-              dropUnusedAttributeValues,
               newOrganizationId: Number(destinationOrganizationId),
               newSpaceKey: destinationSpaceKey,
               sourceEpicId: Number(boardId),
@@ -36,25 +30,4 @@ export const createMoveBoardsDialogDeps = (client: ApiClient): MoveBoardsDialogD
   },
   organizationSelect: createOrganizationSelectDeps(client),
   spaceSelect: createSpaceSelectDeps(client),
-
-  // The move itself rejects an incomplete destination; until then there is nothing to ask about.
-  unusedAttributes: async ({ boardIds, destinationOrganizationId, destinationSpaceKey }) => {
-    if (!boardIds.length || !destinationOrganizationId || !destinationSpaceKey) {
-      return []
-    }
-    const perBoard = await Promise.all(
-      boardIds.map((boardId) =>
-        request(
-          client.POST('/api/movement/move-epic/unused-attributes', {
-            body: {
-              newOrganizationId: Number(destinationOrganizationId),
-              newSpaceKey: destinationSpaceKey,
-              sourceEpicId: Number(boardId),
-            },
-          }),
-        ),
-      ),
-    )
-    return [...new Set(perBoard.flat().map((attribute) => attribute.name))]
-  },
 })

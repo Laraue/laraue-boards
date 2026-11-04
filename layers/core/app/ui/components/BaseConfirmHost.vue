@@ -1,7 +1,7 @@
 <template>
   <BaseAlertDialog
     :action-label="request?.action ?? (request?.danger ? dangerLabel : confirmLabel)"
-    :cancel-label="request?.cancel ?? cancelLabel"
+    :cancel-label="cancelLabel"
     :danger="request?.danger"
     :description="request?.description"
     :open="request !== null"

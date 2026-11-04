@@ -8,7 +8,6 @@ export type AttributeListItem = {
 }
 
 export type AttributesPageDeps = {
-  // Every attribute of the organization, in the new order.
   reorder: (input: { attributeIds: string[] }) => Promise<void>
   view: (input: { signal?: AbortSignal }) => Promise<AttributeListItem[]>
 }

@@ -61,6 +61,7 @@
             class="history-more"
             size="small"
             @click="loadPage()">
+            <IconChevronDown />
             {{ t('loadMore') }}
           </BaseButton>
         </section>
@@ -70,7 +71,13 @@
 </template>
 
 <script setup lang="ts">
-import { IconCalendar, IconHistory, IconLoader2, IconUser } from '@tabler/icons-vue'
+import {
+  IconCalendar,
+  IconChevronDown,
+  IconHistory,
+  IconLoader2,
+  IconUser,
+} from '@tabler/icons-vue'
 import { computed, reactive, watch } from 'vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
@@ -241,6 +248,10 @@ watch(
   margin: 0;
   min-width: 0;
   padding: 0;
+}
+
+.filter-options :deep(.base-checkbox) {
+  padding-inline: var(--space-2);
 }
 
 .history-loading {

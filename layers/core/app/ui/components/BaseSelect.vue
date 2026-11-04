@@ -1,12 +1,13 @@
 <template>
   <!-- One root: closed, Reka still renders a holder for the options next to the trigger. -->
   <div
+    ref="root"
     class="base-select-root"
     :class="{ 'base-select-root-inline': variant === 'inline' && !fullWidth }">
     <SelectRoot
       v-model="selected"
       :disabled="disabled"
-      @update:open="$event && onOpen?.()">
+      @update:open="handleOpenChange">
       <SelectTrigger
         v-bind="$attrs"
         :aria-busy="loading || undefined"
@@ -14,6 +15,7 @@
         :class="{
           'base-select-inline': variant === 'inline',
           'base-select-full-width': fullWidth,
+          'base-select-icon-only': iconOnly,
           'base-select-icon-only-mobile': iconOnlyOnMobile,
           placeholder: !selectedOption,
         }">
@@ -25,34 +27,39 @@
           v-if="showChevron"
           class="base-select-chevron" />
       </SelectTrigger>
-      <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
-      <SelectContent
-        class="base-select-content"
-        :collision-padding="12"
-        position="popper"
-        :side-offset="4">
-        <SelectViewport class="base-select-viewport">
-          <p
-            v-if="message"
-            class="base-select-message">
-            {{ message }}
-          </p>
-          <SelectItem
-            v-for="option in loading ? [] : options"
-            :key="option.value"
-            class="base-select-item"
-            :disabled="option.disabled"
-            :value="toItemValue(option.value)">
-            <slot
-              name="icon"
-              :option="option" />
-            <SelectItemText>{{ option.label }}</SelectItemText>
-            <SelectItemIndicator class="base-select-check">
-              <IconCheck />
-            </SelectItemIndicator>
-          </SelectItem>
-        </SelectViewport>
-      </SelectContent>
+      <SelectPortal>
+        <SelectContent
+          :body-lock="false"
+          class="base-select-content"
+          :collision-padding="12"
+          :disable-outside-pointer-events="false"
+          position="popper"
+          :side-offset="4"
+          @close-auto-focus="keepOutsideFocus"
+          @pointer-down-outside="markOutsideInteraction">
+          <SelectViewport class="base-select-viewport">
+            <p
+              v-if="message"
+              class="base-select-message">
+              {{ message }}
+            </p>
+            <SelectItem
+              v-for="option in loading ? [] : options"
+              :key="option.value"
+              class="base-select-item"
+              :disabled="option.disabled"
+              :value="toItemValue(option.value)">
+              <slot
+                name="icon"
+                :option="option" />
+              <SelectItemText>{{ option.label }}</SelectItemText>
+              <SelectItemIndicator class="base-select-check">
+                <IconCheck />
+              </SelectItemIndicator>
+            </SelectItem>
+          </SelectViewport>
+        </SelectContent>
+      </SelectPortal>
     </SelectRoot>
   </div>
 </template>
@@ -69,16 +76,18 @@ import {
   SelectItem,
   SelectItemIndicator,
   SelectItemText,
+  SelectPortal,
   SelectRoot,
   SelectTrigger,
   SelectViewport,
 } from 'reka-ui'
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 
 const props = withDefaults(
   defineProps<{
     disabled?: boolean
     fullWidth?: boolean
+    iconOnly?: boolean
     iconOnlyOnMobile?: boolean
     loading?: boolean
     // Shown above the options instead of them: loading, nothing to pick, a load error.
@@ -92,6 +101,7 @@ const props = withDefaults(
   {
     disabled: false,
     fullWidth: false,
+    iconOnly: false,
     iconOnlyOnMobile: false,
     loading: false,
     message: undefined,
@@ -105,6 +115,26 @@ const props = withDefaults(
 defineOptions({ inheritAttrs: false })
 
 const model = defineModel<string>({ required: true })
+const root = useTemplateRef('root')
+let interactedOutside = false
+
+const handleOpenChange = (open: boolean) => {
+  if (open) {
+    interactedOutside = false
+    props.onOpen?.()
+  }
+}
+
+const markOutsideInteraction = (event: Event) => {
+  interactedOutside = event.target instanceof Node && !root.value?.contains(event.target)
+}
+
+// A closed select must not steal focus from the control the user just opened.
+const keepOutsideFocus = (event: Event) => {
+  if (interactedOutside) {
+    event.preventDefault()
+  }
+}
 
 defineSlots<{
   // The option's icon, avatar or color, in the field and in the list; no option is the placeholder.
@@ -208,6 +238,20 @@ const selected = computed({
   width: 100%;
 }
 
+.base-select-icon-only {
+  justify-content: center;
+  padding: 0;
+  width: var(--control-height-small);
+}
+
+.base-select-icon-only .base-select-value {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
 @media (max-width: 600px) {
   .base-select-icon-only-mobile {
     justify-content: center;
@@ -238,7 +282,7 @@ const selected = computed({
   max-width: calc(100vw - var(--space-6));
   min-width: var(--reka-select-trigger-width);
   overflow: hidden;
-  z-index: 50;
+  z-index: 51;
 }
 
 .base-select-viewport {

@@ -1,6 +1,6 @@
 <template>
-  <!-- The wrapper takes the consumer's class, so a width set on it (--base-popover-width) reaches
-       the content, which is not portaled: outside an open <dialog> it would be under it and inert. -->
+  <!-- Not portaled: the width the consumer sets on the wrapper (--base-popover-width) must reach the
+       content. -->
   <div
     ref="root"
     class="base-popover">
@@ -32,7 +32,7 @@ import { ref, useTemplateRef } from 'vue'
 withDefaults(
   defineProps<{
     align?: 'end' | 'start'
-    side?: 'bottom' | 'right'
+    side?: 'bottom' | 'left' | 'right'
     viewportPadding?: number
   }>(),
   { align: 'start', side: 'bottom', viewportPadding: 16 },
@@ -90,7 +90,7 @@ const focusTrigger = (event: Event) => {
   box-shadow: var(--shadow-popover);
   color: var(--color-text);
   max-height: var(--reka-popover-content-available-height);
-  max-width: calc(100vw - var(--space-8));
+  max-width: min(calc(100vw - var(--space-8)), var(--reka-popover-content-available-width, 100vw));
   overflow: auto;
   width: var(--base-popover-width, max-content);
   z-index: 31;

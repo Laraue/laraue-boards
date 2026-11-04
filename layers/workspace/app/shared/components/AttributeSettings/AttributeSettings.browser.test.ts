@@ -24,7 +24,13 @@ const mount = async (
 ) => {
   currentWrapper = await mountSuspended(AttributeSettings, {
     attachTo: document.body,
-    props: { canEdit, modelValue, 'onUpdate:modelValue': onUpdate, owner: 'space', view },
+    props: {
+      canEdit,
+      description: 'Follows the organization.',
+      modelValue,
+      'onUpdate:modelValue': onUpdate,
+      view,
+    },
   })
   return currentWrapper
 }
@@ -39,9 +45,8 @@ it('shows inherited settings read-only and starts own ones from them on override
 
   await mount(inherited, { attributes: [], overridden: false }, onUpdate)
 
-  await expect
-    .element(page.getByText('follow the organization’s attribute settings'))
-    .toBeInTheDocument()
+  await expect.element(page.getByText('Follows the organization.')).toBeInTheDocument()
+  await expect.element(page.getByText('Overridden')).not.toBeInTheDocument()
   await expect.element(page.getByRole('checkbox', { name: 'Available' }).first()).toBeDisabled()
   await page.getByRole('button', { name: 'Override' }).click()
 
@@ -57,7 +62,7 @@ it('lets own settings be edited and dropped', async () => {
 
   await mount({ ...inherited, source: 'space' }, draft, onUpdate)
 
-  await expect.element(page.getByText('has its own attribute settings')).toBeInTheDocument()
+  await expect.element(page.getByText('Overridden')).toBeInTheDocument()
   await page.getByRole('checkbox', { name: 'Available' }).first().click()
   expect(draft.attributes[0]?.isEnabled).toBe(false)
   await page.getByRole('button', { name: 'Reset to inherited' }).click()

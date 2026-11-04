@@ -59,7 +59,8 @@
               :disabled="saving || !state.displayName.trim()"
               type="submit"
               variant="primary">
-              {{ saving ? t('saving') : t('saveChanges') }}
+              <IconCheck />
+              {{ saving ? t('saving') : t('saveProfile') }}
             </BaseButton>
           </div>
         </form>
@@ -69,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconCheck } from '@tabler/icons-vue'
 import { reactive, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
@@ -98,7 +100,7 @@ const { t } = useI18n({
     loadError: 'Could not load your profile',
     loading: 'Loading your profile…',
     profile: 'Profile',
-    saveChanges: 'Save changes',
+    saveProfile: 'Save profile',
     saving: 'Saving…',
   },
   ru: {
@@ -111,7 +113,7 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить профиль',
     loading: 'Загрузка профиля…',
     profile: 'Профиль',
-    saveChanges: 'Сохранить изменения',
+    saveProfile: 'Сохранить профиль',
     saving: 'Сохранение…',
   },
 })

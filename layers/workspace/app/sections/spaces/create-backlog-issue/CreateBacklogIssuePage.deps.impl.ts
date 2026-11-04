@@ -22,7 +22,6 @@ export const createCreateBacklogIssuePageDeps = (
     if (!space || !backlog) {
       throw new ApiError(404)
     }
-    // The form offers only the attributes the backlog uses (BRD-179).
     const [board, attributes] = await Promise.all([
       request(
         client.GET('/api/epics/{id}', { params: { path: { id: Number(backlog.id) } }, signal }),

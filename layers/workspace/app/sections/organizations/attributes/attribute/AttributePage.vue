@@ -85,7 +85,8 @@
               :disabled="submitting"
               type="submit"
               variant="primary">
-              {{ submitting ? t('saving') : t('saveChanges') }}
+              <IconCheck />
+              {{ submitting ? t('saving') : t('saveAttribute') }}
             </BaseButton>
           </div>
         </form>
@@ -96,6 +97,7 @@
             :disabled="submitting"
             variant="danger"
             @click="remove(attribute)">
+            <IconTrash />
             {{ t('deleteAttribute') }}
           </BaseButton>
         </BaseDangerZone>
@@ -105,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconPlus, IconTrash } from '@tabler/icons-vue'
+import { IconCheck, IconPlus, IconTrash } from '@tabler/icons-vue'
 import { TransitionGroup, computed, ref, watch } from 'vue'
 
 import { useHead } from '#app'
@@ -158,7 +160,7 @@ const { t } = useI18n({
     option: 'Option',
     options: 'Options',
     removeOption: 'Remove option',
-    saveChanges: 'Save changes',
+    saveAttribute: 'Save attribute',
     saving: 'Saving…',
     showOnCard: 'Shown on cards',
     showOnCardHint: 'Its value appears on issue cards where the organization’s settings apply.',
@@ -181,7 +183,7 @@ const { t } = useI18n({
     option: 'Вариант',
     options: 'Варианты',
     removeOption: 'Удалить вариант',
-    saveChanges: 'Сохранить изменения',
+    saveAttribute: 'Сохранить атрибут',
     saving: 'Сохранение…',
     showOnCard: 'На карточках',
     showOnCardHint: 'Значение видно на карточках задач там, где действуют настройки организации.',
@@ -322,9 +324,15 @@ const remove = async (attribute: Attribute) => {
   gap: var(--space-5);
 }
 
+.attribute-editor {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .attribute-editor fieldset {
   border: 0;
-  margin: var(--space-5) 0 0;
+  margin: 0;
+  min-width: 0;
   padding: 0;
 }
 
@@ -347,6 +355,6 @@ const remove = async (attribute: Attribute) => {
 
 .usage-hint {
   font-size: var(--font-size-sm);
-  margin: 0 0 var(--space-2) calc(var(--space-2) + var(--space-5));
+  margin: 0 0 var(--space-2) var(--space-6);
 }
 </style>

@@ -20,6 +20,7 @@
                 :disabled="reordering"
                 variant="primary"
                 @click="saveOrder">
+                <IconCheck />
                 {{ reordering ? t('saving') : t('saveOrder') }}
               </BaseButton>
             </template>
@@ -91,7 +92,7 @@ import { arrayMove } from '@dnd-kit/helpers'
 import { DragDropProvider, KeyboardSensor, PointerSensor } from '@dnd-kit/vue'
 import type { DragEndEvent } from '@dnd-kit/vue'
 import { isSortable } from '@dnd-kit/vue/sortable'
-import { IconArrowsSort, IconPlus } from '@tabler/icons-vue'
+import { IconArrowsSort, IconCheck, IconPlus } from '@tabler/icons-vue'
 import { reactive } from 'vue'
 
 import { useHead } from '#app'

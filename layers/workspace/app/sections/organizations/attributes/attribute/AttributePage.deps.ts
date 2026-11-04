@@ -40,7 +40,6 @@ export type UpdateAttributeInput = {
     | { type: 'integer' }
     | { type: 'text' }
   id: string
-  // The organization's defaults for spaces and epics that don't have their own attribute settings.
   isEnabled: boolean
   name: string
   showOnCard: boolean

@@ -38,6 +38,7 @@
               <BaseButton
                 :disabled="!page.canPay"
                 @click="select(pack)">
+                <IconArrowRight />
                 {{ t('select') }}
               </BaseButton>
             </article>
@@ -64,6 +65,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowRight } from '@tabler/icons-vue'
 import { computed, reactive, useTemplateRef } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 

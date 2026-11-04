@@ -27,9 +27,9 @@
       </BaseField>
     </BaseFieldGroup>
     <p
-      v-if="message || unusedMessage"
+      v-if="message"
       class="form-error">
-      {{ message || unusedMessage }}
+      {{ message }}
     </p>
     <template #actions>
       <BaseButton
@@ -42,6 +42,7 @@
         :loading="moving"
         type="submit"
         variant="primary">
+        <IconArrowsLeftRight />
         {{ moving ? t('moving') : t('move') }}
       </BaseButton>
     </template>
@@ -49,7 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, useTemplateRef } from 'vue'
+import { IconArrowsLeftRight } from '@tabler/icons-vue'
+import { reactive, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
@@ -59,7 +61,6 @@ import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
 import OrganizationSelect from '#layers/workspace/app/sections/organizations/shared/components/OrganizationSelect/OrganizationSelect.vue'
 import SpaceSelect from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
-import { useAttributeValuesChoice } from '#layers/workspace/app/shared/composables/useAttributeValuesChoice'
 
 import type { MoveBoardsDialogDeps } from './MoveBoardsDialog.deps'
 
@@ -101,14 +102,7 @@ const state = reactive({
 
 const dialog = useTemplateRef('dialog')
 
-const { execute: moveBoards, message, pending: movingBoards } = useApiAction(props.deps.moveBoards)
-const {
-  execute: findUnusedAttributes,
-  message: unusedMessage,
-  pending: checking,
-} = useApiAction(props.deps.unusedAttributes)
-const chooseAttributeValues = useAttributeValuesChoice()
-const moving = computed(() => movingBoards.value || checking.value)
+const { execute: moveBoards, message, pending: moving } = useApiAction(props.deps.moveBoards)
 
 const open = () => {
   message.value = undefined
@@ -118,17 +112,11 @@ const open = () => {
 }
 
 const confirmMove = async () => {
-  const destination = {
+  const moved = await moveBoards({
     boardIds: props.ids,
     destinationOrganizationId: state.organizationId,
     destinationSpaceKey: state.spaceKey,
-  }
-  const unused = await findUnusedAttributes(destination)
-  if (!unused) {
-    return
-  }
-  const dropUnusedAttributeValues = await chooseAttributeValues(unused.value)
-  const moved = await moveBoards({ ...destination, dropUnusedAttributeValues })
+  })
   if (moved) {
     dialog.value?.close()
     await props.onMoved()

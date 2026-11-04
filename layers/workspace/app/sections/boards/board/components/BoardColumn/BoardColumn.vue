@@ -31,12 +31,15 @@
         :key="issue.issueKey"
         :column-id="viewModel.id"
         :completed="viewModel.category === 'Completed'"
+        :deps="issueCardDeps"
         :disabled="!canMoveIssues || movingIssueKeys.has(issue.issueKey)"
         :in-review="viewModel.category === 'Review'"
         :index="index"
         :moving="movingIssueKeys.has(issue.issueKey)"
         :on-open-issue="onOpenIssue"
+        :on-updated="onIssueUpdated"
         :organization-routes="organizationRoutes"
+        :space-key="spaceKey"
         :view-model="issue" />
       <div
         v-if="viewModel.hasNext"
@@ -64,6 +67,7 @@ import { computed, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import type { IssueCardDeps } from '#layers/workspace/app/sections/boards/board/components/BoardColumn/components/IssueCard.types'
 import IssueCard from '#layers/workspace/app/sections/boards/board/components/BoardColumn/components/IssueCard.vue'
 import StatusIndicator from '#layers/workspace/app/sections/boards/shared/components/StatusSelect/StatusIndicator.vue'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
@@ -74,13 +78,16 @@ import type { BoardColumnViewModel } from './BoardColumn.types'
 const props = defineProps<{
   canCreateIssues: boolean
   canMoveIssues: boolean
+  issueCardDeps: IssueCardDeps
   loadingMore: boolean
   loadMoreFailed: boolean
   movingIssueKeys: Set<string>
   onCreateIssue: (statusId: string) => void
+  onIssueUpdated: () => Promise<void> | void
   onLoadMore: (statusId: string) => void
   onOpenIssue: (issueKey: string) => void
   organizationRoutes: OrganizationRoutes
+  spaceKey: string
   viewModel: BoardColumnViewModel
 }>()
 

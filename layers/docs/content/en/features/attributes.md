@@ -39,14 +39,14 @@ On **Admin → Attributes**, tap **Change order** and drag the attributes into t
 
 An attribute's edit page has two defaults, used wherever a space or board hasn't chosen its own:
 
-- **Available** — issues can have the attribute: it's in the issue form and in the filters. Switch it off for an attribute only some spaces need; it stays in the organization and keeps its values, and a space or board can still turn it on. The list marks such an attribute **Off**.
+- **Available** — issues can have the attribute: it's in the issue form. Switch it off for an attribute only some spaces need; it stays in the organization and keeps its values, and a space or board can still turn it on. The list marks such an attribute **Off**.
 - **Shown on cards** — the attribute's value appears on issue cards.
 
 ## Attributes in a space or board
 
 A space's settings and a board's settings each have an **Attributes** section. At first it follows the level above — the organization's defaults for a space, the space's settings for a board — and shows them read-only.
 
-Tap **Override** to give the space or board its own settings, then tick **Available** and **Shown on cards** for each attribute. Changes above it no longer reach it. **Reset to inherited** goes back to following the level above. Both only change the form: tap **Save changes** to apply them together with the rest of the settings.
+Tap **Override** to give the space or board its own settings, then tick **Available** and **Shown on cards** for each attribute. Changes above it no longer reach it, and the section is marked **Overridden**. **Reset to inherited** goes back to following the level above. Both only change the form: tap **Save** at the top of the page to apply them together with the rest of the settings.
 
 - A space's backlog always follows the space's settings.
 - An attribute added to the organization after a space or board got its own settings is off there until someone turns it on.
@@ -55,15 +55,15 @@ Changing a space's or board's attribute settings takes the permission to update 
 
 ## On cards and in lists
 
-Values of the attributes a board shows on cards appear as small labels: under the title on board cards, and after the title in issue lists, where more than two collapse into a **+N** label. Hover over a label to see the attribute's name.
+Values of the attributes a board shows on cards appear as small labels under the title on board cards and in issue lists. Lists show all these values on a separate line below the title, on desktop and mobile. Hover over a label to see the attribute's name.
 
 ## On the issue page
 
-The issue page lists the attributes its board uses. If the issue still has a value for an attribute the board doesn't use — for example, after a move — that value stays in its place, dimmed, with a mark that says **Not used on this board**. You can change or clear it, but such an attribute can't get a new value on that board.
+The issue page lists the attributes its board uses. If the issue still has a value for an attribute the board doesn't use — for example, after a move — that value is folded under **Not available on this board** at the end of the properties. Open it to see the value or clear it; such an attribute can't get a new value on that board.
 
 ## Moving issues
 
-When you move issues to a board that doesn't use some of their attributes, Laraue Boards asks whether to keep or drop those values. Kept values stay on the issues; dropped ones are removed and recorded in the issue history. Moving boards between spaces asks the same — see [Mass move](/documentation/features/mass-move).
+When you move issues to a board that doesn't use some of their attributes, their values stay on the issues, listed apart as above. Moving boards between spaces keeps them the same way — see [Mass move](/documentation/features/mass-move).
 
 ## Who can manage attributes
 
@@ -71,7 +71,7 @@ Managing attributes — creating, editing, or deleting them — requires the **M
 
 ## Filtering by attribute
 
-When a board uses List attributes, filter chips appear in the filter bar — only for the attributes that board uses. Tap a chip to filter to only issues with that value. Multiple filters combine — only issues matching all selected values are shown.
+When a board uses List attributes, filter chips appear in the filter bar — for every List attribute of the organization, so values kept where the board doesn't use an attribute are still found. Tap a chip to filter to only issues with that value. Multiple filters combine — only issues matching all selected values are shown.
 
 ## Attributes vs statuses
 

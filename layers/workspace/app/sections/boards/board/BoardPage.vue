@@ -98,13 +98,16 @@
                 :key="column.id"
                 :can-create-issues="page.canCreateIssues"
                 :can-move-issues="page.canMoveIssues"
+                :issue-card-deps="deps.issueCard"
                 :load-more-failed="state.failedColumnIds.has(column.id)"
                 :loading-more="state.loadingColumnIds.has(column.id)"
                 :moving-issue-keys="state.movingIssueKeys"
                 :on-create-issue="onCreateIssue"
+                :on-issue-updated="() => refreshLoadedIssues(new Set([column.id]))"
                 :on-load-more="loadMoreIssues"
                 :on-open-issue="openIssue"
                 :organization-routes="organizationRoutes"
+                :space-key="spaceKey"
                 :view-model="column" />
             </div>
             <BoardScrollMap
@@ -267,7 +270,13 @@ const sensors = [
       event.pointerType === 'touch'
         ? [new PointerActivationConstraints.Delay({ tolerance: 10, value: 450 })]
         : [new PointerActivationConstraints.Distance({ value: 6 })],
-    preventActivation: () => false,
+    preventActivation: (event) =>
+      event.target instanceof Element &&
+      Boolean(
+        event.target.closest(
+          'button, input, select, textarea, [contenteditable], [role="combobox"]',
+        ),
+      ),
   }),
   KeyboardSensor,
 ]

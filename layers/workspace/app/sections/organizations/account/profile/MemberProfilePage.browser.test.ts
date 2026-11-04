@@ -40,7 +40,7 @@ it('saves the name shown in the organization', async () => {
 
   await expect.element(page.getByLabelText('Name')).toHaveValue('Ada Lovelace')
   await page.getByLabelText('Name').fill('Ada')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save profile' }).click()
 
   expect(deps.update).toHaveBeenCalledWith({ color: '#4774d4', displayName: 'Ada' })
   await expect.element(page.getByText('Changes saved.')).toBeVisible()
@@ -52,7 +52,7 @@ it('takes the name from the profile again when it is cleared', async () => {
   await mount(deps)
 
   await page.getByLabelText('Name').fill('')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save profile' }).click()
 
   expect(deps.update).toHaveBeenCalledWith({ color: '#4774d4', displayName: '' })
 })

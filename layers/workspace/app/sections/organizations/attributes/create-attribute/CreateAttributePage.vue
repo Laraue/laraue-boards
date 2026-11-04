@@ -87,6 +87,7 @@
           :disabled="pending"
           type="submit"
           variant="primary">
+          <IconPlus />
           {{ pending ? t('creating') : t('createAttribute') }}
         </BaseButton>
       </div>
@@ -239,9 +240,15 @@ const submit = async () => {
   gap: var(--space-5);
 }
 
+.attribute-editor {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .attribute-editor fieldset {
   border: 0;
-  margin: var(--space-5) 0 0;
+  margin: 0;
+  min-width: 0;
   padding: 0;
 }
 

@@ -37,7 +37,6 @@ const createDeps = (overrides: Partial<MoveBoardsDialogDeps> = {}): BoardsMoveme
         { label: 'Development', value: '10' },
       ]),
     },
-    unusedAttributes: vi.fn<MoveBoardsDialogDeps['unusedAttributes']>(async () => []),
     ...overrides,
   },
 })
@@ -67,8 +66,8 @@ const dialog = () => page.getByRole('dialog')
 
 const chooseSpace = async () => {
   await dialog().getByLabelText('Space').click()
-  await expect.element(dialog().getByRole('option', { name: 'Development' })).toBeInTheDocument()
-  await dialog().getByRole('option', { name: 'Development' }).click()
+  await expect.element(page.getByRole('option', { name: 'Development' })).toBeInTheDocument()
+  await page.getByRole('option', { name: 'Development' }).click()
 }
 
 afterEach(async () => {
@@ -100,7 +99,6 @@ it('moves a single board through its row action without touching the selection',
     boardIds: ['21'],
     destinationOrganizationId: '1',
     destinationSpaceKey: '10',
-    dropUnusedAttributeValues: false,
   })
   expect(onMoved).toHaveBeenCalledTimes(1)
 })
@@ -120,7 +118,6 @@ it('moves every selected board through the bulk action', async () => {
     boardIds: ['21', '22'],
     destinationOrganizationId: '1',
     destinationSpaceKey: '10',
-    dropUnusedAttributeValues: false,
   })
 })
 

@@ -17,7 +17,6 @@ export type BoardSettingsPageData = {
   canUpdate: boolean
   color: string
   columns: BoardSettingsColumn[]
-  // The space's backlog: it always follows its space's attribute settings.
   isDefault: boolean
   name: string
   // The key when the space isn't among the user's spaces.

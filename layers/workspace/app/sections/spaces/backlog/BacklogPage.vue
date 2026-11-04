@@ -61,6 +61,8 @@
             :excluded-move-board-id="page.backlogBoardId"
             :filtering="filtering"
             :has-next-page="hasNextPage"
+            hide-location
+            hide-status
             :issues="issues"
             :on-moved="searchIssues"
             :on-update-page="updatePage"

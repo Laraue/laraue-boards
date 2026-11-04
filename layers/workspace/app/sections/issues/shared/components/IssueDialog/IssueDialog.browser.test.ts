@@ -88,7 +88,6 @@ const createDeps = (overrides: Partial<IssuePageDeps> = {}): IssuePageDeps => ({
   statusSelect: {
     loadStatuses: vi.fn<IssuePageDeps['statusSelect']['loadStatuses']>(),
   },
-  unusedAttributes: vi.fn<IssuePageDeps['unusedAttributes']>(async () => []),
   view: vi.fn<IssuePageDeps['view']>(async () => issue),
   ...overrides,
 })
@@ -211,7 +210,7 @@ it('notifies the board and stays open after the issue is saved', async () => {
   })
 
   await page.getByLabelText('Content').fill('Document the reproduction steps')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(onSaved).toHaveBeenCalledOnce()
   expect(onClose).not.toHaveBeenCalled()

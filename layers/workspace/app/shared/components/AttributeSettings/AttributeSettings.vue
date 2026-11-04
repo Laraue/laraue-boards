@@ -1,14 +1,17 @@
-<!-- Which attributes a space or a board uses and shows on cards (BRD-179), as a part of its settings
-     form. It follows the settings above it - the organization's, or for a board its space's - until it
-     gets its own; Override and Reset only change the form, the page's Save changes saves them. -->
+<!-- Override and Reset only change the form; the page's Save saves them. -->
 <template>
   <section
     :aria-labelledby="headingId"
-    class="attribute-settings">
+    class="settings-section">
     <BaseSectionHeader
       :id="headingId"
       :description="description"
       :title="t('attributes')">
+      <template
+        v-if="modelValue.overridden"
+        #badge>
+        <BaseBadge variant="outline">{{ t('overridden') }}</BaseBadge>
+      </template>
       <template
         v-if="canEdit && view.attributes.length"
         #actions>
@@ -16,12 +19,14 @@
           v-if="modelValue.overridden"
           :disabled="disabled"
           @click="reset">
+          <IconArrowBackUp />
           {{ t('reset') }}
         </BaseButton>
         <BaseButton
           v-else
           :disabled="disabled"
           @click="override">
+          <IconPencil />
           {{ t('override') }}
         </BaseButton>
       </template>
@@ -33,7 +38,6 @@
     </p>
     <template v-else>
       <div>
-        <!-- The column names once, over the checkboxes; each checkbox names its row for screen readers. -->
         <div
           aria-hidden="true"
           class="attribute-grid attribute-grid-header">
@@ -71,9 +75,11 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowBackUp, IconPencil } from '@tabler/icons-vue'
 import { computed, useId } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
+import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseCheckbox from '#layers/core/app/ui/components/BaseCheckbox.vue'
 import BaseList from '#layers/core/app/ui/components/BaseList.vue'
@@ -87,8 +93,8 @@ import { AttributeIcon } from '#layers/workspace/app/shared/constants/icons'
 
 const props = defineProps<{
   canEdit: boolean
+  description: string
   disabled?: boolean
-  owner: 'board' | 'space'
   view: AttributeSettingsView
 }>()
 
@@ -97,39 +103,21 @@ const modelValue = defineModel<AttributeSettingsDraft>({ required: true })
 const { t } = useI18n({
   en: {
     attributes: 'Attributes',
-    boardFollowsOrganization:
-      'This board follows the organization’s attribute settings. Override them to choose its own attributes.',
-    boardFollowsSpace:
-      'This board follows its space’s attribute settings. Override them to choose its own attributes.',
-    boardOwn:
-      'This board has its own attribute settings: changes in the space or the organization don’t reach it.',
     enabled: 'Available',
     noAttributes: 'The organization has no attributes yet.',
+    overridden: 'Overridden',
     override: 'Override',
     reset: 'Reset to inherited',
     showOnCard: 'Shown on cards',
-    spaceFollowsOrganization:
-      'This space and its backlog follow the organization’s attribute settings. Override them to choose the space’s own attributes.',
-    spaceOwn:
-      'This space has its own attribute settings: changes in the organization don’t reach it. Its backlog follows them.',
   },
   ru: {
     attributes: 'Атрибуты',
-    boardFollowsOrganization:
-      'Доска следует настройкам атрибутов организации. Переопределите их, чтобы выбрать свои атрибуты.',
-    boardFollowsSpace:
-      'Доска следует настройкам атрибутов своего пространства. Переопределите их, чтобы выбрать свои атрибуты.',
-    boardOwn:
-      'У доски свои настройки атрибутов: изменения в пространстве и организации её не затрагивают.',
     enabled: 'Доступен',
     noAttributes: 'В организации пока нет атрибутов.',
+    overridden: 'Переопределены',
     override: 'Переопределить',
     reset: 'Вернуть унаследованные',
     showOnCard: 'На карточках',
-    spaceFollowsOrganization:
-      'Пространство и его бэклог следуют настройкам атрибутов организации. Переопределите их, чтобы выбрать атрибуты пространства.',
-    spaceOwn:
-      'У пространства свои настройки атрибутов: изменения в организации его не затрагивают. Бэклог следует им.',
   },
 })
 
@@ -137,28 +125,16 @@ const headingId = useId()
 
 const editable = computed(() => props.canEdit && !props.disabled && modelValue.value.overridden)
 
-// Own settings are edited in the draft; inherited ones are only shown.
 const shown = computed<AttributeSettingItem[]>(() =>
   modelValue.value.overridden ? modelValue.value.attributes : props.view.inherited.attributes,
 )
 
-const description = computed(() => {
-  if (props.owner === 'space') {
-    return modelValue.value.overridden ? t('spaceOwn') : t('spaceFollowsOrganization')
-  }
-  if (modelValue.value.overridden) {
-    return t('boardOwn')
-  }
-  return props.view.inherited.source === 'space'
-    ? t('boardFollowsSpace')
-    : t('boardFollowsOrganization')
-})
-
-// Starts from what the space or board shows now: its saved own settings, or what it inherits.
+// Starts from the settings in effect: own ones, or the inherited.
 const override = () => {
-  const ownSaved = props.view.source === (props.owner === 'space' ? 'space' : 'epic')
-  const from = ownSaved ? props.view.attributes : props.view.inherited.attributes
-  modelValue.value = { attributes: from.map((attribute) => ({ ...attribute })), overridden: true }
+  modelValue.value = {
+    attributes: props.view.attributes.map((attribute) => ({ ...attribute })),
+    overridden: true,
+  }
 }
 
 const reset = () => {
@@ -167,15 +143,6 @@ const reset = () => {
 </script>
 
 <style scoped>
-/* Always follows other settings on its page: a line sets it apart, as between the board form's sections. */
-.attribute-settings {
-  border-top: 1px solid var(--color-divider);
-  display: grid;
-  gap: var(--space-3);
-  padding-top: var(--space-5);
-}
-
-/* Name, then a narrow column per checkbox, the same in the header and every row. */
 .attribute-grid {
   align-items: center;
   column-gap: var(--space-2);
@@ -209,14 +176,5 @@ const reset = () => {
 
 .attribute-check {
   justify-self: center;
-}
-
-.visually-hidden {
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
 }
 </style>

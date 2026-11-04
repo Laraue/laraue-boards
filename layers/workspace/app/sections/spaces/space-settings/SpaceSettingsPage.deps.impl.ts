@@ -3,7 +3,7 @@ import { ApiError, request } from '#infrastructure/api/request'
 import {
   mapAttributeSettingsView,
   toAttributeSettingsUpdate,
-} from '#layers/workspace/app/shared/components/AttributeSettings/attributeSettingsApi'
+} from '#layers/workspace/app/shared/components/AttributeSettings/api/attributeSettings'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { SpaceSettingsPageDeps } from './SpaceSettingsPage.deps'
@@ -16,7 +16,6 @@ export const createSpaceSettingsPageDeps = (
     await request(client.DELETE('/api/spaces/{key}', { params: { path: { key: spaceKey } } }))
   },
 
-  // One request: the settings, description, links and attribute settings are saved together or not at all.
   save: async ({ attributeSettings, color, description, links, name, newKey, oldKey }) => {
     await request(
       client.PUT('/api/spaces/{key}', {

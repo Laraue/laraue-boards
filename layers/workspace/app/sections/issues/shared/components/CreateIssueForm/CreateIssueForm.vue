@@ -109,6 +109,7 @@
         :loading="pending"
         type="submit"
         variant="primary">
+        <IconClipboardPlus />
         {{ pending ? t('adding') : t('addIssue') }}
       </BaseButton>
     </div>
@@ -116,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconListDetails, IconPaperclip } from '@tabler/icons-vue'
+import { IconClipboardPlus, IconListDetails, IconPaperclip } from '@tabler/icons-vue'
 import { computed, reactive, useId, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

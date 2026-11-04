@@ -144,6 +144,7 @@
           :loading="pending"
           type="submit"
           variant="primary">
+          <IconSend />
           {{ t('send') }}
         </BaseButton>
       </template>
@@ -152,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowBackUp, IconRobot, IconX } from '@tabler/icons-vue'
+import { IconArrowBackUp, IconRobot, IconSend, IconX } from '@tabler/icons-vue'
 import { computed, ref, useId, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

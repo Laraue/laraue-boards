@@ -64,7 +64,7 @@ it('saves the board name edited by the user', async () => {
     onSaved,
   )
   await page.getByLabelText('Name', { exact: true }).fill('Planning')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(save).toHaveBeenCalledWith({
     attributeSettings: null,
@@ -89,7 +89,7 @@ it('saves a column category picked by the user', async () => {
   )
   await page.getByRole('combobox', { name: 'Status category' }).first().click()
   await page.getByRole('option', { exact: true, name: 'In progress' }).click()
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -114,7 +114,7 @@ it('saves the review category picked by the user', async () => {
   )
   await page.getByRole('combobox', { name: 'Status category' }).first().click()
   await page.getByRole('option', { exact: true, name: 'In review' }).click()
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -141,7 +141,7 @@ it('reorders columns through keyboard drag and drop before saving', async () => 
 
   await handle.click()
   await userEvent.keyboard('{Space}{ArrowDown}{Space}')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -164,10 +164,10 @@ it('saves own attribute settings of the board with the rest of its settings', as
     },
     vi.fn<() => void>(),
   )
-  await expect.element(page.getByText('follows its space’s attribute settings')).toBeInTheDocument()
+  await expect.element(page.getByText('Same as the space.')).toBeInTheDocument()
   await page.getByRole('button', { name: 'Override' }).click()
   await page.getByRole('checkbox', { name: 'Available' }).click()
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(save).toHaveBeenCalledWith(
     expect.objectContaining({

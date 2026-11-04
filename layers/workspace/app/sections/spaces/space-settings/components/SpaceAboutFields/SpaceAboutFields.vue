@@ -1,7 +1,8 @@
 <template>
-  <section class="space-about-fields">
-    <BaseSectionHeader :title="t('about')" />
-    <p class="muted hint">{{ t('aboutHint') }}</p>
+  <section class="settings-section">
+    <BaseSectionHeader
+      :description="t('aboutHint')"
+      :title="t('about')" />
     <!-- Framed like the other fields: the editor itself draws no box. -->
     <div
       class="space-description"
@@ -12,9 +13,11 @@
         :label="t('description')"
         :placeholder="t('descriptionPlaceholder')" />
     </div>
-
-    <BaseSectionHeader :title="t('links')" />
-    <p class="muted hint">{{ t('linksHint') }}</p>
+  </section>
+  <section class="settings-section">
+    <BaseSectionHeader
+      :description="t('linksHint')"
+      :title="t('links')" />
     <ul
       v-if="links.length"
       class="space-links">
@@ -150,15 +153,6 @@ const remove = (index: number): void => {
 </script>
 
 <style scoped>
-.space-about-fields {
-  display: grid;
-  gap: var(--space-4);
-}
-
-.hint {
-  margin: 0;
-}
-
 .space-description {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -191,10 +185,11 @@ const remove = (index: number): void => {
 }
 
 .space-link {
-  border-bottom: 1px solid var(--color-divider);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
   display: grid;
   gap: var(--space-3);
-  padding-bottom: var(--space-4);
+  padding: var(--space-4);
 }
 
 .space-link-description {

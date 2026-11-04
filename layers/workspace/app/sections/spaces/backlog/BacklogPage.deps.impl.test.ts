@@ -14,19 +14,6 @@ test('maps backlog page data', async () => {
     if (path === '/api/spaces/product/epics') {
       return [{ id: 8, isDefault: true, name: 'Backlog' }]
     }
-    if (path === '/api/epics/8/attributes') {
-      return [
-        {
-          color: '#999',
-          id: 3,
-          isEnabled: true,
-          listValues: [],
-          name: 'Priority',
-          showOnCard: true,
-          type: 'Text',
-        },
-      ]
-    }
     return { data: [], hasNextPage: false }
   })
 
@@ -38,7 +25,7 @@ test('maps backlog page data', async () => {
       spaceKey: 'product',
     }),
     {
-      attributes: [{ color: '#999', id: '3', name: 'Priority', type: 'text' }],
+      attributes: [],
       backlogBoardId: '8',
       hasNextPage: false,
       issues: [],
@@ -63,6 +50,7 @@ test('maps backlog search request and response', async () => {
         key: 'ISS-1',
         space: { color: '#333', name: 'Product' },
         status: null,
+        time: '2026-01-01T10:00:00Z',
       },
     ],
     hasNextPage: false,
@@ -76,6 +64,7 @@ test('maps backlog search request and response', async () => {
   })
 
   assert.equal(result.issues[0]?.issueKey, 'ISS-1')
+  assert.equal(result.issues[0]?.time, '2026-01-01T10:00:00Z')
   assert.deepEqual(await requests[0]!.json(), {
     epicIds: [8],
     filters: {},

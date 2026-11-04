@@ -38,6 +38,7 @@
           :loading="creating"
           type="submit"
           variant="primary">
+          <IconPlus />
           {{ t('create') }}
         </BaseButton>
       </template>
@@ -103,6 +104,7 @@
                 v-else
                 :disabled="busy"
                 @click="revokeKey(key.id)">
+                <IconKeyOff />
                 {{ t('revoke') }}
               </BaseButton>
             </template>
@@ -123,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconCopy, IconPlus } from '@tabler/icons-vue'
+import { IconCheck, IconCopy, IconKeyOff, IconPlus } from '@tabler/icons-vue'
 import { computed, ref, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

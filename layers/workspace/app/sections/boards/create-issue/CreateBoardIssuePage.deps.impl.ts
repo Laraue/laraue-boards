@@ -13,8 +13,6 @@ export const createCreateBoardIssuePageDeps = (
 ): CreateBoardIssuePageDeps => ({
   form: createCreateIssueFormDeps(client),
   view: async ({ boardId, signal, spaceKey }) => {
-    // The board doesn't carry its space's name; the layout's spaces list does. The form offers only the
-    // attributes the board uses (BRD-179).
     const { spaces } = readCatalog()
     const [board, attributes] = await Promise.all([
       request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),

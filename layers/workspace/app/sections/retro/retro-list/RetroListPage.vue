@@ -59,6 +59,7 @@
                   size="small"
                   :tooltip="t('continueTitle', { name: retro.name })"
                   @click="start(retro)">
+                  <IconArrowRight />
                   {{ t('continue') }}
                 </BaseButton>
                 <BaseIconButton
@@ -87,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconPlus, IconTrash } from '@tabler/icons-vue'
+import { IconArrowRight, IconPlus, IconTrash } from '@tabler/icons-vue'
 import { computed } from 'vue'
 import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 

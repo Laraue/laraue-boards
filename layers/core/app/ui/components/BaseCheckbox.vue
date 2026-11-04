@@ -17,7 +17,6 @@ const model = defineModel<boolean>({ required: true })
 <style scoped>
 .base-checkbox {
   align-items: center;
-  border-radius: var(--radius-control);
   color: var(--color-text);
   cursor: pointer;
   display: flex;
@@ -26,7 +25,6 @@ const model = defineModel<boolean>({ required: true })
   gap: var(--space-2);
   margin: 0;
   min-height: var(--control-height);
-  padding: var(--space-1) var(--space-2);
 }
 
 .base-checkbox:has(input:disabled) {

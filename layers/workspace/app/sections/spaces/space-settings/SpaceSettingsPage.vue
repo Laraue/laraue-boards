@@ -12,7 +12,21 @@
             to: organizationRoutes.space(spaceKey),
           },
         ]"
-        :title="t('settings')" />
+        :title="t('settings')">
+        <template
+          v-if="data?.canUpdate"
+          #actions>
+          <BaseButton
+            :disabled="removing"
+            :form="formId"
+            :loading="saving"
+            type="submit"
+            variant="primary">
+            <IconCheck />
+            {{ t('save') }}
+          </BaseButton>
+        </template>
+      </PageHeader>
     </template>
     <QueryState
       :data="data"
@@ -22,39 +36,41 @@
       :on-retry="refresh"
       :pending="pending">
       <template #default="{ data: page }">
-        <section class="space-settings-page">
-          <BaseSectionHeader :title="t('general')" />
+        <section class="settings-page">
           <form
-            class="space-settings-form"
+            :id="formId"
             @submit.prevent="save">
-            <BaseFieldGroup>
-              <BaseField
-                id="space-settings-name"
-                :label="t('name')">
-                <BaseInput
+            <section class="settings-section">
+              <BaseSectionHeader :title="t('general')" />
+              <BaseFieldGroup>
+                <BaseField
                   id="space-settings-name"
-                  v-model="form.name"
-                  :disabled="!page.canUpdate || submitting"
-                  required />
-              </BaseField>
-              <BaseField
-                id="space-settings-key"
-                :label="t('key')">
-                <BaseInput
+                  :label="t('name')">
+                  <BaseInput
+                    id="space-settings-name"
+                    v-model="form.name"
+                    :disabled="!page.canUpdate || submitting"
+                    required />
+                </BaseField>
+                <BaseField
                   id="space-settings-key"
-                  v-model="form.key"
-                  :disabled="!page.canUpdate || submitting"
-                  required />
-              </BaseField>
-              <BaseField
-                v-slot="{ labelId }"
-                :label="t('color')">
-                <AppColorPicker
-                  v-model="form.color"
-                  :aria-labelledby="labelId"
-                  :disabled="!page.canUpdate || submitting" />
-              </BaseField>
-            </BaseFieldGroup>
+                  :label="t('key')">
+                  <BaseInput
+                    id="space-settings-key"
+                    v-model="form.key"
+                    :disabled="!page.canUpdate || submitting"
+                    required />
+                </BaseField>
+                <BaseField
+                  v-slot="{ labelId }"
+                  :label="t('color')">
+                  <AppColorPicker
+                    v-model="form.color"
+                    :aria-labelledby="labelId"
+                    :disabled="!page.canUpdate || submitting" />
+                </BaseField>
+              </BaseFieldGroup>
+            </section>
             <SpaceAboutFields
               v-model:description="form.description"
               v-model:links="form.links"
@@ -62,25 +78,16 @@
             <AttributeSettings
               v-model="form.attributeSettings"
               :can-edit="page.canUpdate"
+              :description="
+                form.attributeSettings.overridden ? t('attributesOwn') : t('attributesInherited')
+              "
               :disabled="submitting"
-              owner="space"
               :view="page.attributeSettings" />
             <p
               v-if="saveMessage || removeMessage"
               class="form-error">
               {{ saveMessage || removeMessage }}
             </p>
-            <div
-              v-if="page.canUpdate"
-              class="form-actions">
-              <BaseButton
-                :disabled="removing"
-                :loading="saving"
-                type="submit"
-                variant="primary">
-                {{ t('saveChanges') }}
-              </BaseButton>
-            </div>
           </form>
           <BaseDangerZone
             v-if="page.canDelete"
@@ -91,6 +98,7 @@
               :loading="removing"
               variant="danger"
               @click="remove">
+              <IconTrash />
               {{ t('deleteSpace') }}
             </BaseButton>
           </BaseDangerZone>
@@ -101,8 +109,8 @@
 </template>
 
 <script setup lang="ts">
-import { IconSettings } from '@tabler/icons-vue'
-import { computed, reactive, watch } from 'vue'
+import { IconCheck, IconSettings, IconTrash } from '@tabler/icons-vue'
+import { computed, reactive, useId, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
@@ -144,6 +152,8 @@ const props = defineProps<{
 const confirm = useConfirm()
 const { t } = useI18n({
   en: {
+    attributesInherited: 'Same as the organization, for the backlog too.',
+    attributesOwn: 'Changes in the organization don’t apply here. The backlog uses these too.',
     color: 'Color',
     deleteConfirm: 'Delete this space?',
     deleteDescription: 'Deletes the space for every member. This cannot be undone.',
@@ -153,10 +163,12 @@ const { t } = useI18n({
     loadError: 'Could not load space',
     loading: 'Loading space…',
     name: 'Name',
-    saveChanges: 'Save changes',
+    save: 'Save',
     settings: 'Space settings',
   },
   ru: {
+    attributesInherited: 'Как в организации, и для бэклога тоже.',
+    attributesOwn: 'Изменения в организации сюда не доходят. Бэклог использует эти же.',
     color: 'Цвет',
     deleteConfirm: 'Удалить это пространство?',
     deleteDescription: 'Удаляет пространство для всех участников. Отменить нельзя.',
@@ -166,7 +178,7 @@ const { t } = useI18n({
     loadError: 'Не удалось загрузить пространство',
     loading: 'Загрузка пространства…',
     name: 'Название',
-    saveChanges: 'Сохранить изменения',
+    save: 'Сохранить',
     settings: 'Настройки пространства',
   },
 })
@@ -217,6 +229,7 @@ const {
   message: removeMessage,
   pending: removing,
 } = useApiAction(props.deps.remove)
+const formId = `space-settings-${useId()}`
 const submitting = computed(() => saving.value || removing.value)
 
 // Rows left empty aren't links.
@@ -277,18 +290,3 @@ const remove = async (): Promise<void> => {
   }
 }
 </script>
-
-<style scoped>
-.space-settings-form {
-  display: grid;
-  gap: var(--space-5);
-}
-
-.space-settings-page {
-  display: grid;
-  gap: var(--space-5);
-  margin-inline: auto;
-  max-width: 768px;
-  width: 100%;
-}
-</style>

@@ -31,7 +31,6 @@ const mapAttributes = (attributes: Schemas['AttributeSettingDto'][]): AttributeS
     showOnCard: attribute.showOnCard,
   }))
 
-/** The settings of a space or a board as the settings pages show them. */
 export const mapAttributeSettingsView = (
   settings: Schemas['AttributeSettingsViewDto'],
 ): AttributeSettingsView => ({

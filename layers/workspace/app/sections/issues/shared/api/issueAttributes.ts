@@ -1,6 +1,6 @@
 import type { components } from '#infrastructure/api/generated'
 import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
-import type { IssueCardAttribute } from '#layers/workspace/app/sections/issues/shared/components/IssueCardAttributes/IssueCardAttributes.types'
+import type { IssueAttributeLabel } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeLabels/IssueAttributeLabels.types'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -26,7 +26,7 @@ type IssueAttributeValueInput =
   | { attributeId: string; type: 'list'; valueId: string }
   | { attributeId: string; type: 'text'; value: string }
 
-const cardAttributeKind = (type: Schemas['AttributeType']): IssueCardAttribute['kind'] => {
+const attributeLabelKind = (type: Schemas['AttributeType']): IssueAttributeLabel['kind'] => {
   switch (type) {
     case 'Date':
       return 'date'
@@ -37,12 +37,12 @@ const cardAttributeKind = (type: Schemas['AttributeType']): IssueCardAttribute['
   }
 }
 
-export const mapCardAttributes = (
+export const mapAttributeLabels = (
   attributes: Schemas['IssueListAttributeDto'][],
-): IssueCardAttribute[] =>
+): IssueAttributeLabel[] =>
   attributes.map((attribute) => ({
     color: attribute.color,
-    kind: cardAttributeKind(attribute.type),
+    kind: attributeLabelKind(attribute.type),
     name: attribute.name,
     value: attribute.value,
   }))

@@ -60,6 +60,7 @@
           size="small"
           variant="primary"
           @click="add">
+          <IconPlus />
           {{ t('add') }}
         </BaseButton>
       </div>
@@ -109,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconLink, IconX } from '@tabler/icons-vue'
+import { IconLink, IconPlus, IconX } from '@tabler/icons-vue'
 import { computed, nextTick, onBeforeUnmount, reactive, useId, useTemplateRef, watch } from 'vue'
 
 import { NuxtLink } from '#components'

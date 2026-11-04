@@ -20,7 +20,7 @@ Two issues have at most one link between them. To change its type, remove the li
 
 ## Adding and removing links
 
-On the issue page, click **Add link**, choose the link type, and type the other issue's key or words from its title. Links are saved straight away — the issue's **Save changes** isn't needed. Hover a link and click the remove button to delete it.
+On the issue page, click **Add link**, choose the link type, and type the other issue's key or words from its title. Links are saved straight away — the issue's **Save** isn't needed. Hover a link and click the remove button to delete it.
 
 You need edit access to the issue you add the link from, and to be able to see the other issue. Links to issues you can't see aren't shown to you.
 

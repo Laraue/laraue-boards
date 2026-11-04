@@ -9,6 +9,7 @@
           size="small"
           variant="ghost"
           @click="onClear">
+          <IconX />
           {{ t('clear') }}
         </BaseButton>
         <BaseButton
@@ -24,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowsLeftRight } from '@tabler/icons-vue'
+import { IconArrowsLeftRight, IconX } from '@tabler/icons-vue'
 import { Transition, computed } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

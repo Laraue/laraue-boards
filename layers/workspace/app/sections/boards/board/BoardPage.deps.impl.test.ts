@@ -11,19 +11,6 @@ const catalog = () => ({
 
 test('maps board columns in status order with their issues', async () => {
   const { client, paths } = createTestApiClient((_request, path) => {
-    if (path === '/api/epics/7/attributes') {
-      return [
-        {
-          color: '#999',
-          id: 3,
-          isEnabled: true,
-          listValues: [],
-          name: 'Priority',
-          showOnCard: true,
-          type: 'Text',
-        },
-      ]
-    }
     if (path === '/api/epics/7') {
       return {
         canCreateIssues: true,
@@ -47,6 +34,7 @@ test('maps board columns in status order with their issues', async () => {
             {
               assignee: 'Ada',
               assigneeColor: '#444',
+              assigneeId: 'ada',
               assigneeInitial: null,
               attributes: [],
               content: null,
@@ -77,7 +65,7 @@ test('maps board columns in status order with their issues', async () => {
       spaceKey: 'product',
     }),
     {
-      attributes: [{ color: '#999', id: '3', name: 'Priority', type: 'text' }],
+      attributes: [],
       canCreateIssues: true,
       canDelete: true,
       canMoveIssues: true,
@@ -93,6 +81,7 @@ test('maps board columns in status order with their issues', async () => {
           issues: [
             {
               assigneeColor: '#444',
+              assigneeId: 'ada',
               assigneeInitial: '?',
               assigneeName: 'Ada',
               attributes: [],
@@ -122,8 +111,8 @@ test('maps board columns in status order with their issues', async () => {
       title: 'Roadmap',
     },
   )
-  // The spaces come from the layout; the board, the attributes it uses and its issues load together.
-  assert.sameMembers(paths(), ['/api/epics/7', '/api/epics/7/attributes', '/api/issues/board'])
+  // The attributes and spaces come from the layout; the board and its issues load together.
+  assert.sameMembers(paths(), ['/api/epics/7', '/api/issues/board'])
 })
 
 test('maps the latest agent run and the source of a card', async () => {

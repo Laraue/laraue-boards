@@ -6,6 +6,7 @@ export const useFormatters = () => {
   const formatters = getFormatters(locale)
   return {
     ...formatters,
+    formatCompactDate: (value: Date | string) => formatters.formatCompactDate(value, new Date()),
     formatRecent: (value: Date | string) => formatters.formatRecent(value, new Date()),
   }
 }

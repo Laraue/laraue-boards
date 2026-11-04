@@ -54,6 +54,7 @@
         :loading="pending"
         type="submit"
         variant="primary">
+        <IconArrowRight />
         {{ t('next') }}
       </BaseButton>
     </template>
@@ -61,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconAlertTriangle } from '@tabler/icons-vue'
+import { IconAlertTriangle, IconArrowRight } from '@tabler/icons-vue'
 import { onMounted, reactive, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

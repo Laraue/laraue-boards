@@ -24,6 +24,7 @@
         v-if="onRetry"
         variant="primary"
         @click="onRetry">
+        <IconRefresh />
         {{ translatedRetryText }}
       </BaseButton>
       <BaseButton to="/organizations">
@@ -37,7 +38,7 @@
 </template>
 
 <script setup lang="ts" generic="Value">
-import { IconAlertTriangle, IconLoader2 } from '@tabler/icons-vue'
+import { IconAlertTriangle, IconLoader2, IconRefresh } from '@tabler/icons-vue'
 import { computed } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

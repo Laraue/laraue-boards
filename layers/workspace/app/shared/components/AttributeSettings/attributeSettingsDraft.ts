@@ -27,7 +27,6 @@ export const toAttributeSettingsSave = (
   const settings = draft.attributes.map(({ id, isEnabled, showOnCard }) => ({
     id,
     isEnabled,
-    // A value is shown on cards only where the attribute is used.
     showOnCard: isEnabled && showOnCard,
   }))
   const unchanged =

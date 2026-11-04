@@ -47,6 +47,7 @@
             <BaseButton
               class="usage-action"
               @click="onBuyTokens">
+              <IconCoins />
               {{ t('buyTokens') }}
             </BaseButton>
           </article>
@@ -63,6 +64,7 @@
             <BaseButton
               class="usage-action"
               @click="onChangePlan">
+              <IconArrowsExchange />
               {{ t('changePlan') }}
             </BaseButton>
           </article>
@@ -88,6 +90,7 @@
             <BaseButton
               class="usage-action"
               @click="onChangePlan">
+              <IconArrowsExchange />
               {{ t('changePlan') }}
             </BaseButton>
           </article>
@@ -98,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconArrowsExchange } from '@tabler/icons-vue'
+import { IconArrowsExchange, IconCoins } from '@tabler/icons-vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'

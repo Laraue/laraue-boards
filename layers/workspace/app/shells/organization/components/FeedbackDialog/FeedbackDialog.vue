@@ -68,6 +68,7 @@
         :loading="sending"
         type="submit"
         variant="primary">
+        <IconSend />
         {{ sending ? t('sending') : t('send') }}
       </BaseButton>
     </template>
@@ -75,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconSend } from '@tabler/icons-vue'
 import { reactive, useTemplateRef, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

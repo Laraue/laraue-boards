@@ -157,6 +157,7 @@
         :loading="pending"
         type="submit"
         variant="primary">
+        <IconCheck />
         {{ t('finish') }}
       </BaseButton>
     </template>
@@ -164,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconPlus, IconTrash } from '@tabler/icons-vue'
+import { IconCheck, IconPlus, IconTrash } from '@tabler/icons-vue'
 import { computed, onMounted, reactive, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

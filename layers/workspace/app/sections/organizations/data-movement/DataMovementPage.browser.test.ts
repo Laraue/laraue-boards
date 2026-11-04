@@ -41,7 +41,6 @@ const createDeps = (view?: DataMovementPageDeps['view']): DataMovementPageDeps =
           { label: 'Development', value: '10' },
         ]),
       },
-      unusedAttributes: vi.fn<MoveBoardsDialogDeps['unusedAttributes']>(async () => []),
     },
   },
   spacesMovementSection: {
@@ -89,8 +88,8 @@ it('refreshes the page and notifies the layout after spaces moved', async () => 
 
   await page.getByLabelText('Move Development').click()
   await dialog().getByLabelText('Organization').click()
-  await expect.element(dialog().getByRole('option', { name: 'Target' })).toBeInTheDocument()
-  await dialog().getByRole('option', { name: 'Target' }).click()
+  await expect.element(page.getByRole('option', { name: 'Target' })).toBeInTheDocument()
+  await page.getByRole('option', { name: 'Target' }).click()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
   await expect.element(page.getByText('No spaces.')).toBeInTheDocument()
@@ -108,8 +107,8 @@ it('refreshes the page without notifying the layout after boards moved', async (
 
   await page.getByRole('button', { name: 'Move Board' }).click()
   await dialog().getByLabelText('Space').click()
-  await expect.element(dialog().getByRole('option', { name: 'Development' })).toBeInTheDocument()
-  await dialog().getByRole('option', { name: 'Development' }).click()
+  await expect.element(page.getByRole('option', { name: 'Development' })).toBeInTheDocument()
+  await page.getByRole('option', { name: 'Development' }).click()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
   await expect.element(page.getByText('No movable boards.')).toBeInTheDocument()

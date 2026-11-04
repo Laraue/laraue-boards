@@ -27,6 +27,7 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
   spaceName: 'Product',
   status: 'To do',
   statusColor: '#444',
+  time: '2026-01-01T10:00:00Z',
   title,
 })
 
@@ -50,7 +51,6 @@ const createDeps = (overrides: Partial<IssuesPageDeps> = {}): IssuesPageDeps => 
       statusSelect: {
         loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => []),
       },
-      unusedAttributes: vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => []),
     },
   },
   searchIssues: vi.fn<IssuesPageDeps['searchIssues']>(async () => ({

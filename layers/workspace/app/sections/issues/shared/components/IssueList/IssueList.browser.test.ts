@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { afterEach, expect, it, vi } from 'vitest'
-import { page } from 'vitest/browser'
+import { page, userEvent } from 'vitest/browser'
 
 import { ApiError } from '#infrastructure/api/request'
 import type { BoardSelectDeps } from '#layers/workspace/app/sections/boards/shared/components/BoardSelect/BoardSelect.deps'
@@ -26,10 +26,29 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
   spaceName: 'Product',
   status: 'To do',
   statusColor: '#444',
+  time: '2026-01-01T10:00:00Z',
   title,
 })
 
 const issues = [issueOf('ISS-1', 'First issue'), issueOf('ISS-2', 'Second issue')]
+
+const responsiveIssues: IssueListItem[] = [
+  {
+    ...issues[0]!,
+    attributes: [
+      { color: '#123456', kind: 'text', name: 'Project', value: 'Long attribute '.repeat(12) },
+      { color: '#123456', kind: 'text', name: 'Team', value: 'Product development' },
+      { color: '#123456', kind: 'text', name: 'Priority', value: 'High' },
+    ],
+    boardName: 'Long board name '.repeat(8),
+    source: { keyName: null, kind: 'web' },
+    spaceKey: 'product',
+    spaceName: 'Long space name '.repeat(8),
+    status: 'Long status name '.repeat(8),
+    title: 'VeryLongUnbrokenIssueTitle'.repeat(15),
+  },
+  { ...issues[1]!, canMove: false, status: null },
+]
 
 const createDeps = (overrides: Partial<MoveIssuesDialogDeps> = {}): IssueListDeps => ({
   moveIssuesDialog: {
@@ -50,7 +69,6 @@ const createDeps = (overrides: Partial<MoveIssuesDialogDeps> = {}): IssueListDep
         { label: 'Done', value: '4' },
       ]),
     },
-    unusedAttributes: vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => []),
     ...overrides,
   },
 })
@@ -126,14 +144,14 @@ it('loads inline choices on opening and keeps the current status after a failed 
 
 const chooseDestination = async () => {
   await dialog().getByLabelText('Space').click()
-  await expect.element(dialog().getByRole('option', { name: 'Product' })).toBeInTheDocument()
-  await dialog().getByRole('option', { name: 'Product' }).click()
+  await expect.element(page.getByRole('option', { name: 'Product' })).toBeInTheDocument()
+  await page.getByRole('option', { name: 'Product' }).click()
   await dialog().getByLabelText('Board').click()
-  await expect.element(dialog().getByRole('option', { name: 'Sprint board' })).toBeInTheDocument()
-  await dialog().getByRole('option', { name: 'Sprint board' }).click()
+  await expect.element(page.getByRole('option', { name: 'Sprint board' })).toBeInTheDocument()
+  await page.getByRole('option', { name: 'Sprint board' }).click()
   await dialog().getByLabelText('Status').click()
-  await expect.element(dialog().getByRole('option', { name: 'To do' })).toBeInTheDocument()
-  await dialog().getByRole('option', { name: 'To do' }).click()
+  await expect.element(page.getByRole('option', { name: 'To do' })).toBeInTheDocument()
+  await page.getByRole('option', { name: 'To do' }).click()
 }
 
 afterEach(async () => {
@@ -147,6 +165,143 @@ it('shows the empty text when there are no issues', async () => {
   await expect.element(page.getByText('No issues yet.')).toBeInTheDocument()
 })
 
+it('shows a date rather than a clock time for an issue created today', async () => {
+  const time = new Date().toISOString()
+  const wrapper = await mount(createDeps(), vi.fn<() => void>(), [{ ...issues[0]!, time }])
+
+  expect(wrapper.get('time').attributes('datetime')).toBe(time)
+  expect(wrapper.get('time').text()).not.toContain(String(new Date(time).getFullYear()))
+  expect(wrapper.get('time').text()).not.toMatch(/^\d{1,2}:\d{2}$/)
+})
+
+it.each([390, 1440])('only shows checkboxes in selection mode at %ipx', async (width) => {
+  const wrapper = await mount(createDeps())
+  wrapper.element.setAttribute('style', `width: ${width}px`)
+  const keyOffset = () => {
+    const row = wrapper.get('.issue-list-row').element
+    return (
+      wrapper.get('.issue-key').element.getBoundingClientRect().left -
+      row.getBoundingClientRect().left -
+      Number.parseFloat(getComputedStyle(row).paddingLeft) -
+      Number.parseFloat(getComputedStyle(row).borderLeftWidth)
+    )
+  }
+
+  await userEvent.hover(wrapper.get('.issue-list-row').element)
+  await userEvent.tab()
+  expect(page.getByRole('checkbox', { name: 'Select issue' }).all()).toHaveLength(0)
+  await vi.waitFor(() => expect(keyOffset()).toBeCloseTo(0))
+  await rowAction(0, 'Select issue')
+  await expect.element(page.getByRole('checkbox', { name: 'Select issue' }).first()).toBeChecked()
+  await vi.waitFor(() => expect(keyOffset()).toBeGreaterThan(0))
+  await page.getByRole('button', { exact: true, name: 'Clear' }).click()
+  expect(page.getByRole('checkbox', { name: 'Select issue' }).all()).toHaveLength(0)
+  await vi.waitFor(() => expect(keyOffset()).toBeCloseTo(0))
+})
+
+it('shows Backlog with the same status indicator when the API has no board status', async () => {
+  const wrapper = await mount(createDeps(), vi.fn<() => void>(), [{ ...issues[0]!, status: null }])
+
+  await expect.element(page.getByText('Backlog', { exact: true })).toBeVisible()
+  expect(wrapper.find('.issue-status .issue-status-indicator').exists()).toBe(true)
+})
+
+it('only offers checkboxes for movable issues and leaves selection mode when the last is cleared', async () => {
+  await mount(createDeps(), vi.fn<() => void>(), [issues[0]!, { ...issues[1]!, canMove: false }])
+
+  await rowAction(0, 'Select issue')
+  expect(page.getByRole('checkbox', { name: 'Select issue' }).all()).toHaveLength(1)
+  await expect.element(page.getByText('1 selected')).toBeInTheDocument()
+  await page.getByRole('checkbox', { name: 'Select issue' }).click()
+  expect(page.getByRole('checkbox', { name: 'Select issue' }).all()).toHaveLength(0)
+})
+
+it.each([320, 390, 768, 1024, 1440])(
+  'keeps long issue content and controls inside a %ipx list, including the backlog',
+  async (width) => {
+    const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
+    const container = wrapper.get('.issue-list-container').element
+    container.setAttribute('style', `width: ${width}px`)
+
+    const expectContentToFit = () => {
+      const bounds = container.getBoundingClientRect()
+      expect(container.scrollWidth).toBeLessThanOrEqual(width + 1)
+      for (const element of container.querySelectorAll(
+        '.issue-key, .issue-content, .issue-title, .issue-time, .issue-status, .issue-person, .issue-attributes, .issue-location, .row-actions',
+      )) {
+        const rect = element.getBoundingClientRect()
+        expect(rect.left).toBeGreaterThanOrEqual(bounds.left)
+        expect(rect.right).toBeLessThanOrEqual(bounds.right + 1)
+      }
+      for (const row of container.querySelectorAll('.issue-list-row')) {
+        const key = row.querySelector('.issue-key')!
+        expect(key.getBoundingClientRect().left).toBeCloseTo(
+          row.getBoundingClientRect().left +
+            Number.parseFloat(getComputedStyle(row).paddingLeft) +
+            Number.parseFloat(getComputedStyle(row).borderLeftWidth),
+        )
+      }
+      for (const row of container.querySelectorAll('.issue-list-row:has(.row-actions button)')) {
+        const actions = row.querySelector('.row-actions button')!
+        const created = row.querySelector('.issue-created')!
+        const padding = Number.parseFloat(getComputedStyle(row).paddingRight)
+        expect(created.getBoundingClientRect().right).toBeLessThanOrEqual(
+          actions.getBoundingClientRect().left - Number.parseFloat(getComputedStyle(row).columnGap),
+        )
+        expect(actions.getBoundingClientRect().right).toBeLessThanOrEqual(
+          row.getBoundingClientRect().right - padding + 1,
+        )
+      }
+    }
+
+    await vi.waitFor(expectContentToFit)
+    expect(wrapper.findAll('.attribute-label')).toHaveLength(3)
+    expect(page.getByRole('button', { name: 'Attributes' }).all()).toHaveLength(0)
+    expect(wrapper.get('.issue-attributes').element.getBoundingClientRect().top).toBeGreaterThan(
+      wrapper.get('.issue-content').element.getBoundingClientRect().bottom,
+    )
+    await wrapper.setProps({
+      hideLocation: true,
+      hideStatus: true,
+      issues: [{ ...wrapper.props('issues')[0]!, status: null }],
+    })
+    await vi.waitFor(expectContentToFit)
+    expect(wrapper.find('.issue-location').exists()).toBe(false)
+    expect(wrapper.find('.issue-status').exists()).toBe(false)
+    expect(wrapper.findAll('.attribute-label')).toHaveLength(3)
+  },
+)
+
+it.each([320, 390, 768])(
+  'wraps the title under its key and aligns the mobile footer at %ipx',
+  async (width) => {
+    const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
+    wrapper.get('.issue-list-container').element.setAttribute('style', `width: ${width}px`)
+    const titleRange = document.createRange()
+    titleRange.selectNodeContents(wrapper.get('.issue-title').element)
+    const lines = Array.from(titleRange.getClientRects()).filter((rect) => rect.width > 0)
+    expect(lines.length).toBeGreaterThan(1)
+    expect(lines[1]!.left).toBeCloseTo(
+      wrapper.get('.issue-content').element.getBoundingClientRect().left,
+    )
+    const element: Element = wrapper.element
+    const controls = element.querySelectorAll(
+      '.issue-list-row:first-child :is(.issue-person, .issue-created, .row-actions)',
+    )
+    expect(
+      new Set(
+        Array.from(controls, (control) => {
+          const rect = control.getBoundingClientRect()
+          return rect.top + rect.height / 2
+        }),
+      ).size,
+    ).toBe(1)
+    expect(wrapper.get('.issue-status').element.getBoundingClientRect().top).toBeLessThan(
+      wrapper.get('.issue-footer').element.getBoundingClientRect().top,
+    )
+  },
+)
+
 it('moves a single issue through its row action without touching the selection', async () => {
   const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => {})
   const onMoved = vi.fn<() => void>()
@@ -158,11 +313,7 @@ it('moves a single issue through its row action without touching the selection',
   await chooseDestination()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  expect(moveIssues).toHaveBeenCalledWith({
-    dropUnusedAttributeValues: false,
-    issueKeys: ['ISS-1'],
-    statusId: '3',
-  })
+  expect(moveIssues).toHaveBeenCalledWith({ issueKeys: ['ISS-1'], statusId: '3' })
   expect(onMoved).toHaveBeenCalledTimes(1)
 })
 
@@ -177,32 +328,8 @@ it('moves every selected issue and clears the selection afterwards', async () =>
   await chooseDestination()
   await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
 
-  expect(moveIssues).toHaveBeenCalledWith({
-    dropUnusedAttributeValues: false,
-    issueKeys: ['ISS-1', 'ISS-2'],
-    statusId: '3',
-  })
+  expect(moveIssues).toHaveBeenCalledWith({ issueKeys: ['ISS-1', 'ISS-2'], statusId: '3' })
   await expect.element(page.getByText('2 selected')).not.toBeInTheDocument()
-})
-
-it('drops the values of attributes the board does not use when the user chooses so', async () => {
-  const moveIssues = vi.fn<MoveIssuesDialogDeps['moveIssues']>(async () => {})
-  const unusedAttributes = vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => ['Priority'])
-  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
-
-  await mount(createDeps({ moveIssues, unusedAttributes }))
-
-  await rowAction(0, 'Move to board')
-  await chooseDestination()
-  await dialog().getByRole('button', { exact: true, name: 'Move' }).click()
-
-  expect(unusedAttributes).toHaveBeenCalledWith({ issueKeys: ['ISS-1'], statusId: '3' })
-  expect(confirm).toHaveBeenCalledTimes(1)
-  expect(moveIssues).toHaveBeenCalledWith({
-    dropUnusedAttributeValues: true,
-    issueKeys: ['ISS-1'],
-    statusId: '3',
-  })
 })
 
 it('keeps the dialog open and shows the message when moving fails', async () => {
@@ -238,7 +365,7 @@ it('drops the failure message as soon as the destination changes', async () => {
     .toBeInTheDocument()
 
   await dialog().getByLabelText('Status').click()
-  await dialog().getByRole('option', { name: 'Done' }).click()
+  await page.getByRole('option', { name: 'Done' }).click()
 
   await expect
     .element(dialog().getByText('These issues can no longer be moved.'))
@@ -246,11 +373,21 @@ it('drops the failure message as soon as the destination changes', async () => {
 })
 
 it('marks a blocked issue', async () => {
-  await mount(createDeps(), vi.fn<() => void>(), [
-    { ...issueOf('ISS-1', 'Waits for the API'), blocked: true },
+  const wrapper = await mount(createDeps(), vi.fn<() => void>(), [
+    {
+      ...issueOf('ISS-1', 'Waits for the API'),
+      blocked: true,
+      source: { keyName: null, kind: 'web' },
+    },
     issueOf('ISS-2', 'Build the API'),
   ])
 
   await expect.element(page.getByText('Build the API')).toBeInTheDocument()
   expect(page.getByRole('img', { name: 'Blocked' }).all()).toHaveLength(1)
+  expect(wrapper.get('.issue-key').element.nextElementSibling?.className).toBe('issue-title')
+  expect(wrapper.get('.issue-title').element.firstElementChild?.className).toBe('issue-blocked')
+  expect(
+    wrapper.get('time').element.previousElementSibling?.classList.contains('issue-source-icon'),
+  ).toBe(true)
+  expect(wrapper.find('.issue-content .issue-source-icon').exists()).toBe(false)
 })

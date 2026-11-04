@@ -28,7 +28,7 @@ Under **Boards**, boards are grouped by the space they currently belong to. Chec
 
 Attributes belong to the organization, so moving a space or a board to **another organization** removes its issues' attribute values, along with the space's or boards' own [attribute settings](/documentation/features/attributes#attributes-in-a-space-or-board).
 
-Moving boards to another space **in the same organization** keeps their issues' values. If the new space doesn't use some of the attributes those issues have values for, you're asked whether to keep or drop those values. A board with its own attribute settings keeps them, so nothing is asked for its issues.
+Moving boards to another space **in the same organization** keeps their issues' values, including values of attributes the new space doesn't use. A board with its own attribute settings keeps them.
 
 ## Who can do this
 

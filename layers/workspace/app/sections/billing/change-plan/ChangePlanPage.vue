@@ -42,12 +42,14 @@
               <BaseButton
                 v-if="isCurrent(page, plan)"
                 disabled>
+                <IconCheck />
                 {{ t('active') }}
               </BaseButton>
               <BaseButton
                 v-else-if="!plan.isFree"
                 :disabled="!page.canPay"
                 @click="select(plan)">
+                <IconArrowRight />
                 {{ t('select') }}
               </BaseButton>
             </article>
@@ -75,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowRight, IconCheck } from '@tabler/icons-vue'
 import { computed, reactive, useTemplateRef } from 'vue'
 import type { RouteLocationRaw } from 'vue-router'
 

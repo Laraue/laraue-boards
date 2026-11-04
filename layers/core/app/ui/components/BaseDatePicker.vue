@@ -38,7 +38,6 @@
           <IconCalendar />
         </DatePickerTrigger>
       </DatePickerField>
-      <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
       <DatePickerContent
         align="start"
         class="base-date-picker-content"

@@ -50,6 +50,7 @@
             :loading="pending"
             type="submit"
             variant="primary">
+            <IconPlus />
             {{ t('createOrganization') }}
           </BaseButton>
         </div>
@@ -59,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconPlus } from '@tabler/icons-vue'
 import { reactive } from 'vue'
 
 import { useHead } from '#app'

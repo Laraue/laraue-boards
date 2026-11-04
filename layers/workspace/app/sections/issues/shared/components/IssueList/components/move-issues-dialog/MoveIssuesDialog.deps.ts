@@ -4,14 +4,7 @@ import type { SpaceSelectDeps } from '#layers/workspace/app/sections/spaces/shar
 
 export type MoveIssuesDialogDeps = {
   boardSelect: BoardSelectDeps
-  moveIssues: (input: {
-    // Whether issues landing on another board lose their values of attributes it doesn't use.
-    dropUnusedAttributeValues: boolean
-    issueKeys: string[]
-    statusId: string
-  }) => Promise<void>
+  moveIssues: (input: { issueKeys: string[]; statusId: string }) => Promise<void>
   spaceSelect: SpaceSelectDeps
   statusSelect: StatusSelectDeps
-  // The names of the attributes the issues have values for that the status's board doesn't use.
-  unusedAttributes: (input: { issueKeys: string[]; statusId: string }) => Promise<string[]>
 }

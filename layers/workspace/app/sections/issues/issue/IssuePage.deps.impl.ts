@@ -10,7 +10,6 @@ import { toLocalIssueDateTime } from '#layers/workspace/app/sections/issues/shar
 import { updateIssueFormData } from '#layers/workspace/app/sections/issues/shared/api/issueFormData'
 import { mapIssueLinkRelation } from '#layers/workspace/app/sections/issues/shared/api/issueLinks'
 import { mapIssueSource } from '#layers/workspace/app/sections/issues/shared/api/issueSource'
-import { getUnusedAttributesForStatus } from '#layers/workspace/app/sections/issues/shared/api/unusedAttributes'
 import { createAssigneeSelectDeps } from '#layers/workspace/app/sections/issues/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
 import { createIssueDescriptionDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueDescription/IssueDescription.deps.impl'
 import { createSpaceSelectDeps } from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.deps.impl'
@@ -186,11 +185,7 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
     try {
       movedKeys = await request(
         client.POST('/api/issues/status', {
-          body: {
-            dropUnusedAttributeValues: input.dropUnusedAttributeValues ?? false,
-            issueKeys: [input.issueKey],
-            statusId: Number(input.statusId),
-          },
+          body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
         }),
       )
     } catch (error) {
@@ -214,9 +209,6 @@ export const createIssuePageDeps = (client: ApiClient): IssuePageDeps => ({
 
   spaceSelect: createSpaceSelectDeps(client),
   statusSelect: createStatusSelectDeps(client),
-
-  unusedAttributes: ({ issueKey, statusId }) =>
-    getUnusedAttributesForStatus(client, { issueKeys: [issueKey], statusId }),
 
   view: async ({ issueKey, signal }) => {
     const issue = await request(

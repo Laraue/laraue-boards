@@ -1,4 +1,3 @@
-<!-- An attribute in the list being reordered: a drag handle, its icon and name. -->
 <template>
   <div
     ref="element"

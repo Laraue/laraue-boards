@@ -39,7 +39,10 @@ const { locale, t } = useI18n({
 </script>
 
 <style scoped>
+/* 24px target that doesn't stretch the heading's line. */
 .docs-help-link {
+  --icon-btn-size: var(--icon-btn-size-small);
   color: var(--color-muted);
+  margin-block: calc(var(--space-1) * -1);
 }
 </style>

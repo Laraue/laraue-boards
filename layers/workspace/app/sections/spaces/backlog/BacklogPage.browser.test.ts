@@ -25,6 +25,7 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
   issueKey,
   status: null,
   statusColor: '#333',
+  time: '2026-01-01T10:00:00Z',
   title,
 })
 
@@ -51,7 +52,6 @@ const createDeps = (overrides: Partial<BacklogPageDeps> = {}): BacklogPageDeps =
       statusSelect: {
         loadStatuses: vi.fn<StatusSelectDeps['loadStatuses']>(async () => []),
       },
-      unusedAttributes: vi.fn<MoveIssuesDialogDeps['unusedAttributes']>(async () => []),
     },
   },
   search: vi.fn<BacklogPageDeps['search']>(async () => ({
@@ -96,6 +96,7 @@ it('loads the current backlog and links to issue creation', async () => {
   })
 
   await expect.element(page.getByText('First issue')).toBeInTheDocument()
+  expect(currentWrapper!.find('.issue-list-row .issue-status').exists()).toBe(false)
   await expect
     .element(page.getByRole('link', { name: 'Add issue' }))
     .toHaveAttribute('href', '/organizations/acme-ab12/spaces/product/backlog/issues/new')
