@@ -112,6 +112,11 @@ const activeId = ref<string>()
 }
 
 /* The accessible name includes the number of active filters. */
+.filter-trigger[data-active] {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
 .filter-trigger[data-active]::after {
   background: var(--color-accent);
   border-radius: var(--radius-full);
