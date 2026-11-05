@@ -59,7 +59,7 @@ The **Title** is optional. Leave it empty and an AI writes a short title from th
 
 New issues from the bot land on the default board so saving stays effortless — you never have to pick a board before sending a message, unless the chat is [linked](/documentation/integrations/telegram-linking) to a different destination. If you want an issue somewhere else, open the **Backlog**, find the issue in the list, and change its board directly from the issue's detail view.
 
-If the new board doesn't use some of the issue's attributes, you're asked whether to keep or drop those values — see [Custom attributes](/documentation/features/attributes#moving-issues).
+If the new board doesn't use some of the issue's attributes, their values stay on the issue — see [Custom attributes](/documentation/features/attributes#moving-issues).
 
 Moving an issue between boards **within the same space** keeps its issue key. Moving it to a **different space** gives it a new key, since keys are numbered per space — any link or quoted key already shared for that issue will point at the old one and stop working.
 
