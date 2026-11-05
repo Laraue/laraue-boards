@@ -422,7 +422,7 @@ const save = async (field: 'assignee' | 'status', value: string) => {
 }
 
 .issue-status:not(:has(.base-select)) {
-  padding-inline: var(--space-3);
+  padding-inline: calc(var(--space-2) + 1px);
 }
 
 .issue-person {
@@ -485,12 +485,16 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   color: var(--color-muted);
   display: inline-flex;
   flex: none;
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-body);
   gap: var(--space-1);
   margin-left: auto;
   position: relative;
   white-space: nowrap;
   z-index: 1;
+}
+
+.issue-created :deep(.issue-source-icon) {
+  font-size: var(--icon-size);
 }
 
 .issue-location {
@@ -547,8 +551,13 @@ a.issue-location-board:hover {
     column-gap: var(--space-2);
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
+    grid-template-rows: auto;
     padding: var(--space-2);
     row-gap: var(--space-1);
+  }
+
+  .issue-list-row:has(.issue-attributes) {
+    grid-template-rows: auto auto;
   }
 
   .issue-list-row:hover {
@@ -582,7 +591,7 @@ a.issue-location-board:hover {
 
   .issue-location {
     grid-column: location;
-    grid-row: 1;
+    grid-row: 1 / -1;
   }
 
   .issue-metadata,
@@ -592,22 +601,23 @@ a.issue-location-board:hover {
 
   .issue-created {
     grid-column: time;
-    grid-row: 1;
+    grid-row: 1 / -1;
   }
 
   .issue-status {
     grid-column: status;
-    grid-row: 1;
+    grid-row: 1 / -1;
     max-width: 100%;
   }
 
   .issue-person,
-  .row-actions {
-    grid-row: 1;
+  .row-actions,
+  .row-select-target {
+    grid-row: 1 / -1;
   }
 
   .issue-attributes {
-    grid-column: key / -1;
+    grid-column: key / span 2;
   }
 
   .row-error {
