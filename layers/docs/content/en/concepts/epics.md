@@ -62,7 +62,7 @@ Each board has controls in the header for sorting and filtering:
 
 **Filter by attribute** — filter chips for the custom attributes the board uses appear in the filter bar. Tap a chip to show only issues with that attribute value. Which attributes a board uses is set in its settings — see [Custom attributes](/documentation/features/attributes#attributes-in-a-space-or-board).
 
-![Filter chips for custom attributes in the board's filter bar](https://laraue.com/static/images/blog/docs/laraue-boards/filters-bar.jpg)
+![The board filters, with the Type attribute open and one of its values selected](https://laraue.com/static/images/blog/docs/laraue-boards/filters-bar.jpg)
 
 **Board search** — tap the search icon in the board header. Type any text and the board instantly shows only matching cards across all columns. The search clears when you navigate away.
 

@@ -85,7 +85,7 @@ Comments support image attachments — paste an image directly with **Ctrl+V**, 
 
 The History tab on an issue shows what changed, when, and who changed it — as a plain, readable log, not raw data. A status change reads as **Status: New → In progress**, a move to a different board as **Board: Sprint 2 (Active) → Sprint 3**, and a new attachment as **Added attachment: image.png**. It covers changes to the issue's title, description, status, board, comments, and attachments.
 
-![The History tab on an issue, showing a status change, a board move, and an added attachment](https://laraue.com/static/images/blog/docs/laraue-boards/issue-history.jpg)
+![The History tab on an issue, showing a status change, added comments, an attribute change, and a description change](https://laraue.com/static/images/blog/docs/laraue-boards/issue-history.jpg)
 
 ## Related pages
 

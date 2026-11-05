@@ -10,7 +10,7 @@ updatedAt: 2026-10-28
 ---
 The **History** tab on an issue shows what changed, when, and who changed it — as a plain, readable log, not raw data.
 
-![The History tab on an issue, showing an attribute change, a comment diff, a content diff, an added attachment, and a board and status change grouped together](https://laraue.com/static/images/blog/docs/laraue-boards/issue-history.jpg)
+![The History tab on an issue, showing a status change, added comments, an attribute change, a description change, and the issue being created](https://laraue.com/static/images/blog/docs/laraue-boards/issue-history.jpg)
 
 ## What gets logged
 
