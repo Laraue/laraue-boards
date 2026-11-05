@@ -4,10 +4,13 @@ import { ApiError, request } from '#infrastructure/api/request'
 import { createIssuePageDeps } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps.impl'
 import { mapAgentRunState } from '#layers/workspace/app/sections/issues/shared/api/agentRun'
 import {
+  mapAttributeLabels,
   mapIssueFilters,
   mapRawIssueFilters,
 } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
 import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/api/issueSource'
+import { saveIssueAssignee } from '#layers/workspace/app/sections/issues/shared/api/saveIssueAssignee'
+import { createAssigneeSelectDeps } from '#layers/workspace/app/sections/issues/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
@@ -19,8 +22,10 @@ const mapIssueListItem = (issue: Schemas['IssueListDto']) => ({
   ...(issue.latestAgentRun ? { agentRunState: mapAgentRunState(issue.latestAgentRun.state) } : {}),
   ...issueSourceField(issue.createdVia, issue.createdByApiKeyName),
   assigneeColor: issue.assigneeColor,
+  assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
   assigneeName: issue.assignee,
+  attributes: mapAttributeLabels(issue.attributes),
   blocked: issue.isBlocked,
   issueKey: issue.key,
   time: issue.time,
@@ -44,6 +49,10 @@ export const createBoardPageDeps = (
   client: ApiClient,
   readCatalog: ReadOrganizationCatalog,
 ): BoardPageDeps => ({
+  issueCard: {
+    assigneeSelect: createAssigneeSelectDeps(client),
+    saveAssignee: (input) => saveIssueAssignee(client, input),
+  },
   issueDialog: createIssuePageDeps(client),
 
   loadMoreBoardIssues: async ({ filters, offset, search, statusId, take }) => {
@@ -123,7 +132,7 @@ export const createBoardPageDeps = (
       ),
     ),
 
-  // The attributes and the space's name and color come from the layout.
+  // Filters offer every attribute of the organization: kept values of unused ones still match.
   view: async ({ attributeQuery, boardId, search, signal, spaceKey }) => {
     const { attributes, spaces } = readCatalog()
     const [board, columnIssues] = await Promise.all([

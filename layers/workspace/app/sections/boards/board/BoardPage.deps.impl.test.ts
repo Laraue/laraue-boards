@@ -34,7 +34,9 @@ test('maps board columns in status order with their issues', async () => {
             {
               assignee: 'Ada',
               assigneeColor: '#444',
+              assigneeId: 'ada',
               assigneeInitial: null,
+              attributes: [],
               content: null,
               epicId: 7,
               id: 1,
@@ -79,8 +81,10 @@ test('maps board columns in status order with their issues', async () => {
           issues: [
             {
               assigneeColor: '#444',
+              assigneeId: 'ada',
               assigneeInitial: '?',
               assigneeName: 'Ada',
+              attributes: [],
               blocked: true,
               issueKey: 'ISS-1',
               time: '2026-01-01T00:00:00Z',
@@ -122,6 +126,7 @@ test('maps the latest agent run and the source of a card', async () => {
                 assignee: 'Ada',
                 assigneeColor: '#444',
                 assigneeInitial: 'A',
+                attributes: [],
                 content: null,
                 createdByApiKeyName: 'Claude Code agent (dev-laptop)',
                 createdVia: 'Agent',

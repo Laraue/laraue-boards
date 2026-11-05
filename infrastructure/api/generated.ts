@@ -414,6 +414,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/organizations/attributes/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReorderAttributesRequest"];
+                    "text/json": components["schemas"]["ReorderAttributesRequest"];
+                    "application/*+json": components["schemas"]["ReorderAttributesRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/admin/organizations/billing/transactions": {
         parameters: {
             query?: never;
@@ -1366,6 +1405,84 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/epics/{id}/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AttributeDto"][];
+                        "application/json": components["schemas"]["AttributeDto"][];
+                        "text/json": components["schemas"]["AttributeDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/epics/{id}/attribute-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AttributeSettingsViewDto"];
+                        "application/json": components["schemas"]["AttributeSettingsViewDto"];
+                        "text/json": components["schemas"]["AttributeSettingsViewDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/feedback": {
         parameters: {
             query?: never;
@@ -2025,6 +2142,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/issues/status/unused-attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GetUnusedAttributesForStatusRequest"];
+                    "text/json": components["schemas"]["GetUnusedAttributesForStatusRequest"];
+                    "application/*+json": components["schemas"]["GetUnusedAttributesForStatusRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UnusedAttributeDto"][];
+                        "application/json": components["schemas"]["UnusedAttributeDto"][];
+                        "text/json": components["schemas"]["UnusedAttributeDto"][];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/issues/status": {
         parameters: {
             query?: never;
@@ -2389,6 +2549,92 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/movement/move-space-epics/unused-attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MoveSpaceEpicsRequest"];
+                    "text/json": components["schemas"]["MoveSpaceEpicsRequest"];
+                    "application/*+json": components["schemas"]["MoveSpaceEpicsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UnusedAttributeDto"][];
+                        "application/json": components["schemas"]["UnusedAttributeDto"][];
+                        "text/json": components["schemas"]["UnusedAttributeDto"][];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/movement/move-epic/unused-attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MoveEpicRequest"];
+                    "text/json": components["schemas"]["MoveEpicRequest"];
+                    "application/*+json": components["schemas"]["MoveEpicRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["UnusedAttributeDto"][];
+                        "application/json": components["schemas"]["UnusedAttributeDto"][];
+                        "text/json": components["schemas"]["UnusedAttributeDto"][];
+                    };
                 };
             };
         };
@@ -3114,6 +3360,84 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/spaces/{key}/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AttributeDto"][];
+                        "application/json": components["schemas"]["AttributeDto"][];
+                        "text/json": components["schemas"]["AttributeDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/spaces/{key}/attribute-settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    key: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["AttributeSettingsViewDto"];
+                        "application/json": components["schemas"]["AttributeSettingsViewDto"];
+                        "text/json": components["schemas"]["AttributeSettingsViewDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/statuses": {
         parameters: {
             query?: never;
@@ -3716,6 +4040,8 @@ export interface components {
             name: string;
             color: string;
             type: components["schemas"]["AttributeType"];
+            isEnabled: boolean;
+            showOnCard: boolean;
             listValues: components["schemas"]["AttributeListValueDto"][];
         };
         AttributeFilterValue: components["schemas"]["AttributeFilterValueStringAttributeFilterValue"] | components["schemas"]["AttributeFilterValueEnumAttributeFilterValue"] | components["schemas"]["AttributeFilterValueIntegerAttributeFilterValue"] | components["schemas"]["AttributeFilterValueDecimalAttributeFilterValue"] | components["schemas"]["AttributeFilterValueDateAttributeFilterValue"] | components["schemas"]["AttributeFilterValueDateTimeAttributeFilterValue"];
@@ -3765,6 +4091,36 @@ export interface components {
             /** Format: int64 */
             id: number;
             name: string;
+        };
+        AttributeSettingDto: {
+            /** Format: int64 */
+            attributeId: number;
+            name: string;
+            color: string;
+            type: components["schemas"]["AttributeType"];
+            isEnabled: boolean;
+            showOnCard: boolean;
+        };
+        AttributeSettingInput: {
+            /** Format: int64 */
+            attributeId: number;
+            isEnabled: boolean;
+            showOnCard: boolean;
+        };
+        AttributeSettingsDto: {
+            source: components["schemas"]["AttributeSettingsSource"];
+            attributes: components["schemas"]["AttributeSettingDto"][];
+        };
+        /** @enum {unknown} */
+        AttributeSettingsSource: "Organization" | "Space" | "Epic";
+        AttributeSettingsUpdate: {
+            overridden: boolean;
+            settings?: components["schemas"]["AttributeSettingInput"][];
+        };
+        AttributeSettingsViewDto: {
+            source: components["schemas"]["AttributeSettingsSource"];
+            attributes: components["schemas"]["AttributeSettingDto"][];
+            inherited: components["schemas"]["AttributeSettingsDto"];
         };
         /** @enum {unknown} */
         AttributeType: "Text" | "List" | "Integer" | "Decimal" | "Date" | "DateTime";
@@ -3951,6 +4307,8 @@ export interface components {
             color: string;
             type: components["schemas"]["AttributeType"];
             listValues?: null | components["schemas"]["NewAttributeListValueDto"][];
+            isEnabled?: boolean;
+            showOnCard?: boolean;
         };
         CreateCheckoutRequest: {
             kind: components["schemas"]["BillingItemKind"];
@@ -4010,6 +4368,7 @@ export interface components {
             value: string;
             color: string;
             listValues: components["schemas"]["IssueAttributeListValueDto"][];
+            isInactive: boolean;
         };
         DirectSpaceAccessLevel: {
             canRead?: boolean;
@@ -4050,6 +4409,7 @@ export interface components {
             canUpdate: boolean;
             canDelete: boolean;
             status: components["schemas"]["EpicStatus"];
+            isDefault: boolean;
         };
         EpicListDto: {
             /** Format: int64 */
@@ -4147,6 +4507,12 @@ export interface components {
             /** Format: date-time */
             dateTo?: null | string;
             pagination: components["schemas"]["PaginationData"];
+        };
+        GetUnusedAttributesForStatusRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            issueKeys: string[];
+            /** Format: int64 */
+            statusId: number;
         };
         GlobalAccessLevels: {
             canRead?: boolean;
@@ -4327,6 +4693,10 @@ export interface components {
         /** @enum {unknown} */
         IssueLinkRelation: "Blocks" | "BlockedBy" | "RelatesTo" | "Duplicates" | "DuplicatedBy";
         IssueListAttributeDto: {
+            /** Format: int64 */
+            attributeId: number;
+            name: string;
+            type: components["schemas"]["AttributeType"];
             value: string;
             color: string;
         };
@@ -4425,6 +4795,7 @@ export interface components {
             newSpaceKey: string;
             /** Format: int64 */
             newOrganizationId: number;
+            dropUnusedAttributeValues?: boolean;
         };
         MoveSpaceEpicsRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -4432,6 +4803,7 @@ export interface components {
             newSpaceKey: string;
             /** Format: int64 */
             newOrganizationId: number;
+            dropUnusedAttributeValues?: boolean;
         };
         NameAndColor: {
             name: string;
@@ -4540,6 +4912,10 @@ export interface components {
             organizationName?: null | string;
             /** Format: uuid */
             userId?: null | string;
+        };
+        ReorderAttributesRequest: {
+            authData?: components["schemas"]["OrganizationAuthData"];
+            attributeIds: number[];
         };
         SearchEpicStatusesRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -4772,6 +5148,11 @@ export interface components {
         TokenTransactionReason: "TariffGrant" | "DailyGrant" | "Purchase" | "Expiry" | "Spend";
         /** @enum {unknown} */
         TokenTransactionStatus: "Started" | "Canceled" | "Confirmed";
+        UnusedAttributeDto: {
+            /** Format: int64 */
+            id: number;
+            name: string;
+        };
         UpdateAttributeListValueDto: {
             /** Format: int64 */
             id?: null | number;
@@ -4784,6 +5165,15 @@ export interface components {
             name: string;
             color: string;
             listValues: null | components["schemas"]["UpdateAttributeListValueDto"][];
+            isEnabled?: null | boolean;
+            showOnCard?: null | boolean;
+        };
+        UpdateEpicColumn: {
+            /** Format: int64 */
+            id?: null | number;
+            name: string;
+            color?: null | string;
+            category: components["schemas"]["StatusCategory"];
         };
         UpdateEpicRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -4791,6 +5181,8 @@ export interface components {
             id?: number;
             name: string;
             color: string;
+            columns?: null | components["schemas"]["UpdateEpicColumn"][];
+            attributeSettings?: null | components["schemas"]["AttributeSettingsUpdate"];
         };
         UpdateIssuesStatusRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -4798,6 +5190,7 @@ export interface components {
             /** Format: int64 */
             statusId: number;
             comment?: null | string;
+            dropUnusedAttributeValues?: boolean;
         };
         UpdateMemberProfileRequest: {
             authData?: components["schemas"]["OrganizationAuthData"];
@@ -4817,6 +5210,7 @@ export interface components {
             newKey: string;
             description?: null | string;
             links?: null | components["schemas"]["SpaceLinkRequest"][];
+            attributeSettings?: null | components["schemas"]["AttributeSettingsUpdate"];
         };
         UserDetails: {
             /** Format: uuid */

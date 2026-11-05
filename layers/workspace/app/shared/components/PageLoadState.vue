@@ -16,6 +16,7 @@
       </span>
       <p class="muted">{{ errorText }}</p>
       <BaseButton @click="props.onRetry?.()">
+        <IconRefresh />
         {{ retryLabel }}
       </BaseButton>
     </div>
@@ -23,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconAlertTriangle, IconLoader } from '@tabler/icons-vue'
+import { IconAlertTriangle, IconLoader, IconRefresh } from '@tabler/icons-vue'
 import { computed } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

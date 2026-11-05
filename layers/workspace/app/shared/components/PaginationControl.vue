@@ -10,11 +10,11 @@
       @click="$emit('update:page', page - 1)">
       <IconChevronLeft />
     </BaseIconButton>
-    <input
+    <BaseInput
       :aria-label="t('pageNumber')"
       min="1"
+      :model-value="String(page)"
       type="number"
-      :value="page"
       @change="changePage" />
     <BaseIconButton
       :disabled="!hasNextPage"
@@ -30,6 +30,7 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 
 defineProps<{ hasNextPage: boolean; page: number }>()
 const emit = defineEmits<{ 'update:page': [page: number] }>()
@@ -63,7 +64,7 @@ const changePage = (event: Event) =>
   margin-top: var(--space-4);
 }
 
-.pagination input {
+.pagination :deep(.base-input) {
   appearance: textfield;
   background: var(--color-feed);
   font-size: var(--font-size-small);
@@ -73,8 +74,8 @@ const changePage = (event: Event) =>
   width: 64px;
 }
 
-.pagination input::-webkit-inner-spin-button,
-.pagination input::-webkit-outer-spin-button {
+.pagination :deep(.base-input)::-webkit-inner-spin-button,
+.pagination :deep(.base-input)::-webkit-outer-spin-button {
   appearance: none;
   margin: 0;
 }

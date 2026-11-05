@@ -8,7 +8,9 @@ export type Attribute = {
     | { type: 'integer' }
     | { type: 'text' }
   id: string
+  isEnabled: boolean
   name: string
+  showOnCard: boolean
 }
 
 type DraftListValue = { id: null | string; key: number; name: string }
@@ -23,7 +25,9 @@ export type AttributeDraft = {
     | { type: 'integer' }
     | { type: 'text' }
   id: string
+  isEnabled: boolean
   name: string
+  showOnCard: boolean
 }
 
 export type UpdateAttributeInput = {
@@ -36,7 +40,9 @@ export type UpdateAttributeInput = {
     | { type: 'integer' }
     | { type: 'text' }
   id: string
+  isEnabled: boolean
   name: string
+  showOnCard: boolean
 }
 
 export type AttributePageDeps = {

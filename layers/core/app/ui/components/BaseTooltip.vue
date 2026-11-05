@@ -5,20 +5,27 @@
       <TooltipTrigger as-child>
         <slot />
       </TooltipTrigger>
-      <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
-      <!-- Above by default; where there is no room (the header), Reka turns it below. -->
-      <TooltipContent
-        class="base-tooltip"
-        side="top"
-        :side-offset="4">
-        {{ text }}
-      </TooltipContent>
+      <TooltipPortal>
+        <!-- Above by default; where there is no room (the header), Reka turns it below. -->
+        <TooltipContent
+          class="base-tooltip"
+          side="top"
+          :side-offset="4">
+          {{ text }}
+        </TooltipContent>
+      </TooltipPortal>
     </TooltipRoot>
   </TooltipProvider>
 </template>
 
 <script setup lang="ts">
-import { TooltipContent, TooltipProvider, TooltipRoot, TooltipTrigger } from 'reka-ui'
+import {
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+} from 'reka-ui'
 
 defineProps<{ text: string }>()
 </script>
@@ -28,10 +35,12 @@ defineProps<{ text: string }>()
 .base-tooltip {
   background: var(--color-tooltip);
   border-radius: var(--radius-control);
+  box-shadow: var(--shadow-popover);
   color: var(--color-tooltip-text);
   font-size: var(--font-size-small);
   max-width: 240px;
   padding: var(--space-1) var(--space-3);
+  white-space: pre-line;
   z-index: 60;
 }
 </style>

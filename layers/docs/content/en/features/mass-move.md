@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 5
 createdAt: 2026-05-16
-updatedAt: 2026-10-28
+updatedAt: 2026-11-03
 ---
 **Admin → Data movement** in the sidebar lets you move a space or a board out of the current organization. Moving something takes everything inside it along — a space brings all its boards and their issues; a board brings all its issues.
 
@@ -24,6 +24,12 @@ Under **Boards**, boards are grouped by the space they currently belong to. Chec
 
 ![The Move board dialog, with organization and space dropdowns](https://laraue.com/static/images/blog/docs/laraue-boards/move-board.jpg)
 
+## Attribute values
+
+Attributes belong to the organization, so moving a space or a board to **another organization** removes its issues' attribute values, along with the space's or boards' own [attribute settings](/documentation/features/attributes#attributes-in-a-space-or-board).
+
+Moving boards to another space **in the same organization** keeps their issues' values, including values of attributes the new space doesn't use. A board with its own attribute settings keeps them.
+
 ## Who can do this
 
 Moving spaces and boards requires the **Move spaces and boards** administrative permission. See [Permissions management](/documentation/working-in-a-team/permissions).
@@ -33,3 +39,4 @@ Moving spaces and boards requires the **Move spaces and boards** administrative 
 - [Organizations](/documentation/concepts/organizations)
 - [Spaces](/documentation/concepts/spaces)
 - [Epics](/documentation/concepts/epics)
+- [Custom attributes](/documentation/features/attributes)

@@ -17,13 +17,15 @@
       class="history-more"
       size="small"
       @click="load()">
+      <IconRefresh v-if="state.failed" />
+      <IconChevronDown v-else />
       {{ state.failed ? t('tryAgain') : t('loadMore') }}
     </BaseButton>
   </div>
 </template>
 
 <script setup lang="ts">
-import { IconLoader2 } from '@tabler/icons-vue'
+import { IconChevronDown, IconLoader2, IconRefresh } from '@tabler/icons-vue'
 import { onMounted, reactive } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

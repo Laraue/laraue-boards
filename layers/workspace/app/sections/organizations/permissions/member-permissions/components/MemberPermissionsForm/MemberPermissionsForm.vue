@@ -7,15 +7,12 @@
       <p class="muted section-description">{{ t('administrationDescription') }}</p>
       <div class="permission-card">
         <div class="permission-grid">
-          <label
+          <BaseCheckbox
             v-for="permission in ADMIN_PERMISSION_OPTIONS"
             :key="permission.key"
-            class="permission-option">
-            <input
-              v-model="state.draft.admin[permission.key]"
-              type="checkbox" />
-            <span>{{ t(permission.label) }}</span>
-          </label>
+            v-model="state.draft.admin[permission.key]">
+            {{ t(permission.label) }}
+          </BaseCheckbox>
         </div>
       </div>
     </fieldset>
@@ -28,16 +25,13 @@
           <h3>{{ t('boards') }}</h3>
           <div class="read-permission">
             <strong>{{ t('read') }}</strong>
-            <label class="permission-option">
-              <input
-                :aria-label="t('readOrganization')"
-                :checked="state.draft.global.canRead || globalReadInherited"
-                :disabled="globalReadInherited"
-                :title="globalReadInherited ? t('inherited') : undefined"
-                type="checkbox"
-                @change="state.draft.global.canRead = !state.draft.global.canRead" />
-              <span>{{ t('readOrganization') }}</span>
-            </label>
+            <BaseCheckbox
+              :disabled="globalReadInherited"
+              :model-value="state.draft.global.canRead || globalReadInherited"
+              :title="globalReadInherited ? t('inherited') : undefined"
+              @update:model-value="state.draft.global.canRead = !state.draft.global.canRead">
+              {{ t('readOrganization') }}
+            </BaseCheckbox>
           </div>
           <PermissionTable
             :on-toggle="toggleGlobal"
@@ -47,13 +41,11 @@
           <h3>{{ t('retro') }}</h3>
           <div class="read-permission">
             <strong>{{ t('access') }}</strong>
-            <label class="permission-option">
-              <input
-                v-model="state.draft.global.canManageRetros"
-                :aria-label="t('manageRetrosOrganization')"
-                type="checkbox" />
-              <span>{{ t('manageRetros') }}</span>
-            </label>
+            <!-- Named apart from the same switch of every space below. -->
+            <BaseCheckbox v-model="state.draft.global.canManageRetros">
+              <span aria-hidden="true">{{ t('manageRetros') }}</span>
+              <span class="visually-hidden">{{ t('manageRetrosOrganization') }}</span>
+            </BaseCheckbox>
           </div>
         </div>
       </div>
@@ -77,23 +69,21 @@
               <h3>{{ t('boards') }}</h3>
               <div class="read-permission">
                 <strong>{{ t('read') }}</strong>
-                <label class="permission-option">
-                  <input
-                    :aria-label="`${t('read')} ${space.name}`"
-                    :checked="
-                      state.draft.direct[space.id]!.canRead ||
-                      directPermissionTables[space.id]!.readInherited
-                    "
-                    :disabled="directPermissionTables[space.id]!.readInherited"
-                    :title="
-                      directPermissionTables[space.id]!.readInherited ? t('inherited') : undefined
-                    "
-                    type="checkbox"
-                    @change="
-                      state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
-                    " />
-                  <span>{{ t('readSpace') }}</span>
-                </label>
+                <BaseCheckbox
+                  :disabled="directPermissionTables[space.id]!.readInherited"
+                  :model-value="
+                    state.draft.direct[space.id]!.canRead ||
+                    directPermissionTables[space.id]!.readInherited
+                  "
+                  :title="
+                    directPermissionTables[space.id]!.readInherited ? t('inherited') : undefined
+                  "
+                  @update:model-value="
+                    state.draft.direct[space.id]!.canRead = !state.draft.direct[space.id]!.canRead
+                  ">
+                  <span aria-hidden="true">{{ t('readSpace') }}</span>
+                  <span class="visually-hidden">{{ `${t('read')} ${space.name}` }}</span>
+                </BaseCheckbox>
               </div>
               <PermissionTable
                 :label-suffix="` ${t('in')} ${space.name}`"
@@ -104,22 +94,22 @@
               <h3>{{ t('retro') }}</h3>
               <div class="read-permission">
                 <strong>{{ t('access') }}</strong>
-                <label class="permission-option">
-                  <input
-                    :aria-label="`${t('manageRetros')} ${t('in')} ${space.name}`"
-                    :checked="
-                      state.draft.direct[space.id]!.canManageRetros ||
-                      state.draft.global.canManageRetros
-                    "
-                    :disabled="state.draft.global.canManageRetros"
-                    :title="state.draft.global.canManageRetros ? t('inherited') : undefined"
-                    type="checkbox"
-                    @change="
-                      state.draft.direct[space.id]!.canManageRetros =
-                        !state.draft.direct[space.id]!.canManageRetros
-                    " />
-                  <span>{{ t('manageRetros') }}</span>
-                </label>
+                <BaseCheckbox
+                  :disabled="state.draft.global.canManageRetros"
+                  :model-value="
+                    state.draft.direct[space.id]!.canManageRetros ||
+                    state.draft.global.canManageRetros
+                  "
+                  :title="state.draft.global.canManageRetros ? t('inherited') : undefined"
+                  @update:model-value="
+                    state.draft.direct[space.id]!.canManageRetros =
+                      !state.draft.direct[space.id]!.canManageRetros
+                  ">
+                  <span aria-hidden="true">{{ t('manageRetros') }}</span>
+                  <span class="visually-hidden">
+                    {{ `${t('manageRetros')} ${t('in')} ${space.name}` }}
+                  </span>
+                </BaseCheckbox>
               </div>
             </div>
           </div>
@@ -144,6 +134,7 @@
         :disabled="submitting"
         type="submit"
         variant="primary">
+        <IconCheck />
         {{ submitting ? t('saving') : t('savePermissions') }}
       </BaseButton>
     </div>
@@ -151,11 +142,12 @@
 </template>
 
 <script setup lang="ts">
-import { IconChevronRight } from '@tabler/icons-vue'
+import { IconCheck, IconChevronRight } from '@tabler/icons-vue'
 import { computed, reactive, toRaw, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import BaseCheckbox from '#layers/core/app/ui/components/BaseCheckbox.vue'
 import type {
   DirectSpacePermissions,
   GlobalPermissions,
@@ -310,17 +302,9 @@ legend {
 }
 
 .permission-grid {
+  column-gap: var(--space-3);
   display: grid;
-  gap: var(--space-3);
   grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.permission-option {
-  align-items: center;
-  display: flex;
-  font-weight: 400;
-  gap: var(--space-2);
-  margin: 0;
 }
 
 /* A row like the table's under it: its name, then the switch. */

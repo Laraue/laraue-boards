@@ -29,7 +29,7 @@ withDefaults(
     // A longer hint than the accessible name, e.g. with a shortcut.
     tooltip?: string
     type?: 'button' | 'submit'
-    variant?: 'danger' | 'ghost' | 'primary'
+    variant?: 'danger' | 'ghost' | 'neutral' | 'primary'
   }>(),
   {
     disabled: false,

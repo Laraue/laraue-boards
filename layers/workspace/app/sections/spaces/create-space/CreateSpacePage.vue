@@ -48,6 +48,7 @@
             :loading="pending"
             type="submit"
             variant="primary">
+            <IconPlus />
             {{ t('createSpace') }}
           </BaseButton>
         </div>
@@ -57,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconPlus } from '@tabler/icons-vue'
 import { reactive } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

@@ -6,12 +6,15 @@
     <BaseButton
       variant="primary"
       @click="onContinue">
+      <IconArrowRight />
       {{ t('continue') }}
     </BaseButton>
   </section>
 </template>
 
 <script setup lang="ts">
+import { IconArrowRight } from '@tabler/icons-vue'
+
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseEmptyState from '#layers/core/app/ui/components/BaseEmptyState.vue'

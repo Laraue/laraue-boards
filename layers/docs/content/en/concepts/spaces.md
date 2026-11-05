@@ -53,7 +53,7 @@ They're also context for AI agents: [Claude over MCP](/documentation/integration
 
 ## Editing and deleting a space
 
-Open the space, then its settings, to edit its name, key, color, description and links — all saved together with **Save changes** — or to delete it.
+Open the space, then its settings, to edit its name, key, color, description and links — all saved together with **Save** at the top of the page — or to delete it.
 
 ![The Edit space screen, with Name, Key, and Color fields, and Save changes and Delete space buttons](https://laraue.com/static/images/blog/docs/laraue-boards/edit-space.jpg)
 

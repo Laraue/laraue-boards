@@ -84,6 +84,7 @@
               <BaseButton
                 :disabled="busy"
                 @click="deny">
+                <IconX />
                 {{ t('deny') }}
               </BaseButton>
             </div>
@@ -95,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconLoader, IconTerminal2 } from '@tabler/icons-vue'
+import { IconLoader, IconTerminal2, IconX } from '@tabler/icons-vue'
 import { computed, reactive, watch } from 'vue'
 
 import { useHead } from '#app'

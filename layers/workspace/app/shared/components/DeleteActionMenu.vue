@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu align="end">
+  <BaseMenu side="left">
     <template #trigger>
       <BaseIconButton :label="t('actions')">
         <IconDots />

@@ -25,11 +25,20 @@ const mapType = (type: components['schemas']['AttributeType']): AttributeListIte
 }
 
 export const createAttributesPageDeps = (client: ApiClient): AttributesPageDeps => ({
+  reorder: async ({ attributeIds }) => {
+    await request(
+      client.POST('/api/admin/organizations/attributes/reorder', {
+        body: { attributeIds: attributeIds.map(Number) },
+      }),
+    )
+  },
+
   view: async ({ signal }) => {
     const attributes = await request(client.GET('/api/organizations/attributes', { signal }))
     return attributes.map((attribute) => ({
       color: attribute.color,
       id: String(attribute.id),
+      isEnabled: attribute.isEnabled,
       name: attribute.name,
       type: mapType(attribute.type),
     }))

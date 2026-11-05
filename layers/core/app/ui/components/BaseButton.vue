@@ -112,7 +112,7 @@ const classes = computed(() => [
   height: var(--control-height);
   justify-content: center;
   max-width: 100%;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-2);
   text-decoration: none;
   transition: border-color var(--duration-fast) var(--ease-standard);
   white-space: nowrap;

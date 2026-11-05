@@ -28,10 +28,10 @@
                   <p class="muted">{{ t('inviteDescription') }}</p>
                 </div>
                 <div class="invitation-link">
-                  <input
+                  <BaseInput
                     :aria-label="t('invitationLink')"
+                    :model-value="invitationUrl"
                     readonly
-                    :value="invitationUrl"
                     @focus="($event.target as HTMLInputElement).select()" />
                   <BaseIconButton
                     :label="state.copied ? t('copied') : t('copyLink')"
@@ -94,6 +94,7 @@ import BaseAvatar from '#layers/core/app/ui/components/BaseAvatar.vue'
 import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseList from '#layers/core/app/ui/components/BaseList.vue'
 import BaseListRow from '#layers/core/app/ui/components/BaseListRow.vue'
 import BasePopover from '#layers/core/app/ui/components/BasePopover.vue'

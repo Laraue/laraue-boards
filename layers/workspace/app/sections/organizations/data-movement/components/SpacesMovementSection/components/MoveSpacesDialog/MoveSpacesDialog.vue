@@ -31,6 +31,7 @@
         :loading="moving"
         type="submit"
         variant="primary">
+        <IconArrowsLeftRight />
         {{ moving ? t('moving') : t('move') }}
       </BaseButton>
     </template>
@@ -38,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { IconArrowsLeftRight } from '@tabler/icons-vue'
 import { reactive, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'

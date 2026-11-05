@@ -18,7 +18,7 @@
       <BaseField
         v-slot="{ id }"
         :label="t('name')">
-        <input
+        <BaseInput
           :id="id"
           v-model="name"
           autocomplete="off"
@@ -38,6 +38,7 @@
           :loading="creating"
           type="submit"
           variant="primary">
+          <IconPlus />
           {{ t('create') }}
         </BaseButton>
       </template>
@@ -103,6 +104,7 @@
                 v-else
                 :disabled="busy"
                 @click="revokeKey(key.id)">
+                <IconKeyOff />
                 {{ t('revoke') }}
               </BaseButton>
             </template>
@@ -123,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconCheck, IconCopy, IconPlus } from '@tabler/icons-vue'
+import { IconCheck, IconCopy, IconKeyOff, IconPlus } from '@tabler/icons-vue'
 import { computed, ref, useTemplateRef } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
@@ -133,6 +135,7 @@ import BaseDialog from '#layers/core/app/ui/components/BaseDialog.vue'
 import BaseEmptyState from '#layers/core/app/ui/components/BaseEmptyState.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseList from '#layers/core/app/ui/components/BaseList.vue'
 import BaseListRow from '#layers/core/app/ui/components/BaseListRow.vue'
 import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'

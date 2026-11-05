@@ -14,7 +14,7 @@
         <BaseField
           id="create-attribute-name"
           :label="t('name')">
-          <input
+          <BaseInput
             id="create-attribute-name"
             v-model="draft.name"
             maxlength="64"
@@ -54,7 +54,7 @@
               v-for="(option, index) in draft.data.listValues"
               :key="option.key"
               class="attribute-option">
-              <input
+              <BaseInput
                 v-model="option.name"
                 :aria-label="`${t('option')} ${index + 1}`"
                 maxlength="64"
@@ -87,6 +87,7 @@
           :disabled="pending"
           type="submit"
           variant="primary">
+          <IconPlus />
           {{ pending ? t('creating') : t('createAttribute') }}
         </BaseButton>
       </div>
@@ -104,6 +105,7 @@ import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
 import BaseSelect from '#layers/core/app/ui/components/BaseSelect.vue'
 import type {
@@ -239,9 +241,15 @@ const submit = async () => {
   gap: var(--space-5);
 }
 
+.attribute-editor {
+  display: grid;
+  gap: var(--space-5);
+}
+
 .attribute-editor fieldset {
   border: 0;
-  margin: var(--space-5) 0 0;
+  margin: 0;
+  min-width: 0;
   padding: 0;
 }
 

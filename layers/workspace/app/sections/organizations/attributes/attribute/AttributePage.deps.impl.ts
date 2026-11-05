@@ -6,7 +6,13 @@ import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 import type { Attribute, AttributePageDeps } from './AttributePage.deps'
 
 const mapAttribute = (value: components['schemas']['AttributeDto']): Attribute => {
-  const base = { color: value.color, id: String(value.id), name: value.name }
+  const base = {
+    color: value.color,
+    id: String(value.id),
+    isEnabled: value.isEnabled,
+    name: value.name,
+    showOnCard: value.showOnCard,
+  }
   switch (value.type) {
     case 'Text':
       return { ...base, data: { type: 'text' } }
@@ -43,12 +49,13 @@ export const createAttributePageDeps = (client: ApiClient): AttributePageDeps =>
     )
   },
 
-  update: async ({ color, data, id, name }) => {
+  update: async ({ color, data, id, isEnabled, name, showOnCard }) => {
     await request(
       client.PUT('/api/admin/organizations/attributes/{id}', {
         body: {
           color,
           id: Number(id),
+          isEnabled,
           listValues:
             data.type === 'list'
               ? data.listValues.map((option) => ({
@@ -57,6 +64,7 @@ export const createAttributePageDeps = (client: ApiClient): AttributePageDeps =>
                 }))
               : null,
           name,
+          showOnCard,
         },
         params: { path: { id: Number(id) } },
       }),

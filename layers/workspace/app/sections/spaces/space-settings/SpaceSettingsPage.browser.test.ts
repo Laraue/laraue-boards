@@ -12,6 +12,14 @@ import type { SpaceSettingsPageData, SpaceSettingsPageDeps } from './SpaceSettin
 import SpaceSettingsPage from './SpaceSettingsPage.vue'
 
 const pageData: SpaceSettingsPageData = {
+  attributeSettings: {
+    attributes: [{ color: '#555', id: '5', isEnabled: true, name: 'Type', showOnCard: true }],
+    inherited: {
+      attributes: [{ color: '#555', id: '5', isEnabled: true, name: 'Type', showOnCard: true }],
+      source: 'organization',
+    },
+    source: 'organization',
+  },
   canDelete: true,
   canUpdate: true,
   color: '#4774d4',
@@ -86,9 +94,10 @@ it('saves the settings, description and links with one button and reports the tr
   await page.getByRole('button', { name: 'Add link' }).click()
   await page.getByLabelText('URL').last().fill('https://github.com/acme/web')
   await page.getByLabelText('What it is').last().fill('Web app')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(save).toHaveBeenCalledWith({
+    attributeSettings: null,
     color: '#4774d4',
     description: '',
     links: [
@@ -108,7 +117,7 @@ it('saves a removed link and ignores an empty new row', async () => {
   await mount(createDeps({ save }))
   await page.getByRole('button', { name: 'Remove' }).click()
   await page.getByRole('button', { name: 'Add link' }).click()
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(save).toHaveBeenCalledWith(expect.objectContaining({ links: [] }))
 })
@@ -132,7 +141,7 @@ it('shows a validation message and stays on the page when saving fails', async (
   const onUpdated = vi.fn<(spaceKey: string) => void>()
 
   await mount(createDeps({ save }), vi.fn<() => void>(), onUpdated)
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   await expect.element(page.getByText('Key is already taken.')).toBeInTheDocument()
   expect(onUpdated).not.toHaveBeenCalled()
@@ -150,7 +159,9 @@ it('hides unavailable settings actions', async () => {
   await expect.element(page.getByLabelText('Name')).toBeDisabled()
   await expect.element(page.getByLabelText('URL')).toBeDisabled()
   await expect.element(page.getByRole('button', { name: 'Add link' })).not.toBeInTheDocument()
-  await expect.element(page.getByRole('button', { name: 'Save changes' })).not.toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { exact: true, name: 'Save' }))
+    .not.toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Delete space' })).not.toBeInTheDocument()
 })
 
@@ -164,4 +175,22 @@ it('reloads settings when the failed request is retried', async () => {
   await page.getByRole('button', { name: 'Try again' }).click()
 
   await expect.element(page.getByLabelText('Name')).toHaveValue('Product')
+})
+
+it('saves own attribute settings of the space with the rest of its settings', async () => {
+  const save = vi.fn<SpaceSettingsPageDeps['save']>(async () => {})
+
+  await mount(createDeps({ save }), vi.fn<() => void>(), vi.fn<(spaceKey: string) => void>())
+  await page.getByRole('button', { name: 'Override' }).click()
+  await page.getByRole('checkbox', { name: 'Shown on cards' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
+
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({
+      attributeSettings: {
+        overridden: true,
+        settings: [{ id: '5', isEnabled: true, showOnCard: false }],
+      },
+    }),
+  )
 })

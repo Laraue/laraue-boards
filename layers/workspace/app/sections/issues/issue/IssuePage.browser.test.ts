@@ -149,6 +149,83 @@ it('shows the loaded issue', async () => {
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
 })
 
+it('folds kept values of attributes the board does not use, to read or clear', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssuePageDeps['view']>(async () => ({
+        ...issue,
+        attributes: [
+          {
+            color: '#222',
+            id: '3',
+            inactive: false,
+            name: 'Priority',
+            type: 'text',
+            value: 'High',
+          },
+          { color: '#333', id: '4', inactive: true, name: 'Client', type: 'text', value: 'Acme' },
+        ],
+      })),
+    }),
+  )
+
+  await expect.element(page.getByLabelText('Priority')).toHaveValue('High')
+  await expect.element(page.getByText('Acme')).not.toBeInTheDocument()
+
+  await page.getByText('Not available on this board').click()
+  await expect.element(page.getByText('Acme')).toBeVisible()
+  await page.getByRole('button', { name: 'Clear Client' }).click()
+
+  await expect.element(page.getByText('Not available on this board')).not.toBeInTheDocument()
+})
+
+const pickBoard = async (name: string) => {
+  await page.getByRole('combobox', { exact: true, name: 'Board' }).click()
+  await page.getByRole('option', { exact: true, name }).click()
+}
+
+it('hides the status of a backlog issue until another board is picked', async () => {
+  const backlogIssue: IssuePageViewModel = {
+    ...issue,
+    boardId: '5',
+    boardIsBacklog: true,
+    boardLabel: 'Backlog',
+    statusId: '50',
+    statusLabel: '',
+  }
+  const saveIssue = vi.fn<IssuePageDeps['saveIssue']>(() => new Promise(() => {}))
+  await mount(
+    createDeps({
+      boardSelect: {
+        loadBoards: vi.fn<IssuePageDeps['boardSelect']['loadBoards']>(async () => [
+          { isBacklog: true, label: 'Backlog', value: '5' },
+          { label: 'Sprint board', value: '12' },
+        ]),
+      },
+      saveIssue,
+      view: vi.fn<IssuePageDeps['view']>(async () => backlogIssue),
+    }),
+  )
+  const status = page.getByRole('combobox', { exact: true, name: 'Status' })
+
+  await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
+  await expect.element(status).not.toBeInTheDocument()
+
+  await pickBoard('Sprint board')
+  await expect.element(status).toBeVisible()
+  await expect.element(status).toHaveTextContent('Select status')
+
+  await pickBoard('Backlog')
+  await expect.element(status).not.toBeInTheDocument()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
+
+  await vi.waitFor(() =>
+    expect(saveIssue).toHaveBeenCalledWith(
+      expect.objectContaining({ boardId: '5', statusId: '50' }),
+    ),
+  )
+})
+
 it('refreshes the issue and its mounted comments through the page callback', async () => {
   const deps = createDeps()
   await mount(deps)
@@ -368,7 +445,7 @@ it('stays on the page after the issue is saved', async () => {
 
   await page.getByLabelText('Content').fill('Document the reproduction steps')
   await vi.waitFor(() => expect(onDirtyChange).toHaveBeenLastCalledWith(true))
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(onBack).not.toHaveBeenCalled()
   expect(onDirtyChange).toHaveBeenLastCalledWith(false)
@@ -854,7 +931,9 @@ it('hides the actions when the issue cannot be edited', async () => {
     }),
   )
 
-  await expect.element(page.getByRole('button', { name: 'Save changes' })).not.toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { exact: true, name: 'Save' }))
+    .not.toBeInTheDocument()
   await expect.element(page.getByRole('button', { name: 'Delete issue' })).not.toBeInTheDocument()
 })
 

@@ -1,6 +1,6 @@
 <!-- The heading of a page section: its title, an optional line under it and the section's actions on
      the right. The `leading` slot is a line above the title, such as a link back to the list, so the
-     title keeps the page's left edge. -->
+     title keeps the page's left edge; the `badge` slot sits next to the title, such as a state. -->
 <template>
   <header class="base-section-header">
     <div
@@ -10,7 +10,17 @@
     </div>
     <div class="base-section-header-main">
       <div class="base-section-header-text">
-        <h2 :id="id">{{ title }}</h2>
+        <div
+          v-if="$slots.badge"
+          class="base-section-header-title">
+          <h2 :id="id">{{ title }}</h2>
+          <slot name="badge" />
+        </div>
+        <h2
+          v-else
+          :id="id">
+          {{ title }}
+        </h2>
         <p v-if="description">{{ description }}</p>
       </div>
       <div
@@ -39,6 +49,13 @@ defineProps<{ description?: string; id?: string; title: string }>()
   gap: var(--space-4);
   justify-content: space-between;
   min-height: var(--control-height);
+}
+
+.base-section-header-title {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .base-section-header-leading {

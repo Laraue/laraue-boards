@@ -206,19 +206,6 @@ watch(
 .board-settings-form {
   --board-column-grid: var(--icon-btn-size) var(--icon-btn-size) minmax(0, 1fr) 200px
     var(--icon-btn-size);
-  display: grid;
-  gap: var(--space-6);
-}
-
-.settings-section {
-  display: grid;
-  gap: var(--space-4);
-  min-width: 0;
-}
-
-.settings-section + .settings-section {
-  border-top: 1px solid var(--color-divider);
-  padding-top: var(--space-5);
 }
 
 .add-column {

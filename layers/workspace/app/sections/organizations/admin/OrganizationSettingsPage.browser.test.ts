@@ -64,7 +64,7 @@ it('submits the edited settings and reports success', async () => {
   await mount(createDeps({ updateOrganization }), onUpdated)
 
   await page.getByLabelText('Name').fill('Acme Studio')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save settings' }).click()
 
   expect(updateOrganization).toHaveBeenCalledWith({
     color: '#4774d4',
@@ -84,7 +84,7 @@ it('keeps the form open and shows the validation message returned by the backend
 
   await mount(createDeps({ updateOrganization }), onUpdated)
 
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save settings' }).click()
 
   await expect.element(page.getByText('Name is already taken.')).toBeInTheDocument()
   expect(onUpdated).not.toHaveBeenCalled()
@@ -125,7 +125,7 @@ it('hides unavailable settings actions', async () => {
   await mount(createDeps({ view }), vi.fn<() => void>())
 
   await expect.element(page.getByLabelText('Name')).toBeDisabled()
-  await expect.element(page.getByRole('button', { name: 'Save changes' })).not.toBeInTheDocument()
+  await expect.element(page.getByRole('button', { name: 'Save settings' })).not.toBeInTheDocument()
   await expect
     .element(page.getByRole('button', { name: 'Delete organization' }))
     .not.toBeInTheDocument()

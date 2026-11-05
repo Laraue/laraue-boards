@@ -38,7 +38,6 @@
           <IconCalendar />
         </DatePickerTrigger>
       </DatePickerField>
-      <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
       <DatePickerContent
         align="start"
         class="base-date-picker-content"
@@ -316,7 +315,7 @@ const pickYear = (year: DateValue | DateValue[] | undefined) => {
   font-variant-numeric: tabular-nums;
   height: var(--control-height);
   min-width: 0;
-  padding: 0 var(--space-1) 0 var(--space-3);
+  padding: 0 var(--space-1) 0 var(--space-2);
 }
 
 .base-date-picker:hover:not([data-disabled], :focus-within) {

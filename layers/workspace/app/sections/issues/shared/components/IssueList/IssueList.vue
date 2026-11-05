@@ -1,65 +1,72 @@
 <template>
-  <AppBulkBar
-    :action-label="t('moveToBoard')"
-    :count="selected.size"
-    :on-action="() => openMoveDialog([...selected])"
-    :on-clear="() => selected.clear()" />
-  <!-- Rows on the page itself, with no box around them: a data list (DESIGN.md, Surfaces). -->
-  <div
-    :aria-busy="filtering"
-    class="issue-list"
-    :class="{ 'results-stale': filtering }">
-    <IssueListRow
-      v-for="issue in issues"
-      :key="issue.issueKey"
-      :assignee="issue.assignee"
-      :assignee-color="issue.assigneeColor"
-      :assignee-id="issue.assigneeId"
-      :assignee-initial="issue.assigneeInitial"
-      :blocked="issue.blocked"
-      :board-color="issue.boardColor"
-      :board-id="issue.boardId"
-      :board-name="issue.boardName"
-      :can-move="issue.canMove"
-      :deleting="deleting"
-      :issue-key="issue.issueKey"
-      :on-delete="deps.deleteIssue ? () => remove(issue.issueKey) : undefined"
-      :on-move="() => openMoveDialog([issue.issueKey])"
-      :on-toggle-selection="() => toggleSelection(issue.issueKey)"
-      :on-updated="onMoved"
-      :organization-routes="organizationRoutes"
-      :quick-edit="deps.quickEdit"
-      :selected="selected.has(issue.issueKey)"
-      :selection-mode="selected.size > 0"
-      :source="issue.source"
-      :space-color="issue.spaceColor"
-      :space-key="issue.spaceKey"
-      :space-name="issue.spaceName"
-      :status="issue.status"
-      :status-category="issue.statusCategory"
-      :status-color="issue.statusColor"
-      :status-id="issue.statusId"
-      :title="issue.title"
-      :to="organizationRoutes.issue(issue.issueKey)" />
+  <div class="issue-list-container">
+    <AppBulkBar
+      :action-label="t('moveToBoard')"
+      :count="selected.size"
+      :on-action="() => openMoveDialog([...selected])"
+      :on-clear="() => selected.clear()" />
+    <!-- Rows on the page itself, with no box around them: a data list (DESIGN.md, Surfaces). -->
+    <div
+      :aria-busy="filtering"
+      class="issue-list"
+      :class="{ 'results-stale': filtering, 'hide-location': hideLocation }"
+      role="list">
+      <IssueListRow
+        v-for="issue in issues"
+        :key="issue.issueKey"
+        :assignee="issue.assignee"
+        :assignee-color="issue.assigneeColor"
+        :assignee-id="issue.assigneeId"
+        :assignee-initial="issue.assigneeInitial"
+        :attributes="issue.attributes"
+        :blocked="issue.blocked"
+        :board-color="issue.boardColor"
+        :board-id="issue.boardId"
+        :board-name="issue.boardName"
+        :can-move="issue.canMove"
+        :deleting="deleting"
+        :hide-status="hideStatus"
+        :issue-key="issue.issueKey"
+        :on-delete="deps.deleteIssue ? () => remove(issue.issueKey) : undefined"
+        :on-move="() => openMoveDialog([issue.issueKey])"
+        :on-toggle-selection="() => toggleSelection(issue.issueKey)"
+        :on-updated="onMoved"
+        :organization-routes="organizationRoutes"
+        :quick-edit="deps.quickEdit"
+        :selected="selected.has(issue.issueKey)"
+        :selection-mode="selected.size > 0"
+        :show-location="!hideLocation"
+        :source="issue.source"
+        :space-color="issue.spaceColor"
+        :space-key="issue.spaceKey"
+        :space-name="issue.spaceName"
+        :status="issue.status"
+        :status-category="issue.statusCategory"
+        :status-color="issue.statusColor"
+        :status-id="issue.statusId"
+        :time="issue.time"
+        :title="issue.title"
+        :to="organizationRoutes.issue(issue.issueKey)" />
+    </div>
     <BaseEmptyState
       v-if="issues.length === 0"
       :hint="emptyHint"
       :title="emptyText" />
+    <p
+      v-if="deleteMessage"
+      class="form-error">
+      {{ deleteMessage }}
+    </p>
+    <PaginationControl
+      :has-next-page="hasNextPage"
+      :page="page"
+      @update:page="props.onUpdatePage" />
+    <MoveIssuesDialog
+      ref="moveDialog"
+      :deps="deps.moveIssuesDialog"
+      :excluded-board-id="excludedMoveBoardId"
+      :on-moved="handleMoved" />
   </div>
-  <p
-    v-if="deleteMessage"
-    class="form-error">
-    {{ deleteMessage }}
-  </p>
-  <PaginationControl
-    :has-next-page="hasNextPage"
-    :page="page"
-    @update:page="props.onUpdatePage" />
-  <MoveIssuesDialog
-    ref="moveDialog"
-    :deps="deps.moveIssuesDialog"
-    :excluded-board-id="excludedMoveBoardId"
-    :on-moved="handleMoved" />
 </template>
 
 <script setup lang="ts">
@@ -85,6 +92,9 @@ const props = defineProps<{
   excludedMoveBoardId?: string
   filtering: boolean
   hasNextPage: boolean
+  // In a list of one board, such as the backlog, where it lives goes without saying.
+  hideLocation?: boolean
+  hideStatus?: boolean
   issues: IssueListItem[]
   onMoved: () => Promise<void> | void
   onUpdatePage: (value: number) => void
@@ -94,8 +104,14 @@ const props = defineProps<{
 
 const confirm = useConfirm()
 const { t } = useI18n({
-  en: { deleteConfirm: 'Delete issue {key}?', moveToBoard: 'Move to board' },
-  ru: { deleteConfirm: 'Удалить задачу {key}?', moveToBoard: 'Переместить на доску' },
+  en: {
+    deleteConfirm: 'Delete issue {key}?',
+    moveToBoard: 'Move to board',
+  },
+  ru: {
+    deleteConfirm: 'Удалить задачу {key}?',
+    moveToBoard: 'Переместить на доску',
+  },
 })
 
 const moveDialog = useTemplateRef('moveDialog')
@@ -141,6 +157,11 @@ const handleMoved = async () => {
 </script>
 
 <style scoped>
+.issue-list-container {
+  container: issue-list / inline-size;
+  min-width: 0;
+}
+
 .results-stale {
   opacity: 0.55;
   transition: opacity var(--duration-fast) var(--ease-standard);
@@ -148,5 +169,12 @@ const handleMoved = async () => {
 
 .issue-list {
   display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+@container issue-list (min-width: 60rem) {
+  .issue-list {
+    gap: 0;
+  }
 }
 </style>

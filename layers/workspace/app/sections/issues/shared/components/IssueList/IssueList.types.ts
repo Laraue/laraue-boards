@@ -1,4 +1,5 @@
 import type { components } from '#infrastructure/api/generated'
+import type { IssueAttributeLabel } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeLabels/IssueAttributeLabels.types'
 import type { IssueSource } from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 
 export type IssueListItem = {
@@ -6,6 +7,8 @@ export type IssueListItem = {
   assigneeColor: string
   assigneeId?: string
   assigneeInitial: string
+  // Absent where the list doesn't show attributes.
+  attributes?: IssueAttributeLabel[]
   boardColor: string
   boardId?: string
   boardName: string
@@ -22,5 +25,6 @@ export type IssueListItem = {
   statusCategory?: components['schemas']['StatusCategory']
   statusColor: string
   statusId?: string
+  time: string
   title: string
 }

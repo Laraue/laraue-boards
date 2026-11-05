@@ -2,6 +2,7 @@ import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { request } from '#infrastructure/api/request'
 import {
+  mapAttributeLabels,
   mapIssueFilters,
   mapRawIssueFilters,
 } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
@@ -21,6 +22,7 @@ const mapIssue = (issue: Schemas['SearchIssueDto']): IssueListItem => ({
   assigneeColor: issue.assigneeColor,
   assigneeId: issue.assigneeId,
   assigneeInitial: issue.assigneeInitial ?? '?',
+  attributes: mapAttributeLabels(issue.attributes),
   blocked: issue.isBlocked,
   boardColor: issue.epic.color,
   boardId: String(issue.epicId),
@@ -35,6 +37,7 @@ const mapIssue = (issue: Schemas['SearchIssueDto']): IssueListItem => ({
   statusCategory: issue.status?.category,
   statusColor: issue.status?.color ?? COLORS.gray,
   statusId: String(issue.statusId),
+  time: issue.time,
   title: issue.title,
 })
 

@@ -12,27 +12,33 @@
           name="trigger"
           :open="open" />
       </DropdownMenuTrigger>
-      <!-- Not portaled: outside an open <dialog> it would be under it and inert. -->
-      <DropdownMenuContent
-        :align="align"
-        class="base-menu"
-        :collision-padding="16"
-        :side="side"
-        :side-offset="8">
-        <slot />
-      </DropdownMenuContent>
+      <DropdownMenuPortal>
+        <DropdownMenuContent
+          :align="align"
+          class="base-menu"
+          :collision-padding="16"
+          :side="side"
+          :side-offset="8">
+          <slot />
+        </DropdownMenuContent>
+      </DropdownMenuPortal>
     </DropdownMenuRoot>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DropdownMenuContent, DropdownMenuRoot, DropdownMenuTrigger } from 'reka-ui'
+import {
+  DropdownMenuContent,
+  DropdownMenuPortal,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+} from 'reka-ui'
 import { ref } from 'vue'
 
 withDefaults(
   defineProps<{
     align?: 'end' | 'start'
-    side?: 'bottom' | 'right' | 'top'
+    side?: 'bottom' | 'left' | 'right' | 'top'
   }>(),
   { align: 'start', side: 'bottom' },
 )
@@ -62,7 +68,7 @@ const open = ref(false)
   min-width: 8rem; /* 128px, as in shadcn; wider rows stretch it */
   overflow: auto;
   padding: var(--space-1);
-  z-index: 31;
+  z-index: 51;
 }
 
 .base-menu-separator {

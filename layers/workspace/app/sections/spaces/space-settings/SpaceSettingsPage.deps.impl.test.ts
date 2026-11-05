@@ -12,6 +12,13 @@ const catalog =
   })
 
 const respond = (_request: Request, path: string) => {
+  if (path.endsWith('/attribute-settings')) {
+    return {
+      attributes: [],
+      inherited: { attributes: [], source: 'Organization' },
+      source: 'Organization',
+    }
+  }
   if (path.endsWith('/about')) {
     return {
       canEdit: false,
@@ -28,6 +35,11 @@ test('maps space settings data', async () => {
   assert.deepEqual(
     await createSpaceSettingsPageDeps(client, catalog()).view({ spaceKey: 'product' }),
     {
+      attributeSettings: {
+        attributes: [],
+        inherited: { attributes: [], source: 'organization' },
+        source: 'organization',
+      },
       canDelete: true,
       canUpdate: false,
       color: '#fff',
@@ -46,10 +58,11 @@ test('fails with 404 when the space is not in the list', async () => {
   ).rejects.toMatchObject({ status: 404 })
 })
 
-test('saves the settings, description and links in one request', async () => {
+test('saves the settings, description, links and attribute settings in one request', async () => {
   const { client, requests } = createTestApiClient(() => new Response(null))
 
   await createSpaceSettingsPageDeps(client, catalog()).save({
+    attributeSettings: { overridden: false, settings: [] },
     color: '#000',
     description: 'About',
     links: [
@@ -67,6 +80,7 @@ test('saves the settings, description and links in one request', async () => {
     'PUT /api/spaces/product',
   )
   assert.deepEqual(await requests[0]!.json(), {
+    attributeSettings: { overridden: false, settings: [] },
     color: '#000',
     description: 'About',
     links: [

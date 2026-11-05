@@ -2,7 +2,10 @@ import type { IssuePageDeps } from '#layers/workspace/app/sections/issues/issue/
 import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
 
 import type { BoardColumnViewModel } from './components/BoardColumn/BoardColumn.types'
-import type { IssueCardViewModel } from './components/BoardColumn/components/IssueCard.types'
+import type {
+  IssueCardDeps,
+  IssueCardViewModel,
+} from './components/BoardColumn/components/IssueCard.types'
 
 export type BoardPageAttributeViewModel = IssueAttributeField
 
@@ -54,6 +57,7 @@ export type IssueFilter =
   | { attributeId: string; type: 'list'; valueIds: string[] }
 
 export type BoardPageDeps = {
+  issueCard: IssueCardDeps
   issueDialog: IssuePageDeps
   loadMoreBoardIssues: (input: {
     filters: IssueFilter[]

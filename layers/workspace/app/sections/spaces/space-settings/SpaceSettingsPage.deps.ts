@@ -1,3 +1,8 @@
+import type {
+  AttributeSettingsSave,
+  AttributeSettingsView,
+} from '#layers/workspace/app/shared/components/AttributeSettings/AttributeSettings.types'
+
 export type SpaceLinkItem = {
   description: string
   id: string
@@ -13,6 +18,7 @@ export type SpaceLinkDraft = {
 }
 
 export type SpaceSettingsPageData = {
+  attributeSettings: AttributeSettingsView
   canDelete: boolean
   canUpdate: boolean
   color: string
@@ -22,6 +28,8 @@ export type SpaceSettingsPageData = {
 }
 
 export type SaveSpaceSettingsInput = {
+  // Null leaves the space's attribute settings as they are.
+  attributeSettings: AttributeSettingsSave | null
   color: string
   description: string
   links: SpaceLinkDraft[]

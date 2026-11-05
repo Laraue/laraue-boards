@@ -66,8 +66,8 @@ const dialog = () => page.getByRole('dialog')
 
 const chooseSpace = async () => {
   await dialog().getByLabelText('Space').click()
-  await expect.element(dialog().getByRole('option', { name: 'Development' })).toBeInTheDocument()
-  await dialog().getByRole('option', { name: 'Development' }).click()
+  await expect.element(page.getByRole('option', { name: 'Development' })).toBeInTheDocument()
+  await page.getByRole('option', { name: 'Development' }).click()
 }
 
 afterEach(async () => {

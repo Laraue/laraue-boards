@@ -1,9 +1,12 @@
 <template>
   <input
-    v-model="model"
+    v-bind="$attrs"
     class="base-input"
     :class="{ 'base-input-inline': variant === 'inline' }"
-    :disabled="disabled" />
+    :disabled="disabled"
+    :value="model"
+    @compositionend="update"
+    @input="update" />
 </template>
 
 <script setup lang="ts">
@@ -11,12 +14,24 @@ withDefaults(defineProps<{ disabled?: boolean; variant?: 'default' | 'inline' }>
   disabled: false,
   variant: 'default',
 })
-const model = defineModel<string>({ required: true })
+
+// Native input validators run before this component reads the resulting value.
+defineOptions({ inheritAttrs: false })
+
+const model = defineModel<string>({ default: '' })
+
+const update = (event: Event) => {
+  if (event instanceof InputEvent && event.isComposing) {
+    return
+  }
+  model.value = (event.target as HTMLInputElement).value
+}
 </script>
 
 <style scoped>
-.base-input {
+:where(.base-input) {
   min-width: 0;
+  padding: 0 var(--space-2);
   transition: border-color var(--duration-fast) var(--ease-standard);
 }
 

@@ -65,6 +65,7 @@ const label = computed(() => {
   color: var(--color-muted);
   display: inline-flex;
   flex: none;
+  font-size: var(--font-size-body);
 }
 
 .issue-source-icon .tabler-icon {

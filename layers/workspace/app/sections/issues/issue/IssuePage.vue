@@ -193,21 +193,26 @@
                     }"
                     :space-key="state.pickedSpaceId"
                     variant="inline" />
-                  <label for="issue-status">{{ t('status') }}</label>
-                  <StatusSelect
-                    id="issue-status"
-                    :key="`status-${issue.issueKey}`"
-                    v-model="state.statusId"
-                    :board-id="state.boardId"
-                    :deps="deps.statusSelect"
-                    :disabled="!issue.canEdit"
-                    :initial-option="{
-                      color: issue.statusColor,
-                      category: issue.statusCategory,
-                      label: issue.statusLabel || t('currentStatus'),
-                      value: issue.statusId,
-                    }"
-                    variant="inline" />
+                  <!-- v-show, not v-if: the select must stay mounted to clear the status on a board change. -->
+                  <div
+                    v-show="!statusHidden(issue)"
+                    class="issue-property-row">
+                    <label for="issue-status">{{ t('status') }}</label>
+                    <StatusSelect
+                      id="issue-status"
+                      :key="`status-${issue.issueKey}`"
+                      v-model="state.statusId"
+                      :board-id="state.boardId"
+                      :deps="deps.statusSelect"
+                      :disabled="!issue.canEdit"
+                      :initial-option="{
+                        color: issue.statusColor,
+                        category: issue.statusCategory,
+                        label: issue.statusLabel || t('currentStatus'),
+                        value: issue.statusId,
+                      }"
+                      variant="inline" />
+                  </div>
                   <label for="issue-assignee">{{ t('assignee') }}</label>
                   <AssigneeSelect
                     id="issue-assignee"
@@ -233,11 +238,15 @@
                     <span>{{ issue.owner }}</span>
                   </div>
                   <IssueAttributeFields
-                    v-if="issue.attributes.length"
+                    v-if="activeAttributes(issue).length"
                     v-model="state.attributeValues"
-                    :attributes="issue.attributes"
+                    :attributes="activeAttributes(issue)"
                     :disabled="!canEditFields(issue)"
                     select-variant="inline" />
+                  <IssueUnusedAttributes
+                    v-model="state.attributeValues"
+                    :attributes="inactiveAttributes(issue)"
+                    :disabled="!canEditFields(issue)" />
                 </div>
                 <IssueLinks
                   :key="`links-${issue.issueKey}`"
@@ -368,6 +377,7 @@ import IssueComments from './components/IssueComments/IssueComments.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
 import IssueLinks from './components/IssueLinks/IssueLinks.vue'
 import IssuePageActions from './components/IssuePageActions.vue'
+import IssueUnusedAttributes from './components/IssueUnusedAttributes/IssueUnusedAttributes.vue'
 import type {
   IssuePageDeps,
   IssuePageSavedIssue,
@@ -588,6 +598,23 @@ const fieldsLocked = (issue?: IssuePageViewModel | null) =>
   issue?.agentRun?.state === 'ready' || issue?.agentRun?.state === 'working'
 
 const canEditFields = (issue: IssuePageViewModel) => issue.canEdit && !fieldsLocked(issue)
+
+const activeAttributes = (issue: IssuePageViewModel) =>
+  issue.attributes.filter((attribute) => !attribute.inactive)
+const inactiveAttributes = (issue: IssuePageViewModel) =>
+  issue.attributes.filter((attribute) => attribute.inactive)
+const statusHidden = (issue: IssuePageViewModel) =>
+  issue.boardIsBacklog && state.boardId === issue.boardId
+// The status select clears the status on every board change; restore it after that (flush: post).
+watch(
+  () => state.boardId,
+  (boardId) => {
+    if (currentIssue.value && boardId === currentIssue.value.boardId) {
+      state.statusId = currentIssue.value.statusId
+    }
+  },
+  { flush: 'post' },
+)
 
 const openBlockers = (issue: IssuePageViewModel) =>
   issue.links
@@ -849,8 +876,12 @@ const refreshPage = () =>
   align-items: center;
   display: grid;
   gap: var(--space-1) var(--space-3);
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns: fit-content(128px) minmax(0, 1fr);
   margin: 0;
+}
+
+.issue-property-row {
+  display: contents;
 }
 
 .issue-properties :deep(label),
@@ -859,7 +890,14 @@ const refreshPage = () =>
   color: var(--color-muted);
   font-weight: normal;
   margin: 0;
-  overflow-wrap: anywhere;
+  min-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issue-properties :deep(label) {
+  pointer-events: none;
 }
 
 .issue-person {
@@ -867,7 +905,7 @@ const refreshPage = () =>
   display: flex;
   gap: var(--space-2);
   min-height: var(--control-height);
-  padding: 0 var(--space-3);
+  padding: 0 calc(var(--space-2) + 1px);
 }
 
 .issue-dates {

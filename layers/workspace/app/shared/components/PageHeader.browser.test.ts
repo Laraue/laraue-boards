@@ -1,11 +1,53 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
 import { page } from 'vitest/browser'
 import { defineComponent, h, provide, ref } from 'vue'
 
 import { sidebarOpenKey } from '#layers/workspace/app/shared/composables/useSidebarOpen'
 
+import AppPage from './AppPage.vue'
 import PageHeader from './PageHeader.vue'
+
+it('moves tools together below the title and actions, then restores one row when space returns', async () => {
+  const slots = {
+    actions: () => h('button', { style: { width: '80px' } }, 'Add'),
+    tools: () => [
+      h('input', { 'aria-label': 'Search', style: { width: '240px' } }),
+      h('button', { style: { width: '32px' } }, 'Filter'),
+    ],
+  }
+  const wrapper = await mountSuspended(
+    defineComponent({
+      setup: () => () =>
+        h(
+          AppPage,
+          {},
+          {
+            header: () => h(PageHeader, { title: 'Test a very long board name' }, slots),
+          },
+        ),
+    }),
+    { attachTo: document.body },
+  )
+  const center = (selector: string) => {
+    const rect = wrapper.get(selector).element.getBoundingClientRect()
+    return rect.top + rect.height / 2
+  }
+  try {
+    wrapper.element.setAttribute('style', 'width: 440px')
+    await vi.waitFor(() => {
+      expect(center('.page-header-actions')).toBe(center('.page-header-start'))
+      expect(center('.page-header-tools')).toBeGreaterThan(center('.page-header-start'))
+    })
+    wrapper.element.setAttribute('style', 'width: 900px')
+    await vi.waitFor(() => {
+      expect(center('.page-header-actions')).toBe(center('.page-header-start'))
+      expect(center('.page-header-tools')).toBe(center('.page-header-start'))
+    })
+  } finally {
+    wrapper.unmount()
+  }
+})
 
 const shell = (name: string) =>
   defineComponent({

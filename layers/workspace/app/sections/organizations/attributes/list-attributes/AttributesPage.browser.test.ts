@@ -10,16 +10,19 @@ import type { AttributeListItem, AttributesPageDeps } from './AttributesPage.dep
 import AttributesPage from './AttributesPage.vue'
 
 const attributes: AttributeListItem[] = [
-  { color: COLORS.blue, id: '7', name: 'Priority', type: 'text' },
-  { color: COLORS.amber, id: '8', name: 'Severity', type: 'list' },
+  { color: COLORS.blue, id: '7', isEnabled: true, name: 'Priority', type: 'text' },
+  { color: COLORS.amber, id: '8', isEnabled: false, name: 'Severity', type: 'list' },
 ]
 
 let currentWrapper: Awaited<ReturnType<typeof mountSuspended>> | undefined
 
-const mount = async (view: AttributesPageDeps['view']) => {
+const mount = async (
+  view: AttributesPageDeps['view'],
+  reorder: AttributesPageDeps['reorder'] = vi.fn<AttributesPageDeps['reorder']>(async () => {}),
+) => {
   currentWrapper = await mountSuspended(AttributesPage, {
     attachTo: document.body,
-    props: { deps: { view }, organizationRoutes: createOrganizationRoutes('acme-ab12') },
+    props: { deps: { reorder, view }, organizationRoutes: createOrganizationRoutes('acme-ab12') },
     route: '/organizations/acme-ab12/admin/attributes',
   })
   return currentWrapper
@@ -74,5 +77,28 @@ it('reloads the attributes when the failed request is retried', async () => {
 
   await page.getByRole('button', { name: 'Try again' }).click()
 
+  await expect.element(page.getByRole('link', { name: /Priority/ })).toBeInTheDocument()
+})
+
+it('marks an attribute switched off by default', async () => {
+  const view = vi.fn<AttributesPageDeps['view']>(async () => attributes)
+
+  await mount(view)
+
+  await expect.element(page.getByRole('link', { name: /Severity/ })).toHaveTextContent('Off')
+  await expect.element(page.getByRole('link', { name: /Priority/ })).not.toHaveTextContent('Off')
+})
+
+it('saves the order and shows the list again', async () => {
+  const view = vi.fn<AttributesPageDeps['view']>(async () => attributes)
+  const reorder = vi.fn<AttributesPageDeps['reorder']>(async () => {})
+
+  await mount(view, reorder)
+
+  await page.getByRole('button', { name: 'Change order' }).click()
+  await expect.element(page.getByRole('button', { name: 'Move Severity' })).toBeInTheDocument()
+  await page.getByRole('button', { name: 'Save order' }).click()
+
+  expect(reorder).toHaveBeenCalledWith({ attributeIds: ['7', '8'] })
   await expect.element(page.getByRole('link', { name: /Priority/ })).toBeInTheDocument()
 })

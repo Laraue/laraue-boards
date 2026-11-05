@@ -19,33 +19,34 @@
         class="base-combobox-input"
         :placeholder="placeholder" />
     </ComboboxAnchor>
-    <!-- Not portaled: a popup outside an open <dialog> would be under it and inert. -->
-    <ComboboxContent
-      class="base-select-content base-combobox-content"
-      :collision-padding="12"
-      position="popper"
-      :side-offset="4">
-      <ComboboxViewport class="base-select-viewport">
-        <p
-          v-if="message"
-          class="base-select-message">
-          {{ message }}
-        </p>
-        <ComboboxItem
-          v-for="option in loading ? [] : options"
-          :key="option.value"
-          class="base-select-item base-combobox-item"
-          :text-value="option.label"
-          :value="option.value">
-          <span class="base-combobox-label">{{ option.label }}</span>
-          <span
-            v-if="option.description"
-            class="base-combobox-description">
-            {{ option.description }}
-          </span>
-        </ComboboxItem>
-      </ComboboxViewport>
-    </ComboboxContent>
+    <ComboboxPortal>
+      <ComboboxContent
+        class="base-select-content base-combobox-content"
+        :collision-padding="12"
+        position="popper"
+        :side-offset="4">
+        <ComboboxViewport class="base-select-viewport">
+          <p
+            v-if="message"
+            class="base-select-message">
+            {{ message }}
+          </p>
+          <ComboboxItem
+            v-for="option in loading ? [] : options"
+            :key="option.value"
+            class="base-select-item base-combobox-item"
+            :text-value="option.label"
+            :value="option.value">
+            <span class="base-combobox-label">{{ option.label }}</span>
+            <span
+              v-if="option.description"
+              class="base-combobox-description">
+              {{ option.description }}
+            </span>
+          </ComboboxItem>
+        </ComboboxViewport>
+      </ComboboxContent>
+    </ComboboxPortal>
   </ComboboxRoot>
 </template>
 
@@ -59,6 +60,7 @@ import {
   ComboboxContent,
   ComboboxInput,
   ComboboxItem,
+  ComboboxPortal,
   ComboboxRoot,
   ComboboxViewport,
 } from 'reka-ui'

@@ -9,12 +9,14 @@ const catalog = () => ({
   spaces: [{ color: '#4774d4', key: 'product', name: 'Product' }],
 })
 
-test('saves board and column changes', async () => {
-  const { client, requests } = createTestApiClient((request, path) =>
-    request.method === 'POST' && path === '/api/statuses' ? 9 : new Response(null, { status: 200 }),
-  )
+test('saves the board, its columns and attribute settings in one request', async () => {
+  const { client, requests } = createTestApiClient(() => new Response(null, { status: 200 }))
 
   await createBoardSettingsPageDeps(client, catalog).save({
+    attributeSettings: {
+      overridden: true,
+      settings: [{ id: '5', isEnabled: true, showOnCard: false }],
+    },
     boardId: '7',
     color: '#111',
     columns: [
@@ -22,83 +24,82 @@ test('saves board and column changes', async () => {
       { category: 'Completed', color: '#444', id: null, name: 'Done' },
     ],
     name: 'Roadmap',
-    originalColumns: [
-      { category: 'Created', color: '#000', id: '2', name: 'Todo' },
-      { category: 'InProgress', color: '#333', id: '3', name: 'Later' },
-    ],
   })
 
   assert.deepEqual(
     requests.map((request) => [request.method, new URL(request.url).pathname]),
-    [
-      ['PUT', '/api/epics/7'],
-      ['POST', '/api/statuses'],
-      ['PUT', '/api/statuses/2'],
-      ['DELETE', '/api/statuses/3'],
-      ['POST', '/api/epics/7/reorder-statuses'],
-    ],
+    [['PUT', '/api/epics/7']],
   )
-  assert.deepEqual(await requests[1]!.json(), {
-    category: 'Completed',
-    color: '#444',
-    epicId: 7,
-    name: 'Done',
+  assert.deepEqual(await requests[0]!.json(), {
+    attributeSettings: {
+      overridden: true,
+      settings: [{ attributeId: 5, isEnabled: true, showOnCard: false }],
+    },
+    color: '#111',
+    columns: [
+      { category: 'InProgress', color: '#222', id: 2, name: 'Doing' },
+      { category: 'Completed', color: '#444', id: null, name: 'Done' },
+    ],
+    id: 7,
+    name: 'Roadmap',
   })
-  assert.deepEqual(await requests[2]!.json(), {
-    category: 'InProgress',
-    color: '#222',
-    id: 2,
-    name: 'Doing',
-  })
-  assert.deepEqual(await requests[4]!.json(), { 2: 1, 9: 2 })
 })
 
-test('updates a column when only its category changed', async () => {
+test('leaves attribute settings alone when they did not change', async () => {
   const { client, requests } = createTestApiClient(() => new Response(null, { status: 200 }))
-  const column = { color: '#222', id: '2', name: 'Doing' }
 
   await createBoardSettingsPageDeps(client, catalog).save({
+    attributeSettings: null,
     boardId: '7',
     color: '#111',
-    columns: [{ ...column, category: 'Completed' }],
+    columns: [],
     name: 'Roadmap',
-    originalColumns: [{ ...column, category: 'InProgress' }],
   })
 
-  assert.deepEqual(
-    requests.map((request) => [request.method, new URL(request.url).pathname]),
-    [
-      ['PUT', '/api/epics/7'],
-      ['PUT', '/api/statuses/2'],
-      ['POST', '/api/epics/7/reorder-statuses'],
-    ],
-  )
-  assert.deepEqual(await requests[1]!.json(), {
-    category: 'Completed',
-    color: '#222',
-    id: 2,
-    name: 'Doing',
-  })
+  assert.equal((await requests[0]!.json()).attributeSettings, null)
 })
 
 test('maps board settings and sorts columns', async () => {
-  const { client } = createTestApiClient(() => ({
-    canDelete: true,
-    canUpdate: true,
-    color: '#111',
-    name: 'Roadmap',
-    status: 'Active',
-    statuses: [
-      { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
-      { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
-    ],
-  }))
+  const { client } = createTestApiClient((_request, path) =>
+    path === '/api/epics/12/attribute-settings'
+      ? {
+          attributes: [
+            {
+              attributeId: 5,
+              color: '#555',
+              isEnabled: true,
+              name: 'Type',
+              showOnCard: true,
+              type: 'Text',
+            },
+          ],
+          inherited: { attributes: [], source: 'Space' },
+          source: 'Epic',
+        }
+      : {
+          canDelete: true,
+          canUpdate: true,
+          color: '#111',
+          isDefault: false,
+          name: 'Roadmap',
+          status: 'Active',
+          statuses: [
+            { category: 'Completed', color: '#222', id: 2, name: 'Done', sortOrder: 2 },
+            { category: 'Created', color: '#333', id: 1, name: 'To do', sortOrder: 1 },
+          ],
+        },
+  )
 
   const view = await createBoardSettingsPageDeps(client, catalog).view({
     boardId: '12',
     spaceKey: 'product',
   })
   assert.deepEqual(view, {
+    attributeSettings: {
+      attributes: [{ color: '#555', id: '5', isEnabled: true, name: 'Type', showOnCard: true }],
+      inherited: { attributes: [], source: 'space' },
+      source: 'epic',
+    },
     canDelete: true,
     canUpdate: true,
     color: '#111',
@@ -106,6 +107,7 @@ test('maps board settings and sorts columns', async () => {
       { category: 'Created', color: '#333', id: '1', name: 'To do' },
       { category: 'Completed', color: '#222', id: '2', name: 'Done' },
     ],
+    isDefault: false,
     name: 'Roadmap',
     spaceColor: '#4774d4',
     spaceName: 'Product',

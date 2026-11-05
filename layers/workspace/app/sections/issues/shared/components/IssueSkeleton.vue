@@ -74,8 +74,7 @@
         <span class="skeleton skeleton-footer-menu" />
         <span class="skeleton skeleton-footer-save">
           <span class="skeleton-footer-icon" />
-          <span class="skeleton-save-label">{{ t('saveChanges') }}</span>
-          <span class="skeleton-save-label-mobile">{{ t('save') }}</span>
+          {{ t('save') }}
         </span>
       </div>
     </div>
@@ -98,7 +97,6 @@ const { t } = useI18n({
     owner: 'Owner',
     properties: 'Properties',
     save: 'Save',
-    saveChanges: 'Save changes',
     space: 'Space',
     status: 'Status',
     updated: 'Updated',
@@ -113,7 +111,6 @@ const { t } = useI18n({
     owner: 'Владелец',
     properties: 'Свойства',
     save: 'Сохранить',
-    saveChanges: 'Сохранить изменения',
     space: 'Пространство',
     status: 'Статус',
     updated: 'Изменена',
@@ -210,10 +207,6 @@ const { t } = useI18n({
 
 .skeleton-footer-icon {
   width: var(--icon-size);
-}
-
-.skeleton-save-label-mobile {
-  display: none;
 }
 
 .skeleton-content {
@@ -427,16 +420,6 @@ const { t } = useI18n({
   .skeleton-side {
     max-height: none;
     overflow: visible;
-  }
-}
-
-@media (max-width: 767px) {
-  .skeleton-save-label {
-    display: none;
-  }
-
-  .skeleton-save-label-mobile {
-    display: inline;
   }
 }
 </style>

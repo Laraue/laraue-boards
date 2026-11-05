@@ -9,14 +9,16 @@
     <template #default>
       <section class="form-page">
         <BaseSectionHeader :title="t('profile')" />
-        <form @submit.prevent="save">
+        <form
+          class="member-profile-form"
+          @submit.prevent="save">
           <BaseFieldGroup>
             <BaseField
               id="member-profile-name"
               v-slot="{ describedby }"
               :hint="t('nameHint')"
               :label="t('name')">
-              <input
+              <BaseInput
                 id="member-profile-name"
                 v-model="state.displayName"
                 :aria-describedby="describedby"
@@ -47,7 +49,8 @@
               :disabled="saving"
               type="submit"
               variant="primary">
-              {{ saving ? t('saving') : t('saveChanges') }}
+              <IconCheck />
+              {{ saving ? t('saving') : t('saveProfile') }}
             </BaseButton>
           </div>
         </form>
@@ -57,12 +60,14 @@
 </template>
 
 <script setup lang="ts">
+import { IconCheck } from '@tabler/icons-vue'
 import { reactive, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
+import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
 import BaseSectionHeader from '#layers/core/app/ui/components/BaseSectionHeader.vue'
 import AppColorPicker from '#layers/workspace/app/shared/components/AppColorPicker.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
@@ -87,7 +92,7 @@ const { t } = useI18n({
       'How other members see you in this organization. Leave it empty to use your profile name.',
     namePlaceholder: 'Your name from your profile',
     profile: 'Profile',
-    saveChanges: 'Save changes',
+    saveProfile: 'Save profile',
     saving: 'Saving…',
   },
   ru: {
@@ -100,7 +105,7 @@ const { t } = useI18n({
       'Так вас видят другие участники этой организации. Оставьте пустым, чтобы взять имя из профиля.',
     namePlaceholder: 'Имя из вашего профиля',
     profile: 'Профиль',
-    saveChanges: 'Сохранить изменения',
+    saveProfile: 'Сохранить профиль',
     saving: 'Сохранение…',
   },
 })
@@ -136,6 +141,11 @@ const save = async (): Promise<void> => {
 <style scoped>
 .form-page {
   align-content: start;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.member-profile-form {
   display: grid;
   gap: var(--space-5);
 }

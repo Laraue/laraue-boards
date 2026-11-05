@@ -33,6 +33,7 @@ const mapAttribute = (
   const base = {
     color: attribute.color,
     id: String(attribute.id),
+    inactive: attribute.isInactive,
     name: attribute.name,
     value: String(attribute.value),
   }

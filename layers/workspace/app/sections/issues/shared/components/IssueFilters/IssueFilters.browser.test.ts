@@ -79,3 +79,27 @@ it('updates a numeric range filter', async () => {
     [{ attributes: { estimate: ['', '10'] }, spaceIds: [] }],
   ])
 })
+
+const trigger = () => page.getByRole('button', { name: /^Filters/ }).element()
+
+it('highlights the trigger when only board statuses are selected and clears it on reset', async () => {
+  await mount()
+  const originalColor = getComputedStyle(trigger()).color
+  const originalBackground = getComputedStyle(trigger()).backgroundColor
+  await currentWrapper!.setProps({
+    epicStatuses: [
+      { label: 'New', value: 'New' },
+      { label: 'In progress', value: 'Active' },
+    ],
+    modelValue: { attributes: {}, epicStatuses: ['New', 'Active'], spaceIds: [] },
+  })
+
+  expect(trigger().getAttribute('aria-label')).toBe('Filters (2)')
+  expect(getComputedStyle(trigger()).color).not.toBe(originalColor)
+  expect(getComputedStyle(trigger()).backgroundColor).not.toBe(originalBackground)
+  await currentWrapper!.setProps({
+    modelValue: { attributes: {}, epicStatuses: [], spaceIds: [] },
+  })
+  expect(getComputedStyle(trigger()).color).toBe(originalColor)
+  expect(getComputedStyle(trigger()).backgroundColor).toBe(originalBackground)
+})

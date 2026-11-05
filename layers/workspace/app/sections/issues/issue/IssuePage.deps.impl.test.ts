@@ -54,6 +54,7 @@ test('maps issue detail', async () => {
       {
         color: '#222',
         id: 3,
+        isInactive: false,
         listValues: [{ id: 4, name: 'High' }],
         name: 'Priority',
         type: 'List',
@@ -62,6 +63,7 @@ test('maps issue detail', async () => {
       {
         color: '#555',
         id: 6,
+        isInactive: false,
         listValues: [],
         name: 'Starts',
         type: 'DateTime',
@@ -70,6 +72,7 @@ test('maps issue detail', async () => {
       {
         color: '#666',
         id: 7,
+        isInactive: false,
         listValues: [],
         name: 'Estimate',
         type: 'Decimal',
@@ -78,6 +81,7 @@ test('maps issue detail', async () => {
       {
         color: '#777',
         id: 8,
+        isInactive: true,
         listValues: [],
         name: 'Points',
         type: 'Integer',
@@ -151,6 +155,7 @@ test('maps issue detail', async () => {
     {
       color: '#222',
       id: '3',
+      inactive: false,
       name: 'Priority',
       options: [{ label: 'High', value: '4' }],
       type: 'list',
@@ -159,6 +164,7 @@ test('maps issue detail', async () => {
     {
       color: '#555',
       id: '6',
+      inactive: false,
       name: 'Starts',
       type: 'dateTime',
       value: toLocalIssueDateTime('2026-08-22T12:30:00Z'),
@@ -166,6 +172,7 @@ test('maps issue detail', async () => {
     {
       color: '#666',
       id: '7',
+      inactive: false,
       name: 'Estimate',
       type: 'decimal',
       value: '1',
@@ -173,6 +180,7 @@ test('maps issue detail', async () => {
     {
       color: '#777',
       id: '8',
+      inactive: true,
       name: 'Points',
       type: 'integer',
       value: '2',

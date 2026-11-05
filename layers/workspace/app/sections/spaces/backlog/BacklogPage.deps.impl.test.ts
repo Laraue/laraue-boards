@@ -43,12 +43,14 @@ test('maps backlog search request and response', async () => {
         assignee: 'Ada',
         assigneeColor: '#111',
         assigneeInitial: 'A',
+        attributes: [],
         canEdit: true,
         content: 'Fix the bug',
         epic: { color: '#222', name: 'Backlog' },
         key: 'ISS-1',
         space: { color: '#333', name: 'Product' },
         status: null,
+        time: '2026-01-01T10:00:00Z',
       },
     ],
     hasNextPage: false,
@@ -62,6 +64,7 @@ test('maps backlog search request and response', async () => {
   })
 
   assert.equal(result.issues[0]?.issueKey, 'ISS-1')
+  assert.equal(result.issues[0]?.time, '2026-01-01T10:00:00Z')
   assert.deepEqual(await requests[0]!.json(), {
     epicIds: [8],
     filters: {},

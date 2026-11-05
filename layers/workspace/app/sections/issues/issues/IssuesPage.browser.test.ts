@@ -27,6 +27,7 @@ const issueOf = (issueKey: string, title: string): IssueListItem => ({
   spaceName: 'Product',
   status: 'To do',
   statusColor: '#444',
+  time: '2026-01-01T10:00:00Z',
   title,
 })
 

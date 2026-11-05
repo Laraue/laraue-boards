@@ -177,7 +177,7 @@
         <textarea
           v-model="longText"
           rows="3" />
-        <input
+        <BaseInput
           v-model="query"
           placeholder="Search"
           type="search" />
@@ -244,6 +244,20 @@
           v-model="option"
           :options="options"
           variant="inline" />
+        <BaseSelect
+          v-model="option"
+          aria-label="Avatar select"
+          icon-only
+          :options="options"
+          :show-chevron="false"
+          variant="inline">
+          <template #icon="{ option: selected }">
+            <BaseAvatar
+              color="var(--color-accent)"
+              :initials="selected?.label.slice(0, 1) ?? '?'"
+              size="sm" />
+          </template>
+        </BaseSelect>
         <BaseSelect
           v-model="option"
           disabled

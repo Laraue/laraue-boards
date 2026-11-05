@@ -22,6 +22,8 @@ import type { IssueHistoryDeps } from './components/IssueHistory/IssueHistory.de
 import type { IssueLinksDeps } from './components/IssueLinks/IssueLinks.deps'
 
 type IssuePageAttributeViewModel = IssueAttributeField & {
+  // Off on the issue's board, but the issue still has a value: it can be cleared, not set.
+  inactive: boolean
   value: string
 }
 

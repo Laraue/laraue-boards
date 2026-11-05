@@ -40,4 +40,8 @@ fieldset {
   overflow-y: auto;
   padding: 0 var(--space-1) var(--space-4);
 }
+
+fieldset :deep(.base-checkbox) {
+  padding-inline: var(--space-2);
+}
 </style>

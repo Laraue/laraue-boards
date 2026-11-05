@@ -48,7 +48,7 @@ it('saves the global profile', async () => {
   await page.getByLabelText('Given name').fill('Augusta')
   await page.getByLabelText('Family name').fill('King')
   await page.getByLabelText('Display name').fill('Countess of Lovelace')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save profile' }).click()
 
   expect(deps.update).toHaveBeenCalledWith({
     displayName: 'Countess of Lovelace',
@@ -65,7 +65,7 @@ it('does not save an empty display name', async () => {
 
   await page.getByLabelText('Display name').fill('  ')
 
-  await expect.element(page.getByRole('button', { name: 'Save changes' })).toBeDisabled()
+  await expect.element(page.getByRole('button', { name: 'Save profile' })).toBeDisabled()
   expect(deps.update).not.toHaveBeenCalled()
 })
 
@@ -77,7 +77,7 @@ it('shows why the profile was not saved', async () => {
   })
   const onUpdated = await mount(deps)
 
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { name: 'Save profile' }).click()
 
   await expect.element(page.getByText('Changes saved.')).not.toBeInTheDocument()
   expect(onUpdated).not.toHaveBeenCalled()

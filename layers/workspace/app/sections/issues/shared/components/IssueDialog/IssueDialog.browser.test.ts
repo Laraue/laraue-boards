@@ -210,7 +210,7 @@ it('notifies the board and stays open after the issue is saved', async () => {
   })
 
   await page.getByLabelText('Content').fill('Document the reproduction steps')
-  await page.getByRole('button', { name: 'Save changes' }).click()
+  await page.getByRole('button', { exact: true, name: 'Save' }).click()
 
   expect(onSaved).toHaveBeenCalledOnce()
   expect(onClose).not.toHaveBeenCalled()
