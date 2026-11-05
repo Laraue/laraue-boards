@@ -1,4 +1,5 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
+import type { DOMWrapper } from '@vue/test-utils'
 import { afterEach, expect, it, vi } from 'vitest'
 import { page, userEvent } from 'vitest/browser'
 
@@ -157,6 +158,7 @@ const chooseDestination = async () => {
 afterEach(async () => {
   await currentWrapper?.unmount()
   currentWrapper = undefined
+  await page.viewport(1440, 900)
 })
 
 it('shows the empty text when there are no issues', async () => {
@@ -175,6 +177,7 @@ it('shows a date rather than a clock time for an issue created today', async () 
 })
 
 it.each([390, 1440])('only shows checkboxes in selection mode at %ipx', async (width) => {
+  await page.viewport(width, 900)
   const wrapper = await mount(createDeps())
   wrapper.element.setAttribute('style', `width: ${width}px`)
   const keyOffset = () => {
@@ -216,9 +219,10 @@ it('only offers checkboxes for movable issues and leaves selection mode when the
   expect(page.getByRole('checkbox', { name: 'Select issue' }).all()).toHaveLength(0)
 })
 
-it.each([320, 390, 768, 1024, 1440])(
+it.each([320, 390, 767, 768, 1024, 1440])(
   'keeps long issue content and controls inside a %ipx list, including the backlog',
   async (width) => {
+    await page.viewport(width, 900)
     const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
     const container = wrapper.get('.issue-list-container').element
     container.setAttribute('style', `width: ${width}px`)
@@ -227,7 +231,7 @@ it.each([320, 390, 768, 1024, 1440])(
       const bounds = container.getBoundingClientRect()
       expect(container.scrollWidth).toBeLessThanOrEqual(width + 1)
       for (const element of container.querySelectorAll(
-        '.issue-key, .issue-content, .issue-title, .issue-time, .issue-status, .issue-person, .issue-attributes, .issue-location, .row-actions',
+        '.issue-key, .issue-content, .issue-time, .issue-status, .issue-person, .issue-attributes, .issue-location, .row-actions',
       )) {
         const rect = element.getBoundingClientRect()
         expect(rect.left).toBeGreaterThanOrEqual(bounds.left)
@@ -245,9 +249,14 @@ it.each([320, 390, 768, 1024, 1440])(
         const actions = row.querySelector('.row-actions button')!
         const created = row.querySelector('.issue-created')!
         const padding = Number.parseFloat(getComputedStyle(row).paddingRight)
-        expect(created.getBoundingClientRect().right).toBeLessThanOrEqual(
-          actions.getBoundingClientRect().left - Number.parseFloat(getComputedStyle(row).columnGap),
-        )
+        const dateBounds = created.getBoundingClientRect()
+        const actionBounds = actions.getBoundingClientRect()
+        expect(
+          dateBounds.bottom <= actionBounds.top ||
+            dateBounds.top >= actionBounds.bottom ||
+            dateBounds.right <= actionBounds.left ||
+            dateBounds.left >= actionBounds.right,
+        ).toBe(true)
         expect(actions.getBoundingClientRect().right).toBeLessThanOrEqual(
           row.getBoundingClientRect().right - padding + 1,
         )
@@ -255,11 +264,16 @@ it.each([320, 390, 768, 1024, 1440])(
     }
 
     await vi.waitFor(expectContentToFit)
-    expect(wrapper.findAll('.attribute-label')).toHaveLength(3)
+    expect(wrapper.findAll('.attribute-label')).toHaveLength(2)
     expect(page.getByRole('button', { name: 'Attributes' }).all()).toHaveLength(0)
-    expect(wrapper.get('.issue-attributes').element.getBoundingClientRect().top).toBeGreaterThan(
-      wrapper.get('.issue-content').element.getBoundingClientRect().bottom,
-    )
+    const headerBounds = wrapper.get('.issue-header').element.getBoundingClientRect()
+    const detailsBounds = wrapper.get('.issue-details').element.getBoundingClientRect()
+    const attributeBounds = wrapper.get('.issue-attributes').element.getBoundingClientRect()
+    expect(
+      width < 960
+        ? detailsBounds.top > headerBounds.bottom
+        : attributeBounds.left > headerBounds.right,
+    ).toBe(true)
     await wrapper.setProps({
       hideLocation: true,
       hideStatus: true,
@@ -268,56 +282,108 @@ it.each([320, 390, 768, 1024, 1440])(
     await vi.waitFor(expectContentToFit)
     expect(wrapper.find('.issue-location').exists()).toBe(false)
     expect(wrapper.find('.issue-status').exists()).toBe(false)
-    expect(wrapper.findAll('.attribute-label')).toHaveLength(3)
+    expect(wrapper.findAll('.attribute-label')).toHaveLength(2)
+  },
+)
+
+it.each([320, 390, 767, 768])(
+  'keeps attributes and date together below the header at %ipx',
+  async (width) => {
+    await page.viewport(width, 900)
+    const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
+    wrapper.get('.issue-list-container').element.setAttribute('style', 'width: ' + width + 'px')
+    const row = wrapper.get('.issue-list-row').element
+    const header = row.querySelector('.issue-header')!.getBoundingClientRect()
+    const details = row.querySelector('.issue-details')!.getBoundingClientRect()
+    expect(header.bottom).toBeLessThan(details.top)
+    expect(row.querySelector('.issue-created')!.parentElement?.className).toBe('issue-controls')
+    expect(wrapper.get('.issue-person .truncate').text()).toBe('Ada')
+  },
+)
+
+it.each([767, 768])(
+  'places the assignee beside the date and metadata to the left of attributes at %ipx',
+  async (width) => {
+    await page.viewport(width, 900)
+    const wrapper = await mount(createDeps(), vi.fn<() => void>(), [
+      {
+        ...issues[0]!,
+        attributes: [{ color: '#123456', kind: 'text', name: 'Priority', value: 'High' }],
+        title: 'Long issue title '.repeat(10),
+      },
+    ])
+    wrapper.get('.issue-list-container').element.setAttribute('style', 'width: ' + width + 'px')
+    const row = wrapper.get('.issue-list-row').element
+    const title = row.querySelector('.issue-content')!.getBoundingClientRect()
+    const person = row.querySelector('.issue-person')!.getBoundingClientRect()
+    const actions = row.querySelector('.row-actions')!.getBoundingClientRect()
+    const attributes = row.querySelector('.issue-attributes-date')!.getBoundingClientRect()
+    const metadata = row.querySelector('.issue-metadata')!.getBoundingClientRect()
+    const date = row.querySelector('.issue-created')!.getBoundingClientRect()
+    expect(person.top).toBeGreaterThan(title.bottom)
+    expect(date.right).toBeLessThan(person.left)
+    expect(person.right).toBeLessThan(actions.left)
+    expect(metadata.right).toBeLessThan(attributes.left)
+    expect(attributes.top + attributes.height / 2).toBeCloseTo(metadata.top + metadata.height / 2)
   },
 )
 
 it.each([1024, 1440])(
-  'centers desktop metadata beside the title and attributes at %ipx',
+  'aligns desktop columns with one attribute and a remainder count at %ipx',
   async (width) => {
+    await page.viewport(width, 900)
     const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
-    wrapper.get('.issue-list-container').element.setAttribute('style', `width: ${width}px`)
-    const row = wrapper.get('.issue-list-row').element
+    wrapper.get('.issue-list-container').element.setAttribute('style', 'width: ' + width + 'px')
+    const rows = wrapper.findAll('.issue-list-row')
+    const row = rows[0]!.element
     const title = row.querySelector('.issue-content')!.getBoundingClientRect()
     const attributes = row.querySelector('.issue-attributes')!.getBoundingClientRect()
-    const location = row.querySelector('.issue-location')!.getBoundingClientRect()
-    expect(attributes.right).toBeLessThan(location.left)
-    for (const control of row.querySelectorAll(
-      '.issue-location, .issue-status, .issue-person, .issue-created, .row-actions',
-    )) {
-      const rect = control.getBoundingClientRect()
-      expect(rect.top + rect.height / 2).toBeCloseTo((title.top + attributes.bottom) / 2)
+    expect(attributes.left).toBeGreaterThan(title.right)
+    expect(row.querySelectorAll('.attribute-label')).toHaveLength(2)
+    expect(row.querySelector('.attribute-label-more')?.textContent).toContain('+2')
+    const columns = [
+      '.issue-location',
+      '.issue-status',
+      '.issue-person',
+      '.issue-created',
+      '.row-actions',
+    ]
+    let right = title.right
+    for (const selector of columns) {
+      const bounds = row.querySelector(selector)!.getBoundingClientRect()
+      expect(bounds.left).toBeGreaterThan(right)
+      right = bounds.right
+      for (const other of rows
+        .slice(1)
+        .filter((candidate: DOMWrapper<Element>) => candidate.find(selector).exists())) {
+        expect(other.get(selector).element.getBoundingClientRect().left).toBeCloseTo(bounds.left)
+      }
     }
   },
 )
 
-it.each([320, 390, 768])(
-  'wraps the title under its key and aligns the mobile footer at %ipx',
+it.each([320, 390])(
+  'keeps the assignee and actions beside the date with metadata below attributes at %ipx',
   async (width) => {
+    await page.viewport(width, 900)
     const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
-    wrapper.get('.issue-list-container').element.setAttribute('style', `width: ${width}px`)
+    wrapper.get('.issue-list-container').element.setAttribute('style', 'width: ' + width + 'px')
+    const row = wrapper.get('.issue-list-row').element
+    const title = row.querySelector('.issue-content')!.getBoundingClientRect()
+    const person = row.querySelector('.issue-person')!.getBoundingClientRect()
+    const date = row.querySelector('.issue-created')!.getBoundingClientRect()
+    const actions = row.querySelector('.row-actions')!.getBoundingClientRect()
+    const attributes = row.querySelector('.issue-attributes-date')!.getBoundingClientRect()
+    const metadata = row.querySelector('.issue-metadata')!.getBoundingClientRect()
+    expect(person.top).toBeGreaterThan(title.bottom)
+    expect(date.right).toBeLessThan(person.left)
+    expect(person.right).toBeLessThan(actions.left)
+    expect(metadata.top).toBeGreaterThan(attributes.bottom)
     const titleRange = document.createRange()
-    titleRange.selectNodeContents(wrapper.get('.issue-title').element)
+    titleRange.selectNodeContents(row.querySelector('.issue-title')!)
     const lines = Array.from(titleRange.getClientRects()).filter((rect) => rect.width > 0)
     expect(lines.length).toBeGreaterThan(1)
-    expect(lines[1]!.left).toBeCloseTo(
-      wrapper.get('.issue-content').element.getBoundingClientRect().left,
-    )
-    const element: Element = wrapper.element
-    const controls = element.querySelectorAll(
-      '.issue-list-row:first-child :is(.issue-person, .issue-created, .row-actions)',
-    )
-    expect(
-      new Set(
-        Array.from(controls, (control) => {
-          const rect = control.getBoundingClientRect()
-          return rect.top + rect.height / 2
-        }),
-      ).size,
-    ).toBe(1)
-    expect(wrapper.get('.issue-status').element.getBoundingClientRect().top).toBeLessThan(
-      wrapper.get('.issue-footer').element.getBoundingClientRect().top,
-    )
+    expect(lines[1]!.left).toBeCloseTo(title.left)
   },
 )
 

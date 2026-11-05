@@ -102,7 +102,7 @@ const activeId = ref<string>()
 
 <style scoped>
 .filter-menu-popover {
-  --base-popover-width: min(320px, calc(100vw - var(--space-8)));
+  --base-popover-width: min(18rem, calc(100vw - var(--space-8)));
 }
 
 .filter-menu {

@@ -172,46 +172,9 @@ const handleMoved = async () => {
   gap: var(--space-2);
   min-width: 0;
 }
-
-/* Use the available content width, including when the sidebar is open. */
 @container issue-list (min-width: 60rem) {
   .issue-list {
-    column-gap: var(--space-3);
-    grid-template-columns:
-      var(--issue-selection-column,) [key] max-content [title] minmax(0, 1fr)
-      [location] fit-content(9rem) [status] fit-content(9rem)
-      [person] var(--control-height-small) [time] max-content
-      [actions] max-content;
-    row-gap: 0;
-  }
-
-  .issue-list:has(.row-select-target) {
-    --issue-selection-column: [select] var(--control-height-small);
-  }
-
-  .issue-list.hide-location {
-    grid-template-columns:
-      var(--issue-selection-column,) [key] max-content [title] minmax(0, 1fr)
-      [status] fit-content(9rem) [person] var(--control-height-small)
-      [time] max-content [actions] max-content;
-  }
-
-  .issue-list:not(:has(.issue-status)) {
-    grid-template-columns:
-      var(--issue-selection-column,) [key] max-content [title] minmax(0, 1fr)
-      [location] fit-content(9rem) [person] var(--control-height-small)
-      [time] max-content [actions] max-content;
-  }
-
-  .issue-list.hide-location:not(:has(.issue-status)) {
-    grid-template-columns:
-      var(--issue-selection-column,) [key] max-content [title] minmax(0, 1fr)
-      [person] var(--control-height-small) [time] max-content
-      [actions] max-content;
-  }
-
-  .issue-list > * {
-    grid-column: 1 / -1;
+    gap: 0;
   }
 }
 </style>
