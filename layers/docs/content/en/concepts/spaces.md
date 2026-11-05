@@ -17,7 +17,7 @@ The first time you log in, you already have a space set up for you, with a defau
 
 Open a space from the list in the sidebar to see everything in it: your Backlog, and a grid of all its boards.
 
-![A space overview showing the Backlog and a grid of boards with progress bars](https://laraue.com/static/images/blog/docs/laraue-boards/space-overview.jpg)
+![A space overview showing the Backlog, the list of boards with progress bars, and the About this space panel](https://laraue.com/static/images/blog/docs/laraue-boards/space-overview.jpg)
 
 Each board card in the grid shows a segmented progress bar and a breakdown by status, so you can see how a board is doing without opening it. Tap a board card to open it, or tap the Backlog row to see the issues waiting there.
 
@@ -55,7 +55,7 @@ They're also context for AI agents: [Claude over MCP](/documentation/integration
 
 Open the space, then its settings, to edit its name, key, color, description and links — all saved together with **Save** at the top of the page — or to delete it.
 
-![The Edit space screen, with Name, Key, and Color fields, and Save changes and Delete space buttons](https://laraue.com/static/images/blog/docs/laraue-boards/edit-space.jpg)
+![The space settings page, with Name, Key, Color, About and Links fields and the Save button at the top](https://laraue.com/static/images/blog/docs/laraue-boards/edit-space.jpg)
 
 Deleting a space permanently deletes everything in it — every board and every issue. This cannot be undone. We're planning to add a step where you can move the boards to another space before deleting one, instead of losing them. Until then, move anything you want to keep out of the space first.
 

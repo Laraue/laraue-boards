@@ -10,6 +10,8 @@ updatedAt: 2026-10-18
 ---
 Links connect two issues of the same organization and say how they relate. They're listed in the **Links** section on the issue page, grouped by what they mean from that issue's side.
 
+![The Links section on an issue page, with the issue that blocks it listed under Blocked by](https://laraue.com/static/images/blog/docs/laraue-boards/issue-links.jpg)
+
 ## Link types
 
 - **Blocks / Blocked by** — one issue must be done before the other. If ISS-3 blocks ISS-7, ISS-7 shows it under **Blocked by**, and ISS-3 shows ISS-7 under **Blocks**. Blocks links can't form a loop.

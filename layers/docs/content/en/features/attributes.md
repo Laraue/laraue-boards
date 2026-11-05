@@ -48,6 +48,8 @@ A space's settings and a board's settings each have an **Attributes** section. A
 
 Tap **Override** to give the space or board its own settings, then tick **Available** and **Shown on cards** for each attribute. Changes above it no longer reach it, and the section is marked **Overridden**. **Reset to inherited** goes back to following the level above. Both only change the form: tap **Save** at the top of the page to apply them together with the rest of the settings.
 
+![The Attributes section of a board's settings, overridden, with Available and Shown on cards checkboxes for each attribute](https://laraue.com/static/images/blog/docs/laraue-boards/attribute-settings.jpg)
+
 - A space's backlog always follows the space's settings.
 - An attribute added to the organization after a space or board got its own settings is off there until someone turns it on.
 
