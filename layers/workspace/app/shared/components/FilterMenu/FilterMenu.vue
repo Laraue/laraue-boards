@@ -112,12 +112,12 @@ const activeId = ref<string>()
 }
 
 /* The accessible name includes the number of active filters. */
-.filter-trigger[data-active] {
+.filter-menu-popover :deep(.filter-trigger[data-active]) {
   background: var(--color-accent-soft);
   color: var(--color-accent);
 }
 
-.filter-trigger[data-active]::after {
+.filter-menu-popover :deep(.filter-trigger[data-active]::after) {
   background: var(--color-accent);
   border-radius: var(--radius-full);
   content: '';
@@ -128,7 +128,7 @@ const activeId = ref<string>()
   width: var(--space-1);
 }
 
-.filter-trigger {
+.filter-menu-popover :deep(.filter-trigger) {
   position: relative;
 }
 
