@@ -272,21 +272,24 @@ it.each([320, 390, 768, 1024, 1440])(
   },
 )
 
-it.each([1024, 1440])('centers desktop metadata beside the title and attributes at %ipx', async (width) => {
-  const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
-  wrapper.get('.issue-list-container').element.setAttribute('style', `width: ${width}px`)
-  const row = wrapper.get('.issue-list-row').element
-  const title = row.querySelector('.issue-content')!.getBoundingClientRect()
-  const attributes = row.querySelector('.issue-attributes')!.getBoundingClientRect()
-  const location = row.querySelector('.issue-location')!.getBoundingClientRect()
-  expect(attributes.right).toBeLessThan(location.left)
-  for (const control of row.querySelectorAll(
-    '.issue-location, .issue-status, .issue-person, .issue-created, .row-actions',
-  )) {
-    const rect = control.getBoundingClientRect()
-    expect(rect.top + rect.height / 2).toBeCloseTo((title.top + attributes.bottom) / 2)
-  }
-})
+it.each([1024, 1440])(
+  'centers desktop metadata beside the title and attributes at %ipx',
+  async (width) => {
+    const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
+    wrapper.get('.issue-list-container').element.setAttribute('style', `width: ${width}px`)
+    const row = wrapper.get('.issue-list-row').element
+    const title = row.querySelector('.issue-content')!.getBoundingClientRect()
+    const attributes = row.querySelector('.issue-attributes')!.getBoundingClientRect()
+    const location = row.querySelector('.issue-location')!.getBoundingClientRect()
+    expect(attributes.right).toBeLessThan(location.left)
+    for (const control of row.querySelectorAll(
+      '.issue-location, .issue-status, .issue-person, .issue-created, .row-actions',
+    )) {
+      const rect = control.getBoundingClientRect()
+      expect(rect.top + rect.height / 2).toBeCloseTo((title.top + attributes.bottom) / 2)
+    }
+  },
+)
 
 it.each([320, 390, 768])(
   'wraps the title under its key and aligns the mobile footer at %ipx',

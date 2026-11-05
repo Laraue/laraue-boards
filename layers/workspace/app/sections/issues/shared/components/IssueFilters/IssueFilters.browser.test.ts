@@ -80,9 +80,10 @@ it('updates a numeric range filter', async () => {
   ])
 })
 
+const trigger = () => page.getByRole('button', { name: /^Filters/ }).element()
+
 it('highlights the trigger when only board statuses are selected and clears it on reset', async () => {
   await mount()
-  const trigger = () => page.getByRole('button', { name: /^Filters/ }).element()
   const originalColor = getComputedStyle(trigger()).color
   const originalBackground = getComputedStyle(trigger()).backgroundColor
   await currentWrapper!.setProps({

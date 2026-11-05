@@ -497,6 +497,10 @@ const save = async (field: 'assignee' | 'status', value: string) => {
   font-size: var(--icon-size);
 }
 
+.issue-time {
+  line-height: 1;
+}
+
 .issue-location {
   align-items: center;
   color: var(--color-muted);
@@ -548,7 +552,7 @@ a.issue-location-board:hover {
     border: 0;
     border-bottom: 1px solid var(--color-divider);
     border-radius: 0;
-    column-gap: var(--space-2);
+    column-gap: var(--space-3);
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     grid-template-rows: auto;
@@ -568,6 +572,7 @@ a.issue-location-board:hover {
   .issue-content,
   .selection-mode:has(.row-select-target) .issue-content {
     display: grid;
+    gap: 0;
     grid-column: key / span 2;
     grid-row: 1;
     grid-template-columns: subgrid;
