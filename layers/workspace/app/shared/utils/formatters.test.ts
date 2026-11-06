@@ -10,3 +10,13 @@ test('compact task dates show the day and month today, and add the year for olde
   expect(formatCompactDate(new Date(2026, 7, 3, 12), today)).toBe('Aug 3')
   expect(formatCompactDate(new Date(2025, 7, 3, 12), today)).toBe('Aug 3, 2025')
 })
+
+test('storage sizes use the binary units the plans are counted in', () => {
+  const { formatStorageSize } = getFormatters('en')
+
+  expect(formatStorageSize(100 * 1024 * 1024)).toBe('100 MB')
+  expect(formatStorageSize(11 * 1024 ** 3)).toBe('11 GB')
+  expect(formatStorageSize(1536 * 1024)).toBe('1.5 MB')
+  expect(formatStorageSize(0)).toBe('0 B')
+  expect(getFormatters('ru').formatStorageSize(1536 * 1024)).toBe('1,5 МБ')
+})

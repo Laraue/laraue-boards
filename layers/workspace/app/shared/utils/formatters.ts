@@ -9,6 +9,19 @@ const createFormatters = (locale: Locale) => {
   const dayMonth = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' })
   const localDate = new Intl.DateTimeFormat(locale)
   const number = new Intl.NumberFormat(locale)
+  const size = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+  const sizeUnits = locale === 'ru' ? ['Б', 'КБ', 'МБ', 'ГБ', 'ТБ'] : ['B', 'KB', 'MB', 'GB', 'TB']
+
+  // Storage sizes in binary units, the way the plans count them: 100 MB is 100 × 1024² bytes.
+  const formatStorageSize = (bytes: number) => {
+    let value = bytes
+    let unit = 0
+    while (Math.abs(value) >= 1024 && unit < sizeUnits.length - 1) {
+      value /= 1024
+      unit++
+    }
+    return `${size.format(value)} ${sizeUnits[unit]}`
+  }
 
   const formatCompactDate = (value: FormatValue, now: Date) => {
     const moment = new Date(value)
@@ -33,6 +46,7 @@ const createFormatters = (locale: Locale) => {
     formatLocalDate: (value: FormatValue) => localDate.format(new Date(value)),
     formatNumber: (value: number) => number.format(value),
     formatRecent,
+    formatStorageSize,
     formatTime: (value: FormatValue) => time.format(new Date(value)),
   }
 }

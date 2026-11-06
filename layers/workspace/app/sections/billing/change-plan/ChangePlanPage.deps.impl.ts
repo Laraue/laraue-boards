@@ -16,6 +16,11 @@ const mapPlan = (tariff: PersonalTariff | Schemas['TeamSubscription']): BillingP
   id: tariff.id,
   isFree: Number(tariff.price ?? 0) === 0,
   issuesPerMonth: Number(tariff.limitIssuesPerMonth ?? 0) || undefined,
+  storageAddonPrices: tariff.storageAddonPrices.map((price) => ({
+    addonId: price.storageAddonId,
+    formattedPrice: price.formattedPrice,
+  })),
+  storageMegabytes: Number(tariff.includedStorageMegabytes),
   title: tariff.title,
   tokens: Number(tariff.includedTokensCount),
 })
@@ -34,15 +39,27 @@ export const createChangePlanPageDeps = (
 
     return {
       personal: tariffs.personalSubscriptions.filter(isBoardsTariff).map(mapPlan),
+      storageAddons: tariffs.storageAddons.map((addon) => ({
+        formattedPrice: addon.formattedPrice,
+        id: addon.id,
+        storageMegabytes: Number(addon.storageMegabytes),
+        title: addon.title,
+      })),
       team: tariffs.teamSubscriptions.map(mapPlan),
     }
   },
-  startCheckout: async ({ currencyCode, itemId, kind }) => {
+  startCheckout: async ({ currencyCode, itemId, kind, storageAddonId }) => {
     const checkout = await request(
-      client.POST('/api/billing/checkout', { body: { currencyCode, itemId, kind } }),
+      client.POST('/api/billing/checkout', {
+        body: { currencyCode, itemId, kind, storageAddonId },
+      }),
     )
 
-    return { url: checkout.url }
+    if (checkout.storageOverLimit) {
+      return { ...checkout.storageOverLimit, kind: 'storageOverLimit' }
+    }
+
+    return { kind: 'payment', url: checkout.url ?? '' }
   },
   view: async ({ signal }) => {
     const summary = await request(client.GET('/api/billing/summary', { signal }))
@@ -50,6 +67,8 @@ export const createChangePlanPageDeps = (
     return {
       canPay: summary.canPay,
       kind: summary.$type === 'personal' ? 'personal' : 'team',
+      storageAddonId: summary.storage.storageAddonId ?? null,
+      storageUsedBytes: summary.storage.usedBytes,
       subscriptionCode: summary.subscriptionCode,
     }
   },

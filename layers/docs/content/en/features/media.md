@@ -1,12 +1,12 @@
 ---
 title: Attachments — photos, videos and documents in issues
-description: How photos, videos and documents are attached to Laraue Boards issues, stored and displayed. Originals stream from Telegram; you can add images and documents (PDF, DOCX, Markdown, TXT, JSON) yourself.
-keywords: [telegram photo task, video attachment kanban, media in project management, photo issue tracker, telegram video task board, attach pdf to task, document attachment issue tracker]
+description: How photos, videos and documents are attached to Laraue Boards issues, stored and displayed, and how much storage each plan includes. You can add images and documents (PDF, DOCX, Markdown, TXT, JSON) yourself.
+keywords: [issue tracker file storage limit, extra storage add-on, telegram photo task, video attachment kanban, media in project management, photo issue tracker, telegram video task board, attach pdf to task, document attachment issue tracker]
 type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-10-23
+updatedAt: 2026-11-07
 ---
 When you capture a Telegram message that contains photos, videos or documents, those files become part of the issue.
 
@@ -35,11 +35,29 @@ Comments can carry attachments too. Today they're added through the [MCP server]
 
 ## How storage works
 
-Original files are not stored on Laraue Boards — they're streamed from Telegram each time you open them, in their original quality. Preview thumbnails are cached on our server, so the small previews load quickly without hitting Telegram every time.
+Files you attach yourself — in the web app, or through the [MCP server](/documentation/integrations/mcp) — are kept in our own file storage, together with their previews. Files from Telegram messages stay in Telegram: they're streamed from there each time you open them. So do files uploaded before our own storage was added: they're kept in a private Telegram chat of the bot.
 
-This is also true for images and documents you add yourself through the interface, not just ones forwarded from a chat. When you upload a file directly, our bot actually sends it into a private chat that only the bot can access — that's where it's stored, the same way as any other file from Telegram. This is why attachment storage stays free.
+## Storage limit
 
-We're planning to add the option to store files directly on our own servers, for people who don't want to depend on Telegram as storage. That option will be paid, since it's a real storage cost on our side rather than Telegram's.
+Every organization has its own storage. A file counts toward the organization it's attached in, whoever attaches it: in your personal organization it's your personal plan's storage, in a team organization it's the team plan's.
+
+| Plan | Storage |
+|---|---|
+| Free (personal or team) | 100 MB |
+| Plus, Team, Business | 1 GB |
+| Paid plan with extra storage | 1 GB + 10 GB or + 50 GB |
+
+What counts is each file you upload plus its preview. Files from Telegram messages don't count, and neither do the older files kept in Telegram. The same file attached twice in one organization is stored once and counts once. Deleting an attachment frees its space once no other attachment uses the same file.
+
+You can see how much is used on **Organization profile → Plan and usage**, in the **Storage left** card.
+
+When a file doesn't fit, it isn't attached: the message says how much is used, how much the plan gives, and how to get more. An AI agent gets the same message from the MCP server. To make room, delete attachments you no longer need, or get more storage.
+
+### Getting more storage
+
+Open **Plan and usage → Get more storage**. Extra storage is added to a paid plan and paid together with it, in one payment, every month: +10 GB or +50 GB (the prices are in the [pricing section](/#pricing)). Choose it in the payment window when you buy or extend a plan; to change it later, extend the plan with another option. Only the organization owner can pay.
+
+You can't move to less storage than your files already take: the payment window says how much to delete first. If a paid plan ends while you use more than the Free plan's 100 MB, nothing is deleted — your files stay — but new files can't be attached until you delete enough or pay for the plan again.
 
 ## Media-only issues
 

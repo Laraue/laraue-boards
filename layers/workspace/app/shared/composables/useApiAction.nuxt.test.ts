@@ -29,6 +29,22 @@ test('keeps the backend text of a failure for the form', async () => {
   assert.equal(message.value, 'Name is required.')
 })
 
+test('words a full storage itself instead of the backend text', async () => {
+  const { execute, message } = useApiAction(async () => {
+    throw new ApiError(402, 'English text from the backend', {
+      quotaBytes: 104_857_600,
+      requiredBytes: 2_097_152,
+      usedBytes: 103_809_024,
+    })
+  })
+
+  assert.isUndefined(await execute())
+  assert.equal(
+    message.value,
+    'The organization’s storage is full: 99 MB of 100 MB used, and the files need 2 MB. Delete attachments, or get more storage on the billing page: upgrade the plan or add storage to it.',
+  )
+})
+
 test('shows other failures as a toast', async () => {
   const { toasts } = useToast()
   toasts.value = []

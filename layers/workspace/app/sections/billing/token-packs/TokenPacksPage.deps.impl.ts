@@ -32,7 +32,8 @@ export const createTokenPacksPageDeps = (
       client.POST('/api/billing/checkout', { body: { currencyCode, itemId, kind } }),
     )
 
-    return { url: checkout.url }
+    // Only a plan checkout can be refused for storage and come back without an address.
+    return { url: checkout.url ?? '' }
   },
   view: async ({ signal }) => {
     const summary = await request(client.GET('/api/billing/summary', { signal }))

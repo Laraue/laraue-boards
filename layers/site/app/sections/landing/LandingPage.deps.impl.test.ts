@@ -9,10 +9,12 @@ const personal = {
   currencyCode: 'USD',
   formattedPrice: '0$',
   id: 'free',
+  includedStorageMegabytes: 100,
   includedTokensCount: '0',
   limitFreeTeamOrganizationsCount: 1,
   limitIssuesPerMonth: 500,
   price: 0,
+  storageAddonPrices: [],
   title: 'Free',
   type: 'LaraueBoardsPersonal',
 }
@@ -20,6 +22,7 @@ const personal = {
 test('requests the Boards tariffs without choosing a currency', async () => {
   const { client, requests } = createTestBillingApiClient(() => ({
     personalSubscriptions: [],
+    storageAddons: [],
     teamSubscriptions: [],
   }))
 
@@ -34,11 +37,22 @@ test('requests the Boards tariffs without choosing a currency', async () => {
 test('maps billing tariffs to the landing view model', async () => {
   const { client } = createTestBillingApiClient(() => ({
     personalSubscriptions: [personal],
+    storageAddons: [
+      {
+        currencyCode: 'USD',
+        formattedPrice: '$1',
+        id: 'addon-10',
+        price: 1,
+        storageMegabytes: 10240,
+        title: '+10 GB',
+      },
+    ],
     teamSubscriptions: [
       {
         ...personal,
         billingDuration: 3,
         billingPeriod: 'Month',
+        includedStorageMegabytes: 1024,
         includedTokensCount: '750000',
         limitIssuesPerMonth: null,
         price: '6',
@@ -58,10 +72,12 @@ test('maps billing tariffs to the landing view model', async () => {
         id: 'free',
         issuesPerMonth: 500,
         price: 0,
+        storageMegabytes: 100,
         title: 'Free',
         tokens: 0,
       },
     ],
+    storageAddons: [{ formattedPrice: '$1', id: 'addon-10', storageMegabytes: 10_240 }],
     team: [
       {
         billing: { duration: 3, period: 'month' },
@@ -71,6 +87,7 @@ test('maps billing tariffs to the landing view model', async () => {
         id: 'free',
         issuesPerMonth: undefined,
         price: 6,
+        storageMegabytes: 1024,
         title: 'Team',
         tokens: 750000,
       },
@@ -84,6 +101,7 @@ test('treats a personal tariff without an organization limit as unlimited', asyn
       { ...personal, limitFreeTeamOrganizationsCount: null },
       { ...personal, id: 'no-field', limitFreeTeamOrganizationsCount: undefined },
     ],
+    storageAddons: [],
     teamSubscriptions: [],
   }))
 
@@ -98,10 +116,15 @@ test('treats a personal tariff without an organization limit as unlimited', asyn
 test('skips tariffs of other services', async () => {
   const { client } = createTestBillingApiClient(() => ({
     personalSubscriptions: [{ ...personal, type: 'MarkdownTranslatorPersonal' }],
+    storageAddons: [],
     teamSubscriptions: [],
   }))
 
-  assert.deepEqual(await createLandingPageDeps(client).getTariffs(), { personal: [], team: [] })
+  assert.deepEqual(await createLandingPageDeps(client).getTariffs(), {
+    personal: [],
+    storageAddons: [],
+    team: [],
+  })
 })
 
 test('reports the status code of a failed response', async () => {

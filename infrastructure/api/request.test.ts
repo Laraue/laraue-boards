@@ -35,6 +35,23 @@ test('throws the reason of a 402 response', async () => {
   })
 })
 
+test('throws the sizes of a full storage with its 402', async () => {
+  const call = request(
+    Promise.resolve({
+      error: {
+        errors: { storageQuota: ['104857600', '104857600', '2048'] },
+        message: 'The organization’s storage is full.',
+      },
+      response: response(402),
+    }),
+  )
+
+  await expect(call).rejects.toMatchObject({
+    status: 402,
+    storageQuota: { quotaBytes: 104_857_600, requiredBytes: 2048, usedBytes: 104_857_600 },
+  })
+})
+
 test('throws the status of other errors', async () => {
   const call = request(Promise.resolve({ error: 'server error', response: response(500) }))
 
