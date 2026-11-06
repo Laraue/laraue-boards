@@ -15,13 +15,14 @@ const free: LandingTariff = {
   id: 'free',
   issuesPerMonth: 100,
   price: 0,
+  storageMegabytes: 100,
   title: 'Free',
   tokens: 50,
 }
 
 test('builds offers without mounting the pricing component and clears them when tariffs disappear', () => {
   const offers = getLandingOffers(
-    { personal: [free], team: [free] },
+    { personal: [free], storageAddons: [], team: [free] },
     { locale: 'en', pricingUrl: 'https://example.com/#pricing', t },
   )
 
@@ -39,6 +40,7 @@ test('describes paid team offers per seat', () => {
   const offers = getLandingOffers(
     {
       personal: [],
+      storageAddons: [],
       team: [{ ...free, billing: { duration: 1, period: 'month' }, price: 10 }],
     },
     { locale: 'ru', pricingUrl: 'https://example.com/ru#pricing', t },

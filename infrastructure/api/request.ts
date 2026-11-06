@@ -1,15 +1,22 @@
-import { getInvalidInputError, getResponseMessage } from './getInvalidInputError'
+import {
+  getInvalidInputError,
+  getResponseMessage,
+  getStorageQuotaError,
+  type StorageQuotaError,
+} from './getInvalidInputError'
 
 type ApiResponse<Data, Error = unknown> =
   | { data: Data; error?: never; response: Response }
   | { data?: never; error: Error; response: Response }
 
 /** A request the API did not fulfil. `status` is 0 when no response came back; `reason` is the
- * backend's own text for the user (validation errors, payment required), empty otherwise. */
+ * backend's own text for the user (validation errors, payment required), empty otherwise.
+ * `storageQuota` is set when an upload was refused because the organization's storage is full. */
 export class ApiError extends Error {
   constructor(
     readonly status: number,
     readonly reason = '',
+    readonly storageQuota?: StorageQuotaError,
   ) {
     super(`API request failed with status ${status}`)
   }
@@ -44,5 +51,7 @@ export const request = async <Response extends ApiResponse<unknown>>(
     throw new ApiError(status, getInvalidInputError(error).message)
   }
   // Payment required carries the reason (no AI credits, plan limit) - show it instead of a generic failure.
-  throw new ApiError(status, status === 402 ? getResponseMessage(error) : '')
+  throw status === 402
+    ? new ApiError(status, getResponseMessage(error), getStorageQuotaError(error))
+    : new ApiError(status)
 }

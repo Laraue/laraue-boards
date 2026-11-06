@@ -16,6 +16,12 @@
         <NuxtLink :to="localePath('terms', locale)">{{ t('terms_link') }}</NuxtLink>
         .
       </p>
+      <p
+        v-if="storageAddonsText"
+        class="pricing-note">
+        {{ t('storage_note', { addons: storageAddonsText }) }}
+        <NuxtLink :to="storageDocsHref">{{ t('storage_link') }}</NuxtLink>
+      </p>
       <p class="pricing-note">
         {{ t('tokens_note') }}
         <NuxtLink :to="tokensDocsHref">{{ t('tokens_link') }}</NuxtLink>
@@ -89,12 +95,15 @@ const { locale, t } = useI18n({
     billing_label_n_months: 'every {count} months',
     feature_free_orgs: '{count} free team organization(s)',
     feature_issues: 'Up to {count} issues / month',
+    feature_storage: '{size} of file storage',
+    feature_storage_org: '{size} of file storage for the whole organization',
     feature_tokens: '{count} tokens included',
     feature_tokens_monthly: '{count} tokens / month',
     feature_tokens_monthly_org: '{count} tokens / month for the whole organization',
     feature_tokens_per_seat: '{count} tokens per seat',
     feature_unlimited_orgs: 'Unlimited team organizations',
     load_error: "Couldn't load pricing right now — please try again later.",
+    per_month: 'month',
     per_seat: 'per seat',
     personal_label: 'For individuals',
     personal_pricing_note:
@@ -103,6 +112,10 @@ const { locale, t } = useI18n({
     pricing_label: 'Pricing',
     pricing_sub: 'Free to start, both for individuals and teams. Upgrade only when you need more.',
     pricing_title: 'Simple, honest pricing',
+    storage_addon: '{size} for {price} / {period}',
+    storage_link: 'How storage works',
+    storage_note:
+      'Files you attach count toward storage. Paid plans can add more, paid together with the plan: {addons}.',
     team_label: 'For teams',
     team_pricing_note:
       'Paid plans are priced per seat, and their included tokens are per seat, combined across your whole team. The Free plan is per organization.',
@@ -118,12 +131,15 @@ const { locale, t } = useI18n({
     billing_label_n_months: 'раз в {count} мес.',
     feature_free_orgs: '{count} бесплатных организаций',
     feature_issues: 'До {count} issues в месяц',
+    feature_storage: '{size} для файлов',
+    feature_storage_org: '{size} для файлов на всю организацию',
     feature_tokens: '{count} токенов включено',
     feature_tokens_monthly: '{count} токенов в месяц',
     feature_tokens_monthly_org: '{count} токенов в месяц на всю организацию',
     feature_tokens_per_seat: '{count} токенов на место',
     feature_unlimited_orgs: 'Неограниченное число организаций',
     load_error: 'Не удалось загрузить тарифы — попробуйте позже.',
+    per_month: 'месяц',
     per_seat: 'за место',
     personal_label: 'Для себя',
     personal_pricing_note:
@@ -133,6 +149,10 @@ const { locale, t } = useI18n({
     pricing_sub:
       'Бесплатно для старта — как для себя, так и для команды. Платите только когда нужно больше.',
     pricing_title: 'Просто и честно',
+    storage_addon: '{size} за {price} / {period}',
+    storage_link: 'Как хранятся файлы',
+    storage_note:
+      'Прикреплённые файлы занимают место в хранилище. К платному тарифу можно добавить место, оплата вместе с тарифом: {addons}.',
     team_label: 'Для команд',
     team_pricing_note:
       'Платные тарифы оплачиваются за место, а включённые токены указаны за одно место и суммируются по всей команде. Бесплатный тариф — на организацию.',
@@ -150,6 +170,30 @@ const tokensDocsHref = computed(() =>
     locale.value,
   ),
 )
+const storageDocsHref = computed(() =>
+  localePath({ name: 'documentation-path', params: { path: ['features', 'media'] } }, locale.value),
+)
+
+// Binary units, the way the plans count storage: 1024 MB is 1 GB.
+const formatStorage = (megabytes: number): string => {
+  const [gigabytes, megabytesUnit] = locale.value === 'ru' ? ['ГБ', 'МБ'] : ['GB', 'MB']
+  return megabytes >= 1024
+    ? `${(megabytes / 1024).toLocaleString(locale.value, { maximumFractionDigits: 1 })} ${gigabytes}`
+    : `${megabytes.toLocaleString(locale.value)} ${megabytesUnit}`
+}
+
+const storageAddonsText = computed(() =>
+  (props.tariffs?.storageAddons ?? [])
+    .map((addon) =>
+      t('storage_addon', {
+        period: t('per_month'),
+        price: addon.formattedPrice,
+        size: `+${formatStorage(addon.storageMegabytes)}`,
+      }),
+    )
+    .join(', '),
+)
+
 const groups = computed(() => {
   if (!props.tariffs) {
     return []
@@ -200,6 +244,14 @@ const features = (tariff: LandingTariff, perSeat: boolean): string[] => [
   ...(tariff.tokens > 0 ? [tokensFeature(tariff, perSeat)] : []),
   ...(tariff.issuesPerMonth
     ? [t('feature_issues', { count: tariff.issuesPerMonth.toLocaleString(locale.value) })]
+    : []),
+  // Storage belongs to the organization: on a team plan it isn't per seat.
+  ...(tariff.storageMegabytes > 0
+    ? [
+        t(perSeat ? 'feature_storage_org' : 'feature_storage', {
+          size: formatStorage(tariff.storageMegabytes),
+        }),
+      ]
     : []),
   ...(tariff.freeOrganizations === null ? [t('feature_unlimited_orgs')] : []),
   ...(tariff.freeOrganizations

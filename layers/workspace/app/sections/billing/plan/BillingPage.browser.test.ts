@@ -22,6 +22,7 @@ const createDeps = (overrides: Partial<BillingPageDeps> = {}, canPay = true): Bi
     periodEndsAt: null,
     periodResets: false,
     purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+    storage: { quotaBytes: 104_857_600, usedBytes: 0 },
     subscriptionCode: 'Pro',
     tokens: { limit: 1000, remaining: 850, used: 150 },
   })),
@@ -82,6 +83,7 @@ it('shows when the allowance of a Free plan resets and the purchased tokens with
           expireAt: '2027-04-06T12:00:00Z',
           expiringCount: 25_000,
         },
+        storage: { quotaBytes: 104_857_600, usedBytes: 0 },
         subscriptionCode: 'Free',
         tokens: { limit: 25_000, remaining: 25_000, used: 0 },
       })),
@@ -116,6 +118,7 @@ it('says when a paid plan ends and that all the purchased tokens expire together
           expireAt: '2027-04-06T12:00:00Z',
           expiringCount: 100_000,
         },
+        storage: { quotaBytes: 104_857_600, usedBytes: 0 },
         subscriptionCode: 'Team',
         tokens: { limit: 750_000, remaining: 700_000, used: 50_000 },
       })),
@@ -150,6 +153,7 @@ it('offers to change the plan from the issues limit too', async () => {
         periodEndsAt: null,
         periodResets: false,
         purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        storage: { quotaBytes: 104_857_600, usedBytes: 0 },
         subscriptionCode: 'Free',
         tokens: { limit: 25_000, remaining: 25_000, used: 0 },
       })),
@@ -174,6 +178,7 @@ it('says in one line how many issues are used and when the count starts over', a
         periodEndsAt: '2026-11-06T12:00:00Z',
         periodResets: true,
         purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        storage: { quotaBytes: 104_857_600, usedBytes: 0 },
         subscriptionCode: 'Free',
         tokens: { limit: 25_000, remaining: 25_000, used: 0 },
       })),
@@ -196,6 +201,7 @@ it('says only how many issues are used when no reset is known', async () => {
         periodEndsAt: null,
         periodResets: false,
         purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        storage: { quotaBytes: 104_857_600, usedBytes: 0 },
         subscriptionCode: 'Free',
         tokens: { limit: 25_000, remaining: 25_000, used: 0 },
       })),
@@ -213,6 +219,36 @@ it('shows how many free team organizations are used, with a way to lift the limi
 
   // The first button is the plan card's, the second one belongs to the free team organizations limit.
   await page.getByRole('button', { name: 'Change plan' }).nth(1).click()
+
+  expect(onChangePlan).toHaveBeenCalled()
+})
+
+it('shows the storage left and what to do when it is over the limit', async () => {
+  const onChangePlan = vi.fn<() => void>()
+  await mountPage(
+    createDeps({
+      view: vi.fn<BillingPageDeps['view']>(async () => ({
+        canPay: true,
+        issuesPerMonth: null,
+        issuesResetAt: null,
+        kind: 'team',
+        periodEndsAt: null,
+        periodResets: true,
+        purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+        storage: { quotaBytes: 104_857_600, usedBytes: 157_286_400 },
+        subscriptionCode: 'Free',
+        tokens: { limit: 25_000, remaining: 25_000, used: 0 },
+      })),
+    }),
+    onChangePlan,
+  )
+
+  await expect.element(page.getByText('Storage left')).toBeVisible()
+  await expect
+    .element(page.getByText(/150 MB used of 100 MB: new files can’t be attached/))
+    .toBeVisible()
+
+  await page.getByRole('button', { name: 'Get more storage' }).click()
 
   expect(onChangePlan).toHaveBeenCalled()
 })

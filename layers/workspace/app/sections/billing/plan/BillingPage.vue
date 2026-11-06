@@ -52,6 +52,37 @@
             </BaseButton>
           </article>
 
+          <article class="usage-card">
+            <span class="usage-label">{{ t('storage') }}</span>
+            <strong class="usage-value">
+              {{ formatStorageSize(Math.max(0, page.storage.quotaBytes - page.storage.usedBytes)) }}
+            </strong>
+            <div class="usage-bar">
+              <span
+                :class="{ full: page.storage.usedBytes >= page.storage.quotaBytes }"
+                :style="{ width: storagePercent(page) }" />
+            </div>
+            <p class="usage-note muted">
+              {{
+                t(
+                  page.storage.usedBytes > page.storage.quotaBytes
+                    ? 'storageOver'
+                    : 'usedOfLimitInPlan',
+                  {
+                    limit: formatStorageSize(page.storage.quotaBytes),
+                    used: formatStorageSize(page.storage.usedBytes),
+                  },
+                )
+              }}
+            </p>
+            <BaseButton
+              class="usage-action"
+              @click="onChangePlan">
+              <IconArrowsExchange />
+              {{ t('getMoreStorage') }}
+            </BaseButton>
+          </article>
+
           <article
             v-if="page.issuesPerMonth"
             class="usage-card">
@@ -128,6 +159,7 @@ const { t } = useI18n({
     changePlan: 'Change plan',
     currentPlan: 'Current plan',
     freeTeamOrganizations: 'Free team organizations left',
+    getMoreStorage: 'Get more storage',
     issuesPerMonth: 'Issues left this month',
     loadError: 'Could not load billing summary',
     loading: 'Loading billing summary…',
@@ -137,6 +169,9 @@ const { t } = useI18n({
     purchasedNoDate: '+ {count} purchased tokens',
     purchasedPart: '+ {count} purchased tokens, {expiring} of them expire on {date}',
     resetsOn: 'Resets on {date}',
+    storage: 'Storage left',
+    storageOver:
+      '{used} used of {limit}: new files can’t be attached until you delete some or get more storage',
     teamPlan: 'Team plan',
     tokens: 'Tokens left',
     usedOfLimitInPlan: '{used} used of {limit} in the plan',
@@ -148,6 +183,7 @@ const { t } = useI18n({
     changePlan: 'Сменить тариф',
     currentPlan: 'Текущий тариф',
     freeTeamOrganizations: 'Осталось бесплатных командных организаций',
+    getMoreStorage: 'Увеличить хранилище',
     issuesPerMonth: 'Осталось задач в этом месяце',
     loadError: 'Не удалось загрузить информацию о биллинге',
     loading: 'Загрузка информации о биллинге…',
@@ -157,6 +193,9 @@ const { t } = useI18n({
     purchasedNoDate: '+ {count} купленных токенов',
     purchasedPart: '+ {count} купленных токенов, {expiring} из них сгорят {date}',
     resetsOn: 'Обновится {date}',
+    storage: 'Осталось места',
+    storageOver:
+      'занято {used} из {limit}: новые файлы нельзя прикрепить, пока вы не удалите часть файлов или не увеличите хранилище',
     teamPlan: 'Командный тариф',
     tokens: 'Осталось токенов',
     usedOfLimitInPlan: 'использовано {used} из {limit} в тарифе',
@@ -164,7 +203,7 @@ const { t } = useI18n({
   },
 })
 
-const { formatDate, formatNumber } = useFormatters()
+const { formatDate, formatNumber, formatStorageSize } = useFormatters()
 
 const { data, message, pending, refresh } = await useApiQuery('billing-summary', (signal) =>
   props.deps.view({ signal }),
@@ -210,6 +249,13 @@ const issuesUsageText = (page: BillingPageData, usage: BillingUsageViewModel) =>
     ? t('usedOfLimitInPlanResets', { ...values, date: formatDate(page.issuesResetAt) })
     : t('usedOfLimitInPlan', values)
 }
+
+const storagePercent = (page: BillingPageData) =>
+  usagePercent({
+    limit: page.storage.quotaBytes,
+    remaining: 0,
+    used: page.storage.usedBytes,
+  })
 
 const usagePercent = (usage: BillingUsageViewModel) =>
   `${usage.limit > 0 ? Math.min(100, Math.max(0, (usage.used / usage.limit) * 100)) : 0}%`
@@ -285,5 +331,9 @@ const usagePercent = (usage: BillingUsageViewModel) =>
   border-radius: inherit;
   display: block;
   height: 100%;
+}
+
+.usage-bar span.full {
+  background: var(--color-danger);
 }
 </style>
