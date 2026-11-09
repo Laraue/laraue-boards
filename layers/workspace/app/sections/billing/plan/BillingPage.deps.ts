@@ -12,6 +12,13 @@ export type BillingPurchasedTokensViewModel = {
   expiringCount: number
 }
 
+export type BillingStorageViewModel = {
+  // The plan's storage plus the storage add-on's, in bytes.
+  quotaBytes: number
+  // Can be above the quota after a paid plan ends: the files stay, new uploads are refused.
+  usedBytes: number
+}
+
 type BillingPageCommonData = {
   // Only the organization's owner pays for it.
   canPay: boolean
@@ -24,6 +31,8 @@ type BillingPageCommonData = {
   periodResets: boolean
   // Tokens bought in packs, on top of the plan and spent after its own.
   purchasedTokens: BillingPurchasedTokensViewModel
+  // The organization's file storage.
+  storage: BillingStorageViewModel
   subscriptionCode: string
   // The tokens of the plan itself: what is left of it and how much of it has been used.
   tokens: BillingUsageViewModel

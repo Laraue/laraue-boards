@@ -29,6 +29,10 @@ export const createBillingPageDeps = (client: ApiClient): BillingPageDeps => ({
         expireAt: summary.purchasedTokensExpireAt,
         expiringCount: summary.purchasedTokensExpiringCount,
       },
+      storage: {
+        quotaBytes: summary.storage.quotaBytes,
+        usedBytes: summary.storage.usedBytes,
+      },
       subscriptionCode: summary.subscriptionCode,
       tokens: mapUsage(summary.tokens)!,
     }

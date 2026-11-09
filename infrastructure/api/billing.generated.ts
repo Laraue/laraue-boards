@@ -266,6 +266,7 @@ export interface components {
         GetServiceTariffsResponse: {
             personalSubscriptions: components["schemas"]["PersonalSubscription"][];
             teamSubscriptions: components["schemas"]["TeamSubscription"][];
+            storageAddons: components["schemas"]["StorageAddonDto"][];
         };
         GetTokenPacksResponse: {
             tokenPacks: components["schemas"]["TokenPack"][];
@@ -290,6 +291,9 @@ export interface components {
             limitIssuesPerMonth?: null | number | string;
             /** Format: int32 */
             limitFreeTeamOrganizationsCount?: null | number | string;
+            /** Format: int32 */
+            includedStorageMegabytes: number | string;
+            storageAddonPrices: components["schemas"]["StorageAddonPrice"][];
             /** Format: uuid */
             id: string;
             title: string;
@@ -321,6 +325,24 @@ export interface components {
         };
         /** @enum {unknown} */
         ServiceId: "LaraueBoards" | "MarkdownTranslator";
+        StorageAddonDto: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            /** Format: int32 */
+            storageMegabytes: number | string;
+            /** Format: double */
+            price?: number | string;
+            currencyCode: string;
+            formattedPrice: string;
+        };
+        StorageAddonPrice: {
+            /** Format: uuid */
+            storageAddonId: string;
+            /** Format: double */
+            price?: number | string;
+            formattedPrice: string;
+        };
         TeamSubscription: components["schemas"]["TeamSubscriptionLaraueBoardsTeamSubscription"];
         TeamSubscriptionLaraueBoardsTeamSubscription: {
             /** @enum {string} */
@@ -329,6 +351,9 @@ export interface components {
             includedTokensCount: number | string;
             /** Format: int32 */
             limitIssuesPerMonth?: null | number | string;
+            /** Format: int32 */
+            includedStorageMegabytes: number | string;
+            storageAddonPrices: components["schemas"]["StorageAddonPrice"][];
             /** Format: uuid */
             id: string;
             title: string;

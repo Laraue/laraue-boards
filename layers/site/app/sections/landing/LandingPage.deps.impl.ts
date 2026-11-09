@@ -41,6 +41,7 @@ const mapTariff = (
   id: tariff.id,
   issuesPerMonth: toNumber(tariff.limitIssuesPerMonth) || undefined,
   price: toNumber(tariff.price),
+  storageMegabytes: toNumber(tariff.includedStorageMegabytes),
   title: tariff.title,
   tokens: toNumber(tariff.includedTokensCount),
 })
@@ -56,6 +57,11 @@ export const createLandingPageDeps = (client: BillingApiClient): LandingPageDeps
       personal: data.personalSubscriptions
         .filter(isBoardsTariff)
         .map((tariff) => mapTariff(tariff, tariff.limitFreeTeamOrganizationsCount ?? null)),
+      storageAddons: data.storageAddons.map((addon) => ({
+        formattedPrice: addon.formattedPrice,
+        id: addon.id,
+        storageMegabytes: toNumber(addon.storageMegabytes),
+      })),
       team: data.teamSubscriptions.map((tariff) => mapTariff(tariff)),
     }
   },

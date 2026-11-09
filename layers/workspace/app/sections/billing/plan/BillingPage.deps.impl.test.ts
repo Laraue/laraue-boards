@@ -16,6 +16,7 @@ test('maps the billing summary and its nullable limits', async () => {
     purchasedTokensCount: 0,
     purchasedTokensExpireAt: null,
     purchasedTokensExpiringCount: 0,
+    storage: { quotaBytes: 1_073_741_824, storageAddonId: null, usedBytes: 5_000 },
     subscriptionCode: 'Pro',
     tokens: { limit: 1000, remaining: 850, used: 150 },
   }))
@@ -29,6 +30,7 @@ test('maps the billing summary and its nullable limits', async () => {
     periodEndsAt: null,
     periodResets: false,
     purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+    storage: { quotaBytes: 1_073_741_824, usedBytes: 5_000 },
     subscriptionCode: 'Pro',
     tokens: { limit: 1000, remaining: 850, used: 150 },
   })
@@ -44,6 +46,7 @@ test('maps the period and the purchased tokens of the summary', async () => {
     purchasedTokensCount: 125000,
     purchasedTokensExpireAt: '2027-04-06T12:00:00Z',
     purchasedTokensExpiringCount: 25000,
+    storage: { quotaBytes: 104_857_600, storageAddonId: null, usedBytes: 0 },
     subscriptionCode: 'Free',
     tokens: { limit: 25000, remaining: 25000, used: 0 },
   }))
@@ -71,6 +74,7 @@ test('maps a team billing summary without personal usage', async () => {
     purchasedTokensCount: 0,
     purchasedTokensExpireAt: null,
     purchasedTokensExpiringCount: 0,
+    storage: { quotaBytes: 104_857_600, storageAddonId: null, usedBytes: 0 },
     subscriptionCode: 'Team',
     tokens: { limit: 5000, remaining: 4200, used: 800 },
   }))
@@ -83,6 +87,7 @@ test('maps a team billing summary without personal usage', async () => {
     periodEndsAt: null,
     periodResets: false,
     purchasedTokens: { count: 0, expireAt: null, expiringCount: 0 },
+    storage: { quotaBytes: 104_857_600, usedBytes: 0 },
     subscriptionCode: 'Team',
     tokens: { limit: 5000, remaining: 4200, used: 800 },
   })

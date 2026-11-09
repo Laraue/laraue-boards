@@ -21,6 +21,8 @@
           {{ condition }}
         </li>
       </ul>
+      <!-- Choices that change what is bought, e.g. extra storage with a plan. -->
+      <slot />
       <p
         v-if="note"
         class="plan-period muted">
