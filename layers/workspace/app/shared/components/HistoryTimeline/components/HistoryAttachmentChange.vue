@@ -4,15 +4,17 @@
     <span
       class="history-new-value"
       :title="fileName">
+      <!-- A removed attachment's file is deleted, so its image stops loading: the name is all that's left. -->
       <a
-        v-if="change.imageUrl"
+        v-if="change.imageUrl && !imageMissing"
         :aria-label="`${t('open')} ${fileName}`"
         class="history-attachment"
         :href="change.imageUrl"
         target="_blank">
         <img
           :alt="fileName"
-          :src="change.imageUrl" />
+          :src="change.imageUrl"
+          @error="imageMissing = true" />
       </a>
       {{ fileName }}
     </span>
@@ -20,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 
 import type { HistoryAttachmentChangeViewModel } from '../HistoryTimeline.types'
@@ -42,6 +46,7 @@ const { t } = useI18n({
 })
 
 const fileName = props.change.fileName ?? t('untitledFile')
+const imageMissing = ref(false)
 </script>
 
 <style scoped>
