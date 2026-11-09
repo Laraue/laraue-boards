@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { isApiError } from '#infrastructure/api/request'
 import { useToast } from '#layers/core/app/ui/composables/useToast'
 import { useErrorMessage } from '#layers/workspace/app/shared/composables/useErrorMessage'
-import { useStorageQuotaMessage } from '#layers/workspace/app/shared/composables/useStorageQuotaMessage'
 import { actionFailure } from '#layers/workspace/app/shared/utils/actionFailure'
 
 /** Runs an action that throws an `ApiError` on failure. A failure with the backend's own text
@@ -13,7 +12,6 @@ export const useApiAction = <Args extends unknown[], Value>(
   action: (...args: Args) => Promise<Value>,
 ) => {
   const errorMessage = useErrorMessage()
-  const storageQuotaMessage = useStorageQuotaMessage()
   const pending = ref(false)
   const message = ref<string | undefined>()
   const toast = useToast()
@@ -29,9 +27,7 @@ export const useApiAction = <Args extends unknown[], Value>(
       if (!isApiError(error)) {
         throw error
       }
-      // A full storage is worded here, in the user's language, rather than with the backend's English text.
-      const reason = error.storageQuota ? storageQuotaMessage(error.storageQuota) : error.reason
-      const failure = actionFailure(error.status, reason, errorMessage)
+      const failure = actionFailure(error.status, error.reason, errorMessage)
       if (failure.target === 'form') {
         message.value = failure.message
       } else {

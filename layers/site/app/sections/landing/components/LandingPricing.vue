@@ -174,13 +174,14 @@ const storageDocsHref = computed(() =>
   localePath({ name: 'documentation-path', params: { path: ['features', 'media'] } }, locale.value),
 )
 
-// Binary units, the way the plans count storage: 1024 MB is 1 GB.
-const formatStorage = (megabytes: number): string => {
-  const [gigabytes, megabytesUnit] = locale.value === 'ru' ? ['ГБ', 'МБ'] : ['GB', 'MB']
-  return megabytes >= 1024
-    ? `${(megabytes / 1024).toLocaleString(locale.value, { maximumFractionDigits: 1 })} ${gigabytes}`
-    : `${megabytes.toLocaleString(locale.value)} ${megabytesUnit}`
-}
+// Binary units, the way the plans count storage: 1024 MB is 1 GB. Intl names the units in the locale's language.
+const formatStorage = (megabytes: number): string =>
+  new Intl.NumberFormat(locale.value, {
+    maximumFractionDigits: 1,
+    style: 'unit',
+    unit: megabytes >= 1024 ? 'gigabyte' : 'megabyte',
+    unitDisplay: 'short',
+  }).format(megabytes >= 1024 ? megabytes / 1024 : megabytes)
 
 const storageAddonsText = computed(() =>
   (props.tariffs?.storageAddons ?? [])
