@@ -183,3 +183,29 @@ it('marks a deleted issue with an icon and a struck-through title and keeps the 
   expect(wrapper.find('.history-changes').text()).toContain('Issue deleted')
   expect(wrapper.find('.history-changes').text()).toContain('Comment added')
 })
+
+it('shows only the name of an attachment whose file is gone', async () => {
+  const wrapper = await mountSuspended(HistoryTimeline, {
+    props: {
+      items: [
+        {
+          changes: [
+            {
+              action: 'added' as const,
+              fileName: 'storage-check.png',
+              // The file of a removed attachment is deleted, so its image no longer loads.
+              imageUrl: 'data:image/png;base64,not-an-image',
+              kind: 'attachment' as const,
+            },
+          ],
+          createdAt: '2026-11-06T18:50:55Z',
+          owner: { color: '#4774d4', initials: 'WI', name: 'win7user10' },
+        },
+      ],
+      organizationRoutes: createOrganizationRoutes('acme-ab12'),
+    },
+  })
+
+  await expect.poll(() => wrapper.find('.history-attachment').exists()).toBe(false)
+  expect(wrapper.text()).toContain('storage-check.png')
+})
