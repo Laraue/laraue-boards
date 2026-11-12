@@ -40,3 +40,16 @@ test('skips the API outside Telegram', async () => {
   assert.equal(await createJoinOrganizationPageDeps(client).loginViaTelegramMiniApp(), false)
   assert.equal(requests.length, 0)
 })
+
+test('sends where the visitor came from with every sign-in', async () => {
+  const { client, requests } = createTestApiClient(() => new Response('token'))
+  const deps = createJoinOrganizationPageDeps(client, 'init-data', () => 'invite')
+
+  await deps.loginViaGoogle({ code: 'code' })
+  await deps.loginViaTelegramMiniApp()
+  await deps.loginViaTelegramWidget({ auth_date: 1, first_name: 'Ada', hash: 'hash', id: 7 })
+
+  assert.equal((await requests[0]!.json()).signUpSource, 'invite')
+  assert.equal((await requests[1]!.json()).signUpSource, 'invite')
+  assert.equal((await requests[2]!.json()).sign_up_source, 'invite')
+})

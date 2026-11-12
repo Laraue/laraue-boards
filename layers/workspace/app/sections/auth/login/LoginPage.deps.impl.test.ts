@@ -33,3 +33,16 @@ test('does not call the API outside Telegram', async () => {
   assert.equal(await createLoginPageDeps(client).loginViaTelegramMiniApp(), false)
   assert.equal(requests.length, 0)
 })
+
+test('sends where the visitor came from with every sign-in', async () => {
+  const { client, requests } = createTestApiClient(() => new Response('token'))
+  const deps = createLoginPageDeps(client, 'init-data', () => 'producthunt')
+
+  await deps.loginViaGoogle({ code: 'google-code' })
+  await deps.loginViaTelegramMiniApp()
+  await deps.loginViaTelegramWidget({ auth_date: 1, first_name: 'Ada', hash: 'hash', id: 7 })
+
+  assert.equal((await requests[0]!.json()).signUpSource, 'producthunt')
+  assert.equal((await requests[1]!.json()).signUpSource, 'producthunt')
+  assert.equal((await requests[2]!.json()).sign_up_source, 'producthunt')
+})
