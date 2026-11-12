@@ -35,7 +35,7 @@ import { isConsentPage } from '#layers/core/app/analytics/consent/decision'
 import { laraueIconUrl } from '#layers/core/app/branding/laraueIcons'
 import { useI18n, useLocale } from '#layers/core/app/i18n/useI18n'
 import { useAppPreferences } from '#layers/core/app/preferences/useAppPreferences'
-import { rememberBrowserSignUpSource } from '#layers/core/app/signUpSource/signUpSource'
+import { rememberBrowserSignUpOrigin } from '#layers/core/app/signUpOrigin/signUpOrigin'
 import BaseConfirmHost from '#layers/core/app/ui/components/BaseConfirmHost.vue'
 import BaseToasts from '#layers/core/app/ui/components/BaseToasts.vue'
 import { useConfirmationService } from '#layers/core/app/ui/composables/useConfirm'
@@ -88,9 +88,8 @@ const onConsentChoice = (choice: ConsentChoice) => {
 onMounted(async () => {
   consent.value = { ...(await consentController.resolve()), resolved: true }
 })
-// Where the visitor came from (a link's ref or utm_source, the referring site, an invite), kept from the first
-// page they open until they sign up (BRD-295).
-onMounted(rememberBrowserSignUpSource)
+// The first page the visitor opens and the site that sent them, kept as is until they sign up (BRD-295).
+onMounted(rememberBrowserSignUpOrigin)
 watch(
   () => [consent.value.consent, route.path],
   () => consentController.apply(consent.value.consent, route.path),

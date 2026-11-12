@@ -41,10 +41,11 @@ include the Telegram Mini App SDK in the document head so it reads the signed la
 router normalization. The landing page and documentation do not include it. Dependencies that read
 Mini App data also await the SDK for client-side navigation into the workspace.
 
-The root also remembers where a visitor came from (`core/app/signUpSource`): on mount it saves the
-link's `ref`, else `utm_source`, else `invite` on an invite page, else the referring site, unless
-one is saved already (the first source wins). The sign-in dependencies of the login and invite pages
-send it with every sign-in; the backend keeps it only for a new user and does the normalizing.
+The root also remembers where a visitor came from (`core/app/signUpOrigin`): on mount it saves the
+page URL and `document.referrer` as they are, unless a first visit is saved already. The sign-in
+dependencies of the login and invite pages send them with every sign-in. The frontend knows no
+sources or sites: the backend works the source out (link `ref`/`utm_source`, invite pages, known
+referrers) and keeps it only for a new user.
 
 The landing page computes schema.org offers from its tariff data and passes them to its SEO
 composable. Rendering the pricing component does not write shared state or change SEO.

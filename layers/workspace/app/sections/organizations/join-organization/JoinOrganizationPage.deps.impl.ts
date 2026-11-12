@@ -1,20 +1,26 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { isApiError, request } from '#infrastructure/api/request'
-import { readBrowserSignUpSource } from '#layers/core/app/signUpSource/signUpSource'
+import type { SignUpOrigin } from '#layers/core/app/signUpOrigin/signUpOrigin'
+import { readBrowserSignUpOrigin } from '#layers/core/app/signUpOrigin/signUpOrigin'
 import { createGoogleSignInButtonDeps } from '#layers/workspace/app/sections/auth/shared/components/GoogleSignInButton/GoogleSignInButton.deps.impl'
 import { createTelegramSignInButtonDeps } from '#layers/workspace/app/sections/auth/shared/components/TelegramSignInButton/TelegramSignInButton.deps.impl'
 import { loadTelegramMiniAppData } from '#layers/workspace/app/shared/utils/loadTelegramMiniAppData'
+import {
+  webSignUpFields,
+  widgetSignUpFields,
+} from '#layers/workspace/app/shared/utils/signUpFields'
 
 import type { JoinOrganizationPageDeps } from './JoinOrganizationPage.deps'
 
 /**
- * @param readSignUpSource where the visitor came from (BRD-295) - `invite` when they first opened this invite page
- * without a ref; sent with every sign-in, kept by the backend only for a new user.
+ * @param readSignUpOrigin the first page the visitor opened and the site that sent them (BRD-295), sent as is with
+ * every sign-in; the backend works out where they came from (an invite page included) and keeps it only for a new
+ * user.
  */
 export const createJoinOrganizationPageDeps = (
   client: ApiClient,
   testInitData?: string,
-  readSignUpSource: () => null | string = readBrowserSignUpSource,
+  readSignUpOrigin: () => null | SignUpOrigin = readBrowserSignUpOrigin,
 ): JoinOrganizationPageDeps => ({
   googleSignInButton: createGoogleSignInButtonDeps(),
 
@@ -42,7 +48,7 @@ export const createJoinOrganizationPageDeps = (
         body: {
           code,
           languageCode: languageCode?.split('-')[0]?.toLowerCase() || null,
-          signUpSource: readSignUpSource() ?? undefined,
+          ...webSignUpFields(readSignUpOrigin()),
         },
         parseAs: 'text',
       }),
@@ -56,7 +62,7 @@ export const createJoinOrganizationPageDeps = (
     }
     await request(
       client.POST('/api/user/auth-via-mini-app', {
-        body: { initData, signUpSource: readSignUpSource() ?? undefined },
+        body: { initData, ...webSignUpFields(readSignUpOrigin()) },
         parseAs: 'text',
       }),
     )
@@ -66,7 +72,7 @@ export const createJoinOrganizationPageDeps = (
   loginViaTelegramWidget: async (input) => {
     await request(
       client.POST('/api/user/auth', {
-        body: { ...input, sign_up_source: readSignUpSource() ?? undefined },
+        body: { ...input, ...widgetSignUpFields(readSignUpOrigin()) },
         parseAs: 'text',
       }),
     )
