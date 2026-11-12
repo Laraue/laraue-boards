@@ -12,6 +12,7 @@ import { computed } from 'vue'
 
 import { clearNuxtData, navigateTo, useRoute, useRuntimeConfig } from '#app'
 import { definePageMeta } from '#app/composables/pages'
+import { readSignUpSourceUrls } from '#layers/core/app/analytics/signUpSourceUrls/signUpSourceUrls'
 import { createJoinOrganizationPageDeps } from '#layers/workspace/app/sections/organizations/join-organization/JoinOrganizationPage.deps.impl'
 import JoinOrganizationPage from '#layers/workspace/app/sections/organizations/join-organization/JoinOrganizationPage.vue'
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
@@ -21,8 +22,10 @@ definePageMeta({ layout: 'public' })
 const route = useRoute('join-code')
 const config = useRuntimeConfig()
 const code = computed(() => String(route.params.code))
+const client = useApiClient({})
 const deps = createJoinOrganizationPageDeps(
-  useApiClient({}),
+  client,
+  readSignUpSourceUrls,
   import.meta.dev ? config.public.testUserToken : undefined,
 )
 

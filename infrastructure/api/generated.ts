@@ -4047,6 +4047,8 @@ export interface components {
         };
         AuthenticateViaStringInitDataRequest: {
             initData: string;
+            signUpLandingUrl?: null | string;
+            signUpReferrer?: null | string;
         };
         /** @enum {unknown} */
         AuthorKind: "User" | "Agent";
@@ -4403,6 +4405,8 @@ export interface components {
             idToken?: null | string;
             code?: null | string;
             languageCode?: null | string;
+            signUpLandingUrl?: null | string;
+            signUpReferrer?: null | string;
         };
         HistoryItemChange: components["schemas"]["HistoryItemChangeIssueHistoryContentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryTitleChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAssigneeChange"] | components["schemas"]["HistoryItemChangeIssueHistoryStatusChange"] | components["schemas"]["HistoryItemChangeIssueHistoryPropertyChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAttachmentChange"] | components["schemas"]["HistoryItemChangeIssueHistoryEpicChange"] | components["schemas"]["HistoryItemChangeIssueHistorySpaceChange"] | components["schemas"]["HistoryItemChangeIssueHistoryAgentRunChange"] | components["schemas"]["HistoryItemChangeIssueHistoryLinkChange"];
         HistoryItemChangeIssueHistoryAgentRunChange: {
@@ -5029,6 +5033,8 @@ export interface components {
             /** Format: int64 */
             auth_date?: number;
             hash?: string;
+            sign_up_landing_url?: null | string;
+            sign_up_referrer?: null | string;
         };
         /** @enum {unknown} */
         TokenTransactionReason: "TariffGrant" | "DailyGrant" | "Purchase" | "Expiry" | "Spend";
