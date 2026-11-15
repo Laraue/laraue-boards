@@ -70,6 +70,13 @@ it('shows the space and links to its backlog, board, creation, and settings page
     .toHaveAttribute('href', '/organizations/acme-ab12/spaces/product/9')
   await expect.element(page.getByRole('link', { name: 'Create board' })).toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: 'Space settings' })).toBeInTheDocument()
+  await expect
+    .element(
+      page
+        .getByRole('region', { exact: true, name: 'To do' })
+        .getByRole('link', { name: 'Add board' }),
+    )
+    .toHaveAttribute('href', '/organizations/acme-ab12/spaces/product/boards/new')
 })
 
 it('hides management actions when the member lacks permission', async () => {
@@ -82,6 +89,7 @@ it('hides management actions when the member lacks permission', async () => {
   await mount(view)
 
   await expect.element(page.getByRole('link', { name: 'Create board' })).not.toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: 'Add board' })).not.toBeInTheDocument()
   await expect.element(page.getByRole('link', { name: 'Space settings' })).not.toBeInTheDocument()
 })
 
@@ -173,55 +181,92 @@ const boardsData: SpacePageData = {
       status: 'New',
       statuses: [],
     },
+    {
+      color: '#666',
+      createdAt: '2026-04-01T00:00:00Z',
+      id: '12',
+      issueCount: 0,
+      kind: 'board',
+      name: 'Alpha',
+      status: 'New',
+      statuses: [],
+    },
   ],
 }
 
-// The backlog row comes first; boards follow in the order they are shown.
-const boardRow = (index: number) => page.getByRole('link', { name: /issues?$/ }).nth(index + 1)
+const boardLink = (index: number) =>
+  page
+    .getByRole('group', { exact: true, name: 'Boards' })
+    .getByRole('link', { name: /issues?$/ })
+    .nth(index)
 
-it('lists the newest boards first, and sorts them by name or age on request', async () => {
+it('groups boards by status and sorts within each group', async () => {
   await mount(vi.fn<SpacePageDeps['view']>(async () => boardsData))
 
-  await expect.element(boardRow(0)).toHaveTextContent('Launch')
-  await expect.element(boardRow(2)).toHaveTextContent('Archive')
+  await expect.element(page.getByRole('heading', { name: 'To do 2' })).toBeInTheDocument()
+  await expect.element(page.getByRole('heading', { name: 'In progress 1' })).toBeInTheDocument()
+  await expect.element(page.getByRole('heading', { name: 'Done 1' })).toBeInTheDocument()
+  await expect
+    .element(
+      page.getByRole('region', { exact: true, name: 'To do' }).getByRole('link', { name: /Alpha/ }),
+    )
+    .toHaveTextContent('Alpha')
+  await expect
+    .element(page.getByRole('region', { exact: true, name: 'In progress' }).getByRole('link'))
+    .toHaveTextContent('Roadmap')
+  await expect
+    .element(page.getByRole('region', { exact: true, name: 'Done' }).getByRole('link'))
+    .toHaveTextContent('Archive')
+  await expect.element(boardLink(0)).toHaveAttribute('draggable', 'false')
+  await page.getByRole('button', { name: 'How board statuses work' }).click()
+  await expect
+    .element(page.getByText(/A board’s status is calculated automatically from its issues:/))
+    .toBeInTheDocument()
+  await page.getByRole('button', { name: 'How board statuses work' }).click()
+  await expect.element(boardLink(0)).toHaveTextContent('Alpha')
+  await expect.element(boardLink(1)).toHaveTextContent('Launch')
+  await expect.element(boardLink(2)).toHaveTextContent('Roadmap')
+  await expect.element(boardLink(3)).toHaveTextContent('Archive')
 
   await page.getByRole('combobox', { name: 'Sort by' }).click()
   await page.getByRole('option', { name: 'Name' }).click()
 
-  await expect.element(boardRow(0)).toHaveTextContent('Archive')
-  await expect.element(boardRow(1)).toHaveTextContent('Launch')
-  await expect.element(boardRow(2)).toHaveTextContent('Roadmap')
+  await expect.element(boardLink(0)).toHaveTextContent('Alpha')
+  await expect.element(boardLink(1)).toHaveTextContent('Launch')
+  await expect.element(boardLink(2)).toHaveTextContent('Roadmap')
 
   await page.getByRole('combobox', { name: 'Sort by' }).click()
   await page.getByRole('option', { name: 'Oldest first' }).click()
 
-  await expect.element(boardRow(0)).toHaveTextContent('Archive')
-  await expect.element(boardRow(2)).toHaveTextContent('Launch')
+  await expect.element(boardLink(0)).toHaveTextContent('Launch')
+  await expect.element(boardLink(1)).toHaveTextContent('Alpha')
 })
 
-it('shows only the boards matching the quick filter', async () => {
-  await mount(vi.fn<SpacePageDeps['view']>(async () => boardsData))
+it('shows the empty state when the space has no regular boards', async () => {
+  await mount(
+    vi.fn<SpacePageDeps['view']>(async () => ({
+      ...pageData,
+      boards: pageData.boards.filter((board) => board.kind === 'backlog'),
+    })),
+  )
 
-  await page.getByRole('combobox', { name: 'Show' }).click()
-  await page.getByRole('option', { name: 'Not finished' }).click()
-
-  await expect.element(page.getByRole('link', { name: /Archive/ })).not.toBeInTheDocument()
-  await expect.element(page.getByRole('link', { name: /Roadmap/ })).toBeInTheDocument()
-  await expect.element(page.getByRole('link', { name: /Launch/ })).toBeInTheDocument()
-
-  await page.getByRole('combobox', { name: 'Show' }).click()
-  await page.getByRole('option', { exact: true, name: 'Finished' }).click()
-
-  await expect.element(page.getByRole('link', { name: /Archive/ })).toBeInTheDocument()
-  await expect.element(page.getByRole('link', { name: /Roadmap/ })).not.toBeInTheDocument()
+  await expect.element(page.getByText('No boards yet')).toBeInTheDocument()
+  await expect.element(page.getByRole('link', { name: /Backlog/ })).toBeInTheDocument()
 })
 
-it('says no boards match when the filter hides them all', async () => {
+it('keeps empty status columns visible without including the backlog', async () => {
   await mount(vi.fn<SpacePageDeps['view']>(async () => pageData))
 
-  await page.getByRole('combobox', { name: 'Show' }).click()
-  await page.getByRole('option', { exact: true, name: 'Finished' }).click()
-
-  await expect.element(page.getByText('No boards match')).toBeInTheDocument()
-  await expect.element(page.getByRole('link', { name: /Backlog/ })).toBeInTheDocument()
+  await expect.element(page.getByRole('heading', { name: 'To do 0' })).toBeInTheDocument()
+  await expect.element(page.getByRole('heading', { name: 'Done 0' })).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('region', { exact: true, name: 'To do' }).getByText('No boards'))
+    .toBeInTheDocument()
+  await expect
+    .element(
+      page
+        .getByRole('group', { exact: true, name: 'Boards' })
+        .getByRole('link', { name: /Backlog/ }),
+    )
+    .not.toBeInTheDocument()
 })

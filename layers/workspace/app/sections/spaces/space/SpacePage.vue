@@ -41,89 +41,127 @@
       :message="message"
       :on-retry="refresh"
       :pending="pending">
-      <template #default="{ data: page }">
-        <!-- A data list, as the issue list: rows on the page itself, no box around them. -->
+      <template #default>
         <section class="space-page">
-          <NuxtLink
-            v-if="backlog"
-            class="space-row"
-            :to="organizationRoutes.backlog(spaceKey)">
-            <span class="space-row-name">
-              <IconListDetails :style="{ color: backlog.color }" />
-              <span class="space-row-title">{{ t('backlog') }}</span>
-            </span>
-            <span class="space-row-count">{{ tp('issues', backlog.issueCount) }}</span>
-            <IconChevronRight class="space-row-chevron" />
-          </NuxtLink>
+          <div class="space-toolbar">
+            <NuxtLink
+              v-if="backlog"
+              class="backlog-link"
+              :to="organizationRoutes.backlog(spaceKey)">
+              <span class="backlog-name">
+                <IconListDetails :style="{ color: backlog.color }" />
+                <span class="backlog-title">{{ t('backlog') }}</span>
+              </span>
+              <span class="backlog-count">{{ tp('issues', backlog.issueCount) }}</span>
+              <IconChevronRight class="backlog-chevron" />
+            </NuxtLink>
 
-          <div class="space-group">
-            <h2 class="space-group-title">
-              {{ t('boards') }}
-              <span class="muted">{{ visibleBoards.length }}</span>
-            </h2>
             <div
               v-if="regularBoards.length"
-              class="space-group-controls">
-              <BaseSelect
-                :aria-label="t('show')"
-                :model-value="state.filter"
-                :options="filterOptions"
-                variant="inline"
-                @update:model-value="changeFilter" />
-              <BaseSelect
-                :aria-label="t('sortBy')"
-                :model-value="state.sort"
-                :options="sortOptions"
-                variant="inline"
-                @update:model-value="changeSort" />
+              class="space-group">
+              <div class="space-group-controls">
+                <span>{{ t('sortBy') }}:</span>
+                <BaseSelect
+                  :aria-label="t('sortBy')"
+                  :model-value="state.sort"
+                  :options="sortOptions"
+                  variant="inline"
+                  @update:model-value="changeSort" />
+              </div>
+              <BasePopover
+                align="end"
+                class="boards-status-help">
+                <template #trigger="{ open, toggle }">
+                  <BaseIconButton
+                    :aria-expanded="open"
+                    :label="t('aboutBoardStatus')"
+                    @click="toggle">
+                    <IconInfoCircle />
+                  </BaseIconButton>
+                </template>
+                <div class="boards-hint">
+                  <p>{{ t('automaticStatus') }}</p>
+                  <ul>
+                    <li>
+                      <strong>{{ t('new') }}</strong>
+                      — {{ t('statusToDoHint') }}
+                    </li>
+                    <li>
+                      <strong>{{ t('inProgress') }}</strong>
+                      — {{ t('statusActiveHint') }}
+                    </li>
+                    <li>
+                      <strong>{{ t('done') }}</strong>
+                      — {{ t('statusDoneHint') }}
+                    </li>
+                  </ul>
+                  <p>{{ t('statusChangeHint') }}</p>
+                </div>
+              </BasePopover>
             </div>
           </div>
 
-          <template v-if="visibleBoards.length">
-            <NuxtLink
-              v-for="board in visibleBoards"
-              :key="board.id"
-              class="space-row"
-              :to="organizationRoutes.board(spaceKey, board.id)">
-              <span class="space-row-name">
-                <BoardIcon :style="{ color: board.color }" />
-                <span class="space-row-title">{{ board.name }}</span>
-                <BaseBadge :variant="boardStatusAppearance[board.status].variant">
-                  {{ statusLabel(board.status) }}
-                </BaseBadge>
-              </span>
-              <span
-                class="space-row-progress"
-                :title="
-                  board.statuses.map((status) => `${status.count} ${status.name}`).join(' · ')
-                ">
-                <span
-                  aria-hidden="true"
-                  class="meter">
-                  <span
-                    v-for="status in board.statuses"
-                    :key="status.name"
-                    :style="{ background: status.color, flex: status.count || 0 }" />
-                </span>
-                <span class="space-row-statuses">
-                  <span
-                    v-for="status in board.statuses"
-                    :key="status.name">
-                    <StatusIndicator
-                      :category="status.category"
-                      :color="status.color" />
-                    {{ status.count }} {{ status.name }}
+          <div
+            v-if="sortedBoards.length"
+            :aria-label="t('boards')"
+            class="boards-kanban"
+            role="group">
+            <section
+              v-for="group in boardGroups"
+              :key="group.status"
+              :aria-label="statusLabel(group.status)"
+              class="boards-column">
+              <div class="boards-column-header">
+                <h2 class="boards-column-heading">
+                  <StatusIndicator
+                    :category="boardStatusAppearance[group.status].category"
+                    :color="boardStatusAppearance[group.status].color" />
+                  {{ statusLabel(group.status) }}
+                  <span class="muted">{{ group.boards.length }}</span>
+                </h2>
+                <BaseIconButton
+                  v-if="group.status === 'New' && data?.canCreateBoards"
+                  :label="t('addBoard')"
+                  :to="organizationRoutes.newBoard(spaceKey)">
+                  <IconPlus />
+                </BaseIconButton>
+              </div>
+              <NuxtLink
+                v-for="board in group.boards"
+                :key="board.id"
+                class="board-card"
+                :draggable="false"
+                :to="organizationRoutes.board(spaceKey, board.id)">
+                <span class="board-card-header">
+                  <span class="board-card-icon">
+                    <BoardIcon
+                      aria-hidden="true"
+                      :style="{ color: board.color }" />
                   </span>
+                  <span class="board-card-name">{{ board.name }}</span>
+                  <IconChevronRight
+                    aria-hidden="true"
+                    class="board-card-chevron" />
                 </span>
-              </span>
-              <span class="space-row-count">{{ tp('issues', board.issueCount) }}</span>
-              <IconChevronRight class="space-row-chevron" />
-            </NuxtLink>
-          </template>
-          <BaseEmptyState
-            v-else-if="regularBoards.length"
-            :hint="t('noMatchHint')"
-            :title="t('noMatchTitle')" />
+                <span class="board-card-progress">
+                  <span
+                    aria-hidden="true"
+                    class="meter">
+                    <span
+                      v-for="status in board.statuses"
+                      :key="status.name"
+                      :style="{ background: status.color, flex: status.count || 0 }" />
+                  </span>
+                  <span class="board-card-count">{{ tp('issues', board.issueCount) }}</span>
+                </span>
+              </NuxtLink>
+              <p
+                v-if="!group.boards.length"
+                class="boards-column-empty">
+                {{ t('noBoards') }}
+              </p>
+            </section>
+          </div>
           <BaseEmptyState
             v-else
             :hint="t('emptyHint')"
@@ -137,20 +175,24 @@
 <script setup lang="ts">
 import {
   IconChevronRight,
+  IconInfoCircle,
   IconLayoutGridAdd,
   IconListDetails,
+  IconPlus,
   IconSettings,
 } from '@tabler/icons-vue'
 import { computed, reactive } from 'vue'
 
 import { NuxtLink } from '#components'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
-import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseEmptyState from '#layers/core/app/ui/components/BaseEmptyState.vue'
+import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
+import BasePopover from '#layers/core/app/ui/components/BasePopover.vue'
 import BaseSelect from '#layers/core/app/ui/components/BaseSelect.vue'
 import SpaceAbout from '#layers/workspace/app/sections/spaces/space/components/SpaceAbout/SpaceAbout.vue'
 import type {
+  SpaceBoardStatus,
   SpaceBoardSummary,
   SpacePageDeps,
 } from '#layers/workspace/app/sections/spaces/space/SpacePage.deps'
@@ -171,7 +213,9 @@ const props = defineProps<{
 
 const { t, tp } = useI18n({
   en: {
-    allBoards: 'All boards',
+    aboutBoardStatus: 'How board statuses work',
+    addBoard: 'Add board',
+    automaticStatus: 'A board’s status is calculated automatically from its issues:',
     backlog: 'Backlog',
     boards: 'Boards',
     createBoard: 'Create board',
@@ -179,26 +223,29 @@ const { t, tp } = useI18n({
     emptyHint:
       "A board shows this space's issues as columns — one column per status, so work moves from To do to Done by dragging it. Create the first one with Create board.",
     emptyTitle: 'No boards yet',
-    finished: 'Finished',
     inProgress: 'In progress',
     issues: 'issue | issues',
     loadError: 'Could not load space',
     loading: 'Loading space…',
     name: 'Name',
-    new: 'New',
+    new: 'To do',
     newest: 'Newest first',
-    noMatchHint: 'Show all boards to see the rest.',
-    noMatchTitle: 'No boards match',
-    notFinished: 'Not finished',
+    noBoards: 'No boards',
     oldest: 'Oldest first',
     settings: 'Settings',
-    show: 'Show',
     sortBy: 'Sort by',
     space: 'Space',
     spaceSettings: 'Space settings',
+    statusActiveHint: 'a mix of issue statuses, or work has started.',
+    statusChangeHint:
+      'To change a board’s status, update the issues inside it. Board cards cannot be dragged between these columns.',
+    statusDoneHint: 'all issues are completed.',
+    statusToDoHint: 'all issues are still to do.',
   },
   ru: {
-    allBoards: 'Все доски',
+    aboutBoardStatus: 'Как определяются статусы',
+    addBoard: 'Добавить доску',
+    automaticStatus: 'Статус доски рассчитывается автоматически по её задачам:',
     backlog: 'Бэклог',
     boards: 'Доски',
     createBoard: 'Создать доску',
@@ -206,23 +253,24 @@ const { t, tp } = useI18n({
     emptyHint:
       'Доска показывает задачи пространства в виде колонок. Перемещайте задачи перетаскиванием от «К выполнению» до «Готово». Создайте первую кнопкой «Создать доску».',
     emptyTitle: 'Досок пока нет',
-    finished: 'Завершённые',
     inProgress: 'В работе',
     issues: 'задача | задачи | задач',
     loadError: 'Не удалось загрузить пространство',
     loading: 'Загрузка пространства…',
     name: 'По названию',
-    new: 'Новая',
+    new: 'К выполнению',
     newest: 'Сначала новые',
-    noMatchHint: 'Покажите все доски, чтобы увидеть остальные.',
-    noMatchTitle: 'Подходящих досок нет',
-    notFinished: 'Незавершённые',
+    noBoards: 'Нет досок',
     oldest: 'Сначала старые',
     settings: 'Настройки',
-    show: 'Показать',
     sortBy: 'Сортировка',
     space: 'Пространство',
     spaceSettings: 'Настройки пространства',
+    statusActiveHint: 'задачи в разных статусах или работа уже началась.',
+    statusChangeHint:
+      'Чтобы изменить статус доски, меняйте статусы задач внутри неё. Карточки досок нельзя перетаскивать между этими колонками.',
+    statusDoneHint: 'все задачи завершены.',
+    statusToDoHint: 'все задачи ещё предстоит выполнить.',
   },
 })
 
@@ -237,34 +285,15 @@ const backlog = computed(() => boards.value.find((board) => board.kind === 'back
 
 const regularBoards = computed(() => boards.value.filter((board) => board.kind === 'board'))
 
-const boardFilters = ['all', 'notFinished', 'finished'] as const
-type BoardFilter = (typeof boardFilters)[number]
-
 const boardSorts = ['newest', 'oldest', 'name'] as const
 type BoardSort = (typeof boardSorts)[number]
 
-const state = reactive<{ filter: BoardFilter; sort: BoardSort }>({ filter: 'all', sort: 'newest' })
-
-const filterOptions = computed(() => [
-  { label: t('allBoards'), value: 'all' },
-  { label: t('notFinished'), value: 'notFinished' },
-  { label: t('finished'), value: 'finished' },
-])
+const state = reactive<{ sort: BoardSort }>({ sort: 'newest' })
 
 const sortOptions = computed(() => boardSorts.map((sort) => ({ label: t(sort), value: sort })))
 
-const changeFilter = (value: string): void => {
-  state.filter = boardFilters.find((filter) => filter === value) ?? 'all'
-}
-
 const changeSort = (value: string): void => {
   state.sort = boardSorts.find((sort) => sort === value) ?? 'newest'
-}
-
-const matchesFilter: Record<BoardFilter, (board: SpaceBoardSummary) => boolean> = {
-  all: () => true,
-  finished: (board) => board.status === 'Done',
-  notFinished: (board) => board.status !== 'Done',
 }
 
 const compareBoards: Record<BoardSort, (a: SpaceBoardSummary, b: SpaceBoardSummary) => number> = {
@@ -273,72 +302,76 @@ const compareBoards: Record<BoardSort, (a: SpaceBoardSummary, b: SpaceBoardSumma
   oldest: (a, b) => a.createdAt.localeCompare(b.createdAt),
 }
 
-const visibleBoards = computed(() =>
-  regularBoards.value.filter(matchesFilter[state.filter]).toSorted(compareBoards[state.sort]),
+const sortedBoards = computed(() => regularBoards.value.toSorted(compareBoards[state.sort]))
+
+const boardStatuses: SpaceBoardStatus[] = ['New', 'Active', 'Done']
+const boardGroups = computed(() =>
+  boardStatuses.map((status) => ({
+    boards: sortedBoards.value.filter((board) => board.status === status),
+    status,
+  })),
 )
 
-const statusLabel = (status: 'Active' | 'Done' | 'New') =>
+const statusLabel = (status: SpaceBoardStatus) =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
 </script>
 
 <style scoped>
 .space-page {
-  align-content: start;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
 }
 
-/* Name, progress, count, chevron: the same columns for the backlog and every board. */
-.space-row {
+.space-toolbar {
   align-items: center;
   border-bottom: 1px solid var(--color-divider);
-  color: var(--color-text);
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2) var(--space-4);
-  /* The name keeps its room: grid grows a capped track to its cap before an fr one gets anything,
-     so the progress may shrink to nothing but never takes the name's space. */
-  grid-template-columns: minmax(12rem, 1fr) minmax(0, 28rem) 6rem var(--icon-size);
-  min-height: 2.75rem;
-  padding: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.backlog-link {
+  align-items: center;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--control-height);
+  padding: 0 var(--space-2);
   text-decoration: none;
 }
 
-.space-row:hover {
+.backlog-link:hover {
   background: var(--color-row-hover);
 }
 
-.space-row:focus-visible {
+.backlog-link:focus-visible {
   box-shadow: var(--shadow-focus);
   outline: none;
 }
 
-.space-row-name {
+.backlog-name {
   align-items: center;
   display: flex;
   gap: var(--space-2);
   min-width: 0;
 }
 
-.space-row-name > svg {
+.backlog-name > svg {
   flex: none;
   height: var(--icon-size);
   width: var(--icon-size);
 }
 
-.space-row-title {
+.backlog-title {
   font-weight: var(--font-weight-medium);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-/* One line, centred with the name and the count: a short bar, its legend beside it. */
-.space-row-progress {
-  align-items: center;
-  display: flex;
-  gap: var(--space-3);
-  min-width: 0;
-  overflow: hidden;
 }
 
 /* The board's statuses as one bar, each its share of the issues. */
@@ -348,113 +381,197 @@ const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   display: flex;
   flex: none;
   gap: 2px;
-  height: 4px;
+  height: 0.25rem;
   overflow: hidden;
-  width: 7.5rem;
+  width: 100%;
 }
 
-/* A legend for the bar: the caption size kept for small annotations. */
-.space-row-statuses {
-  color: var(--color-muted);
-  display: flex;
-  font-size: var(--font-size-caption);
-  gap: 0 var(--space-3);
-  min-width: 0;
-  overflow: hidden;
-}
-
-.space-row-statuses > span {
-  align-items: center;
-  display: inline-flex;
-  gap: var(--space-1);
-  white-space: nowrap;
-}
-
-.space-row-statuses :deep(svg) {
-  flex: none;
-  height: 12px;
-  width: 12px;
-}
-
-.space-row-count {
+.backlog-count {
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
-  grid-column: 3;
   text-align: right;
   white-space: nowrap;
 }
 
-.space-row-chevron {
+.backlog-chevron {
   color: var(--color-muted);
   height: var(--icon-size);
   width: var(--icon-size);
 }
 
-/* A group inside the list: a quiet label, no fill, so it never reads as a hovered row. Its filter and
-   sort sit at the end of the same line. */
 .space-group {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  justify-content: space-between;
-  margin: var(--space-6) 0 0;
-  padding: var(--space-2) var(--space-4);
-}
-
-.space-group-title {
-  align-items: center;
-  color: var(--color-muted);
-  display: flex;
-  font-size: var(--font-size-small);
-  font-weight: var(--font-weight-medium);
-  gap: var(--space-2);
-  margin: 0;
+  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .space-group-controls {
+  align-items: center;
   display: flex;
   gap: var(--space-1);
 }
 
-/* Under 1100px the one-line row would cut the legend: the progress goes under the name, the count
-   stays at the end of the first line. */
-@media (max-width: 1100px) {
-  .space-row {
-    grid-template-columns: minmax(0, 1fr) auto var(--icon-size);
-  }
-
-  .space-row-count {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .space-row-chevron {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  .space-row-progress {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  /* The legend wraps instead of being cut: no hover shows it whole on a phone. */
-  .space-row-statuses {
-    flex-wrap: wrap;
-  }
+.boards-status-help {
+  --base-popover-width: 20rem;
 }
 
-/* On a phone the bar takes the row's width and the legend goes under it. */
+.boards-hint {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.boards-hint p,
+.boards-hint ul {
+  margin: 0;
+}
+
+.boards-hint ul {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: var(--space-4);
+}
+
+.boards-kanban {
+  align-items: stretch;
+  display: grid;
+  flex: 1;
+  gap: var(--space-4);
+  grid-template-columns: repeat(3, minmax(16rem, 1fr));
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.boards-column {
+  align-content: start;
+  background: var(--color-feed);
+  border-radius: var(--radius-popover);
+  display: grid;
+  gap: var(--space-2);
+  min-height: 0;
+  min-width: 0;
+  padding: var(--space-2);
+}
+
+.boards-column-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.boards-column-heading {
+  align-items: center;
+  display: flex;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  gap: var(--space-2);
+  margin: 0;
+  min-height: var(--control-height-small);
+  padding: 0 var(--space-2);
+}
+
+.board-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-surface);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  cursor: pointer;
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+  text-decoration: none;
+}
+
+.board-card:hover {
+  border-color: var(--color-border-hover);
+}
+
+.board-card:focus-visible {
+  border-color: var(--color-focus);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.board-card-header {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.board-card-icon {
+  align-items: center;
+  display: flex;
+  height: var(--icon-size);
+  justify-content: center;
+  width: var(--icon-size);
+}
+
+.board-card-icon > svg {
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.board-card-name {
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-body);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.board-card-chevron {
+  color: var(--color-muted);
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.board-card-progress {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.board-card-count {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.board-card-count,
+.boards-column-empty {
+  color: var(--color-muted);
+  font-size: var(--font-size-small);
+}
+
+.boards-column-empty {
+  margin: 0;
+  padding: var(--space-5) var(--space-2);
+  text-align: center;
+}
+
 @media (max-width: 767px) {
-  .space-row-progress {
-    align-items: stretch;
-    flex-direction: column;
-    gap: var(--space-2);
+  .backlog-link {
+    margin-right: auto;
   }
 
-  .meter {
+  .space-group {
     width: 100%;
+  }
+
+  .boards-kanban {
+    grid-auto-columns: 90%;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+  }
+
+  .boards-column {
+    scroll-snap-align: start;
   }
 }
 </style>
