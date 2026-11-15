@@ -5,8 +5,8 @@ import { page, userEvent } from 'vitest/browser'
 
 import { ApiError } from '#infrastructure/api/request'
 import type { BoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps'
-import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 import type { SpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps'
+import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 import { createOrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
 
 import type { MoveIssuesDialogDeps } from './components/move-issues-dialog/MoveIssuesDialog.deps'
@@ -302,7 +302,7 @@ it.each([320, 390, 767, 768])(
 )
 
 it.each([767, 768])(
-  'places the assignee beside the date and metadata to the left of attributes at %ipx',
+  'places the assignee beside the date and metadata above attributes at %ipx',
   async (width) => {
     await page.viewport(width, 900)
     const wrapper = await mount(createDeps(), vi.fn<() => void>(), [
@@ -323,8 +323,8 @@ it.each([767, 768])(
     expect(person.top).toBeGreaterThan(title.bottom)
     expect(date.right).toBeLessThan(person.left)
     expect(person.right).toBeLessThan(actions.left)
-    expect(metadata.right).toBeLessThan(attributes.left)
-    expect(attributes.top + attributes.height / 2).toBeCloseTo(metadata.top + metadata.height / 2)
+    expect(metadata.top).toBeGreaterThan(title.bottom)
+    expect(metadata.bottom).toBeLessThan(attributes.top)
   },
 )
 
@@ -363,7 +363,7 @@ it.each([1024, 1440])(
 )
 
 it.each([320, 390])(
-  'keeps the assignee and actions beside the date with metadata below attributes at %ipx',
+  'keeps the assignee and actions beside the date with metadata above attributes at %ipx',
   async (width) => {
     await page.viewport(width, 900)
     const wrapper = await mount(createDeps(), vi.fn<() => void>(), responsiveIssues)
@@ -378,7 +378,8 @@ it.each([320, 390])(
     expect(person.top).toBeGreaterThan(title.bottom)
     expect(date.right).toBeLessThan(person.left)
     expect(person.right).toBeLessThan(actions.left)
-    expect(metadata.top).toBeGreaterThan(attributes.bottom)
+    expect(metadata.top).toBeGreaterThan(title.bottom)
+    expect(metadata.bottom).toBeLessThan(attributes.top)
     const titleRange = document.createRange()
     titleRange.selectNodeContents(row.querySelector('.issue-title')!)
     const lines = Array.from(titleRange.getClientRects()).filter((rect) => rect.width > 0)

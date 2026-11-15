@@ -22,10 +22,10 @@
             @update:model-value="updateSearch" />
           <IssueFilters
             :assignee-select="deps.issueList.quickEdit?.assigneeSelect"
-            :space-key="spaceKey"
             :attributes="data.attributes"
             :loading="filtering"
             :model-value="filterValue"
+            :space-key="spaceKey"
             @update:model-value="updateFilters({ attributes: $event.attributes })" />
         </template>
         <template #actions>
@@ -82,9 +82,9 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
+import type { BacklogPageDeps } from '#layers/workspace/app/sections/spaces/backlog/BacklogPage.deps'
+import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import type { IssueFiltersValue } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.types'
-import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
-import IssueList from '#layers/workspace/app/shared/components/IssueList/IssueList.vue'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -92,8 +92,8 @@ import {
   readIssueAssigneeQuery,
   withIssueAttributeFilters,
 } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.utils'
-import type { BacklogPageDeps } from '#layers/workspace/app/sections/spaces/backlog/BacklogPage.deps'
-import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
+import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
+import IssueList from '#layers/workspace/app/shared/components/IssueList/IssueList.vue'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'

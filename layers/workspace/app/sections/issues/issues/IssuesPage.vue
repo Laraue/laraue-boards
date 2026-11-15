@@ -89,9 +89,8 @@ import {
   issueBoardStatuses,
   type IssueBoardStatus,
 } from '#layers/workspace/app/sections/issues/issues/IssuesPage.deps'
+import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import type { IssueFiltersValue } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.types'
-import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
-import IssueList from '#layers/workspace/app/shared/components/IssueList/IssueList.vue'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -100,7 +99,8 @@ import {
   readIssueSpaceQuery,
   withIssueAttributeFilters,
 } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.utils'
-import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
+import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
+import IssueList from '#layers/workspace/app/shared/components/IssueList/IssueList.vue'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'

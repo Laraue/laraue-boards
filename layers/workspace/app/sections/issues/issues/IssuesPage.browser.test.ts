@@ -5,10 +5,10 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { ApiError } from '#infrastructure/api/request'
 import type { BoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps'
-import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 import type { MoveIssuesDialogDeps } from '#layers/workspace/app/shared/components/IssueList/components/move-issues-dialog/MoveIssuesDialog.deps'
 import type { IssueListItem } from '#layers/workspace/app/shared/components/IssueList/IssueList.types'
 import type { SpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps'
+import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 import { createOrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
 
 import type { IssuesPageData, IssuesPageDeps } from './IssuesPage.deps'

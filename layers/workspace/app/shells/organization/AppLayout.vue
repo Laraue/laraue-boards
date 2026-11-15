@@ -44,7 +44,6 @@ import {
 } from '#app'
 import { ClientOnly } from '#components'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
-import PageLoadState from '#layers/workspace/app/shells/organization/components/PageLoadState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { sidebarOpenKey } from '#layers/workspace/app/shared/composables/useSidebarOpen'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
@@ -54,6 +53,7 @@ import type {
 } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 import AppLayoutContent from '#layers/workspace/app/shells/organization/components/AppLayoutContent.vue'
 import OrganizationSetup from '#layers/workspace/app/shells/organization/components/OrganizationSetup/OrganizationSetup.vue'
+import PageLoadState from '#layers/workspace/app/shells/organization/components/PageLoadState.vue'
 import {
   appLayoutDataKey,
   refreshAppLayoutData,

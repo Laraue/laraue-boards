@@ -86,7 +86,10 @@ const createDeps = (overrides: Partial<IssueDetailsDeps> = {}): IssueDetailsDeps
     })),
   },
   history: {
-    load: vi.fn<IssueDetailsDeps['history']['load']>(async () => ({ hasNextPage: false, items: [] })),
+    load: vi.fn<IssueDetailsDeps['history']['load']>(async () => ({
+      hasNextPage: false,
+      items: [],
+    })),
   },
   links: {
     add: vi.fn<IssueDetailsDeps['links']['add']>(async () => ({ outcome: 'added' as const })),
@@ -145,21 +148,29 @@ it('copies the current description including unsaved edits', async () => {
   const wrapper = await mount(createDeps())
   await wrapper.findComponent({ name: 'IssueDescription' }).setValue('# Updated\n\n**Details**')
 
-  await page.getByRole('button', { name: 'Copy issue description', exact: true }).click()
+  await page.getByRole('button', { exact: true, name: 'Copy issue description' }).click()
 
   expect(writeText).toHaveBeenCalledWith('# Updated\n\n**Details**')
-  await expect.element(page.getByRole('button', { name: 'Copied', exact: true })).toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { exact: true, name: 'Copied' }))
+    .toBeInTheDocument()
 })
 
 it('offers manual copying when clipboard access is denied for a read-only issue', async () => {
   vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('Denied'))
   const prompt = vi.spyOn(window, 'prompt').mockReturnValue(null)
-  await mount(createDeps({ view: vi.fn(async () => ({ ...issue, canEdit: false })) }))
+  await mount(
+    createDeps({
+      view: vi.fn<IssueDetailsDeps['view']>(async () => ({ ...issue, canEdit: false })),
+    }),
+  )
 
-  await page.getByRole('button', { name: 'Copy issue description', exact: true }).click()
+  await page.getByRole('button', { exact: true, name: 'Copy issue description' }).click()
 
   expect(prompt).toHaveBeenCalledWith('Copy issue description', issue.content)
-  await expect.element(page.getByRole('button', { name: 'Copied', exact: true })).not.toBeInTheDocument()
+  await expect
+    .element(page.getByRole('button', { exact: true, name: 'Copied' }))
+    .not.toBeInTheDocument()
 })
 
 it('shows the loaded issue', async () => {
@@ -170,6 +181,42 @@ it('shows the loaded issue', async () => {
   )
 
   await expect.element(page.getByText('ISS-1', { exact: true })).toBeInTheDocument()
+})
+
+it('shows the table menu only while editing the table in the issue dialog', async () => {
+  await mount(
+    createDeps({
+      view: vi.fn<IssueDetailsDeps['view']>(async () => ({
+        ...issue,
+        content: `| Header |\n| - |\n| Example ${'1'.repeat(500)} |`,
+      })),
+    }),
+    undefined,
+    undefined,
+    true,
+  )
+
+  const addRow = page.getByRole('button', { exact: true, name: 'Add a row' })
+  await expect.element(page.getByRole('cell', { name: /^Example/ })).toBeInTheDocument()
+  await expect.element(addRow).not.toBeInTheDocument()
+
+  await page.getByRole('cell', { name: /^Example/ }).click()
+  await expect.element(addRow).toBeVisible()
+
+  const table = currentWrapper!.get('table').element
+  table.scrollLeft = 500
+  table.dispatchEvent(new Event('scroll'))
+  expect(table.scrollLeft).toBeGreaterThan(0)
+  await expect
+    .poll(() => {
+      const editor = currentWrapper!.get('.markdown-editor').element.getBoundingClientRect()
+      const menu = document.querySelector('.markdown-editor-table-menu')?.getBoundingClientRect()
+      return !!menu && menu.left >= editor.left && menu.right <= editor.right
+    })
+    .toBe(true)
+
+  await page.getByRole('textbox', { exact: true, name: 'Title' }).click()
+  await expect.element(addRow).not.toBeInTheDocument()
 })
 
 it('folds kept values of attributes the board does not use, to read or clear', async () => {
@@ -1027,7 +1074,9 @@ it('adds a link to an issue picked from the suggestions', async () => {
 })
 
 it('keeps the link fields open when no such issue is found', async () => {
-  const add = vi.fn<IssueDetailsDeps['links']['add']>(async () => ({ outcome: 'notFound' as const }))
+  const add = vi.fn<IssueDetailsDeps['links']['add']>(async () => ({
+    outcome: 'notFound' as const,
+  }))
   await mount(createDeps({ links: { ...createDeps().links, add } }))
 
   await page.getByRole('button', { name: 'Add link' }).click()

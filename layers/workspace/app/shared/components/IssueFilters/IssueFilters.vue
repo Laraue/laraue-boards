@@ -88,17 +88,17 @@ import { computed } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseCheckbox from '#layers/core/app/ui/components/BaseCheckbox.vue'
-import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
-import { boardStatusAppearance } from '#layers/workspace/app/shared/constants/boardStatus'
 import type { AssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps'
-import type { IssueAttributeField } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
 import type { FilterMenuItem } from '#layers/workspace/app/shared/components/FilterMenu/FilterMenu.types'
 import FilterMenu from '#layers/workspace/app/shared/components/FilterMenu/FilterMenu.vue'
+import type { IssueAttributeField } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import IssueDateFilter from '#layers/workspace/app/shared/components/IssueDateFilter.vue'
+import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
+import { boardStatusAppearance } from '#layers/workspace/app/shared/constants/boardStatus'
 import { AttributeIcon, BoardIcon, SpaceIcon } from '#layers/workspace/app/shared/constants/icons'
 import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 
 import IssueAssigneeFilter from './components/IssueAssigneeFilter.vue'
-import IssueDateFilter from '#layers/workspace/app/shared/components/IssueDateFilter.vue'
 import IssueDateTimeFilter from './components/IssueDateTimeFilter.vue'
 import IssueDecimalFilter from './components/IssueDecimalFilter.vue'
 import IssueIntegerFilter from './components/IssueIntegerFilter.vue'
@@ -210,12 +210,14 @@ const toggleSpace = (spaceId: string) => {
 type FilterItem = FilterMenuItem & { attribute?: IssueAttributeField }
 const filterItems = computed<FilterItem[]>(() => [
   ...(props.assigneeSelect
-    ? [{
-        count: selectedAssignees.value.length,
-        icon: IconUser,
-        id: ASSIGNEE_FILTER,
-        label: t('assignees'),
-      }]
+    ? [
+        {
+          count: selectedAssignees.value.length,
+          icon: IconUser,
+          id: ASSIGNEE_FILTER,
+          label: t('assignees'),
+        },
+      ]
     : []),
   ...(props.spaces.length
     ? [

@@ -149,8 +149,6 @@ import BaseBadge from '#layers/core/app/ui/components/BaseBadge.vue'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseEmptyState from '#layers/core/app/ui/components/BaseEmptyState.vue'
 import BaseSelect from '#layers/core/app/ui/components/BaseSelect.vue'
-import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
-import { boardStatusAppearance } from '#layers/workspace/app/shared/constants/boardStatus'
 import SpaceAbout from '#layers/workspace/app/sections/spaces/space/components/SpaceAbout/SpaceAbout.vue'
 import type {
   SpaceBoardSummary,
@@ -159,7 +157,9 @@ import type {
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
+import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
+import { boardStatusAppearance } from '#layers/workspace/app/shared/constants/boardStatus'
 import { BoardIcon, SpaceIcon } from '#layers/workspace/app/shared/constants/icons'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
 
@@ -279,7 +279,6 @@ const visibleBoards = computed(() =>
 
 const statusLabel = (status: 'Active' | 'Done' | 'New') =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]
-
 </script>
 
 <style scoped>

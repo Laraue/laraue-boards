@@ -1,10 +1,19 @@
 import { assert, test } from 'vitest'
 
-import { type IssueAttributeDto, mapIssueAttributes, mapIssueAttributeValues } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.deps.impl'
-import { mapIssueFilters, mapRawIssueFilters } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
+import {
+  type IssueAttributeDto,
+  mapIssueAttributes,
+  mapIssueAttributeValues,
+} from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.deps.impl'
+import {
+  toLocalIssueDateTime,
+  toUtcIssueDateTime,
+} from '#layers/workspace/app/shared/components/IssueAttributeFields/issueDateTime'
+import {
+  mapIssueFilters,
+  mapRawIssueFilters,
+} from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
-
-import { toLocalIssueDateTime, toUtcIssueDateTime } from '#layers/workspace/app/shared/components/IssueAttributeFields/issueDateTime'
 
 const attributeDtos: IssueAttributeDto[] = [
   {

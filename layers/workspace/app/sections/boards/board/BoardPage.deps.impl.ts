@@ -1,13 +1,16 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
-import { createIssueDetailsDeps } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps.impl'
 import { mapAgentRunState } from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.deps.impl'
-import { mapAttributeLabels } from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.deps.impl'
-import { mapIssueFilters, mapRawIssueFilters } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
-import { issueSourceField } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
 import { saveIssueAssignee } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
 import { createAssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
+import { mapAttributeLabels } from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.deps.impl'
+import { createIssueDetailsDeps } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps.impl'
+import {
+  mapIssueFilters,
+  mapRawIssueFilters,
+} from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
+import { issueSourceField } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 

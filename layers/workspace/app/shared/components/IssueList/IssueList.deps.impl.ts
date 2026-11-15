@@ -1,8 +1,8 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
-import { createStatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps.impl'
 import { saveIssueAssignee } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
 import { createAssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
+import { createStatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps.impl'
 
 import { createMoveIssuesDialogDeps } from './components/move-issues-dialog/MoveIssuesDialog.deps.impl'
 import type { IssueListDeps } from './IssueList.deps'

@@ -82,6 +82,27 @@ it('lets the user choose a destination and create an issue from the issue list',
   expect(onCreated).toHaveBeenCalledWith('ISS-1')
 })
 
+it('keeps a wide Markdown table inside the description when creating an issue', async () => {
+  currentWrapper = await mountSuspended(CreateIssueForm, {
+    attachTo: document.body,
+    props: { attributes: [], deps: createDeps(), onCreated: vi.fn<(issueKey: string) => void>() },
+  })
+  await currentWrapper
+    .findComponent({ name: 'IssueDescription' })
+    .setValue(`|   |   |   |\n| - | - | - |\n|   | Example | ${'1'.repeat(500)} |`)
+
+  await expect
+    .poll(() => {
+      const main = currentWrapper!.get('.issue-form-main').element
+      const table = currentWrapper!.get('table').element
+      return {
+        descriptionFits: main.scrollWidth <= main.clientWidth + 1,
+        tableScrolls: table.scrollWidth > table.clientWidth,
+      }
+    })
+    .toEqual({ descriptionFits: true, tableScrolls: true })
+})
+
 it('creates an issue in a fixed board without showing destination selects', async () => {
   const onCreated = vi.fn<(issueKey: string) => void>()
   const deps = createDeps()

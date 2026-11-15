@@ -2,7 +2,11 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 
-import type { AttributeFilterInput, AttributeFilterValues, IssueFilterAttribute } from './IssueFilters.types'
+import type {
+  AttributeFilterInput,
+  AttributeFilterValues,
+  IssueFilterAttribute,
+} from './IssueFilters.types'
 
 const prefix = 'attribute.'
 

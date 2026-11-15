@@ -24,11 +24,11 @@
             :model-value="search"
             @update:model-value="updateSearch" />
           <IssueFilters
-        :assignee-select="deps.issueCard.assigneeSelect"
-        :space-key="spaceKey"
+            :assignee-select="deps.issueCard.assigneeSelect"
             :attributes="viewModel.attributes"
             :loading="state.filtering"
             :model-value="filterValue"
+            :space-key="spaceKey"
             @update:model-value="updateFilters" />
         </template>
         <template
@@ -183,8 +183,8 @@ import type {
 } from '#layers/workspace/app/sections/boards/board/BoardPage.deps'
 import BoardColumn from '#layers/workspace/app/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '#layers/workspace/app/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
+import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import type { IssueDetailsSavedIssue } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps'
-import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
@@ -192,7 +192,7 @@ import {
   readIssueAssigneeQuery,
   withIssueAttributeFilters,
 } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.utils'
-import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
+import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'

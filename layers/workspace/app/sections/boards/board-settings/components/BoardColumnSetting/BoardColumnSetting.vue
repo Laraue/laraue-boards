@@ -64,9 +64,9 @@ import { computed, useTemplateRef } from 'vue'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
 import BaseInput from '#layers/core/app/ui/components/BaseInput.vue'
+import AppColorPicker from '#layers/workspace/app/shared/components/AppColorPicker.vue'
 import type { StatusCategory } from '#layers/workspace/app/shared/components/StatusCategorySelect/StatusCategorySelect.types'
 import StatusCategorySelect from '#layers/workspace/app/shared/components/StatusCategorySelect/StatusCategorySelect.vue'
-import AppColorPicker from '#layers/workspace/app/shared/components/AppColorPicker.vue'
 
 const props = defineProps<{
   canUpdate: boolean

@@ -10,7 +10,9 @@
     <div
       v-if="!disabled || $slots['after-insert-block']"
       class="issue-description-footer">
-      <slot v-if="!disabled" name="actions" />
+      <slot
+        v-if="!disabled"
+        name="actions" />
       <!-- The blocks "/" offers, found by a button rather than a line of text to read. -->
       <BaseIconButton
         v-if="!disabled"
@@ -104,6 +106,8 @@ const summarizeContent = async (): Promise<void> => {
 .issue-description {
   display: grid;
   gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
 }
 
 .issue-description :deep(.markdown) {

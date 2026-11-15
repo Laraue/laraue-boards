@@ -1,11 +1,11 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
-import { createBoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps.impl'
-import { createStatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps.impl'
-import { mapIssueAttributeValues } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.deps.impl'
 import { createAssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
+import { createBoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps.impl'
+import { mapIssueAttributeValues } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.deps.impl'
 import { createIssueDescriptionDeps } from '#layers/workspace/app/shared/components/IssueDescription/IssueDescription.deps.impl'
 import { createSpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps.impl'
+import { createStatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps.impl'
 
 import type { CreateIssueFormDeps } from './CreateIssueForm.deps'
 
@@ -66,4 +66,3 @@ export const createIssueFormData = (input: {
   input.files.forEach((file) => formData.append('Files', file))
   return formData
 }
-

@@ -361,20 +361,20 @@ import BaseAvatar from '#layers/core/app/ui/components/BaseAvatar.vue'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
 import BaseTabs from '#layers/core/app/ui/components/BaseTabs.vue'
 import { useConfirm } from '#layers/core/app/ui/composables/useConfirm'
-import BoardSelect from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.vue'
-import StatusSelect from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.vue'
+import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import AssigneeSelect from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.vue'
+import BoardSelect from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.vue'
 import IssueAttachments from '#layers/workspace/app/shared/components/IssueAttachments/IssueAttachments.vue'
+import { getIssueAttributeValueInput } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.utils'
 import IssueAttributeFields from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.vue'
 import IssueDescription from '#layers/workspace/app/shared/components/IssueDescription/IssueDescription.vue'
 import IssueSkeleton from '#layers/workspace/app/shared/components/IssueSkeleton.vue'
 import type { IssueSource } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 import IssueSourceIcon from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.vue'
-import { getIssueAttributeValueInput } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.utils'
-import SpaceSelect from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.vue'
-import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
 import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
+import SpaceSelect from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.vue'
+import StatusSelect from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
 import { useFormatters } from '#layers/workspace/app/shared/composables/useFormatters'
@@ -384,9 +384,9 @@ import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/orga
 
 import IssueAgentRun from './components/IssueAgentRun/IssueAgentRun.vue'
 import IssueComments from './components/IssueComments/IssueComments.vue'
+import IssueDetailsActions from './components/IssueDetailsActions/IssueDetailsActions.vue'
 import IssueHistory from './components/IssueHistory/IssueHistory.vue'
 import IssueLinks from './components/IssueLinks/IssueLinks.vue'
-import IssueDetailsActions from './components/IssueDetailsActions/IssueDetailsActions.vue'
 import IssueUnusedAttributes from './components/IssueUnusedAttributes/IssueUnusedAttributes.vue'
 import type {
   IssueDetailsDeps,
@@ -422,8 +422,8 @@ const { t } = useI18n({
     board: 'Board',
     comments: 'Comments',
     copied: 'Copied',
-    copyIssueLink: 'Copy issue link',
     copyIssueContent: 'Copy issue description',
+    copyIssueLink: 'Copy issue link',
     created: 'Created',
     currentBoard: 'Current board',
     currentSpace: 'Current space',
@@ -456,8 +456,8 @@ const { t } = useI18n({
     board: 'Доска',
     comments: 'Комментарии',
     copied: 'Скопировано',
-    copyIssueLink: 'Копировать ссылку на задачу',
     copyIssueContent: 'Копировать описание задачи',
+    copyIssueLink: 'Копировать ссылку на задачу',
     created: 'Создана',
     currentBoard: 'Текущая доска',
     currentSpace: 'Текущее пространство',

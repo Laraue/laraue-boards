@@ -57,5 +57,4 @@ test('createIssueFormData preserves multipart fields', () => {
   ])
 
   assert.isNull(createIssueFormData({ ...input, statusId: '2', title: '  ' }).get('Title'))
-
 })

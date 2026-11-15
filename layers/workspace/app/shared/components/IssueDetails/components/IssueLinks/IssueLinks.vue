@@ -119,14 +119,14 @@ import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseCombobox from '#layers/core/app/ui/components/BaseCombobox.vue'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
 import BaseSelect from '#layers/core/app/ui/components/BaseSelect.vue'
-import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
-import { ISSUE_LINK_RELATIONS } from '#layers/workspace/app/shared/constants/issueLinks'
+import DocsHelpLink from '#layers/workspace/app/shared/components/DocsHelpLink/DocsHelpLink.vue'
 import type {
   IssueLinkRelation,
   IssueLinkViewModel,
 } from '#layers/workspace/app/shared/components/IssueDetails/components/IssueLinks/IssueLinks.types'
-import DocsHelpLink from '#layers/workspace/app/shared/components/DocsHelpLink/DocsHelpLink.vue'
+import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
+import { ISSUE_LINK_RELATIONS } from '#layers/workspace/app/shared/constants/issueLinks'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
 
 import type { IssueLinkCandidate, IssueLinksDeps } from './IssueLinks.deps'

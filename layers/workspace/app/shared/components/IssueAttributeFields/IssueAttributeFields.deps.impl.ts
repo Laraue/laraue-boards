@@ -1,8 +1,8 @@
 import type { components } from '#infrastructure/api/generated'
+import { toUtcIssueDateTime } from '#layers/workspace/app/shared/components/IssueAttributeFields/issueDateTime'
 import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 
 import type { IssueAttributeField, IssueAttributeValueInput } from './IssueAttributeFields.types'
-import { toUtcIssueDateTime } from '#layers/workspace/app/shared/components/IssueAttributeFields/issueDateTime'
 
 type Schemas = components['schemas']
 export type IssueAttributeDto = Schemas['AttributeDto']
@@ -89,4 +89,3 @@ export const mapIssueAttributeValues = (values: IssueAttributeValueInput[]) => {
     }
   }) satisfies Schemas['AttributeValue'][]
 }
-

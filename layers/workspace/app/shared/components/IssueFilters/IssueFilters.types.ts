@@ -22,4 +22,3 @@ export type IssueFilterAttribute =
   | { id: string; type: 'decimal' }
   | { id: string; type: 'integer' }
   | { id: string; type: 'text' }
-

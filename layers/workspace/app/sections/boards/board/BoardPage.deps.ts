@@ -1,5 +1,5 @@
-import type { IssueDetailsDeps } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps'
 import type { IssueAttributeField } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import type { IssueDetailsDeps } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps'
 
 import type { BoardColumnViewModel } from './components/BoardColumn/BoardColumn.types'
 import type {

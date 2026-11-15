@@ -1,5 +1,5 @@
-import type { StatusCategory } from '#layers/workspace/app/shared/components/StatusCategorySelect/StatusCategorySelect.types'
 import type { AgentRunState } from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.types'
+import type { StatusCategory } from '#layers/workspace/app/shared/components/StatusCategorySelect/StatusCategorySelect.types'
 
 // What keeps the user from handing the issue off now, as the backend decided it.
 export type AgentHandOffBlocker =

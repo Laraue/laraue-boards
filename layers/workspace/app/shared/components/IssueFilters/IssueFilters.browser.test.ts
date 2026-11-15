@@ -87,26 +87,31 @@ it('selects the current user, preserves other filters and clears assignees', asy
   const id = '00000000-0000-0000-0000-000000000001'
   await currentWrapper!.setProps({
     assigneeSelect: {
-      loadAssignees: async () => [{
-        color: '#db2777',
-        initials: 'GR',
-        isCurrentUser: false,
-        label: 'Grace',
-        value: '00000000-0000-0000-0000-000000000002',
-      }, {
-        color: '#4774d4',
-        initials: 'AD',
-        isCurrentUser: true,
-        label: 'Ada',
-        value: id,
-      }],
+      loadAssignees: async () => [
+        {
+          color: '#db2777',
+          initials: 'GR',
+          isCurrentUser: false,
+          label: 'Grace',
+          value: '00000000-0000-0000-0000-000000000002',
+        },
+        {
+          color: '#4774d4',
+          initials: 'AD',
+          isCurrentUser: true,
+          label: 'Ada',
+          value: id,
+        },
+      ],
     },
     modelValue: { attributes: {}, spaceIds: ['7'] },
   })
   await page.getByRole('button', { name: /^Filters/ }).click()
   await page.getByRole('button', { exact: true, name: 'Assignees' }).click()
   await expect.element(page.getByRole('checkbox', { name: 'Ada (me)' })).toBeInTheDocument()
-  const labels = [...document.querySelectorAll('.assignee-option > span:last-child')].map((el) => el.textContent?.replace(/\s+/g, ' ').trim())
+  const labels = [...document.querySelectorAll('.assignee-option > span:last-child')].map((el) =>
+    el.textContent?.replace(/\s+/g, ' ').trim(),
+  )
   expect(labels).toEqual(['Ada (me)', 'Grace'])
   expect(document.querySelectorAll('.assignee-option .base-avatar')).toHaveLength(2)
   await page.getByRole('checkbox', { name: 'Ada (me)' }).click()

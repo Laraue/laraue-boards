@@ -1,5 +1,4 @@
 import type { components } from '#infrastructure/api/generated'
-import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 
 import type { IssueAttributeLabel } from './IssueAttributeLabels.types'
 
@@ -25,4 +24,3 @@ export const mapAttributeLabels = (
     name: attribute.name,
     value: attribute.value,
   }))
-

@@ -1,6 +1,6 @@
 import type { BoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps'
-import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 import type { SpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps'
+import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 
 export type MoveIssuesDialogDeps = {
   boardSelect: BoardSelectDeps

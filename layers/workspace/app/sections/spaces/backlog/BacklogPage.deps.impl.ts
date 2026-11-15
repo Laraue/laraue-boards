@@ -2,10 +2,13 @@ import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
 import { mapAttributeLabels } from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.deps.impl'
-import { mapIssueFilters, mapRawIssueFilters } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
-import { issueSourceField } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
+import {
+  mapIssueFilters,
+  mapRawIssueFilters,
+} from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
 import { createIssueListDeps } from '#layers/workspace/app/shared/components/IssueList/IssueList.deps.impl'
 import type { IssueListItem } from '#layers/workspace/app/shared/components/IssueList/IssueList.types'
+import { issueSourceField } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 

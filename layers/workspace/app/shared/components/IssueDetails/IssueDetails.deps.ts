@@ -1,16 +1,16 @@
 import type { components } from '#infrastructure/api/generated'
-import type { BoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps'
-import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 import type { AssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps'
+import type { BoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps'
 import type { IssueAttachmentViewModel } from '#layers/workspace/app/shared/components/IssueAttachments/IssueAttachments.types'
 import type {
   IssueAttributeField,
   IssueAttributeValueInput,
 } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
 import type { IssueDescriptionDeps } from '#layers/workspace/app/shared/components/IssueDescription/IssueDescription.deps'
-import type { IssueSource } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 import type { IssueLinkViewModel } from '#layers/workspace/app/shared/components/IssueDetails/components/IssueLinks/IssueLinks.types'
+import type { IssueSource } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 import type { SpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps'
+import type { StatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps'
 
 import type {
   AgentHandOffViewModel,

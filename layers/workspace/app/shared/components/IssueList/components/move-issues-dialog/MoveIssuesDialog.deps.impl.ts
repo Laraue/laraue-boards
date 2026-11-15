@@ -1,8 +1,8 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { request } from '#infrastructure/api/request'
 import { createBoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps.impl'
-import { createStatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps.impl'
 import { createSpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps.impl'
+import { createStatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps.impl'
 
 import type { MoveIssuesDialogDeps } from './MoveIssuesDialog.deps'
 

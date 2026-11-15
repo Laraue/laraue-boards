@@ -1,10 +1,10 @@
-import type { components } from '#infrastructure/api/generated'
-import type { IssueLinkRelation } from './IssueLinks.types'
-import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 import type { ApiClient } from '#infrastructure/api/client'
+import type { components } from '#infrastructure/api/generated'
 import { isApiError, request } from '#infrastructure/api/request'
+import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 
 import type { IssueLinksDeps } from './IssueLinks.deps'
+import type { IssueLinkRelation } from './IssueLinks.types'
 
 const SUGGESTION_COUNT = 10
 

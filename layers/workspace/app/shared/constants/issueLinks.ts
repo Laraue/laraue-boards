@@ -8,4 +8,3 @@ export const ISSUE_LINK_RELATIONS: IssueLinkRelation[] = [
   'duplicates',
   'duplicatedBy',
 ]
-

@@ -1,6 +1,9 @@
 import { assert, test } from 'vitest'
 
-import { issueSourceField, mapIssueSource } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
+import {
+  issueSourceField,
+  mapIssueSource,
+} from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
 
 test('maps how an issue was created to its source mark', () => {
   assert.deepEqual(mapIssueSource('Web', null), { keyName: null, kind: 'web' })

@@ -1,4 +1,7 @@
-import type { IssueAttributeField, IssueAttributeValueInput } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import type {
+  IssueAttributeField,
+  IssueAttributeValueInput,
+} from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
 import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 
 export function getIssueAttributeValueInput(
@@ -24,7 +27,7 @@ export function getIssueAttributeValueInput(
       case 'dateTime':
         return [{ attributeId: attribute.id, type: 'dateTime' as const, value }]
       default:
-        return assertNever(attribute)
+        return assertNever(attribute.type)
     }
   })
 }

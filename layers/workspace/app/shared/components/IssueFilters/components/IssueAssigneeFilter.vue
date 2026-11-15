@@ -22,15 +22,20 @@
               :initials="option.initials"
               size="sm" />
             <span>
-              {{ option.label }}<span
+              {{ option.label }}
+              <span
                 v-if="option.isCurrentUser"
-                class="muted"> ({{ t('me') }})</span>
+                class="muted">
+                ({{ t('me') }})
+              </span>
             </span>
           </span>
         </BaseCheckbox>
         <p
           v-if="!options.length"
-          class="muted">{{ t('empty') }}</p>
+          class="muted">
+          {{ t('empty') }}
+        </p>
       </fieldset>
     </template>
   </QueryState>

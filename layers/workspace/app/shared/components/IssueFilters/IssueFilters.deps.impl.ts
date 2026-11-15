@@ -3,8 +3,8 @@ import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
 
 import type { IssueAttributeField } from '../IssueAttributeFields/IssueAttributeFields.types'
 import { toUtcIssueDateTime } from '../IssueAttributeFields/issueDateTime'
-import { getIssueAttributeFilterInput, normalizeIssueAttributeFilters } from './IssueFilters.utils'
 import type { AttributeFilterInput } from './IssueFilters.types'
+import { getIssueAttributeFilterInput, normalizeIssueAttributeFilters } from './IssueFilters.utils'
 
 type Schemas = components['schemas']
 

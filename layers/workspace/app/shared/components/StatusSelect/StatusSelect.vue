@@ -30,9 +30,9 @@ import { computed, useId, watch } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseSelect from '#layers/core/app/ui/components/BaseSelect.vue'
+import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
 
-import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
 import type { StatusSelectDeps, StatusSelectOption } from './StatusSelect.deps'
 
 const props = withDefaults(

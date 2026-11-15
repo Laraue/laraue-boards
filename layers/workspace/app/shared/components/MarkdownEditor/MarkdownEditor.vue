@@ -1,5 +1,7 @@
 <template>
-  <div class="markdown-editor">
+  <div
+    ref="element"
+    class="markdown-editor">
     <!-- Rendered on the server and until the editor mounts, so the text does not jump in. -->
     <!-- eslint-disable vue/no-v-html -- sanitized by renderMarkdown -->
     <div
@@ -176,7 +178,7 @@ import { Markdown } from '@tiptap/markdown'
 import { StarterKit } from '@tiptap/starter-kit'
 import { EditorContent, useEditor } from '@tiptap/vue-3'
 import { BubbleMenu, FloatingMenu } from '@tiptap/vue-3/menus'
-import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import type { Component } from 'vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
@@ -251,13 +253,14 @@ const model = defineModel<string>({ required: true })
 
 const fallback = computed(() => renderMarkdown(model.value))
 
-const selectionMenuOptions = {
+const element = useTemplateRef<HTMLElement>('element')
+const selectionMenuOptions = computed(() => ({
   flip: { padding: 8 },
   offset: 8,
   placement: 'top' as const,
-  shift: { padding: 8 },
+  shift: { boundary: element.value ?? ('clippingAncestors' as const), padding: 8 },
   strategy: 'fixed' as const,
-}
+}))
 
 // The markdown the editor holds, to tell its own changes from new content coming in.
 let editorMarkdown = model.value
@@ -469,6 +472,7 @@ const blockActions: EditorAction[][] = [
 ]
 
 type SlashContext = {
+  isFocused: boolean
   state: {
     selection: {
       $from: {
@@ -516,7 +520,7 @@ const slashCommands = computed(() =>
 // the slash is read there, so the list is never one keystroke behind.
 const showSlashMenu = ({ editor: current }: { editor: SlashContext }) => {
   updateSlash(current)
-  return slashCommands.value.length > 0
+  return current.isFocused && slashCommands.value.length > 0
 }
 
 const runSlashCommand = (command: EditorAction) => {
@@ -571,11 +575,16 @@ const tableActions: EditorAction[][] = [
 
 // The text menu needs a selection outside a table; in a table, the table's menu shows instead.
 type MenuContext = {
-  editor: { isActive: (name: string) => boolean; state: { selection: { empty: boolean } } }
+  editor: {
+    isActive: (name: string) => boolean
+    isFocused: boolean
+    state: { selection: { empty: boolean } }
+  }
 }
 const showTextMenu = ({ editor: current }: MenuContext) =>
-  !current.state.selection.empty && !current.isActive('table')
-const showTableMenu = ({ editor: current }: MenuContext) => current.isActive('table')
+  current.isFocused && !current.state.selection.empty && !current.isActive('table')
+const showTableMenu = ({ editor: current }: MenuContext) =>
+  current.isFocused && current.isActive('table')
 // For a button next to the editor: a "/" on an empty line, opening the list of blocks.
 const insertSlash = () => {
   const current = editor.value
