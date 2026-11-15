@@ -1,7 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
-import { mapIssueAttributes } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
-import { createCreateIssueFormDeps } from '#layers/workspace/app/sections/issues/shared/components/CreateIssueForm/CreateIssueForm.deps.impl'
+import { createCreateIssueFormDeps } from '#layers/workspace/app/shared/components/CreateIssueForm/CreateIssueForm.deps.impl'
+import { mapIssueAttributes } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.deps.impl'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { CreateBacklogIssuePageDeps } from './CreateBacklogIssuePage.deps'

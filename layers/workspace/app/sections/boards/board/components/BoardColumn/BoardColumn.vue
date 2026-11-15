@@ -69,7 +69,7 @@ import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseIconButton from '#layers/core/app/ui/components/BaseIconButton.vue'
 import type { IssueCardDeps } from '#layers/workspace/app/sections/boards/board/components/BoardColumn/components/IssueCard.types'
 import IssueCard from '#layers/workspace/app/sections/boards/board/components/BoardColumn/components/IssueCard.vue'
-import StatusIndicator from '#layers/workspace/app/sections/boards/shared/components/StatusSelect/StatusIndicator.vue'
+import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
 

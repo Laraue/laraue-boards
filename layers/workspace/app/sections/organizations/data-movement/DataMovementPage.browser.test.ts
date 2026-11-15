@@ -4,7 +4,7 @@ import { page } from 'vitest/browser'
 
 import { ApiError } from '#infrastructure/api/request'
 import type { OrganizationSelectDeps } from '#layers/workspace/app/sections/organizations/shared/components/OrganizationSelect/OrganizationSelect.deps'
-import type { SpaceSelectDeps } from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.deps'
+import type { SpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps'
 
 import type { MoveBoardsDialogDeps } from './components/BoardsMovementSection/components/MoveBoardsDialog/MoveBoardsDialog.deps'
 import type { MoveSpacesDialogDeps } from './components/SpacesMovementSection/components/MoveSpacesDialog/MoveSpacesDialog.deps'

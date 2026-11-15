@@ -84,25 +84,27 @@
       role="alert">
       {{ saveMessage }}
     </p>
-    <IconLoader
+    <span
       v-if="moving"
-      :aria-label="t('savingPosition')"
-      class="task-progress" />
+      class="visually-hidden"
+      role="status">
+      {{ t('savingPosition') }}
+    </span>
   </article>
 </template>
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
-import { IconLoader, IconLock } from '@tabler/icons-vue'
+import { IconLock } from '@tabler/icons-vue'
 import { computed, useTemplateRef } from 'vue'
 
 import { NuxtLink } from '#components'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseAvatar from '#layers/core/app/ui/components/BaseAvatar.vue'
-import AgentRunBadge from '#layers/workspace/app/sections/issues/shared/components/AgentRunBadge/AgentRunBadge.vue'
-import AssigneeSelect from '#layers/workspace/app/sections/issues/shared/components/AssigneeSelect/AssigneeSelect.vue'
-import IssueAttributeLabels from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeLabels/IssueAttributeLabels.vue'
-import IssueSourceIcon from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.vue'
+import AgentRunBadge from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.vue'
+import AssigneeSelect from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.vue'
+import IssueAttributeLabels from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.vue'
+import IssueSourceIcon from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { useFormatters } from '#layers/workspace/app/shared/composables/useFormatters'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
@@ -278,16 +280,6 @@ useSortable({
   z-index: 1;
 }
 
-.task-progress {
-  animation: var(--animation-spin);
-  color: var(--color-accent);
-  height: 16px;
-  position: absolute;
-  right: var(--space-5);
-  top: var(--space-5);
-  width: 16px;
-}
-
 .task-key {
   color: var(--color-muted);
   margin-inline-end: var(--space-1);
@@ -314,10 +306,6 @@ useSortable({
   margin: 0 0 var(--space-3);
   overflow: hidden;
   overflow-wrap: anywhere;
-}
-
-.task--moving .task-title {
-  padding-right: var(--control-height-small);
 }
 
 @media (hover: hover) and (pointer: fine) {

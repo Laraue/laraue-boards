@@ -10,6 +10,20 @@ const catalog = () => ({
   spaces: [{ color: '#333', key: 'product', name: 'Product' }],
 })
 
+test('keeps assignees on initial load and paginated search', async () => {
+  const assigneeIds = ['00000000-0000-0000-0000-000000000001']
+  const { client, requests } = createTestApiClient(() => ({ data: [], hasNextPage: false }))
+  const deps = createIssuesPageDeps(client, catalog)
+  const input = { assigneeIds, epicStatuses: [], page: 2, search: '', spaceIds: [] }
+  await deps.view({ ...input, attributeQuery: {} })
+  await deps.searchIssues({ ...input, filters: [] })
+  for (const request of requests) {
+    const body = await request.json()
+    assert.deepEqual(body.assigneeIds, assigneeIds)
+    assert.equal(body.page, 1)
+  }
+})
+
 const response = () => ({
   data: [
     {
@@ -69,7 +83,7 @@ test('loads the initial issues page data in one request', async () => {
       attributes: [],
       hasNextPage: false,
       issues: [],
-      spaces: [{ label: 'Product', value: 'product' }],
+      spaces: [{ color: '#333', label: 'Product', value: 'product' }],
     },
   )
   // The attributes and spaces come from the layout (BRD-301).

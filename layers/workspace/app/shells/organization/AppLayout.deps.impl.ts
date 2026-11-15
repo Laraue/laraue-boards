@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { isApiError, request } from '#infrastructure/api/request'
-import { mapIssueAttributes } from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
+import { mapIssueAttributes } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.deps.impl'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import { getOrganizationKey } from '#layers/workspace/app/shared/utils/organizationKey'
 import { createFeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps.impl'

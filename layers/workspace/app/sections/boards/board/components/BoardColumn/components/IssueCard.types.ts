@@ -1,7 +1,7 @@
-import type { AgentRunState } from '#layers/workspace/app/sections/issues/shared/components/AgentRunBadge/AgentRunBadge.types'
-import type { AssigneeSelectDeps } from '#layers/workspace/app/sections/issues/shared/components/AssigneeSelect/AssigneeSelect.deps'
-import type { IssueAttributeLabel } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeLabels/IssueAttributeLabels.types'
-import type { IssueSource } from '#layers/workspace/app/sections/issues/shared/components/IssueSourceIcon/IssueSourceIcon.types'
+import type { AgentRunState } from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.types'
+import type { AssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps'
+import type { IssueAttributeLabel } from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.types'
+import type { IssueSource } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.types'
 
 export type IssueCardDeps = {
   assigneeSelect: AssigneeSelectDeps

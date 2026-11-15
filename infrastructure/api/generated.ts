@@ -1614,6 +1614,7 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
+                    AssigneeIds?: string[];
                     "AuthData.OrganizationId"?: number;
                     "AuthData.UserId"?: string;
                     "AuthData.ApiKeyId"?: string;
@@ -4340,6 +4341,7 @@ export interface components {
             pagination: components["schemas"]["PaginationData"];
         };
         GetBoardRequest: {
+            assigneeIds?: string[];
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
             epicId: number;
@@ -4362,6 +4364,7 @@ export interface components {
             pagination: components["schemas"]["PaginationData"];
         };
         GetIssuesRequest: {
+            assigneeIds?: string[];
             authData?: components["schemas"]["OrganizationAuthData"];
             /** Format: int64 */
             statusId?: number;
@@ -4831,6 +4834,7 @@ export interface components {
             color: string;
         };
         SearchRequest: {
+            assigneeIds?: string[];
             authData?: components["schemas"]["OrganizationAuthData"];
             epicIds?: number[];
             epicStatuses?: components["schemas"]["EpicStatus"][];

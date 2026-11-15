@@ -13,6 +13,7 @@
             :model-value="request.search"
             @update:model-value="updateSearch" />
           <IssueFilters
+            :assignee-select="deps.issueList.quickEdit?.assigneeSelect"
             :attributes="data.attributes"
             :epic-statuses="epicStatusOptions"
             :loading="filtering"
@@ -20,6 +21,7 @@
             :spaces="data.spaces"
             @update:model-value="
               updateFilters({
+                assigneeIds: $event.assigneeIds ?? [],
                 attributes: $event.attributes,
                 epicStatuses: $event.epicStatuses ?? [],
                 spaceIds: $event.spaceIds ?? [],
@@ -87,18 +89,19 @@ import {
   issueBoardStatuses,
   type IssueBoardStatus,
 } from '#layers/workspace/app/sections/issues/issues/IssuesPage.deps'
-import type { IssueFiltersValue } from '#layers/workspace/app/sections/issues/shared/components/IssueFilters/IssueFilters.types'
-import IssueFilters from '#layers/workspace/app/sections/issues/shared/components/IssueFilters/IssueFilters.vue'
-import IssueList from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.vue'
+import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
+import type { IssueFiltersValue } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.types'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
   readIssueAttributeQuery,
+  readIssueAssigneeQuery,
   readIssueSpaceQuery,
   withIssueAttributeFilters,
-} from '#layers/workspace/app/sections/issues/shared/model/issueAttributeFilters'
-import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
-import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+} from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.utils'
+import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
+import IssueList from '#layers/workspace/app/shared/components/IssueList/IssueList.vue'
+import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
@@ -149,6 +152,7 @@ const epicStatusOptions: Array<{ label: string; value: IssueBoardStatus }> = [
 ]
 
 const request = computed(() => ({
+  assigneeIds: readIssueAssigneeQuery(props.routeQuery.assignee),
   attributeQuery: readIssueAttributeQuery(props.routeQuery),
   epicStatuses: issueBoardStatuses.filter((status) =>
     [props.routeQuery.epicStatus].flat().includes(status),
@@ -168,6 +172,7 @@ const attributeFilters = computed(() =>
   normalizeIssueAttributeFilters(request.value.attributeQuery, attributes.value),
 )
 const filterValue = computed<IssueFiltersValue>(() => ({
+  assigneeIds: request.value.assigneeIds,
   attributes: attributeFilters.value,
   epicStatuses: request.value.epicStatuses,
   spaceIds: request.value.spaceIds,
@@ -183,6 +188,7 @@ const {
   () => `issues-search:${props.organizationKey}`,
   () =>
     props.deps.searchIssues({
+      assigneeIds: request.value.assigneeIds,
       epicStatuses: request.value.epicStatuses,
       filters: getIssueAttributeFilterInput(attributeFilters.value, attributes.value),
       page: request.value.page,
@@ -216,6 +222,11 @@ const scheduleSearch = debounce(searchIssues, 300)
 
 const updateFilters = (value: Required<IssueFiltersValue>) => {
   const nextQuery = withIssueAttributeFilters(props.routeQuery, value.attributes, attributes.value)
+  if (value.assigneeIds.length) {
+    nextQuery.assignee = value.assigneeIds
+  } else {
+    delete nextQuery.assignee
+  }
   if (value.spaceIds.length) {
     nextQuery.space = value.spaceIds
   } else {

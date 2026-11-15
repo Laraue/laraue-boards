@@ -59,7 +59,7 @@ import BaseDialog from '#layers/core/app/ui/components/BaseDialog.vue'
 import BaseField from '#layers/core/app/ui/components/BaseField.vue'
 import BaseFieldGroup from '#layers/core/app/ui/components/BaseFieldGroup.vue'
 import OrganizationSelect from '#layers/workspace/app/sections/organizations/shared/components/OrganizationSelect/OrganizationSelect.vue'
-import SpaceSelect from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.vue'
+import SpaceSelect from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 
 import type { MoveBoardsDialogDeps } from './MoveBoardsDialog.deps'

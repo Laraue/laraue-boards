@@ -103,7 +103,7 @@ import type {
   RetroListPageDeps,
 } from '#layers/workspace/app/sections/retro/retro-list/RetroListPage.deps'
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
-import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import PaginationControl from '#layers/workspace/app/shared/components/PaginationControl.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'

@@ -22,7 +22,7 @@ import { onBeforeRouteUpdate, type LocationQueryRaw } from 'vue-router'
 import { navigateTo, useRoute, useRouter } from '#app'
 import { createBoardPageDeps } from '#layers/workspace/app/sections/boards/board/BoardPage.deps.impl'
 import BoardPage from '#layers/workspace/app/sections/boards/board/BoardPage.vue'
-import type { IssuePageSavedIssue } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps'
+import type { IssueDetailsSavedIssue } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps'
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
@@ -50,7 +50,7 @@ const onCreateIssue = async (statusId: string): Promise<void> => {
     query: { statusId },
   })
 }
-const onIssueMoved = async (issue: IssuePageSavedIssue): Promise<void> => {
+const onIssueMoved = async (issue: IssueDetailsSavedIssue): Promise<void> => {
   await router.replace({
     ...organizationRoutes.board(issue.spaceKey, issue.boardId),
     query: { ...route.query, issue: issue.issueKey },

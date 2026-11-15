@@ -1,5 +1,5 @@
 import type { ApiClient } from '#infrastructure/api/client'
-import { createCreateIssueFormDeps } from '#layers/workspace/app/sections/issues/shared/components/CreateIssueForm/CreateIssueForm.deps.impl'
+import { createCreateIssueFormDeps } from '#layers/workspace/app/shared/components/CreateIssueForm/CreateIssueForm.deps.impl'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
 import type { CreateIssuePageDeps } from './CreateIssuePage.deps'

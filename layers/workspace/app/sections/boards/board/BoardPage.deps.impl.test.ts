@@ -9,8 +9,28 @@ const catalog = () => ({
   spaces: [{ color: '#555', key: 'product', name: 'Product' }],
 })
 
+test('sends assignees for board search and column pagination', async () => {
+  const assigneeIds = ['00000000-0000-0000-0000-000000000001']
+  const { client, requests } = createTestApiClient((_request, path) =>
+    path === '/api/issues/board' ? [] : { data: [], hasNext: false },
+  )
+  const deps = createBoardPageDeps(client, catalog)
+  await deps.searchBoardIssues({ assigneeIds, boardId: '7', filters: [], search: '', take: 25 })
+  await deps.loadMoreBoardIssues({
+    assigneeIds,
+    filters: [],
+    offset: 25,
+    search: '',
+    statusId: '1',
+    take: 25,
+  })
+  for (const request of requests) {
+    assert.deepEqual((await request.json()).assigneeIds, assigneeIds)
+  }
+})
+
 test('maps board columns in status order with their issues', async () => {
-  const { client, paths } = createTestApiClient((_request, path) => {
+  const { client, paths, requests } = createTestApiClient((_request, path) => {
     if (path === '/api/epics/7') {
       return {
         canCreateIssues: true,
@@ -59,6 +79,7 @@ test('maps board columns in status order with their issues', async () => {
 
   assert.deepEqual(
     await createBoardPageDeps(client, catalog).view({
+      assigneeIds: ['00000000-0000-0000-0000-000000000001'],
       attributeQuery: {},
       boardId: '7',
       search: '',
@@ -113,6 +134,9 @@ test('maps board columns in status order with their issues', async () => {
   )
   // The attributes and spaces come from the layout; the board and its issues load together.
   assert.sameMembers(paths(), ['/api/epics/7', '/api/issues/board'])
+  assert.deepEqual((await requests[1]!.json()).assigneeIds, [
+    '00000000-0000-0000-0000-000000000001',
+  ])
 })
 
 test('maps the latest agent run and the source of a card', async () => {

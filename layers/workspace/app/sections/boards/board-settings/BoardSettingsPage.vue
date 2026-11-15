@@ -96,7 +96,7 @@ import {
   toAttributeSettingsDraft,
   toAttributeSettingsSave,
 } from '#layers/workspace/app/shared/components/AttributeSettings/attributeSettingsDraft'
-import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'

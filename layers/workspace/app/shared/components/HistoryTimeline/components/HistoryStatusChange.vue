@@ -25,7 +25,7 @@
 import { IconArrowRight } from '@tabler/icons-vue'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
-import StatusIndicator from '#layers/workspace/app/sections/boards/shared/components/StatusSelect/StatusIndicator.vue'
+import StatusIndicator from '#layers/workspace/app/shared/components/StatusIndicator.vue'
 
 import type { HistoryStatusChangeViewModel } from '../HistoryTimeline.types'
 

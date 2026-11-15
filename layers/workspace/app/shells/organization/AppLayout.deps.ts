@@ -1,4 +1,4 @@
-import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import type { IssueAttributeField } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
 import type { TourStateDeps } from '#layers/workspace/app/shared/composables/useTour'
 import type { FeedbackDialogDeps } from '#layers/workspace/app/shells/organization/components/FeedbackDialog/FeedbackDialog.deps'
 import type { OrganizationSetupDeps } from '#layers/workspace/app/shells/organization/components/OrganizationSetup/OrganizationSetup.deps'

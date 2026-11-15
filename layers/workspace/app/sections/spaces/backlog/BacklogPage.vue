@@ -21,9 +21,11 @@
             :model-value="request.search"
             @update:model-value="updateSearch" />
           <IssueFilters
+            :assignee-select="deps.issueList.quickEdit?.assigneeSelect"
             :attributes="data.attributes"
             :loading="filtering"
             :model-value="filterValue"
+            :space-key="spaceKey"
             @update:model-value="updateFilters({ attributes: $event.attributes })" />
         </template>
         <template #actions>
@@ -80,18 +82,19 @@ import type { LocationQuery, LocationQueryRaw } from 'vue-router'
 
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
-import type { IssueFiltersValue } from '#layers/workspace/app/sections/issues/shared/components/IssueFilters/IssueFilters.types'
-import IssueFilters from '#layers/workspace/app/sections/issues/shared/components/IssueFilters/IssueFilters.vue'
-import IssueList from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.vue'
+import type { BacklogPageDeps } from '#layers/workspace/app/sections/spaces/backlog/BacklogPage.deps'
+import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
+import type { IssueFiltersValue } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.types'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
   readIssueAttributeQuery,
+  readIssueAssigneeQuery,
   withIssueAttributeFilters,
-} from '#layers/workspace/app/sections/issues/shared/model/issueAttributeFilters'
-import type { BacklogPageDeps } from '#layers/workspace/app/sections/spaces/backlog/BacklogPage.deps'
-import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
-import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+} from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.utils'
+import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
+import IssueList from '#layers/workspace/app/shared/components/IssueList/IssueList.vue'
+import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiQuery } from '#layers/workspace/app/shared/composables/useApiQuery'
@@ -130,6 +133,7 @@ const { t } = useI18n({
 })
 
 const request = computed(() => ({
+  assigneeIds: readIssueAssigneeQuery(props.routeQuery.assignee),
   attributeQuery: readIssueAttributeQuery(props.routeQuery),
   page: Math.max(1, Number(props.routeQuery.page) || 1),
   search: typeof props.routeQuery.search === 'string' ? props.routeQuery.search : '',
@@ -145,6 +149,7 @@ const attributeFilters = computed(() =>
   normalizeIssueAttributeFilters(request.value.attributeQuery, attributes.value),
 )
 const filterValue = computed<IssueFiltersValue>(() => ({
+  assigneeIds: request.value.assigneeIds,
   attributes: attributeFilters.value,
 }))
 
@@ -158,6 +163,7 @@ const {
   () => `backlog-search:${props.spaceKey}`,
   () =>
     props.deps.search({
+      assigneeIds: request.value.assigneeIds,
       backlogBoardId: data.value?.backlogBoardId ?? '',
       filters: getIssueAttributeFilterInput(attributeFilters.value, attributes.value),
       page: request.value.page,
@@ -178,10 +184,14 @@ const filtering = computed(() => state.scheduled || searching.value)
 
 // The search results replace the first load's issues once they exist, so they reload too.
 
-const updateFilters = (value: Required<Pick<IssueFiltersValue, 'attributes'>>) => {
-  void props.onUpdateQuery(
-    withIssueAttributeFilters(props.routeQuery, value.attributes, attributes.value),
-  )
+const updateFilters = (value: IssueFiltersValue) => {
+  const query = withIssueAttributeFilters(props.routeQuery, value.attributes, attributes.value)
+  if (value.assigneeIds?.length) {
+    query.assignee = value.assigneeIds
+  } else {
+    delete query.assignee
+  }
+  void props.onUpdateQuery(query)
 }
 
 const updatePage = (value: number) => {
