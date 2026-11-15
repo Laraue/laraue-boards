@@ -110,6 +110,15 @@
                     v-model:title="state.title"
                     :deps="deps.description"
                     :disabled="!canEditFields(issue)">
+                    <template #after-insert-block>
+                      <BaseIconButton
+                        :disabled="!state.content.trim()"
+                        :label="state.contentCopied ? t('copied') : t('copyIssueContent')"
+                        @click="copyIssueContent">
+                        <IconCheck v-if="state.contentCopied" />
+                        <IconCopy v-else />
+                      </BaseIconButton>
+                    </template>
                     <template #actions>
                       <BaseIconButton
                         :disabled="!canEditFields(issue) || saving || deleting"
@@ -335,6 +344,7 @@
 <script setup lang="ts">
 import {
   IconCheck,
+  IconCopy,
   IconExternalLink,
   IconHistory,
   IconLink,
@@ -413,6 +423,7 @@ const { t } = useI18n({
     comments: 'Comments',
     copied: 'Copied',
     copyIssueLink: 'Copy issue link',
+    copyIssueContent: 'Copy issue description',
     created: 'Created',
     currentBoard: 'Current board',
     currentSpace: 'Current space',
@@ -446,6 +457,7 @@ const { t } = useI18n({
     comments: 'Комментарии',
     copied: 'Скопировано',
     copyIssueLink: 'Копировать ссылку на задачу',
+    copyIssueContent: 'Копировать описание задачи',
     created: 'Создана',
     currentBoard: 'Текущая доска',
     currentSpace: 'Текущее пространство',
@@ -510,6 +522,7 @@ const state = reactive({
   boardId: '',
   commentsReloadToken: 0,
   content: '',
+  contentCopied: false,
   copied: false,
   dirty: false,
   files: [] as File[],
@@ -709,6 +722,17 @@ const changeFiles = (files: File[]) => {
 
 const removeAttachment = (id: string) => {
   state.removedAttachmentIds.push(id)
+}
+
+const copyIssueContent = async () => {
+  try {
+    await navigator.clipboard.writeText(state.content)
+  } catch {
+    window.prompt(t('copyIssueContent'), state.content)
+    return
+  }
+  state.contentCopied = true
+  setTimeout(() => (state.contentCopied = false), 1200)
 }
 
 const copyIssueLink = async () => {

@@ -8,19 +8,21 @@
       :placeholder="t('descriptionPlaceholder')"
       @update:model-value="message = undefined" />
     <div
-      v-if="!disabled"
+      v-if="!disabled || $slots['after-insert-block']"
       class="issue-description-footer">
-      <slot name="actions" />
+      <slot v-if="!disabled" name="actions" />
       <!-- The blocks "/" offers, found by a button rather than a line of text to read. -->
       <BaseIconButton
+        v-if="!disabled"
         :label="t('insertBlock')"
         :tooltip="t('insertBlockHint')"
         @click="editor?.insertSlash()">
         <IconSlash />
       </BaseIconButton>
+      <slot name="after-insert-block" />
       <!-- With a label, so it is seen; only with text, as there is nothing to improve before. -->
       <BaseButton
-        v-if="model.trim()"
+        v-if="!disabled && model.trim()"
         :loading="summarizing"
         size="small"
         :tooltip="t('improveWithAiHint')"

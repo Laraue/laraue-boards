@@ -84,16 +84,18 @@
       role="alert">
       {{ saveMessage }}
     </p>
-    <IconLoader
+    <span
       v-if="moving"
-      :aria-label="t('savingPosition')"
-      class="task-progress" />
+      class="visually-hidden"
+      role="status">
+      {{ t('savingPosition') }}
+    </span>
   </article>
 </template>
 
 <script setup lang="ts">
 import { useSortable } from '@dnd-kit/vue/sortable'
-import { IconLoader, IconLock } from '@tabler/icons-vue'
+import { IconLock } from '@tabler/icons-vue'
 import { computed, useTemplateRef } from 'vue'
 
 import { NuxtLink } from '#components'
@@ -278,16 +280,6 @@ useSortable({
   z-index: 1;
 }
 
-.task-progress {
-  animation: var(--animation-spin);
-  color: var(--color-accent);
-  height: 16px;
-  position: absolute;
-  right: var(--space-5);
-  top: var(--space-5);
-  width: 16px;
-}
-
 .task-key {
   color: var(--color-muted);
   margin-inline-end: var(--space-1);
@@ -314,10 +306,6 @@ useSortable({
   margin: 0 0 var(--space-3);
   overflow: hidden;
   overflow-wrap: anywhere;
-}
-
-.task--moving .task-title {
-  padding-right: var(--control-height-small);
 }
 
 @media (hover: hover) and (pointer: fine) {

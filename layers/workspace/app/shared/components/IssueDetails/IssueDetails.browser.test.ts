@@ -137,6 +137,29 @@ const mount = async (
 afterEach(async () => {
   await currentWrapper?.unmount()
   currentWrapper = undefined
+  vi.restoreAllMocks()
+})
+
+it('copies the current description including unsaved edits', async () => {
+  const writeText = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue()
+  const wrapper = await mount(createDeps())
+  await wrapper.findComponent({ name: 'IssueDescription' }).setValue('# Updated\n\n**Details**')
+
+  await page.getByRole('button', { name: 'Copy issue description', exact: true }).click()
+
+  expect(writeText).toHaveBeenCalledWith('# Updated\n\n**Details**')
+  await expect.element(page.getByRole('button', { name: 'Copied', exact: true })).toBeInTheDocument()
+})
+
+it('offers manual copying when clipboard access is denied for a read-only issue', async () => {
+  vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('Denied'))
+  const prompt = vi.spyOn(window, 'prompt').mockReturnValue(null)
+  await mount(createDeps({ view: vi.fn(async () => ({ ...issue, canEdit: false })) }))
+
+  await page.getByRole('button', { name: 'Copy issue description', exact: true }).click()
+
+  expect(prompt).toHaveBeenCalledWith('Copy issue description', issue.content)
+  await expect.element(page.getByRole('button', { name: 'Copied', exact: true })).not.toBeInTheDocument()
 })
 
 it('shows the loaded issue', async () => {
