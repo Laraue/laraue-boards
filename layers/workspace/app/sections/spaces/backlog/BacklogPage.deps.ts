@@ -1,6 +1,6 @@
-import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
-import type { IssueListDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.deps'
-import type { IssueListItem } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.types'
+import type { IssueAttributeField } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import type { IssueListDeps } from '#layers/workspace/app/shared/components/IssueList/IssueList.deps'
+import type { IssueListItem } from '#layers/workspace/app/shared/components/IssueList/IssueList.types'
 
 export type BacklogPageData = {
   attributes: IssueAttributeField[]
@@ -29,12 +29,14 @@ export type SearchBacklogResult = {
 export type BacklogPageDeps = {
   issueList: IssueListDeps
   search: (input: {
+    assigneeIds?: string[]
     backlogBoardId: string
     filters: BacklogFilter[]
     page: number
     search: string
   }) => Promise<SearchBacklogResult>
   view: (input: {
+    assigneeIds?: string[]
     attributeQuery: Record<string, string[]>
     page: number
     search: string

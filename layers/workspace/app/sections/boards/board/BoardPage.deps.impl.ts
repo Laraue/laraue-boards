@@ -1,16 +1,13 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
-import { createIssuePageDeps } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps.impl'
-import { mapAgentRunState } from '#layers/workspace/app/sections/issues/shared/api/agentRun'
-import {
-  mapAttributeLabels,
-  mapIssueFilters,
-  mapRawIssueFilters,
-} from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
-import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/api/issueSource'
-import { saveIssueAssignee } from '#layers/workspace/app/sections/issues/shared/api/saveIssueAssignee'
-import { createAssigneeSelectDeps } from '#layers/workspace/app/sections/issues/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
+import { createIssueDetailsDeps } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps.impl'
+import { mapAgentRunState } from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.deps.impl'
+import { mapAttributeLabels } from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.deps.impl'
+import { mapIssueFilters, mapRawIssueFilters } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
+import { issueSourceField } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
+import { saveIssueAssignee } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
+import { createAssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
 import { DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
@@ -53,12 +50,13 @@ export const createBoardPageDeps = (
     assigneeSelect: createAssigneeSelectDeps(client),
     saveAssignee: (input) => saveIssueAssignee(client, input),
   },
-  issueDialog: createIssuePageDeps(client),
+  issueDialog: createIssueDetailsDeps(client),
 
-  loadMoreBoardIssues: async ({ filters, offset, search, statusId, take }) => {
+  loadMoreBoardIssues: async ({ assigneeIds, filters, offset, search, statusId, take }) => {
     const page = await request(
       client.POST('/api/issues/by-status/{statusId}/search', {
         body: {
+          assigneeIds: assigneeIds?.length ? assigneeIds : undefined,
           filters: mapIssueFilters(filters),
           searchString: search || undefined,
           skip: offset,
@@ -118,11 +116,12 @@ export const createBoardPageDeps = (
     )
   },
 
-  searchBoardIssues: async ({ boardId, filters, search, take }) =>
+  searchBoardIssues: async ({ assigneeIds, boardId, filters, search, take }) =>
     mapBoardIssues(
       await request(
         client.POST('/api/issues/board', {
           body: {
+            assigneeIds: assigneeIds?.length ? assigneeIds : undefined,
             epicId: Number(boardId),
             filters: mapIssueFilters(filters),
             searchString: search || undefined,
@@ -133,13 +132,14 @@ export const createBoardPageDeps = (
     ),
 
   // Filters offer every attribute of the organization: kept values of unused ones still match.
-  view: async ({ attributeQuery, boardId, search, signal, spaceKey }) => {
+  view: async ({ assigneeIds, attributeQuery, boardId, search, signal, spaceKey }) => {
     const { attributes, spaces } = readCatalog()
     const [board, columnIssues] = await Promise.all([
       request(client.GET('/api/epics/{id}', { params: { path: { id: Number(boardId) } }, signal })),
       request(
         client.POST('/api/issues/board', {
           body: {
+            assigneeIds: assigneeIds?.length ? assigneeIds : undefined,
             epicId: Number(boardId),
             filters: mapRawIssueFilters(attributeQuery, attributes),
             searchString: search || undefined,

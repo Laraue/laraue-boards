@@ -1,4 +1,4 @@
-import type { StatusCategory } from '#layers/workspace/app/sections/boards/shared/components/StatusCategorySelect/StatusCategorySelect.types'
+import type { StatusCategory } from '#layers/workspace/app/shared/components/StatusCategorySelect/StatusCategorySelect.types'
 
 /** Demo issues go to a new board with these statuses, or to the space's backlog. */
 export type DemoDataTarget = 'backlog' | 'board'

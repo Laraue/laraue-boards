@@ -28,7 +28,7 @@ import { NuxtPage } from '#components'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseSettingsLayout from '#layers/core/app/ui/components/BaseSettingsLayout.vue'
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
-import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import {
   type OrganizationRouteName,
   useOrganizationRoutes,

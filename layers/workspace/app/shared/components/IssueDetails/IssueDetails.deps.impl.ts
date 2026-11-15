@@ -1,0 +1,253 @@
+import type { ApiClient } from '#infrastructure/api/client'
+import type { components } from '#infrastructure/api/generated'
+import { ApiError, isApiError, request } from '#infrastructure/api/request'
+import { createBoardSelectDeps } from '#layers/workspace/app/shared/components/BoardSelect/BoardSelect.deps.impl'
+import { createStatusSelectDeps } from '#layers/workspace/app/shared/components/StatusSelect/StatusSelect.deps.impl'
+import { mapAgentRunState } from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.deps.impl'
+import { mapIssueAttachments } from '#layers/workspace/app/shared/components/IssueAttachments/IssueAttachments.deps.impl'
+import { mapIssueAttributeValues } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.deps.impl'
+import { toLocalIssueDateTime } from '#layers/workspace/app/shared/components/IssueAttributeFields/issueDateTime'
+import { mapIssueLinkRelation } from '#layers/workspace/app/shared/components/IssueDetails/components/IssueLinks/IssueLinks.deps.impl'
+import { mapIssueSource } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
+import { createAssigneeSelectDeps } from '#layers/workspace/app/shared/components/AssigneeSelect/AssigneeSelect.deps.impl'
+import { createIssueDescriptionDeps } from '#layers/workspace/app/shared/components/IssueDescription/IssueDescription.deps.impl'
+import { createSpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps.impl'
+import { COLORS, DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
+import { assertNever } from '#layers/workspace/app/shared/utils/assertNever'
+
+import type {
+  AgentHandOffBlocker,
+  AgentHandOffViewModel,
+} from './components/IssueAgentRun/IssueAgentRun.deps'
+import { createIssueAgentRunDeps } from './components/IssueAgentRun/IssueAgentRun.deps.impl'
+import { createIssueCommentsDeps } from './components/IssueComments/IssueComments.deps.impl'
+import { createIssueHistoryDeps } from './components/IssueHistory/IssueHistory.deps.impl'
+import { createIssueLinksDeps } from './components/IssueLinks/IssueLinks.deps.impl'
+import type { IssueDetailsDeps, IssueDetailsViewModel } from './IssueDetails.deps'
+
+type Schemas = components['schemas']
+const mapAttribute = (
+  attribute: Schemas['DetailIssueAttributeDto'],
+): IssueDetailsViewModel['attributes'][number] => {
+  const base = {
+    color: attribute.color,
+    id: String(attribute.id),
+    inactive: attribute.isInactive,
+    name: attribute.name,
+    value: String(attribute.value),
+  }
+  switch (attribute.type) {
+    case 'Text':
+      return { ...base, type: 'text' }
+    case 'List':
+      return {
+        ...base,
+        options: attribute.listValues.map((option) => ({
+          label: option.name,
+          value: String(option.id),
+        })),
+        type: 'list',
+      }
+    case 'Integer':
+      return { ...base, type: 'integer' }
+    case 'Decimal':
+      return { ...base, type: 'decimal' }
+    case 'Date':
+      return { ...base, type: 'date' }
+    case 'DateTime':
+      return { ...base, type: 'dateTime', value: toLocalIssueDateTime(attribute.value) }
+    default:
+      return assertNever(attribute.type)
+  }
+}
+
+const AGENT_HAND_OFF_BLOCKERS = {
+  BoardNotReady: 'boardNotReady',
+  IssueStarted: 'issueStarted',
+  NoApiKey: 'noApiKey',
+  NotAllowed: 'notAllowed',
+  RunOpen: 'runOpen',
+} as const satisfies Record<NonNullable<Schemas['AgentHandOffBlocker']>, AgentHandOffBlocker>
+
+// An API older than the agent runs sends nothing: offer no hand-off.
+const mapAgentHandOff = (handOff: Schemas['AgentHandOffDto'] | undefined): AgentHandOffViewModel =>
+  handOff
+    ? {
+        available: handOff.available,
+        blocker: handOff.blocker ? AGENT_HAND_OFF_BLOCKERS[handOff.blocker] : null,
+        canSendBack: handOff.canSendBack,
+        missingStatusCategories: handOff.missingStatusCategories,
+      }
+    : { available: false, blocker: 'notAllowed', canSendBack: false, missingStatusCategories: [] }
+
+const mapIssue = (issue: Schemas['IssueDetailDto'], baseUrl: string): IssueDetailsViewModel => ({
+  agentHandOff: mapAgentHandOff(issue.agentHandOff),
+  agentRun: issue.latestAgentRun
+    ? {
+        failureReason: issue.latestAgentRun.failureReason,
+        finishedAt: issue.latestAgentRun.finishedAt,
+        id: String(issue.latestAgentRun.id),
+        state: mapAgentRunState(issue.latestAgentRun.state),
+      }
+    : null,
+  assignee: issue.assignee.displayName,
+  assigneeColor: issue.assignee.color,
+  assigneeId: issue.assigneeId,
+  assigneeInitial: issue.assignee.initials,
+  assigneeIsCurrentUser: issue.assignee.isCurrentUser,
+  attachments: mapIssueAttachments(issue.attachments, baseUrl),
+  attributes: issue.attributeValues.map(mapAttribute),
+  boardColor: issue.epicColor ?? DEFAULT_COLOR,
+  boardId: String(issue.epicId),
+  boardIsBacklog: issue.epicIsDefault,
+  boardLabel: issue.epicName ?? '',
+  canEdit: issue.canEdit,
+  content: issue.content ?? '',
+  createdAt: issue.time,
+  createdVia: mapIssueSource(issue.createdVia, issue.createdByApiKeyName),
+  issueKey: issue.key,
+  links: issue.links.map((link) => ({
+    issueKey: link.key,
+    relation: mapIssueLinkRelation(link.relation),
+    statusCategory: link.statusCategory,
+    statusColor: link.statusColor ?? COLORS.gray,
+    statusLabel: link.statusName ?? '',
+    title: link.title,
+  })),
+  owner: issue.owner.displayName,
+  ownerColor: issue.owner.color,
+  ownerInitial: issue.owner.initials,
+  source: issue.source
+    ? {
+        chatTitle: issue.source.chatTitle,
+        isPrivateChat: issue.source.isPrivateChat,
+        messageUrl: issue.source.messageUrl,
+      }
+    : null,
+  spaceColor: issue.spaceColor,
+  spaceId: issue.spaceKey,
+  spaceLabel: issue.spaceName,
+  statusCategory: issue.statusCategory,
+  statusColor: issue.statusColor ?? COLORS.gray,
+  statusId: String(issue.statusId),
+  statusLabel: issue.statusName ?? '',
+  title: issue.title,
+  updatedAt: issue.updatedAt,
+})
+
+export const createIssueDetailsDeps = (client: ApiClient): IssueDetailsDeps => ({
+  agentRun: createIssueAgentRunDeps(client),
+  assigneeSelect: createAssigneeSelectDeps(client),
+  boardSelect: createBoardSelectDeps(client),
+  comments: createIssueCommentsDeps(client),
+
+  deleteIssue: async ({ issueKey }) => {
+    await request(client.DELETE('/api/issues/{key}', { params: { path: { key: issueKey } } }))
+  },
+
+  description: createIssueDescriptionDeps(client),
+  history: createIssueHistoryDeps(client),
+  links: createIssueLinksDeps(client),
+
+  // Saving and moving to another status are two requests: when only the move fails, the
+  // save still stands and the issue stays where it was.
+  saveIssue: async (input) => {
+    if (!input.fieldsLocked) {
+      await request(
+        client.PUT('/api/issues/{key}', {
+          body: {},
+          bodySerializer: () =>
+            updateIssueFormData({
+              ...input,
+              attributeValues: mapIssueAttributeValues(input.attributeValues),
+            }),
+          params: { path: { key: input.issueKey } },
+        }),
+      )
+    }
+    const saved = {
+      boardId: input.boardId,
+      complete: true,
+      content: input.content,
+      issueKey: input.issueKey,
+      previousBoardId: input.previousBoardId,
+      previousIssueKey: input.issueKey,
+      previousStatusId: input.previousStatusId,
+      spaceKey: input.previousSpaceKey,
+      statusId: input.statusId,
+      title: input.title,
+    }
+    if (input.statusId === input.previousStatusId) {
+      return saved
+    }
+    let movedKeys: Record<string, string>
+    try {
+      movedKeys = await request(
+        client.POST('/api/issues/status', {
+          body: { issueKeys: [input.issueKey], statusId: Number(input.statusId) },
+        }),
+      )
+    } catch (error) {
+      if (!isApiError(error)) {
+        throw error
+      }
+      return {
+        ...saved,
+        boardId: input.previousBoardId,
+        complete: false,
+        statusId: input.previousStatusId,
+      }
+    }
+    // Moving to another space gives the issue a new key.
+    const issueKey = movedKeys[input.issueKey]
+    if (!issueKey) {
+      throw new ApiError(0)
+    }
+    return { ...saved, issueKey, spaceKey: input.spaceKey }
+  },
+
+  spaceSelect: createSpaceSelectDeps(client),
+  statusSelect: createStatusSelectDeps(client),
+
+  view: async ({ issueKey, signal }) => {
+    const issue = await request(
+      client.GET('/api/issues/{key}', { params: { path: { key: issueKey } }, signal }),
+    )
+    return mapIssue(issue, client.baseUrl)
+  },
+})
+
+type AttributeValue = ReturnType<typeof mapIssueAttributeValues>[number]
+
+const appendIssueFields = (
+  formData: FormData,
+  input: {
+    assigneeId: string
+    attributeValues: AttributeValue[]
+    content: string
+    title: string
+  },
+) => {
+  formData.append('AssigneeId', input.assigneeId)
+  formData.append('AttributeValues', JSON.stringify(input.attributeValues))
+  formData.append('Content', input.content)
+  // No title asks the server to generate one.
+  if (input.title.trim()) {
+    formData.append('Title', input.title)
+  }
+}
+
+export const updateIssueFormData = (input: {
+  assigneeId: string
+  attributeValues: AttributeValue[]
+  content: string
+  files: File[]
+  removeAttachmentIds: string[]
+  title: string
+}) => {
+  const formData = new FormData()
+  appendIssueFields(formData, input)
+  input.files.forEach((file) => formData.append('AddFiles', file))
+  input.removeAttachmentIds.forEach((id) => formData.append('RemoveAttachmentIds', id))
+  return formData
+}

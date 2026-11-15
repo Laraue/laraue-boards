@@ -1,5 +1,5 @@
-import type { IssuePageDeps } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps'
-import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import type { IssueDetailsDeps } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps'
+import type { IssueAttributeField } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
 
 import type { BoardColumnViewModel } from './components/BoardColumn/BoardColumn.types'
 import type {
@@ -10,6 +10,7 @@ import type {
 export type BoardPageAttributeViewModel = IssueAttributeField
 
 export type BoardPageFilterValue = {
+  assigneeIds?: string[]
   attributes: Record<string, string | string[]>
 }
 
@@ -58,8 +59,9 @@ export type IssueFilter =
 
 export type BoardPageDeps = {
   issueCard: IssueCardDeps
-  issueDialog: IssuePageDeps
+  issueDialog: IssueDetailsDeps
   loadMoreBoardIssues: (input: {
+    assigneeIds?: string[]
     filters: IssueFilter[]
     offset: number
     search: string
@@ -78,12 +80,14 @@ export type BoardPageDeps = {
     spaceKey: string
   }) => Promise<void>
   searchBoardIssues: (input: {
+    assigneeIds?: string[]
     boardId: string
     filters: IssueFilter[]
     search: string
     take: number
   }) => Promise<SearchBoardIssuesResult>
   view: (input: {
+    assigneeIds?: string[]
     attributeQuery: Record<string, string[]>
     boardId: string
     search: string

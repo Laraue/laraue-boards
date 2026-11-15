@@ -1,15 +1,11 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { request } from '#infrastructure/api/request'
-import {
-  mapAttributeLabels,
-  mapIssueFilters,
-  mapRawIssueFilters,
-} from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
-import { createdAtDescending } from '#layers/workspace/app/sections/issues/shared/api/issueSorting'
-import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/api/issueSource'
-import { createIssueListDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.deps.impl'
-import type { IssueListItem } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.types'
+import { mapAttributeLabels } from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.deps.impl'
+import { mapIssueFilters, mapRawIssueFilters } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
+import { issueSourceField } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
+import { createIssueListDeps } from '#layers/workspace/app/shared/components/IssueList/IssueList.deps.impl'
+import type { IssueListItem } from '#layers/workspace/app/shared/components/IssueList/IssueList.types'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
@@ -43,18 +39,20 @@ const mapIssue = (issue: Schemas['SearchIssueDto']): IssueListItem => ({
 
 // The page counts from 1, the API from 0; empty lists and search mean "no filter".
 const searchBody = (input: {
+  assigneeIds?: string[]
   epicStatuses: IssueBoardStatus[]
   filters: Schemas['SearchRequest']['filters']
   page: number
   search: string
   spaceIds: string[]
 }): Schemas['SearchRequest'] => ({
+  assigneeIds: input.assigneeIds?.length ? input.assigneeIds : undefined,
   epicStatuses: input.epicStatuses.length ? input.epicStatuses : undefined,
   filters: input.filters,
   page: input.page - 1,
   perPage: 20,
   searchString: input.search || undefined,
-  sorting: createdAtDescending,
+  sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
   spaceKeys: input.spaceIds.length ? input.spaceIds : undefined,
 })
 
@@ -86,7 +84,7 @@ export const createIssuesPageDeps = (
       attributes,
       hasNextPage: issues.hasNextPage,
       issues: issues.data.map(mapIssue),
-      spaces: spaces.map((space) => ({ label: space.name, value: space.key })),
+      spaces: spaces.map((space) => ({ color: space.color, label: space.name, value: space.key })),
     }
   },
 })

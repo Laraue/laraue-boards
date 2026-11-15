@@ -1,15 +1,11 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import type { components } from '#infrastructure/api/generated'
 import { ApiError, request } from '#infrastructure/api/request'
-import {
-  mapAttributeLabels,
-  mapIssueFilters,
-  mapRawIssueFilters,
-} from '#layers/workspace/app/sections/issues/shared/api/issueAttributes'
-import { createdAtDescending } from '#layers/workspace/app/sections/issues/shared/api/issueSorting'
-import { issueSourceField } from '#layers/workspace/app/sections/issues/shared/api/issueSource'
-import { createIssueListDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.deps.impl'
-import type { IssueListItem } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.types'
+import { mapAttributeLabels } from '#layers/workspace/app/shared/components/IssueAttributeLabels/IssueAttributeLabels.deps.impl'
+import { mapIssueFilters, mapRawIssueFilters } from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.deps.impl'
+import { issueSourceField } from '#layers/workspace/app/shared/components/IssueSourceIcon/IssueSourceIcon.deps.impl'
+import { createIssueListDeps } from '#layers/workspace/app/shared/components/IssueList/IssueList.deps.impl'
+import type { IssueListItem } from '#layers/workspace/app/shared/components/IssueList/IssueList.types'
 import { COLORS } from '#layers/workspace/app/shared/constants/colors'
 import type { ReadOrganizationCatalog } from '#layers/workspace/app/shells/organization/AppLayout.deps'
 
@@ -46,23 +42,24 @@ export const createBacklogPageDeps = (
   issueList: createIssueListDeps(client),
 
   // The page counts from 1, the API from 0.
-  search: async ({ backlogBoardId, filters, page, search }) => {
+  search: async ({ assigneeIds, backlogBoardId, filters, page, search }) => {
     const issues = await request(
       client.POST('/api/issues/search', {
         body: {
+          assigneeIds: assigneeIds?.length ? assigneeIds : undefined,
           epicIds: [Number(backlogBoardId)],
           filters: mapIssueFilters(filters),
           page: page - 1,
           perPage: PER_PAGE,
           searchString: search || undefined,
-          sorting: createdAtDescending,
+          sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
         },
       }),
     )
     return { hasNextPage: issues.hasNextPage, issues: issues.data.map(mapIssue) }
   },
 
-  view: async ({ attributeQuery, page, search, signal, spaceKey }) => {
+  view: async ({ assigneeIds, attributeQuery, page, search, signal, spaceKey }) => {
     const { attributes, spaces } = readCatalog()
     const boards = await request(
       client.GET('/api/spaces/{key}/epics', { params: { path: { key: spaceKey } }, signal }),
@@ -76,12 +73,13 @@ export const createBacklogPageDeps = (
     const issues = await request(
       client.POST('/api/issues/search', {
         body: {
+          assigneeIds: assigneeIds?.length ? assigneeIds : undefined,
           epicIds: [backlog.id],
           filters: mapRawIssueFilters(attributeQuery, attributes),
           page: page - 1,
           perPage: PER_PAGE,
           searchString: search || undefined,
-          sorting: createdAtDescending,
+          sorting: { $type: 'property', direction: 'Descending', property: 'CreatedAt' },
         },
         signal,
       }),

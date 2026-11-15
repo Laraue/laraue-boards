@@ -19,9 +19,13 @@ system before adding a component or variant. Every shared component and its stat
 - Buttons are `BaseButton` / `BaseIconButton` everywhere; the old `.primary`, `.secondary` and
   `.icon-btn` classes are gone from the app. The retro board page (retro-board/) lives apart and
   keeps them in `workspace/sections/retro/retro-controls.css`, which nothing else may use.
-- Workspace-wide components live in `layers/workspace/app/shared/components/`, page frames in
-  `layers/workspace/app/shells/`, and domain components in their page section or
-  `layers/workspace/app/sections/<domain>/shared/components/`. Landing components stay in
+- Reusable workspace components live in `layers/workspace/app/shared/components/`, page frames in
+  `layers/workspace/app/shells/`, and page-specific components in their page section. Each page or
+  component owns its types, dependency contract, implementation, and local helpers. API mapping
+  belongs in the owner's `.deps.impl.ts`; do not create section-level `shared/api` or `shared/model`
+  layers. A component with one parent stays in that parent's `components/` directory, including its
+  types, deps and tests; only components used by multiple parents belong in the shared catalog.
+  Shared constants live in `layers/workspace/app/shared/constants/`. Landing components stay in
   `layers/site/app/sections/landing/`; documentation components stay in `layers/docs/app/`. Only
   cross-area components belong to their actual host concern; the common public header and footer
   live in `layers/core/app/public-shell/`. A generic need found in an app component moves into the

@@ -7,7 +7,7 @@
       <BaseButton
         :aria-label="t('changeStatus', { status: statusLabel(status) })"
         class="board-status"
-        :class="statusClass[status]"
+        :class="boardStatusAppearance[status].variant"
         :loading="saving">
         {{ statusLabel(status) }}
         <IconChevronDown class="board-status-chevron" />
@@ -26,7 +26,7 @@
   <span
     v-else
     class="board-status"
-    :class="statusClass[status]">
+    :class="boardStatusAppearance[status].variant">
     {{ statusLabel(status) }}
   </span>
 </template>
@@ -38,6 +38,7 @@ import { useI18n } from '#layers/core/app/i18n/useI18n'
 import BaseButton from '#layers/core/app/ui/components/BaseButton.vue'
 import BaseMenu from '#layers/core/app/ui/components/BaseMenu.vue'
 import BaseMenuItem from '#layers/core/app/ui/components/BaseMenuItem.vue'
+import { boardStatusAppearance } from '#layers/workspace/app/shared/constants/boardStatus'
 
 import type { BoardStatus } from './BoardStatusMenu.types'
 
@@ -64,8 +65,6 @@ const { t } = useI18n({
 })
 
 const statusOptions: BoardStatus[] = ['New', 'Active', 'Done']
-// The same words and colors as the boards list of the space page.
-const statusClass = { Active: 'warning', Done: 'success', New: 'neutral' } as const
 
 const statusLabel = (status: BoardStatus) =>
   ({ Active: t('inProgress'), Done: t('done'), New: t('new') })[status]

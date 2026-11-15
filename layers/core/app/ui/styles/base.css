@@ -123,6 +123,11 @@ select,
 textarea {
   font: inherit;
 }
+input,
+textarea,
+[contenteditable='true'] {
+  caret-color: var(--color-text);
+}
 button {
   cursor: pointer;
 }

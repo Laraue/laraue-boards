@@ -1,7 +1,7 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
 import { createOrganizationSelectDeps } from '#layers/workspace/app/sections/organizations/shared/components/OrganizationSelect/OrganizationSelect.deps.impl'
-import { createSpaceSelectDeps } from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.deps.impl'
+import { createSpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps.impl'
 
 import type { MoveBoardsDialogDeps } from './MoveBoardsDialog.deps'
 

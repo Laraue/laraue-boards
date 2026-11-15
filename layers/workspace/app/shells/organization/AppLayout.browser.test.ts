@@ -4,7 +4,7 @@ import { page } from 'vitest/browser'
 import { h } from 'vue'
 
 import { ApiError } from '#infrastructure/api/request'
-import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import type { TourStateDeps } from '#layers/workspace/app/shared/composables/useTour'
 import { createOrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'
 

@@ -1,6 +1,6 @@
 import type { ApiClient } from '#infrastructure/api/client'
 import { ApiError, request } from '#infrastructure/api/request'
-import type { StatusCategory } from '#layers/workspace/app/sections/boards/shared/components/StatusCategorySelect/StatusCategorySelect.types'
+import type { StatusCategory } from '#layers/workspace/app/shared/components/StatusCategorySelect/StatusCategorySelect.types'
 import { COLORS, DEFAULT_COLOR } from '#layers/workspace/app/shared/constants/colors'
 
 import type { DemoData, SetupDemoDataDialogDeps } from './SetupDemoDataDialog.deps'

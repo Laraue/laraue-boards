@@ -24,6 +24,8 @@
             :model-value="search"
             @update:model-value="updateSearch" />
           <IssueFilters
+        :assignee-select="deps.issueCard.assigneeSelect"
+        :space-key="spaceKey"
             :attributes="viewModel.attributes"
             :loading="state.filtering"
             :model-value="filterValue"
@@ -181,16 +183,17 @@ import type {
 } from '#layers/workspace/app/sections/boards/board/BoardPage.deps'
 import BoardColumn from '#layers/workspace/app/sections/boards/board/components/BoardColumn/BoardColumn.vue'
 import BoardScrollMap from '#layers/workspace/app/sections/boards/board/components/BoardScrollMap/BoardScrollMap.vue'
-import type { IssuePageSavedIssue } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps'
-import IssueFilters from '#layers/workspace/app/sections/issues/shared/components/IssueFilters/IssueFilters.vue'
+import type { IssueDetailsSavedIssue } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps'
+import IssueFilters from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.vue'
 import {
   getIssueAttributeFilterInput,
   normalizeIssueAttributeFilters,
   readIssueAttributeQuery,
+  readIssueAssigneeQuery,
   withIssueAttributeFilters,
-} from '#layers/workspace/app/sections/issues/shared/model/issueAttributeFilters'
+} from '#layers/workspace/app/shared/components/IssueFilters/IssueFilters.utils'
 import AppPage from '#layers/workspace/app/shared/components/AppPage.vue'
-import PageHeader from '#layers/workspace/app/shared/components/PageHeader.vue'
+import PageHeader from '#layers/workspace/app/shared/components/PageHeader/PageHeader.vue'
 import PageHeaderSearch from '#layers/workspace/app/shared/components/PageHeaderSearch.vue'
 import QueryState from '#layers/workspace/app/shared/components/QueryState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
@@ -205,7 +208,7 @@ const props = defineProps<{
   onBack: () => void
   onCreateIssue: (statusId: string) => Promise<void> | void
   onIssueDirtyChange: (dirty: boolean) => void
-  onIssueMoved: (issue: IssuePageSavedIssue) => Promise<void> | void
+  onIssueMoved: (issue: IssueDetailsSavedIssue) => Promise<void> | void
   onPushQuery: (query: LocationQueryRaw) => Promise<void> | void
   onReplaceQuery: (query: LocationQueryRaw) => Promise<void> | void
   organizationRoutes: OrganizationRoutes
@@ -235,7 +238,7 @@ const { t } = useI18n({
 
 const IssueDialog = defineAsyncComponent(
   () =>
-    import('#layers/workspace/app/sections/issues/shared/components/IssueDialog/IssueDialog.vue'),
+    import('#layers/workspace/app/sections/boards/board/components/IssueDialog/IssueDialog.vue'),
 )
 const board = useTemplateRef('board')
 // 'clone' leaves a visible copy of the card in the slot it would drop into, where the default
@@ -266,6 +269,7 @@ const search = computed(() =>
   typeof props.routeQuery.search === 'string' ? props.routeQuery.search : '',
 )
 const attributeQuery = computed(() => readIssueAttributeQuery(props.routeQuery))
+const assigneeIds = computed(() => readIssueAssigneeQuery(props.routeQuery.assignee))
 const state = reactive({
   closingIssueDialog: false,
   dragging: false,
@@ -280,6 +284,7 @@ const { data, message, pending, refresh } = await useApiQuery(
   () => `board:${props.boardId}`,
   (signal) =>
     props.deps.view({
+      assigneeIds: assigneeIds.value,
       attributeQuery: attributeQuery.value,
       boardId: props.boardId,
       search: search.value,
@@ -308,17 +313,22 @@ const attributeFilters = computed(() =>
   normalizeIssueAttributeFilters(attributeQuery.value, issueAttributes.value),
 )
 const filterValue = computed<BoardPageFilterValue>(() => ({
+  assigneeIds: assigneeIds.value,
   attributes: attributeFilters.value,
 }))
 const filterInput = computed(() =>
   getIssueAttributeFilterInput(attributeFilters.value, issueAttributes.value),
 )
-const filterKey = computed(() => JSON.stringify(filterInput.value))
+const filterKey = computed(() => JSON.stringify([filterInput.value, assigneeIds.value]))
 
 const updateFilters = (value: BoardPageFilterValue) => {
-  void props.onReplaceQuery(
-    withIssueAttributeFilters(props.routeQuery, value.attributes, issueAttributes.value),
-  )
+  const query = withIssueAttributeFilters(props.routeQuery, value.attributes, issueAttributes.value)
+  if (value.assigneeIds?.length) {
+    query.assignee = value.assigneeIds
+  } else {
+    delete query.assignee
+  }
+  void props.onReplaceQuery(query)
 }
 
 const updateSearch = (value: string) => {
@@ -376,7 +386,7 @@ const closeIssueDialog = () => {
   void props.onReplaceQuery(target.query)
 }
 
-const handleIssueSaved = async (issue: IssuePageSavedIssue) => {
+const handleIssueSaved = async (issue: IssueDetailsSavedIssue) => {
   scheduleSearch.cancel()
   state.filtering = false
   const current = viewModel.value
@@ -413,6 +423,7 @@ const searchIssues = async () => {
   scheduleSearch.cancel()
   state.filtering = true
   const result = await searchBoardIssues({
+    assigneeIds: assigneeIds.value,
     boardId: props.boardId,
     filters: filterInput.value,
     search: search.value,
@@ -455,6 +466,7 @@ const refreshLoadedIssues = async (
         .map(async (column) => ({
           columnId: column.id,
           result: await loadMoreBoardIssues({
+            assigneeIds: assigneeIds.value,
             filters: filterInput.value,
             offset: 0,
             search: search.value,
@@ -464,6 +476,7 @@ const refreshLoadedIssues = async (
         })),
     ),
     searchBoardIssues({
+      assigneeIds: assigneeIds.value,
       boardId: props.boardId,
       filters: filterInput.value,
       search: search.value,
@@ -558,6 +571,7 @@ const loadMoreIssues = async (statusId: string) => {
   const requestedFilterKey = filterKey.value
 
   const result = await loadMoreBoardIssues({
+    assigneeIds: assigneeIds.value,
     filters: filterInput.value,
     offset: column.issues.length,
     search: requestedSearch,
@@ -665,7 +679,7 @@ const moveIssueInBoard = (
 
 const updateIssueInBoard = (
   boardData: BoardPageViewModel,
-  update: IssuePageSavedIssue,
+  update: IssueDetailsSavedIssue,
 ): BoardPageViewModel => {
   const hasIssue = boardData.columns.some((column) =>
     column.issues.some((issue) => issue.issueKey === update.previousIssueKey),

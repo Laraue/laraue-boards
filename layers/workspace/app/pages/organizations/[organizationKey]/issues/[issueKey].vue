@@ -1,5 +1,5 @@
 <template>
-  <IssuePage
+  <IssueDetails
     :deps="deps"
     :issue-key="issueKey"
     :lazy="false"
@@ -13,9 +13,9 @@
 import { computed, ref } from 'vue'
 
 import { navigateTo, useRoute, useRouter } from '#app'
-import type { IssuePageSavedIssue } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps'
-import { createIssuePageDeps } from '#layers/workspace/app/sections/issues/issue/IssuePage.deps.impl'
-import IssuePage from '#layers/workspace/app/sections/issues/issue/IssuePage.vue'
+import type { IssueDetailsSavedIssue } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps'
+import { createIssueDetailsDeps } from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.deps.impl'
+import IssueDetails from '#layers/workspace/app/shared/components/IssueDetails/IssueDetails.vue'
 import { useApiClient } from '#layers/workspace/app/shared/composables/useApiClient'
 import { useOrganizationRoutes } from '#layers/workspace/app/shared/composables/useOrganizationRoutes'
 import { useSignInRedirect } from '#layers/workspace/app/shared/composables/useSignInRedirect'
@@ -29,8 +29,8 @@ const setDirty = (value: boolean) => (dirty.value = value)
 const router = useRouter()
 const organizationRoutes = useOrganizationRoutes()
 const client = useApiClient({ onUnauthorized: useSignInRedirect() })
-const deps = createIssuePageDeps(client)
-const onSaved = async (issue: IssuePageSavedIssue): Promise<void> => {
+const deps = createIssueDetailsDeps(client)
+const onSaved = async (issue: IssueDetailsSavedIssue): Promise<void> => {
   if (issue.issueKey !== issueKey.value) {
     await router.replace(organizationRoutes.issue(issue.issueKey))
   }

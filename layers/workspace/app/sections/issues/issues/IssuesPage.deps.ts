@@ -1,6 +1,6 @@
-import type { IssueAttributeField } from '#layers/workspace/app/sections/issues/shared/components/IssueAttributeFields/IssueAttributeFields.types'
-import type { IssueListDeps } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.deps'
-import type { IssueListItem } from '#layers/workspace/app/sections/issues/shared/components/IssueList/IssueList.types'
+import type { IssueAttributeField } from '#layers/workspace/app/shared/components/IssueAttributeFields/IssueAttributeFields.types'
+import type { IssueListDeps } from '#layers/workspace/app/shared/components/IssueList/IssueList.deps'
+import type { IssueListItem } from '#layers/workspace/app/shared/components/IssueList/IssueList.types'
 
 export const issueBoardStatuses = ['New', 'Active', 'Done'] as const
 export type IssueBoardStatus = (typeof issueBoardStatuses)[number]
@@ -9,7 +9,7 @@ export type IssuesPageData = {
   attributes: IssueAttributeField[]
   hasNextPage: boolean
   issues: IssueListItem[]
-  spaces: Array<{ label: string; value: string }>
+  spaces: Array<{ color?: string; label: string; value: string }>
 }
 
 export type IssuesFilter =
@@ -26,6 +26,7 @@ export type SearchIssuesResult = {
 }
 
 type IssuesRequest = {
+  assigneeIds?: string[]
   epicStatuses: IssueBoardStatus[]
   page: number
   search: string

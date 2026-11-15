@@ -1,6 +1,6 @@
 import type { components } from '#infrastructure/api/generated'
-import { mapAgentRunState } from '#layers/workspace/app/sections/issues/shared/api/agentRun'
-import { mapIssueLinkRelation } from '#layers/workspace/app/sections/issues/shared/api/issueLinks'
+import { mapAgentRunState } from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.deps.impl'
+import { mapIssueLinkRelation } from '#layers/workspace/app/shared/components/IssueDetails/components/IssueLinks/IssueLinks.deps.impl'
 
 import { diffLines } from '../diffLines'
 import type { HistoryChangeViewModel, HistoryPageViewModel } from '../HistoryTimeline.types'

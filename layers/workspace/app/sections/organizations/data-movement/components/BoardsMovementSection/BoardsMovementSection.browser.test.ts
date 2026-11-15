@@ -5,7 +5,7 @@ import { page } from 'vitest/browser'
 import { ApiError } from '#infrastructure/api/request'
 import type { DataMovementPageData } from '#layers/workspace/app/sections/organizations/data-movement/DataMovementPage.deps'
 import type { OrganizationSelectDeps } from '#layers/workspace/app/sections/organizations/shared/components/OrganizationSelect/OrganizationSelect.deps'
-import type { SpaceSelectDeps } from '#layers/workspace/app/sections/spaces/shared/components/SpaceSelect/SpaceSelect.deps'
+import type { SpaceSelectDeps } from '#layers/workspace/app/shared/components/SpaceSelect/SpaceSelect.deps'
 
 import type { BoardsMovementSectionDeps } from './BoardsMovementSection.deps'
 import BoardsMovementSection from './BoardsMovementSection.vue'

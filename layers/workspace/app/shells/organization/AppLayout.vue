@@ -44,7 +44,7 @@ import {
 } from '#app'
 import { ClientOnly } from '#components'
 import { useI18n } from '#layers/core/app/i18n/useI18n'
-import PageLoadState from '#layers/workspace/app/shared/components/PageLoadState.vue'
+import PageLoadState from '#layers/workspace/app/shells/organization/components/PageLoadState.vue'
 import { useApiAction } from '#layers/workspace/app/shared/composables/useApiAction'
 import { sidebarOpenKey } from '#layers/workspace/app/shared/composables/useSidebarOpen'
 import type { OrganizationRoutes } from '#layers/workspace/app/shared/utils/organizationRoutes'

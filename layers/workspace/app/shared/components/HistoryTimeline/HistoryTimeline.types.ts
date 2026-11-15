@@ -1,8 +1,8 @@
 import type { RouteLocationRaw } from 'vue-router'
 
 import type { components } from '#infrastructure/api/generated'
-import type { AgentRunState } from '#layers/workspace/app/sections/issues/shared/components/AgentRunBadge/AgentRunBadge.types'
-import type { IssueLinkRelation } from '#layers/workspace/app/sections/issues/shared/model/IssueLinks.types'
+import type { AgentRunState } from '#layers/workspace/app/shared/components/AgentRunBadge/AgentRunBadge.types'
+import type { IssueLinkRelation } from '#layers/workspace/app/shared/components/IssueDetails/components/IssueLinks/IssueLinks.types'
 
 import type { IssueDescriptionDiffLine } from './components/IssueDescriptionDiff/IssueDescriptionDiff.types'
 
