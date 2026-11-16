@@ -7,7 +7,11 @@ import { errorFields, writeEntry } from '../utils/jsonLog'
 // nginx access log: not logged (BRD-374, it was 692 of 725 "[SSR ERROR]" entries a day).
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('error', (error, { event }) => {
-    const { statusCode, unhandled, fatal } = error as { statusCode?: unknown; unhandled?: unknown; fatal?: unknown }
+    const { fatal, statusCode, unhandled } = error as {
+      fatal?: unknown
+      statusCode?: unknown
+      unhandled?: unknown
+    }
     const status = typeof statusCode === 'number' ? statusCode : 500
     if (status < 500 || unhandled === true || fatal === true) {
       return
@@ -15,11 +19,11 @@ export default defineNitroPlugin((nitroApp) => {
 
     const path = event?.path ?? 'unknown'
     writeEntry({
-      time: new Date().toISOString(),
+      error: errorFields(error),
       level: 'error',
       message: `[SSR ERROR] ${path}: ${error.message}`,
       path,
-      error: errorFields(error),
+      time: new Date().toISOString(),
     })
   })
 })

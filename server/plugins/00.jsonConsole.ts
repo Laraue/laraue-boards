@@ -10,7 +10,9 @@ export default defineNitroPlugin(() => {
     return
   }
 
+  // oxlint-disable-next-line no-console -- replaces the method, doesn't log through it
   console.debug = (...args: unknown[]) => writeEntry(consoleEntry('debug', args))
+  // oxlint-disable-next-line no-console -- replaces the method, doesn't log through it
   console.log = (...args: unknown[]) => writeEntry(consoleEntry('info', args))
   console.info = (...args: unknown[]) => writeEntry(consoleEntry('info', args))
   console.warn = (...args: unknown[]) => writeEntry(consoleEntry('warn', args))

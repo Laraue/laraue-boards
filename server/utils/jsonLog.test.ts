@@ -6,9 +6,9 @@ const now = new Date('2026-11-16T20:00:00.000Z')
 
 test('formats console arguments into one message', () => {
   assert.deepEqual(consoleEntry('info', ['Submitted %d URLs', 3, { status: 200 }], now), {
-    time: '2026-11-16T20:00:00.000Z',
     level: 'info',
     message: 'Submitted 3 URLs { status: 200 }',
+    time: '2026-11-16T20:00:00.000Z',
   })
 })
 
@@ -19,12 +19,21 @@ test('keeps a multi-line message in one entry', () => {
 })
 
 test('moves an error and its stack into the error field', () => {
-  const error = Object.assign(new Error('Page not found: /x', { cause: new Error('inner') }), { statusCode: 404 })
-  const entry = consoleEntry('error', ['[request error] [GET] https://boards.laraue.com/x\n', error], now)
+  const error = Object.assign(new Error('Page not found: /x', { cause: new Error('inner') }), {
+    statusCode: 404,
+  })
+  const entry = consoleEntry(
+    'error',
+    ['[request error] [GET] https://boards.laraue.com/x\n', error],
+    now,
+  )
 
   assert.equal(entry.level, 'error')
-  assert.equal(entry.message, '[request error] [GET] https://boards.laraue.com/x Page not found: /x')
-  assert.deepInclude(entry.error, { name: 'Error', message: 'Page not found: /x', statusCode: 404 })
+  assert.equal(
+    entry.message,
+    '[request error] [GET] https://boards.laraue.com/x Page not found: /x',
+  )
+  assert.deepInclude(entry.error, { message: 'Page not found: /x', name: 'Error', statusCode: 404 })
   assert.include((entry.error as { stack: string }).stack, 'Page not found: /x')
   assert.deepInclude((entry.error as { cause: object }).cause, { message: 'inner' })
 })
@@ -34,6 +43,17 @@ test('logs an error passed alone with its message', () => {
 })
 
 test('turns Vue Router misses into debug', () => {
-  assert.equal(consoleEntry('warn', ['[VUE_ROUTER_R0004] No match found for location with path "/wp-login.php"'], now).level, 'debug')
-  assert.equal(consoleEntry('warn', ['[Vue Router warn]: No match found for location with path "/x"'], now).level, 'debug')
+  assert.equal(
+    consoleEntry(
+      'warn',
+      ['[VUE_ROUTER_R0004] No match found for location with path "/wp-login.php"'],
+      now,
+    ).level,
+    'debug',
+  )
+  assert.equal(
+    consoleEntry('warn', ['[Vue Router warn]: No match found for location with path "/x"'], now)
+      .level,
+    'debug',
+  )
 })
