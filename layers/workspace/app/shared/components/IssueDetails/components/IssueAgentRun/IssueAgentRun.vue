@@ -127,7 +127,7 @@
           :id="id"
           v-model="sendBackComment"
           class="issue-agent-run-comment"
-          :maxlength="4096"
+          :maxlength="32768"
           :placeholder="t('whatsWrongPlaceholder')"
           required
           rows="5" />
