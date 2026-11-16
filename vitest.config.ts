@@ -22,7 +22,12 @@ export default defineConfig({
         },
         test: {
           exclude: [...defaultExclude, '**/*.browser.test.ts', '**/*.nuxt.test.ts'],
-          include: ['layers/**/*.test.ts', 'infrastructure/**/*.test.ts', 'tools/**/*.test.mjs'],
+          include: [
+            'layers/**/*.test.ts',
+            'infrastructure/**/*.test.ts',
+            'server/**/*.test.ts',
+            'tools/**/*.test.mjs',
+          ],
           name: 'node',
           sequence: { groupOrder: 0 },
         },
