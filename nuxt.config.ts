@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 
 import { defineNuxtConfig } from 'nuxt/config'
 
-import { laraueLogoUrl } from './layers/core/app/branding/laraueIcons'
+import { laraueLogoUrl } from './layers/core/app/branding/brandIcons'
 import { githubRepositoryUrl } from './layers/core/app/constants/links'
 
 // Public origin of the site (override with NUXT_PUBLIC_SITE_URL): canonical, hreflang and sitemap

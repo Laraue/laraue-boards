@@ -33,7 +33,7 @@ import type { ConsentState } from '#layers/core/app/analytics/consent/ConsentSta
 import type { ConsentChoice } from '#layers/core/app/analytics/consent/decision'
 import { isConsentPage } from '#layers/core/app/analytics/consent/decision'
 import { rememberSignUpSourceUrls } from '#layers/core/app/analytics/signUpSourceUrls/signUpSourceUrls'
-import { laraueIconUrl } from '#layers/core/app/branding/laraueIcons'
+import { boardsIconUrl } from '#layers/core/app/branding/brandIcons'
 import { useI18n, useLocale } from '#layers/core/app/i18n/useI18n'
 import { useAppPreferences } from '#layers/core/app/preferences/useAppPreferences'
 import BaseConfirmHost from '#layers/core/app/ui/components/BaseConfirmHost.vue'
@@ -97,51 +97,39 @@ watch(
 
 useHead(() => ({
   htmlAttrs: { 'data-theme': theme.value, lang: locale.value },
-  // The tab icon follows the OS/browser theme: the transparent mark on dark tabs, the standard
-  // one on light tabs. The light links come last on purpose - browsers that ignore `media` fall
-  // back to the last declared icon.
+  // The tab icon follows the OS/browser theme: the dark tile on dark tabs (the bare mark's navy
+  // bottom fades into them), the bare transparent mark on light tabs. The light links come last on
+  // purpose - browsers that ignore `media` fall back to the last declared icon.
   link: [
     {
-      href: laraueIconUrl('favicon-transparent'),
-      media: '(prefers-color-scheme: dark)',
-      rel: 'icon',
-      type: 'image/png',
-    },
-    {
-      href: laraueIconUrl('favicon-32x32-transparent'),
+      href: boardsIconUrl('favicon-32x32-black'),
       media: '(prefers-color-scheme: dark)',
       rel: 'icon',
       sizes: '32x32',
       type: 'image/png',
     },
     {
-      href: laraueIconUrl('favicon-16x16-transparent'),
+      href: boardsIconUrl('favicon-16x16-black'),
       media: '(prefers-color-scheme: dark)',
       rel: 'icon',
       sizes: '16x16',
       type: 'image/png',
     },
     {
-      href: laraueIconUrl('favicon-black'),
-      media: '(prefers-color-scheme: light)',
-      rel: 'icon',
-      type: 'image/png',
-    },
-    {
-      href: laraueIconUrl('favicon-32x32-black'),
+      href: boardsIconUrl('favicon-32x32-transparent'),
       media: '(prefers-color-scheme: light)',
       rel: 'icon',
       sizes: '32x32',
       type: 'image/png',
     },
     {
-      href: laraueIconUrl('favicon-16x16-black'),
+      href: boardsIconUrl('favicon-16x16-transparent'),
       media: '(prefers-color-scheme: light)',
       rel: 'icon',
       sizes: '16x16',
       type: 'image/png',
     },
-    { href: laraueIconUrl('apple-touch-icon-black'), rel: 'apple-touch-icon', sizes: '180x180' },
+    { href: boardsIconUrl('apple-touch-icon-black'), rel: 'apple-touch-icon', sizes: '180x180' },
   ],
 }))
 </script>

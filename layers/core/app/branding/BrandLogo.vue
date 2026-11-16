@@ -6,7 +6,7 @@
     <img
       alt=""
       class="logo-mark"
-      :src="laraueLogoUrl" />
+      :src="boardsLogoUrl" />
     <span>Laraue Boards</span>
   </component>
 </template>
@@ -16,7 +16,7 @@ import type { RouteLocationRaw } from 'vue-router'
 
 import { NuxtLink } from '#components'
 
-import { laraueLogoUrl } from './laraueIcons'
+import { boardsLogoUrl } from './brandIcons'
 
 defineProps<{ to?: RouteLocationRaw }>()
 </script>

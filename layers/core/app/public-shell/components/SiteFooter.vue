@@ -5,7 +5,7 @@
         <img
           alt=""
           height="28"
-          :src="laraueLogoUrl"
+          :src="boardsLogoUrl"
           width="28" />
         Laraue Boards
       </div>
@@ -65,7 +65,7 @@ import { computed } from 'vue'
 
 import { NuxtLink } from '#components'
 import { useLocalePath } from '#imports'
-import { laraueLogoUrl } from '#layers/core/app/branding/laraueIcons'
+import { boardsLogoUrl } from '#layers/core/app/branding/brandIcons'
 import {
   telegramBotUrl,
   githubRepositoryUrl,
