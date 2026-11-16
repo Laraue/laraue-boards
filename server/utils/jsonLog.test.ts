@@ -36,15 +36,18 @@ test('drops request 4xx and router misses without suppressing other warnings or 
   assert.equal(consoleEntry('warn', ['No match found for location with path'])?.level, 'warn')
 })
 
-test.each(['unhandledRejection', 'uncaughtException'])('logs %s only through the console', (tag) => {
-  const error = new Error('background failure')
-  assert.deepEqual(consoleEntry('error', [`[${tag}]`, error]), {
-    level: 'error',
-    message: `[${tag}] background failure`,
-    stack: error.stack,
-  })
-  assert.isUndefined(requestErrorEntry(error, undefined, [tag]))
-})
+test.each(['unhandledRejection', 'uncaughtException'])(
+  'logs %s only through the console',
+  (tag) => {
+    const error = new Error('background failure')
+    assert.deepEqual(consoleEntry('error', [`[${tag}]`, error]), {
+      level: 'error',
+      message: `[${tag}] background failure`,
+      stack: error.stack,
+    })
+    assert.isUndefined(requestErrorEntry(error, undefined, [tag]))
+  },
+)
 
 test('preserves console formatting and an error stack', () => {
   const error = new Error('timeout')
@@ -61,6 +64,6 @@ test('keeps the second error stack in the message', () => {
   const entry = consoleEntry('error', ['Both attempts failed', first, second])
   assert.isDefined(entry)
   assert.equal(entry.stack, first.stack)
-  assert.isString(second.stack)
+  assert.isDefined(second.stack)
   assert.include(entry.message, second.stack)
 })

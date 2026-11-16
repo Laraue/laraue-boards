@@ -11,10 +11,13 @@ type LogEntry = {
 export function requestErrorEntry(
   error: Error & { status?: number; statusCode?: number },
   path?: string,
-  tags?: readonly string[],
+  tags?: unknown,
 ): LogEntry | undefined {
   // Nitro already reports process errors through console.error.
-  if (tags?.includes('unhandledRejection') || tags?.includes('uncaughtException')) {
+  if (
+    Array.isArray(tags) &&
+    (tags.includes('unhandledRejection') || tags.includes('uncaughtException'))
+  ) {
     return
   }
 
@@ -33,7 +36,7 @@ export function requestErrorEntry(
 }
 
 export function consoleEntry(
-  level: LogEntry['level'] | 'debug',
+  level: 'debug' | LogEntry['level'],
   args: unknown[],
 ): LogEntry | undefined {
   if (level === 'debug') {
