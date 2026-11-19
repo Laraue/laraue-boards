@@ -31,6 +31,25 @@ test('takes the text of a heading with formatting without the markup', () => {
   assert.deepEqual(headings, [{ id: 'the-key-of-an-issue', level: 2, text: 'The key of an issue' }])
 })
 
+test('takes an explicit id from the end of a heading and hides it from the text', () => {
+  const { headings, html } = renderDocMarkdown(
+    '## Where to save {#destination}\n\n### Куда сохранять {#destination-picker}',
+  )
+
+  assert.deepEqual(headings, [
+    { id: 'destination', level: 2, text: 'Where to save' },
+    { id: 'destination-picker', level: 3, text: 'Куда сохранять' },
+  ])
+  assert.include(html, '<h2 id="destination">Where to save</h2>')
+  assert.notInclude(html, '{#')
+})
+
+test('keeps a brace in a heading that is not an explicit id', () => {
+  const { headings } = renderDocMarkdown('## The {#Bad Id} format')
+
+  assert.deepEqual(headings, [{ id: 'the-bad-id-format', level: 2, text: 'The {#Bad Id} format' }])
+})
+
 test('loads images lazily and escapes their attributes', () => {
   const { html } = renderDocMarkdown('![A "board"](https://example.com/board.jpg)')
 

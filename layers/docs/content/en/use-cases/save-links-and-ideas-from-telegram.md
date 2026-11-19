@@ -6,13 +6,13 @@ type: documentation
 project: boards
 order: 2
 createdAt: 2026-10-01
-updatedAt: 2026-10-28
+updatedAt: 2026-11-19
 ---
 Telegram is where you read interesting links, get ideas and receive requests — and Saved Messages is where they disappear: easy to save, hard to find. This guide turns what you forward into a board you can search and sort, so a link saved today is still easy to find in three months.
 
 ## How it works
 
-Forward any message to [@msgboard_bot](https://t.me/msgboard_bot). It becomes an issue in your personal organization, in the Backlog of its first space (the Default Space, unless you renamed it), and the bot confirms it with a reaction. Text, links, photos, videos and albums all work.
+Forward any message to [@msgboard_bot](https://t.me/msgboard_bot). It becomes an issue in your personal organization, in the Backlog of its first space (the Default Space, unless you renamed it), and the bot replies with a link to the new card (or puts 👍 on the message, if you've switched to reactions). Text, links, photos, videos and albums all work.
 
 ![A forwarded message in Telegram with the bot's reaction confirming it was saved](https://laraue.com/static/images/blog/docs/laraue-boards/message-board-bot-processed-message.jpg)
 
@@ -22,7 +22,7 @@ The card keeps the text (up to 4,096 characters), the media, the sender's name a
 
 1. Open the chat with the bot once and pin it, so it stays at the top of your chat list.
 2. When you see something worth keeping, long-press the message, tap **Forward** and choose the bot.
-3. Want a specific board instead of the Backlog? Send `/link` in your private chat with the bot and choose a board, then pick **Every message**. From then on, anything you send straight to the bot lands there. See [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking).
+3. Want a specific board instead of the Backlog? Send `/link` in your private chat with the bot, tap **📍 Change destination** and choose a board, then pick **Every message**. From then on, anything you send straight to the bot lands there. Or tap **❓ Ask for the space each time** to choose a board for each message as it arrives — see [One inbox chat, sort later](/documentation/integrations/telegram-chat-settings#inbox-chat).
 
 ## Sort it when you have time
 

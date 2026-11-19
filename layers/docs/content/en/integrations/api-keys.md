@@ -4,7 +4,7 @@ description: Create a long-lived API key from your organization profile to let s
 keywords: [boards api key, boards personal access token, boards api authentication, boards mcp api key, revoke api key]
 type: documentation
 project: boards
-order: 6
+order: 7
 createdAt: 2026-09-23
 updatedAt: 2026-10-28
 ---

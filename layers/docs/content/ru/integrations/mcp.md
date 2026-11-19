@@ -4,7 +4,7 @@ description: Подключите Claude Desktop, Claude Code, Cursor или cla
 keywords: [mcp сервер boards, claude mcp коннектор, model context protocol boards, подключить claude к boards, как подключить mcp сервер, mcp сервер для claude code, подключить cursor к mcp, ai-агент управление проектами, удалённый mcp коннектор]
 type: documentation
 project: boards
-order: 7
+order: 8
 createdAt: 2026-09-23
 updatedAt: 2026-11-03
 ---

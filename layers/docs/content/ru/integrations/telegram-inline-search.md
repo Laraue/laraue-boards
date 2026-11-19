@@ -4,7 +4,7 @@ description: Введите @msgboard_bot и запрос в любом чате
 keywords: [telegram inline поиск issues, поиск kanban из telegram, telegram бот найти задачу, telegram inline запрос доска]
 type: documentation
 project: boards
-order: 5
+order: 6
 createdAt: 2026-08-19
 updatedAt: 2026-10-28
 ---

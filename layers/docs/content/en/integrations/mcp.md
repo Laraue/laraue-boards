@@ -4,7 +4,7 @@ description: Connect Claude Desktop, Claude Code, Cursor, or claude.ai to Laraue
 keywords: [boards mcp server, claude mcp connector, model context protocol boards, connect claude to boards, connect claude code to task tracker, claude code mcp server setup, cursor mcp server, ai agent project management, remote mcp connector]
 type: documentation
 project: boards
-order: 7
+order: 8
 createdAt: 2026-09-23
 updatedAt: 2026-11-03
 ---

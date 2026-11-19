@@ -5,7 +5,7 @@ keywords: [telegram mini app integration, telegram bot project management, teleg
 type: sectionDefinition
 order: 6
 createdAt: 2026-04-22
-updatedAt: 2026-09-23
+updatedAt: 2026-11-19
 ---
 Laraue Boards is built around Telegram, and also connects to AI agents like Claude. This section covers how each integration works and how to get the most out of it.
 
@@ -14,6 +14,8 @@ Laraue Boards is built around Telegram, and also connects to AI agents like Clau
 - [Telegram Mini App](/documentation/integrations/telegram-mini-app) — Using Laraue Boards natively inside Telegram. Automatic login, message capture from any chat, and mobile-first design.
 
 - [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking) — Point any chat — private or group — at an organization, space, epic, and status with `/link`.
+
+- [Telegram chat settings](/documentation/integrations/telegram-chat-settings) — When, where and how a linked chat saves messages: pick the place each time or once, get a link to each card or a 👍, with use cases.
 
 - [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes) — Choose whether messages in a linked chat become issues automatically or only the ones you save with `/save`.
 
