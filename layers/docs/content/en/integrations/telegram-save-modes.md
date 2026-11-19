@@ -4,9 +4,9 @@ description: Once a Telegram chat is linked to Boards, choose whether every mess
 keywords: [telegram bot save mode, telegram bot auto save, telegram save command, telegram aisave command, telegram info command, telegram info issue link, telegram delete command, telegram bot manual save]
 type: documentation
 project: boards
-order: 4
+order: 5
 createdAt: 2026-08-19
-updatedAt: 2026-10-28
+updatedAt: 2026-11-19
 ---
 **Save mode** is the last step of [linking a chat](/documentation/integrations/telegram-linking), and it decides *when* a message in that chat turns into an issue: automatically, or only when someone asks for it.
 
@@ -16,7 +16,7 @@ Every message sent in the chat becomes an issue immediately. If the sender edits
 
 This is a good choice for a **solo or personal chat** — for example, your own "notes to self" chat linked to a specific project, where any message should become a card.
 
-Because saving happens silently (a reaction confirms it, not a reply), reply to a message with `/info` (below) if you want to grab the card's link.
+How the bot confirms each save depends on the chat's [confirmation setting](/documentation/integrations/telegram-chat-settings#reply-mode): a reply with the card's link, or a 👍 on the message. With reactions, reply to a message with `/info` (below) when you want the card's link.
 
 ## Only via /save (manual mode)
 
@@ -36,7 +36,9 @@ This is the right choice for a **busy group chat** where only some messages shou
 
 Replying to any message in a photo/video **album** saves the whole album as one issue — content and caption come from the album's first message, and every attachment is attached to the issue.
 
-Running `/save` again on a message that's already saved triggers a re-sync and returns the same card's link. In manual mode, this is the correct way to update the card on the board if the message in the chat was updated.
+Running `/save` again on a message that's already saved triggers a re-sync of the same card. In manual mode, this is the correct way to update the card on the board if the message in the chat was updated.
+
+The bot answers `/save` the way the chat's [confirmation setting](/documentation/integrations/telegram-chat-settings#reply-mode) says: with the card's link, or with 👍 on the saved message (❤ when `/save` updates a card that already exists).
 
 ## /aisave — save with an AI-cleaned title and description
 
@@ -81,12 +83,17 @@ If the message has no recognized issue link, `/info` falls back to looking up wh
 
 Reply to a message with `/delete` to delete the issue saved from it. The bot first shows the issue and asks you to confirm with **🗑 Delete** (or **✖ Cancel**); only then is the issue deleted, and the bot replies "🗑 Card deleted." The Telegram message itself stays. If the message has no issue yet, or you don't hold the **Delete** permission for it, the bot tells you so and nothing is deleted.
 
+## When the chat asks where to save
+
+If the chat isn't linked all the way down to a status — it asks for the space, epic or status each time — a new message in auto mode, or your `/save` in manual mode, first gets a **📥 Where should this go?** question. The card is created once you pick; `/aisave` and the title you gave still apply. See [Picking where a message goes](/documentation/integrations/telegram-chat-settings#destination-picker).
+
 ## Permissions
 
-Every save checks whether you have create-issue permission in the destination epic. Linking a chat doesn't hand everyone in it permission to create cards there. See [Permissions management](/documentation/working-in-a-team/permissions) for how to grant it.
+Every save checks whether you have create-issue permission in the destination epic (the one you picked, when the chat asks). Linking a chat doesn't hand everyone in it permission to create cards there. See [Permissions management](/documentation/working-in-a-team/permissions) for how to grant it.
 
 ## Related pages
 
+- [Telegram chat settings](/documentation/integrations/telegram-chat-settings) — where messages go and how the bot confirms them
 - [Linking a Telegram chat to Boards](/documentation/integrations/telegram-linking)
 - [Capturing Telegram messages](/documentation/working-alone/telegram-messages) — forwarding messages without linking a chat
 - [Permissions management](/documentation/working-in-a-team/permissions)

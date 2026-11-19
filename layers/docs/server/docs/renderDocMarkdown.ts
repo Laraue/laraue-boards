@@ -47,6 +47,10 @@ const slugify = (value: string): string =>
     .replaceAll(/[^\p{L}\p{N}]+/gu, '-')
     .replaceAll(/^-+|-+$/g, '')
 
+// An explicit id at the end of a heading - "## Where to save {#destination}" - for a section other
+// pages and the bot link to: it stays the same in both languages and when the heading is reworded.
+const explicitIdPattern = /\s*\{#([a-z\d][a-z\d-]*)\}\s*$/
+
 // The docs are our own content, so the HTML is not sanitized. Second and third level headings get
 // an id (for the "on this page" list and links to a section) and are returned alongside the HTML.
 export const renderDocMarkdown = (body: string): { headings: DocHeading[]; html: string } => {
@@ -57,13 +61,15 @@ export const renderDocMarkdown = (body: string): { headings: DocHeading[]; html:
     gfm: true,
     renderer: {
       heading({ depth, tokens }) {
-        const content = this.parser.parseInline(tokens)
+        const rendered = this.parser.parseInline(tokens)
+        const explicitId = explicitIdPattern.exec(rendered)?.[1]
+        const content = explicitId ? rendered.replace(explicitIdPattern, '') : rendered
         if (depth !== 2 && depth !== 3) {
           return `<h${depth}>${content}</h${depth}>\n`
         }
 
         const text = decodeEntities(content.replaceAll(/<[^>]*>/g, ''))
-        const base = slugify(text) || 'section'
+        const base = explicitId ?? (slugify(text) || 'section')
         const count = usedIds.get(base) ?? 0
         usedIds.set(base, count + 1)
         const id = count === 0 ? base : `${base}-${count}`

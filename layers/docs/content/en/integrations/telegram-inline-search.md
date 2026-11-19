@@ -4,7 +4,7 @@ description: Type @msgboard_bot followed by a query in any Telegram chat to sear
 keywords: [telegram inline search issues, search kanban from telegram, telegram bot find task, telegram inline query board]
 type: documentation
 project: boards
-order: 5
+order: 6
 createdAt: 2026-08-19
 updatedAt: 2026-10-01
 ---

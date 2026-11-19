@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 1
 createdAt: 2026-10-01
-updatedAt: 2026-10-28
+updatedAt: 2026-11-19
 ---
 In a busy group chat, a task is rarely where the work happens: someone asks for a fix on Tuesday, and by Friday it is buried under two hundred messages. This guide sets up a shared board that your group chat feeds. Anyone on the team replies `/save` to a message, it becomes a card everyone can see, and nobody has to leave Telegram.
 
@@ -26,7 +26,9 @@ Create an organization, copy its invite link and send it to your teammates. [Cre
 
 ### 2. Link the group chat to a board
 
-Add [@msgboard_bot](https://t.me/msgboard_bot) to the group, then send `/link` in it. Only a chat admin can do this, and you need the *Link Telegram chats* permission in the organization — the owner has it, and an admin can grant it to you on your permissions page. The bot walks you through the destination: organization, space, epic and status. At the last step, choose **Only via /save** — the manual mode, built for busy chats.
+Add [@msgboard_bot](https://t.me/msgboard_bot) to the group, then send `/link` in it. Only a chat admin can do this, and you need the *Link Telegram chats* permission in the organization — the owner has it, and an admin can grant it to you on your permissions page. The bot walks you through the destination: organization, space, epic and status. Then choose **Only via /save** — the manual mode, built for busy chats — and how the bot confirms a save: **🔗 Reply with the card link** lets the whole chat see each new card.
+
+Want whoever saves a message to choose its column? At the status step, tap **❓ Ask for the status each time**: each `/save` then asks which status the card goes to. See [Team group](/documentation/integrations/telegram-chat-settings#team-group).
 
 ![The linked chat, showing the destination breadcrumb and the chosen save mode](https://laraue.com/static/images/blog/docs/laraue-boards/link-chat-linked.jpg)
 
@@ -59,7 +61,7 @@ For a rambling message, reply with `/aisave` instead. It rewrites the text into 
 
 ## When to save everything automatically
 
-Auto mode turns every message in the chat into a card, and keeps the card in sync when the message is edited. Use it for a small chat that exists only for requests, not for a busy group. To change the mode, unlink the chat with `/unlink` and link it again. See [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes).
+Auto mode turns every message in the chat into a card, and keeps the card in sync when the message is edited. Use it for a small chat that exists only for requests, not for a busy group. To change the mode, send `/link` in the chat and tap the button that switches it — see [Changing settings](/documentation/integrations/telegram-chat-settings#changing-settings) and [Auto vs. manual save mode](/documentation/integrations/telegram-save-modes).
 
 ## Start now
 

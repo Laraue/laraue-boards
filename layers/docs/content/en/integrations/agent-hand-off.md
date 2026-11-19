@@ -4,7 +4,7 @@ description: Hand an issue in Laraue Boards to your own AI coding agent. The age
 keywords: [hand issue to ai agent, ai coding agent task tracker, claude code issue tracker, codex issue tracker, agent runner mcp, ai agent backlog, delegate issue to agent]
 type: documentation
 project: boards
-order: 8
+order: 9
 createdAt: 2026-10-18
 updatedAt: 2026-10-22
 ---

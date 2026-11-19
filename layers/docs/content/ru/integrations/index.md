@@ -5,7 +5,7 @@ keywords: [интеграция telegram mini app, telegram бот управл�
 type: sectionDefinition
 order: 6
 createdAt: 2026-04-22
-updatedAt: 2026-10-28
+updatedAt: 2026-11-19
 ---
 Laraue Boards построен вокруг Telegram и подключается к ИИ-агентам вроде Claude. В этом разделе — как устроена каждая интеграция и как извлечь из неё максимум.
 
@@ -14,6 +14,8 @@ Laraue Boards построен вокруг Telegram и подключается
 - [Telegram Mini App](/ru/documentation/integrations/telegram-mini-app) — Laraue Boards прямо в Telegram: автоматический вход, сохранение сообщений из любого чата и интерфейс, рассчитанный на телефон.
 
 - [Привязка чата Telegram к Boards](/ru/documentation/integrations/telegram-linking) — направьте любой чат, личный или групповой, в организацию, пространство, эпик и статус командой `/link`.
+
+- [Настройки чата Telegram](/ru/documentation/integrations/telegram-chat-settings) — когда, куда и как привязанный чат сохраняет сообщения: место выбирается один раз или для каждого сообщения, подтверждение — ссылкой на карточку или 👍; со сценариями.
 
 - [Автоматический и ручной режимы сохранения](/ru/documentation/integrations/telegram-save-modes) — выберите, будут ли сообщения в привязанном чате становиться issues автоматически или только по команде `/save`.
 

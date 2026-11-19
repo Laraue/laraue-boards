@@ -6,7 +6,7 @@ type: documentation
 project: boards
 order: 3
 createdAt: 2026-04-22
-updatedAt: 2026-10-29
+updatedAt: 2026-11-19
 ---
 The core idea behind Laraue Boards is that work is already happening in Telegram. A client request, a bug report, a photo of something that needs fixing — these are all issues, they just haven't been structured yet. Laraue Boards captures them directly.
 
@@ -22,6 +22,8 @@ The simplest way to capture a message:
 ![A forwarded message in Telegram with the bot's reaction confirming it was saved](https://laraue.com/static/images/blog/docs/laraue-boards/message-board-bot-processed-message.jpg)
 
 This works for text messages, photos, videos, documents, and albums.
+
+The bot confirms each saved message: by default it replies with the new card and an **Open issue** button, so you see where the message went. If you'd rather keep the chat quiet, switch to a 👍 reaction with `/link` — see [How the bot confirms](/documentation/integrations/telegram-chat-settings#reply-mode). Chats set up before this setting existed keep the 👍.
 
 ## What gets captured
 

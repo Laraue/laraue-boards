@@ -4,7 +4,7 @@ description: Передайте issue в Laraue Boards своему ИИ-аге�
 keywords: [передать задачу ai агенту, ai агент для кода таск-трекер, claude code задачи, codex задачи, агент mcp, бэклог для ai агента, делегировать задачу агенту]
 type: documentation
 project: boards
-order: 8
+order: 9
 createdAt: 2026-10-18
 updatedAt: 2026-10-28
 ---

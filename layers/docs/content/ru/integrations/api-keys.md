@@ -4,7 +4,7 @@ description: Создайте долгосрочный API-ключ в проф�
 keywords: [api-ключ boards, персональный токен доступа boards, авторизация api boards, api-ключ mcp boards, отозвать api-ключ]
 type: documentation
 project: boards
-order: 6
+order: 7
 createdAt: 2026-09-23
 updatedAt: 2026-10-28
 ---
