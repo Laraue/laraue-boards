@@ -171,7 +171,7 @@ const { t } = useI18n({
     signingIn: 'Открываем страницу входа…',
     title: 'Подключение приложения',
     unknownClientText:
-      'Boards подключает только известные ему приложения, например Claude и ChatGPT.',
+      'К Boards можно подключить только известные приложения, например Claude и ChatGPT.',
     unknownClientTitle: 'Это приложение нельзя подключить к Boards',
   },
 })
