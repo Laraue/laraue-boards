@@ -25,6 +25,7 @@ const privatePaths = [
   '/dev/**',
   '/join/**',
   '/login',
+  '/oauth/**',
   '/organizations',
   '/organizations/**',
   '/payment/**',

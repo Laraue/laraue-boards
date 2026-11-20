@@ -6,19 +6,24 @@ type: documentation
 project: boards
 order: 8
 createdAt: 2026-09-23
-updatedAt: 2026-11-03
+updatedAt: 2026-11-20
 ---
 Laraue Boards runs a remote **MCP** (Model Context Protocol) server, so an AI agent like Claude can work with your issues directly — listing them, opening one, moving it between statuses, or leaving a comment — without you copying anything back and forth by hand.
 
 ## What you need
 
-An [API key](/documentation/integrations/api-keys) for the organization you want Claude to access. Create one from **Organization profile → API keys** before connecting.
+A Laraue Boards account. Claude and Claude Code sign in to Boards when you connect them: Boards asks which organization they should work in, and you allow it. Other clients, like Cursor, connect with an [API key](/documentation/integrations/api-keys) instead — create one from **Organization profile → API keys** before connecting.
 
 ## Connecting in Claude
 
-In Claude, type `/mcp` to open the MCP connectors list, then choose the **custom connector** option and add:
+In Claude, type `/mcp` to open the MCP connectors list, choose the **custom connector** option and set the URL:
 
 - **URL**: `https://boards.laraue.com/boards-mcp/mcp`
+
+When you connect it, Claude opens Boards: sign in if you aren't yet, choose the organization and click **Allow**. You're taken back to Claude, and the connector is ready.
+
+If you prefer an API key, add a header to the connector instead of signing in:
+
 - **Header**: `X-Api-Key` set to your API key
 
 ![Adding the Laraue Boards MCP connector in Claude, with the server URL and X-Api-Key header](https://laraue.com/static/images/blog/docs/laraue-boards/claude-mcp-connector-setup.jpg)
@@ -30,11 +35,21 @@ Laraue Boards is also listed on the [official MCP Registry](https://registry.mod
 Run this once in a terminal:
 
 ```bash
+claude mcp add --transport http boards https://boards.laraue.com/boards-mcp/mcp
+```
+
+Then type `/mcp` inside Claude Code, select `boards` and authenticate: the browser opens Boards, where you choose the organization and click **Allow**.
+
+By default the server is added for the current project only. Add `--scope user` to make it available in every project.
+
+To connect with an API key instead, pass it as a header:
+
+```bash
 claude mcp add --transport http boards https://boards.laraue.com/boards-mcp/mcp \
   --header "X-Api-Key: YOUR_API_KEY"
 ```
 
-By default the server is added for the current project only. Add `--scope user` to make it available in every project. With `--scope project` the server goes into the project's `.mcp.json`, which includes the key — keep that file out of version control. Run `/mcp` inside Claude Code to check the connection.
+With `--scope project` the server goes into the project's `.mcp.json`, which then includes the key — keep that file out of version control.
 
 ## Connecting Cursor
 
@@ -55,11 +70,22 @@ Add the server to `.cursor/mcp.json` in your project, or to `~/.cursor/mcp.json`
 
 Set `BOARDS_API_KEY` in your shell environment, so the key never sits in the file.
 
+## Connecting more than one organization
+
+One connection works in one organization. To use the agent with, for example, your personal organization and your company's, connect the server twice under different names and choose a different organization each time you allow it:
+
+```bash
+claude mcp add --transport http boards-personal https://boards.laraue.com/boards-mcp/mcp
+claude mcp add --transport http boards-work https://boards.laraue.com/boards-mcp/mcp
+```
+
+Authenticate each of them from `/mcp`. The agent sees both servers and their tools side by side, and you can tell it which one to use ("in boards-work, create an issue…"). In Claude, add a second custom connector with another name in the same way. With API keys, give each connection the key of its own organization.
+
 Once connected, see [A backlog for AI-assisted development](/documentation/use-cases/ai-agent-backlog) for what to ask the agent.
 
 ## What Claude can do
 
-Every action runs with your own permissions, live — Claude can't do anything in an organization that you couldn't do yourself there, and it can't act at all once the API key behind it is revoked.
+Every action runs with your own permissions, live — Claude can't do anything in an organization that you couldn't do yourself there, and it can't act at all once the API key behind its connection is revoked.
 
 - **Issues** — list and filter issues, view one in full detail, create a new one (with a title), edit its title, content or assignee, move it to a different status (keeping or dropping the values of attributes the new board doesn't use), or delete it
 - **Comments** — add a comment to an issue, or edit one you wrote, with files attached (e.g. a report or config)
@@ -72,7 +98,7 @@ Claude only offers actions you're actually allowed to take — for example, it w
 
 ## Revoking access
 
-Access is tied entirely to the API key. Revoke it from **Organization profile → API keys** at any time, and Claude immediately loses the ability to reach that organization — the same as revoking any other key.
+Every connection works through an API key: the one you created, or one Boards created when the client signed in, named after the client — for example `Claude (claude.ai)` or `Claude Code (claude.ai)`. Revoke it from **Organization profile → API keys** at any time, and the agent immediately loses the ability to reach that organization — the same as revoking any other key.
 
 ## Related pages
 
