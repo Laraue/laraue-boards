@@ -20,9 +20,9 @@ In Claude, type `/mcp` to open the MCP connectors list, choose the **custom conn
 
 - **URL**: `https://boards.laraue.com/boards-mcp/mcp`
 
-When you connect it, Claude opens Boards: sign in if you aren't yet, choose the organization and click **Allow**. You're taken back to Claude, and the connector is ready.
+Claude detects how Boards signs clients in. Keep what it marks as **Detected**: **Sign in now** under **Authentication** and **Use Claude's published identity** under **OAuth client**, leave the request headers empty, and click **Add**. Claude then opens Boards: sign in if you aren't yet, choose the organization and click **Allow**. You're taken back to Claude, and the connector is ready.
 
-If you prefer an API key, add a header to the connector instead of signing in:
+If you prefer an API key, choose **No sign-in** under **Authentication** and add a request header instead:
 
 - **Header**: `X-Api-Key` set to your API key
 
