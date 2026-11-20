@@ -2,7 +2,7 @@
   <OAuthConsentPage
     :deps="deps"
     :error="error"
-    :on-redirect="(url) => navigateTo(url, { external: true })"
+    :on-redirect="redirect"
     :on-sign-in-required="signIn"
     :request-id="requestId" />
 </template>
@@ -26,6 +26,11 @@ const requestId = computed(() =>
 )
 const error = computed(() => (typeof route.query.error === 'string' ? route.query.error : ''))
 const deps = createOAuthConsentPageDeps(useApiClient({}))
+
+// Allow or Deny sends the browser back to the app, outside Boards.
+const redirect = async (url: string): Promise<void> => {
+  await navigateTo(url, { external: true })
+}
 
 // Back to this page after signing in, with the same request.
 const signIn = async (): Promise<void> => {

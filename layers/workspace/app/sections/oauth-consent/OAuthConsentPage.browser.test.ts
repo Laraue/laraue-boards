@@ -65,7 +65,9 @@ it('allows the app for the only organization and sends the browser back to it', 
   await expect
     .element(page.getByText(/ChatGPT \(chatgpt.com\) wants to work with your Boards issues/))
     .toBeInTheDocument()
-  await expect.element(page.getByText(/API key named “ChatGPT \(chatgpt.com\)”/)).toBeInTheDocument()
+  await expect
+    .element(page.getByText(/API key named “ChatGPT \(chatgpt.com\)”/))
+    .toBeInTheDocument()
   await page.getByRole('button', { name: 'Allow' }).click()
 
   expect(deps.approve).toHaveBeenCalledWith({ organizationId: '7', requestId })
