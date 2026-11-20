@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://boards.laraue.com/sitemap_index.xml
+
+# Documentation for LLMs and AI agents: https://boards.laraue.com/llms.txt

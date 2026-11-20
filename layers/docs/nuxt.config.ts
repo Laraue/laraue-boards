@@ -16,6 +16,9 @@ export default defineNuxtConfig({
     // Data for the pages and the sitemap, not pages themselves.
     '/docs-content/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/docs-sitemap-urls': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    // For LLMs and AI agents (see server/routes/llms*.txt), not for search results.
+    '/llms-full.txt': { headers: { 'X-Robots-Tag': 'noindex' } },
+    '/llms.txt': { headers: { 'X-Robots-Tag': 'noindex' } },
   },
   // The articles share one route, so their addresses come from the markdown files.
   sitemap: { sources: ['/docs-sitemap-urls'] },

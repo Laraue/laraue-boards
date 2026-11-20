@@ -24,6 +24,11 @@ export const createDocsCatalog = (files: Record<string, string>) => {
   }
 
   return {
+    // The pages' markdown as it is written, in reading order, for the markdown copies of the pages.
+    entries: (locale: DocsLocale): DocEntry[] =>
+      readingOrder[locale].flatMap((node) => entries[locale].get(pathKey(node.path)) ?? []),
+    entry: (locale: DocsLocale, path: string[]): DocEntry | undefined =>
+      entries[locale].get(pathKey(path)),
     page(locale: DocsLocale, path: string[]): DocPage | undefined {
       const entry = entries[locale].get(pathKey(path))
       if (!entry) {
