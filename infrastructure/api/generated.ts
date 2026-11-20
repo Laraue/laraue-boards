@@ -2555,6 +2555,251 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/oauth/authorize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    response_type?: string;
+                    client_id?: string;
+                    redirect_uri?: string;
+                    code_challenge?: string;
+                    code_challenge_method?: string;
+                    state?: string;
+                    resource?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/oauth/token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        grant_type?: string;
+                        code?: string;
+                        client_id?: string;
+                        redirect_uri?: string;
+                        code_verifier?: string;
+                        resource?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/oauth/requests/{requestId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    requestId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OAuthConsentDto"];
+                        "application/json": components["schemas"]["OAuthConsentDto"];
+                        "text/json": components["schemas"]["OAuthConsentDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/oauth/requests/{requestId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    requestId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApproveOAuthRequest"];
+                    "text/json": components["schemas"]["ApproveOAuthRequest"];
+                    "application/*+json": components["schemas"]["ApproveOAuthRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OAuthDecisionResponse"];
+                        "application/json": components["schemas"]["OAuthDecisionResponse"];
+                        "text/json": components["schemas"]["OAuthDecisionResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/oauth/requests/{requestId}/deny": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    requestId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OAuthDecisionResponse"];
+                        "application/json": components["schemas"]["OAuthDecisionResponse"];
+                        "text/json": components["schemas"]["OAuthDecisionResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/.well-known/oauth-authorization-server": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OAuthServerMetadata"];
+                        "application/json": components["schemas"]["OAuthServerMetadata"];
+                        "text/json": components["schemas"]["OAuthServerMetadata"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organizations": {
         parameters: {
             query?: never;
@@ -3889,6 +4134,10 @@ export interface components {
             /** Format: int64 */
             organizationId: number;
         };
+        ApproveOAuthRequest: {
+            /** Format: int64 */
+            organizationId: number;
+        };
         /** @enum {unknown} */
         AttachmentAction: "Created" | "Deleted";
         AttachmentData: {
@@ -4688,6 +4937,27 @@ export interface components {
         };
         NewAttributeListValueDto: {
             name: string;
+        };
+        OAuthConsentDto: {
+            clientName: string;
+            clientHost: string;
+            keyName: string;
+            /** Format: date-time */
+            expiresAt: string;
+        };
+        OAuthDecisionResponse: {
+            redirectUrl: string;
+        };
+        OAuthServerMetadata: {
+            issuer: string;
+            authorization_endpoint: string;
+            token_endpoint: string;
+            response_types_supported?: string[];
+            grant_types_supported?: string[];
+            code_challenge_methods_supported?: string[];
+            token_endpoint_auth_methods_supported?: string[];
+            client_id_metadata_document_supported?: boolean;
+            authorization_response_iss_parameter_supported?: boolean;
         };
         /** @enum {unknown} */
         OnboardingId: "OrganizationsV1" | "AppLayoutV1";
